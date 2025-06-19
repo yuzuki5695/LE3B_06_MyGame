@@ -225,6 +225,9 @@
     <ClCompile Include="engine\camera\Camera.cpp">
       <Filter>ソース ファイル\engine\camera</Filter>
     </ClCompile>
+    <ClCompile Include="application\Bullet\BaseBullet.cpp">
+      <Filter>ソース ファイル\application\bullet</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="engine\2d\Sprite.h">
@@ -370,6 +373,9 @@
     </ClInclude>
     <ClInclude Include="engine\camera\CameraManager.h">
       <Filter>ヘッダー ファイル\engine\camera</Filter>
+    </ClInclude>
+    <ClInclude Include="application\Bullet\BaseBullet.h">
+      <Filter>ヘッダー ファイル\application\bullet</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
