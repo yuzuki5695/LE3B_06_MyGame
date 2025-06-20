@@ -48,10 +48,8 @@ private: // メンバ変数
     uint32_t soundfige;
 
 
-    std::unique_ptr <Player> player_;    
-    
-    std::vector<std::unique_ptr<Enemy>> enemys_;
-
+    //std::unique_ptr <Player> player_;
+    // std::vector<std::unique_ptr<Enemy>> enemys_;
 
     std::unique_ptr<BulletManager> bulletManager_;
 

@@ -1,20 +1,20 @@
 #pragma once
-#include<Object3d.h>
 #include <fstream>
 #include <vector>
 #include <string>
 #include<Transform.h>
+#include<Character.h>
 
-class Player{
+class Player: public Character{
 public:
-	~Player();
+	~Player() override;
 
 	// 初期化
-	void Initialize();
+	void Initialize() override;
 	// 毎フレーム更新
-	void Update();
+	void Update() override;
 	// 描画
-	void Draw();
+	void Draw() override;
 	// 弾の発射
 	void AttachBullet();
 	// デバッグ用のImGui描画

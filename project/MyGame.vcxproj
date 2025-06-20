@@ -103,6 +103,8 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="application\Bullet\Bullet.cpp" />
     <ClCompile Include="application\Bullet\BaseBullet.cpp" />
     <ClCompile Include="application\Bullet\BulletManager.cpp" />
+    <ClCompile Include="application\Player\Character.cpp" />
+    <ClCompile Include="application\Player\CharacterManager.cpp" />
     <ClCompile Include="engine\camera\CameraManager.cpp" />
     <ClCompile Include="application\Enemy\Enemy.cpp" />
     <ClCompile Include="engine\3d\Particle\ParticleCommon.cpp" />
@@ -145,6 +147,8 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\Bullet\Bullet.h" />
     <ClInclude Include="application\Bullet\BaseBullet.h" />
     <ClInclude Include="application\Bullet\BulletManager.h" />
+    <ClInclude Include="application\Player\Character.h" />
+    <ClInclude Include="application\Player\CharacterManager.h" />
     <ClInclude Include="engine\camera\CameraManager.h" />
     <ClInclude Include="application\Enemy\Enemy.h" />
     <ClInclude Include="engine\3d\Particle\ParticleCommon.h" />

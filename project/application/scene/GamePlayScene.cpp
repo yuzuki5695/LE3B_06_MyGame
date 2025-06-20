@@ -12,9 +12,11 @@
 #include <ParticleManager.h>
 #include <numbers>
 #include <CameraManager.h>
+#include<CharacterManager.h>
 
 void GamePlayScene::Finalize() {
-	BulletManager::GetInstance()->Finalize(); // 弾の終了処理
+	CharacterManager::GetInstance()->Clear(); // キャラクターの解放処理
+	BulletManager::GetInstance()->Finalize(); // 弾の解放処理
 }
 
 void GamePlayScene::Initialize() {
@@ -25,16 +27,9 @@ void GamePlayScene::Initialize() {
     // テクスチャを読み込む
     TextureManager::GetInstance()->LoadTexture("Resources/uvChecker.png");
     TextureManager::GetInstance()->LoadTexture("Resources/monsterBall.png");
-    TextureManager::GetInstance()->LoadTexture("Resources/circle.png");
-    TextureManager::GetInstance()->LoadTexture("Resources/grass.png");
-    TextureManager::GetInstance()->LoadTexture("Resources/circle2.png");
-    TextureManager::GetInstance()->LoadTexture("Resources/gradationLine.png");
 
     // .objファイルからモデルを読み込む
     ModelManager::GetInstance()->LoadModel("plane.obj");
-    ModelManager::GetInstance()->LoadModel("axis.obj");
-    ModelManager::GetInstance()->LoadModel("monsterBallUV.obj");
-    ModelManager::GetInstance()->LoadModel("fence.obj");
     ModelManager::GetInstance()->LoadModel("terrain.obj");
 
     // 音声ファイルを追加
@@ -47,19 +42,21 @@ void GamePlayScene::Initialize() {
 
     // パーティクルグループ生成
     ParticleManager::GetInstance()->CreateParticleGroup("Particles", "Resources/uvChecker.png", "plane.obj", VertexType::Model);            // モデルで生成
- 	
-    // プレイヤーの初期化
-	player_ = std::make_unique<Player>();
-    player_->Initialize();
-        
+
+    // キャラクターの生成
+    CharacterManager::GetInstance()->Initialize(); // リストクリア
+    CharacterManager::GetInstance()->AddCharacter(std::make_unique<Player>());   // プレイヤーの登録
+    CharacterManager::GetInstance()->InitializeAllCharacters(); // 登録クラスを全て初期化
+
+
     // 敵を複数体生成
-    for (int i = 0; i < 6; ++i) {
+  /*  for (int i = 0; i < 6; ++i) {
         auto enemy = std::make_unique<Enemy>();
         enemy->Initialize();
         enemys_.push_back(std::move(enemy));
-    }
+    }*/
 
-    // 弾マネージャの初期化
+    // Bulletマネージャの初期化
 	BulletManager::GetInstance()->Initialize();
 }
 
@@ -83,29 +80,20 @@ void GamePlayScene::Update() {
     // 更新処理
     grass->Update();
 
-    // プレイヤー 
-    player_->Update();
 
-    // 敵
-    for (auto& enemy : enemys_) {
-        if (enemy->IsActive()) {
-            enemy->Update(player_->GetTransform().translate);
-        }
-    }
+    //if (CameraManager::GetInstance()->Getmovefige()) {
+    //    //CheckBulletEnemyCollisions();  // 当たり判定(プレイヤーの球と敵)
+    //    //CheckEnemyBulletPlayerCollisions(); // 当たり判定(プレイヤーと敵の弾)
+    //    //CheckPlayerEnemyCollisions();  // 当たり判定(プレイヤーと敵)
+    //    //CleanupInactiveObjects();      // 不要なオブジェクト削除
+    //}
 
-    if (CameraManager::GetInstance()->Getmovefige()) {
-        //CheckBulletEnemyCollisions();  // 当たり判定(プレイヤーの球と敵)
-        //CheckEnemyBulletPlayerCollisions(); // 当たり判定(プレイヤーと敵の弾)
-        //CheckPlayerEnemyCollisions();  // 当たり判定(プレイヤーと敵)
-        //CleanupInactiveObjects();      // 不要なオブジェクト削除
-    }
-
-
-    // 弾マネージャの更新処理
+	// キャラクターの更新処理
+    CharacterManager::GetInstance()->Update();
+    // Bulletマネージャの更新処理
     BulletManager::GetInstance()->Update();
 
     ParticleManager::GetInstance()->Update();
-
 #pragma endregion 全てのObject3d個々の更新処理
 
 #pragma region 全てのSprite個々の更新処理
@@ -126,18 +114,9 @@ void GamePlayScene::Draw() {
 
     grass->Draw();
     
-    // プレイヤー 
-    player_->Draw();
-   
-    
-    // 敵
-    for (auto& enemy : enemys_) {
-        if (enemy->IsActive()) {
-            enemy->Draw();
-        }
-    }
-    
-    // 弾マネージャの描画処理
+   	// キャラクターの描画処理
+    CharacterManager::GetInstance()->Draw();
+    // Bulletマネージャの描画処理
     BulletManager::GetInstance()->Draw();
 
     // パーティクルの描画準備。パーティクルの描画に共通のグラフィックスコマンドを積む 

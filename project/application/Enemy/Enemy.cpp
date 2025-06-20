@@ -21,28 +21,21 @@ void Enemy::Initialize() {
     object = Object3d::Create("uvChecker.obj", Transform({ {1.0f, 1.0f, 1.0f},     {0.0f, 0.0f, 0.0f}, position_.x,position_.y,position_.z }));
 }
 
-void Enemy::Update(const Vector3& playerPos) {
+void Enemy::Update() {
 
     // 位置をobjectから取得して同期する
     //position_ = object->GetWorldPosition(); // ← 追加
 	object->SetTranslate(position_); // ← 追加
     object->Update();
       
-    attachBullet(playerPos);
-
-    //// 弾の更新
-    //for (auto& b : bullets_) {
-    //    b->Update();
-    //}
+    if (target_) {
+        Vector3 playerPos = target_->GetTransform().translate;
+        attachBullet(playerPos); // プレイヤーの位置を使って弾発射
+    }
 }
 
 void Enemy::Draw() {   
     object->Draw();
-
-    // // 弾の描画
-    //for (auto& b : bullets_) {
-    //    b->Draw();
-    //}
 }
 
 void Enemy::attachBullet(const Vector3& playerPos) {
@@ -69,4 +62,8 @@ void Enemy::attachBullet(const Vector3& playerPos) {
     //}
 
     //canShoot_ = false;
+}
+
+void Enemy::SetTarget(Character* target) {
+    target_ = target;
 }
