@@ -4,10 +4,10 @@
 using namespace MatrixVector;
 
 Enemy::~Enemy() {
-    for (auto b : bullets_) {
-        delete b;
-    }
-    bullets_.clear();
+    //for (auto b : bullets_) {
+    //    delete b;
+    //}
+    //bullets_.clear();
 }
 
 void Enemy::Initialize() {
@@ -30,43 +30,43 @@ void Enemy::Update(const Vector3& playerPos) {
       
     attachBullet(playerPos);
 
-    // 弾の更新
-    for (auto& b : bullets_) {
-        b->Update();
-    }
+    //// 弾の更新
+    //for (auto& b : bullets_) {
+    //    b->Update();
+    //}
 }
 
 void Enemy::Draw() {   
     object->Draw();
 
-     // 弾の描画
-    for (auto& b : bullets_) {
-        b->Draw();
-    }
+    // // 弾の描画
+    //for (auto& b : bullets_) {
+    //    b->Draw();
+    //}
 }
 
 void Enemy::attachBullet(const Vector3& playerPos) {
-    bulletTimer_ += 1.0f / 60.0f; // 毎フレーム経過時間を加算（60fps前提）
-    // 30秒経過したら発射可能にする
-    if (bulletTimer_ >= bulletInterval_) {
-        canShoot_ = true;
-        bulletTimer_ = 0.0f; // タイマーリセット
-    }
+    //bulletTimer_ += 1.0f / 60.0f; // 毎フレーム経過時間を加算（60fps前提）
+    //// 30秒経過したら発射可能にする
+    //if (bulletTimer_ >= bulletInterval_) {
+    //    canShoot_ = true;
+    //    bulletTimer_ = 0.0f; // タイマーリセット
+    //}
 
-    // 弾が撃てるか確認
-    if (!canShoot_) return;
-    
-    if (canShoot_) {
-        Bullet* newBullet = new Bullet();
-        // 発射位置：敵の現在位置
-        Vector3 startPos = position_;
+    //// 弾が撃てるか確認
+    //if (!canShoot_) return;
+    //
+    //if (canShoot_) {
+    //    Bullet* newBullet = new Bullet();
+    //    // 発射位置：敵の現在位置
+    //    Vector3 startPos = position_;
 
-        // プレイヤーに向かって撃つ
-        Vector3 direction = Normalize(playerPos - startPos);
+    //    // プレイヤーに向かって撃つ
+    //    Vector3 direction = Normalize(playerPos - startPos);
 
-        newBullet->Initialize(startPos, direction, 0.5f);
-        bullets_.push_back(newBullet);
-    }
+    //    newBullet->Initialize(startPos, direction, 0.5f);
+    //    bullets_.push_back(newBullet);
+    //}
 
-    canShoot_ = false;
+    //canShoot_ = false;
 }

@@ -3,7 +3,6 @@
 #include<Object3d.h>
 #include<Transform.h>
 #include<random>
-#include "Bullet.h"
 
 class Enemy {
 public:
@@ -18,7 +17,7 @@ public:
 	
 	void attachBullet(const Vector3& playerPos);
 	// 弾リストを取得
-	const std::vector<Bullet*>& GetBullets() const { return bullets_; }
+	//onst std::vector<Bullet*>& GetBullets() const { return bullets_; }
 
 private:
 	// Object3d
@@ -32,10 +31,10 @@ private:
 	// ランダムエンジン
 	std::mt19937 randomEngine;
 
-	std::vector<Bullet*> bullets_;
-	float bulletTimer_ = 0.0f;                   // 経過時間
-	const float bulletInterval_ = 5.0f;         // 30秒ごとに弾を撃てる
-	bool canShoot_ = true;                       // 弾を撃てるかどうか
+	//std::vector<Bullet*> bullets_;
+	//float bulletTimer_ = 0.0f;                   // 経過時間
+	//const float bulletInterval_ = 5.0f;         // 30秒ごとに弾を撃てる
+	//bool canShoot_ = true;                       // 弾を撃てるかどうか
 
 public:
 

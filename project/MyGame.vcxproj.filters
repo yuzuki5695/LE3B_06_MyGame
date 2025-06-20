@@ -228,6 +228,12 @@
     <ClCompile Include="application\Bullet\BaseBullet.cpp">
       <Filter>ソース ファイル\application\bullet</Filter>
     </ClCompile>
+    <ClCompile Include="application\Bullet\BulletManager.cpp">
+      <Filter>ソース ファイル\application\bullet</Filter>
+    </ClCompile>
+    <ClCompile Include="application\Bullet\PlayerBullet.cpp">
+      <Filter>ソース ファイル\application\player</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="engine\2d\Sprite.h">
@@ -376,6 +382,12 @@
     </ClInclude>
     <ClInclude Include="application\Bullet\BaseBullet.h">
       <Filter>ヘッダー ファイル\application\bullet</Filter>
+    </ClInclude>
+    <ClInclude Include="application\Bullet\BulletManager.h">
+      <Filter>ヘッダー ファイル\application\bullet</Filter>
+    </ClInclude>
+    <ClInclude Include="application\Bullet\PlayerBullet.h">
+      <Filter>ヘッダー ファイル\application\player</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

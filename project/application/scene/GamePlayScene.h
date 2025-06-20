@@ -7,6 +7,7 @@
 #include<ParticleEmitter.h>
 #include<Player.h>
 #include<Enemy.h>
+#include<BulletManager.h>
 
 // ゲームプレイシーン
 class GamePlayScene : public BaseScene
@@ -50,5 +51,8 @@ private: // メンバ変数
     std::unique_ptr <Player> player_;    
     
     std::vector<std::unique_ptr<Enemy>> enemys_;
+
+
+    std::unique_ptr<BulletManager> bulletManager_;
 
 };

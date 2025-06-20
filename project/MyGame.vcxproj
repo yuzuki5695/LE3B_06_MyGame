@@ -102,6 +102,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
   <ItemGroup>
     <ClCompile Include="application\Bullet\Bullet.cpp" />
     <ClCompile Include="application\Bullet\BaseBullet.cpp" />
+    <ClCompile Include="application\Bullet\BulletManager.cpp" />
     <ClCompile Include="engine\camera\CameraManager.cpp" />
     <ClCompile Include="application\Enemy\Enemy.cpp" />
     <ClCompile Include="engine\3d\Particle\ParticleCommon.cpp" />
@@ -138,10 +139,12 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="engine\scene\MyGame.cpp" />
     <ClCompile Include="engine\scene\SceneManager.cpp" />
     <ClCompile Include="application\Player\Player.cpp" />
+    <ClCompile Include="application\Bullet\PlayerBullet.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="application\Bullet\Bullet.h" />
     <ClInclude Include="application\Bullet\BaseBullet.h" />
+    <ClInclude Include="application\Bullet\BulletManager.h" />
     <ClInclude Include="engine\camera\CameraManager.h" />
     <ClInclude Include="application\Enemy\Enemy.h" />
     <ClInclude Include="engine\3d\Particle\ParticleCommon.h" />
@@ -189,6 +192,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\scene\TitleScene.h" />
     <ClInclude Include="engine\scene\SceneManager.h" />
     <ClInclude Include="application\Player\Player.h" />
+    <ClInclude Include="application\Bullet\PlayerBullet.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="externals\DirectXTex\DirectXTex_Desktop_2022_Win10.vcxproj">
