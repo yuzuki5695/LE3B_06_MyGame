@@ -2,8 +2,8 @@
 #include <memory>
 #include <vector>
 #include <Character.h>
-#include "Player.h"  // Player クラスが必要
 
+class Player;
 
 class CharacterManager {
 public:
