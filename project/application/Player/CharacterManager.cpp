@@ -1,4 +1,5 @@
 #include "CharacterManager.h"
+#include <Player.h>
 
 CharacterManager* CharacterManager::instance = nullptr;
 
@@ -41,4 +42,14 @@ void CharacterManager::Clear() {
 
 const std::vector<std::unique_ptr<Character>>& CharacterManager::GetCharacters() const {
     return characters_;
+}
+
+Player* CharacterManager::GetPlayer() {
+    for (const auto& character : characters_) {
+        // dynamic_cast を使って Player 型か確認
+        if (Player* player = dynamic_cast<Player*>(character.get())) {
+            return player;
+        }
+    }
+    return nullptr; // プレイヤーがいない場合は nullptr を返す
 }

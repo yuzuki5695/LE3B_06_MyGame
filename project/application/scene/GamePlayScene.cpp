@@ -39,25 +39,28 @@ void GamePlayScene::Initialize() {
     soundfige = 0;
 
     grass = Object3d::Create("terrain.obj", Transform({ {1.0f, 1.0f, 10.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 70.0f} }));
-
+                                            
     // パーティクルグループ生成
     ParticleManager::GetInstance()->CreateParticleGroup("Particles", "Resources/uvChecker.png", "plane.obj", VertexType::Model);            // モデルで生成
 
     // キャラクターの生成
     CharacterManager::GetInstance()->Initialize(); // リストクリア
     CharacterManager::GetInstance()->AddCharacter(std::make_unique<Player>());   // プレイヤーの登録
+    for (int i = 0; i < 5; ++i) {
+        CharacterManager::GetInstance()->AddCharacter(std::make_unique<Enemy>());    // 敵の登録
+    }
+
+    Player* player = CharacterManager::GetInstance()->GetPlayer();
+    for (auto& character : CharacterManager::GetInstance()->GetCharacters()) {
+        if (Enemy* enemy = dynamic_cast<Enemy*>(character.get())) {
+            enemy->SetPlayer(player);
+        }
+    }
+
     CharacterManager::GetInstance()->InitializeAllCharacters(); // 登録クラスを全て初期化
 
-
-    // 敵を複数体生成
-  /*  for (int i = 0; i < 6; ++i) {
-        auto enemy = std::make_unique<Enemy>();
-        enemy->Initialize();
-        enemys_.push_back(std::move(enemy));
-    }*/
-
     // Bulletマネージャの初期化
-	BulletManager::GetInstance()->Initialize();
+    BulletManager::GetInstance()->Initialize();
 }
 
 void GamePlayScene::Update() {

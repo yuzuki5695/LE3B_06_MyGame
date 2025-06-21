@@ -2,6 +2,8 @@
 #include <memory>
 #include <vector>
 #include <Character.h>
+#include "Player.h"  // Player クラスが必要
+
 
 class CharacterManager {
 public:
@@ -17,6 +19,10 @@ public:
     const std::vector<std::unique_ptr<Character>>& GetCharacters() const;
     
     void InitializeAllCharacters();
+
+    // プレイヤーキャラクターを取得
+    Player* GetPlayer();
+
 
 private:
     CharacterManager() = default;

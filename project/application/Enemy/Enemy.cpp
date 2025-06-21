@@ -1,14 +1,12 @@
 #include "Enemy.h"
 #include <MatrixVector.h>
+#include<EnemyBullet.h>
+#include <BulletManager.h>
+#include <Player.h>
 
 using namespace MatrixVector;
 
-Enemy::~Enemy() {
-    //for (auto b : bullets_) {
-    //    delete b;
-    //}
-    //bullets_.clear();
-}
+Enemy::~Enemy() {}
 
 void Enemy::Initialize() {
     // 乱数エンジンを初期化
@@ -17,21 +15,23 @@ void Enemy::Initialize() {
     std::uniform_real_distribution<float> distX(-12.0f, 12.0f);
     std::uniform_real_distribution<float> distY(3.0f, 12.0f);
     std::uniform_real_distribution<float> distZ(50.0f, 230.0f);
-	position_ = { distX(randomEngine), distY(randomEngine), distZ(randomEngine) };
+	position_ = { distX(randomEngine), distY(randomEngine), distZ(randomEngine) };    
     object = Object3d::Create("uvChecker.obj", Transform({ {1.0f, 1.0f, 1.0f},     {0.0f, 0.0f, 0.0f}, position_.x,position_.y,position_.z }));
 }
 
 void Enemy::Update() {
 
     // 位置をobjectから取得して同期する
-    //position_ = object->GetWorldPosition(); // ← 追加
+    position_ = object->GetTranslate(); // ← 追加
 	object->SetTranslate(position_); // ← 追加
-    object->Update();
+
       
-    if (target_) {
-        Vector3 playerPos = target_->GetTransform().translate;
-        attachBullet(playerPos); // プレイヤーの位置を使って弾発射
+    if (player_) {
+        Vector3 playerPos = player_->GetTransform().translate;
+        attachBullet(playerPos);// プレイヤーの位置を狙って弾発射
     }
+
+    object->Update();
 }
 
 void Enemy::Draw() {   
@@ -39,31 +39,25 @@ void Enemy::Draw() {
 }
 
 void Enemy::attachBullet(const Vector3& playerPos) {
-    //bulletTimer_ += 1.0f / 60.0f; // 毎フレーム経過時間を加算（60fps前提）
-    //// 30秒経過したら発射可能にする
-    //if (bulletTimer_ >= bulletInterval_) {
-    //    canShoot_ = true;
-    //    bulletTimer_ = 0.0f; // タイマーリセット
-    //}
+    bulletTimer_ += 1.0f / 60.0f; // 毎フレーム経過時間を加算（60fps前提）
+    // 30秒経過したら発射可能にする
+    if (bulletTimer_ >= bulletInterval_) {
+        canShoot_ = true;
+        bulletTimer_ = 0.0f; // タイマーリセット
+    }
 
-    //// 弾が撃てるか確認
-    //if (!canShoot_) return;
-    //
-    //if (canShoot_) {
-    //    Bullet* newBullet = new Bullet();
-    //    // 発射位置：敵の現在位置
-    //    Vector3 startPos = position_;
+    // 弾が撃てるか確認
+    if (!canShoot_) return;
+    
+    if (canShoot_) {
+         std::unique_ptr<BaseBullet> bullet = std::make_unique<EnemyBullet>();		// 弾を生成
+        bullet->Initialize(position_, playerPos, 0.5f);                     // 初期位置などを設定
+		BulletManager::GetInstance()->AddBullet(std::move(bullet));                 // BulletManagerに追加
+    }
 
-    //    // プレイヤーに向かって撃つ
-    //    Vector3 direction = Normalize(playerPos - startPos);
-
-    //    newBullet->Initialize(startPos, direction, 0.5f);
-    //    bullets_.push_back(newBullet);
-    //}
-
-    //canShoot_ = false;
+    canShoot_ = false;
 }
 
-void Enemy::SetTarget(Character* target) {
-    target_ = target;
-}
+//void Enemy::SetTarget(Character* target) {
+//    //target_ = target;
+//}

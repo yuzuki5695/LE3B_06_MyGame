@@ -4,6 +4,8 @@
 #include<Transform.h>
 #include<Character.h>
 
+class Player;
+
 class Enemy : public Character {
 public:
 	~Enemy() override;
@@ -17,8 +19,11 @@ public:
 	
 
 	void attachBullet(const Vector3& playerPos);
+
+	void SetPlayer(Player* player) { player_ = player; }
+
 private:	  
-	Character* target_ = nullptr; // プレイヤーなど
+    Player* player_;
 
 	// Object3d
 	std::unique_ptr<Object3d> object;
@@ -31,18 +36,11 @@ private:
 	// ランダムエンジン
 	std::mt19937 randomEngine;
 
-	//std::vector<Bullet*> bullets_;
-	//float bulletTimer_ = 0.0f;                   // 経過時間
-	//const float bulletInterval_ = 5.0f;         // 30秒ごとに弾を撃てる
-	//bool canShoot_ = true;                       // 弾を撃てるかどうか
-
-public:	
-	// ターゲット（プレイヤー）登録用
-	void SetTarget(Character* target); 
+	float bulletTimer_ = 0.0f;                   // 経過時間
+	const float bulletInterval_ = 5.0f;         // 30秒ごとに弾を撃てる
+	bool canShoot_ = true;                       // 弾を撃てるかどうか
 
 
-	bool IsActive() const { return active_; }
-	Vector3 GetPosition() const { return position_; }
-	float GetRadius() const { return radius_; }
-	void SetInactive() { active_ = false; }
+
+public:
 };
