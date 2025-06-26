@@ -82,35 +82,17 @@
     <Filter Include="リソース ファイル\shaders">
       <UniqueIdentifier>{0de7fefb-2e6d-4ca7-b098-464774bb7c1b}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ソース ファイル\application\bullet">
-      <UniqueIdentifier>{c3581c68-197f-465b-966f-7cba7f22ee95}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ソース ファイル\application\Enemy">
-      <UniqueIdentifier>{63095a8f-0d32-46db-8021-cbb2b332dde2}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ソース ファイル\application\player">
-      <UniqueIdentifier>{a105ae2f-55c6-4790-8add-05d822eb459e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ソース ファイル\application\scene">
-      <UniqueIdentifier>{792431d0-54be-4105-831e-7121fc68efe6}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ヘッダー ファイル\application\bullet">
-      <UniqueIdentifier>{d2ff6bd1-b2fd-4d92-af20-094aa7c8d854}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ヘッダー ファイル\application\Enemy">
-      <UniqueIdentifier>{a4a144ac-8f35-408c-a6db-9c2358a2d3bc}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ヘッダー ファイル\application\scene">
       <UniqueIdentifier>{274efcee-0964-497f-a839-b32ab88eb2cf}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ヘッダー ファイル\application\player">
-      <UniqueIdentifier>{002320f8-963e-4661-b678-b35ec198544c}</UniqueIdentifier>
     </Filter>
     <Filter Include="ヘッダー ファイル\engine\camera">
       <UniqueIdentifier>{3b2bd65f-cf04-450a-8757-252635abbb16}</UniqueIdentifier>
     </Filter>
     <Filter Include="ソース ファイル\engine\camera">
       <UniqueIdentifier>{059690a8-734e-4cad-a2bb-9a414ca8fc96}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\application\scene">
+      <UniqueIdentifier>{55cd0bc1-6937-4b79-8831-54ec6be53b6d}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -204,44 +186,17 @@
     <ClCompile Include="engine\math\PrimitiveGenerator.cpp">
       <Filter>ソース ファイル\engine\math</Filter>
     </ClCompile>
-    <ClCompile Include="application\Bullet\Bullet.cpp">
-      <Filter>ソース ファイル\application\bullet</Filter>
-    </ClCompile>
-    <ClCompile Include="application\Enemy\Enemy.cpp">
-      <Filter>ソース ファイル\application\Enemy</Filter>
-    </ClCompile>
-    <ClCompile Include="application\scene\GamePlayScene.cpp">
-      <Filter>ソース ファイル\application\scene</Filter>
-    </ClCompile>
-    <ClCompile Include="application\Player\Player.cpp">
-      <Filter>ソース ファイル\application\player</Filter>
-    </ClCompile>
-    <ClCompile Include="application\scene\TitleScene.cpp">
-      <Filter>ソース ファイル\application\scene</Filter>
-    </ClCompile>
     <ClCompile Include="engine\camera\CameraManager.cpp">
       <Filter>ソース ファイル\engine\camera</Filter>
     </ClCompile>
     <ClCompile Include="engine\camera\Camera.cpp">
       <Filter>ソース ファイル\engine\camera</Filter>
     </ClCompile>
-    <ClCompile Include="application\Bullet\BaseBullet.cpp">
-      <Filter>ソース ファイル\application\bullet</Filter>
+    <ClCompile Include="application\scene\TitleScene.cpp">
+      <Filter>ソース ファイル\application\scene</Filter>
     </ClCompile>
-    <ClCompile Include="application\Bullet\BulletManager.cpp">
-      <Filter>ソース ファイル\application\bullet</Filter>
-    </ClCompile>
-    <ClCompile Include="application\Bullet\PlayerBullet.cpp">
-      <Filter>ソース ファイル\application\player</Filter>
-    </ClCompile>
-    <ClCompile Include="application\Player\Character.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="application\Player\CharacterManager.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="application\Bullet\EnemyBullet.cpp">
-      <Filter>ソース ファイル\application\bullet</Filter>
+    <ClCompile Include="application\scene\GamePlayScene.cpp">
+      <Filter>ソース ファイル\application\scene</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -368,15 +323,6 @@
     <ClInclude Include="engine\math\Vertex.h">
       <Filter>ヘッダー ファイル\engine\math</Filter>
     </ClInclude>
-    <ClInclude Include="application\Bullet\Bullet.h">
-      <Filter>ヘッダー ファイル\application\bullet</Filter>
-    </ClInclude>
-    <ClInclude Include="application\Enemy\Enemy.h">
-      <Filter>ヘッダー ファイル\application\Enemy</Filter>
-    </ClInclude>
-    <ClInclude Include="application\Player\Player.h">
-      <Filter>ヘッダー ファイル\application\player</Filter>
-    </ClInclude>
     <ClInclude Include="application\scene\GamePlayScene.h">
       <Filter>ヘッダー ファイル\application\scene</Filter>
     </ClInclude>
@@ -388,24 +334,6 @@
     </ClInclude>
     <ClInclude Include="engine\camera\CameraManager.h">
       <Filter>ヘッダー ファイル\engine\camera</Filter>
-    </ClInclude>
-    <ClInclude Include="application\Bullet\BaseBullet.h">
-      <Filter>ヘッダー ファイル\application\bullet</Filter>
-    </ClInclude>
-    <ClInclude Include="application\Bullet\BulletManager.h">
-      <Filter>ヘッダー ファイル\application\bullet</Filter>
-    </ClInclude>
-    <ClInclude Include="application\Bullet\PlayerBullet.h">
-      <Filter>ヘッダー ファイル\application\player</Filter>
-    </ClInclude>
-    <ClInclude Include="application\Player\Character.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="application\Player\CharacterManager.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="application\Bullet\EnemyBullet.h">
-      <Filter>ヘッダー ファイル\application\bullet</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
