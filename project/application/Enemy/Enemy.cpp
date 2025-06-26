@@ -28,7 +28,7 @@ void Enemy::Update() {
       
     if (player_) {
         Vector3 playerPos = player_->GetTransform().translate;
-        attachBullet(playerPos);// プレイヤーの位置を狙って弾発射
+        AttachBullet(playerPos);// プレイヤーの位置を狙って弾発射
     }
 
     object->Update();
@@ -38,7 +38,7 @@ void Enemy::Draw() {
     object->Draw();
 }
 
-void Enemy::attachBullet(const Vector3& playerPos) {
+void Enemy::AttachBullet(const Vector3& playerPos) {
     bulletTimer_ += 1.0f / 60.0f; // 毎フレーム経過時間を加算（60fps前提）
     // 30秒経過したら発射可能にする
     if (bulletTimer_ >= bulletInterval_) {
@@ -57,7 +57,3 @@ void Enemy::attachBullet(const Vector3& playerPos) {
 
     canShoot_ = false;
 }
-
-//void Enemy::SetTarget(Character* target) {
-//    //target_ = target;
-//}

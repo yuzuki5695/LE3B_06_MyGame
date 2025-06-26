@@ -49,7 +49,7 @@ void GamePlayScene::Initialize() {
     for (int i = 0; i < 5; ++i) {
         CharacterManager::GetInstance()->AddCharacter(std::make_unique<Enemy>());    // 敵の登録
     }
-
+    
     Player* player = CharacterManager::GetInstance()->GetPlayer();
     for (auto& character : CharacterManager::GetInstance()->GetCharacters()) {
         if (Enemy* enemy = dynamic_cast<Enemy*>(character.get())) {

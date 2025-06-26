@@ -19,8 +19,9 @@ public:
 	void AttachBullet();
 	// デバッグ用のImGui描画
 	void debugimgui();
-
+	// キーボードでの移動入力処理
 	void MoveInput(float speed);
+	
 	void UpdateTargetPosition(Transform& targetTransform, float speed);
 private:
 	// Object3d
