@@ -29,7 +29,7 @@ void CameraManager::Finalize() {
 
 void CameraManager::Initialize() {
     // 初期状態はデフォルトカメラ
-    currentMode_ = CameraMode::GamePlay;
+    currentMode_ = CameraMode::Default;
 	useFollowCamera_ = false;
     
     // すべてのカメラを作っておく
