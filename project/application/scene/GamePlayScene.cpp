@@ -44,7 +44,7 @@ void GamePlayScene::Initialize() {
     ParticleManager::GetInstance()->CreateParticleGroup("Particles", "Resources/uvChecker.png", "plane.obj", VertexType::Model);            // モデルで生成
 
     // キャラクターの生成
-    CharacterManager::GetInstance()->Initialize(); // リストクリア
+    CharacterManager::GetInstance()->Clear(); // リストクリア
     CharacterManager::GetInstance()->AddCharacter(std::make_unique<Player>());   // プレイヤーの登録
     for (int i = 0; i < 5; ++i) {
         CharacterManager::GetInstance()->AddCharacter(std::make_unique<Enemy>());    // 敵の登録
@@ -57,7 +57,7 @@ void GamePlayScene::Initialize() {
         }
     }
 
-    CharacterManager::GetInstance()->InitializeAllCharacters(); // 登録クラスを全て初期化
+    CharacterManager::GetInstance()->Initialize(); // 登録クラスを全て初期化
 
     // Bulletマネージャの初期化
     BulletManager::GetInstance()->Initialize();

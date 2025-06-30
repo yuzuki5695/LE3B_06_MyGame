@@ -11,13 +11,13 @@ CharacterManager* CharacterManager::GetInstance() {
 }
 
 void CharacterManager::Initialize() {
-    characters_.clear();
-}
-
-void CharacterManager::InitializeAllCharacters() {
     for (std::unique_ptr<Character>& character : characters_) {
         character->Initialize();
     }
+}
+
+void CharacterManager::Clear() {
+    characters_.clear();
 }
 
 void CharacterManager::Update() {
@@ -34,10 +34,6 @@ void CharacterManager::Draw() {
 
 void CharacterManager::AddCharacter(std::unique_ptr<Character> character) {
     characters_.push_back(std::move(character));
-}
-
-void CharacterManager::Clear() {
-    characters_.clear();
 }
 
 const std::vector<std::unique_ptr<Character>>& CharacterManager::GetCharacters() const {

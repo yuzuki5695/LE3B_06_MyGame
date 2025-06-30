@@ -17,8 +17,6 @@ public:
     void Clear();
 
     const std::vector<std::unique_ptr<Character>>& GetCharacters() const;
-    
-    void InitializeAllCharacters();
 
     // プレイヤーキャラクターを取得
     Player* GetPlayer();
