@@ -156,10 +156,8 @@ void CameraManager::DrawImGui() {
     if (activeCamera) {
         if (newMode == CameraMode::GamePlay) {
             ImGui::Checkbox("isBezier", &movefige);
-            if (!movefige) {
-                if (ImGui::DragFloat3(label, &bezierPos_.x, 0.01f)) {
-                    activeCamera->SetTranslate(bezierPos_);
-                }
+            if (ImGui::DragFloat3(label, &bezierPos_.x, 0.01f)) {
+                activeCamera->SetTranslate(bezierPos_);
             }
         } else {
             Vector3 pos = activeCamera->GetTranslate();
@@ -198,45 +196,6 @@ void CameraManager::SetActiveCamera() {
     }
 }
 
-std::vector<BezierPoint> CameraManager::LoadBezierFromJSON(const std::string& filePath) {
-    std::vector<BezierPoint> points;
-
-    std::ifstream file(filePath);
-    if (!file.is_open()) {
-        throw std::runtime_error("JSONファイルを開けませんでした");
-    }
-
-    json j;
-    file >> j;
-
-    // "Curve" の最初のスプラインを使う
-    if (!j.contains("Curve") || !j["Curve"].is_array() || j["Curve"].empty()) {
-        throw std::runtime_error("Curveデータが存在しません");
-    }
-
-    for (const auto& pointData : j["Curve"][0]) {
-        BezierPoint pt;
-        pt.handleLeft = {
-            pointData["handle_left"][0],
-            pointData["handle_left"][1],
-            pointData["handle_left"][2]
-        };
-        pt.controlPoint = {
-            pointData["control_point"][0],
-            pointData["control_point"][1],
-            pointData["control_point"][2]
-        };
-        pt.handleRight = {
-            pointData["handle_right"][0],
-            pointData["handle_right"][1],
-            pointData["handle_right"][2]
-        };
-        points.push_back(pt);
-    }
-
-    return points;
-}
-
 Vector3 CameraManager::BezierInterpolate(const Vector3& p0, const Vector3& p1, const Vector3& p2, const Vector3& p3, float t) {
     float u = 1.0f - t;
     float tt = t * t;
@@ -253,11 +212,63 @@ Vector3 CameraManager::BezierInterpolate(const Vector3& p0, const Vector3& p1, c
     return result;
 }
 
+std::vector<BezierPoint> CameraManager::LoadBezierFromJSON(const std::string& filePath) {
+    std::vector<BezierPoint> points;
+
+    std::ifstream file(filePath);
+    if (!file.is_open()) {
+        throw std::runtime_error("JSONファイルを開けませんでした");
+    }
+
+    json j;
+    file >> j;
+
+    if (!j.contains("object_names") || !j["object_names"].is_array()) {
+        throw std::runtime_error("object_names が見つかりません");
+    }
+
+    for (const auto& name : j["object_names"]) {
+        const std::string curveName = name;
+        if (!j.contains(curveName) || !j[curveName].is_array() || j[curveName].empty()) {
+            continue;
+        }
+
+        // スプライン単位でループ（通常は1スプラインだが拡張性のために）
+        for (const auto& spline : j[curveName]) {
+            for (const auto& pointData : spline) {
+                BezierPoint pt;
+                pt.handleLeft = {
+                    pointData["handle_left"][0],
+                    pointData["handle_left"][1],
+                    pointData["handle_left"][2]
+                };
+                pt.controlPoint = {
+                    pointData["control_point"][0],
+                    pointData["control_point"][1],
+                    pointData["control_point"][2]
+                };
+                pt.handleRight = {
+                    pointData["handle_right"][0],
+                    pointData["handle_right"][1],
+                    pointData["handle_right"][2]
+                };
+                points.push_back(pt);
+            }
+        }
+    }
+
+    return points;
+}
+
 void CameraManager::UpdateObjectPosition() {
+    if (bezierPoints.size() < 2) {
+        return; // セグメントが足りない場合は何もしない
+    }
+
     if (segmentIndex + 1 < bezierPoints.size()) {
         const BezierPoint& start = bezierPoints[segmentIndex];
         const BezierPoint& end = bezierPoints[segmentIndex + 1];
-         
+
         bezierPos_ = BezierInterpolate(
             moveOffset_ + start.controlPoint,
             moveOffset_ + start.handleRight,
@@ -267,24 +278,21 @@ void CameraManager::UpdateObjectPosition() {
         );
 
         t += speed;
-       
-        // 一度だけ初期オフセットを加算
+
         if (!addedInitialOffset_) {
             addedInitialOffset_ = true;
         }
 
+        // セグメント終了したら次へ
         if (t > 1.0f) {
             t = 0.0f;
             segmentIndex++;
-        }
-    } else {
-        // 最後の点で停止
-        moveOffset_ = bezierPoints.back().controlPoint;
-    }
 
-    if (segmentIndex == 1) {
-        segmentIndex = 0; // ループする場合はリセット
-        t = 0.0f; // tもリセット
-        addedInitialOffset_ = false; // ループ時にリセットするならここも必要
+            // セグメントを超えた場合はループ
+            if (segmentIndex + 1 >= bezierPoints.size()) {
+                segmentIndex = 0;
+                addedInitialOffset_ = false;
+            }
+        }
     }
 }
