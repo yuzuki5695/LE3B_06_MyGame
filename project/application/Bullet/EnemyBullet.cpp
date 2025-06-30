@@ -34,8 +34,9 @@ void EnemyBullet::Finalize() {
 	}
 }
 
-void EnemyBullet::Update() {
+void EnemyBullet::Update() {     
     if (!active_) return;
+
     // 速度ベクトル velocity_ によって位置を移動
     position_ = position_ + velocity_;
     // オブジェクトの位置を更新
@@ -44,7 +45,7 @@ void EnemyBullet::Update() {
     object_->Update();
 }
 
-void EnemyBullet::Draw() {
-	if (!active_) return;
+void EnemyBullet::Draw() {       
+    if (!active_) return;
 	object_->Draw();
 }

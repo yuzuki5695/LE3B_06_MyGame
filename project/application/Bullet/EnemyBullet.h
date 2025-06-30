@@ -31,9 +31,4 @@ private:
     Vector3 position_;
     Vector3 direction_;
     Vector3 velocity_;
-    bool active_ = true;
-public:
-    bool IsActive() const override { return active_; }
-    void SetActive(bool active) override { active_ = active; }
-
 };

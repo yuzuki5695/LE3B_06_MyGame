@@ -48,7 +48,7 @@ void PlayerBullet::Update() {
     }
 }
 
-void PlayerBullet::Draw() {
+void PlayerBullet::Draw() { 
     if (!active_) return;
     object_->Draw();
 }

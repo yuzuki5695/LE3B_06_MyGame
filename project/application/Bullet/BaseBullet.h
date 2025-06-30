@@ -22,10 +22,10 @@ public:// メンバ関数
 
 	  // ===== 共通属性のためのアクセサ ===== //
 
-    /// 弾が有効かどうか
-    virtual bool IsActive() const = 0;
+    // アクティブ状態の取得・設定
+    bool IsActive() const { return active_; }
+	void SetInactive() { active_ = false; }
 
-    /// 弾をアクティブ/非アクティブにする
-    virtual void SetActive(bool active) = 0;
-
+protected: 
+    bool active_ = true;
 };

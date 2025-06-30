@@ -46,6 +46,14 @@ void BulletManager::Draw() {
             bullet->Draw();
         }
     }
+    
+    // 無効化された弾を削除（erase_if は C++20）
+    std::erase_if(playerBullets_, [](const std::unique_ptr<PlayerBullet>& b) {
+        return !b->IsActive();
+    });
+    std::erase_if(enemyBullets_, [](const std::unique_ptr<EnemyBullet>& b) {
+        return !b->IsActive();
+    });
 }
 
 void BulletManager::AddPlayerBullet(std::unique_ptr<PlayerBullet> bullet) {

@@ -32,10 +32,4 @@ private:
     Vector3 position_;
     Vector3 direction_;
     Vector3 velocity_;
-    bool active_ = true;
-public:
-	// ===== 共通属性のためのアクセサ ===== //
-	/// 弾が有効かどうか
-    bool IsActive() const override { return active_; }
-    void SetActive(bool active) override { active_ = active; }
 };
