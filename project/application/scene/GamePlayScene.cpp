@@ -45,17 +45,14 @@ void GamePlayScene::Initialize() {
 
     // キャラクターの生成
     CharacterManager::GetInstance()->Clear(); // リストクリア
-    CharacterManager::GetInstance()->AddCharacter(std::make_unique<Player>());   // プレイヤーの登録
+    std::unique_ptr<Player> player = std::make_unique<Player>();
+    CharacterManager::GetInstance()->SetPlayer(std::move(player));
+
     for (int i = 0; i < 5; ++i) {
-        CharacterManager::GetInstance()->AddCharacter(std::make_unique<Enemy>());    // 敵の登録
+        std::unique_ptr<Enemy> enemy = std::make_unique<Enemy>();
+        CharacterManager::GetInstance()->AddEnemy(std::move(enemy));
     }
     
-    Player* player = CharacterManager::GetInstance()->GetPlayer();
-    for (auto& character : CharacterManager::GetInstance()->GetCharacters()) {
-        if (Enemy* enemy = dynamic_cast<Enemy*>(character.get())) {
-            enemy->SetPlayer(player);
-        }
-    }
 
     CharacterManager::GetInstance()->Initialize(); // 登録クラスを全て初期化
 
@@ -135,27 +132,27 @@ void GamePlayScene::CheckBulletEnemyCollisions() {
     const auto& bullets = BulletManager::GetInstance()->GetPlayerBullets();
     const auto& enemies = CharacterManager::GetInstance()->GetEnemies();
 
-    //for (const std::unique_ptr<PlayerBullet>& bullet : bullets) {
-    //    if (!bullet->IsActive()) continue;
+    for (const std::unique_ptr<PlayerBullet>& bullet : bullets) {
+        if (!bullet->IsActive()) continue;
 
-    //    for (Enemy* enemy : enemies) {
-    //        if (!enemy->IsActive()) continue;
+        for (Enemy* enemy : enemies) {
+            if (!enemy->IsActive()) continue;
 
-    //        Vector3 delta = bullet->GetPosition() - enemy->GetPosition();
-    //        Vector3 collisionDist = bullet->GetRadius() + enemy->GetRadius();
+            Vector3 delta = bullet->GetPosition() - enemy->GetPosition();
+            Vector3 collisionDist = bullet->GetRadius() + enemy->GetRadius();
 
-    //        if (std::abs(delta.x) <= collisionDist.x &&
-    //            std::abs(delta.y) <= collisionDist.y &&
-    //            std::abs(delta.z) <= collisionDist.z) {
+            if (std::abs(delta.x) <= collisionDist.x &&
+                std::abs(delta.y) <= collisionDist.y &&
+                std::abs(delta.z) <= collisionDist.z) {
 
-    //            bullet->SetInactive();
-    //            enemy->SetInactive();
+                bullet->SetInactive();
+                enemy->SetInactive();
 
-    //            // パーティクルなど
-    //            break;
-    //        }
-    //    }
-    //}
+                // パーティクルなど
+                break;
+            }
+        }
+    }
 }
 
 void GamePlayScene::CleanupInactiveObjects() {

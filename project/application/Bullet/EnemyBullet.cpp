@@ -14,11 +14,12 @@ void EnemyBullet::Initialize() {}
 void EnemyBullet::Initialize(const Vector3& startPos, const Vector3& targetPos, float speed) {
 	// 初期位置を設定
 	position_ = startPos;
+    size_ = { 0.5f,0.5f,0.5f };
     if (!object_) {
         ModelManager::GetInstance()->LoadModel("uvChecker.obj");
         object_ = Object3d::Create(
             "uvChecker.obj",
-            Transform{ { 0.5f, 0.5f, 0.5f},{ 0.0f, 0.0f, 0.0f},position_ }
+            Transform{ size_,{ 0.0f, 0.0f, 0.0f},position_ }
         );
         object_->SetScale({ 0.5f, 0.5f, 0.5f });
     } 

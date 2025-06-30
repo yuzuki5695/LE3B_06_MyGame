@@ -29,6 +29,15 @@ public:
 private:
     std::unique_ptr<Object3d> object_;
     Vector3 position_;
+    Vector3 size_;
     Vector3 direction_;
     Vector3 velocity_;
+
+public:
+    // 位置の取得・設定
+    Vector3 GetPosition() const { return position_; }
+    void SetPosition(const Vector3& pos) { position_ = pos; }
+    
+    Vector3 GetRadius() const { return size_; }
+    void SetRadius(const Vector3& pos) { size_ = pos; }
 };

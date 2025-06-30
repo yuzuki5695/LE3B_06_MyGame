@@ -11,59 +11,59 @@ CharacterManager* CharacterManager::GetInstance() {
     return instance;
 }
 
-void CharacterManager::Initialize() {
-    for (std::unique_ptr<Character>& character : characters_) {
-        character->Initialize();
-    }
+void CharacterManager::Clear() {
+    // プレイヤーの解放（nullptrにすることで unique_ptr が delete）
+    player_.reset();
+    // 敵キャラクターリストの解放（中身を全て delete）
+    enemies_.clear();
 }
 
-void CharacterManager::Clear() {
-    characters_.clear();
+void CharacterManager::Initialize() {
+    if (player_) player_->Initialize();
+    for (auto& enemy : enemies_) {
+        enemy->Initialize();
+    }
 }
 
 void CharacterManager::Update() {
-    for (std::unique_ptr<Character>& character : characters_) {
-        character->Update();
+    if (player_) player_->Update();
+    for (auto& enemy : enemies_) {
+        enemy->Update();
     }
-    // 非アクティブなキャラを削除（erase-remove idiom）
-    characters_.erase(
-        std::remove_if(characters_.begin(), characters_.end(),
-            [](const std::unique_ptr<Character>& character) {
-                return !character->IsActive();
+
+    // 死んだ敵の削除（IsActive() == false）
+    enemies_.erase(
+        std::remove_if(enemies_.begin(), enemies_.end(),
+            [](const std::unique_ptr<Enemy>& e) {
+                return !e->IsActive();
             }),
-        characters_.end());
+        enemies_.end());
 }
 
 void CharacterManager::Draw() {
-    for (std::unique_ptr<Character>& character : characters_) {
-        character->Draw();
+    if (player_) player_->Draw();
+    for (auto& enemy : enemies_) {
+        enemy->Draw();
     }
 }
 
-void CharacterManager::AddCharacter(std::unique_ptr<Character> character) {
-    characters_.push_back(std::move(character));
-}
-
-const std::vector<std::unique_ptr<Character>>& CharacterManager::GetCharacters() const {
-    return characters_;
-}
 
 Player* CharacterManager::GetPlayer() {
-    for (const auto& character : characters_) {
-        // dynamic_cast を使って Player 型か確認
-        if (Player* player = dynamic_cast<Player*>(character.get())) {
-            return player;
-        }
-    }
-    return nullptr; // プレイヤーがいない場合は nullptr を返す
+    return player_.get();
 }
 
 std::vector<Enemy*> CharacterManager::GetEnemies() const {
-    std::vector<Enemy*> enemies;
-    for (const auto& character : characters_) {
-        if (Enemy* enemy = dynamic_cast<Enemy*>(character.get())) {
-            enemies.push_back(enemy);
-        }
+    std::vector<Enemy*> result;
+    for (const auto& e : enemies_) {
+        result.push_back(e.get());
     }
-    return enemies;
+    return result;
+}
+
+void CharacterManager::SetPlayer(std::unique_ptr<Player> player) {
+    player_ = std::move(player);
+}
+
+void CharacterManager::AddEnemy(std::unique_ptr<Enemy> enemy) {
+    enemies_.push_back(std::move(enemy));
 }

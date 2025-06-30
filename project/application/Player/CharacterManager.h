@@ -12,17 +12,16 @@ public:
 
     void Initialize();
     void Update();
-    void Draw();
-
-    void AddCharacter(std::unique_ptr<Character> character);
+    void Draw();     
     void Clear();
-
-    const std::vector<std::unique_ptr<Character>>& GetCharacters() const;
 
     // プレイヤーキャラクターを取得
     Player* GetPlayer();    
     // 敵だけのリストを返す
     std::vector<Enemy*> GetEnemies() const;
+
+    void SetPlayer(std::unique_ptr<Player> player);
+    void AddEnemy(std::unique_ptr<Enemy> enemy);
 
 private:
     CharacterManager() = default;
@@ -32,6 +31,7 @@ private:
     CharacterManager& operator=(const CharacterManager&) = delete;
 
     static CharacterManager* instance;
-    std::vector<std::unique_ptr<Character>> characters_;
+    std::unique_ptr<Player> player_;
+    std::vector<std::unique_ptr<Enemy>> enemies_;
 };
 
