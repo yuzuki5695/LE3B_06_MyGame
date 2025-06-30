@@ -16,9 +16,9 @@ void EnemyBullet::Initialize(const Vector3& startPos, const Vector3& targetPos, 
 	position_ = startPos;
     size_ = { 0.5f,0.5f,0.5f };
     if (!object_) {
-        ModelManager::GetInstance()->LoadModel("uvChecker.obj");
+        ModelManager::GetInstance()->LoadModel("EnemyBullet.obj");
         object_ = Object3d::Create(
-            "uvChecker.obj",
+            "EnemyBullet.obj",
             Transform{ size_,{ 0.0f, 0.0f, 0.0f},position_ }
         );
         object_->SetScale({ 0.5f, 0.5f, 0.5f });
@@ -43,6 +43,12 @@ void EnemyBullet::Update() {
     object_->SetTranslate(position_);
     // 更新処理
     object_->Update();
+        if (time < Maxtime) {
+        time++;
+    } else {
+        time = 0; 
+        active_ = false;
+    }
 }
 
 void EnemyBullet::Draw() {       

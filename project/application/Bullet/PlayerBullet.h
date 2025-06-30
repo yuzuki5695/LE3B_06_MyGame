@@ -35,7 +35,7 @@ private:
     Vector3 size_;
 
     int time = 0;
-    int Maxtime = 100;
+    int Maxtime = 500;
 
 public:
     // 位置の取得・設定
