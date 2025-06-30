@@ -26,7 +26,6 @@ void PlayerBullet::Initialize(const Vector3& startPos, const Vector3& targetPos,
     Vector3 dir = Normalize(targetPos - startPos);
     velocity_ = dir * speed;
     active_ = true;
-    hp_ = 1; // 初期HP
 }
 
 void PlayerBullet::Finalize() {
@@ -50,14 +49,6 @@ void PlayerBullet::Update() {
 }
 
 void PlayerBullet::Draw() {
-	if (!active_) return;
-	object_->Draw();
-}
-
-void PlayerBullet::Damage(int value) {
-    hp_ -= value;
-    if (hp_ <= 0) {
-        hp_ = 0;
-        active_ = false;  // HP0以下なら非アクティブにするなど
-    }
+    if (!active_) return;
+    object_->Draw();
 }

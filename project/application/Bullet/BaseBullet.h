@@ -28,16 +28,4 @@ public:// メンバ関数
     /// 弾をアクティブ/非アクティブにする
     virtual void SetActive(bool active) = 0;
 
-    virtual int GetHP() const = 0;         /// HPを取得
-    virtual void SetHP(int hp) = 0;        /// HPを設定
-    virtual void Damage(int value) = 0;    /// HPを減らす（例：被弾時）
-
-
-
-//    /// 強制的に無効化する（削除フラグなど）
-//    virtual void SetInactive() = 0;
-//    /// 弾の当たり判定半径を取得
-//    virtual float GetRadius() const = 0;
-//    /// 弾の位置を取得
-//    virtual const Vector3& GetPosition() const = 0;
 };

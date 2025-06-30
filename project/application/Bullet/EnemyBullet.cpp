@@ -26,7 +26,6 @@ void EnemyBullet::Initialize(const Vector3& startPos, const Vector3& targetPos, 
     Vector3 dir = Normalize(targetPos - startPos);
     velocity_ = dir * speed;
     active_ = true;
-    hp_ = 1; // 初期HP
 }
 
 void EnemyBullet::Finalize() {
@@ -48,12 +47,4 @@ void EnemyBullet::Update() {
 void EnemyBullet::Draw() {
 	if (!active_) return;
 	object_->Draw();
-}
-
-void EnemyBullet::Damage(int value) {
-    hp_ -= value;
-    if (hp_ <= 0) {
-        hp_ = 0;
-        active_ = false;  // HP0以下なら非アクティブにするなど
-    }
 }
