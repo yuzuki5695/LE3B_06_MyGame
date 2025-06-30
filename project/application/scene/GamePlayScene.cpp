@@ -87,6 +87,7 @@ void GamePlayScene::Update() {
     if (CameraManager::GetInstance()->Getmovefige()) {
         CheckBulletEnemyCollisions();  // 当たり判定(プレイヤーの球と敵)
         CheckPlayerEnemyCollisions();
+        CheckEnemyBulletPlayerCollisions();
     }
 
 	// キャラクターの更新処理
@@ -114,8 +115,8 @@ void GamePlayScene::Draw() {
     Object3dCommon::GetInstance()->Commondrawing();
 
     grass->Draw();
-    
-   	// キャラクターの描画処理
+
+    // キャラクターの描画処理
     CharacterManager::GetInstance()->Draw();
     // Bulletマネージャの描画処理
     BulletManager::GetInstance()->Draw();
@@ -192,36 +193,29 @@ void GamePlayScene::CheckPlayerEnemyCollisions() {
 }
 
 void GamePlayScene::CheckEnemyBulletPlayerCollisions() {
-    //if (!player_->IsActive()) return;
+    const auto& bullets = BulletManager::GetInstance()->GetEnemyBullets();
+    Player* player = CharacterManager::GetInstance()->GetPlayer();
 
-    //const Vector3& playerPos = player_->GetObject3d()->GetTransform().translate;
-    //float playerRadius = player_->GetObject3d()->GetTransform().scale.x * 0.5f; // 半径 = スケールの半分
+    if (!player || !player->IsActive()) return;
 
+    const Vector3& playerPos = player->GetPosition();
+    const Vector3& playerRadius = player->GetRadius();
 
-    //for (const auto& enemy : enemys_) {
-    //    const std::vector<Bullet*>& enemyBullets = enemy->GetBullets();
+    for (const std::unique_ptr<EnemyBullet>& bullet : bullets) {
+        if (!bullet->IsActive()) continue;
 
-    //    for (Bullet* bullet : enemyBullets) {
-    //        if (!bullet->IsActive()) continue;
+        Vector3 delta = bullet->GetPosition() - playerPos;
+        Vector3 collisionDist = bullet->GetRadius() + playerRadius;
 
-    //        Vector3 delta = {
-    //            bullet->GetPosition().x - playerPos.x,
-    //            bullet->GetPosition().y - playerPos.y,
-    //            bullet->GetPosition().z - playerPos.z
-    //        };
-    //        float dist = Length(delta);
+        if (std::abs(delta.x) <= collisionDist.x &&
+            std::abs(delta.y) <= collisionDist.y &&
+            std::abs(delta.z) <= collisionDist.z) {
+            
+            bullet->SetInactive();
+            player->SetInactive();  // プレイヤーを無効にする
 
-    //        float collisionDist = bullet->GetRadius() + playerRadius;
-
-    //        if (dist <= collisionDist) {
-    //            if (!player_->IsActive()) {
-    //                bullet->SetInactive();    // 弾を消す
-    //            }
-    //            player_->SetInactive();   // プレイヤーを消す
-
-    //            // 必要ならエフェクト生成も追加
-    //            break; // 一発で終わらせるなら break
-    //        }
-    //    }
-    //}
+            // パーティクルやエフェクトの追加処理
+            break;  // 一発当たったら終了
+        }
+    }
 }
