@@ -29,8 +29,6 @@ public: // メンバ関数
     void CheckPlayerEnemyCollisions();
        // 当たり判定(プレイヤーと敵の弾)
     void CheckEnemyBulletPlayerCollisions();
-    // 不要なオブジェクト削除
-    void CleanupInactiveObjects();
 
 
     inline float Length(const Vector3& v) {

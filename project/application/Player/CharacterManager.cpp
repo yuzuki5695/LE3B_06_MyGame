@@ -26,9 +26,18 @@ void CharacterManager::Initialize() {
 }
 
 void CharacterManager::Update() {
-    if (player_) player_->Update();
+    if (player_) {
+        if (player_->IsActive()) {
+            player_->Update();
+        } else {
+            player_.reset(); // 無効化されたら削除
+        }
+    }
+
     for (auto& enemy : enemies_) {
-        enemy->Update();
+        if (enemy->IsActive()) {
+            enemy->Update();
+        }
     }
 
     // 死んだ敵の削除（IsActive() == false）
@@ -41,9 +50,14 @@ void CharacterManager::Update() {
 }
 
 void CharacterManager::Draw() {
-    if (player_) player_->Draw();
+    if (player_ && player_->IsActive()) {
+        player_->Draw();
+    }
+
     for (auto& enemy : enemies_) {
-        enemy->Draw();
+        if (enemy->IsActive()) {
+            enemy->Draw();
+        }
     }
 }
 

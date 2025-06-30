@@ -36,7 +36,6 @@ void PlayerBullet::Finalize() {
 }
 
 void PlayerBullet::Update() {
-    if (!active_) return;
     // 速度ベクトル velocity_ によって位置を移動
     position_ = position_ + velocity_;
     // オブジェクトの位置を更新
@@ -49,7 +48,6 @@ void PlayerBullet::Update() {
     }
 }
 
-void PlayerBullet::Draw() { 
-    if (!active_) return;
+void PlayerBullet::Draw() {
     object_->Draw();
 }

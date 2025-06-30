@@ -45,11 +45,14 @@ void GamePlayScene::Initialize() {
 
     // キャラクターの生成
     CharacterManager::GetInstance()->Clear(); // リストクリア
-    std::unique_ptr<Player> player = std::make_unique<Player>();
+    auto player = std::make_unique<Player>();
+    Player* playerPtr = player.get();
     CharacterManager::GetInstance()->SetPlayer(std::move(player));
 
+
     for (int i = 0; i < 5; ++i) {
-        std::unique_ptr<Enemy> enemy = std::make_unique<Enemy>();
+        std::unique_ptr<Enemy> enemy = std::make_unique<Enemy>(); 
+        enemy->SetPlayer(playerPtr);   // プレイヤーのポインタをセット！
         CharacterManager::GetInstance()->AddEnemy(std::move(enemy));
     }
     
@@ -83,6 +86,7 @@ void GamePlayScene::Update() {
 
     if (CameraManager::GetInstance()->Getmovefige()) {
         CheckBulletEnemyCollisions();  // 当たり判定(プレイヤーの球と敵)
+        CheckPlayerEnemyCollisions();
     }
 
 	// キャラクターの更新処理
@@ -155,65 +159,36 @@ void GamePlayScene::CheckBulletEnemyCollisions() {
     }
 }
 
-void GamePlayScene::CleanupInactiveObjects() {
-    //// 自弾リストの取得
-    //std::vector<Bullet*>& bullets_ = player_->GetBullet();
-
-    //// bullets_ を非アクティブなものだけ削除
-    //bullets_.erase(std::remove_if(bullets_.begin(), bullets_.end(),
-    //    [](Bullet* b) {
-    //        if (!b->IsActive()) {
-    //            delete b;
-    //            return true;
-    //        }
-    //        return false;
-    //    }), bullets_.end());
-
-    //enemys_.erase(std::remove_if(enemys_.begin(), enemys_.end(),
-    //    [](const std::unique_ptr<Enemy>& e) {
-    //        return !e->IsActive(); // unique_ptr の所有権は move されるので delete は不要
-    //    }), enemys_.end());
-
-}
-
 void GamePlayScene::CheckPlayerEnemyCollisions() {
-    //const Vector3& playerPos = player_->GetObject3d()->GetTransform().translate;
-    //float playerRadius = player_->GetObject3d()->GetTransform().scale.x * 0.5f; // 半径 = スケールの半分
+    Player* player = CharacterManager::GetInstance()->GetPlayer();
+    const auto& enemies = CharacterManager::GetInstance()->GetEnemies();
 
-    //for (const auto& enemy : enemys_) {
-    //    if (!enemy->IsActive()) continue;
+    // プレイヤーがいない or 無効化されていたら何もしない
+    if (!player || !player->IsActive()) {
+        return;
+    }
 
-    //    const Vector3& enemyPos = enemy->GetPosition();
-    //    float enemyRadius = enemy->GetRadius();
+    const Vector3& playerPos = player->GetPosition();
+    float playerRadius = player->GetRadius().x; // 半径 = スケールの半分（仮）
 
-    //    Vector3 delta = {
-    //        playerPos.x - enemyPos.x,
-    //        playerPos.y - enemyPos.y,
-    //        playerPos.z - enemyPos.z
-    //    };
-    //    float dist = Length(delta);
-    //    float collisionDist = playerRadius + enemyRadius;
+    for (Enemy* enemy : enemies) {
+        if (!enemy->IsActive()) continue;
 
-    //    if (dist <= collisionDist) {
-    //        if (!player_->IsActive()) {
-    //            // 敵を無効化
-    //            enemy->SetInactive();
-    //        }
+        const Vector3& enemyPos = enemy->GetPosition();
+        float enemyRadius = enemy->GetRadius().x;
 
-    //        // プレイヤーを無効化 ← ここを追加！
-    //        player_->SetInactive();
+        Vector3 delta = playerPos - enemyPos;
+        float dist = Length(delta);
+        float collisionDist = playerRadius + enemyRadius;
 
-    //        // パーティクル発生
-    //        Transform particleTransform = {
-    //            {0.05f, 1.0f, 1.0f},
-    //            {0.0f, 0.0f, 0.0f},
-    //            {enemy->GetPosition().x, enemy->GetPosition().y + 2.0f, enemy->GetPosition().z}
-    //        };
+        if (dist <= collisionDist) {
+            // 両者を無効化
+            player->SetInactive();
+            enemy->SetInactive();
 
-    //        // break でループ終了（1体と当たったら終わる）
-    //        break;
-    //    }
-    //}
+            break; // 一体でも当たったら処理終了
+        }
+    }
 }
 
 void GamePlayScene::CheckEnemyBulletPlayerCollisions() {
