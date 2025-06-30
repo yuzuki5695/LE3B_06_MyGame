@@ -11,6 +11,7 @@ public:
 
 	// 初期化
 	void Initialize() override;
+	
 	// 毎フレーム更新
 	void Update() override;
 	// 描画
@@ -26,6 +27,15 @@ public:
 
 	// ブースト状態更新
 	void UpdateBoostState();
+
+	void SetInactive() {
+		active_ = false;
+	}
+	
+	// アクティブ状態の取得・設定
+    bool IsActive() const { return active_; }
+	void SetActive(bool isactive) { active_ = isactive; }
+	    
 
 private:
 	// Object3d
@@ -51,6 +61,10 @@ private:
 	bool isCoolingDown_ = false;
 	float cooldownTime_ = 0.0f;
 	const float cooldownDuration_ = 3.0f; // クールダウン時間
+
+
+	
+	bool active_ = true;
 
 public: // メンバ関数
 	// getter類は必要なら維持

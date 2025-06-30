@@ -40,11 +40,11 @@ void CharacterManager::Update() {
         }
     }
 
-    // 死んだ敵の削除（IsActive() == false）
-    enemies_.erase(
+    // 死んだ敵の削除
+   enemies_.erase(
         std::remove_if(enemies_.begin(), enemies_.end(),
             [](const std::unique_ptr<Enemy>& e) {
-                return !e->IsActive();
+                return e->IsDead();  // ← 出現前の非アクティブは残す！
             }),
         enemies_.end());
 }

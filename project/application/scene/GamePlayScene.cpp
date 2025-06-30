@@ -30,15 +30,16 @@ void GamePlayScene::Initialize() {
 
     // .objファイルからモデルを読み込む
     ModelManager::GetInstance()->LoadModel("plane.obj");
-    ModelManager::GetInstance()->LoadModel("terrain.obj");
-
+    ModelManager::GetInstance()->LoadModel("terrain.obj"); 
+    ModelManager::GetInstance()->LoadModel("Tile.obj");
+    
     // 音声ファイルを追加
     soundData = SoundLoader::GetInstance()->SoundLoadWave("Resources/Alarm01.wav");
 
     // 音声プレイフラグ
     soundfige = 0;
 
-    grass = Object3d::Create("terrain.obj", Transform({ {1.0f, 1.0f, 100.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 70.0f} }));
+    grass = Object3d::Create("Tile.obj", Transform({ {1.0f, 1.0f, 10.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, -50.0f, 70.0f} }));
                                             
     // パーティクルグループ生成
     ParticleManager::GetInstance()->CreateParticleGroup("Particles", "Resources/uvChecker.png", "plane.obj", VertexType::Model);            // モデルで生成
@@ -46,13 +47,14 @@ void GamePlayScene::Initialize() {
     // キャラクターの生成
     CharacterManager::GetInstance()->Clear(); // リストクリア
     auto player = std::make_unique<Player>();
-    Player* playerPtr = player.get();
+    playerPtr = player.get();
     CharacterManager::GetInstance()->SetPlayer(std::move(player));
 
 
-    for (int i = 0; i < 5; ++i) {
+    for (int i = 0; i < MAXEnemy; ++i) {
         std::unique_ptr<Enemy> enemy = std::make_unique<Enemy>(); 
-        enemy->SetPlayer(playerPtr);   // プレイヤーのポインタをセット！
+        enemy->SetPlayer(playerPtr);   // プレイヤーのポインタをセット！ 
+        enemy->SetActive(false);  // 最初は非アクティブ
         CharacterManager::GetInstance()->AddEnemy(std::move(enemy));
     }
     
@@ -82,7 +84,37 @@ void GamePlayScene::Update() {
 
     // 更新処理
     grass->Update();
+    
+    // プレイヤーの位置取得
+    float playerZ = playerPtr->GetPosition().z;
 
+    // 敵出現トリガー処理
+    for (auto& trigger : spawnTriggers) {
+        if (!trigger.hasSpawned && playerZ >= trigger.zThreshold) {
+            int activated = 0;
+            for (auto& enemy : CharacterManager::GetInstance()->GetEnemies()) {
+                if (!enemy->IsActive()) {
+                    enemy->SetInitialize(trigger.zThreshold);
+                    enemy->SetActive(true); // ←トリガーのZ位置を渡す！
+                    ++activated;
+                    if (activated >= trigger.spawnCount) break;
+                }
+            }
+            trigger.hasSpawned = true;
+        }
+    }
+
+    // 敵がプレイヤーから離れすぎたら削除（過去の敵掃除）
+    for (auto& enemy : CharacterManager::GetInstance()->GetEnemies()) {
+        if (!enemy->IsActive()) continue;
+
+        float playerZ = playerPtr->GetPosition().z;
+        float spawnZ = enemy->GetSpawnBaseZ();  // 出現基準Z
+
+        if (playerZ > spawnZ + 20) { // 出現位置より進んでたら削除
+            enemy->Kill();
+        }
+    }
 
     if (CameraManager::GetInstance()->Getmovefige()) {
         CheckBulletEnemyCollisions();  // 当たり判定(プレイヤーの球と敵)
