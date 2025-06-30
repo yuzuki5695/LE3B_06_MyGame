@@ -27,11 +27,7 @@ private:
 
 	// Object3d
 	std::unique_ptr<Object3d> object;
-
-
-	Vector3 position_;
 	float radius_ = 1.0f; // 敵の半径
-	bool active_ = true;
 
 	// ランダムエンジン
 	std::mt19937 randomEngine;

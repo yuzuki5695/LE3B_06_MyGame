@@ -4,6 +4,7 @@
 #include <Character.h>
 
 class Player;
+class Enemy;
 
 class CharacterManager {
 public:
@@ -19,8 +20,9 @@ public:
     const std::vector<std::unique_ptr<Character>>& GetCharacters() const;
 
     // プレイヤーキャラクターを取得
-    Player* GetPlayer();
-
+    Player* GetPlayer();    
+    // 敵だけのリストを返す
+    std::vector<Enemy*> GetEnemies() const;
 
 private:
     CharacterManager() = default;

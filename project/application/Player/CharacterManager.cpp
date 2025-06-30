@@ -1,5 +1,6 @@
 #include "CharacterManager.h"
 #include <Player.h>
+#include <Enemy.h>
 
 CharacterManager* CharacterManager::instance = nullptr;
 
@@ -24,6 +25,13 @@ void CharacterManager::Update() {
     for (std::unique_ptr<Character>& character : characters_) {
         character->Update();
     }
+    // 非アクティブなキャラを削除（erase-remove idiom）
+    characters_.erase(
+        std::remove_if(characters_.begin(), characters_.end(),
+            [](const std::unique_ptr<Character>& character) {
+                return !character->IsActive();
+            }),
+        characters_.end());
 }
 
 void CharacterManager::Draw() {
@@ -48,4 +56,14 @@ Player* CharacterManager::GetPlayer() {
         }
     }
     return nullptr; // プレイヤーがいない場合は nullptr を返す
+}
+
+std::vector<Enemy*> CharacterManager::GetEnemies() const {
+    std::vector<Enemy*> enemies;
+    for (const auto& character : characters_) {
+        if (Enemy* enemy = dynamic_cast<Enemy*>(character.get())) {
+            enemies.push_back(enemy);
+        }
+    }
+    return enemies;
 }

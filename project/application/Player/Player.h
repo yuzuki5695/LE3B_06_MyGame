@@ -28,7 +28,7 @@ private:
 	std::unique_ptr <Object3d> object = nullptr;
 	Transform transform{};
 	Vector3 moveOffset;
-	Vector3 moveDelta = { 0.0f, 0.0f, 0.0f };
+	Vector3 moveDelta{};
 		
 	std::unique_ptr <Object3d> target_ = nullptr;
 	Transform targetpos_{};
@@ -38,16 +38,11 @@ private:
 	float bulletTimer_ = 0.0f;                   // 経過時間
 	const float bulletInterval_ = 0.5f;         // 30秒ごとに弾を撃てる
 	bool canShoot_ = true;                       // 弾を撃てるかどうか
-	
-	bool isActive_ = true; // 初期状態ではアクティブ
 
 public: // メンバ関数
-	Transform GetTransform() const { return transform; }
+    // getter類は必要なら維持
+    Transform GetTransform() const { return transform; }
+    Object3d* GetObject3d() { return object.get(); }
+    Vector3 GetForwardDirection() const { return Vector3(0.0f, 0.0f, 1.0f); }
 
-	Object3d* GetObject3d() { return object.get(); }
-	Vector3 GetForwardDirection() const {
-		// プレイヤーの正面方向ベクトル（例：Y軸方向に前向きの場合）
-		// 必要に応じて回転を考慮したベクトル計算に変えてください
-		return Vector3(0.0f, 0.0f, 1.0f);
-	}
 };

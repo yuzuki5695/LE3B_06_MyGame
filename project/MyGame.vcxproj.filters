@@ -210,9 +210,6 @@
     <ClCompile Include="engine\math\PrimitiveGenerator.cpp">
       <Filter>ソース ファイル\engine\math</Filter>
     </ClCompile>
-    <ClCompile Include="application\Bullet\Bullet.cpp">
-      <Filter>ソース ファイル\application\bullet</Filter>
-    </ClCompile>
     <ClCompile Include="application\Enemy\Enemy.cpp">
       <Filter>ソース ファイル\application\Character\Enemy</Filter>
     </ClCompile>
@@ -373,9 +370,6 @@
     </ClInclude>
     <ClInclude Include="engine\math\Vertex.h">
       <Filter>ヘッダー ファイル\engine\math</Filter>
-    </ClInclude>
-    <ClInclude Include="application\Bullet\Bullet.h">
-      <Filter>ヘッダー ファイル\application\bullet</Filter>
     </ClInclude>
     <ClInclude Include="application\Enemy\Enemy.h">
       <Filter>ヘッダー ファイル\application\Character\Enemy</Filter>

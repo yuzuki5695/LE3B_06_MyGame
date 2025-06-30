@@ -14,9 +14,10 @@ using namespace MatrixVector;
 Player::~Player() {}
 
 void Player::Initialize() {
+    position_ = { 0.0f,3.0f,0.0f };
     ModelManager::GetInstance()->LoadModel("uvChecker.obj");
 	// プレイヤーの初期位置と回転を設定
-	transform = { {1.0f, 1.0f, 1.0f}, {0.0f, -1.6f, 0.0f}, {0.0f, 3.0f, 0.0f} };
+	transform = { {1.0f, 1.0f, 1.0f}, {0.0f, -1.6f, 0.0f}, position_ };
     // プレイヤー生成
     if (!object) {
         object = Object3d::Create("uvChecker.obj", transform);

@@ -136,39 +136,27 @@ void GamePlayScene::Draw() {
 
 
 void GamePlayScene::CheckBulletEnemyCollisions() {
+   // const auto& bullets = BulletManager::GetInstance()->GetPlayerBullets();   
+    const auto& enemies = CharacterManager::GetInstance()->GetEnemies();
 
-    //// 自弾リストの取得
-    //const std::vector<Bullet*>& bullets_ = player_->GetBullets();
-
-
-    //for (Bullet* bullet : bullets_) {
+    //for (const std::unique_ptr<PlayerBullet>& bullet : bullets) {
     //    if (!bullet->IsActive()) continue;
 
-    //    for (const auto& enemy : enemys_) {
+    //    for (Enemy* enemy : enemies) {
     //        if (!enemy->IsActive()) continue;
 
-    //        //float dist = Length(bullet->GetPosition() - enemy->GetPosition());
-    //        Vector3 delta = {
-    //            bullet->GetPosition().x - enemy->GetPosition().x
-    //            , bullet->GetPosition().y - enemy->GetPosition().y
-    //            , bullet->GetPosition().z - enemy->GetPosition().z
-    //        };
-    //        float dist = Length(delta);
+    //        Vector3 delta = bullet->GetPosition() - enemy->GetPosition();
+    //        Vector3 collisionDist  = bullet->GetRadius() + enemy->GetRadius();
 
-    //        float collisionDist = bullet->GetRadius() + enemy->GetRadius();
+    //        if (std::abs(delta.x) <= collisionDist.x &&
+    //            std::abs(delta.y) <= collisionDist.y &&
+    //            std::abs(delta.z) <= collisionDist.z) {
 
-    //        if (dist <= collisionDist) {
-    //            bullet->SetInactive(); // 弾を非アクティブに
-    //            enemy->SetInactive();  // 敵も非アクティブに
+    //            bullet->SetInactive();
+    //            enemy->SetInactive();
 
-
-    //            // 敵の位置にパーティクルを出す
-    //            Transform particleTransform = {
-    //                {1.0f, 2.0f, 1.0f},                  // scale（必要に応じて変更）
-    //                {0.0f, 0.0f, 0.0f},                  // rotation
-    //                {enemy->GetPosition().x,enemy->GetPosition().y + 2.0f,enemy->GetPosition().z}                // 敵の位置を使用
-    //            };
-    //            break; // 一発で1体だけ倒す場合はbreak
+    //            // パーティクルなど
+    //            break;
     //        }
     //    }
     //}

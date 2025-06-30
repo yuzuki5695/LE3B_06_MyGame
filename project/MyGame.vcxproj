@@ -100,7 +100,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="application\Bullet\Bullet.cpp" />
     <ClCompile Include="application\Bullet\BaseBullet.cpp" />
     <ClCompile Include="application\Bullet\BulletManager.cpp" />
     <ClCompile Include="application\Player\Character.cpp" />
@@ -145,7 +144,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="application\Bullet\PlayerBullet.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="application\Bullet\Bullet.h" />
     <ClInclude Include="application\Bullet\BaseBullet.h" />
     <ClInclude Include="application\Bullet\BulletManager.h" />
     <ClInclude Include="application\Player\Character.h" />
