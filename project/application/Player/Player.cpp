@@ -14,15 +14,16 @@ using namespace MatrixVector;
 Player::~Player() {}
 
 void Player::Initialize() {
-    ModelManager::GetInstance()->LoadModel("uvChecker.obj");
+    ModelManager::GetInstance()->LoadModel("Player.obj");     
+    ModelManager::GetInstance()->LoadModel("PlayerBullet.obj");
 	// プレイヤーの初期位置と回転を設定
 	transform_ = { {1.0f, 1.0f, 1.0f}, {0.0f, -1.6f, 0.0f},  0.0f,3.0f,0.0f };
     // プレイヤー生成
     if (!object) {
-        object = Object3d::Create("uvChecker.obj", transform_);
+        object = Object3d::Create("Player.obj", transform_);
     }
-    targetpos_ = { {0.3f, 0.3f, 0.3f}, {0.0f, -1.6f, 0.0f}, {0.0f, 3.0f, 30.0f} };
-    target_= Object3d::Create("uvChecker.obj", targetpos_);
+    targetpos_ = { {0.3f, 0.3f, 0.3f}, {0.0f, 0.0f, 0.0f}, {0.0f, 3.0f, 30.0f} };
+    target_= Object3d::Create("PlayerBullet.obj", targetpos_);
     moveDelta = Vector3(0.0f, 0.0f, 0.0f);
 }
 
