@@ -38,7 +38,7 @@ void GamePlayScene::Initialize() {
     // 音声プレイフラグ
     soundfige = 0;
 
-    grass = Object3d::Create("terrain.obj", Transform({ {1.0f, 1.0f, 10.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 70.0f} }));
+    grass = Object3d::Create("terrain.obj", Transform({ {1.0f, 1.0f, 100.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 70.0f} }));
                                             
     // パーティクルグループ生成
     ParticleManager::GetInstance()->CreateParticleGroup("Particles", "Resources/uvChecker.png", "plane.obj", VertexType::Model);            // モデルで生成

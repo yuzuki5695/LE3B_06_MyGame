@@ -1,8 +1,7 @@
 {
-    "object_count": 2,
+    "object_count": 1,
     "object_names": [
-        "Curve1",
-        "Curve2"
+        "Curve1"
     ],
     "Curve1": [
         [
@@ -27,55 +26,17 @@
                 "handle_left": [
                     0.0,
                     0.0,
-                    200.0
+                    1000.0
                 ],
                 "control_point": [
                     0.0,
                     0.0,
-                    200.0
+                    1000.0
                 ],
                 "handle_right": [
                     0.0,
                     0.0,
-                    200.0
-                ]
-            }
-        ]
-    ],
-    "Curve2": [
-        [
-            {
-                "handle_left": [
-                    0.0,
-                    0.0,
-                    200.0
-                ],
-                "control_point": [
-                    0.0,
-                    0.0,
-                    200.0
-                ],
-                "handle_right": [
-                    0.0,
-                    0.0,
-                    200.0
-                ]
-            },
-            {
-                "handle_left": [
-                    -200.0,
-                    0.0,
-                    200.0
-                ],
-                "control_point": [
-                    -200.0,
-                    0.0,
-                    200.0
-                ],
-                "handle_right": [
-                    -200.0,
-                    0.0,
-                    200.0
+                    1000.0
                 ]
             }
         ]

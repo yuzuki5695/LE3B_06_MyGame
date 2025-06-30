@@ -27,6 +27,9 @@ void PlayerBullet::Initialize(const Vector3& startPos, const Vector3& targetPos,
     Vector3 dir = Normalize(targetPos - startPos);
     velocity_ = dir * speed;
     active_ = true;
+   time = 0;
+   Maxtime = 1000;
+
 }
 
 void PlayerBullet::Finalize() {
@@ -43,7 +46,10 @@ void PlayerBullet::Update() {
     // 更新処理
     object_->Update();
     // 球が強制に消える距離を調整
-    if (position_.z > 300.0f) {
+    if (time < Maxtime) {
+        time++;
+    } else {
+        time = 0; 
         active_ = false;
     }
 }

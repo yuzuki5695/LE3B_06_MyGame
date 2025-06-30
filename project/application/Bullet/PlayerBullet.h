@@ -34,6 +34,9 @@ private:
     Vector3 velocity_;
     Vector3 size_;
 
+    int time = 0;
+    int Maxtime = 100;
+
 public:
     // 位置の取得・設定
     Vector3 GetPosition() const { return position_; }

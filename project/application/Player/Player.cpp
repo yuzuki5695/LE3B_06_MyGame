@@ -35,9 +35,12 @@ void Player::Update() {
         Vector3 relativeOffset = { 0.0f, -3.0f, 30.0f };
         transform_.translate = cameraPos + relativeOffset;
     }
-    
-    // キー入力でmoveDeltaに移動量加算
-    MoveInput(0.1f);
+     
+    UpdateBoostState(); // 追加：ブースト状態更新
+
+    float currentSpeed = isBoosting_ ? boostSpeed_ : normalSpeed_;
+    MoveInput(currentSpeed); // ブースト中は速く移動
+
     // ターゲットを矢印キーで動かす
     UpdateTargetPosition(targetpos_,0.2f);   // ターゲットに使う    
     // 弾の発射
@@ -99,8 +102,38 @@ void Player::AttachBullet() {
     if (!canShoot_) return;
     if (Input::GetInstance()->Pushkey(DIK_SPACE)) {                                 // スペースキーが押されたら弾を撃つ
         std::unique_ptr<PlayerBullet> bullet = std::make_unique<PlayerBullet>();		// 弾を生成
-        bullet->Initialize(transform_.translate, copypos, 0.5f);                     // 初期位置などを設定
+        bullet->Initialize(transform_.translate, copypos,1.5f);                     // 初期位置などを設定
 		BulletManager::GetInstance()->AddPlayerBullet(std::move(bullet));                 // BulletManagerに追加
 		canShoot_ = false;                                                          // 弾を撃てる状態にする
     };
+}
+
+void Player::UpdateBoostState() {
+    Input* input = Input::GetInstance();
+
+    // ブースト発動判定（Shiftキー押し && ブースト中でなく && クールタイム中でない）
+    if (input->Pushkey(DIK_LSHIFT) && !isBoosting_ && !isCoolingDown_) {
+        isBoosting_ = true;
+        boostTime_ = 0.0f;
+    }
+
+    // ブースト中の処理
+    if (isBoosting_) {
+        boostTime_ += 1.0f / 60.0f; // 60FPS前提
+
+        if (boostTime_ >= boostDuration_) {
+            isBoosting_ = false;
+            isCoolingDown_ = true;
+            cooldownTime_ = 0.0f;
+        }
+    }
+
+    // クールダウン中の処理
+    if (isCoolingDown_) {
+        cooldownTime_ += 1.0f / 60.0f;
+
+        if (cooldownTime_ >= cooldownDuration_) {
+            isCoolingDown_ = false;
+        }
+    }
 }
