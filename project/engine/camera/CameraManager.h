@@ -41,8 +41,9 @@ public: // メンバ関数
     std::vector<BezierPoint> LoadBezierFromJSON(const std::string& filePath);
     
     Vector3 BezierInterpolate(const Vector3& p0, const Vector3& p1, const Vector3& p2, const Vector3& p3, float t);
-
-
+    
+    float GetTForDistance(float distance) const;
+    void CalculateCurveLength();
     void UpdateObjectPosition();
 
 private:    
@@ -57,16 +58,22 @@ private:
 	Vector3 moveOffset_; // カメラの移動オフセット
 
     Vector3 bezierPos_;
+    bool useFollowCamera_ = false; // カメラモード切替用フラグ
+
+
 
     std::vector<BezierPoint> bezierPoints; 
     float t = 0.0f;
-	float speed = 0.001f; // 移動の速さ
+
 	bool movefige; // ベジェ曲線に沿って移動するフラグ     
     int segmentIndex = 0; // 今は1つだけと仮定、複数ならループ管理
     // ヘッダーかクラス内に追加
-    bool addedInitialOffset_ = false;
+    bool addedInitialOffset_ = false;      
+    std::vector<float> curveLengths;  // 曲線を細分割した累積距離テーブル
+    float totalCurveLength = 0.0f;    // 曲線全体の長さ
+    float distanceAlongCurve = 0.0f;  // 現在の距離位置
+	float speed = 0.5f; // 移動の速さ
 
-    bool useFollowCamera_ = false; // カメラモード切替用フラグ
 public: // メンバ関数
     // 追従対象をセット（nullptrなら追従なし）
     void SetTarget(Object3d* target);
@@ -75,5 +82,7 @@ public: // メンバ関数
 	bool Getmovefige() { return movefige; } // ベジェ曲線に沿って移動するかどうか
 
     void SetCameraMode(CameraMode mode);
+    
+    float GetSpeed() { return speed; }
 
 };

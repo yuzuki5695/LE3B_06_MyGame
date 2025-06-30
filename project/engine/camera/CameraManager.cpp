@@ -252,7 +252,7 @@ std::vector<BezierPoint> CameraManager::LoadBezierFromJSON(const std::string& fi
                     pointData["handle_right"][1],
                     pointData["handle_right"][2]
                 };
-                points.push_back(pt);
+                points.push_back(pt);            
             }
         }
     }
@@ -261,14 +261,29 @@ std::vector<BezierPoint> CameraManager::LoadBezierFromJSON(const std::string& fi
 }
 
 void CameraManager::UpdateObjectPosition() {
-    if (bezierPoints.size() < 2) {
-        return; // セグメントが足りない場合は何もしない
-    }
+    if (segmentIndex + 1 < bezierPoints.size())
+    {
+        // 速度は距離ベースで制御（0〜1000の範囲で距離を進める例）
+        distanceAlongCurve += speed; // speedは距離単位で
 
-    if (segmentIndex + 1 < bezierPoints.size()) {
+        // 曲線長計算がまだなら初期化
+        if (curveLengths.empty())
+            CalculateCurveLength();
+
+        // 距離を曲線長の範囲内に制限
+        if (distanceAlongCurve > totalCurveLength)
+        {
+            distanceAlongCurve = 0.0f; // ループの場合
+            segmentIndex = 0;
+            addedInitialOffset_ = false;
+        }
+
+        // 曲線長に対応するtを取得
+        t = GetTForDistance(distanceAlongCurve);
+
+        // tを元にベジェ曲線の位置計算
         const BezierPoint& start = bezierPoints[segmentIndex];
         const BezierPoint& end = bezierPoints[segmentIndex + 1];
-
         bezierPos_ = BezierInterpolate(
             moveOffset_ + start.controlPoint,
             moveOffset_ + start.handleRight,
@@ -277,22 +292,76 @@ void CameraManager::UpdateObjectPosition() {
             t
         );
 
-        t += speed;
+        // 必要ならsegmentIndexの更新などの処理も検討（ここは曲線全体の長さ1本のときは不要）
+    } else
+    {
+        // 最後の点に固定
+        bezierPos_ = moveOffset_ + bezierPoints.back().controlPoint;
+    }
+}
 
-        if (!addedInitialOffset_) {
-            addedInitialOffset_ = true;
-        }
+// 曲線を細かく分割して長さ計算用のデータを作る（1回だけ呼ぶ）
+void CameraManager::CalculateCurveLength()
+{
+    const int steps = 1000; // 分割数（必要に応じて調整）
+    curveLengths.clear();
+    curveLengths.push_back(0.0f); // 始点の長さ0
 
-        // セグメント終了したら次へ
-        if (t > 1.0f) {
-            t = 0.0f;
-            segmentIndex++;
+    Vector3 prevPos = BezierInterpolate(
+        moveOffset_ + bezierPoints[0].controlPoint,
+        moveOffset_ + bezierPoints[0].handleRight,
+        moveOffset_ + bezierPoints[1].handleLeft,
+        moveOffset_ + bezierPoints[1].controlPoint,
+        0.0f
+    );
 
-            // セグメントを超えた場合はループ
-            if (segmentIndex + 1 >= bezierPoints.size()) {
-                segmentIndex = 0;
-                addedInitialOffset_ = false;
-            }
+    float length = 0.0f;
+    for (int i = 1; i <= steps; i++) {
+        float t = (float)i / steps;
+        Vector3 currPos = BezierInterpolate(
+            moveOffset_ + bezierPoints[segmentIndex].controlPoint,
+            moveOffset_ + bezierPoints[segmentIndex].handleRight,
+            moveOffset_ + bezierPoints[segmentIndex + 1].handleLeft,
+            moveOffset_ + bezierPoints[segmentIndex + 1].controlPoint,
+            t
+        );
+
+        length += Length(currPos - prevPos); // Length()はVector3の距離計算関数
+        curveLengths.push_back(length);
+        prevPos = currPos;
+    }
+
+    totalCurveLength = length;
+}
+
+float CameraManager::GetTForDistance(float distance) const
+{
+    if (distance <= 0) return 0.0f;
+    if (distance >= totalCurveLength) return 1.0f;
+
+    // 曲線長配列から距離に最も近い区間を探す（二分探索など高速化可）
+    int low = 0;
+    int high = (int)curveLengths.size() - 1;
+
+    while (low < high) {
+        int mid = (low + high) / 2;
+        if (curveLengths[mid] < distance) {
+            low = mid + 1;
+        } else {
+            high = mid;
         }
     }
+
+    int idx = low;
+    if (idx == 0) return 0.0f;
+
+    // idx-1とidxの間で線形補間
+    float lengthBefore = curveLengths[idx - 1];
+    float lengthAfter = curveLengths[idx];
+    float segmentFraction = (distance - lengthBefore) / (lengthAfter - lengthBefore);
+
+    float tBefore = (float)(idx - 1) / (curveLengths.size() - 1);
+    float tAfter = (float)idx / (curveLengths.size() - 1);
+
+    return tBefore + segmentFraction * (tAfter - tBefore);
 }
