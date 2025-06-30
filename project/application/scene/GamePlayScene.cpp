@@ -84,12 +84,9 @@ void GamePlayScene::Update() {
     grass->Update();
 
 
-    //if (CameraManager::GetInstance()->Getmovefige()) {
-    //    //CheckBulletEnemyCollisions();  // 当たり判定(プレイヤーの球と敵)
-    //    //CheckEnemyBulletPlayerCollisions(); // 当たり判定(プレイヤーと敵の弾)
-    //    //CheckPlayerEnemyCollisions();  // 当たり判定(プレイヤーと敵)
-    //    //CleanupInactiveObjects();      // 不要なオブジェクト削除
-    //}
+    if (CameraManager::GetInstance()->Getmovefige()) {
+        CheckBulletEnemyCollisions();  // 当たり判定(プレイヤーの球と敵)
+    }
 
 	// キャラクターの更新処理
     CharacterManager::GetInstance()->Update();
@@ -134,9 +131,8 @@ void GamePlayScene::Draw() {
 #pragma endregion 全てのSprite個々の描画処理
 }
 
-
 void GamePlayScene::CheckBulletEnemyCollisions() {
-   // const auto& bullets = BulletManager::GetInstance()->GetPlayerBullets();   
+    const auto& bullets = BulletManager::GetInstance()->GetPlayerBullets();
     const auto& enemies = CharacterManager::GetInstance()->GetEnemies();
 
     //for (const std::unique_ptr<PlayerBullet>& bullet : bullets) {
@@ -146,7 +142,7 @@ void GamePlayScene::CheckBulletEnemyCollisions() {
     //        if (!enemy->IsActive()) continue;
 
     //        Vector3 delta = bullet->GetPosition() - enemy->GetPosition();
-    //        Vector3 collisionDist  = bullet->GetRadius() + enemy->GetRadius();
+    //        Vector3 collisionDist = bullet->GetRadius() + enemy->GetRadius();
 
     //        if (std::abs(delta.x) <= collisionDist.x &&
     //            std::abs(delta.y) <= collisionDist.y &&

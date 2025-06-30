@@ -14,13 +14,12 @@ using namespace MatrixVector;
 Player::~Player() {}
 
 void Player::Initialize() {
-    position_ = { 0.0f,3.0f,0.0f };
     ModelManager::GetInstance()->LoadModel("uvChecker.obj");
 	// プレイヤーの初期位置と回転を設定
-	transform = { {1.0f, 1.0f, 1.0f}, {0.0f, -1.6f, 0.0f}, position_ };
+	transform_ = { {1.0f, 1.0f, 1.0f}, {0.0f, -1.6f, 0.0f},  0.0f,3.0f,0.0f };
     // プレイヤー生成
     if (!object) {
-        object = Object3d::Create("uvChecker.obj", transform);
+        object = Object3d::Create("uvChecker.obj", transform_);
     }
     targetpos_ = { {0.3f, 0.3f, 0.3f}, {0.0f, -1.6f, 0.0f}, {0.0f, 3.0f, 30.0f} };
     target_= Object3d::Create("uvChecker.obj", targetpos_);
@@ -34,7 +33,7 @@ void Player::Update() {
         Vector3 cameraPos = camera->GetTranslate();
         // カメラ相対オフセット位置にプレイヤーを固定
         Vector3 relativeOffset = { 0.0f, -3.0f, 30.0f };
-        transform.translate = cameraPos + relativeOffset;
+        transform_.translate = cameraPos + relativeOffset;
     }
     
     // キー入力でmoveDeltaに移動量加算
@@ -45,9 +44,9 @@ void Player::Update() {
     AttachBullet();
 
     // 移動後の位置をObjectに反映
-    object->SetTranslate(transform.translate);
-    object->SetRotate(transform.rotate);
-    object->SetScale(transform.scale);
+    object->SetTranslate(transform_.translate);
+    object->SetRotate(transform_.rotate);
+    object->SetScale(transform_.scale);
     // プレイヤー更新
     object->Update();
 
@@ -66,9 +65,9 @@ void Player::Draw() {
 void Player::debugimgui() {
 #ifdef USE_IMGUI
     ImGui::Begin("Player Control");
-    ImGui::DragFloat3("Translate", &transform.translate.x, 0.01f);
-    ImGui::DragFloat3("Rotate", &transform.rotate.x, 0.01f);
-    ImGui::DragFloat3("Scale", &transform.scale.x, 0.01f);
+    ImGui::DragFloat3("Translate", &transform_.translate.x, 0.01f);
+    ImGui::DragFloat3("Rotate", &transform_.rotate.x, 0.01f);
+    ImGui::DragFloat3("Scale", &transform_.scale.x, 0.01f);
     ImGui::End();
 #endif // USE_IMGUI
 }
@@ -78,7 +77,7 @@ void Player::MoveInput(float speed) {
     if (Input::GetInstance()->Pushkey(DIK_D)) moveDelta.x += speed;
     if (Input::GetInstance()->Pushkey(DIK_W)) moveDelta.y += speed;
     if (Input::GetInstance()->Pushkey(DIK_S)) moveDelta.y -= speed;
-    transform.translate += moveDelta; // キー操作による移動量を加算
+    transform_.translate += moveDelta; // キー操作による移動量を加算
 }
 
 void Player::UpdateTargetPosition(Transform& targetTransform, float speed) {
@@ -86,7 +85,7 @@ void Player::UpdateTargetPosition(Transform& targetTransform, float speed) {
     if (Input::GetInstance()->Pushkey(DIK_RIGHT)) targetTransform.translate.x += speed;
     if (Input::GetInstance()->Pushkey(DIK_UP))    targetTransform.translate.y += speed;
     if (Input::GetInstance()->Pushkey(DIK_DOWN))  targetTransform.translate.y -= speed;
-	copypos = targetpos_.translate + transform.translate; // ターゲットの位置をプレイヤーの位置に合わせる
+	copypos = targetpos_.translate + transform_.translate; // ターゲットの位置をプレイヤーの位置に合わせる
 }
 
 void Player::AttachBullet() { 
@@ -99,9 +98,9 @@ void Player::AttachBullet() {
     // 弾が撃てるか確認
     if (!canShoot_) return;
     if (Input::GetInstance()->Pushkey(DIK_SPACE)) {                                 // スペースキーが押されたら弾を撃つ
-        std::unique_ptr<BaseBullet> bullet = std::make_unique<PlayerBullet>();		// 弾を生成
-        bullet->Initialize(transform.translate, copypos, 0.5f);                     // 初期位置などを設定
-		BulletManager::GetInstance()->AddBullet(std::move(bullet));                 // BulletManagerに追加
+        std::unique_ptr<PlayerBullet> bullet = std::make_unique<PlayerBullet>();		// 弾を生成
+        bullet->Initialize(transform_.translate, copypos, 0.5f);                     // 初期位置などを設定
+		BulletManager::GetInstance()->AddPlayerBullet(std::move(bullet));                 // BulletManagerに追加
 		canShoot_ = false;                                                          // 弾を撃てる状態にする
     };
 }

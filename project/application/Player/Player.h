@@ -26,7 +26,6 @@ public:
 private:
 	// Object3d
 	std::unique_ptr <Object3d> object = nullptr;
-	Transform transform{};
 	Vector3 moveOffset;
 	Vector3 moveDelta{};
 		
@@ -41,8 +40,6 @@ private:
 
 public: // メンバ関数
     // getter類は必要なら維持
-    Transform GetTransform() const { return transform; }
     Object3d* GetObject3d() { return object.get(); }
     Vector3 GetForwardDirection() const { return Vector3(0.0f, 0.0f, 1.0f); }
-
 };

@@ -2,6 +2,8 @@
 #include "BaseBullet.h"
 #include <vector>
 #include <memory>
+#include<PlayerBullet.h>
+#include<EnemyBullet.h>
 
 class BulletManager {
 private:
@@ -20,12 +22,14 @@ public: // メンバ関数
     // 更新・描画
     void Update();
     void Draw();
+        
+    void AddPlayerBullet(std::unique_ptr<PlayerBullet> bullet);
+    void AddEnemyBullet(std::unique_ptr<EnemyBullet> bullet);
 
-    // 弾を追加（プレイヤーから発射など）
-    void AddBullet(std::unique_ptr<BaseBullet> bullet);
-    // 弾リスト取得（衝突処理などに使う場合）
-    const std::vector<std::unique_ptr<BaseBullet>>& GetBullets() const;
+    const std::vector<std::unique_ptr<PlayerBullet>>& GetPlayerBullets() const;
+    const std::vector<std::unique_ptr<EnemyBullet>>& GetEnemyBullets() const;
 
 private:
-    std::vector<std::unique_ptr<BaseBullet>> bullets_;
+    std::vector<std::unique_ptr<PlayerBullet>> playerBullets_;
+    std::vector<std::unique_ptr<EnemyBullet>> enemyBullets_;
 };

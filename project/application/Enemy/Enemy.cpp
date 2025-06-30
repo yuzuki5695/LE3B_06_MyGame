@@ -15,19 +15,19 @@ void Enemy::Initialize() {
     std::uniform_real_distribution<float> distX(-12.0f, 12.0f);
     std::uniform_real_distribution<float> distY(3.0f, 12.0f);
     std::uniform_real_distribution<float> distZ(50.0f, 230.0f);
-	position_ = { distX(randomEngine), distY(randomEngine), distZ(randomEngine) };    
-    object = Object3d::Create("uvChecker.obj", Transform({ {1.0f, 1.0f, 1.0f},     {0.0f, 0.0f, 0.0f}, position_.x,position_.y,position_.z }));
+    transform_ = { { 1.0f, 1.0f, 1.0f }, { 0.0f, 0.0f, 0.0f }, distX(randomEngine), distY(randomEngine), distZ(randomEngine) };
+    object = Object3d::Create("uvChecker.obj", transform_);
 }
 
 void Enemy::Update() {
 
     // 位置をobjectから取得して同期する
-    position_ = object->GetTranslate(); // ← 追加
-	object->SetTranslate(position_); // ← 追加
+    transform_.translate = object->GetTranslate(); // ← 追加
+    object->SetTranslate(transform_.translate); // ← 追加
 
       
     if (player_) {
-        Vector3 playerPos = player_->GetTransform().translate;
+        Vector3 playerPos = player_->GetPosition();
         AttachBullet(playerPos);// プレイヤーの位置を狙って弾発射
     }
 
@@ -50,9 +50,9 @@ void Enemy::AttachBullet(const Vector3& playerPos) {
     if (!canShoot_) return;
     
     if (canShoot_) {
-         std::unique_ptr<BaseBullet> bullet = std::make_unique<EnemyBullet>();		// 弾を生成
-        bullet->Initialize(position_, playerPos, 0.5f);                     // 初期位置などを設定
-		BulletManager::GetInstance()->AddBullet(std::move(bullet));                 // BulletManagerに追加
+         std::unique_ptr<EnemyBullet> bullet = std::make_unique<EnemyBullet>();		// 弾を生成
+         bullet->Initialize(transform_.translate, playerPos, 0.5f);                     // 初期位置などを設定
+		BulletManager::GetInstance()->AddEnemyBullet(std::move(bullet));                 // BulletManagerに追加
     }
 
     canShoot_ = false;

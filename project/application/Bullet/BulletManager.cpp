@@ -12,27 +12,54 @@ BulletManager* BulletManager::GetInstance() {
 void BulletManager::Finalize() {
 	delete instance;
 	instance = nullptr;
-    bullets_.clear();
+    playerBullets_.clear();
+    enemyBullets_.clear();
 }
 
 void BulletManager::Initialize() {}
 
 void BulletManager::Update() {
-    for (std::unique_ptr<BaseBullet>& bullet : bullets_) {
-        bullet->Update();
+    // プレイヤー弾の更新
+    for (auto& bullet : playerBullets_) {
+        if (bullet->IsActive()) {
+            bullet->Update();
+        }
+    }
+
+    // 敵弾の更新
+    for (auto& bullet : enemyBullets_) {
+        if (bullet->IsActive()) {
+            bullet->Update();
+        }
     }
 }
 
 void BulletManager::Draw() {
-    for (std::unique_ptr<BaseBullet>& bullet : bullets_) {
-        bullet->Draw();
+    for (auto& bullet : playerBullets_) {
+        if (bullet->IsActive()) {
+            bullet->Draw();
+        }
+    }
+
+    for (auto& bullet : enemyBullets_) {
+        if (bullet->IsActive()) {
+            bullet->Draw();
+        }
     }
 }
 
-void BulletManager::AddBullet(std::unique_ptr<BaseBullet> bullet) {
-    bullets_.push_back(std::move(bullet));
+void BulletManager::AddPlayerBullet(std::unique_ptr<PlayerBullet> bullet) {
+    playerBullets_.push_back(std::move(bullet));
 }
 
-const std::vector<std::unique_ptr<BaseBullet>>& BulletManager::GetBullets() const {
-    return bullets_;
+void BulletManager::AddEnemyBullet(std::unique_ptr<EnemyBullet> bullet) {
+    enemyBullets_.push_back(std::move(bullet));
+}
+
+const std::vector<std::unique_ptr<PlayerBullet>>& BulletManager::GetPlayerBullets() const {
+    return playerBullets_;
+}
+
+const std::vector<std::unique_ptr<EnemyBullet>>& BulletManager::GetEnemyBullets() const {
+    return enemyBullets_;
 }

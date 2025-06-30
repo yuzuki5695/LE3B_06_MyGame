@@ -16,10 +16,13 @@ public:
 	void SetInactive() { active_ = false; }
 
     // 位置の取得・設定
-    Vector3 GetPosition() const { return position_; }
-    void SetPosition(const Vector3& pos) { position_ = pos; }
+    Vector3 GetPosition() const { return transform_.translate; }
+    void SetPosition(const Vector3& pos) { transform_.translate = pos; }
+    
+    Vector3 GetRadius() const { return transform_.rotate; }
+    void SetRadius(const Vector3& pos) { transform_.rotate = pos; }
 
 protected: 
     bool active_ = true;
-    Vector3 position_{};
+    Transform transform_{};
 };
