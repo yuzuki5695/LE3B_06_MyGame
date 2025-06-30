@@ -20,7 +20,7 @@ void Enemy::Initialize() {
     Vector3 xyz = { distX(randomEngine), distY(randomEngine),distZ(randomEngine) };
 
     transform_ = { { 1.0f, 1.0f, 1.0f }, { 0.0f, 0.0f, 0.0f },xyz };
-    object = Object3d::Create("uvChecker.obj", transform_);
+    object = Object3d::Create("Enemy.obj", transform_);
 }
 
 void Enemy::SetInitialize(float baseZ) { 

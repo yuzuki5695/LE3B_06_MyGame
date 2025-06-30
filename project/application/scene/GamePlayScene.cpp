@@ -32,6 +32,8 @@ void GamePlayScene::Initialize() {
     ModelManager::GetInstance()->LoadModel("plane.obj");
     ModelManager::GetInstance()->LoadModel("terrain.obj"); 
     ModelManager::GetInstance()->LoadModel("Tile.obj");
+  
+    ModelManager::GetInstance()->LoadModel("Enemy.obj");
     
     // 音声ファイルを追加
     soundData = SoundLoader::GetInstance()->SoundLoadWave("Resources/Alarm01.wav");
@@ -50,14 +52,12 @@ void GamePlayScene::Initialize() {
     playerPtr = player.get();
     CharacterManager::GetInstance()->SetPlayer(std::move(player));
 
-
     for (int i = 0; i < MAXEnemy; ++i) {
         std::unique_ptr<Enemy> enemy = std::make_unique<Enemy>(); 
         enemy->SetPlayer(playerPtr);   // プレイヤーのポインタをセット！ 
         enemy->SetActive(false);  // 最初は非アクティブ
         CharacterManager::GetInstance()->AddEnemy(std::move(enemy));
     }
-    
 
     CharacterManager::GetInstance()->Initialize(); // 登録クラスを全て初期化
 
