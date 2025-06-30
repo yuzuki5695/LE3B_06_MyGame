@@ -57,12 +57,10 @@ private:
 	float boostSpeed_ = 0.3f;
 	bool isBoosting_ = false;
 	float boostTime_ = 0.0f;
-	const float boostDuration_ = 0.2f; // ブースト持続時間
+	const float boostDuration_ = 0.4f; // ブースト持続時間
 	bool isCoolingDown_ = false;
 	float cooldownTime_ = 0.0f;
 	const float cooldownDuration_ = 3.0f; // クールダウン時間
-
-
 	
 	bool active_ = true;
 

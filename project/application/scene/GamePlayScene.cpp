@@ -37,12 +37,10 @@ void GamePlayScene::Initialize() {
     
     // 音声ファイルを追加
     soundData = SoundLoader::GetInstance()->SoundLoadWave("Resources/Alarm01.wav");
-
     // 音声プレイフラグ
     soundfige = 0;
-
     grass = Object3d::Create("Tile.obj", Transform({ {1.0f, 1.0f, 10.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, -50.0f, 70.0f} }));
-                                            
+
     // パーティクルグループ生成
     ParticleManager::GetInstance()->CreateParticleGroup("Particles", "Resources/uvChecker.png", "plane.obj", VertexType::Model);            // モデルで生成
 

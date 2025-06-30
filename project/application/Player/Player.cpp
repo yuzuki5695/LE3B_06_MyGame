@@ -81,6 +81,20 @@ void Player::MoveInput(float speed) {
     if (Input::GetInstance()->Pushkey(DIK_D)) moveDelta.x += speed;
     if (Input::GetInstance()->Pushkey(DIK_W)) moveDelta.y += speed;
     if (Input::GetInstance()->Pushkey(DIK_S)) moveDelta.y -= speed;
+
+    
+    // 回転の目標角度
+    float targetZ = 0.0f;
+
+    // 回転角度の強さ（ブースト中は大きめに傾ける）
+    float tiltAmount = isBoosting_ ? 6.0f : 0.3f;
+
+    if (Input::GetInstance()->Pushkey(DIK_A)) targetZ = tiltAmount;
+    else if (Input::GetInstance()->Pushkey(DIK_D)) targetZ = -tiltAmount;
+
+    // 緩やかに回転角を補間（Lerp）
+    transform_.rotate.z += (targetZ - transform_.rotate.z) * 0.1f;
+
     transform_.translate += moveDelta; // キー操作による移動量を加算
 }
 

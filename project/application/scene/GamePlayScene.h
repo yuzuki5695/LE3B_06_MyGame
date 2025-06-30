@@ -45,15 +45,16 @@ private: // メンバ変数
 
     Player* playerPtr;
  
-    int MAXEnemy = 35;
+    int MAXEnemy = 21;
+
     std::vector<EnemySpawnTrigger> spawnTriggers = {
-    {50.0f, 5, false},
-    {200.0f, 5, false},
-    {350.0f, 5, false},
-    {500.0f, 5, false},
-    {600.0f, 5, false},        
-    {700.0f, 5, false},
-    {800.0f, 5, false},
+    {50.0f, 3, false},
+    {200.0f, 3, false},
+    {350.0f, 3, false},
+    {500.0f, 3, false},
+    {600.0f, 3, false},        
+    {700.0f, 3, false},
+    {800.0f, 3, false},
     };
 
 };
