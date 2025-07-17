@@ -1,21 +1,19 @@
 #include "TitleScene.h"
+#include<SceneManager.h>
 #include<TextureManager.h>
 #include<ModelManager.h>
 #include<SpriteCommon.h>
 #include<Object3dCommon.h>
-#include <ParticleCommon.h>
-#include <ParticleManager.h>
+#include <CameraManager.h>
 #include<Input.h>
 #ifdef USE_IMGUI
 #include<ImGuiManager.h>
 #endif // USE_IMGUI
-#include<SceneManager.h>
+#include <ParticleCommon.h>
 
-void TitleScene::Finalize() {
-}
+void TitleScene::Finalize() {}
 
 void TitleScene::Initialize() {
-
 #pragma region 最初のシーンの初期化
 
 
@@ -29,13 +27,6 @@ void TitleScene::Update() {
         // シーン切り替え
         SceneManager::GetInstance()->ChangeScene("GAMEPLAY");
     }
-
-#pragma region  ImGuiの更新処理開始
-
-
-
-#pragma endregion ImGuiの更新処理終了
-
 #pragma region 全てのObject3d個々の更新処理
 
 
@@ -47,10 +38,12 @@ void TitleScene::Update() {
 
 
 #pragma endregion 全てのSprite個々の更新処理
+#pragma region  ImGuiの更新処理開始
 #ifdef USE_IMGUI
-    // ImGuiの描画前準備
-    ImGuiManager::GetInstance()->End();
+
 #endif // USE_IMGUI
+#pragma endregion ImGuiの更新処理終了
+
 }
 
 void TitleScene::Draw() {
