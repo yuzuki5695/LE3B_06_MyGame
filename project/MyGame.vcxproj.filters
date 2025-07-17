@@ -76,29 +76,11 @@
     <Filter Include="リソース ファイル\shaders">
       <UniqueIdentifier>{0de7fefb-2e6d-4ca7-b098-464774bb7c1b}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ソース ファイル\application\bullet">
-      <UniqueIdentifier>{c3581c68-197f-465b-966f-7cba7f22ee95}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ソース ファイル\application\Enemy">
-      <UniqueIdentifier>{63095a8f-0d32-46db-8021-cbb2b332dde2}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ソース ファイル\application\player">
-      <UniqueIdentifier>{a105ae2f-55c6-4790-8add-05d822eb459e}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ソース ファイル\application\scene">
       <UniqueIdentifier>{792431d0-54be-4105-831e-7121fc68efe6}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ヘッダー ファイル\application\bullet">
-      <UniqueIdentifier>{d2ff6bd1-b2fd-4d92-af20-094aa7c8d854}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ヘッダー ファイル\application\Enemy">
-      <UniqueIdentifier>{a4a144ac-8f35-408c-a6db-9c2358a2d3bc}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ヘッダー ファイル\application\scene">
       <UniqueIdentifier>{274efcee-0964-497f-a839-b32ab88eb2cf}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ヘッダー ファイル\application\player">
-      <UniqueIdentifier>{002320f8-963e-4661-b678-b35ec198544c}</UniqueIdentifier>
     </Filter>
     <Filter Include="ヘッダー ファイル\engine\camera">
       <UniqueIdentifier>{3b2bd65f-cf04-450a-8757-252635abbb16}</UniqueIdentifier>

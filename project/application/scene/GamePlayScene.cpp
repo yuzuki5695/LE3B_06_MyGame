@@ -24,10 +24,9 @@ void GamePlayScene::Initialize() {
     TextureManager::GetInstance()->LoadTexture("monsterBall.png");
 
     // .objファイルからモデルを読み込む
-    ModelManager::GetInstance()->LoadModel("plane.obj");
     ModelManager::GetInstance()->LoadModel("terrain.obj"); 
     ModelManager::GetInstance()->LoadModel("monsterBallUV.obj");
-    
+
     // 音声ファイルを追加
     SoundData soundData = SoundLoader::GetInstance()->SoundLoadWave("Alarm01.wav");
 
@@ -42,6 +41,14 @@ void GamePlayScene::Initialize() {
 
     TextureManager::GetInstance()->LoadTexture("rostock_laage_airport_4k.dds");    
     skybox_ = Skybox::Create("rostock_laage_airport_4k.dds", Transform({ 1000.0f,1000.0f,1000.0f }, { 0.0f,0.0f,0.0f }, { 0.0f,0.0f,0.0f }));
+
+
+
+
+    ModelManager::GetInstance()->LoadModel("Bullet/PlayerBullet.obj"); 
+    ModelManager::GetInstance()->LoadModel("Player/Player.obj");
+    ModelManager::GetInstance()->LoadModel("Tile.obj");
+
 
 }
 
