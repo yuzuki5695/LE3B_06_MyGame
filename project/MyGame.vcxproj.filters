@@ -139,6 +139,30 @@
     <Filter Include="ヘッダー ファイル\engine\math\Vector">
       <UniqueIdentifier>{e13f2e36-4292-41c9-b7c0-9808517079de}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ヘッダー ファイル\application\character">
+      <UniqueIdentifier>{88d1f61c-35e7-4b87-8d52-a0fe6ed451ec}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\application\player">
+      <UniqueIdentifier>{2a7546ab-cebe-44d3-a852-a35e4e04e782}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\application\player">
+      <UniqueIdentifier>{a7eab18e-630a-472c-afe5-35bace2ee948}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\application\character">
+      <UniqueIdentifier>{2a9f0528-9f22-4368-a9d5-57d0c9e90e83}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\application\manager">
+      <UniqueIdentifier>{3a1738a6-e58c-4db2-8f43-d0579fe391d7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\application\manager">
+      <UniqueIdentifier>{43c7a045-e790-4fd5-b178-f3bb93dc9aeb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\application\loader">
+      <UniqueIdentifier>{737ec024-93f3-4b94-94b0-39ecb63a733d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\application\loader">
+      <UniqueIdentifier>{4fd94a91-62be-4991-98c1-9fe49ec67cec}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -284,6 +308,15 @@
     </ClCompile>
     <ClCompile Include="engine\io\Controller.cpp">
       <Filter>ソース ファイル\engine\io</Filter>
+    </ClCompile>
+    <ClCompile Include="application\player\Player.cpp">
+      <Filter>ソース ファイル\application\player</Filter>
+    </ClCompile>
+    <ClCompile Include="application\manager\CharacterManager.cpp">
+      <Filter>ソース ファイル\application\manager</Filter>
+    </ClCompile>
+    <ClCompile Include="application\loader\CurveJsonLoader.cpp">
+      <Filter>ソース ファイル\application\loader</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -475,6 +508,18 @@
     </ClInclude>
     <ClInclude Include="engine\math\Vector\Transform.h">
       <Filter>ヘッダー ファイル\engine\math\Vector</Filter>
+    </ClInclude>
+    <ClInclude Include="application\character\BaseCharacter.h">
+      <Filter>ヘッダー ファイル\application\character</Filter>
+    </ClInclude>
+    <ClInclude Include="application\player\Player.h">
+      <Filter>ヘッダー ファイル\application\player</Filter>
+    </ClInclude>
+    <ClInclude Include="application\manager\CharacterManager.h">
+      <Filter>ヘッダー ファイル\application\manager</Filter>
+    </ClInclude>
+    <ClInclude Include="application\loader\CurveJsonLoader.h">
+      <Filter>ヘッダー ファイル\application\loader</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
