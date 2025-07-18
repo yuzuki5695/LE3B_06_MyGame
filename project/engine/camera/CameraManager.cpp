@@ -5,9 +5,6 @@
 #ifdef USE_IMGUI
 #include <ImGuiManager.h>
 #endif // USE_IMGUI
-#include<json.hpp>
-
-using json = nlohmann::json;
 
 using namespace MatrixVector;
 
@@ -27,15 +24,15 @@ void CameraManager::Finalize() {
     instance.reset();  // `delete` 不要
 }
 
-void CameraManager::Initialize() {
+void CameraManager::Initialize(CameraTransform transform) {
     // 初期状態はデフォルトカメラ
     currentMode_ = CameraMode::Default;
 	useFollowCamera_ = false;
     
     // すべてのカメラを作っておく
     defaultCamera_ = new Camera();
-    defaultCamera_->SetTranslate({0.0f, 10.0f, -30.0f});
-    defaultCamera_->SetRotate({0.3f, 0.0f, 0.0f});
+    defaultCamera_->SetTranslate(transform.translate);
+    defaultCamera_->SetRotate(transform.rotate);
 
     followCamera_ = new Camera();
 }

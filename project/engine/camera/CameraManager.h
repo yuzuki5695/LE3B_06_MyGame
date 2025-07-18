@@ -6,6 +6,11 @@ enum class CameraMode {
     Follow,
 };
 
+struct CameraTransform {
+    Vector3 translate; // カメラの位置
+    Vector3 rotate; // カメラの回転
+};
+
 class CameraManager {
 private:
     static std::unique_ptr<CameraManager> instance;
@@ -21,7 +26,7 @@ public: // メンバ関数
     void Finalize();
 
     // 初期化
-    void Initialize();
+    void Initialize(CameraTransform Transform);
     // 更新処理
     void Update();
     
