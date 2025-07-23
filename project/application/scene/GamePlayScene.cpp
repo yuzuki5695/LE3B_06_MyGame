@@ -14,10 +14,11 @@
 #include<SkyboxCommon.h>
 #include<CharacterManager.h>
 #include<Player.h>
+#include <BulletManager.h>
 
 void GamePlayScene::Finalize() {
-    // キャラクターマネージャの開放
-    CharacterManager::GetInstance()->Finalize(); 
+	CharacterManager::GetInstance()->Finalize(); // キャラクターの解放処理
+	BulletManager::GetInstance()->Finalize(); // 弾の解放処理
 }
 
 void GamePlayScene::Initialize() {
@@ -60,6 +61,9 @@ void GamePlayScene::Initialize() {
     // キャラクターマネージャの初期化
     CharacterManager::GetInstance()->Initialize();
 
+    // Bulletマネージャの初期化
+    BulletManager::GetInstance()->Initialize();
+
 }
 
 void GamePlayScene::Update() {
@@ -82,8 +86,10 @@ void GamePlayScene::Update() {
 
     
     // キャラクターマネージャの更新処理
-    CharacterManager::GetInstance()->Update();
-   
+    CharacterManager::GetInstance()->Update(); 
+    // Bulletマネージャの更新処理
+    BulletManager::GetInstance()->Update();
+
     ParticleManager::GetInstance()->Update();
 #pragma endregion 全てのObject3d個々の更新処理
 
@@ -109,7 +115,7 @@ void GamePlayScene::Draw() {
     SkyboxCommon::GetInstance()->Commondrawing();
     // 3Dオブジェクトの描画準備。3Dオブジェクトの描画に共通のグラフィックスコマンドを積む
     Object3dCommon::GetInstance()->Commondrawing();
-    
+
     // 描画処理
 
 
@@ -118,6 +124,8 @@ void GamePlayScene::Draw() {
 
     // キャラクターマネージャの描画処理 
     CharacterManager::GetInstance()->Draw();
+    // Bulletマネージャの描画処理
+    BulletManager::GetInstance()->Draw();
 
     // パーティクルの描画準備。パーティクルの描画に共通のグラフィックスコマンドを積む 
     ParticleCommon::GetInstance()->Commondrawing();

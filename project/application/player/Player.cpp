@@ -5,20 +5,33 @@
 #include<ImGuiManager.h>
 #endif // USE_IMGUI
 #include <Input.h>
+#include<PlayerBullet.h>
+#include <BulletManager.h>
+#include <MatrixVector.h>
+#include<TextureManager.h>
+
+using namespace MatrixVector;
 
 Player::~Player() {}
 
 void Player::Initialize() {	 
-    ModelManager::GetInstance()->LoadModel("Player.obj");
-	// プレイヤーの初期位置と回転を設定
+    ModelManager::GetInstance()->LoadModel("Player.obj");     
+    ModelManager::GetInstance()->LoadModel("Bullet/PlayerBullet.obj");
+	TextureManager::GetInstance()->LoadTexture("uvChecker.png");
+
+    // プレイヤーの初期位置と回転を設定
 	//transform_ = { {1.0f, 1.0f, 1.0f}, {0.0f, -1.6f, 0.0f},  0.0f,3.0f,0.0f };
     // 
     // プレイヤー生成
     if (!object) {
         object = Object3d::Create("Player.obj", transform_);
     }
-
+    targetpos_ = { {0.3f, 0.3f, 0.3f}, {0.0f, 0.0f, 0.0f}, {0.0f, 3.0f, 30.0f} };
+    target_= Object3d::Create("Bullet/PlayerBullet.obj", targetpos_);
     moveDelta = Vector3(0.0f, 0.0f, 0.0f);
+
+
+
 }
 
 void Player::Update() {
@@ -36,8 +49,13 @@ void Player::Update() {
 
     float currentSpeed = isBoosting_ ? boostSpeed_ : normalSpeed_;
     MoveInput(currentSpeed); // ブースト中は速く移動
-
     
+    // ターゲットを矢印キーで動かす
+    UpdateTargetPosition(targetpos_,0.2f);   // ターゲットに使う    
+    // 弾の発射
+    AttachBullet();
+
+
     // 移動後の位置をObjectに反映
     object->SetTranslate(transform_.translate);
     object->SetRotate(transform_.rotate);
@@ -46,11 +64,16 @@ void Player::Update() {
     object->Update(); 
     // デバッグ中のImGui表示
     DebugImgui();
+
+    target_->SetTranslate(copypos);
+    target_->Update();
+
 }
 
 void Player::Draw() {
     // プレイヤー描画
-    object->Draw();
+    object->Draw(); 
+    target_->Draw();
 }
 
 void Player::DebugImgui() {
@@ -85,7 +108,6 @@ void Player::MoveInput(float speed) {
     transform_.translate += moveDelta; // キー操作による移動量を加算
 }
 
-
 void Player::UpdateBoostState() {
     Input* input = Input::GetInstance();
 
@@ -114,4 +136,50 @@ void Player::UpdateBoostState() {
             isCoolingDown_ = false;
         }
     }
+}
+
+void Player::UpdateTargetPosition(Transform& targetTransform, float speed) {
+    if (Input::GetInstance()->Pushkey(DIK_LEFT))  targetTransform.translate.x -= speed;
+    if (Input::GetInstance()->Pushkey(DIK_RIGHT)) targetTransform.translate.x += speed;
+    if (Input::GetInstance()->Pushkey(DIK_UP))    targetTransform.translate.y += speed;
+    if (Input::GetInstance()->Pushkey(DIK_DOWN))  targetTransform.translate.y -= speed;
+	copypos = targetpos_.translate + transform_.translate; // ターゲットの位置をプレイヤーの位置に合わせる
+}
+
+
+void Player::AttachBullet() { 
+    bulletTimer_ += 1.0f / 60.0f; // 毎フレーム経過時間を加算（60fps前提）
+    // 30秒経過したら発射可能にする
+    if (bulletTimer_ >= bulletInterval_) {
+        canShoot_ = true;
+        bulletTimer_ = 0.0f; // タイマーリセット
+    }
+    // 弾が撃てるか確認
+    if (!canShoot_) return;
+    if (Input::GetInstance()->Pushkey(DIK_SPACE)) {                                 // スペースキーが押されたら弾を撃つ
+        std::unique_ptr<PlayerBullet> bullet = std::make_unique<PlayerBullet>();		// 弾を生成
+        bullet->Initialize(transform_.translate, copypos,1.5f);                     // 初期位置などを設定
+		BulletManager::GetInstance()->AddPlayerBullet(std::move(bullet));                 // BulletManagerに追加
+		canShoot_ = false;                                                          // 弾を撃てる状態にする
+    };
+}
+
+Vector3 Player::ScreenToWorldRay(const Vector2& screenPos, const Matrix4x4& view, const Matrix4x4& projection) {
+    //// スクリーン座標 → NDC(-1〜1)
+    //float ndcX = (2.0f * screenPos.x /  1280.0f) - 1.0f;
+    //float ndcY = 1.0f - (2.0f * screenPos.y /  720.0f);
+
+    //Vector4 nearPoint = { ndcX, ndcY, 0.0f, 1.0f };
+    //Vector4 farPoint =  { ndcX, ndcY, 1.0f, 1.0f };
+
+    //Matrix4x4 viewProjInv = Inverse(view * projection);
+
+    //Vector4 worldNear = Transform(nearPoint, viewProjInv);
+    //Vector4 worldFar = Transform(farPoint, viewProjInv);
+
+    //worldNear /= worldNear.w;
+    //worldFar  /= worldFar.w;
+
+    //Vector3 direction = Normalize((worldFar - worldNear));
+    //return direction;
 }

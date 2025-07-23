@@ -100,6 +100,8 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="application\bullet\BulletManager.cpp" />
+    <ClCompile Include="application\bullet\PlayerBullet.cpp" />
     <ClCompile Include="application\loader\CharacterLoader.cpp" />
     <ClCompile Include="application\loader\CurveJsonLoader.cpp" />
     <ClCompile Include="application\manager\CharacterManager.cpp" />
@@ -155,6 +157,9 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="engine\base\DirectXCommon\SwapChainManager.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="application\bullet\BaseBullet.h" />
+    <ClInclude Include="application\bullet\BulletManager.h" />
+    <ClInclude Include="application\bullet\PlayerBullet.h" />
     <ClInclude Include="application\character\BaseCharacter.h" />
     <ClInclude Include="application\loader\CharacterLoader.h" />
     <ClInclude Include="application\loader\CurveJsonLoader.h" />

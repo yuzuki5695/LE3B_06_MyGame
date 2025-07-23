@@ -24,9 +24,31 @@ public:// メンバ関数
 	void UpdateBoostState();
 	// デバッグ用のImGui描画
 	void DebugImgui();
+	
+	// 弾の発射
+	void AttachBullet();
+	
+	void UpdateTargetPosition(Transform& targetTransform, float speed);
+	
+	Vector3 ScreenToWorldRay(const Vector2& screenPos, const Matrix4x4& view, const Matrix4x4& projection);
+
+
 private:// メンバ変数
 	std::unique_ptr <Object3d> object = nullptr;
 	Transform transform_{};
+	
+	std::unique_ptr <Object3d> target_ = nullptr;
+	Transform targetpos_{};
+	Vector3 copypos;
+
+
+	Vector2 reticleScreenPos = { 640.0f, 360.0f }; // 画面中心 (例: 1280x720の解像度)
+
+	// 球関連
+	float bulletTimer_ = 0.0f;                   // 経過時間
+	const float bulletInterval_ = 0.5f;         // 30秒ごとに弾を撃てる
+	bool canShoot_ = true;                       // 弾を撃てるかどうか
+
 
 	Vector3 moveOffset;
 	Vector3 moveDelta{};

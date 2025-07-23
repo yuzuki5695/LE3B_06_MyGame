@@ -16,9 +16,9 @@ void PlayerBullet::Initialize(const Vector3& startPos, const Vector3& targetPos,
 	position_ = startPos;
     size_ = { 0.5f, 0.5f, 0.5f };
     if (!object_) {
-        ModelManager::GetInstance()->LoadModel("PlayerBullet.obj");
+        ModelManager::GetInstance()->LoadModel("Bullet/PlayerBullet.obj");
         object_ = Object3d::Create(
-            "PlayerBullet.obj",
+            "Bullet/PlayerBullet.obj",
             Transform{ size_,{ 0.0f, 0.0f, 0.0f},position_ }
         );
         object_->SetScale({ 0.5f, 0.5f, 0.5f });
