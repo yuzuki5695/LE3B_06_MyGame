@@ -1,5 +1,6 @@
 #pragma once
 #include<BaseCharacter.h>
+#include<Sprite.h>
 
 class Player : public BaseCharacter {
 public:// メンバ関数
@@ -17,7 +18,10 @@ public:// メンバ関数
 	/// <summary>
 	/// 描画更新
 	/// </summary>
-	void Draw() override;	
+	void Draw() override;
+	
+	void DrawSprite();	
+
 	// キーボードでの移動入力処理
 	void MoveInput(float speed);	
 	// ブースト状態更新
@@ -30,7 +34,7 @@ public:// メンバ関数
 	
 	void UpdateTargetPosition(Transform& targetTransform, float speed);
 	
-	Vector3 ScreenToWorldRay(const Vector2& screenPos, const Matrix4x4& view, const Matrix4x4& projection);
+	//Vector3 ScreenToWorldRay(const Vector2& screenPos, const Matrix4x4& view, const Matrix4x4& projection);
 
 
 private:// メンバ変数
@@ -40,8 +44,9 @@ private:// メンバ変数
 	std::unique_ptr <Object3d> target_ = nullptr;
 	Transform targetpos_{};
 	Vector3 copypos;
-
-
+	
+	std::unique_ptr <Sprite> targetreticle_ = nullptr; // レティクル用スプライト
+	
 	Vector2 reticleScreenPos = { 640.0f, 360.0f }; // 画面中心 (例: 1280x720の解像度)
 
 	// 球関連

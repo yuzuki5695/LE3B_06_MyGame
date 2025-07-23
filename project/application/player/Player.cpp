@@ -19,6 +19,7 @@ void Player::Initialize() {
     ModelManager::GetInstance()->LoadModel("Bullet/PlayerBullet.obj");
 	TextureManager::GetInstance()->LoadTexture("uvChecker.png");
 
+
     // プレイヤーの初期位置と回転を設定
 	//transform_ = { {1.0f, 1.0f, 1.0f}, {0.0f, -1.6f, 0.0f},  0.0f,3.0f,0.0f };
     // 
@@ -30,8 +31,8 @@ void Player::Initialize() {
     target_= Object3d::Create("Bullet/PlayerBullet.obj", targetpos_);
     moveDelta = Vector3(0.0f, 0.0f, 0.0f);
 
-
-
+    reticleScreenPos = { 640.0f, 360.0f };
+    targetreticle_ = Sprite::Create("uvChecker.png", reticleScreenPos, 0.0f, Vector2{ 200.0f,200.0f });
 }
 
 void Player::Update() {
@@ -67,13 +68,17 @@ void Player::Update() {
 
     target_->SetTranslate(copypos);
     target_->Update();
-
+    targetreticle_->Update();
 }
 
 void Player::Draw() {
     // プレイヤー描画
     object->Draw(); 
     target_->Draw();
+}
+
+void Player::DrawSprite() { 
+    targetreticle_->Draw();
 }
 
 void Player::DebugImgui() {
@@ -163,23 +168,23 @@ void Player::AttachBullet() {
 		canShoot_ = false;                                                          // 弾を撃てる状態にする
     };
 }
-
-Vector3 Player::ScreenToWorldRay(const Vector2& screenPos, const Matrix4x4& view, const Matrix4x4& projection) {
-    //// スクリーン座標 → NDC(-1〜1)
-    //float ndcX = (2.0f * screenPos.x /  1280.0f) - 1.0f;
-    //float ndcY = 1.0f - (2.0f * screenPos.y /  720.0f);
-
-    //Vector4 nearPoint = { ndcX, ndcY, 0.0f, 1.0f };
-    //Vector4 farPoint =  { ndcX, ndcY, 1.0f, 1.0f };
-
-    //Matrix4x4 viewProjInv = Inverse(view * projection);
-
-    //Vector4 worldNear = Transform(nearPoint, viewProjInv);
-    //Vector4 worldFar = Transform(farPoint, viewProjInv);
-
-    //worldNear /= worldNear.w;
-    //worldFar  /= worldFar.w;
-
-    //Vector3 direction = Normalize((worldFar - worldNear));
-    //return direction;
-}
+//
+//Vector3 Player::ScreenToWorldRay(const Vector2& screenPos, const Matrix4x4& view, const Matrix4x4& projection) {
+//    //// スクリーン座標 → NDC(-1〜1)
+//    //float ndcX = (2.0f * screenPos.x /  1280.0f) - 1.0f;
+//    //float ndcY = 1.0f - (2.0f * screenPos.y /  720.0f);
+//
+//    //Vector4 nearPoint = { ndcX, ndcY, 0.0f, 1.0f };
+//    //Vector4 farPoint =  { ndcX, ndcY, 1.0f, 1.0f };
+//
+//    //Matrix4x4 viewProjInv = Inverse(view * projection);
+//
+//    //Vector4 worldNear = Transform(nearPoint, viewProjInv);
+//    //Vector4 worldFar = Transform(farPoint, viewProjInv);
+//
+//    //worldNear /= worldNear.w;
+//    //worldFar  /= worldFar.w;
+//
+//    //Vector3 direction = Normalize((worldFar - worldNear));
+//    return direction;
+//}

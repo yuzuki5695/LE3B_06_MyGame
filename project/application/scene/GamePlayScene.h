@@ -6,6 +6,7 @@
 #include<SoundPlayer.h>
 #include<Skybox.h>
 #include<CharacterLoader.h>
+#include<Player.h>
 
 // ゲームプレイシーン
 class GamePlayScene : public BaseScene
@@ -25,13 +26,12 @@ private: // メンバ変数
     // 地面
     std::unique_ptr <Object3d> grass = nullptr;
    
+	std::unique_ptr <Player> player_ = nullptr;
+    
     Transform transform_;
 
 	// キャラクターローダー
     std::unique_ptr<CharacterLoader> levelLoader_ = nullptr;
     // レベルデータ格納用インスタンスを生成
     LevelData* levelData = nullptr;
-    // オブジェクトコンテナ
-    std::vector<std::unique_ptr<Object3d>> object3ds_;
-
 };

@@ -12,12 +12,10 @@
 #include<ImGuiManager.h>
 #endif // USE_IMGUI
 #include<SkyboxCommon.h>
-#include<CharacterManager.h>
 #include<Player.h>
 #include <BulletManager.h>
 
 void GamePlayScene::Finalize() {
-	CharacterManager::GetInstance()->Finalize(); // キャラクターの解放処理
 	BulletManager::GetInstance()->Finalize(); // 弾の解放処理
 }
 
@@ -37,6 +35,8 @@ void GamePlayScene::Initialize() {
     // オブジェクトの作成
     grass = Object3d::Create("Tile.obj", Transform({ {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f} }));
 
+	player_ = std::make_unique<Player>();
+	player_->Initialize(); // プレイヤーの初期化
 
     // ローダーの初期化
     levelLoader_ = std::make_unique<CharacterLoader>();
@@ -46,10 +46,7 @@ void GamePlayScene::Initialize() {
     // レベルデータから読み込み、オブジェクト生成
     for (auto& objData : levelData->objects) {
         if (objData.fileName == "Player") {
-            auto player = std::make_unique<Player>();
-            player->SetTransform({ objData.scaling, objData.rotation, objData.translation });
-            // キャラクターマネージャの登録
-            CharacterManager::GetInstance()->AddCharacter(std::move(player));
+            player_->SetTransform({ objData.scaling, objData.rotation, objData.translation });
             continue;
         }
         if (objData.fileName == "Tile") {
@@ -57,13 +54,8 @@ void GamePlayScene::Initialize() {
             grass = Object3d::Create("Tile.obj", transform_);
         }
     }
-
-    // キャラクターマネージャの初期化
-    CharacterManager::GetInstance()->Initialize();
-
     // Bulletマネージャの初期化
     BulletManager::GetInstance()->Initialize();
-
 }
 
 void GamePlayScene::Update() {
@@ -84,9 +76,8 @@ void GamePlayScene::Update() {
 
     grass->Update();
 
-    
-    // キャラクターマネージャの更新処理
-    CharacterManager::GetInstance()->Update(); 
+    player_->Update();
+
     // Bulletマネージャの更新処理
     BulletManager::GetInstance()->Update();
 
@@ -121,9 +112,8 @@ void GamePlayScene::Draw() {
 
     grass->Draw();
 
+    player_->Draw();
 
-    // キャラクターマネージャの描画処理 
-    CharacterManager::GetInstance()->Draw();
     // Bulletマネージャの描画処理
     BulletManager::GetInstance()->Draw();
 
@@ -135,6 +125,9 @@ void GamePlayScene::Draw() {
 #pragma region 全てのSprite個々の描画処理
     // Spriteの描画準備。Spriteの描画に共通のグラフィックスコマンドを積む
     SpriteCommon::GetInstance()->Commondrawing();
+
+    player_->DrawSprite();
+
 
 
 #pragma endregion 全てのSprite個々の描画処理
