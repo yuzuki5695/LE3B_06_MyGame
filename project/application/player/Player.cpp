@@ -9,13 +9,13 @@
 Player::~Player() {}
 
 void Player::Initialize() {	 
-    ModelManager::GetInstance()->LoadModel("Player/Player.obj");
+    ModelManager::GetInstance()->LoadModel("Player.obj");
 	// プレイヤーの初期位置と回転を設定
 	//transform_ = { {1.0f, 1.0f, 1.0f}, {0.0f, -1.6f, 0.0f},  0.0f,3.0f,0.0f };
     // 
     // プレイヤー生成
     if (!object) {
-        object = Object3d::Create("Player/Player.obj", transform_);
+        object = Object3d::Create("Player.obj", transform_);
     }
 
     moveDelta = Vector3(0.0f, 0.0f, 0.0f);

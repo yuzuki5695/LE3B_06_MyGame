@@ -13,27 +13,52 @@
 #endif // USE_IMGUI
 #include<SkyboxCommon.h>
 #include<CharacterManager.h>
+#include<Player.h>
 
-void GamePlayScene::Finalize() {}
+void GamePlayScene::Finalize() {
+    // キャラクターマネージャの開放
+    CharacterManager::GetInstance()->Finalize(); 
+}
 
 void GamePlayScene::Initialize() {
     // カメラマネージャの初期化
-    CameraManager::GetInstance()->Initialize(CameraTransform({ 0.0f, 10.0f, -30.0f }, { 0.3f, 0.0f, 0.0f }));
+    CameraManager::GetInstance()->Initialize(CameraTransform({ 0.0f, 50.0f, -300.0f }, { 0.0f, 0.0f, 0.0f }));
 
     // テクスチャを読み込む
     TextureManager::GetInstance()->LoadTexture("uvChecker.png");
     TextureManager::GetInstance()->LoadTexture("monsterBall.png");
     // .objファイルからモデルを読み込む
-    ModelManager::GetInstance()->LoadModel("terrain.obj"); 
+    ModelManager::GetInstance()->LoadModel("terrain.obj");
     ModelManager::GetInstance()->LoadModel("monsterBallUV.obj");
+    ModelManager::GetInstance()->LoadModel("Bullet/PlayerBullet.obj");
+    ModelManager::GetInstance()->LoadModel("Tile.obj");
 
     // オブジェクトの作成
-    grass = Object3d::Create("terrain.obj", Transform({ {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f} })); 
+    grass = Object3d::Create("Tile.obj", Transform({ {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f} }));
 
 
+    // ローダーの初期化
+    levelLoader_ = std::make_unique<CharacterLoader>();
+    // JSONファイルからレベルデータを読み込む
+    levelData = levelLoader_->LoadFile("untitled");
 
-    ModelManager::GetInstance()->LoadModel("Bullet/PlayerBullet.obj"); 
-    ModelManager::GetInstance()->LoadModel("Tile.obj");
+    // レベルデータから読み込み、オブジェクト生成
+    for (auto& objData : levelData->objects) {
+        if (objData.fileName == "Player") {
+            auto player = std::make_unique<Player>();
+            player->SetTransform({ objData.scaling, objData.rotation, objData.translation });
+            // キャラクターマネージャの登録
+            CharacterManager::GetInstance()->AddCharacter(std::move(player));
+            continue;
+        }
+        if (objData.fileName == "Tile") {
+            transform_ = { objData.scaling, objData.rotation, objData.translation };
+            grass = Object3d::Create("Tile.obj", transform_);
+        }
+    }
+
+    // キャラクターマネージャの初期化
+    CharacterManager::GetInstance()->Initialize();
 
 }
 
@@ -52,8 +77,13 @@ void GamePlayScene::Update() {
 #pragma region 全てのObject3d個々の更新処理
 
     // 更新処理 
+
     grass->Update();
 
+    
+    // キャラクターマネージャの更新処理
+    CharacterManager::GetInstance()->Update();
+   
     ParticleManager::GetInstance()->Update();
 #pragma endregion 全てのObject3d個々の更新処理
 
@@ -81,7 +111,13 @@ void GamePlayScene::Draw() {
     Object3dCommon::GetInstance()->Commondrawing();
     
     // 描画処理
+
+
     grass->Draw();
+
+
+    // キャラクターマネージャの描画処理 
+    CharacterManager::GetInstance()->Draw();
 
     // パーティクルの描画準備。パーティクルの描画に共通のグラフィックスコマンドを積む 
     ParticleCommon::GetInstance()->Commondrawing();

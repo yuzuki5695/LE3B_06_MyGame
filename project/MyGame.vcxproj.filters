@@ -163,6 +163,12 @@
     <Filter Include="ヘッダー ファイル\application\loader">
       <UniqueIdentifier>{4fd94a91-62be-4991-98c1-9fe49ec67cec}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ソース ファイル\application\camera">
+      <UniqueIdentifier>{2c45c29c-d0c3-4ba3-83cc-fde300d51295}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\application\camera">
+      <UniqueIdentifier>{225bec48-4135-4122-8a6e-3b5d8149494c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -316,6 +322,12 @@
       <Filter>ソース ファイル\application\manager</Filter>
     </ClCompile>
     <ClCompile Include="application\loader\CurveJsonLoader.cpp">
+      <Filter>ソース ファイル\application\loader</Filter>
+    </ClCompile>
+    <ClCompile Include="application\camera\GameCamera.cpp">
+      <Filter>ソース ファイル\application\camera</Filter>
+    </ClCompile>
+    <ClCompile Include="application\loader\CharacterLoader.cpp">
       <Filter>ソース ファイル\application\loader</Filter>
     </ClCompile>
   </ItemGroup>
@@ -519,6 +531,12 @@
       <Filter>ヘッダー ファイル\application\manager</Filter>
     </ClInclude>
     <ClInclude Include="application\loader\CurveJsonLoader.h">
+      <Filter>ヘッダー ファイル\application\loader</Filter>
+    </ClInclude>
+    <ClInclude Include="application\camera\GameCamera.h">
+      <Filter>ヘッダー ファイル\application\camera</Filter>
+    </ClInclude>
+    <ClInclude Include="application\loader\CharacterLoader.h">
       <Filter>ヘッダー ファイル\application\loader</Filter>
     </ClInclude>
   </ItemGroup>
