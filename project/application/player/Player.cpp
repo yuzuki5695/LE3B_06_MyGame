@@ -20,7 +20,7 @@ void Player::Initialize() {
 	TextureManager::GetInstance()->LoadTexture("uvChecker.png");
 
     // プレイヤーの初期位置と回転を設定
-	//transform_ = { {1.0f, 1.0f, 1.0f}, {0.0f, -1.6f, 0.0f},  0.0f,3.0f,0.0f }
+    transform_ = { {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f},  0.0f,0.0f,0.0f };
     // プレイヤー生成
     if (!object) {
         object = Object3d::Create("Player.obj", transform_);
@@ -39,7 +39,7 @@ void Player::Update() {
     if (CameraManager::GetInstance()->GetcurrentMode() == CameraMode::GamePlay && camera) {
         Vector3 cameraPos = camera->GetTranslate();
         // カメラ相対オフセット位置にプレイヤーを固定
-        Vector3 relativeOffset = { 0.0f, -3.0f, 30.0f };
+        Vector3 relativeOffset = { 0.0f, 0.0f, 3.0f };
         transform_.translate = cameraPos + relativeOffset;
     }
 
@@ -90,7 +90,6 @@ void Player::DebugImgui() {
 }
 
 void Player::MoveInput(float speed) {
-    moveDelta = { 0.0f,0.0f };
     if (Input::GetInstance()->Pushkey(DIK_A)) moveDelta.x -= speed;
     if (Input::GetInstance()->Pushkey(DIK_D)) moveDelta.x += speed;
     if (Input::GetInstance()->Pushkey(DIK_W)) moveDelta.y += speed;
@@ -109,7 +108,7 @@ void Player::MoveInput(float speed) {
     // 緩やかに回転角を補間（Lerp）
     transform_.rotate.z += (targetZ - transform_.rotate.z) * 0.1f;
 
-    transform_.translate += moveDelta; // キー操作による移動量を加算
+    transform_.translate = moveDelta; // キー操作による移動量を加算
 }
 
 void Player::UpdateBoostState() {

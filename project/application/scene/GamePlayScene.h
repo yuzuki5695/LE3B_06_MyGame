@@ -36,6 +36,5 @@ private: // メンバ変数
     LevelData* levelData = nullptr;
 
 
-    std::unique_ptr <Object3d> name = nullptr;
 
 };

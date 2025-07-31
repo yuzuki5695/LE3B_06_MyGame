@@ -3,6 +3,28 @@
     "objects": [
         {
             "type": "MESH",
+            "name": "player",
+            "transform": {
+                "translation": [
+                    0.0,
+                    0.0,
+                    3.0
+                ],
+                "rotation": [
+                    0.0,
+                    -0.0,
+                    0.0
+                ],
+                "scaling": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            },
+            "file_name": "Player"
+        },
+        {
+            "type": "MESH",
             "name": "Tile",
             "transform": {
                 "translation": [
@@ -21,50 +43,8 @@
                     1.0
                 ]
             },
-            "file_name": "Tile"
-        },
-        {
-            "type": "MESH",
-            "name": "player",
-            "transform": {
-                "translation": [
-                    0.0,
-                    0.0,
-                    0.0
-                ],
-                "rotation": [
-                    0.0,
-                    -0.0,
-                    0.0
-                ],
-                "scaling": [
-                    1.0,
-                    1.0,
-                    1.0
-                ]
-            },
-            "file_name": "Player"
-        },
-        {
-            "type": "MESH",
-            "name": "球.001",
-            "transform": {
-                "translation": [
-                    0.0,
-                    0.0,
-                    0.0
-                ],
-                "rotation": [
-                    0.0,
-                    -0.0,
-                    0.0
-                ],
-                "scaling": [
-                    1.0,
-                    1.0,
-                    1.0
-                ]
-            }
+            "file_name": "Tile",
+            "disabled": false
         }
     ]
 }

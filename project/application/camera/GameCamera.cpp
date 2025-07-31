@@ -4,7 +4,8 @@
 using namespace MatrixVector;
 
 void GameCamera::Initialize(Vector3 offset) {
-
+    moveOffset_ = offset;
+    
     camera_ = new Camera();
     camera_->SetTranslate(offset);
     camera_->SetRotate({ 0, 0, 0 });
@@ -28,10 +29,6 @@ void GameCamera::Initialize(Vector3 offset) {
 }
 
 void GameCamera::Update() {
-    if (movefige) {
-        // ベジェ曲線に沿った位置を計算
-        UpdateObjectPosition();
-    }
     // カメラの位置を更新 
     camera_->SetTranslate(bezierPos_);
     camera_->Update();

@@ -37,9 +37,8 @@ void CameraManager::Initialize(CameraTransform transform) {
     followCamera_ = new Camera();
 
 	gameCamera_ = new GameCamera();
-	moveOffset_ = { 0.0f, 0.0f, -60.0f }; // ベジェ曲線の制御点オフセット
+	moveOffset_ = { 0.0f, 3.0f, -30.0f }; // ベジェ曲線の制御点オフセット
 	gameCamera_->Initialize(moveOffset_); // ベジェ曲線の制御点は後で設定
-
 }
 
 void CameraManager::Update() {
@@ -47,9 +46,10 @@ void CameraManager::Update() {
     case CameraMode::GamePlay:
         if (gameCamera_) {
             if (gameCamera_->Getmovefige()) {
-                //ゲームカメラの更新処理
-                gameCamera_->Update();
+                gameCamera_->UpdateObjectPosition();
             }
+            //ゲームカメラの更新処理
+            gameCamera_->Update();
         }
         break;
     case CameraMode::Follow:
