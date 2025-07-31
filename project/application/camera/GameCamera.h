@@ -8,7 +8,7 @@
 class GameCamera {
 public:
     // 初期化
-    void Initialize(Vector3 offset);
+    void Initialize();
     // 更新処理
     void Update();
 
@@ -24,7 +24,6 @@ private:
     CurveJsonLoader* Jsondata = nullptr;
     Camera* camera_ = nullptr;
 
-    	
     Vector3 moveOffset_; // カメラの移動オフセット
     Vector3 bezierPos_;
     bool useFollowCamera_ = false; // カメラモード切替用フラグ

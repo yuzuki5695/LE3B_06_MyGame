@@ -35,9 +35,8 @@ void Player::Initialize() {
 
 void Player::Update() {
     // カメラの現在位置取得
-    Camera* camera = CameraManager::GetInstance()->GetActiveCamera();
-    if (CameraManager::GetInstance()->GetcurrentMode() == CameraMode::GamePlay && camera) {
-        Vector3 cameraPos = camera->GetTranslate();
+    if (CameraManager::GetInstance()->GetcurrentMode() == CameraMode::GamePlay) {
+        Vector3 cameraPos = CameraManager::GetInstance()->GetGameCamera()->GetbezierPos();
         // カメラ相対オフセット位置にプレイヤーを固定
         Vector3 relativeOffset = { 0.0f, 0.0f, 3.0f };
         transform_.translate = cameraPos + relativeOffset;

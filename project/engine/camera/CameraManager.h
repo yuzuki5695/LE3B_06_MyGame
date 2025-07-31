@@ -45,7 +45,6 @@ private:
     Camera* defaultCamera_; // 追従しないカメラ(デフォルト)
     Camera* followCamera_;  // 追従用カメラ
     GameCamera* gameCamera_;
-    Vector3  moveOffset_;
 
     // ヘッダーかクラス内に追加
     bool addedInitialOffset_ = false;
@@ -59,5 +58,5 @@ public: // メンバ関数
     void SetCameraMode(CameraMode mode);
 
     CameraMode GetcurrentMode() { return currentMode_; }
-
+    GameCamera* GetGameCamera() { return gameCamera_; }
 };

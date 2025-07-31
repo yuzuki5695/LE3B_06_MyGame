@@ -3,29 +3,27 @@
 
 using namespace MatrixVector;
 
-void GameCamera::Initialize(Vector3 offset) {
-    moveOffset_ = offset;
-    
-    camera_ = new Camera();
-    camera_->SetTranslate(offset);
-    camera_->SetRotate({ 0, 0, 0 });
-
+void GameCamera::Initialize() {
     Jsondata = new CurveJsonLoader();
-
-    movefige = false;
-
     // jsonファイルからベジェ曲線の制御点を読み込む
-	bezierPoints = Jsondata->LoadBezierFromJSON("Resources/levels/bezier.json"); 
-    const BezierPoint& start = bezierPoints[segmentIndex]; 
-    const BezierPoint& end = bezierPoints[segmentIndex + 1]; 
+    bezierPoints = Jsondata->LoadBezierFromJSON("Resources/levels/bezier.json");
+    const BezierPoint& start = bezierPoints[segmentIndex];
+    const BezierPoint& end = bezierPoints[segmentIndex + 1];
     bezierPos_ = BezierInterpolate(
-        moveOffset_ + start.controlPoint,
-        moveOffset_ + start.handleRight,
-        moveOffset_ + end.handleLeft,
+        start.controlPoint,
+        start.handleRight,
+        end.handleLeft,
         end.controlPoint,
         t
     );
 
+    camera_ = new Camera();
+    camera_->SetTranslate(bezierPos_);
+    camera_->SetRotate({ 0, 0, 0 });
+    
+    moveOffset_ = { 0.0f, 0.0f, 0.0f };
+
+    movefige = false;
 }
 
 void GameCamera::Update() {
