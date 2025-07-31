@@ -8,7 +8,7 @@
 class GameCamera {
 public:
     // 初期化
-    void Initialize(const std::vector<BezierPoint>& points, Vector3 offset);
+    void Initialize(Vector3 offset);
     // 更新処理
     void Update();
 
@@ -23,7 +23,7 @@ public:
 private:
     CurveJsonLoader* Jsondata = nullptr;
     Camera* camera_ = nullptr;
-    std::vector<BezierPoint> bezierPoints_;
+
     	
     Vector3 moveOffset_; // カメラの移動オフセット
     Vector3 bezierPos_;
@@ -40,4 +40,14 @@ private:
     float totalCurveLength = 0.0f;    // 曲線全体の長さ
     float distanceAlongCurve = 0.0f;  // 現在の距離位置
 	float speed = 0.2f; // 移動の速さ
+public:
+
+    // getter 
+	Camera* Getcamera() { return camera_; }
+    bool Getmovefige() { return movefige; }
+    Vector3 GetbezierPos() { return bezierPos_; }
+
+    // setter
+    void Setmovefige(bool value) { movefige = value; }
+    void SetbezierPos(Vector3 pos) { bezierPos_ = pos; }
 };

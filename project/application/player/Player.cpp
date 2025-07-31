@@ -19,10 +19,8 @@ void Player::Initialize() {
     ModelManager::GetInstance()->LoadModel("Bullet/PlayerBullet.obj");
 	TextureManager::GetInstance()->LoadTexture("uvChecker.png");
 
-
     // プレイヤーの初期位置と回転を設定
-	//transform_ = { {1.0f, 1.0f, 1.0f}, {0.0f, -1.6f, 0.0f},  0.0f,3.0f,0.0f };
-    // 
+	//transform_ = { {1.0f, 1.0f, 1.0f}, {0.0f, -1.6f, 0.0f},  0.0f,3.0f,0.0f }
     // プレイヤー生成
     if (!object) {
         object = Object3d::Create("Player.obj", transform_);
@@ -38,14 +36,14 @@ void Player::Initialize() {
 void Player::Update() {
     // カメラの現在位置取得
     Camera* camera = CameraManager::GetInstance()->GetActiveCamera();
-    if (camera) {
+    if (CameraManager::GetInstance()->GetcurrentMode() == CameraMode::GamePlay && camera) {
         Vector3 cameraPos = camera->GetTranslate();
         // カメラ相対オフセット位置にプレイヤーを固定
         Vector3 relativeOffset = { 0.0f, -3.0f, 30.0f };
         transform_.translate = cameraPos + relativeOffset;
     }
-     
-    
+
+
     UpdateBoostState(); // 追加：ブースト状態更新
 
     float currentSpeed = isBoosting_ ? boostSpeed_ : normalSpeed_;
@@ -78,7 +76,7 @@ void Player::Draw() {
 }
 
 void Player::DrawSprite() { 
-    targetreticle_->Draw();
+   // targetreticle_->Draw();
 }
 
 void Player::DebugImgui() {
@@ -92,6 +90,7 @@ void Player::DebugImgui() {
 }
 
 void Player::MoveInput(float speed) {
+    moveDelta = { 0.0f,0.0f };
     if (Input::GetInstance()->Pushkey(DIK_A)) moveDelta.x -= speed;
     if (Input::GetInstance()->Pushkey(DIK_D)) moveDelta.x += speed;
     if (Input::GetInstance()->Pushkey(DIK_W)) moveDelta.y += speed;
@@ -167,24 +166,64 @@ void Player::AttachBullet() {
 		BulletManager::GetInstance()->AddPlayerBullet(std::move(bullet));                 // BulletManagerに追加
 		canShoot_ = false;                                                          // 弾を撃てる状態にする
     };
+
+    //if (Input::GetInstance()->Pushkey(DIK_SPACE)) {
+    //    Matrix4x4 view = camera_->GetViewMatrix();
+    //    Matrix4x4 proj = camera_->GetProjectionMatrix();
+
+    //    Vector3 shootDirection = ScreenToWorldRay(reticleScreenPos, view, proj);
+
+    //    std::unique_ptr<PlayerBullet> bullet = std::make_unique<PlayerBullet>();
+    //    bullet->Initialize(transform_.translate, transform_.translate + shootDirection * 10.0f, 1.5f);
+    //    BulletManager::GetInstance()->AddPlayerBullet(std::move(bullet));
+    //    canShoot_ = false;
+    //}
+
 }
-//
-//Vector3 Player::ScreenToWorldRay(const Vector2& screenPos, const Matrix4x4& view, const Matrix4x4& projection) {
-//    //// スクリーン座標 → NDC(-1〜1)
-//    //float ndcX = (2.0f * screenPos.x /  1280.0f) - 1.0f;
-//    //float ndcY = 1.0f - (2.0f * screenPos.y /  720.0f);
-//
-//    //Vector4 nearPoint = { ndcX, ndcY, 0.0f, 1.0f };
-//    //Vector4 farPoint =  { ndcX, ndcY, 1.0f, 1.0f };
-//
-//    //Matrix4x4 viewProjInv = Inverse(view * projection);
-//
-//    //Vector4 worldNear = Transform(nearPoint, viewProjInv);
-//    //Vector4 worldFar = Transform(farPoint, viewProjInv);
-//
-//    //worldNear /= worldNear.w;
-//    //worldFar  /= worldFar.w;
-//
-//    //Vector3 direction = Normalize((worldFar - worldNear));
-//    return direction;
-//}
+
+Vector3 Player::ScreenToWorldRay(const Vector2& screenPos, const Matrix4x4& view, const Matrix4x4& projection) {
+    // スクリーン座標 → NDC (-1 ～ +1)
+    float ndcX = (2.0f * screenPos.x / 1280.0f) - 1.0f;
+    float ndcY = 1.0f - (2.0f * screenPos.y / 720.0f); // Yは上下反転
+
+    // NDC空間上のNear/Far位置
+    Vector4 nearPoint = { ndcX, ndcY, 0.0f, 1.0f };
+    Vector4 farPoint  = { ndcX, ndcY, 1.0f, 1.0f };
+
+    // ビュー×プロジェクションの逆行列を計算
+    Matrix4x4 viewProjInv = Inverse(Multiply(view, projection)); // ←順番注意: View→Proj→VP→逆行列
+
+    // ワールド空間に変換
+    Vector4 worldNear = TransformVector4(nearPoint, viewProjInv);
+    Vector4 worldFar  = TransformVector4(farPoint, viewProjInv);
+
+    // 同次座標を3Dに戻す
+    worldNear.x /= worldNear.w;
+    worldNear.y /= worldNear.w;
+    worldNear.z /= worldNear.w;
+    worldNear.w /= worldNear.w;
+
+    worldFar.x /= worldNear.w;
+    worldFar.y /= worldNear.w;
+    worldFar.z /= worldNear.w;
+    worldFar.w /= worldNear.w;
+    
+    
+    // レイ方向 = Near → Far の正規化ベクトル
+    Vector3 direction = Normalize(Vector3{
+        worldFar.x - worldNear.x,
+        worldFar.y - worldNear.y,
+        worldFar.z - worldNear.z
+    });
+
+    return direction;
+}
+
+Vector4 Player::TransformVector4(const Vector4& vec, const Matrix4x4& mat) {
+    Vector4 result;
+    result.x = vec.x * mat.m[0][0] + vec.y * mat.m[1][0] + vec.z * mat.m[2][0] + vec.w * mat.m[3][0];
+    result.y = vec.x * mat.m[0][1] + vec.y * mat.m[1][1] + vec.z * mat.m[2][1] + vec.w * mat.m[3][1];
+    result.z = vec.x * mat.m[0][2] + vec.y * mat.m[1][2] + vec.z * mat.m[2][2] + vec.w * mat.m[3][2];
+    result.w = vec.x * mat.m[0][3] + vec.y * mat.m[1][3] + vec.z * mat.m[2][3] + vec.w * mat.m[3][3];
+    return result;
+}

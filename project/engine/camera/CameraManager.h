@@ -1,9 +1,11 @@
 #pragma once
 #include <Object3d.h>
+#include<GameCamera.h>
 
 enum class CameraMode {
     Default,
     Follow,
+    GamePlay,
 };
 
 struct CameraTransform {
@@ -39,9 +41,11 @@ private:
     // 現在のカメラモード
     CameraMode currentMode_;
     Object3d* target_ = nullptr; // 追従対象オブジェクト
-        
+
     Camera* defaultCamera_; // 追従しないカメラ(デフォルト)
     Camera* followCamera_;  // 追従用カメラ
+    GameCamera* gameCamera_;
+    Vector3  moveOffset_;
 
     // ヘッダーかクラス内に追加
     bool addedInitialOffset_ = false;
@@ -53,4 +57,7 @@ public: // メンバ関数
 	Camera* GetFollowCamera() { return followCamera_; } // 追従カメラ取得
     Camera* GetActiveCamera();
     void SetCameraMode(CameraMode mode);
+
+    CameraMode GetcurrentMode() { return currentMode_; }
+
 };

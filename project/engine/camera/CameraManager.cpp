@@ -35,10 +35,23 @@ void CameraManager::Initialize(CameraTransform transform) {
     defaultCamera_->SetRotate(transform.rotate);
 
     followCamera_ = new Camera();
+
+	gameCamera_ = new GameCamera();
+	moveOffset_ = { 0.0f, 0.0f, -60.0f }; // ベジェ曲線の制御点オフセット
+	gameCamera_->Initialize(moveOffset_); // ベジェ曲線の制御点は後で設定
+
 }
 
 void CameraManager::Update() {
     switch (currentMode_) {
+    case CameraMode::GamePlay:
+        if (gameCamera_) {
+            if (gameCamera_->Getmovefige()) {
+                //ゲームカメラの更新処理
+                gameCamera_->Update();
+            }
+        }
+        break;
     case CameraMode::Follow:
         if (followCamera_) {
             if (target_) {
@@ -55,12 +68,12 @@ void CameraManager::Update() {
             followCamera_->Update();
         }
         break;
-    case CameraMode::Default:
-    default:
-        if (defaultCamera_) {
-            defaultCamera_->Update();
-        }
-        break;
+	case CameraMode::Default:
+		if (defaultCamera_) {
+			// デフォルトカメラの位置と回転を更新
+			defaultCamera_->Update();
+		}
+		break;
     }
 }
 
@@ -85,6 +98,10 @@ void CameraManager::DrawImGui() {
     ImGui::SameLine();
     if (ImGui::RadioButton("Follow", mode == 1)) {
         mode = 1;
+    } 
+    ImGui::SameLine();
+    if (ImGui::RadioButton("GamePlay", mode == 2)) {
+        mode = 2;
     }
 
     // モードが変わったら切り替える
@@ -109,10 +126,24 @@ void CameraManager::DrawImGui() {
         activeCamera = followCamera_;
         modeName = "Follow";
         break;
+    case CameraMode::GamePlay:
+        activeCamera = gameCamera_->Getcamera();
+        modeName = "GamePlay";
+        break;
     }
     ImGui::Text("Current Mode: %s", modeName);
 
     if (activeCamera) {
+        if (newMode == CameraMode::GamePlay) {
+            bool moveFlag = gameCamera_->Getmovefige();
+            if (ImGui::Checkbox("isBezier", &moveFlag)) {
+                gameCamera_->Setmovefige(moveFlag);
+            }
+            Vector3 bezierPos = gameCamera_->GetbezierPos();
+            if (ImGui::DragFloat3(label, &bezierPos.x, 0.01f)) {
+                activeCamera->SetTranslate(bezierPos);
+            }
+        }
         Vector3 pos = activeCamera->GetTranslate();
         Vector3 rotate = activeCamera->GetRotate();
         if (ImGui::DragFloat3(label, &pos.x, 0.01f)) {
@@ -131,6 +162,8 @@ Camera* CameraManager::GetActiveCamera() {
     switch (currentMode_) {
     case CameraMode::Follow:
         return followCamera_ ? followCamera_ : defaultCamera_;
+    case CameraMode::GamePlay:
+        return gameCamera_ ? gameCamera_->Getcamera() : defaultCamera_;
     case CameraMode::Default:
     default:
         return defaultCamera_;

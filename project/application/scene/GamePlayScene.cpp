@@ -56,6 +56,10 @@ void GamePlayScene::Initialize() {
     }
     // Bulletマネージャの初期化
     BulletManager::GetInstance()->Initialize();
+
+
+    name = Object3d::Create("Player.obj", Transform({ {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f} }));
+
 }
 
 void GamePlayScene::Update() {
@@ -71,6 +75,8 @@ void GamePlayScene::Update() {
     }
 
 #pragma region 全てのObject3d個々の更新処理
+
+    name->Update();
 
     // 更新処理 
 
@@ -113,6 +119,11 @@ void GamePlayScene::Draw() {
     grass->Draw();
 
     player_->Draw();
+
+
+    name->Draw();
+
+
 
     // Bulletマネージャの描画処理
     BulletManager::GetInstance()->Draw();

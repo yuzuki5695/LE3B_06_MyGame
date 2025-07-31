@@ -34,8 +34,8 @@ public:// メンバ関数
 	
 	void UpdateTargetPosition(Transform& targetTransform, float speed);
 	
-	//Vector3 ScreenToWorldRay(const Vector2& screenPos, const Matrix4x4& view, const Matrix4x4& projection);
-
+	Vector3 ScreenToWorldRay(const Vector2& screenPos, const Matrix4x4& view, const Matrix4x4& projection);
+	Vector4 TransformVector4(const Vector4& vec, const Matrix4x4& mat);
 
 private:// メンバ変数
 	std::unique_ptr <Object3d> object = nullptr;
