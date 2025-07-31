@@ -138,18 +138,23 @@ void CameraManager::DrawImGui() {
             if (ImGui::Checkbox("isBezier", &moveFlag)) {
                 gameCamera_->Setmovefige(moveFlag);
             }
-            Vector3 bezierPos = gameCamera_->GetbezierPos();
+            Vector3 bezierPos = gameCamera_->GetbezierPos();                       
+            Vector3 rotate = gameCamera_->Getcamera()->GetRotate();
             if (ImGui::DragFloat3(label, &bezierPos.x, 0.01f)) {
-                activeCamera->SetTranslate(bezierPos);
+                gameCamera_->SetbezierPos(bezierPos);
             }
-        }
-        Vector3 pos = activeCamera->GetTranslate();
-        Vector3 rotate = activeCamera->GetRotate();
-        if (ImGui::DragFloat3(label, &pos.x, 0.01f)) {
-            activeCamera->SetTranslate(pos);
-        } 
-        if (ImGui::DragFloat3(label2, &rotate.x, 0.01f)) {
-            activeCamera->SetRotate(rotate);
+            if (ImGui::DragFloat3(label2, &rotate.x, 0.01f)) {
+                gameCamera_->Getcamera()->SetRotate(rotate);
+            }
+        } else {
+            Vector3 pos = activeCamera->GetTranslate();
+            Vector3 rotate = activeCamera->GetRotate();
+            if (ImGui::DragFloat3(label, &pos.x, 0.01f)) {
+                activeCamera->SetTranslate(pos);
+            }
+            if (ImGui::DragFloat3(label2, &rotate.x, 0.01f)) {
+                activeCamera->SetRotate(rotate);
+            }
         }
     }
 

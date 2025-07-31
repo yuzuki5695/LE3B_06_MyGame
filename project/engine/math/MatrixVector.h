@@ -53,4 +53,6 @@ namespace MatrixVector
 	// クロス積
 	Vector3 Cross(const Vector3& a, const Vector3& b);
 
+	// ベクトルを回転させる関数を追加  
+	Vector3 RotateVector(const Vector3& vec, const Vector3& rotation);
 };

@@ -34,14 +34,18 @@ void Player::Initialize() {
 }
 
 void Player::Update() {
-    // カメラの現在位置取得
-    if (CameraManager::GetInstance()->GetcurrentMode() == CameraMode::GamePlay) {
-        Vector3 cameraPos = CameraManager::GetInstance()->GetGameCamera()->GetbezierPos();
-        // カメラ相対オフセット位置にプレイヤーを固定
-        Vector3 relativeOffset = { 0.0f, 0.0f, 3.0f };
-        transform_.translate = cameraPos + relativeOffset;
-    }
+    Camera* camera = CameraManager::GetInstance()->GetActiveCamera();
+    if (camera) {
+        // カメラの現在位置取得
+        if (CameraManager::GetInstance()->GetcurrentMode() == CameraMode::GamePlay) {
+            // カメラの前方向を取得（Z軸正方向をカメラ回転で変換）
+            Vector3 forward = camera->GetForwardVector();
 
+            // 例: forward = normalize(RotateVector({0, 0, 1}, camera->GetRotate()));
+            Vector3 offset = forward * 10.0f;
+            transform_.translate = camera->GetTranslate() + offset;
+        }
+    }
 
     UpdateBoostState(); // 追加：ブースト状態更新
 

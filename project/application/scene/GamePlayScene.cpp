@@ -37,8 +37,8 @@ void GamePlayScene::Initialize() {
 
 	player_ = std::make_unique<Player>();
 	player_->Initialize(); // プレイヤーの初期化
+    //CameraManager::SetTarget();
 
-       
     transform_ = { {10.0f, 1.0f, 10.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, -1.0f, 0.0f} };
 
     grass = Object3d::Create("Tile.obj", transform_);

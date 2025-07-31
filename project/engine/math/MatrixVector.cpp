@@ -269,4 +269,35 @@ namespace MatrixVector {
             a.x * b.y - a.y * b.x
         };
     }
+
+    Vector3 RotateVector(const Vector3& vec, const Vector3& rotation) {
+        // 回転行列を計算するための簡易的な実装  
+        // rotation.x, rotation.y, rotation.z はそれぞれの軸の回転角度（ラジアン）  
+        float cosX = cos(rotation.x), sinX = sin(rotation.x);
+        float cosY = cos(rotation.y), sinY = sin(rotation.y);
+        float cosZ = cos(rotation.z), sinZ = sin(rotation.z);
+
+        // X軸回転  
+        Vector3 rotatedX = {
+            vec.x,
+            vec.y * cosX - vec.z * sinX,
+            vec.y * sinX + vec.z * cosX
+        };
+
+        // Y軸回転  
+        Vector3 rotatedY = {
+            rotatedX.x * cosY + rotatedX.z * sinY,
+            rotatedX.y,
+            -rotatedX.x * sinY + rotatedX.z * cosY
+        };
+
+        // Z軸回転  
+        Vector3 rotatedZ = {
+            rotatedY.x * cosZ - rotatedY.y * sinZ,
+            rotatedY.x * sinZ + rotatedY.y * cosZ,
+            rotatedY.z
+        };
+
+        return rotatedZ;
+    }
 };

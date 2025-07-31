@@ -24,7 +24,6 @@ private:
     CurveJsonLoader* Jsondata = nullptr;
     Camera* camera_ = nullptr;
 
-    Vector3 moveOffset_; // カメラの移動オフセット
     Vector3 bezierPos_;
     bool useFollowCamera_ = false; // カメラモード切替用フラグ
     std::vector<BezierPoint> bezierPoints; 

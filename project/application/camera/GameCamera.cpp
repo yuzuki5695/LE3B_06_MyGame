@@ -20,8 +20,6 @@ void GameCamera::Initialize() {
     camera_ = new Camera();
     camera_->SetTranslate(bezierPos_);
     camera_->SetRotate({ 0, 0, 0 });
-    
-    moveOffset_ = { 0.0f, 0.0f, 0.0f };
 
     movefige = false;
 }
@@ -73,10 +71,10 @@ void GameCamera::UpdateObjectPosition() {
         const BezierPoint& start = bezierPoints[segmentIndex];
         const BezierPoint& end = bezierPoints[segmentIndex + 1];
         bezierPos_ = BezierInterpolate(
-            moveOffset_ + start.controlPoint,
-            moveOffset_ + start.handleRight,
-            moveOffset_ + end.handleLeft,
-            moveOffset_ + end.controlPoint,
+            start.controlPoint,
+            start.handleRight,
+            end.handleLeft,
+            end.controlPoint,
             t
         );
 
@@ -84,7 +82,7 @@ void GameCamera::UpdateObjectPosition() {
     } else
     {
         // 最後の点に固定
-        bezierPos_ = moveOffset_ + bezierPoints.back().controlPoint;
+        bezierPos_ = bezierPoints.back().controlPoint;
     }
 }
 
@@ -96,10 +94,10 @@ void GameCamera::CalculateCurveLength()
     curveLengths.push_back(0.0f); // 始点の長さ0
 
     Vector3 prevPos = BezierInterpolate(
-        moveOffset_ + bezierPoints[0].controlPoint,
-        moveOffset_ + bezierPoints[0].handleRight,
-        moveOffset_ + bezierPoints[1].handleLeft,
-        moveOffset_ + bezierPoints[1].controlPoint,
+        bezierPoints[0].controlPoint,
+        bezierPoints[0].handleRight,
+        bezierPoints[1].handleLeft,
+        bezierPoints[1].controlPoint,
         0.0f
     );
 
@@ -107,10 +105,10 @@ void GameCamera::CalculateCurveLength()
     for (int i = 1; i <= steps; i++) {
         float t = (float)i / steps;
         Vector3 currPos = BezierInterpolate(
-            moveOffset_ + bezierPoints[segmentIndex].controlPoint,
-            moveOffset_ + bezierPoints[segmentIndex].handleRight,
-            moveOffset_ + bezierPoints[segmentIndex + 1].handleLeft,
-            moveOffset_ + bezierPoints[segmentIndex + 1].controlPoint,
+            bezierPoints[segmentIndex].controlPoint,
+            bezierPoints[segmentIndex].handleRight,
+            bezierPoints[segmentIndex + 1].handleLeft,
+            bezierPoints[segmentIndex + 1].controlPoint,
             t
         );
 
