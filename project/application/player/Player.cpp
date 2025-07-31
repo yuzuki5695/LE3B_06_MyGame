@@ -38,12 +38,10 @@ void Player::Update() {
     if (camera) {
         // カメラの現在位置取得
         if (CameraManager::GetInstance()->GetcurrentMode() == CameraMode::GamePlay) {
-            // カメラの前方向を取得（Z軸正方向をカメラ回転で変換）
-            Vector3 forward = camera->GetForwardVector();
-
-            // 例: forward = normalize(RotateVector({0, 0, 1}, camera->GetRotate()));
-            Vector3 offset = forward * 10.0f;
-            transform_.translate = camera->GetTranslate() + offset;
+            Vector3 cameraPos = camera->GetTranslate();
+            // カメラ相対オフセット位置にプレイヤーを固定
+            Vector3 relativeOffset = { 0.0f, 0.0f, 10.0f };
+            transform_.translate = cameraPos + relativeOffset;
         }
     }
 
