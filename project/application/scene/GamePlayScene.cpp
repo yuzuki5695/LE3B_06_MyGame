@@ -21,7 +21,7 @@ void GamePlayScene::Finalize() {
 
 void GamePlayScene::Initialize() {
     // カメラマネージャの初期化
-    CameraManager::GetInstance()->Initialize(CameraTransform({ 0.0f, 1.0f, -30.0f }, { 0.0f, 0.0f, 0.0f }));
+    CameraManager::GetInstance()->Initialize(CameraTransform({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }));
 
     // テクスチャを読み込む
     TextureManager::GetInstance()->LoadTexture("uvChecker.png");
@@ -33,37 +33,17 @@ void GamePlayScene::Initialize() {
     ModelManager::GetInstance()->LoadModel("Tile.obj");
 
     // オブジェクトの作成
-    grass = Object3d::Create("Tile.obj", Transform({ {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f} }));
-
-	player_ = std::make_unique<Player>();
-	player_->Initialize(); // プレイヤーの初期化
-    //CameraManager::SetTarget();
-
-    transform_ = { {10.0f, 1.0f, 10.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, -1.0f, 0.0f} };
+    transform_ = { {10.0f, 1.0f, 10.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, -6.0f, 50.0f} };
 
     grass = Object3d::Create("Tile.obj", transform_);
 
-    //// ローダーの初期化
-    //levelLoader_ = std::make_unique<CharacterLoader>();
-    //// JSONファイルからレベルデータを読み込む
-    //levelData = levelLoader_->LoadFile("untitled");
-
-    //// レベルデータから読み込み、オブジェクト生成
-    //for (auto& objData : levelData->objects) {
-    //    if (objData.fileName == "Player") {
-    //      //  player_->SetTransform({ objData.scaling, objData.rotation, objData.translation });
-    //        continue;
-    //    }
-    //    if (objData.fileName == "Tile") {
-    //        transform_ = { objData.scaling, objData.rotation, objData.translation };
-    //        grass = Object3d::Create("Tile.obj", transform_);
-    //    }
-    //} 
     
+    player_ = std::make_unique<Player>();
+	player_->Initialize(); // プレイヤーの初期化
+
+
     // Bulletマネージャの初期化
     BulletManager::GetInstance()->Initialize();
-
-
 }
 
 void GamePlayScene::Update() {

@@ -9,6 +9,7 @@
 #include <BulletManager.h>
 #include <MatrixVector.h>
 #include<TextureManager.h>
+#include <algorithm>
 
 using namespace MatrixVector;
 
@@ -22,52 +23,50 @@ void Player::Initialize() {
     // プレイヤーの初期位置と回転を設定
     transform_ = { {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f},  0.0f,0.0f,0.0f };
     // プレイヤー生成
-    if (!object) {
-        object = Object3d::Create("Player.obj", transform_);
-    }
-    targetpos_ = { {0.3f, 0.3f, 0.3f}, {0.0f, 0.0f, 0.0f}, {0.0f, 3.0f, 30.0f} };
+    object = Object3d::Create("Player.obj", transform_);
+
+    targetpos_ = { {0.3f, 0.3f, 0.3f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 5.0f} };
     target_= Object3d::Create("Bullet/PlayerBullet.obj", targetpos_);
     moveDelta = Vector3(0.0f, 0.0f, 0.0f);
 
-    reticleScreenPos = { 640.0f, 360.0f };
-    targetreticle_ = Sprite::Create("uvChecker.png", reticleScreenPos, 0.0f, Vector2{ 200.0f,200.0f });
+    reticleScreenPos = { targetpos_.translate.x,  targetpos_.translate.y };
+    targetreticle_ = Sprite::Create("uvChecker.png", reticleScreenPos, 0.0f, Vector2{ 100.0f,100.0f });
 }
 
 void Player::Update() {
-    Camera* camera = CameraManager::GetInstance()->GetActiveCamera();
-    if (camera) {
-        // カメラの現在位置取得
-        if (CameraManager::GetInstance()->GetcurrentMode() == CameraMode::GamePlay) {
-            Vector3 cameraPos = camera->GetTranslate();
-            // カメラ相対オフセット位置にプレイヤーを固定
-            Vector3 relativeOffset = { 0.0f, 0.0f, 10.0f };
-            transform_.translate = cameraPos + relativeOffset;
-        }
+    GameCamera* gameCam = CameraManager::GetInstance()->GetGameCamera();
+    if (gameCam) {
+        Vector3 bezierPos = gameCam->GetbezierPos(); // ← Getter が必要
+        Vector3 relativeOffset = { 0.0f, -3.0f, 30.0f }; // カメラの前方に出すなど
+        transform_.translate = bezierPos + relativeOffset;
     }
 
     UpdateBoostState(); // 追加：ブースト状態更新
 
     float currentSpeed = isBoosting_ ? boostSpeed_ : normalSpeed_;
     MoveInput(currentSpeed); // ブースト中は速く移動
-    
+
     // ターゲットを矢印キーで動かす
-    UpdateTargetPosition(targetpos_,0.2f);   // ターゲットに使う    
+    UpdateTargetPosition(0.2f);   // ターゲットに使う    
     // 弾の発射
     AttachBullet();
 
-
-    // 移動後の位置をObjectに反映
-    object->SetTranslate(transform_.translate);
-    object->SetRotate(transform_.rotate);
-    object->SetScale(transform_.scale);
-    // プレイヤー更新
-    object->Update(); 
     // デバッグ中のImGui表示
     DebugImgui();
 
     target_->SetTranslate(copypos);
     target_->Update();
+
+    UpdateReticlePosition();   // 追加：3D空間に合わせてスクリーン位置を更新
+    targetreticle_->SetPosition(reticleScreenPos_);  // スプライト位置を更新
     targetreticle_->Update();
+ 
+    // 移動後の位置をObjectに反映
+    object->SetTranslate(transform_.translate);
+    object->SetRotate(transform_.rotate);
+    object->SetScale(transform_.scale);
+    // プレイヤー更新
+    object->Update();
 }
 
 void Player::Draw() {
@@ -77,7 +76,7 @@ void Player::Draw() {
 }
 
 void Player::DrawSprite() { 
-   // targetreticle_->Draw();
+    targetreticle_->Draw();
 }
 
 void Player::DebugImgui() {
@@ -96,20 +95,25 @@ void Player::MoveInput(float speed) {
     if (Input::GetInstance()->Pushkey(DIK_W)) moveDelta.y += speed;
     if (Input::GetInstance()->Pushkey(DIK_S)) moveDelta.y -= speed;
 
-    
-    // 回転の目標角度
-    float targetZ = 0.0f;
+    // --- 入力による移動量を制限 ---
+    moveDelta.x = std::clamp(moveDelta.x, -10.0f, 10.0f);
+    moveDelta.y = std::clamp(moveDelta.y, -5.0f, 8.0f);
 
-    // 回転角度の強さ（ブースト中は大きめに傾ける）
+    // 回転角度の処理
+    float targetZ = 0.0f;
     float tiltAmount = isBoosting_ ? 6.0f : 0.3f;
 
     if (Input::GetInstance()->Pushkey(DIK_A)) targetZ = tiltAmount;
     else if (Input::GetInstance()->Pushkey(DIK_D)) targetZ = -tiltAmount;
 
-    // 緩やかに回転角を補間（Lerp）
     transform_.rotate.z += (targetZ - transform_.rotate.z) * 0.1f;
 
-    transform_.translate = moveDelta; // キー操作による移動量を加算
+    // --- プレイヤーの位置を更新 ---
+    transform_.translate += moveDelta;
+
+    // --- 最終的な位置の制限 ---
+    transform_.translate.x = std::clamp(transform_.translate.x, -10.0f, 10.0f);
+    transform_.translate.y = std::clamp(transform_.translate.y, -5.0f, 5.0f);
 }
 
 void Player::UpdateBoostState() {
@@ -142,16 +146,15 @@ void Player::UpdateBoostState() {
     }
 }
 
-void Player::UpdateTargetPosition(Transform& targetTransform, float speed) {
-    if (Input::GetInstance()->Pushkey(DIK_LEFT))  targetTransform.translate.x -= speed;
-    if (Input::GetInstance()->Pushkey(DIK_RIGHT)) targetTransform.translate.x += speed;
-    if (Input::GetInstance()->Pushkey(DIK_UP))    targetTransform.translate.y += speed;
-    if (Input::GetInstance()->Pushkey(DIK_DOWN))  targetTransform.translate.y -= speed;
+void Player::UpdateTargetPosition(float speed) {
+    if (Input::GetInstance()->Pushkey(DIK_LEFT))  targetpos_.translate.x -= speed;
+    if (Input::GetInstance()->Pushkey(DIK_RIGHT)) targetpos_.translate.x += speed;
+    if (Input::GetInstance()->Pushkey(DIK_UP))    targetpos_.translate.y += speed;
+    if (Input::GetInstance()->Pushkey(DIK_DOWN))  targetpos_.translate.y -= speed;
 	copypos = targetpos_.translate + transform_.translate; // ターゲットの位置をプレイヤーの位置に合わせる
 }
 
-
-void Player::AttachBullet() { 
+void Player::AttachBullet() {
     bulletTimer_ += 1.0f / 60.0f; // 毎フレーム経過時間を加算（60fps前提）
     // 30秒経過したら発射可能にする
     if (bulletTimer_ >= bulletInterval_) {
@@ -162,68 +165,35 @@ void Player::AttachBullet() {
     if (!canShoot_) return;
     if (Input::GetInstance()->Pushkey(DIK_SPACE)) {                                 // スペースキーが押されたら弾を撃つ
         std::unique_ptr<PlayerBullet> bullet = std::make_unique<PlayerBullet>();		// 弾を生成
-        bullet->Initialize(transform_.translate, copypos,1.5f);                     // 初期位置などを設定
-		BulletManager::GetInstance()->AddPlayerBullet(std::move(bullet));                 // BulletManagerに追加
-		canShoot_ = false;                                                          // 弾を撃てる状態にする
+        bullet->Initialize(transform_.translate, copypos, 3.0f);                     // 初期位置などを設定
+        BulletManager::GetInstance()->AddPlayerBullet(std::move(bullet));                 // BulletManagerに追加
+        canShoot_ = false;                                                          // 弾を撃てる状態にする
     };
-
-    //if (Input::GetInstance()->Pushkey(DIK_SPACE)) {
-    //    Matrix4x4 view = camera_->GetViewMatrix();
-    //    Matrix4x4 proj = camera_->GetProjectionMatrix();
-
-    //    Vector3 shootDirection = ScreenToWorldRay(reticleScreenPos, view, proj);
-
-    //    std::unique_ptr<PlayerBullet> bullet = std::make_unique<PlayerBullet>();
-    //    bullet->Initialize(transform_.translate, transform_.translate + shootDirection * 10.0f, 1.5f);
-    //    BulletManager::GetInstance()->AddPlayerBullet(std::move(bullet));
-    //    canShoot_ = false;
-    //}
-
 }
 
-Vector3 Player::ScreenToWorldRay(const Vector2& screenPos, const Matrix4x4& view, const Matrix4x4& projection) {
-    // スクリーン座標 → NDC (-1 ～ +1)
-    float ndcX = (2.0f * screenPos.x / 1280.0f) - 1.0f;
-    float ndcY = 1.0f - (2.0f * screenPos.y / 720.0f); // Yは上下反転
+void Player::UpdateReticlePosition() {
+    Camera* camera = CameraManager::GetInstance()->GetActiveCamera();
+    if (!camera) return;
 
-    // NDC空間上のNear/Far位置
-    Vector4 nearPoint = { ndcX, ndcY, 0.0f, 1.0f };
-    Vector4 farPoint  = { ndcX, ndcY, 1.0f, 1.0f };
+    Matrix4x4 view = camera->GetViewMatrix();
+    Matrix4x4 projection = camera->GetProjectionMatrix();
+    Matrix4x4 vp = Multiply(projection, view); // ViewProjection行列
 
-    // ビュー×プロジェクションの逆行列を計算
-    Matrix4x4 viewProjInv = Inverse(Multiply(view, projection)); // ←順番注意: View→Proj→VP→逆行列
+    Vector3 worldPos = copypos; // ターゲット3D位置
 
-    // ワールド空間に変換
-    Vector4 worldNear = TransformVector4(nearPoint, viewProjInv);
-    Vector4 worldFar  = TransformVector4(farPoint, viewProjInv);
+    Vector4 pos4 = { worldPos.x, worldPos.y, worldPos.z, 1.0f };
+    Vector4 clipPos = MultiplyM4xV4(vp, pos4);
 
-    // 同次座標を3Dに戻す
-    worldNear.x /= worldNear.w;
-    worldNear.y /= worldNear.w;
-    worldNear.z /= worldNear.w;
-    worldNear.w /= worldNear.w;
+    if (clipPos.w != 0.0f) {
+        clipPos.x /= clipPos.w;
+        clipPos.y /= clipPos.w;
+        clipPos.z /= clipPos.w;
+    }
 
-    worldFar.x /= worldNear.w;
-    worldFar.y /= worldNear.w;
-    worldFar.z /= worldNear.w;
-    worldFar.w /= worldNear.w;
-    
-    
-    // レイ方向 = Near → Far の正規化ベクトル
-    Vector3 direction = Normalize(Vector3{
-        worldFar.x - worldNear.x,
-        worldFar.y - worldNear.y,
-        worldFar.z - worldNear.z
-    });
+    // スクリーン座標に変換
+    float screenWidth = 1280.0f;
+    float screenHeight = 720.0f;
 
-    return direction;
-}
-
-Vector4 Player::TransformVector4(const Vector4& vec, const Matrix4x4& mat) {
-    Vector4 result;
-    result.x = vec.x * mat.m[0][0] + vec.y * mat.m[1][0] + vec.z * mat.m[2][0] + vec.w * mat.m[3][0];
-    result.y = vec.x * mat.m[0][1] + vec.y * mat.m[1][1] + vec.z * mat.m[2][1] + vec.w * mat.m[3][1];
-    result.z = vec.x * mat.m[0][2] + vec.y * mat.m[1][2] + vec.z * mat.m[2][2] + vec.w * mat.m[3][2];
-    result.w = vec.x * mat.m[0][3] + vec.y * mat.m[1][3] + vec.z * mat.m[2][3] + vec.w * mat.m[3][3];
-    return result;
+    reticleScreenPos_.x = (clipPos.x * 0.5f + 0.5f) * screenWidth;
+    reticleScreenPos_.y = (-clipPos.y * 0.5f + 0.5f) * screenHeight;
 }

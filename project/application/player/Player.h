@@ -32,10 +32,9 @@ public:// メンバ関数
 	// 弾の発射
 	void AttachBullet();
 	
-	void UpdateTargetPosition(Transform& targetTransform, float speed);
-	
-	Vector3 ScreenToWorldRay(const Vector2& screenPos, const Matrix4x4& view, const Matrix4x4& projection);
-	Vector4 TransformVector4(const Vector4& vec, const Matrix4x4& mat);
+	void UpdateTargetPosition(float speed);
+
+	void UpdateReticlePosition();
 
 private:// メンバ変数
 	std::unique_ptr <Object3d> object = nullptr;
@@ -67,6 +66,11 @@ private:// メンバ変数
 	bool isCoolingDown_ = false;
 	float cooldownTime_ = 0.0f;
 	const float cooldownDuration_ = 3.0f; // クールダウン時間	
+
+
+
+    Vector3 reticleWorldPos_;    // 3D空間のレティクル位置（ワールド座標）
+    Vector2 reticleScreenPos_;   // 画面上のスプライト描画位置（スクリーン座標）
 
 public:// メンバ変数
 	// getter
