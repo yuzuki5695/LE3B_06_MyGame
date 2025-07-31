@@ -33,7 +33,7 @@ public:
 	Vector3& GetRotate() { return transform.rotate; }            // 書き換え用
 	const Vector3& GetTranslate() const { return transform.translate; }		
 	Vector3& GetTranslate() { return transform.translate; }            // 書き換え用
-
+	Vector3 GetForward() const;
 	// setter
 	void SetRotate(const Vector3& rotate) { this->transform.rotate = rotate; }
 	void SetTranslate(const Vector3& translate) { this->transform.translate = translate; }

@@ -4,6 +4,15 @@
 #include"Vector4.h"
 #include"Matrix4x4.h"
 
+inline Vector4 operator*(const Matrix4x4& mat, const Vector4& vec) {
+    Vector4 result;
+    result.x = mat.m[0][0] * vec.x + mat.m[0][1] * vec.y + mat.m[0][2] * vec.z + mat.m[0][3] * vec.w;
+    result.y = mat.m[1][0] * vec.x + mat.m[1][1] * vec.y + mat.m[1][2] * vec.z + mat.m[1][3] * vec.w;
+    result.z = mat.m[2][0] * vec.x + mat.m[2][1] * vec.y + mat.m[2][2] * vec.z + mat.m[2][3] * vec.w;
+    result.w = mat.m[3][0] * vec.x + mat.m[3][1] * vec.y + mat.m[3][2] * vec.z + mat.m[3][3] * vec.w;
+    return result;
+}
+
 namespace MatrixVector
 {
 	// 単位行列の作成
@@ -41,6 +50,8 @@ namespace MatrixVector
 
 	// 合成
 	Matrix4x4 Multiply(const Matrix4x4 m1, const Matrix4x4 m2);
+	
+	Vector4 MultiplyM4xV4(const Matrix4x4& m, const Vector4& v);
 
 	// 3次元アフィン変換
 	Matrix4x4 MakeAftineMatrix(const Vector3& scale, const Vector3& rotate, const Vector3& translate);

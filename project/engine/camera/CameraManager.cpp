@@ -33,22 +33,28 @@ void CameraManager::Initialize(CameraTransform transform) {
     defaultCamera_ = new Camera();
     defaultCamera_->SetTranslate(transform.translate);
     defaultCamera_->SetRotate(transform.rotate);
-
+    // オブジェクト追従カメラの生成
     followCamera_ = new Camera();
-
+    // ゲームカメラの生成
 	gameCamera_ = new GameCamera();
-	gameCamera_->Initialize(); // ベジェ曲線の制御点は後で設定
+	gameCamera_->Initialize();
 }
 
 void CameraManager::Update() {
+    // ★ ゲームカメラは常に更新（表示されなくても）
+    if (gameCamera_) {
+        if (gameCamera_->Getmovefige()) {
+            gameCamera_->UpdateObjectPosition();
+        }
+        gameCamera_->Update(); // ← これはプレイヤー追従のため常に動かす
+    }
+
     switch (currentMode_) {
     case CameraMode::GamePlay:
         if (gameCamera_) {
-            if (gameCamera_->Getmovefige()) {
-                gameCamera_->UpdateObjectPosition();
+            if (gameCamera_ && gameCamera_->Getcamera()) {
+                gameCamera_->Getcamera()->Update();
             }
-            //ゲームカメラの更新処理
-            gameCamera_->Update();
         }
         break;
     case CameraMode::Follow:
@@ -67,12 +73,12 @@ void CameraManager::Update() {
             followCamera_->Update();
         }
         break;
-	case CameraMode::Default:
-		if (defaultCamera_) {
-			// デフォルトカメラの位置と回転を更新
-			defaultCamera_->Update();
-		}
-		break;
+    case CameraMode::Default:
+        if (defaultCamera_) {
+            // デフォルトカメラの位置と回転を更新
+            defaultCamera_->Update();
+        }
+        break;
     }
 }
 
@@ -97,7 +103,7 @@ void CameraManager::DrawImGui() {
     ImGui::SameLine();
     if (ImGui::RadioButton("Follow", mode == 1)) {
         mode = 1;
-    } 
+    }
     ImGui::SameLine();
     if (ImGui::RadioButton("GamePlay", mode == 2)) {
         mode = 2;
@@ -133,30 +139,28 @@ void CameraManager::DrawImGui() {
     ImGui::Text("Current Mode: %s", modeName);
 
     if (activeCamera) {
-        if (newMode == CameraMode::GamePlay) {
-            bool moveFlag = gameCamera_->Getmovefige();
-            if (ImGui::Checkbox("isBezier", &moveFlag)) {
-                gameCamera_->Setmovefige(moveFlag);
-            }
-            Vector3 bezierPos = gameCamera_->GetbezierPos();                       
-            Vector3 rotate = gameCamera_->Getcamera()->GetRotate();
-            if (ImGui::DragFloat3(label, &bezierPos.x, 0.01f)) {
-                gameCamera_->SetbezierPos(bezierPos);
-            }
-            if (ImGui::DragFloat3(label2, &rotate.x, 0.01f)) {
-                gameCamera_->Getcamera()->SetRotate(rotate);
-            }
-        } else {
-            Vector3 pos = activeCamera->GetTranslate();
-            Vector3 rotate = activeCamera->GetRotate();
-            if (ImGui::DragFloat3(label, &pos.x, 0.01f)) {
-                activeCamera->SetTranslate(pos);
-            }
-            if (ImGui::DragFloat3(label2, &rotate.x, 0.01f)) {
-                activeCamera->SetRotate(rotate);
-            }
+        Vector3 pos = activeCamera->GetTranslate();
+        Vector3 rotate = activeCamera->GetRotate();
+        if (ImGui::DragFloat3(label, &pos.x, 0.01f)) {
+            activeCamera->SetTranslate(pos);
+        }
+        if (ImGui::DragFloat3(label2, &rotate.x, 0.01f)) {
+            activeCamera->SetRotate(rotate);
         }
     }
+
+    bool moveFlag = gameCamera_->Getmovefige();
+    if (ImGui::Checkbox("isBezier", &moveFlag)) {
+        gameCamera_->Setmovefige(moveFlag);
+    }
+    Vector3 bezierPos = gameCamera_->GetbezierPos();
+    Vector3 rotate = gameCamera_->Getcamera()->GetRotate();
+    if (ImGui::DragFloat3("BezierTranslate", &bezierPos.x, 0.01f)) {
+        gameCamera_->SetbezierPos(bezierPos);
+    }
+    //if (ImGui::DragFloat3(label2, &rotate.x, 0.01f)) {
+    //    gameCamera_->Getcamera()->SetRotate(rotate);
+    //}
 
     ImGui::End();
 #endif // USE_IMGUI
@@ -167,7 +171,7 @@ Camera* CameraManager::GetActiveCamera() {
     case CameraMode::Follow:
         return followCamera_ ? followCamera_ : defaultCamera_;
     case CameraMode::GamePlay:
-        return gameCamera_ ? gameCamera_->Getcamera() : defaultCamera_;
+        return gameCamera_ ? gameCamera_->Getcamera() : nullptr;
     case CameraMode::Default:
     default:
         return defaultCamera_;

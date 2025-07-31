@@ -38,3 +38,19 @@ void Camera::DebugUpdate() {
 	ImGui::End();
 #endif // USE_IMGUI
 }
+
+Vector3 Camera::GetForward() const {
+    // 右手座標系、Z軸が前方向の場合（DirectX標準ではカメラの前は -Z方向）
+    // worldMatrix_ の第3列または第2列が前方向ベクトルを表すことが多い
+
+    // 例えばworldMatrix_の3列目（Z軸方向）を取得し、単位化して返す
+    Vector3 forward = { worldMatrix.m[0][2], worldMatrix.m[1][2], worldMatrix.m[2][2] };
+
+    // DirectX標準ではカメラの前方向は -Zなので符号反転することが多い
+    forward = -forward;
+
+    // 正規化
+    forward = Normalize(forward);
+
+    return forward;
+}

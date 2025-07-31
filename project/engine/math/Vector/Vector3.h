@@ -33,4 +33,9 @@ struct Vector3 final {
     Vector3 operator*(float scalar) const {
         return { x * scalar, y * scalar, z * scalar };
     }
+
+    // 単項マイナス演算子のオーバーロードを追加  
+    Vector3 operator-() const {
+        return { -x, -y, -z };
+    }
 };
