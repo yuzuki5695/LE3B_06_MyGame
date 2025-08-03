@@ -207,7 +207,11 @@ void SpriteCommon::GraphicsPipelineGenerate() {
     graphicsPipelineStateDesc.SampleDesc.Count = 1;
     graphicsPipelineStateDesc.SampleMask = D3D12_DEFAULT_SAMPLE_MASK;
     // DepthStencilの設定
-    graphicsPipelineStateDesc.DepthStencilState = dsvManager_->GetDepthStencilDesc();
+    // DSVManager から取得した設定をコピー
+    D3D12_DEPTH_STENCIL_DESC spriteDepthStencilDesc = dsvManager_->GetDepthStencilDesc();
+    // スプライトは深度バッファに書き込まない（透過表示用）
+    spriteDepthStencilDesc.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ZERO;
+    graphicsPipelineStateDesc.DepthStencilState = spriteDepthStencilDesc;
     graphicsPipelineStateDesc.DSVFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
 
     // 実際に生成

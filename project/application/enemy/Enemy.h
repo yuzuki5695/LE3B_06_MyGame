@@ -14,6 +14,12 @@ struct EnemySpawnTrigger {
 };
 
 
+enum class MoveType {
+    None,
+    Vertical,
+    Horizontal
+};
+
 class Enemy : public BaseCharacter {
 public:
 	~Enemy() override;
@@ -42,7 +48,7 @@ public:
     bool IsActive() const { return isActive_ ; }
 	void SetActive(bool active) { isActive_  = active; }
 
-	void Kill() { isActive_ = false; isDead_ = true; }
+	void Kill() { isActive_ = false; }
     bool IsDead() const { return isDead_; }
 	
 	OBB GetOBB() const;
@@ -71,6 +77,14 @@ private:
     bool isDead_ = false;     // 倒されたか（削除対象か）
 
 	float spawnBaseZ_ = 0.0f;  
+
+
+	
+	Vector3 moveDirection_;               // ランダム移動方向
+    std::uniform_real_distribution<float> moveDirDist_; // 移動方向の分布（-1.0～1.0）
+    float moveSpeed_ = 0.05f;             // 移動速度
+
+	MoveType moveType_;  // 動きの種類
 
 public:
 	float GetSpawnBaseZ() const { return spawnBaseZ_; }

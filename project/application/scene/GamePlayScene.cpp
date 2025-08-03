@@ -30,7 +30,6 @@ void GamePlayScene::Initialize() {
     TextureManager::GetInstance()->LoadTexture("uvChecker.png");
     TextureManager::GetInstance()->LoadTexture("monsterBall.png");     
     TextureManager::GetInstance()->LoadTexture("Black.png");
-
     // .objファイルからモデルを読み込む
     ModelManager::GetInstance()->LoadModel("terrain.obj");
     ModelManager::GetInstance()->LoadModel("monsterBallUV.obj");
@@ -41,19 +40,22 @@ void GamePlayScene::Initialize() {
     ModelManager::GetInstance()->LoadModel("wall.obj");
 
     // オブジェクトの作成
-    transform_ = { {15.0f, 1.0f, 100.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, -8.0f, 50.0f} };
+    transform_ = { {20.0f, 1.0f, 300.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, -8.0f, 50.0f} };
 
     grass = Object3d::Create("Tile.obj", transform_);
 
-    
     player_ = std::make_unique<Player>();
 	player_->Initialize(); // プレイヤーの初期化
-        
+    playerhp_ = player_->IsActive();
+    
+
+    MAX_ENEMY = 11;
     
     // 敵出現トリガー
     spawnTriggers_ = {
         {40.0f, 3, false}, // 30m通過時に3体出現
-        {90.0f, 3, false}, // 60m通過時に3体出現
+        {120.0f, 3, false}, // 60m通過時に3体出現
+        {190.0f, 5, false}, // 60m通過時に3体出現
     };
 
     // 敵をリストに追加して初期化
@@ -65,14 +67,14 @@ void GamePlayScene::Initialize() {
         enemies_.emplace_back(std::move(enemy));
     }
 
-
-    wall = Object3d::Create("wall.obj", Transform{ { 10.0f, 0.7f, 0.7f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 180.0f } });
+    wall = Object3d::Create("wall.obj", Transform{ { 10.0f, 0.7f, 0.7f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 230.0f } });
 
     black = Sprite::Create("Black.png", Vector2{ 0.0f, 0.0f }, 0.0f, Vector2{ 1280.0f,720.0f });
     black->SetColor(Vector4(1.0f, 1.0f, 1.0f, 0.0f));
 
     // Bulletマネージャの初期化
     BulletManager::GetInstance()->Initialize();
+
 }
 
 void GamePlayScene::Update() {
@@ -80,14 +82,10 @@ void GamePlayScene::Update() {
     /*--------------Cameraの更新処理---------------*/
     /*------------------------------------------*/
     CameraManager::GetInstance()->Update();
-
-    // ENTERキーを押したら
-    if (Input::GetInstance()->Triggrkey(DIK_RETURN)) {
-        // シーン切り替え
-        //SceneManager::GetInstance()->ChangeScene("GAMECLEAR");
-    }
-
 #pragma region 全てのObject3d個々の更新処理
+      
+    playerhp_ = player_->IsActive();
+
 
     if (!end) {
 
@@ -100,9 +98,10 @@ void GamePlayScene::Update() {
         // 更新処理
         grass->Update();
 
+        
         player_->Update();
 
-        if (player_->GetPosition().z <= 180.0f) {
+        if (player_->GetPosition().z <= 230.0f) {
             // 敵の更新
             for (auto& enemy : enemies_) {
                 if (enemy->IsActive()) {
@@ -123,14 +122,14 @@ void GamePlayScene::Update() {
         float playerZ = player_->GetPosition().z;
         float spawnZ = enemy->GetSpawnBaseZ();  // 出現基準Z
 
-        if (playerZ > spawnZ + 20) { // 出現位置より進んでたら削除
+        if (playerZ > spawnZ + 10) { // 出現位置より進んでたら削除
             enemy->Kill();
         }
     }
-        
-    if (player_->GetPosition().z >= 180.0f) {
+
+    if (player_->GetPosition().z >= 230.0f) {
         end = true; 
-    }
+    } 
 
     if (end) {
         // フェード時間を進行（毎フレーム）
@@ -139,8 +138,13 @@ void GamePlayScene::Update() {
         float t = std::clamp(fadeTimer / fadeDuration, 0.0f, 1.0f); // 0.0～1.0 に正規化
         black->SetColor(Vector4(1.0f, 1.0f, 1.0f, t)); // αのみ徐々に増加（0→1）
         if (t >= 1.0f) {
-            // シーン切り替え
-            SceneManager::GetInstance()->ChangeScene("GAMECLEAR");
+            if (!playerhp_) {
+                // シーン切り替え
+                SceneManager::GetInstance()->ChangeScene("GAMEOVER");
+            } else {
+                // シーン切り替え
+                SceneManager::GetInstance()->ChangeScene("GAMECLEAR");
+            }
         }
     }
     // 死んだ敵の削除
@@ -175,6 +179,7 @@ void GamePlayScene::Draw() {
 #pragma region 全てのObject3d個々の描画処理
     // 箱オブジェクトの描画準備。3Dオブジェクトの描画に共通のグラフィックスコマンドを積む
     SkyboxCommon::GetInstance()->Commondrawing();
+    //skybox_->Draw();
     // 3Dオブジェクトの描画準備。3Dオブジェクトの描画に共通のグラフィックスコマンドを積む
     Object3dCommon::GetInstance()->Commondrawing();
 
@@ -187,7 +192,7 @@ void GamePlayScene::Draw() {
         BulletManager::GetInstance()->Draw();
     }
 
-    if (player_->GetPosition().z <= 180.0f) {
+    if (player_->GetPosition().z <= 230.0f) {
         // 敵の更新
         for (auto& enemy : enemies_) {
             if (enemy->IsActive()) {
@@ -205,7 +210,7 @@ void GamePlayScene::Draw() {
 #pragma region 全てのSprite個々の描画処理
     // Spriteの描画準備。Spriteの描画に共通のグラフィックスコマンドを積む
     SpriteCommon::GetInstance()->Commondrawing();
-    if (player_->GetPosition().z >= 180.0f) {
+    if (end || !playerhp_) {
         black->Draw();
     }
 #pragma endregion 全てのSprite個々の描画処理

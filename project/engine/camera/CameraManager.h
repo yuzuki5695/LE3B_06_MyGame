@@ -31,13 +31,13 @@ public: // メンバ関数
     void Initialize(CameraTransform Transform);
     // 更新処理
     void Update();
-    
+
     void ToggleCameraMode(bool followMode); // モード切替
     void DrawImGui(); // ImGui描画
 
-	void SetActiveCamera(); // アクティブカメラを設定
+    void SetActiveCamera(); // アクティブカメラを設定
 
-private:    
+private:
     // 現在のカメラモード
     CameraMode currentMode_;
     Object3d* target_ = nullptr; // 追従対象オブジェクト
@@ -50,10 +50,12 @@ private:
     bool addedInitialOffset_ = false;
 
     bool useFollowCamera_ = false; // カメラモード切替用フラグ
+    float waitTime_ = 0.0f;
+    bool activated_ = false;
 public: // メンバ関数
     // 追従対象をセット（nullptrなら追従なし）
     void SetTarget(Object3d* target);
-	Camera* GetFollowCamera() { return followCamera_; } // 追従カメラ取得
+    Camera* GetFollowCamera() { return followCamera_; } // 追従カメラ取得
     Camera* GetActiveCamera();
     void SetCameraMode(CameraMode mode);
 

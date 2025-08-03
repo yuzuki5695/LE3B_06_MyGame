@@ -34,7 +34,7 @@ private: // メンバ変数
     std::unique_ptr <Object3d> grass = nullptr;
    
 	std::unique_ptr <Player> player_ = nullptr;
-    
+    bool playerhp_ = true;
     Transform transform_;
 
 	// キャラクターローダー
@@ -43,7 +43,7 @@ private: // メンバ変数
     LevelData* levelData = nullptr;
     bool end = false;
         
-    int MAX_ENEMY = 6;
+    int MAX_ENEMY;
 
     std::vector<std::unique_ptr<Enemy>> enemies_;
     std::vector<EnemySpawnTrigger> spawnTriggers_;
@@ -52,5 +52,7 @@ private: // メンバ変数
     
     std::unique_ptr <Sprite> black = nullptr;
     float fadeTimer = 0.0f;
-    float fadeDuration = 0.5f; // フェード完了までの秒数（例：2秒）
+    float fadeDuration = 1.0f; // フェード完了までの秒数（例：2秒）
+    
+
 };

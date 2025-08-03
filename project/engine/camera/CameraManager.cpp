@@ -42,7 +42,16 @@ void CameraManager::Initialize(CameraTransform transform) {
 
 void CameraManager::Update() {
     // ★ ゲームカメラは常に更新（表示されなくても）
-    if (gameCamera_) {
+    if (gameCamera_) { 
+        // まだアクティブでない場合は待ち時間を加算
+        if (!activated_) {
+            waitTime_ += 1.0f / 60.0f; // フレームレート60FPS前提
+            if (waitTime_ >= 3.0f) {
+                gameCamera_->Setmovefige(true); // 3秒後にtrueに
+                activated_ = true;
+            }
+        }
+
         if (gameCamera_->Getmovefige()) {
             gameCamera_->UpdateObjectPosition();
         }

@@ -37,7 +37,7 @@ private:
     std::vector<float> curveLengths;  // 曲線を細分割した累積距離テーブル
     float totalCurveLength = 0.0f;    // 曲線全体の長さ
     float distanceAlongCurve = 0.0f;  // 現在の距離位置
-	float speed = 0.2f; // 移動の速さ
+	float speed = 0.4f; // 移動の速さ
 
 public:
 
