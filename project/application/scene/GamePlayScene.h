@@ -48,4 +48,11 @@ private: // メンバ変数
     std::vector<std::unique_ptr<Enemy>> enemies_;
     std::vector<EnemySpawnTrigger> spawnTriggers_;
 
+
+        
+    std::unique_ptr <Object3d> clear = nullptr;
+           
+    std::unique_ptr <Object3d> wall = nullptr;
+    
+    std::unique_ptr <Sprite> black = nullptr;
 };

@@ -28,12 +28,17 @@ void GamePlayScene::Initialize() {
 
     // テクスチャを読み込む
     TextureManager::GetInstance()->LoadTexture("uvChecker.png");
-    TextureManager::GetInstance()->LoadTexture("monsterBall.png");
+    TextureManager::GetInstance()->LoadTexture("monsterBall.png");     
+    TextureManager::GetInstance()->LoadTexture("Black.png");
+
     // .objファイルからモデルを読み込む
     ModelManager::GetInstance()->LoadModel("terrain.obj");
     ModelManager::GetInstance()->LoadModel("monsterBallUV.obj");
-    ModelManager::GetInstance()->LoadModel("Bullet/PlayerBullet.obj");
+    ModelManager::GetInstance()->LoadModel("Bullet/PlayerBullet.obj"); 
+    ModelManager::GetInstance()->LoadModel("EnemyBullet.obj");
     ModelManager::GetInstance()->LoadModel("Tile.obj");
+    ModelManager::GetInstance()->LoadModel("Clear.obj");
+    ModelManager::GetInstance()->LoadModel("wall.obj");
 
     // オブジェクトの作成
     transform_ = { {15.0f, 1.0f, 100.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, -8.0f, 50.0f} };
@@ -60,6 +65,12 @@ void GamePlayScene::Initialize() {
         enemies_.emplace_back(std::move(enemy));
     }
 
+    clear = Object3d::Create("Clear.obj", Transform{ { 1.0f, 1.0f, 1.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 170.0f } });
+    
+    wall = Object3d::Create("wall.obj", Transform{ { 10.0f, 0.7f, 0.7f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 180.0f } });
+
+    black = Sprite::Create("Black.png", Vector2{ 0.0f, 0.0f }, 0.0f, Vector2{ 1280.0f,720.0f });
+
     // Bulletマネージャの初期化
     BulletManager::GetInstance()->Initialize();
 }
@@ -77,11 +88,6 @@ void GamePlayScene::Update() {
     }
 
 #pragma region 全てのObject3d個々の更新処理
-
-    if (player_->GetPosition().z >= 180.0f) {
-        end = true;
-
-    }
 
     if (!end) {
 
@@ -102,10 +108,18 @@ void GamePlayScene::Update() {
             }
         }
 
+        wall->Update();
         // Bulletマネージャの更新処理
         BulletManager::GetInstance()->Update();
     }
+    
 
+        
+    if (player_->GetPosition().z >= 180.0f) {
+        end = true;
+    }
+
+    clear->Update();
 
     // 死んだ敵の削除
     enemies_.erase(
@@ -120,6 +134,7 @@ void GamePlayScene::Update() {
 
 #pragma region 全てのSprite個々の更新処理
 
+    black->Update();
 
 #pragma endregion 全てのSprite個々の更新処理
 
@@ -144,18 +159,24 @@ void GamePlayScene::Draw() {
     // 描画処理
 
     grass->Draw();
+    
+    if (!end) {
+        player_->Draw();
 
-    player_->Draw();
-
-    // 敵の更新
-    for (auto& enemy : enemies_) {
-        if (enemy->IsActive()) {
-            enemy->Draw();
+        // 敵の更新
+        for (auto& enemy : enemies_) {
+            if (enemy->IsActive()) {
+                enemy->Draw();
+            }
         }
+        wall->Draw();
+        // Bulletマネージャの描画処理
+        BulletManager::GetInstance()->Draw();
     }
 
-    // Bulletマネージャの描画処理
-    BulletManager::GetInstance()->Draw();
+    if (player_->GetPosition().z >= 180.0f) {
+        clear->Draw();
+    }
 
     // パーティクルの描画準備。パーティクルの描画に共通のグラフィックスコマンドを積む 
     ParticleCommon::GetInstance()->Commondrawing();
@@ -166,7 +187,6 @@ void GamePlayScene::Draw() {
     // Spriteの描画準備。Spriteの描画に共通のグラフィックスコマンドを積む
     SpriteCommon::GetInstance()->Commondrawing();
 
-    //   player_->DrawSprite();
 
 #pragma endregion 全てのSprite個々の描画処理
 }

@@ -27,7 +27,7 @@ public:
 	// 描画
 	void Draw() override;		
 	// 弾の発射
-	//void AttachBullet(const Vector3& playerPos);
+	void AttachBullet(const Vector3& playerPos);
 
 	void SetPlayer(Player* player) { player_ = player; }
 	

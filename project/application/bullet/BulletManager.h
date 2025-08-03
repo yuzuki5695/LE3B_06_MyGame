@@ -3,7 +3,7 @@
 #include <vector>
 #include <memory>
 #include<PlayerBullet.h>
-//#include<EnemyBullet.h>
+#include<EnemyBullet.h>
 
 class BulletManager {
 private:
@@ -24,12 +24,12 @@ public: // メンバ関数
     void Draw();
         
     void AddPlayerBullet(std::unique_ptr<PlayerBullet> bullet);
-  ///  void AddEnemyBullet(std::unique_ptr<EnemyBullet> bullet);
+    void AddEnemyBullet(std::unique_ptr<EnemyBullet> bullet);
 
     const std::vector<std::unique_ptr<PlayerBullet>>& GetPlayerBullets() const;
-   // const std::vector<std::unique_ptr<EnemyBullet>>& GetEnemyBullets() const;
+    const std::vector<std::unique_ptr<EnemyBullet>>& GetEnemyBullets() const;
 
 private:
     std::vector<std::unique_ptr<PlayerBullet>> playerBullets_;
- //   std::vector<std::unique_ptr<EnemyBullet>> enemyBullets_;
+    std::vector<std::unique_ptr<EnemyBullet>> enemyBullets_;
 };

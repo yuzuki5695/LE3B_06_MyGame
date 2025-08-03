@@ -62,7 +62,7 @@ void Enemy::Update() {
       
     if (player_ && !isDying_) {
         Vector3 playerPos = player_->GetPosition();
-        //ttachBullet(playerPos);// プレイヤーの位置を狙って弾発射
+        AttachBullet(playerPos);// プレイヤーの位置を狙って弾発射
     }
 
     object->Update();
@@ -72,25 +72,25 @@ void Enemy::Draw() {
     object->Draw();
 }
 
-//void Enemy::AttachBullet(const Vector3& playerPos) {
-//    bulletTimer_ += 1.0f / 60.0f; // 毎フレーム経過時間を加算（60fps前提）
-//    // 30秒経過したら発射可能にする
-//    if (bulletTimer_ >= bulletInterval_) {
-//        canShoot_ = true;
-//        bulletTimer_ = 0.0f; // タイマーリセット
-//    }
-//
-//    // 弾が撃てるか確認
-//    if (!canShoot_) return;
-//    
-//    if (canShoot_) {
-//         std::unique_ptr<EnemyBullet> bullet = std::make_unique<EnemyBullet>();		// 弾を生成
-//         bullet->Initialize(transform_.translate, playerPos, 0.5f);                     // 初期位置などを設定
-//		BulletManager::GetInstance()->AddEnemyBullet(std::move(bullet));                 // BulletManagerに追加
-//    }
-//
-//    canShoot_ = false;
-//}
+void Enemy::AttachBullet(const Vector3& playerPos) {
+    bulletTimer_ += 1.0f / 60.0f; // 毎フレーム経過時間を加算（60fps前提）
+    // 30秒経過したら発射可能にする
+    if (bulletTimer_ >= bulletInterval_) {
+        canShoot_ = true;
+        bulletTimer_ = 0.0f; // タイマーリセット
+    }
+
+    // 弾が撃てるか確認
+    if (!canShoot_) return;
+    
+    if (canShoot_) {
+         std::unique_ptr<EnemyBullet> bullet = std::make_unique<EnemyBullet>();		// 弾を生成
+         bullet->Initialize(transform_.translate, playerPos, 0.5f);                     // 初期位置などを設定
+		BulletManager::GetInstance()->AddEnemyBullet(std::move(bullet));                 // BulletManagerに追加
+    }
+
+    canShoot_ = false;
+}
 
 
 OBB Enemy::GetOBB() const {
