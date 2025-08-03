@@ -60,15 +60,20 @@ void GamePlayScene::Update() {
 
 #pragma region 全てのObject3d個々の更新処理
 
+    if (player_->GetPosition().z >= 130.0f) {
+        end = true;
 
-    // 更新処理 
+    }
 
-    grass->Update();
+    if (!end) {
+        // 更新処理
+        grass->Update();
 
-    player_->Update();
+        player_->Update();
 
-    // Bulletマネージャの更新処理
-    BulletManager::GetInstance()->Update();
+        // Bulletマネージャの更新処理
+        BulletManager::GetInstance()->Update();
+    }
 
     ParticleManager::GetInstance()->Update();
 #pragma endregion 全てのObject3d個々の更新処理
@@ -98,7 +103,6 @@ void GamePlayScene::Draw() {
 
     // 描画処理
 
-
     grass->Draw();
 
     player_->Draw();
@@ -117,9 +121,7 @@ void GamePlayScene::Draw() {
     // Spriteの描画準備。Spriteの描画に共通のグラフィックスコマンドを積む
     SpriteCommon::GetInstance()->Commondrawing();
 
-    player_->DrawSprite();
-
-
+ //   player_->DrawSprite();
 
 #pragma endregion 全てのSprite個々の描画処理
 }

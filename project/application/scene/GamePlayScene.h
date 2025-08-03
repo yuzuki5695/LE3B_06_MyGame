@@ -34,7 +34,6 @@ private: // メンバ変数
     std::unique_ptr<CharacterLoader> levelLoader_ = nullptr;
     // レベルデータ格納用インスタンスを生成
     LevelData* levelData = nullptr;
-
-
+    bool end = false;
 
 };

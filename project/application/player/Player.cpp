@@ -25,7 +25,7 @@ void Player::Initialize() {
     // プレイヤー生成
     object = Object3d::Create("Player.obj", transform_);
 
-    targetpos_ = { {0.3f, 0.3f, 0.3f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 5.0f} };
+    targetpos_ = { {0.3f, 0.3f, 0.3f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 30.0f} };
     target_= Object3d::Create("Bullet/PlayerBullet.obj", targetpos_);
     moveDelta = Vector3(0.0f, 0.0f, 0.0f);
 
@@ -47,19 +47,18 @@ void Player::Update() {
     MoveInput(currentSpeed); // ブースト中は速く移動
 
     // ターゲットを矢印キーで動かす
-    UpdateTargetPosition(0.2f);   // ターゲットに使う    
+    UpdateTargetPosition(targetpos_,0.2f);   // ターゲットに使う
     // 弾の発射
     AttachBullet();
 
     // デバッグ中のImGui表示
     DebugImgui();
-
     target_->SetTranslate(copypos);
     target_->Update();
 
-    UpdateReticlePosition();   // 追加：3D空間に合わせてスクリーン位置を更新
-    targetreticle_->SetPosition(reticleScreenPos_);  // スプライト位置を更新
-    targetreticle_->Update();
+    //UpdateReticlePosition();   // 追加：3D空間に合わせてスクリーン位置を更新
+    //targetreticle_->SetPosition(reticleScreenPos_);  // スプライト位置を更新
+    //targetreticle_->Update();
  
     // 移動後の位置をObjectに反映
     object->SetTranslate(transform_.translate);
@@ -76,7 +75,7 @@ void Player::Draw() {
 }
 
 void Player::DrawSprite() { 
-    targetreticle_->Draw();
+    //targetreticle_->Draw();
 }
 
 void Player::DebugImgui() {
@@ -146,13 +145,14 @@ void Player::UpdateBoostState() {
     }
 }
 
-void Player::UpdateTargetPosition(float speed) {
-    if (Input::GetInstance()->Pushkey(DIK_LEFT))  targetpos_.translate.x -= speed;
-    if (Input::GetInstance()->Pushkey(DIK_RIGHT)) targetpos_.translate.x += speed;
-    if (Input::GetInstance()->Pushkey(DIK_UP))    targetpos_.translate.y += speed;
-    if (Input::GetInstance()->Pushkey(DIK_DOWN))  targetpos_.translate.y -= speed;
+void Player::UpdateTargetPosition(Transform& targetTransform, float speed) {
+    if (Input::GetInstance()->Pushkey(DIK_LEFT))  targetTransform.translate.x -= speed;
+    if (Input::GetInstance()->Pushkey(DIK_RIGHT)) targetTransform.translate.x += speed;
+    if (Input::GetInstance()->Pushkey(DIK_UP))    targetTransform.translate.y += speed;
+    if (Input::GetInstance()->Pushkey(DIK_DOWN))  targetTransform.translate.y -= speed;
 	copypos = targetpos_.translate + transform_.translate; // ターゲットの位置をプレイヤーの位置に合わせる
 }
+
 
 void Player::AttachBullet() {
     bulletTimer_ += 1.0f / 60.0f; // 毎フレーム経過時間を加算（60fps前提）

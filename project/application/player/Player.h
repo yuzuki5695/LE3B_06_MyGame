@@ -32,7 +32,8 @@ public:// メンバ関数
 	// 弾の発射
 	void AttachBullet();
 	
-	void UpdateTargetPosition(float speed);
+	void UpdateTargetPosition(Transform& targetTransform, float speed);
+
 
 	void UpdateReticlePosition();
 

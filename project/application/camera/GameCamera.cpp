@@ -59,9 +59,10 @@ void GameCamera::UpdateObjectPosition() {
         // 距離を曲線長の範囲内に制限
         if (distanceAlongCurve > totalCurveLength)
         {
-            distanceAlongCurve = 0.0f; // ループの場合
-            segmentIndex = 0;
-            addedInitialOffset_ = false;
+            distanceAlongCurve = totalCurveLength; // 最後の位置で止める
+            movefige = false;                      // 移動を停止する
+            bezierPos_ = bezierPoints.back().controlPoint; // 最後の点に固定
+            return;
         }
 
         // 曲線長に対応するtを取得
