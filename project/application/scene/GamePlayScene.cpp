@@ -69,7 +69,7 @@ void GamePlayScene::Update() {
     /*--------------Cameraの更新処理---------------*/
     /*------------------------------------------*/
     CameraManager::GetInstance()->Update();
- 
+
     // ENTERキーを押したら
     if (Input::GetInstance()->Triggrkey(DIK_RETURN)) {
         // シーン切り替え
@@ -84,28 +84,11 @@ void GamePlayScene::Update() {
     }
 
     if (!end) {
-        
+
+        // 敵出現動作
+        EnemySpawn();
 
         CheckBulletEnemyCollisionsOBB();
-
-        // プレイヤーの位置取得
-        float playerZ = player_->GetPosition().z;
-
-        // 敵出現トリガー処理
-        for (auto& trigger : spawnTriggers_) {
-            if (!trigger.hasSpawned && playerZ >= trigger.zThreshold) {
-                int activated = 0;
-                for (auto& enemy : enemies_) {
-                    if (!enemy->IsActive()) {
-                        enemy->SetInitialize(trigger.zThreshold);
-                        enemy->SetActive(true); // ←トリガーのZ位置を渡す！
-                        ++activated;
-                        if (activated >= trigger.spawnCount) break;
-                    }
-                }
-                trigger.hasSpawned = true;
-            }
-        }
 
         // 更新処理
         grass->Update();
@@ -123,6 +106,15 @@ void GamePlayScene::Update() {
         BulletManager::GetInstance()->Update();
     }
 
+
+    // 死んだ敵の削除
+    enemies_.erase(
+        std::remove_if(enemies_.begin(), enemies_.end(),
+            [](const std::unique_ptr<Enemy>& e) {
+                return e->IsDead();  // ← 出現前の非アクティブは残す！
+            }),
+        enemies_.end());
+
     ParticleManager::GetInstance()->Update();
 #pragma endregion 全てのObject3d個々の更新処理
 
@@ -130,7 +122,7 @@ void GamePlayScene::Update() {
 
 
 #pragma endregion 全てのSprite個々の更新処理
-    
+
 #pragma region  ImGuiの更新処理開始
 #ifdef USE_IMGUI
     Object3dCommon::GetInstance()->DrawImGui();
@@ -174,9 +166,30 @@ void GamePlayScene::Draw() {
     // Spriteの描画準備。Spriteの描画に共通のグラフィックスコマンドを積む
     SpriteCommon::GetInstance()->Commondrawing();
 
- //   player_->DrawSprite();
+    //   player_->DrawSprite();
 
 #pragma endregion 全てのSprite個々の描画処理
+}
+
+void GamePlayScene::EnemySpawn() {
+    // プレイヤーの位置取得
+    float playerZ = player_->GetPosition().z;
+
+    // 敵出現トリガー処理
+    for (auto& trigger : spawnTriggers_) {
+        if (!trigger.hasSpawned && playerZ >= trigger.zThreshold) {
+            int activated = 0;
+            for (auto& enemy : enemies_) {
+                if (!enemy->IsActive()) {
+                    enemy->SetInitialize(trigger.zThreshold);
+                    enemy->SetActive(true); // ←トリガーのZ位置を渡す！
+                    ++activated;
+                    if (activated >= trigger.spawnCount) break;
+                }
+            }
+            trigger.hasSpawned = true;
+        }
+    }
 }
 
 

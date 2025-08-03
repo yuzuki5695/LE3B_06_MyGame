@@ -22,6 +22,8 @@ public: // メンバ関数
     // 描画
     void Draw() override;
 
+    void EnemySpawn();
+
     bool IsOBBIntersect(const OBB& a, const OBB& b);
     // プレイヤーの弾と敵
     void CheckBulletEnemyCollisionsOBB();
