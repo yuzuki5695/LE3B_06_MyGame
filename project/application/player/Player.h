@@ -51,7 +51,7 @@ private:// メンバ変数
 
 	// 球関連
 	float bulletTimer_ = 0.0f;                   // 経過時間
-	const float bulletInterval_ = 0.5f;         // 30秒ごとに弾を撃てる
+	const float bulletInterval_ = 0.2f;         // 30秒ごとに弾を撃てる
 	bool canShoot_ = true;                       // 弾を撃てるかどうか
 
 
@@ -63,7 +63,7 @@ private:// メンバ変数
 	float boostSpeed_ = 0.5f;
 	bool isBoosting_ = false;
 	float boostTime_ = 0.0f;
-	const float boostDuration_ = 0.4f; // ブースト持続時間
+	const float boostDuration_ = 0.3f; // ブースト持続時間
 	bool isCoolingDown_ = false;
 	float cooldownTime_ = 0.0f;
 	const float cooldownDuration_ = 3.0f; // クールダウン時間	

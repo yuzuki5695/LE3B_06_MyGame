@@ -36,7 +36,7 @@ void GamePlayScene::Initialize() {
     ModelManager::GetInstance()->LoadModel("Tile.obj");
 
     // オブジェクトの作成
-    transform_ = { {10.0f, 1.0f, 10.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, -6.0f, 50.0f} };
+    transform_ = { {15.0f, 1.0f, 100.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, -8.0f, 50.0f} };
 
     grass = Object3d::Create("Tile.obj", transform_);
 
@@ -47,8 +47,8 @@ void GamePlayScene::Initialize() {
     
     // 敵出現トリガー
     spawnTriggers_ = {
-        {00.0f, 3, false}, // 30m通過時に3体出現
-        {30.0f, 3, false}, // 60m通過時に3体出現
+        {40.0f, 3, false}, // 30m通過時に3体出現
+        {90.0f, 3, false}, // 60m通過時に3体出現
     };
 
     // 敵をリストに追加して初期化
@@ -78,7 +78,7 @@ void GamePlayScene::Update() {
 
 #pragma region 全てのObject3d個々の更新処理
 
-    if (player_->GetPosition().z >= 130.0f) {
+    if (player_->GetPosition().z >= 180.0f) {
         end = true;
 
     }

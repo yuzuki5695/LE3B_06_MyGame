@@ -16,7 +16,7 @@ void Enemy::Initialize() {
     std::random_device rd;// 乱数生成器
     randomEngine = std::mt19937(rd());
     std::uniform_real_distribution<float> distX(-12.0f, 12.0f);
-    std::uniform_real_distribution<float> distY(3.0f, 12.0f);
+    std::uniform_real_distribution<float> distY(0.0f, 1.0f);
     std::uniform_real_distribution<float> distZ(50.0f, 100.0f);
 
     Vector3 xyz = { distX(randomEngine), distY(randomEngine),distZ(randomEngine) };
@@ -35,8 +35,8 @@ void Enemy::SetInitialize(float baseZ) {
     std::random_device rd;// 乱数生成器
     randomEngine = std::mt19937(rd());
     std::uniform_real_distribution<float> distX(-12.0f, 12.0f);
-    std::uniform_real_distribution<float> distY(3.0f, 12.0f);
-    std::uniform_real_distribution<float> distZ(100.0f, 150.0f);
+    std::uniform_real_distribution<float> distY(1.0f, 8.0f);
+    std::uniform_real_distribution<float> distZ(50.0f, 100.0f);
     Vector3 xyz = { distX(randomEngine), distY(randomEngine), baseZ + distZ(randomEngine)};
     
     spawnBaseZ_ = xyz.z;  // 出現元Zを記録
