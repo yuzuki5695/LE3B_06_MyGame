@@ -107,8 +107,6 @@ void GamePlayScene::Update() {
             }
         }
 
-
-
         // 更新処理
         grass->Update();
 
