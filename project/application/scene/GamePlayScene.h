@@ -7,6 +7,7 @@
 #include<Skybox.h>
 #include<CharacterLoader.h>
 #include<Player.h>
+#include<Enemy.h>
 
 // ゲームプレイシーン
 class GamePlayScene : public BaseScene
@@ -20,6 +21,10 @@ public: // メンバ関数
     void Update() override;
     // 描画
     void Draw() override;
+
+    bool IsOBBIntersect(const OBB& a, const OBB& b);
+    // プレイヤーの弾と敵
+    void CheckBulletEnemyCollisionsOBB();
 
 private: // メンバ変数
     // オブジェクトデータ
@@ -35,5 +40,10 @@ private: // メンバ変数
     // レベルデータ格納用インスタンスを生成
     LevelData* levelData = nullptr;
     bool end = false;
+        
+    int MAX_ENEMY = 6;
+
+    std::vector<std::unique_ptr<Enemy>> enemies_;
+    std::vector<EnemySpawnTrigger> spawnTriggers_;
 
 };

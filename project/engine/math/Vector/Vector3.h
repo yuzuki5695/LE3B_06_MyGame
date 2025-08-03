@@ -6,6 +6,24 @@
 struct Vector3 final {
     float x, y, z;
 
+        // 添字演算子（書き込み可）
+    float& operator[](size_t i) {
+        switch(i) {
+        case 0: return x;
+        case 1: return y;
+        case 2: return z;
+        }
+    }
+
+    // 添字演算子（読み取り専用）
+    const float& operator[](size_t i) const {
+        switch(i) {
+        case 0: return x;
+        case 1: return y;
+        case 2: return z;
+        }
+    }
+
     // 足し算
     Vector3 operator+(const Vector3& other) const {
         return { x + other.x, y + other.y, z + other.z };

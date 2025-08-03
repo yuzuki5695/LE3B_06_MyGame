@@ -2,6 +2,7 @@
 #include "BaseBullet.h"
 #include "Vector3.h"
 #include <memory>
+#include<BaseCharacter.h>
 
 class Object3d;
 
@@ -27,6 +28,8 @@ public:
 	/// </summary>
     void Draw() override;
  
+    OBB GetOBB() const;
+
 private:
     std::unique_ptr<Object3d> object_;
     Vector3 position_;

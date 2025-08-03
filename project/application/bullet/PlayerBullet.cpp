@@ -57,3 +57,24 @@ void PlayerBullet::Update() {
 void PlayerBullet::Draw() {
     object_->Draw();
 }
+
+OBB PlayerBullet::GetOBB() const {
+    OBB obb;
+
+    // 中心は現在の位置
+    obb.center = position_;
+
+    // サイズ（スケール）の半分をハーフサイズにする
+    obb.halfSize = {
+        size_.x / 2.0f,
+        size_.y / 2.0f,
+        size_.z / 2.0f
+    };
+
+    // プレイヤーバレットは基本的に回転しないと想定して軸はXYZの単位ベクトルでOK
+    obb.axis[0] = Vector3{1, 0, 0}; // X軸
+    obb.axis[1] = Vector3{0, 1, 0}; // Y軸
+    obb.axis[2] = Vector3{0, 0, 1}; // Z軸
+
+    return obb;
+}

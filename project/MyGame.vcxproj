@@ -63,7 +63,7 @@
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)engine\2d;$(ProjectDir)engine\3d;$(ProjectDir)engine\audio;$(ProjectDir)engine\base;$(ProjectDir)engine\io;$(ProjectDir)engine\math;$(ProjectDir)engine\scene;$(ProjectDir)engine\3d\Particle;$(ProjectDir)engine\camera;$(ProjectDir)engine\base\DirectXCommon;$(ProjectDir)engine\base\Utility;$(ProjectDir)engine\base\ViewManager;$(ProjectDir)engine\math\Light;$(ProjectDir)engine\math\Matrix;$(ProjectDir)engine\math\Model;$(ProjectDir)engine\math\Vector;$(ProjectDir)engine\resource;$(ProjectDir)externals\nlohmann;$(ProjectDir)application\scene;$(ProjectDir)application\character;$(ProjectDir)application\player;$(ProjectDir)application\bullet;$(ProjectDir)application\manager;$(ProjectDir)application\loader;$(ProjectDir)application\camera</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)engine\2d;$(ProjectDir)engine\3d;$(ProjectDir)engine\audio;$(ProjectDir)engine\base;$(ProjectDir)engine\io;$(ProjectDir)engine\math;$(ProjectDir)engine\scene;$(ProjectDir)engine\3d\Particle;$(ProjectDir)engine\camera;$(ProjectDir)engine\base\DirectXCommon;$(ProjectDir)engine\base\Utility;$(ProjectDir)engine\base\ViewManager;$(ProjectDir)engine\math\Light;$(ProjectDir)engine\math\Matrix;$(ProjectDir)engine\math\Model;$(ProjectDir)engine\math\Vector;$(ProjectDir)engine\resource;$(ProjectDir)externals\nlohmann;$(ProjectDir)application\scene;$(ProjectDir)application\character;$(ProjectDir)application\player;$(ProjectDir)application\bullet;$(ProjectDir)application\manager;$(ProjectDir)application\loader;$(ProjectDir)application\camera;$(ProjectDir)application\enemy</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -86,7 +86,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)engine\2d;$(ProjectDir)engine\3d;$(ProjectDir)engine\audio;$(ProjectDir)engine\base;$(ProjectDir)engine\io;$(ProjectDir)engine\math;$(ProjectDir)engine\scene;$(ProjectDir)engine\3d\Particle;$(ProjectDir)engine\camera;$(ProjectDir)engine\base\DirectXCommon;$(ProjectDir)engine\base\Utility;$(ProjectDir)engine\base\ViewManager;$(ProjectDir)engine\math\Light;$(ProjectDir)engine\math\Matrix;$(ProjectDir)engine\math\Model;$(ProjectDir)engine\math\Vector;$(ProjectDir)engine\resource;$(ProjectDir)externals\nlohmann;$(ProjectDir)application\scene;$(ProjectDir)application\character;$(ProjectDir)application\player;$(ProjectDir)application\bullet;$(ProjectDir)application\manager;$(ProjectDir)application\loader;$(ProjectDir)application\camera</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)engine\2d;$(ProjectDir)engine\3d;$(ProjectDir)engine\audio;$(ProjectDir)engine\base;$(ProjectDir)engine\io;$(ProjectDir)engine\math;$(ProjectDir)engine\scene;$(ProjectDir)engine\3d\Particle;$(ProjectDir)engine\camera;$(ProjectDir)engine\base\DirectXCommon;$(ProjectDir)engine\base\Utility;$(ProjectDir)engine\base\ViewManager;$(ProjectDir)engine\math\Light;$(ProjectDir)engine\math\Matrix;$(ProjectDir)engine\math\Model;$(ProjectDir)engine\math\Vector;$(ProjectDir)engine\resource;$(ProjectDir)externals\nlohmann;$(ProjectDir)application\scene;$(ProjectDir)application\character;$(ProjectDir)application\player;$(ProjectDir)application\bullet;$(ProjectDir)application\manager;$(ProjectDir)application\loader;$(ProjectDir)application\camera;$(ProjectDir)application\enemy</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -102,6 +102,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
   <ItemGroup>
     <ClCompile Include="application\bullet\BulletManager.cpp" />
     <ClCompile Include="application\bullet\PlayerBullet.cpp" />
+    <ClCompile Include="application\enemy\Enemy.cpp" />
     <ClCompile Include="application\loader\CharacterLoader.cpp" />
     <ClCompile Include="application\loader\CurveJsonLoader.cpp" />
     <ClCompile Include="application\manager\CharacterManager.cpp" />
@@ -161,6 +162,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\bullet\BulletManager.h" />
     <ClInclude Include="application\bullet\PlayerBullet.h" />
     <ClInclude Include="application\character\BaseCharacter.h" />
+    <ClInclude Include="application\enemy\Enemy.h" />
     <ClInclude Include="application\loader\CharacterLoader.h" />
     <ClInclude Include="application\loader\CurveJsonLoader.h" />
     <ClInclude Include="application\manager\CharacterManager.h" />

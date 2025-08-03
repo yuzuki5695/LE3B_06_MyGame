@@ -15,6 +15,10 @@ inline Vector4 operator*(const Matrix4x4& mat, const Vector4& vec) {
 
 namespace MatrixVector
 {
+	 
+	// Dot product
+	float Dot(const Vector3& a, const Vector3& b);
+
 	// 単位行列の作成
 	Matrix4x4 MakeIdentity4x4();
 
@@ -52,6 +56,8 @@ namespace MatrixVector
 	Matrix4x4 Multiply(const Matrix4x4 m1, const Matrix4x4 m2);
 	
 	Vector4 MultiplyM4xV4(const Matrix4x4& m, const Vector4& v);
+
+	Vector3 Multiply4x4x3(const Matrix4x4& mat, const Vector3& vec);
 
 	// 3次元アフィン変換
 	Matrix4x4 MakeAftineMatrix(const Vector3& scale, const Vector3& rotate, const Vector3& translate);

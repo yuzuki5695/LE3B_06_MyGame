@@ -4,6 +4,12 @@
 #include<cmath>
 
 namespace MatrixVector {
+
+    // Dot product
+   float Dot(const Vector3& a, const Vector3& b) {
+        return a.x * b.x + a.y * b.y + a.z * b.z;
+    }
+
     // 単位行列の作成
     Matrix4x4 MakeIdentity4x4() {
         Matrix4x4 result;
@@ -309,4 +315,14 @@ namespace MatrixVector {
 
         return rotatedZ;
     }
+
+
+    Vector3 Multiply4x4x3(const Matrix4x4& mat, const Vector3& vec) {
+        Vector3 result;
+        result.x = vec.x * mat.m[0][0] + vec.y * mat.m[1][0] + vec.z * mat.m[2][0];
+        result.y = vec.x * mat.m[0][1] + vec.y * mat.m[1][1] + vec.z * mat.m[2][1];
+        result.z = vec.x * mat.m[0][2] + vec.y * mat.m[1][2] + vec.z * mat.m[2][2];
+        return result;
+    }
+
 };

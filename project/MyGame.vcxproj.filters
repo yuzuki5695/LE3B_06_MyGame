@@ -175,6 +175,9 @@
     <Filter Include="ヘッダー ファイル\application\bullet">
       <UniqueIdentifier>{91330ba0-b2ca-4345-9fa7-f3775f10d4e6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ソース ファイル\application\enemy">
+      <UniqueIdentifier>{4b99df62-1041-4fee-a5fd-1decbabccbe3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -341,6 +344,9 @@
     </ClCompile>
     <ClCompile Include="application\bullet\PlayerBullet.cpp">
       <Filter>ソース ファイル\application\bullet</Filter>
+    </ClCompile>
+    <ClCompile Include="application\enemy\Enemy.cpp">
+      <Filter>ソース ファイル\application\enemy</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -559,6 +565,9 @@
     </ClInclude>
     <ClInclude Include="application\bullet\PlayerBullet.h">
       <Filter>ヘッダー ファイル\application\bullet</Filter>
+    </ClInclude>
+    <ClInclude Include="application\enemy\Enemy.h">
+      <Filter>ソース ファイル\application\enemy</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
