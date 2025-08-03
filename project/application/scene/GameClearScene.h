@@ -18,4 +18,9 @@ public: // メンバ関数
     // 描画
     void Draw() override;
 private: // メンバ変数
+
+            
+    std::unique_ptr <Object3d> clear = nullptr;
+           
+
 };

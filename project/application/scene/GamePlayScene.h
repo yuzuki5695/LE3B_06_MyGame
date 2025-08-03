@@ -25,8 +25,8 @@ public: // メンバ関数
     void EnemySpawn();
 
     bool IsOBBIntersect(const OBB& a, const OBB& b);
-    // プレイヤーの弾と敵
-    void CheckBulletEnemyCollisionsOBB();
+    void CheckBulletEnemyCollisionsOBB();    // プレイヤーの弾と敵
+    void CheckEnemyBulletPlayerCollisionsOBB();    // プレイヤーと敵の弾
 
 private: // メンバ変数
     // オブジェクトデータ
@@ -48,11 +48,9 @@ private: // メンバ変数
     std::vector<std::unique_ptr<Enemy>> enemies_;
     std::vector<EnemySpawnTrigger> spawnTriggers_;
 
-
-        
-    std::unique_ptr <Object3d> clear = nullptr;
-           
     std::unique_ptr <Object3d> wall = nullptr;
     
     std::unique_ptr <Sprite> black = nullptr;
+    float fadeTimer = 0.0f;
+    float fadeDuration = 0.5f; // フェード完了までの秒数（例：2秒）
 };

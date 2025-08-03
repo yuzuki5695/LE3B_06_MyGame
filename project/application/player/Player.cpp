@@ -197,3 +197,32 @@ void Player::UpdateReticlePosition() {
     reticleScreenPos_.x = (clipPos.x * 0.5f + 0.5f) * screenWidth;
     reticleScreenPos_.y = (-clipPos.y * 0.5f + 0.5f) * screenHeight;
 }
+
+OBB Player::GetOBB() const {
+    OBB obb;
+
+    // 中心座標
+    obb.center = transform_.translate;
+
+    // ハーフサイズ（スケールの半分）
+    obb.halfSize = {
+        transform_.scale.x / 2.0f, 
+        transform_.scale.y / 2.0f, 
+        transform_.scale.z / 2.0f
+    };
+
+    // 回転行列（XYZ順で回転を合成）
+    Matrix4x4 rotX = MakeRotateXMatrix(transform_.rotate.x);
+    Matrix4x4 rotY = MakeRotateYMatrix(transform_.rotate.y);
+    Matrix4x4 rotZ = MakeRotateZMatrix(transform_.rotate.z);
+
+    // Z→X→Y の順に掛けることで、XYZ回転（ローカル空間回転）を再現
+    Matrix4x4 rotMat = Multiply(Multiply(rotZ, rotX), rotY);
+
+    // ローカル軸（X, Y, Z）をワールド空間へ回転適用
+    obb.axis[0] = Normalize(Multiply4x4x3(rotMat, Vector3{ 1, 0, 0 })); // X軸
+    obb.axis[1] = Normalize(Multiply4x4x3(rotMat, Vector3{ 0, 1, 0 })); // Y軸
+    obb.axis[2] = Normalize(Multiply4x4x3(rotMat, Vector3{ 0, 0, 1 })); // Z軸
+
+    return obb;
+}

@@ -65,11 +65,11 @@ void GamePlayScene::Initialize() {
         enemies_.emplace_back(std::move(enemy));
     }
 
-    clear = Object3d::Create("Clear.obj", Transform{ { 1.0f, 1.0f, 1.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 170.0f } });
-    
+
     wall = Object3d::Create("wall.obj", Transform{ { 10.0f, 0.7f, 0.7f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 180.0f } });
 
     black = Sprite::Create("Black.png", Vector2{ 0.0f, 0.0f }, 0.0f, Vector2{ 1280.0f,720.0f });
+    black->SetColor(Vector4(1.0f, 1.0f, 1.0f, 0.0f));
 
     // Bulletマネージャの初期化
     BulletManager::GetInstance()->Initialize();
@@ -95,32 +95,54 @@ void GamePlayScene::Update() {
         EnemySpawn();
 
         CheckBulletEnemyCollisionsOBB();
+        CheckEnemyBulletPlayerCollisionsOBB();
 
         // 更新処理
         grass->Update();
 
         player_->Update();
 
-        // 敵の更新
-        for (auto& enemy : enemies_) {
-            if (enemy->IsActive()) {
-                enemy->Update();
+        if (player_->GetPosition().z <= 180.0f) {
+            // 敵の更新
+            for (auto& enemy : enemies_) {
+                if (enemy->IsActive()) {
+                    enemy->Update();
+                }
             }
         }
-
         wall->Update();
         // Bulletマネージャの更新処理
         BulletManager::GetInstance()->Update();
-    }
-    
 
+    }
+
+    // 敵がプレイヤーから離れすぎたら削除（過去の敵掃除）
+    for (auto& enemy : enemies_) {
+        if (!enemy->IsActive()) continue;
+
+        float playerZ = player_->GetPosition().z;
+        float spawnZ = enemy->GetSpawnBaseZ();  // 出現基準Z
+
+        if (playerZ > spawnZ + 20) { // 出現位置より進んでたら削除
+            enemy->Kill();
+        }
+    }
         
     if (player_->GetPosition().z >= 180.0f) {
-        end = true;
+        end = true; 
     }
 
-    clear->Update();
+    if (end) {
+        // フェード時間を進行（毎フレーム）
+        fadeTimer += 1.0f / 60.0f; // 60fps前提。タイマーに1フレームぶん加算
 
+        float t = std::clamp(fadeTimer / fadeDuration, 0.0f, 1.0f); // 0.0～1.0 に正規化
+        black->SetColor(Vector4(1.0f, 1.0f, 1.0f, t)); // αのみ徐々に増加（0→1）
+        if (t >= 1.0f) {
+            // シーン切り替え
+            SceneManager::GetInstance()->ChangeScene("GAMECLEAR");
+        }
+    }
     // 死んだ敵の削除
     enemies_.erase(
         std::remove_if(enemies_.begin(), enemies_.end(),
@@ -159,10 +181,13 @@ void GamePlayScene::Draw() {
     // 描画処理
 
     grass->Draw();
-    
     if (!end) {
         player_->Draw();
+        // Bulletマネージャの描画処理
+        BulletManager::GetInstance()->Draw();
+    }
 
+    if (player_->GetPosition().z <= 180.0f) {
         // 敵の更新
         for (auto& enemy : enemies_) {
             if (enemy->IsActive()) {
@@ -170,12 +195,6 @@ void GamePlayScene::Draw() {
             }
         }
         wall->Draw();
-        // Bulletマネージャの描画処理
-        BulletManager::GetInstance()->Draw();
-    }
-
-    if (player_->GetPosition().z >= 180.0f) {
-        clear->Draw();
     }
 
     // パーティクルの描画準備。パーティクルの描画に共通のグラフィックスコマンドを積む 
@@ -186,8 +205,9 @@ void GamePlayScene::Draw() {
 #pragma region 全てのSprite個々の描画処理
     // Spriteの描画準備。Spriteの描画に共通のグラフィックスコマンドを積む
     SpriteCommon::GetInstance()->Commondrawing();
-
-
+    if (player_->GetPosition().z >= 180.0f) {
+        black->Draw();
+    }
 #pragma endregion 全てのSprite個々の描画処理
 }
 
@@ -280,6 +300,29 @@ void GamePlayScene::CheckBulletEnemyCollisionsOBB() {
                 // パーティクル生成など
                 break;
             }
+        }
+    }
+}
+
+void GamePlayScene::CheckEnemyBulletPlayerCollisionsOBB() {
+    const auto& bullets = BulletManager::GetInstance()->GetEnemyBullets();
+
+    if (!player_ || !player_->IsActive()) return;
+
+    OBB playerOBB = player_->GetOBB(); // プレイヤーがOBBを返すようにしておく必要あり
+
+    for (const std::unique_ptr<EnemyBullet>& bullet : bullets) {
+        if (!bullet->IsActive()) continue;
+
+        OBB bulletOBB = bullet->GetOBB(); // 弾にもOBBが必要
+
+        if (IsOBBIntersect(bulletOBB, playerOBB)) {
+            bullet->SetInactive();
+            player_->SetInactive();  // プレイヤーを無効にする
+    
+            end =true;
+            // ヒットエフェクトなど追加
+            break;
         }
     }
 }

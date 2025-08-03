@@ -36,8 +36,21 @@ public:// メンバ関数
 
 
 	void UpdateReticlePosition();
+	
+	void SetInactive() {
+		active_ = false;
+	}
+
+	OBB GetOBB() const;
+
+	// アクティブ状態の取得・設定
+    bool IsActive() const { return active_; }
+	void SetActive(bool isactive) { active_ = isactive; }
+	    
 
 private:// メンバ変数
+	bool active_ = true;
+
 	std::unique_ptr <Object3d> object = nullptr;
 	Transform transform_{};
 	

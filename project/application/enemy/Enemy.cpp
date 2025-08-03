@@ -23,6 +23,8 @@ void Enemy::Initialize() {
 
     transform_ = { { 1.0f, 1.0f, 1.0f }, { 0.0f, 0.0f, 0.0f },xyz };
     object = Object3d::Create("Enemy.obj", transform_);
+    bulletIntervalDist_ = std::uniform_real_distribution<float>(2.0f, 7.0f); // 発射間隔を決定する分布
+    bulletInterval_ = bulletIntervalDist_(randomEngine); // 最初の間隔を決定
 }
 
 void Enemy::SetInitialize(float baseZ) { 
@@ -84,11 +86,12 @@ void Enemy::AttachBullet(const Vector3& playerPos) {
     if (!canShoot_) return;
     
     if (canShoot_) {
-         std::unique_ptr<EnemyBullet> bullet = std::make_unique<EnemyBullet>();		// 弾を生成
-         bullet->Initialize(transform_.translate, playerPos, 0.5f);                     // 初期位置などを設定
-		BulletManager::GetInstance()->AddEnemyBullet(std::move(bullet));                 // BulletManagerに追加
+        std::unique_ptr<EnemyBullet> bullet = std::make_unique<EnemyBullet>();		// 弾を生成
+        // 次の発射間隔をランダムに再設定
+        bulletInterval_ = bulletIntervalDist_(randomEngine);
+        bullet->Initialize(transform_.translate, playerPos, 0.5f);                     // 初期位置などを設定
+        BulletManager::GetInstance()->AddEnemyBullet(std::move(bullet));                 // BulletManagerに追加
     }
-
     canShoot_ = false;
 }
 

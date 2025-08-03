@@ -59,7 +59,8 @@ private:
 	std::mt19937 randomEngine;
 
 	float bulletTimer_ = 0.0f;                   // 経過時間
-	const float bulletInterval_ = 5.0f;         // 30秒ごとに弾を撃てる
+	float bulletInterval_ = 5.0f;         // 30秒ごとに弾を撃てる
+	std::uniform_real_distribution<float> bulletIntervalDist_; // ← 追加：5〜10のランダム範囲
 	bool canShoot_ = true;                       // 弾を撃てるかどうか
 
 	bool isDying_ = false;     // 死亡エフェクト中かどうか

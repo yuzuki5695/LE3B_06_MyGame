@@ -1,5 +1,6 @@
 #pragma once
 #include <BaseBullet.h>
+#include <BaseCharacter.h>
 
 class Object3d;
 
@@ -25,6 +26,7 @@ public:
     /// </summary>
     void Draw() override;
 
+    OBB GetOBB() const;
 
 private:
     std::unique_ptr<Object3d> object_;
