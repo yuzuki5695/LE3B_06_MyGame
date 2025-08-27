@@ -7,12 +7,6 @@
 
 class Player;
 
-struct EnemySpawnTrigger {
-    float zThreshold;
-    int spawnCount;
-    bool hasSpawned;
-};
-
 
 enum class MoveType {
     None,
@@ -20,13 +14,21 @@ enum class MoveType {
     Horizontal
 };
 
+struct EnemySpawnTrigger {
+    float zThreshold;
+    int spawnCount;
+    bool hasSpawned;
+    MoveType moveType; // ← 動きタイプを追加
+};
+
+
 class Enemy : public BaseCharacter {
 public:
 	~Enemy() override;
 
 	// 初期化
 	void Initialize() override;	    
-	void SetInitialize(float baseZ);
+	void SetInitialize(float baseZ, MoveType moveType);
 
 	// 毎フレーム更新
 	void Update() override;

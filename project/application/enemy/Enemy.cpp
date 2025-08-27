@@ -38,11 +38,12 @@ void Enemy::Initialize() {
 
 }
 
-void Enemy::SetInitialize(float baseZ) { 
+void Enemy::SetInitialize(float baseZ, MoveType moveType) {
     // isDead, isDying 状態をリセットする！
     isDead_ = false;
     isDying_ = false;
     deathTimer_ = 0.0f;
+    moveType_ = moveType;
 
     // 乱数エンジンを初期化
     std::random_device rd;// 乱数生成器
@@ -53,7 +54,8 @@ void Enemy::SetInitialize(float baseZ) {
     Vector3 xyz = { distX(randomEngine), distY(randomEngine), baseZ + distZ(randomEngine)};
     
     spawnBaseZ_ = xyz.z;  // 出現元Zを記録
-
+        
+    bulletInterval_ = bulletIntervalDist_(randomEngine);
     object->SetTranslate(xyz);
 }
 

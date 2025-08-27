@@ -28,12 +28,13 @@ void GamePlayScene::Initialize() {
 
     // テクスチャを読み込む
     TextureManager::GetInstance()->LoadTexture("uvChecker.png");
-    TextureManager::GetInstance()->LoadTexture("monsterBall.png");     
+    TextureManager::GetInstance()->LoadTexture("monsterBall.png");
     TextureManager::GetInstance()->LoadTexture("Black.png");
+
     // .objファイルからモデルを読み込む
     ModelManager::GetInstance()->LoadModel("terrain.obj");
     ModelManager::GetInstance()->LoadModel("monsterBallUV.obj");
-    ModelManager::GetInstance()->LoadModel("Bullet/PlayerBullet.obj"); 
+    ModelManager::GetInstance()->LoadModel("Bullet/PlayerBullet.obj");
     ModelManager::GetInstance()->LoadModel("EnemyBullet.obj");
     ModelManager::GetInstance()->LoadModel("Tile.obj");
     ModelManager::GetInstance()->LoadModel("Clear.obj");
@@ -45,17 +46,17 @@ void GamePlayScene::Initialize() {
     grass = Object3d::Create("Tile.obj", transform_);
 
     player_ = std::make_unique<Player>();
-	player_->Initialize(); // プレイヤーの初期化
+    player_->Initialize(); // プレイヤーの初期化
     playerhp_ = player_->IsActive();
-    
+
 
     MAX_ENEMY = 11;
-    
+
     // 敵出現トリガー
     spawnTriggers_ = {
-        {40.0f, 3, false}, // 30m通過時に3体出現
-        {120.0f, 3, false}, // 60m通過時に3体出現
-        {190.0f, 5, false}, // 60m通過時に3体出現
+    {40.0f, 3, false, MoveType::None},       // 全部動かない
+    {120.0f, 3, false, MoveType::Vertical},  // 全部縦移動
+    {190.0f, 5, false, MoveType::Horizontal} // 全部横移動
     };
 
     // 敵をリストに追加して初期化
@@ -75,6 +76,11 @@ void GamePlayScene::Initialize() {
     // Bulletマネージャの初期化
     BulletManager::GetInstance()->Initialize();
 
+
+    
+    TextureManager::GetInstance()->LoadTexture("CubemapBox.dds");
+
+    Box_ = Skybox::Create("CubemapBox.dds", Transform{ { 1000.0f, 1000.0f, 1000.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 100.0f } });
 }
 
 void GamePlayScene::Update() {
@@ -155,6 +161,8 @@ void GamePlayScene::Update() {
             }),
         enemies_.end());
 
+    Box_->Update();
+
     ParticleManager::GetInstance()->Update();
 #pragma endregion 全てのObject3d個々の更新処理
 
@@ -179,12 +187,11 @@ void GamePlayScene::Draw() {
 #pragma region 全てのObject3d個々の描画処理
     // 箱オブジェクトの描画準備。3Dオブジェクトの描画に共通のグラフィックスコマンドを積む
     SkyboxCommon::GetInstance()->Commondrawing();
-    //skybox_->Draw();
+    Box_->Draw();
     // 3Dオブジェクトの描画準備。3Dオブジェクトの描画に共通のグラフィックスコマンドを積む
     Object3dCommon::GetInstance()->Commondrawing();
 
     // 描画処理
-
     grass->Draw();
     if (!end) {
         player_->Draw();
@@ -202,6 +209,7 @@ void GamePlayScene::Draw() {
         wall->Draw();
     }
 
+
     // パーティクルの描画準備。パーティクルの描画に共通のグラフィックスコマンドを積む 
     ParticleCommon::GetInstance()->Commondrawing();
     ParticleManager::GetInstance()->Draw();
@@ -211,7 +219,7 @@ void GamePlayScene::Draw() {
     // Spriteの描画準備。Spriteの描画に共通のグラフィックスコマンドを積む
     SpriteCommon::GetInstance()->Commondrawing();
     if (end || !playerhp_) {
-        black->Draw();
+       // black->Draw();
     }
 #pragma endregion 全てのSprite個々の描画処理
 }
@@ -226,7 +234,7 @@ void GamePlayScene::EnemySpawn() {
             int activated = 0;
             for (auto& enemy : enemies_) {
                 if (!enemy->IsActive()) {
-                    enemy->SetInitialize(trigger.zThreshold);
+                    enemy->SetInitialize(trigger.zThreshold, trigger.moveType); // ← 動きタイプ渡す
                     enemy->SetActive(true); // ←トリガーのZ位置を渡す！
                     ++activated;
                     if (activated >= trigger.spawnCount) break;

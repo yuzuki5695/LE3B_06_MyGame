@@ -26,7 +26,7 @@ void CameraManager::Finalize() {
 
 void CameraManager::Initialize(CameraTransform transform) {
     // 初期状態はデフォルトカメラ
-    currentMode_ = CameraMode::GamePlay;
+    currentMode_ = CameraMode::Default;
 	useFollowCamera_ = false;
     
     // すべてのカメラを作っておく
@@ -45,8 +45,8 @@ void CameraManager::Update() {
     if (gameCamera_) { 
         // まだアクティブでない場合は待ち時間を加算
         if (!activated_) {
-            waitTime_ += 1.0f / 60.0f; // フレームレート60FPS前提
-            if (waitTime_ >= 3.0f) {
+          //  waitTime_ += 1.0f / 60.0f; // フレームレート60FPS前提
+            if (waitTime_ >= 1.0f) {
                 gameCamera_->Setmovefige(true); // 3秒後にtrueに
                 activated_ = true;
             }
