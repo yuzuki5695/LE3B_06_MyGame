@@ -4,6 +4,7 @@
 #include<Object3d.h>
 #include<ParticleEmitter.h>
 #include<SoundPlayer.h>
+#include <Skybox.h>
 
 // ゲームプレイシーン
 class TitleScene : public BaseScene
@@ -18,4 +19,8 @@ public: // メンバ関数
     // 描画
     void Draw() override;
 private: // メンバ変数
+    std::unique_ptr <Sprite> ui1_;
+
+    std::unique_ptr <Object3d> title_; 
+    std::unique_ptr <Skybox> Box_ = nullptr;
 };

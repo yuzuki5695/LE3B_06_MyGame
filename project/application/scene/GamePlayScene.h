@@ -53,6 +53,6 @@ private: // メンバ変数
     std::unique_ptr <Sprite> black = nullptr;
     float fadeTimer = 0.0f;
     float fadeDuration = 1.0f; // フェード完了までの秒数（例：2秒）
-    
-    	std::unique_ptr <Skybox> Box_ = nullptr;
+
+    std::unique_ptr <Skybox> Box_ = nullptr;
 };
