@@ -55,4 +55,11 @@ private: // メンバ変数
     float fadeDuration = 1.0f; // フェード完了までの秒数（例：2秒）
 
     std::unique_ptr <Skybox> Box_ = nullptr;
+
+    std::unique_ptr <Sprite> ui1_;
+    std::unique_ptr <Sprite> ui2_;    
+    std::unique_ptr <Sprite> ui3_;
+    std::unique_ptr <Sprite> ui4_;
+
+	float goalpos_ = 300.0f;
 };

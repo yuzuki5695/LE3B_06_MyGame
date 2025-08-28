@@ -10,7 +10,7 @@
 #include<ImGuiManager.h>
 #endif // USE_IMGUI
 #include <ParticleCommon.h>
-
+#include<SkyboxCommon.h>
 void GameClearScene::Finalize() {}
 
 void GameClearScene::Initialize() {
@@ -18,8 +18,15 @@ void GameClearScene::Initialize() {
     CameraManager::GetInstance()->Initialize(CameraTransform({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }));
     CameraManager::GetInstance()->SetCameraMode(CameraMode::Default);
     ModelManager::GetInstance()->LoadModel("Clear.obj");
+        
+    TextureManager::GetInstance()->LoadTexture("TitleEnter.png"); 
+
+    ui1_ = Sprite::Create("TitleEnter.png", Vector2{ 500.0f, 500.0f }, 0.0f, Vector2{ 250.0f,90.0f });
+    ui1_->SetTextureSize(Vector2{ 250.0f,90.0f });
 
     clear = Object3d::Create("Clear.obj", Transform{ { 1.0f, 1.0f, 1.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 30.0f } });
+    Box_ = Skybox::Create("CubemapBox.dds", Transform{ { 1000.0f, 1000.0f, 1000.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 100.0f } });
+
 }
 
 void GameClearScene::Update() {
@@ -28,7 +35,15 @@ void GameClearScene::Update() {
     /*------------------------------------------*/
     CameraManager::GetInstance()->Update();
 
-#pragma region 全てのObject3d個々の更新処理
+    
+    // ENTERキーを押したら
+    if (Input::GetInstance()->Triggrkey(DIK_RETURN)) {
+        // シーン切り替え
+        SceneManager::GetInstance()->ChangeScene("TITLE");
+    }
+
+#pragma region 全てのObject3d個々の更新処理    
+    Box_->Update();
 
     clear->Update();
 
@@ -36,7 +51,7 @@ void GameClearScene::Update() {
 
 #pragma region 全てのSprite個々の更新処理
 
-
+    ui1_->Update();
 
 #pragma endregion 全てのSprite個々の更新処理
 #pragma region  ImGuiの更新処理開始
@@ -53,6 +68,10 @@ void GameClearScene::Update() {
 
 void GameClearScene::Draw() {
 #pragma region 全てのObject3d個々の描画処理
+    // 箱オブジェクトの描画準備。3Dオブジェクトの描画に共通のグラフィックスコマンドを積む
+    SkyboxCommon::GetInstance()->Commondrawing();
+    Box_->Draw();
+
     // 3Dオブジェクトの描画準備。3Dオブジェクトの描画に共通のグラフィックスコマンドを積む
     Object3dCommon::GetInstance()->Commondrawing();
     
@@ -65,6 +84,8 @@ void GameClearScene::Draw() {
 #pragma region 全てのSprite個々の描画処理
     // Spriteの描画準備。Spriteの描画に共通のグラフィックスコマンドを積む
     SpriteCommon::GetInstance()->Commondrawing();
+
+    ui1_->Draw();
 
 #pragma endregion 全てのSprite個々の描画処理
 }

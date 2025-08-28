@@ -56,14 +56,15 @@ void TitleScene::Update() {
 
 #pragma endregion 全てのObject3d個々の更新処理
 
+	ui1_->Update();
+	ui2_->Update();
+
 #pragma region 全てのSprite個々の更新処理
 
 #pragma endregion 全てのSprite個々の更新処理
 #pragma region  ImGuiの更新処理開始
 #ifdef USE_IMGUI
 
-	ui1_->Update();
-	ui2_->Update();
 
 #endif // USE_IMGUI
 #pragma endregion ImGuiの更新処理終了

@@ -31,6 +31,10 @@ void GamePlayScene::Initialize() {
     TextureManager::GetInstance()->LoadTexture("uvChecker.png");
     TextureManager::GetInstance()->LoadTexture("monsterBall.png");
     TextureManager::GetInstance()->LoadTexture("Black.png");
+    TextureManager::GetInstance()->LoadTexture("Gameplay/Move.png");
+    TextureManager::GetInstance()->LoadTexture("Gameplay/Space.png");     
+    TextureManager::GetInstance()->LoadTexture("Gameplay/Shift.png");
+    TextureManager::GetInstance()->LoadTexture("Gameplay/StandardChange.png");
 
     // .objファイルからモデルを読み込む
     ModelManager::GetInstance()->LoadModel("terrain.obj");
@@ -69,7 +73,7 @@ void GamePlayScene::Initialize() {
         enemies_.emplace_back(std::move(enemy));
     }
 
-    wall = Object3d::Create("wall.obj", Transform{ { 10.0f, 0.7f, 0.7f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 230.0f } });
+    wall = Object3d::Create("wall.obj", Transform{ { 10.0f, 0.7f, 0.7f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 300.0f } });
 
     black = Sprite::Create("Black.png", Vector2{ 0.0f, 0.0f }, 0.0f, Vector2{ 1280.0f,720.0f });
     black->SetColor(Vector4(1.0f, 1.0f, 1.0f, 0.0f));
@@ -82,6 +86,16 @@ void GamePlayScene::Initialize() {
     TextureManager::GetInstance()->LoadTexture("CubemapBox.dds");
 
     Box_ = Skybox::Create("CubemapBox.dds", Transform{ { 1000.0f, 1000.0f, 1000.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 100.0f } });
+
+
+	ui1_ = Sprite::Create("Gameplay/Move.png", Vector2{ 15.0f, 585.0f }, 0.0f, Vector2{ 50.0f,50.0f });
+    ui1_->SetTextureSize(Vector2{ 50.0f,50.0f });
+	ui2_ = Sprite::Create("Gameplay/Space.png", Vector2{ 80.0f, 585.0f }, 0.0f, Vector2{ 50.0f,50.0f });
+    ui2_->SetTextureSize(Vector2{ 50.0f,50.0f });
+	ui3_ = Sprite::Create("Gameplay/Shift.png", Vector2{ 15.0f, 650.0f }, 0.0f, Vector2{ 50.0f,50.0f });
+    ui3_->SetTextureSize(Vector2{ 50.0f,50.0f });
+	ui4_ = Sprite::Create("Gameplay/StandardChange.png", Vector2{ 80.0f, 650.0f }, 0.0f, Vector2{ 50.0f,50.0f });
+    ui4_->SetTextureSize(Vector2{ 50.0f,50.0f });
 }
 
 void GamePlayScene::Update() {
@@ -108,7 +122,7 @@ void GamePlayScene::Update() {
         
         player_->Update();
 
-        if (player_->GetPosition().z <= 230.0f) {
+        if (player_->GetPosition().z <= goalpos_) {
             // 敵の更新
             for (auto& enemy : enemies_) {
                 if (enemy->IsActive()) {
@@ -134,7 +148,7 @@ void GamePlayScene::Update() {
         }
     }
 
-    if (player_->GetPosition().z >= 230.0f) {
+    if (player_->GetPosition().z >= goalpos_) {
         end = true; 
     } 
 
@@ -166,6 +180,11 @@ void GamePlayScene::Update() {
 
     ParticleManager::GetInstance()->Update();
 #pragma endregion 全てのObject3d個々の更新処理
+
+    ui1_->Update();
+    ui2_->Update();     
+    ui3_->Update();
+    ui4_->Update();     
 
 #pragma region 全てのSprite個々の更新処理
 
@@ -200,7 +219,7 @@ void GamePlayScene::Draw() {
         BulletManager::GetInstance()->Draw();
     }
 
-    if (player_->GetPosition().z <= 230.0f) {
+    if (player_->GetPosition().z <= goalpos_) {
         // 敵の更新
         for (auto& enemy : enemies_) {
             if (enemy->IsActive()) {
@@ -222,6 +241,12 @@ void GamePlayScene::Draw() {
     if (end || !playerhp_) {
        // black->Draw();
     }
+
+    ui1_->Draw();
+    ui2_->Draw();     
+    ui3_->Draw();
+    ui4_->Draw();
+
 #pragma endregion 全てのSprite個々の描画処理
 }
 
