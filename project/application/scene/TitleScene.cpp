@@ -20,6 +20,7 @@ void TitleScene::Initialize() {
     CameraManager::GetInstance()->Initialize(CameraTransform({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }));
     
     TextureManager::GetInstance()->LoadTexture("Title/newstart.png"); 
+    TextureManager::GetInstance()->LoadTexture("Title/Enter.png"); 
     TextureManager::GetInstance()->LoadTexture("CubemapBox.dds");
     // .objファイルからモデルを読み込む
     ModelManager::GetInstance()->LoadModel("Title/Title.obj");
@@ -28,7 +29,10 @@ void TitleScene::Initialize() {
     Box_ = Skybox::Create("CubemapBox.dds", Transform{ { 1000.0f, 1000.0f, 1000.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 100.0f } });
 
 
-	ui1_ = Sprite::Create("Title/newstart.png", Vector2{ 500.0f, 500.0f }, 0.0f, Vector2{ 180.0f,150.0f });
+	ui1_ = Sprite::Create("Title/newstart.png", Vector2{ 420.0f, 500.0f }, 0.0f, Vector2{ 180.0f,90.0f });
+    ui1_->SetTextureSize(Vector2{ 180.0f,90.0f });
+	ui2_ = Sprite::Create("Title/Enter.png", Vector2{ 580.0f, 500.0f }, 0.0f, Vector2{ 180.0f,90.0f });
+    ui2_->SetTextureSize(Vector2{ 180.0f,90.0f });
 
 #pragma endregion 最初のシーンの初期化
 }
@@ -54,13 +58,12 @@ void TitleScene::Update() {
 
 #pragma region 全てのSprite個々の更新処理
 
-
-
 #pragma endregion 全てのSprite個々の更新処理
 #pragma region  ImGuiの更新処理開始
 #ifdef USE_IMGUI
 
 	ui1_->Update();
+	ui2_->Update();
 
 #endif // USE_IMGUI
 #pragma endregion ImGuiの更新処理終了
@@ -71,7 +74,7 @@ void TitleScene::Draw() {
 #pragma region 全てのObject3d個々の描画処理 
     // 箱オブジェクトの描画準備。3Dオブジェクトの描画に共通のグラフィックスコマンドを積む
     SkyboxCommon::GetInstance()->Commondrawing();
-    //Box_->Draw();
+    Box_->Draw();
 
     // 3Dオブジェクトの描画準備。3Dオブジェクトの描画に共通のグラフィックスコマンドを積む
     Object3dCommon::GetInstance()->Commondrawing();
@@ -87,6 +90,7 @@ void TitleScene::Draw() {
     SpriteCommon::GetInstance()->Commondrawing();
 
     ui1_->Draw();
+    ui2_->Draw();
 
 #pragma endregion 全てのSprite個々の描画処理
 }

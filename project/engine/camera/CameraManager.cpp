@@ -38,6 +38,8 @@ void CameraManager::Initialize(CameraTransform transform) {
     // ゲームカメラの生成
 	gameCamera_ = new GameCamera();
 	gameCamera_->Initialize();
+    moveFlag = true; 
+    gameCamera_->Setmovefige(moveFlag);
 }
 
 void CameraManager::Update() {
@@ -158,7 +160,6 @@ void CameraManager::DrawImGui() {
         }
     }
 
-    bool moveFlag = gameCamera_->Getmovefige();
     if (ImGui::Checkbox("isBezier", &moveFlag)) {
         gameCamera_->Setmovefige(moveFlag);
     }

@@ -51,7 +51,9 @@ private:
 
     bool useFollowCamera_ = false; // カメラモード切替用フラグ
     float waitTime_ = 0.0f;
-    bool activated_ = false;
+    bool activated_ = false;    
+    bool moveFlag = false;
+
 public: // メンバ関数
     // 追従対象をセット（nullptrなら追従なし）
     void SetTarget(Object3d* target);
