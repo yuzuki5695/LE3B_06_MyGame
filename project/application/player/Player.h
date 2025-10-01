@@ -19,7 +19,8 @@ public:// メンバ関数
 	/// 描画更新
 	/// </summary>
 	void Draw() override;
-	
+		
+	void UpdateSprite() ;
 	void DrawSprite();	
 
 	// キーボードでの移動入力処理
@@ -46,7 +47,8 @@ public:// メンバ関数
 	// アクティブ状態の取得・設定
     bool IsActive() const { return active_; }
 	void SetActive(bool isactive) { active_ = isactive; }
-	    
+
+	void UpdateTargetPosition2D(float moveSpeed);
 
 private:// メンバ変数
 	bool active_ = true;
@@ -54,8 +56,6 @@ private:// メンバ変数
 	std::unique_ptr <Object3d> object = nullptr;
 	Transform transform_{};
 	
-	std::unique_ptr <Object3d> target_ = nullptr;
-	Transform targetpos_{};
 	Vector3 copypos;
 	
 	std::unique_ptr <Sprite> targetreticle_ = nullptr; // レティクル用スプライト

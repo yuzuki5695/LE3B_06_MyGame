@@ -111,7 +111,7 @@ void GamePlayScene::Update() {
     if (!end) {
 
         // 敵出現動作
-        EnemySpawn();
+       // EnemySpawn();
 
         CheckBulletEnemyCollisionsOBB();
         CheckEnemyBulletPlayerCollisionsOBB();
@@ -181,6 +181,9 @@ void GamePlayScene::Update() {
     ParticleManager::GetInstance()->Update();
 #pragma endregion 全てのObject3d個々の更新処理
 
+
+   player_->UpdateSprite();
+
     ui1_->Update();
     ui2_->Update();     
     ui3_->Update();
@@ -207,11 +210,11 @@ void GamePlayScene::Draw() {
 #pragma region 全てのObject3d個々の描画処理
     // 箱オブジェクトの描画準備。3Dオブジェクトの描画に共通のグラフィックスコマンドを積む
     SkyboxCommon::GetInstance()->Commondrawing();
-    Box_->Draw();
+   // Box_->Draw();
     // 3Dオブジェクトの描画準備。3Dオブジェクトの描画に共通のグラフィックスコマンドを積む
     Object3dCommon::GetInstance()->Commondrawing();
 
-    // 描画処理
+    //// 描画処理
     grass->Draw();
     if (!end) {
         player_->Draw();
@@ -219,15 +222,15 @@ void GamePlayScene::Draw() {
         BulletManager::GetInstance()->Draw();
     }
 
-    if (player_->GetPosition().z <= goalpos_) {
-        // 敵の更新
-        for (auto& enemy : enemies_) {
-            if (enemy->IsActive()) {
-                enemy->Draw();
-            }
-        }
-        wall->Draw();
-    }
+    //if (player_->GetPosition().z <= goalpos_) {
+    //    // 敵の更新
+    //    for (auto& enemy : enemies_) {
+    //        if (enemy->IsActive()) {
+    //            enemy->Draw();
+    //        }
+    //    }
+    //    wall->Draw();
+    //}
 
 
     // パーティクルの描画準備。パーティクルの描画に共通のグラフィックスコマンドを積む 
@@ -238,6 +241,9 @@ void GamePlayScene::Draw() {
 #pragma region 全てのSprite個々の描画処理
     // Spriteの描画準備。Spriteの描画に共通のグラフィックスコマンドを積む
     SpriteCommon::GetInstance()->Commondrawing();
+    
+    player_->DrawSprite();
+
     if (end || !playerhp_) {
        // black->Draw();
     }

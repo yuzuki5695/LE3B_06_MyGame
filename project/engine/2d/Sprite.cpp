@@ -22,7 +22,7 @@ void Sprite::Initialize(SpriteCommon* spriteCommon) {
 	// マテリアルの生成、初期化
 	MaterialGenerate();
 	// テクスチャサイズをイメージに合わせる
-	//AdjustTextureSize();
+	AdjustTextureSize();
 	// WVP,World用のリソースの生成、初期化
 	TransformationMatrixGenerate();
 }

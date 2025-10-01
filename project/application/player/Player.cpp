@@ -15,22 +15,23 @@ using namespace MatrixVector;
 
 Player::~Player() {}
 
-void Player::Initialize() {	 
-    ModelManager::GetInstance()->LoadModel("Player.obj");     
+void Player::Initialize() {
+    ModelManager::GetInstance()->LoadModel("Player.obj");
     ModelManager::GetInstance()->LoadModel("Bullet/PlayerBullet.obj");
-	TextureManager::GetInstance()->LoadTexture("uvChecker.png");
+    TextureManager::GetInstance()->LoadTexture("uvChecker.png");
+    TextureManager::GetInstance()->LoadTexture("Target.png");
 
     // プレイヤーの初期位置と回転を設定
     transform_ = { {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f},  0.0f,0.0f,0.0f };
     // プレイヤー生成
     object = Object3d::Create("Player.obj", transform_);
 
-    targetpos_ = { {0.3f, 0.3f, 0.3f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 30.0f} };
-    target_= Object3d::Create("Bullet/PlayerBullet.obj", targetpos_);
     moveDelta = Vector3(0.0f, 0.0f, 0.0f);
 
-    reticleScreenPos = { targetpos_.translate.x,  targetpos_.translate.y };
-    targetreticle_ = Sprite::Create("uvChecker.png", reticleScreenPos, 0.0f, Vector2{ 100.0f,100.0f });
+    // レティクル初期化
+    reticleScreenPos = { 640.0f, 360.0f }; // 画面中央 (仮に1280x720の場合)
+    targetreticle_ = Sprite::Create("Target.png", reticleScreenPos, 0.0f, Vector2{ 100.0f, 100.0f });
+    targetreticle_->SetTextureSize(Vector2{ 512.0f, 512.0f });
 }
 
 void Player::Update() {
@@ -47,19 +48,14 @@ void Player::Update() {
     MoveInput(currentSpeed); // ブースト中は速く移動
 
     // ターゲットを矢印キーで動かす
-    UpdateTargetPosition(targetpos_,0.2f);   // ターゲットに使う
+    UpdateTargetPosition2D(5.0f);
     // 弾の発射
     AttachBullet();
 
     // デバッグ中のImGui表示
     DebugImgui();
-    target_->SetTranslate(copypos);
-    target_->Update();
 
-    //UpdateReticlePosition();   // 追加：3D空間に合わせてスクリーン位置を更新
-    //targetreticle_->SetPosition(reticleScreenPos_);  // スプライト位置を更新
-    //targetreticle_->Update();
- 
+
     // 移動後の位置をObjectに反映
     object->SetTranslate(transform_.translate);
     object->SetRotate(transform_.rotate);
@@ -68,14 +64,18 @@ void Player::Update() {
     object->Update();
 }
 
+void Player::UpdateSprite() {
+    targetreticle_->Update();
+
+}
+
 void Player::Draw() {
     // プレイヤー描画
     object->Draw(); 
-    target_->Draw();
 }
 
 void Player::DrawSprite() { 
-    //targetreticle_->Draw();
+    targetreticle_->Draw();
 }
 
 void Player::DebugImgui() {
@@ -145,14 +145,18 @@ void Player::UpdateBoostState() {
     }
 }
 
-void Player::UpdateTargetPosition(Transform& targetTransform, float speed) {
-    if (Input::GetInstance()->Pushkey(DIK_LEFT))  targetTransform.translate.x -= speed;
-    if (Input::GetInstance()->Pushkey(DIK_RIGHT)) targetTransform.translate.x += speed;
-    if (Input::GetInstance()->Pushkey(DIK_UP))    targetTransform.translate.y += speed;
-    if (Input::GetInstance()->Pushkey(DIK_DOWN))  targetTransform.translate.y -= speed;
-	copypos = targetpos_.translate + transform_.translate; // ターゲットの位置をプレイヤーの位置に合わせる
-}
+void Player::UpdateTargetPosition2D(float moveSpeed) {
+    if (Input::GetInstance()->Pushkey(DIK_UP)) reticleScreenPos.y -= moveSpeed;
+    if (Input::GetInstance()->Pushkey(DIK_DOWN))  reticleScreenPos.y += moveSpeed;
+    if (Input::GetInstance()->Pushkey(DIK_LEFT))  reticleScreenPos.x -= moveSpeed;
+    if (Input::GetInstance()->Pushkey(DIK_RIGHT)) reticleScreenPos.x += moveSpeed;
 
+    // 画面端で制限
+    reticleScreenPos.x = std::clamp(reticleScreenPos.x, 0.0f, 1280.0f);
+    reticleScreenPos.y = std::clamp(reticleScreenPos.y, 0.0f, 720.0f);
+
+    targetreticle_->SetPosition(reticleScreenPos);
+}
 
 void Player::AttachBullet() {
     bulletTimer_ += 1.0f / 60.0f; // 毎フレーム経過時間を加算（60fps前提）
@@ -171,32 +175,6 @@ void Player::AttachBullet() {
     };
 }
 
-void Player::UpdateReticlePosition() {
-    Camera* camera = CameraManager::GetInstance()->GetActiveCamera();
-    if (!camera) return;
-
-    Matrix4x4 view = camera->GetViewMatrix();
-    Matrix4x4 projection = camera->GetProjectionMatrix();
-    Matrix4x4 vp = Multiply(projection, view); // ViewProjection行列
-
-    Vector3 worldPos = copypos; // ターゲット3D位置
-
-    Vector4 pos4 = { worldPos.x, worldPos.y, worldPos.z, 1.0f };
-    Vector4 clipPos = MultiplyM4xV4(vp, pos4);
-
-    if (clipPos.w != 0.0f) {
-        clipPos.x /= clipPos.w;
-        clipPos.y /= clipPos.w;
-        clipPos.z /= clipPos.w;
-    }
-
-    // スクリーン座標に変換
-    float screenWidth = 1280.0f;
-    float screenHeight = 720.0f;
-
-    reticleScreenPos_.x = (clipPos.x * 0.5f + 0.5f) * screenWidth;
-    reticleScreenPos_.y = (-clipPos.y * 0.5f + 0.5f) * screenHeight;
-}
 
 OBB Player::GetOBB() const {
     OBB obb;

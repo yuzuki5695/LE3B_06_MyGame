@@ -84,7 +84,7 @@ private: // メンバ変数
 	// テクスチャ左上座標
 	Vector2 textureLeftTop = { 0.0f,0.0f };
 	// テクスチャ切り出しサイズ
-	Vector2 textureSize = { 640.0f,640.0f };
+	Vector2 textureSize = { 0.0f,0.0f };
 public:
 	// getter
 	const Vector2& GetPosition() const { return position_; }
