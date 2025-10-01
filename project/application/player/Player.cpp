@@ -18,7 +18,6 @@ Player::~Player() {}
 void Player::Initialize() {
     ModelManager::GetInstance()->LoadModel("Player.obj");
     ModelManager::GetInstance()->LoadModel("Bullet/PlayerBullet.obj");
-    TextureManager::GetInstance()->LoadTexture("uvChecker.png");
     TextureManager::GetInstance()->LoadTexture("Target.png");
 
     // プレイヤーの初期位置と回転を設定
@@ -26,6 +25,9 @@ void Player::Initialize() {
     // プレイヤー生成
     object = Object3d::Create("Player.obj", transform_);
 
+    
+    targetpos_ = { {0.3f, 0.3f, 0.3f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 30.0f} };
+    target_= Object3d::Create("Bullet/PlayerBullet.obj", targetpos_);
     moveDelta = Vector3(0.0f, 0.0f, 0.0f);
 
     // レティクル初期化
@@ -167,12 +169,13 @@ void Player::AttachBullet() {
     }
     // 弾が撃てるか確認
     if (!canShoot_) return;
-    if (Input::GetInstance()->Pushkey(DIK_SPACE)) {                                 // スペースキーが押されたら弾を撃つ
+    if (Input::GetInstance()->Pushkey(DIK_SPACE)) {                         // スペースキーが押されたら弾を撃つ
+        Vector3 shootDir = GetReticleWorldDirection(); // ←追加
         std::unique_ptr<PlayerBullet> bullet = std::make_unique<PlayerBullet>();		// 弾を生成
-        bullet->Initialize(transform_.translate, copypos, 3.0f);                     // 初期位置などを設定
-        BulletManager::GetInstance()->AddPlayerBullet(std::move(bullet));                 // BulletManagerに追加
-        canShoot_ = false;                                                          // 弾を撃てる状態にする
-    };
+        bullet->Initialize(transform_.translate, shootDir, 3.0f); // copyposの代わりにshootDir
+        BulletManager::GetInstance()->AddPlayerBullet(std::move(bullet));
+        canShoot_ = false;                                                 // 弾を撃てる状態にする
+    }
 }
 
 
@@ -203,4 +206,29 @@ OBB Player::GetOBB() const {
     obb.axis[2] = Normalize(Multiply4x4x3(rotMat, Vector3{ 0, 0, 1 })); // Z軸
 
     return obb;
+}
+
+Vector3 Player::GetReticleWorldDirection() {
+    GameCamera* gameCam = CameraManager::GetInstance()->GetGameCamera();
+    if (!gameCam) return Vector3{ 0,0,1 };
+
+    // スクリーン座標 -> NDC
+    float ndcX = (reticleScreenPos.x / 1280.0f) * 2.0f - 1.0f;
+    float ndcY = 1.0f - (reticleScreenPos.y / 720.0f) * 2.0f;
+
+    // クリップ空間の far 平面上の位置 (Z=1)
+    Vector4 clipFar = { ndcX, ndcY, 1.0f, 1.0f };
+    Vector4 clipNear = { ndcX, ndcY, 0.0f, 1.0f };
+
+    Matrix4x4 invProj = Inverse(gameCam->Getcamera()->GetProjectionMatrix());
+    Matrix4x4 invView = Inverse(gameCam->Getcamera()->GetViewMatrix());
+
+    Vector4 worldFar = MultiplyMatrixVector(invView, MultiplyMatrixVector(invProj, clipFar));
+    worldFar.x /= worldFar.w; worldFar.y /= worldFar.w; worldFar.z /= worldFar.w;
+    Vector4 worldNear = MultiplyMatrixVector(invView, MultiplyMatrixVector(invProj, clipNear));
+    worldNear.x /= worldNear.w; worldNear.y /= worldNear.w; worldNear.z /= worldNear.w;
+
+    // 射線方向
+    Vector3 dir = Normalize(Vector3{ worldFar.x, worldFar.y, worldFar.z } - Vector3{ worldNear.x, worldNear.y, worldNear.z });
+    return dir;
 }

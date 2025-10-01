@@ -54,3 +54,15 @@ Vector3 Camera::GetForward() const {
 
     return forward;
 }
+
+Vector3 Camera::WorldToScreen(const Vector3& worldPos) const {
+	Vector4 clipPos = MultiplyMatrixVector(ViewProjectionMatrix, { worldPos.x, worldPos.y, worldPos.z, 1.0f });
+	clipPos.x /= clipPos.w;
+	clipPos.y /= clipPos.w;
+	clipPos.z /= clipPos.w;
+
+	// NDC(-1～1) → スクリーン座標(ピクセル)
+	float screenX = (clipPos.x * 0.5f + 0.5f) * WinApp::kClientWidth;
+	float screenY = (1.0f - (clipPos.y * 0.5f + 0.5f)) * WinApp::kClientHeight;
+	return { screenX, screenY, clipPos.z };
+}

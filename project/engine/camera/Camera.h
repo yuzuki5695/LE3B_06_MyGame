@@ -10,6 +10,8 @@ public: // メンバ関数
 	Camera();
 	// 更新処理
 	void Update();
+	// スクリーン座標変換
+	Vector3 WorldToScreen(const Vector3& worldPos) const;
 	// ImGuiの更新
 	void DebugUpdate();
 private: // メンバ変数

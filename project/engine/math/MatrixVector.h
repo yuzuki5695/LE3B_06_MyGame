@@ -72,4 +72,8 @@ namespace MatrixVector
 
 	// ベクトルを回転させる関数を追加  
 	Vector3 RotateVector(const Vector3& vec, const Vector3& rotation);
+
+	// 行列とベクトルの掛け算
+	Vector4 MultiplyMatrixVector(const Matrix4x4& m, const Vector4& v);
+
 };
