@@ -58,6 +58,23 @@ void Enemy::SetInitialize(float baseZ, MoveType moveType) {
     bulletInterval_ = bulletIntervalDist_(randomEngine);
     object->SetTranslate(xyz);
 }
+// ★新しく追加：位置を指定して初期化するバージョン
+void Enemy::SetnewTranslate(const Vector3& pos, MoveType moveType) {
+    // isDead, isDying 状態をリセット
+    isDead_ = false;
+    isDying_ = false;
+    deathTimer_ = 0.0f;
+    moveType_ = moveType;
+
+    // 出現位置をそのまま使う
+    spawnBaseZ_ = pos.z;
+
+    // 弾発射間隔などは既存の処理を流用
+    bulletInterval_ = bulletIntervalDist_(randomEngine);
+
+    // オブジェクトを指定位置に配置
+    object->SetTranslate(pos);
+}
 
 void Enemy::Update() {
     if (isDying_) {

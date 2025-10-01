@@ -54,6 +54,8 @@ public:
     bool IsDead() const { return isDead_; }
 	
 	OBB GetOBB() const;
+	
+	void SetnewTranslate(const Vector3& pos, MoveType moveType);
 
 private:
 	// ポインタ

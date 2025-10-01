@@ -55,11 +55,11 @@ void GamePlayScene::Initialize() {
     playerhp_ = player_->IsActive();
 
 
-    MAX_ENEMY = 11;
+    MAX_ENEMY = 14;
 
     // 敵出現トリガー
     spawnTriggers_ = {
-    {40.0f, 3, false, MoveType::None},       // 全部動かない
+    {40.0f, 6, false, MoveType::None},       // 全部動かない
     {120.0f, 3, false, MoveType::Vertical},  // 全部縦移動
     {190.0f, 5, false, MoveType::Horizontal} // 全部横移動
     };
@@ -242,10 +242,10 @@ void GamePlayScene::Draw() {
        // black->Draw();
     }
 
-    ui1_->Draw();
-    ui2_->Draw();     
-    ui3_->Draw();
-    ui4_->Draw();
+    //ui1_->Draw();
+    //ui2_->Draw();     
+    //ui3_->Draw();
+    //ui4_->Draw();
 
 #pragma endregion 全てのSprite個々の描画処理
 }
@@ -254,18 +254,63 @@ void GamePlayScene::EnemySpawn() {
     // プレイヤーの位置取得
     float playerZ = player_->GetPosition().z;
 
-    // 敵出現トリガー処理
-    for (auto& trigger : spawnTriggers_) {
+    for (size_t tIndex = 0; tIndex < spawnTriggers_.size(); ++tIndex) {
+        auto& trigger = spawnTriggers_[tIndex];
+
         if (!trigger.hasSpawned && playerZ >= trigger.zThreshold) {
             int activated = 0;
+
             for (auto& enemy : enemies_) {
                 if (!enemy->IsActive()) {
-                    enemy->SetInitialize(trigger.zThreshold, trigger.moveType); // ← 動きタイプ渡す
-                    enemy->SetActive(true); // ←トリガーのZ位置を渡す！
+                    if (tIndex == 0) {
+                        float baseX = 0.0f;    // 真ん中の基準X
+                        float baseY = 5.0f;    // 一番上のY
+                        float stepX = 3.0f;    // 横の広がり
+                        float stepY = -2.0f;   // 下がる幅
+                        float baseZ = trigger.zThreshold + 60.0f;
+
+                        float posX = baseX;
+                        float posY = baseY;
+
+                        switch (activated) {
+                        case 0: // 真ん中（頂点）
+                            posX = baseX;
+                            posY = baseY;
+                            break;
+                        case 1: // 左上
+                            posX = baseX - stepX;
+                            posY = baseY + stepY;
+                            break;
+                        case 2: // 右上
+                            posX = baseX + stepX;
+                            posY = baseY + stepY;
+                            break;
+                        case 3: // 左下
+                            posX = baseX - stepX * 2;
+                            posY = baseY + stepY * 2;
+                            break;
+                        case 4: // 右下
+                            posX = baseX + stepX * 2;
+                            posY = baseY + stepY * 2;
+                            break;
+                        }
+
+                        enemy->SetnewTranslate(
+                            Vector3{ posX, posY, baseZ },
+                            trigger.moveType
+                        );
+
+                    } else {
+                        // 従来通り
+                        enemy->SetInitialize(trigger.zThreshold, trigger.moveType);
+                    }
+
+                    enemy->SetActive(true);
                     ++activated;
                     if (activated >= trigger.spawnCount) break;
                 }
             }
+
             trigger.hasSpawned = true;
         }
     }
