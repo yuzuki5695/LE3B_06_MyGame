@@ -151,9 +151,6 @@
     <Filter Include="ソース ファイル\application\character">
       <UniqueIdentifier>{2a9f0528-9f22-4368-a9d5-57d0c9e90e83}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ソース ファイル\application\manager">
-      <UniqueIdentifier>{3a1738a6-e58c-4db2-8f43-d0579fe391d7}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ヘッダー ファイル\application\manager">
       <UniqueIdentifier>{43c7a045-e790-4fd5-b178-f3bb93dc9aeb}</UniqueIdentifier>
     </Filter>
@@ -327,9 +324,6 @@
     <ClCompile Include="application\player\Player.cpp">
       <Filter>ソース ファイル\application\player</Filter>
     </ClCompile>
-    <ClCompile Include="application\manager\CharacterManager.cpp">
-      <Filter>ソース ファイル\application\manager</Filter>
-    </ClCompile>
     <ClCompile Include="application\loader\CurveJsonLoader.cpp">
       <Filter>ソース ファイル\application\loader</Filter>
     </ClCompile>
@@ -353,6 +347,9 @@
     </ClCompile>
     <ClCompile Include="application\scene\GameOverScene.cpp">
       <Filter>ソース ファイル\application\scene</Filter>
+    </ClCompile>
+    <ClCompile Include="application\character\CharacterManager.cpp">
+      <Filter>ソース ファイル\application\character</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -580,6 +577,9 @@
     </ClInclude>
     <ClInclude Include="application\scene\GameOverScene.h">
       <Filter>ヘッダー ファイル\application\scene</Filter>
+    </ClInclude>
+    <ClInclude Include="application\character\CharacterManager.h">
+      <Filter>ヘッダー ファイル\application\character</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
