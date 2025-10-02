@@ -87,15 +87,6 @@ void GamePlayScene::Initialize() {
 
     Box_ = Skybox::Create("CubemapBox.dds", Transform{ { 1000.0f, 1000.0f, 1000.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 100.0f } });
 
-
-	ui1_ = Sprite::Create("Gameplay/Move.png", Vector2{ 15.0f, 585.0f }, 0.0f, Vector2{ 50.0f,50.0f });
-    ui1_->SetTextureSize(Vector2{ 50.0f,50.0f });
-	ui2_ = Sprite::Create("Gameplay/Space.png", Vector2{ 80.0f, 585.0f }, 0.0f, Vector2{ 50.0f,50.0f });
-    ui2_->SetTextureSize(Vector2{ 50.0f,50.0f });
-	ui3_ = Sprite::Create("Gameplay/Shift.png", Vector2{ 15.0f, 650.0f }, 0.0f, Vector2{ 50.0f,50.0f });
-    ui3_->SetTextureSize(Vector2{ 50.0f,50.0f });
-	ui4_ = Sprite::Create("Gameplay/StandardChange.png", Vector2{ 80.0f, 650.0f }, 0.0f, Vector2{ 50.0f,50.0f });
-    ui4_->SetTextureSize(Vector2{ 50.0f,50.0f });
 }
 
 void GamePlayScene::Update() {
@@ -181,11 +172,6 @@ void GamePlayScene::Update() {
     ParticleManager::GetInstance()->Update();
 #pragma endregion 全てのObject3d個々の更新処理
 
-    ui1_->Update();
-    ui2_->Update();     
-    ui3_->Update();
-    ui4_->Update();     
-
 #pragma region 全てのSprite個々の更新処理
 
     black->Update();
@@ -241,11 +227,6 @@ void GamePlayScene::Draw() {
     if (end || !playerhp_) {
        // black->Draw();
     }
-
-    //ui1_->Draw();
-    //ui2_->Draw();     
-    //ui3_->Draw();
-    //ui4_->Draw();
 
 #pragma endregion 全てのSprite個々の描画処理
 }
