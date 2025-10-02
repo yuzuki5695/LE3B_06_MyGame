@@ -33,6 +33,11 @@ void ImGuiManager::Initialize([[maybe_unused]] WinApp* winApp, [[maybe_unused]] 
 
 	// ImGuiのコンテキストを生成
 	ImGui::CreateContext();
+	
+	// iniファイルを作らないように設定
+	ImGuiIO& io = ImGui::GetIO();
+	io.IniFilename = nullptr;
+
 	// ImGuiのスタイルを設定
 	ImGui::StyleColorsDark();
 

@@ -151,9 +151,6 @@
     <Filter Include="ソース ファイル\application\character">
       <UniqueIdentifier>{2a9f0528-9f22-4368-a9d5-57d0c9e90e83}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ヘッダー ファイル\application\manager">
-      <UniqueIdentifier>{43c7a045-e790-4fd5-b178-f3bb93dc9aeb}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ソース ファイル\application\loader">
       <UniqueIdentifier>{737ec024-93f3-4b94-94b0-39ecb63a733d}</UniqueIdentifier>
     </Filter>
@@ -547,9 +544,6 @@
     </ClInclude>
     <ClInclude Include="application\player\Player.h">
       <Filter>ヘッダー ファイル\application\player</Filter>
-    </ClInclude>
-    <ClInclude Include="application\manager\CharacterManager.h">
-      <Filter>ヘッダー ファイル\application\manager</Filter>
     </ClInclude>
     <ClInclude Include="application\loader\CurveJsonLoader.h">
       <Filter>ヘッダー ファイル\application\loader</Filter>

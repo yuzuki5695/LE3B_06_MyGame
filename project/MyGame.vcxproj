@@ -169,7 +169,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\enemy\Enemy.h" />
     <ClInclude Include="application\loader\CharacterLoader.h" />
     <ClInclude Include="application\loader\CurveJsonLoader.h" />
-    <ClInclude Include="application\manager\CharacterManager.h" />
     <ClInclude Include="application\player\Player.h" />
     <ClInclude Include="application\scene\GameOverScene.h" />
     <ClInclude Include="engine\3d\Skybox.h" />
