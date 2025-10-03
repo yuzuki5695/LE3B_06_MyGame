@@ -57,9 +57,8 @@ private:// メンバ変数
 	std::unique_ptr <Object3d> target_ = nullptr;
 	Transform targetpos_{};
 	Vector3 copypos;
-	
-	std::unique_ptr <Sprite> targetreticle_ = nullptr; // レティクル用スプライト
-	
+
+	std::unique_ptr <Sprite> targetreticle_ = nullptr; // レティクル用スプライト	
 	Vector2 reticleScreenPos = { 640.0f, 360.0f }; // 画面中心 (例: 1280x720の解像度)
 
 	// 球関連
@@ -85,6 +84,8 @@ private:// メンバ変数
 
     Vector3 reticleWorldPos_;    // 3D空間のレティクル位置（ワールド座標）
     Vector2 reticleScreenPos_;   // 画面上のスプライト描画位置（スクリーン座標）
+
+
 
 public:// メンバ変数
 	// getter
