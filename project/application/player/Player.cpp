@@ -58,8 +58,8 @@ void Player::Update() {
     target_->SetTranslate(copypos);
     target_->Update();
 
-    //UpdateReticlePosition();   // 追加：3D空間に合わせてスクリーン位置を更新
-    //targetreticle_->SetPosition(reticleScreenPos_);  // スプライト位置を更新
+   // UpdateReticlePosition();   // 追加：3D空間に合わせてスクリーン位置を更新
+    targetreticle_->SetPosition(reticleScreenPos_);  // スプライト位置を更新
     targetreticle_->Update();
  
     // 移動後の位置をObjectに反映
@@ -77,7 +77,7 @@ void Player::Draw() {
 }
 
 void Player::DrawSprite() { 
-    targetreticle_->Draw();
+   // targetreticle_->Draw();
 }
 
 void Player::DebugImgui() {
