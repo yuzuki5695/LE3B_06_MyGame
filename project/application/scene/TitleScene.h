@@ -24,4 +24,18 @@ private: // メンバ変数
 
     std::unique_ptr <Object3d> title_; 
     std::unique_ptr <Skybox> Box_ = nullptr;
+
+    std::unique_ptr <Object3d> tile_; 
+     
+    std::unique_ptr <Object3d> player_; 
+    Transform playertransform_{};
+    
+    float timer;
+    float moveDuration;   
+    bool moveFinished;
+
+
+    float startX;
+    float endX;
+
 };

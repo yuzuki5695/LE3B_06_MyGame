@@ -20,7 +20,7 @@ void GameClearScene::Initialize() {
     ModelManager::GetInstance()->LoadModel("Clear.obj");
         
     TextureManager::GetInstance()->LoadTexture("TitleEnter.png"); 
-
+    TextureManager::GetInstance()->LoadTexture("CubemapBox.dds");
     ui1_ = Sprite::Create("TitleEnter.png", Vector2{ 500.0f, 500.0f }, 0.0f, Vector2{ 250.0f,90.0f });
     ui1_->SetTextureSize(Vector2{ 250.0f,90.0f });
 
@@ -85,7 +85,7 @@ void GameClearScene::Draw() {
     // Spriteの描画準備。Spriteの描画に共通のグラフィックスコマンドを積む
     SpriteCommon::GetInstance()->Commondrawing();
 
-    //ui1_->Draw();
+    ui1_->Draw();
 
 #pragma endregion 全てのSprite個々の描画処理
 }
