@@ -58,8 +58,7 @@ void Player::Update() {
     target_->SetTranslate(copypos);
     target_->Update();
 
-   // UpdateReticlePosition();   // 追加：3D空間に合わせてスクリーン位置を更新
-    targetreticle_->SetPosition(reticleScreenPos_);  // スプライト位置を更新
+    UpdateReticlePosition();   // 追加：3D空間に合わせてスクリーン位置を更新
     targetreticle_->Update();
  
     // 移動後の位置をObjectに反映
@@ -73,11 +72,11 @@ void Player::Update() {
 void Player::Draw() {
     // プレイヤー描画
     object->Draw(); 
-    target_->Draw();
+   // target_->Draw();
 }
 
 void Player::DrawSprite() { 
-   // targetreticle_->Draw();
+    targetreticle_->Draw();
 }
 
 void Player::DebugImgui() {
@@ -174,30 +173,50 @@ void Player::AttachBullet() {
 }
 
 void Player::UpdateReticlePosition() {
+    // target_ が存在しない場合は何もしない
+    if (!target_) return;
+
+    // 3Dターゲットのワールド座標を取得
+    Vector3 targetWorldPos = target_->GetTranslate();
+    targetWorldPos.y += 1.8f; // 必要に応じて調整 
+    targetWorldPos.x -= 1.85f; // 必要に応じて調整
+
+    // カメラ情報取得（あなたのエンジンの構造によって変更）
     Camera* camera = CameraManager::GetInstance()->GetActiveCamera();
-    if (!camera) return;
+    const Matrix4x4& viewProj = camera->GetViewProjectionMatrix();
 
-    Matrix4x4 view = camera->GetViewMatrix();
-    Matrix4x4 projection = camera->GetProjectionMatrix();
-    Matrix4x4 vp = Multiply(projection, view); // ViewProjection行列
+    // ---- ワールド座標 → クリップ座標へ変換 ----
+    Vector4 clipPos = {
+        targetWorldPos.x * viewProj.m[0][0] + targetWorldPos.y * viewProj.m[1][0] + targetWorldPos.z * viewProj.m[2][0] + viewProj.m[3][0],
+        targetWorldPos.x * viewProj.m[0][1] + targetWorldPos.y * viewProj.m[1][1] + targetWorldPos.z * viewProj.m[2][1] + viewProj.m[3][1],
+        targetWorldPos.x * viewProj.m[0][2] + targetWorldPos.y * viewProj.m[1][2] + targetWorldPos.z * viewProj.m[2][2] + viewProj.m[3][2],
+        targetWorldPos.x * viewProj.m[0][3] + targetWorldPos.y * viewProj.m[1][3] + targetWorldPos.z * viewProj.m[2][3] + viewProj.m[3][3]
+    };
 
-    Vector3 worldPos = copypos; // ターゲット3D位置
-
-    Vector4 pos4 = { worldPos.x, worldPos.y, worldPos.z, 1.0f };
-    Vector4 clipPos = MultiplyM4xV4(vp, pos4);
-
+    // ---- 正規化デバイス座標（NDC）へ ----
     if (clipPos.w != 0.0f) {
         clipPos.x /= clipPos.w;
         clipPos.y /= clipPos.w;
         clipPos.z /= clipPos.w;
     }
 
-    // スクリーン座標に変換
-    float screenWidth = 1280.0f;
-    float screenHeight = 720.0f;
+    // ---- ③ スプライトの中心補正 ----
+    Vector2 spriteSize = targetreticle_->GetSize();
+    Vector2 centeredPos = {
+        reticleScreenPos_.x - spriteSize.x * 0.5f,
+        reticleScreenPos_.y - spriteSize.y * 0.5f
+    };
+
+    // ---- NDC → スクリーン座標へ変換 ----
+    // ※ 画面サイズに合わせて計算 (例: 1280x720)
+    const float screenWidth = 1280.0f;
+    const float screenHeight = 720.0f;
 
     reticleScreenPos_.x = (clipPos.x * 0.5f + 0.5f) * screenWidth;
     reticleScreenPos_.y = (-clipPos.y * 0.5f + 0.5f) * screenHeight;
+
+    // ---- スプライトの位置更新 ----
+    targetreticle_->SetPosition(reticleScreenPos_);
 }
 
 OBB Player::GetOBB() const {

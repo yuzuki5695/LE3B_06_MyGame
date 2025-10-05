@@ -219,7 +219,17 @@ namespace MatrixVector {
 
         return result;
     };
-    
+   
+    Matrix4x4 MakeRotateMatrix(const Vector3& r) {
+        // 各軸回転行列を生成
+        Matrix4x4 rx = MakeRotateXMatrix(r.x);
+        Matrix4x4 ry = MakeRotateYMatrix(r.y);
+        Matrix4x4 rz = MakeRotateZMatrix(r.z);
+
+        // XYZ順（一般的には Z→X→Y などもあり。必要に応じて変えてOK）
+        return Multiply(rx, Multiply(ry, rz));
+    }
+
     Vector4 MultiplyM4xV4(const Matrix4x4& m, const Vector4& v) {
         Vector4 result;
         result.x = m.m[0][0] * v.x + m.m[0][1] * v.y + m.m[0][2] * v.z + m.m[0][3] * v.w;
@@ -325,4 +335,11 @@ namespace MatrixVector {
         return result;
     }
 
+    // アフィン行列（最終的な統合）
+    Matrix4x4 MakeAffineMatrix(const Vector3& scale, const Vector3& rotate, const Vector3& translate) {
+        Matrix4x4 S = MakeScaleMatrix(scale);
+        Matrix4x4 R = MakeRotateMatrix(rotate);
+        Matrix4x4 T = MakeTranslateMatrix(translate);
+        return Multiply(S, Multiply(R, T));  // S * R * T
+    }
 };

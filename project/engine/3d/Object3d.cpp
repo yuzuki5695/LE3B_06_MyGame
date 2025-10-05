@@ -15,6 +15,20 @@
 using namespace MatrixVector;
 using namespace ResourceFactory;
 
+Vector3 Object3d::GetWorldPosition() const {
+    Matrix4x4 worldMatrix = MatrixVector::MakeAffineMatrix(
+        transform_.scale, transform_.rotate, transform_.translate
+    );
+
+    Vector3 worldPos = {
+        worldMatrix.m[3][0],
+        worldMatrix.m[3][1],
+        worldMatrix.m[3][2]
+    };
+
+    return worldPos;
+}
+
 void Object3d::Initialize(Object3dCommon* object3dCommon) {
     // NULL検出
     assert(object3dCommon);
