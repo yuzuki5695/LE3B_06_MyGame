@@ -29,7 +29,7 @@ void Enemy::Initialize() {
     std::uniform_int_distribution<int> typeDist(0, 2); 
     int type = typeDist(randomEngine);
     moveType_ = static_cast<MoveType>(type);
-    moveDirDist_ = std::uniform_real_distribution<float>(-1.2f, 1.2f);
+    moveDirDist_ = std::uniform_real_distribution<float>(5.9f, 6.0f);
     moveDirection_ = Normalize(Vector3{
         moveDirDist_(randomEngine),
         moveDirDist_(randomEngine),
