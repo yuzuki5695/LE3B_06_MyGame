@@ -29,5 +29,8 @@ private: // メンバ変数
      
     std::unique_ptr <Object3d> player_; 
     Transform playertransform_{};
+    
+    float startX = -20.0f;
+    float endX = -10.0f;
 
 };

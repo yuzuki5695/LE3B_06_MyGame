@@ -11,7 +11,9 @@
 #endif // USE_IMGUI
 #include <ParticleCommon.h>
 #include<SkyboxCommon.h>
-
+#define NOMINMAX
+#include <Windows.h>
+#include <algorithm>
 void TitleScene::Finalize() {}
 
 void TitleScene::Initialize() {
@@ -37,7 +39,7 @@ void TitleScene::Initialize() {
 
     tile_ = Object3d::Create("Tile.obj", { { 20.0f, 1.0f, 300.0f }, { 0.0f, 0.9f, 0.0f }, { 0.0f, -8.0f, 63.4f } });
   
-    playertransform_ = { {1.0f, 1.0f, 1.0f}, {0.0f, 0.9f, 0.0f},  -10.0f,0.0f,40.0f };
+    playertransform_ = { {1.0f, 1.0f, 1.0f}, {0.0f, 0.9f, 0.0f},  -20.0f,0.0f,40.0f };
     player_ = Object3d::Create("Player.obj", playertransform_);
 
 #pragma endregion 最初のシーンの初期化
@@ -57,13 +59,28 @@ void TitleScene::Update() {
 #pragma region 全てのObject3d個々の更新処理
     Box_->Update();
 
+    // -----------------------------------------------
+    // playerのイージング移動処理
+    // -----------------------------------------------
+    Transform trans = player_->GetTransform();
+    static float timer = 0.0f;
+    const float moveDuration = 240.0f;  // 移動にかけるフレーム数（約2秒）
+    timer += 0.6f;
+
+    float t = (std::min)((timer / moveDuration), 1.0f); // 0.0 → 1.0 に補間
+
+    // イージング関数（EaseOutCubic）
+    float ease = 1.0f - powf(1.0f - t, 3.0f);
+
+
+    float currentX = startX + (endX - startX) * ease;
     
     static float time = 0.0f;          // 経過時間
     time += 0.03f;                     // 更新速度（0.05f は揺れの速さ）
-
-    Transform t = player_->GetTransform();
-    t.translate.y = 0.0f + sinf(time) * 2.3f;  // 中心Y=-10.0f、振幅3.0f
-    player_->SetTranslate(t.translate);
+ 
+    trans.translate.x = -20.0f + ( -10.0f - (-20.0f) ) * ease;
+    trans.translate.y = 0.0f + sinf(time) * 2.3f;  // 中心Y=-10.0f、振幅3.0f
+    player_->SetTranslate(trans.translate);
 
     title_->Update();
     tile_->Update(); 
@@ -82,8 +99,6 @@ void TitleScene::Update() {
 #ifdef USE_IMGUI
     // ImGuiでTileの位置・回転・スケールを変更
     ImGui::Begin("Tile Controller");
-
-   // Transform t = tile_->GetTransform();
 
     ImGui::Text("Position");
     ImGui::DragFloat3("Translation", &playertransform_.translate.x, 0.1f);
