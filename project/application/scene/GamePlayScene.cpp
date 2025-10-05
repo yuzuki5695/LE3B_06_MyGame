@@ -228,6 +228,10 @@ void GamePlayScene::Draw() {
        // black->Draw();
     }
 
+    if (!end) {    
+        player_->DrawSprite();
+    }
+
 #pragma endregion 全てのSprite個々の描画処理
 }
 

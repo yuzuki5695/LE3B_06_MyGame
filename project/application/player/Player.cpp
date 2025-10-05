@@ -18,7 +18,7 @@ Player::~Player() {}
 void Player::Initialize() {	 
     ModelManager::GetInstance()->LoadModel("Player.obj");     
     ModelManager::GetInstance()->LoadModel("Bullet/PlayerBullet.obj");
-	TextureManager::GetInstance()->LoadTexture("uvChecker.png");
+    TextureManager::GetInstance()->LoadTexture("Target.png");
 
     // プレイヤーの初期位置と回転を設定
     transform_ = { {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f},  0.0f,0.0f,0.0f };
@@ -29,8 +29,10 @@ void Player::Initialize() {
     target_= Object3d::Create("Bullet/PlayerBullet.obj", targetpos_);
     moveDelta = Vector3(0.0f, 0.0f, 0.0f);
 
-    reticleScreenPos = { targetpos_.translate.x,  targetpos_.translate.y };
-    targetreticle_ = Sprite::Create("uvChecker.png", reticleScreenPos, 0.0f, Vector2{ 100.0f,100.0f });
+    // レティクル初期化
+    reticleScreenPos = { 640.0f, 360.0f }; // 画面中央 (仮に1280x720の場合)
+    targetreticle_ = Sprite::Create("Target.png", reticleScreenPos, 0.0f, Vector2{ 100.0f, 100.0f });
+    targetreticle_->SetTextureSize(Vector2{ 512.0f, 512.0f });
 }
 
 void Player::Update() {
@@ -56,9 +58,9 @@ void Player::Update() {
     target_->SetTranslate(copypos);
     target_->Update();
 
-    //UpdateReticlePosition();   // 追加：3D空間に合わせてスクリーン位置を更新
-    //targetreticle_->SetPosition(reticleScreenPos_);  // スプライト位置を更新
-    //targetreticle_->Update();
+   // UpdateReticlePosition();   // 追加：3D空間に合わせてスクリーン位置を更新
+    targetreticle_->SetPosition(reticleScreenPos_);  // スプライト位置を更新
+    targetreticle_->Update();
  
     // 移動後の位置をObjectに反映
     object->SetTranslate(transform_.translate);
@@ -75,7 +77,7 @@ void Player::Draw() {
 }
 
 void Player::DrawSprite() { 
-    //targetreticle_->Draw();
+   // targetreticle_->Draw();
 }
 
 void Player::DebugImgui() {
