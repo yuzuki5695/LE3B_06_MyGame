@@ -70,4 +70,15 @@ private:
 
 	uint32_t vertexCount;
 	Transform transform_;
+public:
+	// getter
+	const Transform& GetTransform() const { return transform_; }
+	const Vector3& GetScale() const { return transform_.scale; }
+	const Vector3& GetRotate() const { return transform_.rotate; }		
+	const Vector3& GetTranslate() const { return transform_.translate; }
+	//setter
+	void SetTransform(const Transform& transform) { this->transform_ = transform; }	
+	void SetScale(const Vector3& scale) { this->transform_.scale = scale; }
+	void SetRotate(const Vector3& rotate) { this->transform_.rotate = rotate; }
+	void SetTranslate(const Vector3& translate) { this->transform_.translate = translate; }
 };
