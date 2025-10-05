@@ -37,5 +37,7 @@ private: // メンバ変数
 
     float startX;
     float endX;
+         
+    float time = 0.0f;          // 経過時間 
 
 };

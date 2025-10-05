@@ -30,7 +30,7 @@ void TitleScene::Initialize() {
     ModelManager::GetInstance()->LoadModel("Player.obj");
 
     title_ = Object3d::Create("Title/Title.obj", { {0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f},{0.0f,1.0f,10.0f} });
-	title_->GetModel()->GetMaterialData()->color = { 1.0f, 1.0f, 1.0f, 1.0f };
+
 
     Box_ = Skybox::Create("CubemapBox.dds", Transform{ { 1000.0f, 1000.0f, 1000.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 100.0f } });
 
@@ -49,6 +49,7 @@ void TitleScene::Initialize() {
     timer = 0.0f;
     moveDuration = 240.0f;  // 移動にかけるフレーム数（約2秒）     
     moveFinished = false;
+    time = 0.0f;          // 経過時間 
 
 #pragma endregion 最初のシーンの初期化
 }
@@ -70,11 +71,6 @@ void TitleScene::Update() {
     skyTrans.rotate.y += 0.001f; // Y軸回転（1フレームごとに少しずつ）
     Box_->SetRotate(skyTrans.rotate);
     Box_->Update();
-
-    // -----------------------------------------------
-    // playerのイージング移動処理
-    // -----------------------------------------------
-    Transform trans = player_->GetTransform();
 
     if (!moveFinished) {
         // --- 位置のイージング ---
@@ -119,11 +115,11 @@ void TitleScene::Update() {
 
        title_->SetScale(newScale);
    }
-    
-    static float time = 0.0f;          // 経過時間 
+
+
     time += 0.03f;                     // 更新速度（0.05f は揺れの速さ） 
-    trans.translate.y = 0.0f + sinf(time) * 2.3f;  // 中心Y=-10.0f、振幅3.0f 
-    player_->SetTranslate(trans.translate);
+    playertransform_.translate.y = 0.0f + sinf(time) * 2.3f;  // 中心Y=-10.0f、振幅3.0f 
+    player_->SetTranslate(playertransform_.translate);
 
     title_->Update();
     tile_->Update(); 
