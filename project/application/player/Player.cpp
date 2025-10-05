@@ -72,7 +72,7 @@ void Player::Update() {
 void Player::Draw() {
     // プレイヤー描画
     object->Draw(); 
-   // target_->Draw();
+    //target_->Draw();
 }
 
 void Player::DrawSprite() { 
