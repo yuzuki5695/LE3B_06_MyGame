@@ -72,4 +72,10 @@ namespace MatrixVector
 
 	// ベクトルを回転させる関数を追加  
 	Vector3 RotateVector(const Vector3& vec, const Vector3& rotation);
+
+	// ワールド行列
+	Matrix4x4 MakeAffineMatrix(const Vector3& scale, const Vector3& rotate, const Vector3& translate);
+
+	Matrix4x4 MakeRotateMatrix(const Vector3& r);
+
 };

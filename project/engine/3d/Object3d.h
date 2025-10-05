@@ -27,6 +27,8 @@ public: // メンバ関数
 	// imgui
 	void DrawImGui(const std::string& name);
 
+	Vector3 GetWorldPosition() const;
+
 private:
 	// リソース
 	// トランスフォームマトリックス
