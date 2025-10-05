@@ -102,7 +102,7 @@ void GamePlayScene::Update() {
     if (!end) {
 
         // 敵出現動作
-       // EnemySpawn();
+        EnemySpawn();
 
         CheckBulletEnemyCollisionsOBB();
         CheckEnemyBulletPlayerCollisionsOBB();
@@ -113,14 +113,14 @@ void GamePlayScene::Update() {
         
         player_->Update();
 
-        //if (player_->GetPosition().z <= goalpos_) {
-        //    // 敵の更新
-        //    for (auto& enemy : enemies_) {
-        //        if (enemy->IsActive()) {
-        //            enemy->Update();
-        //        }
-        //    }
-        //}
+        if (player_->GetPosition().z <= goalpos_) {
+            // 敵の更新
+            for (auto& enemy : enemies_) {
+                if (enemy->IsActive()) {
+                    enemy->Update();
+                }
+            }
+        }
         wall->Update();
         // Bulletマネージャの更新処理
         BulletManager::GetInstance()->Update();
