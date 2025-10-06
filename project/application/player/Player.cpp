@@ -10,6 +10,8 @@
 #include <MatrixVector.h>
 #include<TextureManager.h>
 #include <algorithm>
+#include <chrono>
+#include <algorithm> // std::max を使用するために必要
 
 using namespace MatrixVector;
 
@@ -33,6 +35,9 @@ void Player::Initialize() {
     reticleScreenPos = { 640.0f, 360.0f }; // 画面中央 (仮に1280x720の場合)
     targetreticle_ = Sprite::Create("Target.png", reticleScreenPos, 0.0f, Vector2{ 100.0f, 100.0f });
     targetreticle_->SetTextureSize(Vector2{ 512.0f, 512.0f });
+    previousTime_ = 0.0f;
+
+    originalColor_ = object->GetModel()->GetMaterialData()->color;
 }
 
 void Player::Update() {
@@ -42,6 +47,12 @@ void Player::Update() {
         Vector3 relativeOffset = { 0.0f, -3.0f, 30.0f }; // カメラの前方に出すなど
         transform_.translate = bezierPos + relativeOffset;
     }
+        // 現在時刻を取得（秒）
+    float currentTime = static_cast<float>(std::chrono::duration<double>(std::chrono::high_resolution_clock::now().time_since_epoch()).count());
+
+    // deltaTime を計算
+    float deltaTime = currentTime - previousTime_;
+    previousTime_ = currentTime;
 
     UpdateBoostState(); // 追加：ブースト状態更新
 
@@ -170,6 +181,53 @@ void Player::AttachBullet() {
         BulletManager::GetInstance()->AddPlayerBullet(std::move(bullet));                 // BulletManagerに追加
         canShoot_ = false;                                                          // 弾を撃てる状態にする
     };
+
+
+    //// スペースキー押している間はチャージ
+    //if (Input::GetInstance()->Pushkey(DIK_SPACE)) {
+    //    isCharging_ = true;
+    //    chargeTime_ += 1.0f / 60.0f;                 // フレーム加算（60fps前提）
+    //    chargeTime_ = (chargeTime_ > maxChargeTime_) ? maxChargeTime_ : chargeTime_;
+    //    return; // 発射はまだ行わない
+    //}
+
+    //// スペースキーを離したタイミングで弾を撃つ
+    //if (isCharging_) {
+    //    isCharging_ = false;
+
+    //    // 発射するサイズをチャージ時間に応じて設定（最小0.5 最大3.0など）
+    //    float sizeScale = 0.5f + (chargeTime_ / maxChargeTime_) * 2.5f;
+
+    //    std::unique_ptr<PlayerBullet> bullet = std::make_unique<PlayerBullet>();
+    //    bullet->Initialize(transform_.translate, copypos, 3.0f); // 速度や初期位置
+
+    //    // サイズを反映
+    //    bullet->SetScale({ sizeScale, sizeScale, sizeScale });
+
+    //    BulletManager::GetInstance()->AddPlayerBullet(std::move(bullet));
+
+    //    chargeTime_ = 0.0f; // チャージタイマーリセット
+    //}
+
+    //if (isCharging_) {
+    //    isCharging_ = false;
+
+    //    float sizeScale = 0.5f + (chargeTime_ / maxChargeTime_) * 2.5f;
+
+    //    // 左弾
+    //    std::unique_ptr<PlayerBullet> leftBullet = std::make_unique<PlayerBullet>();
+    //    leftBullet->Initialize(transform_.translate + bulletOffsetLeft, copypos, 3.0f);
+    //    leftBullet->SetScale({ sizeScale, sizeScale, sizeScale });
+    //    BulletManager::GetInstance()->AddPlayerBullet(std::move(leftBullet));
+
+    //    // 右弾
+    //    std::unique_ptr<PlayerBullet> rightBullet = std::make_unique<PlayerBullet>();
+    //    rightBullet->Initialize(transform_.translate + bulletOffsetRight, copypos, 3.0f);
+    //    rightBullet->SetScale({ sizeScale, sizeScale, sizeScale });
+    //    BulletManager::GetInstance()->AddPlayerBullet(std::move(rightBullet));
+
+    //    chargeTime_ = 0.0f;
+    //}
 }
 
 void Player::UpdateReticlePosition() {

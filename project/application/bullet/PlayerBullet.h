@@ -47,4 +47,6 @@ public:
     
     Vector3 GetRadius() const { return size_; }
     void SetRadius(const Vector3& pos) { size_ = pos; }
+
+    void SetScale(const Vector3& scale);
 };

@@ -20,7 +20,15 @@ struct EnemySpawnTrigger {
     bool hasSpawned;
     MoveType moveType; // ← 動きタイプを追加
 };
-
+//
+//struct FormationEaseData {
+//    Enemy* enemy;
+//    Vector3 startPos;
+//    Vector3 endPos;
+//    float timer = 0.0f;
+//    float duration = 1.0f;
+//    bool active = true;
+//};
 
 class Enemy : public BaseCharacter {
 public:
@@ -86,7 +94,7 @@ private:
 	
 	Vector3 moveDirection_;               // ランダム移動方向
     std::uniform_real_distribution<float> moveDirDist_; // 移動方向の分布（-1.0～1.0）
-    float moveSpeed_ = 0.05f;             // 移動速度
+    float moveSpeed_ = 0.1f;             // 移動速度
 
 	MoveType moveType_;  // 動きの種類
 

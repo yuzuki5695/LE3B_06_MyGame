@@ -27,7 +27,9 @@ public: // メンバ関数
     bool IsOBBIntersect(const OBB& a, const OBB& b);
     void CheckBulletEnemyCollisionsOBB();    // プレイヤーの弾と敵
     void CheckEnemyBulletPlayerCollisionsOBB();    // プレイヤーと敵の弾
-
+    void SpawnVFormation(const EnemySpawnTrigger& trigger);
+    void SpawnReverseStepFormation(const EnemySpawnTrigger& trigger);
+    void SpawnZigZagFormation(const EnemySpawnTrigger& trigger);
 private: // メンバ変数
     // オブジェクトデータ
     // 地面
@@ -57,4 +59,5 @@ private: // メンバ変数
     std::unique_ptr <Skybox> Box_ = nullptr;
 
 	float goalpos_ = 300.0f;
+
 };

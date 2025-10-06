@@ -59,9 +59,9 @@ void GamePlayScene::Initialize() {
 
     // 敵出現トリガー
     spawnTriggers_ = {
-    {40.0f, 6, false, MoveType::None},       // 全部動かない
-    {120.0f, 3, false, MoveType::Vertical},  // 全部縦移動
-    {190.0f, 5, false, MoveType::Horizontal} // 全部横移動
+    {40.0f, 5, false, MoveType::Horizontal},       // 全部動かない None
+    {120.0f, 5, false, MoveType::Vertical},  // 全部縦移動 Vertical
+    {190.0f, 5, false, MoveType::None} // 全部横移動  Horizontal
     };
 
     // 敵をリストに追加して初期化
@@ -243,64 +243,132 @@ void GamePlayScene::EnemySpawn() {
         auto& trigger = spawnTriggers_[tIndex];
 
         if (!trigger.hasSpawned && playerZ >= trigger.zThreshold) {
-            int activated = 0;
+        
+            // --- フォーメーションの種類で分岐 ---
+            if (tIndex == 0) {
+                //SpawnVFormation(trigger);  // △
+                SpawnReverseStepFormation(trigger);
+                //SpawnZigZagFormation(trigger);
 
-            for (auto& enemy : enemies_) {
-                if (!enemy->IsActive()) {
-                    if (tIndex == 0) {
-                        float baseX = 0.0f;    // 真ん中の基準X
-                        float baseY = 5.0f;    // 一番上のY
-                        float stepX = 3.0f;    // 横の広がり
-                        float stepY = -2.0f;   // 下がる幅
-                        float baseZ = trigger.zThreshold + 60.0f;
+            }  if (tIndex == 1) {
+                SpawnVFormation(trigger);
+            
+            }if (tIndex == 2) {                               
+                SpawnZigZagFormation(trigger);
 
-                        float posX = baseX;
-                        float posY = baseY;
-
-                        switch (activated) {
-                        case 0: // 真ん中（頂点）
-                            posX = baseX;
-                            posY = baseY;
-                            break;
-                        case 1: // 左上
-                            posX = baseX - stepX;
-                            posY = baseY + stepY;
-                            break;
-                        case 2: // 右上
-                            posX = baseX + stepX;
-                            posY = baseY + stepY;
-                            break;
-                        case 3: // 左下
-                            posX = baseX - stepX * 2;
-                            posY = baseY + stepY * 2;
-                            break;
-                        case 4: // 右下
-                            posX = baseX + stepX * 2;
-                            posY = baseY + stepY * 2;
-                            break;
-                        }
-
-                        enemy->SetnewTranslate(
-                            Vector3{ posX, posY, baseZ },
-                            trigger.moveType
-                        );
-
-                    } else {
-                        // 従来通り
-                        enemy->SetInitialize(trigger.zThreshold, trigger.moveType);
-                    }
-
-                    enemy->SetActive(true);
-                    ++activated;
-                    if (activated >= trigger.spawnCount) break;
-                }
             }
-
             trigger.hasSpawned = true;
         }
     }
 }
 
+void GamePlayScene::SpawnZigZagFormation(const EnemySpawnTrigger& trigger) {
+    int activated = 0;
+    const int numEnemies = 5;
+
+    const float baseY = 5.0f;           // 中央Y
+    const float baseZ = trigger.zThreshold + 50.0f;
+
+    // X座標とY座標を個別指定（5体）
+    const float xPositions[5] = { -1.5f, 1.5f, 0.0f, -1.5f, 1.5f };
+    const float yPositions[5] = { 2.0f, 2.0f, 0.0f, -2.0f, -2.0f };
+
+    for (auto& enemy : enemies_) {
+        if (!enemy->IsActive() && activated < numEnemies) {
+
+            float posX = xPositions[activated];
+            float posY = baseY + yPositions[activated];
+            float posZ = baseZ;
+
+            enemy->SetnewTranslate(Vector3{ posX, posY, posZ }, trigger.moveType);
+            enemy->SetActive(true);
+
+            ++activated;
+        }
+    }
+}
+
+void GamePlayScene::SpawnReverseStepFormation(const EnemySpawnTrigger& trigger) {
+    int activated = 0;
+
+    const float baseX = 0.0f;     // 左右中央
+    const float baseY = 5.0f;     // 一番上
+    const float baseZ = trigger.zThreshold + 80.0f; // プレイヤーより少し前
+
+    const float stepX = 1.5f;     // 横ズレ
+    const float stepY = -1.2f;    // 縦ズレ
+    const float stepZ = 5.0f;     // 奥行き方向
+
+    for (auto& enemy : enemies_) {
+        if (!enemy->IsActive()) {
+            // X方向のズレを逆に
+            float posX = baseX - (stepX * activated); // ← 反転
+            float posY = baseY + (stepY * activated);
+            float posZ = baseZ - (stepZ * activated);
+
+            // 敵をそのまま配置
+            enemy->SetnewTranslate(Vector3{ posX, posY, posZ }, trigger.moveType);
+            enemy->SetActive(true);
+
+            ++activated;
+            if (activated >= trigger.spawnCount) break;
+        }
+    }
+}
+
+
+void GamePlayScene::SpawnVFormation(const EnemySpawnTrigger& trigger) {
+    int activated = 0;
+
+    // 基準位置
+    const float baseX = 0.0f;    // 中央
+    const float baseY = 1.0f;    // 一番上
+    const float stepX = 3.0f;    // 横の間隔
+    const float stepY = -2.0f;   // 縦の間隔
+    const float baseZ = trigger.zThreshold + 60.0f;
+
+    for (auto& enemy : enemies_) {
+        if (!enemy->IsActive()) {
+            float posX = baseX;
+            float posY = baseY;
+
+            // 出現位置をactivatedの順で決定
+            switch (activated) {
+            case 0: // 真ん中（頂点）
+                posX = baseX;
+                posY = baseY;
+                break;
+            case 1: // 左上
+                posX = baseX - stepX;
+                posY = baseY + stepY;
+                break;
+            case 2: // 右上
+                posX = baseX + stepX;
+                posY = baseY + stepY;
+                break;
+            case 3: // 左下
+                posX = baseX - stepX * 2;
+                posY = baseY + stepY * 2;
+                break;
+            case 4: // 右下
+                posX = baseX + stepX * 2;
+                posY = baseY + stepY * 2;
+                break;
+            default:
+                // spawnCountが5を超えた場合の安全策
+                posX = baseX + (activated - 2) * stepX;
+                posY = baseY + stepY * 3;
+                break;
+            }
+
+            enemy->SetnewTranslate(Vector3{ posX, posY, baseZ }, trigger.moveType);
+            enemy->SetActive(true);
+
+            ++activated;
+            if (activated >= trigger.spawnCount) break;
+        }
+    }
+}
 
 bool GamePlayScene::IsOBBIntersect(const OBB& a, const OBB& b) {
     const float EPSILON = 1e-5f;
