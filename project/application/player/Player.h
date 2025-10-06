@@ -1,6 +1,7 @@
 #pragma once
 #include<BaseCharacter.h>
 #include<Sprite.h>
+#include <ParticleEmitter.h>
 
 class Player : public BaseCharacter {
 public:// メンバ関数
@@ -47,6 +48,10 @@ public:// メンバ関数
     bool IsActive() const { return active_; }
 	void SetActive(bool isactive) { active_ = isactive; }
 	    
+	void StartHitEffect() {
+		isHit_ = true;
+		hitEffectTimer_ = 0.0f;
+	}
 
 private:// メンバ変数
 	bool active_ = true;
@@ -85,7 +90,25 @@ private:// メンバ変数
     Vector3 reticleWorldPos_;    // 3D空間のレティクル位置（ワールド座標）
     Vector2 reticleScreenPos_;   // 画面上のスプライト描画位置（スクリーン座標）
 
+	 
+	bool isHit_ = false;           // 弾に当たったことを示すフラグ
+    float hitEffectTimer_ = 0.0f;  // 演出経過時間
+    const float hitEffectDuration_ = 1.0f; // 演出にかける時間（秒）
+	float previousTime_ = 0.0f;	    
+	Vector4 originalColor_{};   // RGB + Alpha
+	bool end = false;
+    
+	std::unique_ptr <ParticleEmitter> circle_;
+    RandomParameter random_;
 
+
+	
+	bool isCharging_ = false;        // チャージ中か
+    float chargeTime_ = 0.0f;        // 押し続けた時間
+    const float maxChargeTime_ = 5.0f; // 最大チャージ時間（秒）
+
+	Vector3 bulletOffsetLeft  = { -0.5f, 0.0f, 0.0f }; // 左側の発射位置
+	Vector3 bulletOffsetRight = {  0.5f, 0.0f, 0.0f }; // 右側の発射位置
 
 public:// メンバ変数
 	// getter
@@ -94,7 +117,7 @@ public:// メンバ変数
 	void SetTransform(const Transform& t) {
 		transform_ = t;
 	}
-
+	bool IsDeadFinished() const { return end; }
 	// Transformのpositionを返すgetter
 	Vector3 GetPosition() const {
 		return transform_.translate;

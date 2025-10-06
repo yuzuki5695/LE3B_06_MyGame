@@ -78,3 +78,10 @@ OBB PlayerBullet::GetOBB() const {
 
     return obb;
 }
+
+void PlayerBullet::SetScale(const Vector3& scale) {
+    size_ = scale;
+    if (object_) {
+        object_->SetScale(scale);
+    }
+}
