@@ -14,6 +14,19 @@
 #include<Material.h>
 #include<MaterialDate.h>
 #include<ModelDate.h>
+#include <assimp/mesh.h>
+
+struct Node {
+    Matrix4x4 localMatrix;
+    std::string name;
+    std::vector<Node> children;
+};
+
+struct glTFModelData {
+    std::vector<VertexData> vertices;
+    MaterialDate material;
+    Node rootNode;
+};
 
 class Model
 {
@@ -27,6 +40,11 @@ public: // メンバ関数
 	static MaterialDate LoadMaterialTemplateFile(const std::string& directoryPath, const std::string& filename);
 	// .objファイルの読み取り
 	static ModelDate LoadObjFile(const std::string& directoryPath, const std::string& filename);
+
+	// 再帰的にノードを読み取る
+	Node ReadNode(aiNode* node);	
+	// .gltfファイルの読み取り
+	glTFModelData LoadModelFile(const std::string& directoryPath, const std::string& filename);
 private:
 	// 頂点データ作成
 	void VertexDatacreation();
