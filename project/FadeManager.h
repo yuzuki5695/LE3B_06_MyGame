@@ -11,14 +11,17 @@ enum class FadeType {
     FadeOut,
     SpriteFade,
 };
-//
-//// フェードマネージャー
-//class FadeManager {
-//public:
-//	// 終了
-//    static FadeManager* GetInstance();
-//    // 初期化
-//    void Initialize(DirectXCommon* dxCommon, SrvManager* srvManager);
+
+// フェードマネージャー
+class FadeManager {
+private:
+    static std::unique_ptr<FadeManager> instance;
+public:        
+    FadeManager() = default;
+    // 終了
+    static FadeManager* GetInstance();
+    // 初期化
+    void Initialize(DirectXCommon* dxCommon, SrvManager* srvManager);
 //    // 毎フレーム更新
 //    void Update();
 //    // 描画
@@ -29,14 +32,12 @@ enum class FadeType {
 //
 //    //bool IsFading() const { return isFading_; }
 //    //bool IsFadeEnd() const { return !isFading_; }
-//private:
-//    static std::unique_ptr<FadeManager> instance;
-//    FadeManager() = default;
-//
-//private:
-//    DirectXCommon* dxCommon_ = nullptr;
-//    SrvManager* srvManager_ = nullptr;
-//
+
+
+private:
+    DirectXCommon* dxCommon_ = nullptr;
+    SrvManager* srvManager_ = nullptr;
+
 //    float timer_ = 0.0f;
 //    float duration_ = 1.0f;
 //    bool isFading_ = false;
@@ -46,4 +47,4 @@ enum class FadeType {
 //    //// スプライト版フェード用
 //    //uint32_t spriteTex_ = 0;
 //    //float spriteAlpha_ = 0.0f;
-//};
+};
