@@ -14,6 +14,7 @@
 #define NOMINMAX
 #include <Windows.h>
 #include <algorithm>
+
 void TitleScene::Finalize() {}
 
 void TitleScene::Initialize() {

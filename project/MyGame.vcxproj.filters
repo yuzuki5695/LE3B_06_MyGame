@@ -175,6 +175,12 @@
     <Filter Include="ヘッダー ファイル\application\enemy">
       <UniqueIdentifier>{8ca6f24a-1c20-4541-8f80-30ba17e68e7f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ソース ファイル\application\fade">
+      <UniqueIdentifier>{6de3d2ff-57ef-4f70-81ac-7a699de0dd44}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\application\fade">
+      <UniqueIdentifier>{fca0a5c4-0cca-4f32-9665-08aef2b11991}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -350,6 +356,9 @@
     </ClCompile>
     <ClCompile Include="application\character\CharacterManager.cpp">
       <Filter>ソース ファイル\application\character</Filter>
+    </ClCompile>
+    <ClCompile Include="FadeManager.cpp">
+      <Filter>ソース ファイル\application\fade</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -577,6 +586,9 @@
     </ClInclude>
     <ClInclude Include="application\bullet\EnemyBullet.h">
       <Filter>ヘッダー ファイル\application\bullet</Filter>
+    </ClInclude>
+    <ClInclude Include="FadeManager.h">
+      <Filter>ヘッダー ファイル\application\fade</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
