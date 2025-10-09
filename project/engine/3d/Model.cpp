@@ -134,16 +134,16 @@ ModelDate Model::LoadObjFile(const std::string& directoryPath, const std::string
 	assert(scene->HasMeshes()); // メッシュがないのは対応しない
 
     // 3. Meshを解析する
-    for (int32_t meshIndex = 0; meshIndex < scene->mNumMeshes; ++meshIndex) {
+    for (size_t meshIndex = 0; meshIndex < scene->mNumMeshes; ++meshIndex) {
         aiMesh* mesh = scene->mMeshes[meshIndex];
         assert(mesh->HasNormals()); // 法線がないMeshは今回は非対応
         assert(mesh->HasTextureCoords(0)); // TexcoordがないMeshは今回は非対応
         // Meshの中身(Face)を解析していく
-        for (int32_t faceIndex = 0; faceIndex < mesh->mNumFaces; ++faceIndex) {
+        for (size_t faceIndex = 0; faceIndex < mesh->mNumFaces; ++faceIndex) {
             aiFace& face = mesh->mFaces[faceIndex];
             assert(face.mNumIndices == 3); // 三角形のみサポート
             // Faceの中身(Vertex)を解析していく
-            for (int32_t elememt = 0; elememt < face.mNumIndices; ++elememt) {
+            for (size_t elememt = 0; elememt < face.mNumIndices; ++elememt) {
                 uint32_t vertexIndex = face.mIndices[elememt];
                 // 頂点の各要素を取得
                 aiVector3D& position = mesh->mVertices[vertexIndex];
@@ -163,7 +163,7 @@ ModelDate Model::LoadObjFile(const std::string& directoryPath, const std::string
     }
 
     // 4. Materialの解析
-    for (int32_t materialIndex = 0; materialIndex < scene->mNumMaterials; ++materialIndex) {
+    for (size_t materialIndex = 0; materialIndex < scene->mNumMaterials; ++materialIndex) {
 		aiMaterial* material = scene->mMaterials[materialIndex];
         if (material->GetTextureCount(aiTextureType_DIFFUSE) != 0) {
             aiString textureFilePath;
