@@ -11,9 +11,6 @@
 #endif // USE_IMGUI
 #include <ParticleCommon.h>
 #include<SkyboxCommon.h>
-#define NOMINMAX
-#include <Windows.h>
-#include <algorithm>
 
 void TitleScene::Finalize() {}
 
@@ -24,6 +21,7 @@ void TitleScene::Initialize() {
 
     TextureManager::GetInstance()->LoadTexture("Title/newstart.png");
     TextureManager::GetInstance()->LoadTexture("Title/Enter.png");
+    TextureManager::GetInstance()->LoadTexture("uvChecker.png");
     TextureManager::GetInstance()->LoadTexture("CubemapBox.dds");
     // .objファイルからモデルを読み込む
     ModelManager::GetInstance()->LoadModel("Title/Title.obj");
@@ -51,15 +49,41 @@ void TitleScene::Initialize() {
     moveDuration = 240.0f;  // 移動にかけるフレーム数（約2秒）     
     moveFinished = false;
     time = 0.0f;          // 経過時間 
+    
+    
+	// フェードマネージャの初期化
+    fade_ = std::make_unique<FadeManager>();
+    fade_->Initialize();
+    fade_->StartFadeIn(1.0f); // 最初はフェードイン
+
+
+    colors_ = Sprite::Create("uvChecker.png", Vector2{ 0.0f, 0.0f }, 0.0f, Vector2{ 500.0f,500.0f });
+	color_ = { 1.0f,1.0f,1.0f,0.1f };
+    colors_->SetColor(color_);
 
 #pragma endregion 最初のシーンの初期化
 }
 
 void TitleScene::Update() {
-    // ENTERキーを押したら
+    //// ENTERキーを押したら
+    //if (Input::GetInstance()->Triggrkey(DIK_RETURN)) {
+    //    // シーン切り替え
+    //    SceneManager::GetInstance()->ChangeScene("GAMEPLAY");
+    //} 
+    
+    // シーン切り替えが進行中ならフェードだけ動かす
+    if (isSceneChanging_) {
+        fade_->Update();
+        // フェードアウトが完了したら次のシーンへ
+        if (!fade_->IsFading() && fade_->GetFadeType() == FadeType::FadeOut) {
+            SceneManager::GetInstance()->ChangeScene("GAMEPLAY");
+        }
+    }
+
+    // 通常入力処理
     if (Input::GetInstance()->Triggrkey(DIK_RETURN)) {
-        // シーン切り替え
-        SceneManager::GetInstance()->ChangeScene("GAMEPLAY");
+        isSceneChanging_ = true;
+        fade_->StartFadeOut(1.0f); // 1秒でフェードアウト開始
     }
 
     /*-------------------------------------------*/
@@ -180,5 +204,7 @@ void TitleScene::Draw() {
     ui1_->Draw();
     ui2_->Draw();
 
+	// フェードの描画
+    fade_->Draw();
 #pragma endregion 全てのSprite個々の描画処理
 }

@@ -151,7 +151,7 @@ void SpriteCommon::GraphicsPipelineGenerate() {
     blendDesc.RenderTarget[0].DestBlend = D3D12_BLEND_INV_SRC_ALPHA;
     blendDesc.RenderTarget[0].SrcBlendAlpha = D3D12_BLEND_ONE;           // これから書き込む色。PixeShaderから出力する色 (ソースカラ―)
     blendDesc.RenderTarget[0].BlendOpAlpha = D3D12_BLEND_OP_ADD;         // これから書き込むα。PixeShaderから出力するα値 (ソースアルファ)
-    blendDesc.RenderTarget[0].DestBlendAlpha = D3D12_BLEND_ZERO;         // すでに書き込まれている色 (デストカラー)
+    blendDesc.RenderTarget[0].DestBlendAlpha = D3D12_BLEND_INV_SRC_ALPHA;         // すでに書き込まれている色 (デストカラー)
 
     //// 加算合成
     //blendDesc.RenderTarget[0].SrcBlend = D3D12_BLEND_SRC_ALPHA;       // これから書き込む色。PixeShaderから出力する色 (ソースカラ―)
@@ -209,8 +209,12 @@ void SpriteCommon::GraphicsPipelineGenerate() {
     // DepthStencilの設定
     // DSVManager から取得した設定をコピー
     D3D12_DEPTH_STENCIL_DESC spriteDepthStencilDesc = dsvManager_->GetDepthStencilDesc();
-    // スプライトは深度バッファに書き込まない（透過表示用）
+    // スプライトは深度バッファに書き込まない（透過表示用） 
+    spriteDepthStencilDesc.DepthEnable = FALSE;
     spriteDepthStencilDesc.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ZERO;
+    spriteDepthStencilDesc.DepthFunc = D3D12_COMPARISON_FUNC_ALWAYS;
+    spriteDepthStencilDesc.StencilEnable = FALSE;
+
     graphicsPipelineStateDesc.DepthStencilState = spriteDepthStencilDesc;
     graphicsPipelineStateDesc.DSVFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
 

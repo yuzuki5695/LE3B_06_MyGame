@@ -4,6 +4,7 @@
 #include <SrvManager.h>
 #include <CopylmageCommon.h>
 #include <SpriteCommon.h>
+#include <Sprite.h>
 
 enum class FadeType {
     None,
@@ -21,30 +22,24 @@ public:
     // 終了
     static FadeManager* GetInstance();
     // 初期化
-    void Initialize(DirectXCommon* dxCommon, SrvManager* srvManager);
-//    // 毎フレーム更新
-//    void Update();
-//    // 描画
-//    void Draw();
-//
-//    //void StartFadeOut(float duration, bool useRenderTexture = true);
-//    //void StartFadeIn(float duration, bool useRenderTexture = true);
-//
-//    //bool IsFading() const { return isFading_; }
-//    //bool IsFadeEnd() const { return !isFading_; }
+    void Initialize();
+    // 毎フレーム更新
+    void Update();
+    // 描画
+    void Draw();
+
+    void StartFadeIn(float duration = 1.0f);
+    void StartFadeOut(float duration = 1.0f);
+    bool IsFading() const { return isFading_; }
+    bool IsFadeEnd() const { return !isFading_; }
+    FadeType GetFadeType() const { return fadeType_; }
 
 
 private:
-    DirectXCommon* dxCommon_ = nullptr;
-    SrvManager* srvManager_ = nullptr;
-
-//    float timer_ = 0.0f;
-//    float duration_ = 1.0f;
-//    bool isFading_ = false;
-//    bool useRenderTexture_ = true;
-//    FadeType fadeType_ = FadeType::None;
-//
-//    //// スプライト版フェード用
-//    //uint32_t spriteTex_ = 0;
-//    //float spriteAlpha_ = 0.0f;
+    std::unique_ptr<Sprite> sprite_;
+    FadeType fadeType_ = FadeType::None;
+    bool isFading_ = false;
+    float timer_ = 0.0f;
+    float duration_ = 1.0f;
+    float alpha_ = 0.0f;
 };
