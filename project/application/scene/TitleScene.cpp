@@ -42,7 +42,7 @@ void TitleScene::Initialize() {
     ui2_->SetTextureSize(Vector2{ 180.0f,90.0f });
 
     tile_ = Object3d::Create("Tile.obj", { { 20.0f, 1.0f, 300.0f }, { 0.0f, 0.9f, 0.0f }, { 0.0f, -8.0f, 63.4f } });
-  
+
     playertransform_ = { {1.0f, 1.0f, 1.0f}, {0.0f, 0.9f, 0.0f},  -20.0f,0.0f,40.0f };
     player_ = Object3d::Create("Player.obj", playertransform_);
     startX = -20.0f;
@@ -52,23 +52,29 @@ void TitleScene::Initialize() {
     moveDuration = 240.0f;  // 移動にかけるフレーム数（約2秒）     
     moveFinished = false;
     time = 0.0f;          // 経過時間 
-    
-	// フェードマネージャの初期化
+
+    // フェードマネージャの初期化
     FadeManager::GetInstance()->Initialize();
-        
+
 #pragma endregion 最初のシーンの初期化
 }
 
 void TitleScene::Update() {
-    // フェードマネージャの更新   
-    FadeManager::GetInstance()->Update();
-    // 入力処理
-    if (Input::GetInstance()->Triggrkey(DIK_RETURN) && !FadeManager::GetInstance()->IsFadeStart()) {
+       // フェードイン開始
+    if (!FadeManager::GetInstance()->IsFadeStart() && !FadeManager::GetInstance()->IsFading()) {
         // フェード開始
-        FadeManager::GetInstance()->StartFadeOut(1.0f,FadeStyle::Circle);
+        FadeManager::GetInstance()->StartFadeIn(1.0f, FadeStyle::SilhouetteSlide);
     }
+    // フェードマネージャの更新処理
+    FadeManager::GetInstance()->Update();
+       // ゲームシーンへの入力処理
+    if (Input::GetInstance()->Triggrkey(DIK_RETURN) && !FadeManager::GetInstance()->IsFading() && FadeManager::GetInstance()->IsFadeEnd()) {
+        // フェード開始
+        FadeManager::GetInstance()->StartFadeOut(1.0f,FadeStyle::SilhouetteExplode);
+    }
+
     // フェードアウトが完了したら次のシーンへ
-    if (FadeManager::GetInstance()->IsFadeEnd()) {
+    if (FadeManager::GetInstance()->IsFadeEnd() && FadeManager::GetInstance()->GetFadeType() == FadeType::FadeOut) {
         SceneManager::GetInstance()->ChangeScene("GAMEPLAY");
     }
 

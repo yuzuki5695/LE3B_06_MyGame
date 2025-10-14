@@ -76,28 +76,26 @@ void GamePlayScene::Initialize() {
 
     wall = Object3d::Create("wall.obj", Transform{ { 10.0f, 0.7f, 0.7f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 300.0f } });
 
-    black = Sprite::Create("Black.png", Vector2{ 0.0f, 0.0f }, 0.0f, Vector2{ 1280.0f,720.0f });
-    black->SetColor(Vector4(1.0f, 1.0f, 1.0f, 0.0f));
-
     // Bulletマネージャの初期化
     BulletManager::GetInstance()->Initialize();
 
     TextureManager::GetInstance()->LoadTexture("CubemapBox.dds");
 
     Box_ = Skybox::Create("CubemapBox.dds", Transform{ { 1000.0f, 1000.0f, 1000.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 100.0f } });
-   
+	
+    goal_ = false;
     // フェードマネージャの初期化
     FadeManager::GetInstance()->Initialize();
 }
 
 void GamePlayScene::Update() {
     // フェードイン開始
-    if (!FadeManager::GetInstance()->IsFadeStart()) {
+    if (!FadeManager::GetInstance()->IsFadeStart() && !FadeManager::GetInstance()->IsFading()) {
         // フェード開始
-        FadeManager::GetInstance()->StartFadeIn(1.0f,FadeStyle::Circle);
+        FadeManager::GetInstance()->StartFadeIn(1.0f, FadeStyle::SilhouetteExplode);
     }
     // フェードマネージャの更新   
-    FadeManager::GetInstance()->Update();     
+    FadeManager::GetInstance()->Update();
 
 
     /*-------------------------------------------*/
@@ -105,7 +103,7 @@ void GamePlayScene::Update() {
     /*------------------------------------------*/
     CameraManager::GetInstance()->Update();
 #pragma region 全てのObject3d個々の更新処理
-      
+
     playerhp_ = player_->IsActive();
 
 
@@ -120,7 +118,7 @@ void GamePlayScene::Update() {
         // 更新処理
         grass->Update();
 
-        
+
         player_->Update();
 
         if (player_->GetPosition().z <= goalpos_) {
@@ -149,26 +147,27 @@ void GamePlayScene::Update() {
         }
     }
 
-    if (player_->GetPosition().z >= goalpos_) {
-        end = true; 
-    } 
+    if (player_->GetPosition().z >= goalpos_ && !end) {
+        end = true;
+        goal_ = true;
+    }
 
-    if (end) {
-        // フェード時間を進行（毎フレーム）
-        fadeTimer += 1.0f / 60.0f; // 60fps前提。タイマーに1フレームぶん加算
-
-        float t = std::clamp(fadeTimer / fadeDuration, 0.0f, 1.0f); // 0.0～1.0 に正規化
-        black->SetColor(Vector4(1.0f, 1.0f, 1.0f, t)); // αのみ徐々に増加（0→1）
-        if (t >= 1.0f) {
-            if (!playerhp_) {
-                // シーン切り替え
-                SceneManager::GetInstance()->ChangeScene("GAMEOVER");
-            } else {
-                // シーン切り替え
-                SceneManager::GetInstance()->ChangeScene("GAMECLEAR");
-            }
+	// ゴールしたらフェードアウト開始
+    if (goal_) {
+        FadeManager::GetInstance()->StartFadeOut(1.0f, FadeStyle::Normal);
+        goal_ = false;
+    }
+    // フェードアウトが完了したら次のシーンへ
+    if (FadeManager::GetInstance()->IsFadeEnd() && FadeManager::GetInstance()->GetFadeType() == FadeType::FadeOut) {
+        if (!playerhp_) {
+            // シーン切り替え
+            SceneManager::GetInstance()->ChangeScene("GAMEOVER");
+        } else {
+            // シーン切り替え
+            SceneManager::GetInstance()->ChangeScene("GAMECLEAR");
         }
     }
+
     // 死んだ敵の削除
     enemies_.erase(
         std::remove_if(enemies_.begin(), enemies_.end(),
@@ -183,8 +182,6 @@ void GamePlayScene::Update() {
 #pragma endregion 全てのObject3d個々の更新処理
 
 #pragma region 全てのSprite個々の更新処理
-
-    black->Update();
 
 #pragma endregion 全てのSprite個々の更新処理
 
@@ -470,8 +467,10 @@ void GamePlayScene::CheckEnemyBulletPlayerCollisionsOBB() {
         if (IsOBBIntersect(bulletOBB, playerOBB)) {
             bullet->SetInactive();
             player_->SetInactive();  // プレイヤーを無効にする
-    
-            end =true;
+
+            end = true;
+            // フェード開始             
+            FadeManager::GetInstance()->StartFadeOut(1.0f, FadeStyle::Normal);
             // ヒットエフェクトなど追加
             break;
         }

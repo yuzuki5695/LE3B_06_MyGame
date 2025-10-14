@@ -44,35 +44,37 @@ void FadeManager::Initialize() {
     fadeEnd_ = false;
     t_ = 0.0f;
 
-    TextureManager::GetInstance()->LoadTexture("uvChecker.png");
+    TextureManager::GetInstance()->LoadTexture("fade/white.png");
     // 画面を格子状に黒丸で埋める
-    const int cols = 11;
-    const int rows = 7;
+    const int cols = 10;
+    const int rows = 6;
     const float spacingX = 1280.0f / cols;
-    const float spacingY = 720.0f / rows;
-   
-    const float maxDelay = 0.5f; // 最大遅延時間（秒）
-    shapes_.clear();
+    const float spacingY = 720.0f / rows; 
+    const float maxDelay = 0.7f; // 最大遅延時間（秒）   
+    Vector2 center = { 1280.0f / 2, 720.0f / 2 }; // 画面中心
+    shapes_.clear(); 
     for (int y = 0; y < rows; ++y) {
         for (int x = 0; x < cols; ++x) {
             FadeShape shape;
-
-            // 中央アンカーなので、セルの中央に配置
             shape.position = { (x + 0.5f) * spacingX, (y + 0.5f) * spacingY };
             shape.size = { spacingX, spacingY };
             shape.scale = 0.0f;
 
-            shape.sprite = Sprite::Create("uvChecker.png", shape.position, 0.0f, shape.size);
+            shape.sprite = Sprite::Create("fade/white.png", shape.position, 0.0f, shape.size);
             shape.sprite->SetAnchorPoint({ 0.5f, 0.5f });
-            shape.sprite->SetColor({ 0.0f, 0.0f, 0.0f, 0.0f });
+            shape.sprite->SetColor({ 0, 0, 0, 0 });
 
-            // 左から順に delay を設定
-            shape.delay = (float)x / cols * maxDelay;
-
+            // 中心からの距離に応じてdelay設定
+            float dx = shape.position.x - center.x;
+            float dy = shape.position.y - center.y;
+            float dist = std::sqrt(dx * dx + dy * dy);
+            float maxDist = std::sqrt(center.x * center.x + center.y * center.y);
+            shape.delay = (dist / maxDist) * maxDelay;
+            shape.rotation = 0.0f;
+            shape.rotationSpeed = (rand() % 2 == 0 ? 1 : -1) * (0.02f + (rand() % 100 / 5000.0f));
             shapes_.push_back(std::move(shape));
         }
     }
-
 }
 
 void FadeManager::StartFadeIn(float duration, FadeStyle style) {
@@ -84,6 +86,7 @@ void FadeManager::StartFadeIn(float duration, FadeStyle style) {
     timer_ = 0.0f;
     alpha_ = 0.0f;
     fadeStart_ = true;
+    fadeEnd_ = false;
     isFading_ = true;
 }
 
@@ -96,6 +99,7 @@ void FadeManager::StartFadeOut(float duration, FadeStyle style) {
     timer_ = 0.0f;
     alpha_ = 0.0f;
     fadeStart_ = true;
+    fadeEnd_ = false;
     isFading_ = true;
 }
 
@@ -112,11 +116,13 @@ void FadeManager::Update() {
 
     switch (fadeStyle_) {
     case FadeStyle::Normal: UpdateNormalFade(); break;
-    case FadeStyle::Circle: UpdateSilhouetteFade(); break;
+    case FadeStyle::SilhouetteSlide: UpdateSilhouetteSlideFade(); break;
+    case FadeStyle::SilhouetteExplode: UpdateSilhouetteExplodeFade(); break;   
     }
 
     // フェード完了判定
     if (t_ >= 1.0f) {
+        // フラグリセット
         isFading_ = false;
         fadeEnd_ = true;
     }
@@ -134,41 +140,130 @@ void FadeManager::UpdateNormalFade() {
     sprite_->SetColor({ 0.0f, 0.0f, 0.0f, alpha_ });
     sprite_->Update();
 }
-
-void FadeManager::UpdateSilhouetteFade() {
+   
+void FadeManager::UpdateSilhouetteSlideFade() {
     const float maxScale = 1.0f;
+    auto easeOutQuad = [](float t) { return 1 - (1 - t) * (1 - t); };
 
     for (auto& s : shapes_) {
-        float scale;
-        float alpha;
+        float localT = std::clamp((t_ - s.delay) / (1.0f - s.delay), 0.0f, 1.0f);
+        float easedT = easeOutQuad(localT);
 
+        float scale, alpha;
         if (fadeType_ == FadeType::FadeOut) {
-            // フェードアウト（左から右）
-            float localT = std::clamp((t_ - s.delay) / (1.0f - s.delay), 0.0f, 1.0f);
-            scale = localT * maxScale;
-            alpha = localT;
-        } else { // FadeIn（右から左）
-            // delay を反転して右側から開始
-            float reversedDelay = 1.0f - s.delay;
-            float localT = std::clamp((t_ - reversedDelay) / (1.0f - reversedDelay), 0.0f, 1.0f);
-
-            scale = maxScale - localT * maxScale;
-            alpha = 1.0f - localT;
+            scale = easedT * maxScale;
+            alpha = easedT;
+        } else {
+            scale = maxScale - easedT * maxScale;
+            alpha = 1.0f - easedT;
         }
 
         s.scale = scale;
         s.sprite->SetSize(s.size * s.scale);
-        s.sprite->SetColor({ 0.0f, 0.0f, 0.0f, alpha });
+        s.sprite->SetColor({ 0,0,0,alpha });
         s.sprite->Update();
     }
 }
+
+void FadeManager::UpdateSilhouetteExplodeFade() {
+    const Vector2 center = { 1280.0f / 2, 720.0f / 2 };
+
+    // 弾けるようなイージング
+    auto easeOutElastic = [](float t) {
+        const float c4 = (2 * 3.141592f) / 3;
+        return (t == 0.0f) ? 0.0f :
+            (t == 1.0f) ? 1.0f :
+            powf(2.0f, -10.0f * t) * sinf((t * 10.0f - 0.75f) * c4) + 1.0f;
+        };
+
+    for (auto& s : shapes_) {
+        float localT = std::clamp((t_ - s.delay) / (1.0f - s.delay), 0.0f, 1.0f);
+        float easedT = easeOutElastic(localT);
+
+        float scale = 1.0f;
+        float alpha = 1.0f;
+        Vector2 pos = s.position;
+        Vector2 dir = { pos.x - center.x, pos.y - center.y };
+        float len = std::sqrt(dir.x * dir.x + dir.y * dir.y);
+        if (len > 0.0f) { dir.x /= len; dir.y /= len; }
+
+        Vector4 color = { 0, 0, 0, 1 }; // デフォルト黒
+
+        // ===============================================
+        // フェードアウト処理（中心に戻る）
+        // ===============================================
+        if (fadeType_ == FadeType::FadeOut) {
+
+            float spread = (1.0f - easedT) * 150.0f;
+            Vector2 movedPos = { pos.x + dir.x * spread, pos.y + dir.y * spread };
+            s.sprite->SetPosition(movedPos);
+
+            scale = 1.0f - (1.0f - easedT) * 0.2f;
+            alpha = easedT;
+            color = { 0, 0, 0, alpha };
+        }
+
+        // ===============================================
+        // フェードイン処理（黒→白→爆発移動）
+        // ===============================================
+        else {
+            // 0〜0.3：黒→白へ（静止）
+            if (localT < 0.3f) {
+                float colorT = localT / 0.3f; // 0→1
+                color = {
+                    colorT, colorT, colorT, 1.0f // 黒→白
+                };
+                s.sprite->SetPosition(pos);  // 動かない
+                scale = 1.0f;
+                alpha = 1.0f;
+            }
+            // 0.3〜1.0：白→黒に戻りながら爆発的に移動
+            else {
+                float moveT = (localT - 0.3f) / 0.7f; // 0〜1へ正規化
+                float easedMoveT = easeOutElastic(moveT);
+
+                // 拡散距離（爆発）
+                float spread = easedMoveT * 150.0f;
+                Vector2 movedPos = { pos.x + dir.x * spread, pos.y + dir.y * spread };
+
+                s.rotation += s.rotationSpeed * easedMoveT;
+                s.sprite->SetRotation(s.rotation);
+                s.sprite->SetPosition(movedPos);
+
+                // スケール・アルファ変化
+                scale = 1.0f + easedMoveT * 0.3f;
+
+                // 完全に透明までフェードアウト
+                alpha = std::clamp(1.0f - easedMoveT, 0.0f, 1.0f);
+
+
+                // 白のまま固定
+                color = { 1.0f, 1.0f, 1.0f, alpha };
+            }
+        }
+
+        // ===============================================
+        // 共通適用
+        // ===============================================
+        s.scale = scale;
+        s.sprite->SetSize(s.size * s.scale);
+        s.sprite->SetColor(color);
+        s.sprite->Update();
+    }
+}
+
 
 void FadeManager::Draw() {
     switch (fadeStyle_) {
     case FadeStyle::Normal:
         sprite_->Draw();
         break;
-    case FadeStyle::Circle:
+    case FadeStyle::SilhouetteSlide:
+        for (auto& s : shapes_) {
+            s.sprite->Draw();
+        };
+        break;
+    case FadeStyle::SilhouetteExplode:
         for (auto& s : shapes_) {
             s.sprite->Draw();
         };

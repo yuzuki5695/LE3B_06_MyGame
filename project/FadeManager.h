@@ -15,7 +15,8 @@ enum class FadeType {
 // フェードの演出スタイル（新規）
 enum class FadeStyle {
     Normal,   // 全画面フェード
-    Circle,   // 円フェード
+    SilhouetteExplode,    // 中心から外に飛び散って消えるフェード
+    SilhouetteSlide,      // 左→右に消える、右→左に現れる（線状フェード）
 };
 
 struct FadeShape {
@@ -24,6 +25,8 @@ struct FadeShape {
     Vector2 size;
     float scale;
     float delay;   // このスプライトが拡大を始めるまでの遅延時間
+    float rotation;        // 現在の回転角度（ラジアン）
+    float rotationSpeed;   // 回転速度（ランダム）
 };
 
 // フェードマネージャー
@@ -50,8 +53,8 @@ public: // メンバ関数
     void DrawImGui(); // 👈 追加：ImGui描画
         
 	void UpdateNormalFade();     // 通常フェード
-    void UpdateSilhouetteFade(); // シルエットフェード
-    
+    void UpdateSilhouetteExplodeFade();
+    void UpdateSilhouetteSlideFade();
     void StartFadeIn(float duration, FadeStyle style);
     void StartFadeOut(float duration, FadeStyle style);
 
@@ -75,4 +78,6 @@ public:
 
     bool IsFadeStart() const { return fadeStart_; }
     bool IsFadeEnd() const { return fadeEnd_; }    
+    bool IsFading() const { return isFading_; }
+
 };
