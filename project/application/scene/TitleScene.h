@@ -5,6 +5,7 @@
 #include<ParticleEmitter.h>
 #include<SoundPlayer.h>
 #include <Skybox.h>
+#include<FadeManager.h>
 
 // ゲームプレイシーン
 class TitleScene : public BaseScene

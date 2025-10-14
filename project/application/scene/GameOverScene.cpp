@@ -11,16 +11,19 @@
 #endif // USE_IMGUI
 #include <ParticleCommon.h>
 #include<SkyboxCommon.h>
+#include<FadeManager.h>
 
-void GameOverScene::Finalize() {}
+void GameOverScene::Finalize() {
+    FadeManager::GetInstance()->Finalize();
+}
 
 void GameOverScene::Initialize() {
     // カメラマネージャの初期化
     CameraManager::GetInstance()->Initialize(CameraTransform({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }));
     CameraManager::GetInstance()->SetCameraMode(CameraMode::Default);
     ModelManager::GetInstance()->LoadModel("GameOver.obj");
-            
-    TextureManager::GetInstance()->LoadTexture("TitleEnter.png"); 
+
+    TextureManager::GetInstance()->LoadTexture("TitleEnter.png");
 
     ui1_ = Sprite::Create("TitleEnter.png", Vector2{ 500.0f, 500.0f }, 0.0f, Vector2{ 250.0f,90.0f });
     ui1_->SetTextureSize(Vector2{ 250.0f,90.0f });
@@ -29,13 +32,28 @@ void GameOverScene::Initialize() {
     clear = Object3d::Create("GameOver.obj", Transform{ { 1.0f, 1.0f, 1.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 30.0f } });
     Box_ = Skybox::Create("CubemapBox.dds", Transform{ { 1000.0f, 1000.0f, 1000.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 100.0f } });
 
+
+    // フェードマネージャの初期化
+    FadeManager::GetInstance()->Initialize();
 }
 
-void GameOverScene::Update() {
-     
-    // ENTERキーを押したら
-    if (Input::GetInstance()->Triggrkey(DIK_RETURN)) {
-        // シーン切り替え
+void GameOverScene::Update() {  
+    // フェードイン開始
+    if (!FadeManager::GetInstance()->IsFadeStart() && !FadeManager::GetInstance()->IsFading()) {
+        // フェード開始
+        FadeManager::GetInstance()->StartFadeIn(1.0f, FadeStyle::Normal);
+    }
+    // フェードマネージャの更新処理
+    FadeManager::GetInstance()->Update();
+ 
+    // ゲームシーンへの入力処理
+    if (Input::GetInstance()->Triggrkey(DIK_RETURN) && !FadeManager::GetInstance()->IsFading() && FadeManager::GetInstance()->IsFadeEnd()) {
+        // フェード開始
+        FadeManager::GetInstance()->StartFadeOut(1.0f,FadeStyle::SilhouetteSlide);
+    }
+
+    // フェードアウト完了後にタイトルへ
+    if (FadeManager::GetInstance()->IsFadeEnd() && FadeManager::GetInstance()->GetFadeType() == FadeType::FadeOut) {
         SceneManager::GetInstance()->ChangeScene("TITLE");
     }
 
@@ -89,6 +107,8 @@ void GameOverScene::Draw() {
     SpriteCommon::GetInstance()->Commondrawing();
 
     ui1_->Draw();
-
+    
+    // フェードマネージャの描画
+    FadeManager::GetInstance()->Draw();
 #pragma endregion 全てのSprite個々の描画処理
 }

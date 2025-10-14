@@ -11,11 +11,11 @@
 #endif // USE_IMGUI
 #include <ParticleCommon.h>
 #include<SkyboxCommon.h>
-#define NOMINMAX
-#include <Windows.h>
-#include <algorithm>
+#include<FadeManager.h>
 
-void TitleScene::Finalize() {}
+void TitleScene::Finalize() {
+    FadeManager::GetInstance()->Finalize();
+}
 
 void TitleScene::Initialize() {
 #pragma region 最初のシーンの初期化  
@@ -24,6 +24,7 @@ void TitleScene::Initialize() {
 
     TextureManager::GetInstance()->LoadTexture("Title/newstart.png");
     TextureManager::GetInstance()->LoadTexture("Title/Enter.png");
+    TextureManager::GetInstance()->LoadTexture("uvChecker.png");
     TextureManager::GetInstance()->LoadTexture("CubemapBox.dds");
     // .objファイルからモデルを読み込む
     ModelManager::GetInstance()->LoadModel("Title/Title.obj");
@@ -41,7 +42,7 @@ void TitleScene::Initialize() {
     ui2_->SetTextureSize(Vector2{ 180.0f,90.0f });
 
     tile_ = Object3d::Create("Tile.obj", { { 20.0f, 1.0f, 300.0f }, { 0.0f, 0.9f, 0.0f }, { 0.0f, -8.0f, 63.4f } });
-  
+
     playertransform_ = { {1.0f, 1.0f, 1.0f}, {0.0f, 0.9f, 0.0f},  -20.0f,0.0f,40.0f };
     player_ = Object3d::Create("Player.obj", playertransform_);
     startX = -20.0f;
@@ -52,13 +53,28 @@ void TitleScene::Initialize() {
     moveFinished = false;
     time = 0.0f;          // 経過時間 
 
+    // フェードマネージャの初期化
+    FadeManager::GetInstance()->Initialize();
+
 #pragma endregion 最初のシーンの初期化
 }
 
 void TitleScene::Update() {
-    // ENTERキーを押したら
-    if (Input::GetInstance()->Triggrkey(DIK_RETURN)) {
-        // シーン切り替え
+       // フェードイン開始
+    if (!FadeManager::GetInstance()->IsFadeStart() && !FadeManager::GetInstance()->IsFading()) {
+        // フェード開始
+        FadeManager::GetInstance()->StartFadeIn(1.0f, FadeStyle::SilhouetteSlide);
+    }
+    // フェードマネージャの更新処理
+    FadeManager::GetInstance()->Update();
+       // ゲームシーンへの入力処理
+    if (Input::GetInstance()->Triggrkey(DIK_RETURN) && !FadeManager::GetInstance()->IsFading() && FadeManager::GetInstance()->IsFadeEnd()) {
+        // フェード開始
+        FadeManager::GetInstance()->StartFadeOut(1.0f,FadeStyle::SilhouetteExplode);
+    }
+
+    // フェードアウトが完了したら次のシーンへ
+    if (FadeManager::GetInstance()->IsFadeEnd() && FadeManager::GetInstance()->GetFadeType() == FadeType::FadeOut) {
         SceneManager::GetInstance()->ChangeScene("GAMEPLAY");
     }
 
@@ -151,6 +167,9 @@ void TitleScene::Update() {
     player_->SetRotate(playertransform_.rotate);
 
     ImGui::End();
+
+	FadeManager::GetInstance()->DrawImGui(); // フェードマネージャのImGui制御
+
 #endif // USE_IMGUI
 #pragma endregion ImGuiの更新処理終了
 
@@ -180,5 +199,7 @@ void TitleScene::Draw() {
     ui1_->Draw();
     ui2_->Draw();
 
+	// フェードの描画
+    FadeManager::GetInstance()->Draw();
 #pragma endregion 全てのSprite個々の描画処理
 }
