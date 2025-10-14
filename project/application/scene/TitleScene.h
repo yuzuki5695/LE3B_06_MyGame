@@ -40,12 +40,5 @@ private: // メンバ変数
     float endX;
          
     float time = 0.0f;          // 経過時間 
-    
-    std::unique_ptr<FadeManager> fade_;
-    bool isSceneChanging_ = false;
 
-
-
-    std::unique_ptr <Sprite> colors_;
-    Vector4 color_;
 };

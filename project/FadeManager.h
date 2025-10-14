@@ -7,39 +7,72 @@
 #include <Sprite.h>
 
 enum class FadeType {
-    None,
-    FadeIn,
-    FadeOut,
-    SpriteFade,
+    None,    // 通常
+	FadeIn,  // フェードイン
+	FadeOut, // フェードアウト
+};
+
+// フェードの演出スタイル（新規）
+enum class FadeStyle {
+    Normal,   // 全画面フェード
+    Circle,   // 円フェード
+};
+
+struct FadeShape {
+    std::unique_ptr<Sprite> sprite;
+    Vector2 position;
+    Vector2 size;
+    float scale;
+    float delay;   // このスプライトが拡大を始めるまでの遅延時間
 };
 
 // フェードマネージャー
 class FadeManager {
 private:
-    static std::unique_ptr<FadeManager> instance;
-public:        
-    FadeManager() = default;
-    // 終了
-    static FadeManager* GetInstance();
+	static std::unique_ptr<FadeManager> instance;
+
+	FadeManager(FadeManager&) = delete;
+	FadeManager& operator=(FadeManager&) = delete;
+public: // メンバ関数
+	FadeManager() = default;
+	~FadeManager() = default;
+	// シングルトンインスタンスの取得
+	static FadeManager* GetInstance();
+	// 終了
+	void Finalize();
     // 初期化
     void Initialize();
     // 毎フレーム更新
     void Update();
     // 描画
     void Draw();
-
-    void StartFadeIn(float duration = 1.0f);
-    void StartFadeOut(float duration = 1.0f);
-    bool IsFading() const { return isFading_; }
-    bool IsFadeEnd() const { return !isFading_; }
-    FadeType GetFadeType() const { return fadeType_; }
+    
+    void DrawImGui(); // 👈 追加：ImGui描画
+        
+	void UpdateNormalFade();     // 通常フェード
+    void UpdateSilhouetteFade(); // シルエットフェード
+    
+    void StartFadeIn(float duration, FadeStyle style);
+    void StartFadeOut(float duration, FadeStyle style);
 
 
 private:
     std::unique_ptr<Sprite> sprite_;
-    FadeType fadeType_ = FadeType::None;
-    bool isFading_ = false;
-    float timer_ = 0.0f;
-    float duration_ = 1.0f;
-    float alpha_ = 0.0f;
+    FadeType fadeType_;
+    FadeStyle fadeStyle_ = FadeStyle::Normal;
+    float timer_;
+    float duration_;
+    float alpha_;
+    bool isFading_;
+    bool fadeStart_;  // フェード開始瞬間
+    bool fadeEnd_;    // フェード完了瞬間
+    float t_;
+
+    std::vector<FadeShape> shapes_;
+public:
+    // getter
+    FadeType GetFadeType() const { return fadeType_; }
+
+    bool IsFadeStart() const { return fadeStart_; }
+    bool IsFadeEnd() const { return fadeEnd_; }    
 };

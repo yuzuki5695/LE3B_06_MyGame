@@ -11,8 +11,11 @@
 #endif // USE_IMGUI
 #include <ParticleCommon.h>
 #include<SkyboxCommon.h>
+#include<FadeManager.h>
 
-void TitleScene::Finalize() {}
+void TitleScene::Finalize() {
+    FadeManager::GetInstance()->Finalize();
+}
 
 void TitleScene::Initialize() {
 #pragma region 最初のシーンの初期化  
@@ -50,40 +53,23 @@ void TitleScene::Initialize() {
     moveFinished = false;
     time = 0.0f;          // 経過時間 
     
-    
 	// フェードマネージャの初期化
-    fade_ = std::make_unique<FadeManager>();
-    fade_->Initialize();
-    fade_->StartFadeIn(1.0f); // 最初はフェードイン
-
-
-    colors_ = Sprite::Create("uvChecker.png", Vector2{ 0.0f, 0.0f }, 0.0f, Vector2{ 500.0f,500.0f });
-	color_ = { 1.0f,1.0f,1.0f,0.1f };
-    colors_->SetColor(color_);
-
+    FadeManager::GetInstance()->Initialize();
+        
 #pragma endregion 最初のシーンの初期化
 }
 
 void TitleScene::Update() {
-    //// ENTERキーを押したら
-    //if (Input::GetInstance()->Triggrkey(DIK_RETURN)) {
-    //    // シーン切り替え
-    //    SceneManager::GetInstance()->ChangeScene("GAMEPLAY");
-    //} 
-    
-    // シーン切り替えが進行中ならフェードだけ動かす
-    if (isSceneChanging_) {
-        fade_->Update();
-        // フェードアウトが完了したら次のシーンへ
-        if (!fade_->IsFading() && fade_->GetFadeType() == FadeType::FadeOut) {
-            SceneManager::GetInstance()->ChangeScene("GAMEPLAY");
-        }
+    // フェードマネージャの更新   
+    FadeManager::GetInstance()->Update();
+    // 入力処理
+    if (Input::GetInstance()->Triggrkey(DIK_RETURN) && !FadeManager::GetInstance()->IsFadeStart()) {
+        // フェード開始
+        FadeManager::GetInstance()->StartFadeOut(1.0f,FadeStyle::Circle);
     }
-
-    // 通常入力処理
-    if (Input::GetInstance()->Triggrkey(DIK_RETURN)) {
-        isSceneChanging_ = true;
-        fade_->StartFadeOut(1.0f); // 1秒でフェードアウト開始
+    // フェードアウトが完了したら次のシーンへ
+    if (FadeManager::GetInstance()->IsFadeEnd()) {
+        SceneManager::GetInstance()->ChangeScene("GAMEPLAY");
     }
 
     /*-------------------------------------------*/
@@ -175,6 +161,9 @@ void TitleScene::Update() {
     player_->SetRotate(playertransform_.rotate);
 
     ImGui::End();
+
+	FadeManager::GetInstance()->DrawImGui(); // フェードマネージャのImGui制御
+
 #endif // USE_IMGUI
 #pragma endregion ImGuiの更新処理終了
 
@@ -205,6 +194,6 @@ void TitleScene::Draw() {
     ui2_->Draw();
 
 	// フェードの描画
-    fade_->Draw();
+    FadeManager::GetInstance()->Draw();
 #pragma endregion 全てのSprite個々の描画処理
 }

@@ -8,6 +8,7 @@
 #include<CharacterLoader.h>
 #include<Player.h>
 #include<Enemy.h>
+#include<FadeManager.h>
 
 // ゲームプレイシーン
 class GamePlayScene : public BaseScene
