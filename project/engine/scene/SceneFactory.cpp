@@ -17,5 +17,10 @@ BaseScene* SceneFactory::CreateScene(const std::string& sceneName) {
 	}else if (sceneName == "GAMEOVER") {
 		newScene = new GameOverScene();
 	}
+	
+	// シーン名を登録しておく
+	if (newScene) {
+		newScene->SetSceneName(sceneName);
+	}
 	return newScene;
 }

@@ -22,11 +22,9 @@ public: // メンバ関数
 private: // メンバ変数
     std::unique_ptr <Sprite> ui1_;
     std::unique_ptr <Sprite> ui2_;
-
-    std::unique_ptr <Object3d> title_; 
+    std::unique_ptr <Sprite> ui3_;
+ 
     std::unique_ptr <Skybox> Box_ = nullptr;
-
-    std::unique_ptr <Object3d> tile_; 
      
     std::unique_ptr <Object3d> player_; 
     Transform playertransform_{};
@@ -40,5 +38,5 @@ private: // メンバ変数
     float endX;
          
     float time = 0.0f;          // 経過時間 
-
+    bool hasCheckedFade_ = false; // フェード処理済みかどうか
 };
