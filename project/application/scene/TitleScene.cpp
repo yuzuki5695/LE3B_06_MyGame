@@ -31,9 +31,7 @@ void TitleScene::Initialize() {
     ModelManager::GetInstance()->LoadModel("Tile.obj");
     ModelManager::GetInstance()->LoadModel("Player.obj");
 
-    title_ = Object3d::Create("Title/Title.obj", { {0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f},{0.0f,1.0f,10.0f} });
-
-
+ 
     Box_ = Skybox::Create("CubemapBox.dds", Transform{ { 1000.0f, 1000.0f, 1000.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 100.0f } });
 
     ui1_ = Sprite::Create("Title/newstart.png", Vector2{ 420.0f, 500.0f }, 0.0f, Vector2{ 180.0f,90.0f });
@@ -41,7 +39,6 @@ void TitleScene::Initialize() {
     ui2_ = Sprite::Create("Title/Enter.png", Vector2{ 580.0f, 500.0f }, 0.0f, Vector2{ 180.0f,90.0f });
     ui2_->SetTextureSize(Vector2{ 180.0f,90.0f });
 
-    tile_ = Object3d::Create("Tile.obj", { { 20.0f, 1.0f, 300.0f }, { 0.0f, 0.9f, 0.0f }, { 0.0f, -8.0f, 63.4f } });
 
     playertransform_ = { {1.0f, 1.0f, 1.0f}, {0.0f, 0.9f, 0.0f},  -20.0f,0.0f,40.0f };
     player_ = Object3d::Create("Player.obj", playertransform_);
@@ -56,11 +53,14 @@ void TitleScene::Initialize() {
     // フェードマネージャの初期化
     FadeManager::GetInstance()->Initialize();
 
+    ui3_ = Sprite::Create("Title/Title.png", Vector2{ 300.0f, 100.0f }, 0.0f, Vector2{ 600.0f,300.0f });
+    ui3_->SetTextureSize(Vector2{ 600.0f,300.0f });
+
 #pragma endregion 最初のシーンの初期化
 }
 
 void TitleScene::Update() {
-       // フェードイン開始
+    // フェードイン開始
     if (!FadeManager::GetInstance()->IsFadeStart() && !FadeManager::GetInstance()->IsFading()) {
         // フェード開始
         FadeManager::GetInstance()->StartFadeIn(1.0f, FadeStyle::SilhouetteSlide);
@@ -110,41 +110,18 @@ void TitleScene::Update() {
 
         player_->SetTranslate(playertransform_.translate);
     }
-   else {
-
-       // --- タイトルのスケールイージング（フェードインの代わり）---
-       timer += 1.0f;
-       const float scaleDuration = 90.0f; // 約1.5秒で拡大
-       float t = std::clamp(timer / scaleDuration, 0.0f, 1.0f);
-
-       // EaseOutBack（少し弾む拡大）
-       float c1 = 1.70158f;
-       float c3 = c1 + 1.0f;
-       float easeT = 1 + c3 * powf(t - 1, 3) + c1 * powf(t - 1, 2);
-
-       Vector3 startScale = { 0.0f, 0.0f, 0.0f };
-       Vector3 endScale = { 0.7f, 0.7f, 0.7f };
-
-       Vector3 newScale;
-       newScale.x = startScale.x + (endScale.x - startScale.x) * easeT;
-       newScale.y = startScale.y + (endScale.y - startScale.y) * easeT;
-       newScale.z = startScale.z + (endScale.z - startScale.z) * easeT;
-
-       title_->SetScale(newScale);
-   }
 
 
     time += 0.03f;                     // 更新速度（0.05f は揺れの速さ） 
     playertransform_.translate.y = 0.0f + sinf(time) * 2.3f;  // 中心Y=-10.0f、振幅3.0f 
     player_->SetTranslate(playertransform_.translate);
 
-    title_->Update();
-    tile_->Update(); 
+    //title_->Update();
     player_->Update();
 
 
 #pragma endregion 全てのObject3d個々の更新処理
-
+	ui3_->Update();
     ui1_->Update();
     ui2_->Update();
 
@@ -184,8 +161,6 @@ void TitleScene::Draw() {
     // 3Dオブジェクトの描画準備。3Dオブジェクトの描画に共通のグラフィックスコマンドを積む
     Object3dCommon::GetInstance()->Commondrawing();
 
-    title_->Draw();
-	tile_->Draw();
     player_->Draw();
 
     // パーティクルの描画準備。パーティクルの描画に共通のグラフィックスコマンドを積む 
@@ -195,7 +170,9 @@ void TitleScene::Draw() {
 #pragma region 全てのSprite個々の描画処理
     // Spriteの描画準備。Spriteの描画に共通のグラフィックスコマンドを積む
     SpriteCommon::GetInstance()->Commondrawing();
-
+	
+    
+    ui3_->Draw();
     ui1_->Draw();
     ui2_->Draw();
 
