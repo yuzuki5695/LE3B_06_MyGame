@@ -1,87 +1,115 @@
 #include "PlayerBullet.h"
-#include<Object3d.h>
-#include "ModelManager.h"
+#include <Object3d.h>
+#include <ModelManager.h>
 #include <MatrixVector.h>
 
 using namespace MatrixVector;
 
-PlayerBullet::PlayerBullet(){}
+///====================================================
+/// コンストラクタ
+///====================================================
+PlayerBullet::PlayerBullet() {}
 
-PlayerBullet::~PlayerBullet() {	Finalize();}
-
-void PlayerBullet::Initialize() {}
-
-void PlayerBullet::Initialize(const Vector3& startPos, const Vector3& targetPos, float speed) {
-	// 初期位置を設定
-	position_ = startPos;
-    size_ = { 0.5f, 0.5f, 0.5f };
-    if (!object_) {
-        ModelManager::GetInstance()->LoadModel("Bullet/PlayerBullet.obj");
-        object_ = Object3d::Create(
-            "Bullet/PlayerBullet.obj",
-            Transform{ size_,{ 0.0f, 0.0f, 0.0f},position_ }
-        );
-        object_->SetScale({ 0.5f, 0.5f, 0.5f });
-    } 
-    // 発射方向の初期化：ターゲットへのベクトル（正規化）
-    Vector3 dir = Normalize(targetPos - startPos);
-    velocity_ = dir * speed;
-    active_ = true;
-   time = 0;
-   Maxtime = 1000;
-
+///====================================================
+/// デストラクタ
+///====================================================
+PlayerBullet::~PlayerBullet() {
+    Finalize();  // リソース解放
 }
 
+///====================================================
+/// 終了処理（リソース解放）
+///====================================================
 void PlayerBullet::Finalize() {
 	if (object_) {
-		object_.reset();
+		object_.reset(); // メモリ開放
 	}
 }
 
+///====================================================
+/// 初期化処理（共通）
+/// ※今回は未使用、継承先や共通初期化用に残してある
+///====================================================
+void PlayerBullet::Initialize() {}
+
+///====================================================
+/// 初期化処理（発射設定付き）
+/// <param name="startPos">弾の発射位置</param>
+/// <param name="targetPos">狙うターゲットの位置</param>
+/// <param name="speed">弾の速度</param>
+///====================================================
+void PlayerBullet::Initialize(const Vector3& startPos, const Vector3& targetPos, float speed) {
+    // 初期位置を設定
+    transform_.translate = startPos;
+    // 弾の大きさ（スケール）を設定  
+    transform_.scale = { 0.5f, 0.5f, 0.5f };
+    // モデルがまだ読み込まれていなければロード＆生成
+    if (!object_) {
+        // モデルを読み込む
+        ModelManager::GetInstance()->LoadModel("Bullet/PlayerBullet.obj");
+        // 弾用の3Dオブジェクトを生成（Transform情報を渡す）
+        object_ = Object3d::Create(
+            "Bullet/PlayerBullet.obj",
+            transform_
+        );
+        // スケール設定
+        object_->SetScale({ 0.5f, 0.5f, 0.5f });
+    }
+    // 発射方向の計算：ターゲット方向ベクトルを正規化して向きを求める
+    Vector3 dir = Normalize(targetPos - startPos);
+    // 速度ベクトルを計算（方向 × 速度）
+    velocity_ = dir * speed;
+    // 弾をアクティブ状態にする（Update対象にする）
+    active_ = true;
+    // 弾の寿命管理用タイマー初期化
+    time_ = 0;
+    Maxtime_ = 1000;
+}
+
+///====================================================
+/// 更新処理
+///====================================================
 void PlayerBullet::Update() {
-    // 速度ベクトル velocity_ によって位置を移動
-    position_ = position_ + velocity_;
-    // オブジェクトの位置を更新
-    object_->SetTranslate(position_);
+    // 速度ベクトルを加える
+    transform_.translate = transform_.translate + velocity_;
+    // 座標を更新
+    object_->SetTranslate(transform_.translate);
+    object_->SetScale(transform_.scale);
     // 更新処理
     object_->Update();
-    // 球が強制に消える距離を調整
-    if (time < Maxtime) {
-        time++;
+    // 時間経過カウント（寿命制御）
+    if (time_ < Maxtime_) {
+        time_++;
     } else {
-        time = 0; 
+        // 一定時間経過後は非アクティブ化（削除対象）
+        time_ = 0;
         active_ = false;
     }
 }
 
+///====================================================
+/// 描画処理
+///====================================================
 void PlayerBullet::Draw() {
     object_->Draw();
 }
 
+///====================================================
+/// 当たり判定用OBBの取得
+///====================================================
 OBB PlayerBullet::GetOBB() const {
     OBB obb;
 
     // 中心は現在の位置
-    obb.center = position_;
+    obb.center = transform_.translate;
 
     // サイズ（スケール）の半分をハーフサイズにする
-    obb.halfSize = {
-        size_.x / 2.0f,
-        size_.y / 2.0f,
-        size_.z / 2.0f
-    };
+    obb.halfSize = { transform_.scale / 2.0f };
 
     // プレイヤーバレットは基本的に回転しないと想定して軸はXYZの単位ベクトルでOK
-    obb.axis[0] = Vector3{1, 0, 0}; // X軸
-    obb.axis[1] = Vector3{0, 1, 0}; // Y軸
-    obb.axis[2] = Vector3{0, 0, 1}; // Z軸
+    obb.axis[0] = { 1,0,0 }; // X軸
+    obb.axis[1] = { 0,1,0 }; // Y軸
+    obb.axis[2] = { 0,0,1 }; // Z軸
 
     return obb;
-}
-
-void PlayerBullet::SetScale(const Vector3& scale) {
-    size_ = scale;
-    if (object_) {
-        object_->SetScale(scale);
-    }
 }
