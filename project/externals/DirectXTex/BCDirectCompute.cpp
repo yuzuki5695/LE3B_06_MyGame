@@ -532,7 +532,7 @@ HRESULT GPUCompressBC::Compress(const Image& srcImage, const Image& destImage)
 
             if (m_bc7_mode02)
             {
-                // 3 subset modes tend to be used rarely and add significant compression time
+                // 3 subset modes tend to be used rarely and add significant compression time_
                 for (UINT i = 0; i < 2; ++i)
                 {
                     static const UINT modes[] = { 0, 2 };

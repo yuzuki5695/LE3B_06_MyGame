@@ -2784,7 +2784,7 @@ void D3DX_BC7::Encode(uint32_t flags, const HDRColorA* const pIn) noexcept
     {
         if (!(flags & BC_FLAGS_USE_3SUBSETS) && (EP.uMode == 0 || EP.uMode == 2))
         {
-            // 3 subset modes tend to be used rarely and add significant compression time
+            // 3 subset modes tend to be used rarely and add significant compression time_
             continue;
         }
 

@@ -1359,7 +1359,7 @@ namespace
             break;
         }
 
-        // Set file time stamp
+        // Set file time_ stamp
         {
             time_t now = {};
             time(&now);
@@ -2404,7 +2404,7 @@ HRESULT DirectX::SaveToTGAFile(
     }
     else
     {
-        // Otherwise, write the image one scanline at a time...
+        // Otherwise, write the image one scanline at a time_...
         std::unique_ptr<uint8_t[]> temp(new (std::nothrow) uint8_t[rowPitch]);
         if (!temp)
             return E_OUTOFMEMORY;

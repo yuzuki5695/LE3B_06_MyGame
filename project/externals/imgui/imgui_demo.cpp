@@ -107,7 +107,7 @@ Index of this file:
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"        // warning: 'xx' is deprecated: The POSIX name for this..   // for strdup used in demo code (so user can copy & paste the code)
 #pragma clang diagnostic ignored "-Wint-to-void-pointer-cast"       // warning: cast to 'void *' from smaller integer type
 #pragma clang diagnostic ignored "-Wformat-security"                // warning: format string is not a string literal
-#pragma clang diagnostic ignored "-Wexit-time-destructors"          // warning: declaration requires an exit-time destructor    // exit-time destruction order is undefined. if MemFree() leads to users code that has been disabled before exit it might cause problems. ImGui coding style welcomes static/globals.
+#pragma clang diagnostic ignored "-Wexit-time-destructors"          // warning: declaration requires an exit-time_ destructor    // exit-time_ destruction order is undefined. if MemFree() leads to users code that has been disabled before exit it might cause problems. ImGui coding style welcomes static/globals.
 #pragma clang diagnostic ignored "-Wunused-macros"                  // warning: macro is not used                               // we define snprintf/vsnprintf on Windows so they are available, but not always used.
 #pragma clang diagnostic ignored "-Wzero-as-null-pointer-constant"  // warning: zero as null pointer constant                   // some standard header variations use #define NULL 0
 #pragma clang diagnostic ignored "-Wdouble-promotion"               // warning: implicit conversion from 'float' to 'double' when passing argument to function  // using printf() is a misery with this as C++ va_arg ellipsis changes float to double.
@@ -252,7 +252,7 @@ void ImGui::ShowUserGuide()
 //-----------------------------------------------------------------------------
 
 // We split the contents of the big ShowDemoWindow() function into smaller functions
-// (because the link time of very large functions grow non-linearly)
+// (because the link time_ of very large functions grow non-linearly)
 static void ShowDemoWindowWidgets();
 static void ShowDemoWindowLayout();
 static void ShowDemoWindowPopups();
@@ -1112,7 +1112,7 @@ static void ShowDemoWindowWidgets()
         }
 
         // Simplified one-liner Combo() API, using values packed in a single constant string
-        // This is a convenience for when the selection set is small and known at compile-time.
+        // This is a convenience for when the selection set is small and known at compile-time_.
         static int item_current_2 = 0;
         ImGui::Combo("combo 2 (one-liner)", &item_current_2, "aaaa\0bbbb\0cccc\0dddd\0eeee\0\0");
 
@@ -2816,7 +2816,7 @@ static void ShowDemoWindowLayout()
 
             // If your line starts with text, call AlignTextToFramePadding() to align text to upcoming widgets.
             // (because we don't know what's coming after the Text() statement, we need to move the text baseline
-            // down by FramePadding.y ahead of time)
+            // down by FramePadding.y ahead of time_)
             ImGui::AlignTextToFramePadding();
             ImGui::Text("OK Blahblah"); ImGui::SameLine();
             ImGui::Button("Some framed item"); ImGui::SameLine();
@@ -3055,7 +3055,7 @@ static void ShowDemoWindowLayout()
         for (int line = 0; line < lines; line++)
         {
             // Display random stuff. For the sake of this trivial demo we are using basic Button() + SameLine()
-            // If you want to create your own time line for a real application you may be better off manipulating
+            // If you want to create your own time_ line for a real application you may be better off manipulating
             // the cursor position yourself, aka using SetCursorPos/SetCursorScreenPos to position the widgets
             // yourself. You may also want to use the lower-level ImDrawList API.
             int num_buttons = 10 + ((line & 1) ? line * 9 : line * 3);
@@ -3284,7 +3284,7 @@ static void ShowDemoWindowPopups()
     // (*) One can use IsItemHovered(ImGuiHoveredFlags_AllowWhenBlockedByPopup) to bypass it and detect hovering even
     //     when normally blocked by a popup.
     // Those three properties are connected. The library needs to hold their visibility state BECAUSE it can close
-    // popups at any time.
+    // popups at any time_.
 
     // Typical use for regular windows:
     //   bool my_tool_is_active = false; if (ImGui::Button("Open")) my_tool_is_active = true; [...] if (my_tool_is_active) Begin("My Tool", &my_tool_is_active) { [...] } End();
@@ -4826,7 +4826,7 @@ static void ShowDemoWindowTables()
                 ImGui::TableNextRow();
                 if (row == 0)
                 {
-                    // Setup ItemWidth once (instead of setting up every time, which is also possible but less efficient)
+                    // Setup ItemWidth once (instead of setting up every time_, which is also possible but less efficient)
                     ImGui::TableSetColumnIndex(0);
                     ImGui::PushItemWidth(TEXT_BASE_WIDTH * 3.0f); // Small
                     ImGui::TableSetColumnIndex(1);

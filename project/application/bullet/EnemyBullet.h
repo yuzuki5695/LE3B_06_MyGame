@@ -1,5 +1,6 @@
 #pragma once
 #include <BaseBullet.h>
+#include <Transform.h>
 #include <BaseCharacter.h>
 
 // ヘッダーの重複を防ぐ前方宣言
@@ -8,7 +9,7 @@ class Object3d;
 /// <summary>
 /// 敵の弾クラス
 /// BaseBulletを継承
-/// 敵弾の生成・移動・描画・衝突判定を管理する
+/// 敵の弾の生成・移動・描画・衝突判定を管理する
 /// </summary>
 class EnemyBullet : public BaseBullet {
 public:
@@ -21,7 +22,12 @@ public:
     /// デストラクタ
     /// リソースの解放処理を行う
     /// </summary>
-    ~EnemyBullet() override;
+    ~EnemyBullet() override;    
+    /// <summary>
+    /// 終了処理
+    /// メモリ解放などの後処理を行う
+    /// </summary>
+    void Finalize() override;
     /// <summary>
     /// 弾の初期化（共通処理）
     /// モデルや基本設定のロードなどを行う
@@ -34,11 +40,6 @@ public:
     /// <param name="targetPos">狙うターゲットの位置（ワールド座標）</param>
     /// <param name="speed">弾の速度</param>
     void Initialize(const Vector3& startPos, const Vector3& targetPos, float speed) override;
-    /// <summary>
-    /// 終了処理
-    /// メモリ解放などの後処理を行う
-    /// </summary>
-    void Finalize() override;
     /// <summary>
     /// 更新処理
     /// 移動・寿命管理・衝突判定などを行う
@@ -57,25 +58,25 @@ public:
 private:    // メンバ変数
 	// 3Dオブジェクト
     std::unique_ptr<Object3d> object_;
-    // 座標
-    Vector3 position_;
-    // サイズ
-    Vector3 size_;
+    // 位置・回転・スケール情報 
+    Transform transform_;
 	// 方向ベクトル
     Vector3 direction_;
 	// 速度ベクトル
     Vector3 velocity_;
 	// 現在の生存時間
-    int time = 0;
+    int time_;
 	// 最大生存時間
-    int Maxtime = 500;
+    int Maxtime_;
 public:  // アクセッサ（Getter / Setter）    
     /// 弾の現在位置を取得
-    Vector3 GetPosition() const { return position_; }
+    Vector3 GetTranslate() const { return transform_.translate; }
     /// 弾のサイズを取得
-    Vector3 GetRadius() const { return size_; }
+    Vector3 GetScale() const { return transform_.scale; }
+    
+    
     /// 弾の現在位置を設定
-    void SetPosition(const Vector3& pos) { position_ = pos; } 
+    void SetTranslate(const Vector3& translate) { transform_.translate = translate; } 
     /// 弾のサイズを設定
-    void SetRadius(const Vector3& pos) { size_ = pos; }
+    void SetScale(const Vector3& scale) { transform_.scale = scale; }
 };

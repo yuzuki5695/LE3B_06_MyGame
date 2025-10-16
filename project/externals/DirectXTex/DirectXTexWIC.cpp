@@ -496,7 +496,7 @@ namespace
 
         static HRESULT ComputeGrowSize(uint64_t& newSize, const uint64_t targetSize) noexcept
         {
-            // We grow by doubling until we hit 256MB, then we add 16MB at a time.
+            // We grow by doubling until we hit 256MB, then we add 16MB at a time_.
             while (newSize < targetSize)
             {
                 if (newSize < (256 * 1024 * 1024))

@@ -36,7 +36,7 @@ Index of this file:
 //-----------------------------------------------------------------------------
 // - BeginTable()                               user begin into a table
 //    | BeginChild()                            - (if ScrollX/ScrollY is set)
-//    | TableBeginInitMemory()                  - first time table is used
+//    | TableBeginInitMemory()                  - first time_ table is used
 //    | TableResetSettings()                    - on settings reset
 //    | TableLoadSettings()                     - on settings load
 //    | TableBeginApplyRequests()               - apply queued resizing/reordering/hiding requests
@@ -824,7 +824,7 @@ void ImGui::TableUpdateLayout(ImGuiTable* table)
 
     // [Part 2] Disable child window clipping while fitting columns. This is not strictly necessary but makes it possible
     // to avoid the column fitting having to wait until the first visible frame of the child container (may or not be a good thing).
-    // FIXME-TABLE: for always auto-resizing columns may not want to do that all the time.
+    // FIXME-TABLE: for always auto-resizing columns may not want to do that all the time_.
     if (has_auto_fit_request && table->OuterWindow != table->InnerWindow)
         table->InnerWindow->SkipItems = false;
     if (has_auto_fit_request)
@@ -1626,7 +1626,7 @@ void ImGui::TableSetBgColor(ImGuiTableBgTarget target, ImU32 color, int column_n
     if (color == IM_COL32_DISABLE)
         color = 0;
 
-    // We cannot draw neither the cell or row background immediately as we don't know the row height at this point in time.
+    // We cannot draw neither the cell or row background immediately as we don't know the row height at this point in time_.
     switch (target)
     {
     case ImGuiTableBgTarget_CellBg:
@@ -2612,7 +2612,7 @@ void ImGui::TableDrawBorders(ImGuiTable* table)
 
 // Return NULL if no sort specs (most often when ImGuiTableFlags_Sortable is not set)
 // You can sort your data again when 'SpecsChanged == true'. It will be true with sorting specs have changed since
-// last call, or the first time.
+// last call, or the first time_.
 // Lifetime: don't hold on this pointer over multiple frames or past any subsequent call to BeginTable()!
 ImGuiTableSortSpecs* ImGui::TableGetSortSpecs()
 {
