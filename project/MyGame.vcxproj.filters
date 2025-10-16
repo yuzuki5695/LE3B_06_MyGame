@@ -184,6 +184,12 @@
     <Filter Include="ヘッダー ファイル\engine\math\Collision">
       <UniqueIdentifier>{5f01e14b-13b2-42aa-ae79-9affb9303730}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ソース ファイル\application\Collision">
+      <UniqueIdentifier>{2445fd21-e0ba-4dd6-9908-f0f2e0615510}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\application\Collision">
+      <UniqueIdentifier>{2b551131-8003-4282-b5ca-995d168aec00}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -362,6 +368,9 @@
     </ClCompile>
     <ClCompile Include="FadeManager.cpp">
       <Filter>ソース ファイル\application\fade</Filter>
+    </ClCompile>
+    <ClCompile Include="CollisionManager.cpp">
+      <Filter>ソース ファイル\application\Collision</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -595,6 +604,9 @@
     </ClInclude>
     <ClInclude Include="engine\math\OBB.h">
       <Filter>ヘッダー ファイル\engine\math\Collision</Filter>
+    </ClInclude>
+    <ClInclude Include="CollisionManager.h">
+      <Filter>ヘッダー ファイル\application\Collision</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
