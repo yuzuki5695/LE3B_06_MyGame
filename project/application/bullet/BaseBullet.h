@@ -2,7 +2,7 @@
 #include "Vector3.h"
 #include <memory>
 
-// 前方宣言
+// ヘッダーの重複を防ぐ前方宣言
 class Object3d;
 
 /// <summary>
