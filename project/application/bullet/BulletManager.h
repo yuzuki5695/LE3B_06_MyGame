@@ -5,10 +5,12 @@
 #include<PlayerBullet.h>
 #include<EnemyBullet.h>
 
+/// <summary>
 /// 各弾の更新・描画を管理するクラス
 /// 各シーンで発射された弾を追加,保持する
 /// 弾の生成は AddPlayerBullet / AddEnemyBullet 経由で行う
 /// シングルトンとして全体からアクセス可能
+/// </summary>
 class BulletManager {
 private: // シングルトンインスタンス
     static BulletManager* instance;
@@ -34,7 +36,7 @@ private:
 	// 弾のリスト
 	std::vector<std::unique_ptr<PlayerBullet>> playerBullets_; // プレイヤー
 	std::vector<std::unique_ptr<EnemyBullet>> enemyBullets_;   // 敵
-public: // ゲッター    
+public: // アクセッサ（Getter / Setter）   
     // 弾のリストを外部から読み取る
     const std::vector<std::unique_ptr<PlayerBullet>>& GetPlayerBullets() const; // プレイヤー
 	const std::vector<std::unique_ptr<EnemyBullet>>& GetEnemyBullets() const;   // 敵
