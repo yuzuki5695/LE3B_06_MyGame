@@ -1185,7 +1185,7 @@ HRESULT DirectX::SaveToHDRFile(const Image& image, const wchar_t* szFile) noexce
     }
     else
     {
-        // Otherwise, write the image one scanline at a time...
+        // Otherwise, write the image one scanline at a time_...
         std::unique_ptr<uint8_t[]> temp(new (std::nothrow) uint8_t[rowPitch * 2]);
         if (!temp)
             return E_OUTOFMEMORY;

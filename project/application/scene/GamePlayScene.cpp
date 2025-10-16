@@ -76,9 +76,6 @@ void GamePlayScene::Initialize() {
 
     wall = Object3d::Create("wall.obj", Transform{ { 10.0f, 0.7f, 0.7f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 300.0f } });
 
-    // Bulletマネージャの初期化
-    BulletManager::GetInstance()->Initialize();
-
     TextureManager::GetInstance()->LoadTexture("CubemapBox.dds");
 
     Box_ = Skybox::Create("CubemapBox.dds", Transform{ { 1000.0f, 1000.0f, 1000.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 100.0f } });

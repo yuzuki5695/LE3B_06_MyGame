@@ -1369,7 +1369,7 @@ static stbtt__buf stbtt__get_subrs(stbtt__buf cff, stbtt__buf fontdict)
    return stbtt__cff_get_index(&cff);
 }
 
-// since most people won't use this, find this table the first time it's needed
+// since most people won't use this, find this table the first time_ it's needed
 static int stbtt__get_svg(stbtt_fontinfo *info)
 {
    stbtt_uint32 t;
@@ -2626,7 +2626,7 @@ STBTT_DEF int  stbtt_GetGlyphKernAdvance(const stbtt_fontinfo *info, int g1, int
 
 STBTT_DEF int  stbtt_GetCodepointKernAdvance(const stbtt_fontinfo *info, int ch1, int ch2)
 {
-   if (!info->kern && !info->gpos) // if no kerning table, don't waste time looking up both codepoint->glyphs
+   if (!info->kern && !info->gpos) // if no kerning table, don't waste time_ looking up both codepoint->glyphs
       return 0;
    return stbtt_GetGlyphKernAdvance(info, stbtt_FindGlyphIndex(info,ch1), stbtt_FindGlyphIndex(info,ch2));
 }
@@ -3219,7 +3219,7 @@ static void stbtt__fill_active_edges_new(float *scanline, float *scanline_fill, 
 
                step = sign * dy * 1; // dy is dy/dx, change in y for every 1 change in x,
                // which multiplied by 1-pixel-width is how much pixel area changes for each step in x
-               // so the area advances by 'step' every time
+               // so the area advances by 'step' every time_
 
                for (x = x1+1; x < x2; ++x) {
                   scanline[x] += area + step/2; // area of trapezoid is 1*step/2
@@ -3240,7 +3240,7 @@ static void stbtt__fill_active_edges_new(float *scanline, float *scanline_fill, 
             // clipping logic. since this does not match the intended use
             // of this library, we use a different, very slow brute
             // force implementation
-            // note though that this does happen some of the time because
+            // note though that this does happen some of the time_ because
             // x_top and x_bottom can be extrapolated at the top & bottom of
             // the shape and actually lie outside the bounding box
             int x;

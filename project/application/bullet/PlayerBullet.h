@@ -1,52 +1,82 @@
 #pragma once
-#include "BaseBullet.h"
-#include "Vector3.h"
-#include <memory>
-#include<BaseCharacter.h>
+#include <BaseBullet.h>
+#include <Transform.h>
+#include <BaseCharacter.h>
 
+// ヘッダーの重複を防ぐ前方宣言
 class Object3d;
 
+/// <summary>
+/// プレイヤーの弾クラス
+/// BaseBulletを継承
+/// プレイヤーの弾の生成・移動・描画・衝突判定を管理する
+/// </summary>
 class PlayerBullet : public BaseBullet {
-public:
+public: // メンバ関数
+    /// <summary>
+    /// コンストラクタ
+    /// メンバ変数の初期化などを行う
+    /// </summary>
     PlayerBullet();
+    /// <summary>
+    /// デストラクタ
+    /// リソースの解放処理を行う
+    /// </summary>
     ~PlayerBullet() override;
     /// <summary>
-	/// 初期化
+    /// 終了処理
+    /// メモリ解放などの後処理を行う
     /// </summary>
-    void Initialize() override; 
+    void Finalize() override;
+    /// <summary>
+    /// 弾の初期化（共通処理）
+    /// モデルや基本設定のロードなどを行う
+    /// </summary>
+    void Initialize() override;
+    /// <summary>
+    /// 弾の初期化（発射位置・ターゲット位置を指定）
+    /// </summary>
+    /// <param name="startPos">発射位置（ワールド座標）</param>
+    /// <param name="targetPos">狙うターゲットの位置（ワールド座標）</param>
+    /// <param name="speed">弾の速度</param>
     void Initialize(const Vector3& startPos, const Vector3& targetPos, float speed) override;
     /// <summary>
-	/// 終了処理
+    /// 更新処理
+    /// 移動・寿命管理・衝突判定などを行う
     /// </summary>
-    void Finalize() override; 
-	/// <summary>
-	/// 更新処理
-	/// </summary>
-    void Update() override; 
+    void Update() override;
     /// <summary>
-	/// 描画処理
-	/// </summary>
+    /// 描画処理
+    /// 弾モデルを3D空間に描画する
+    /// </summary>
     void Draw() override;
- 
+    /// <summary>
+    /// 弾の当たり判定情報（OBB）を取得する
+    /// </summary>
+    /// <returns>弾のOBB（回転付き当たり判定）</returns>
     OBB GetOBB() const;
-
 private:
-    std::unique_ptr<Object3d> object_;
-    Vector3 position_;
+	// 3Dオブジェクト
+    std::unique_ptr<Object3d> object_;	   
+    // 位置・回転・スケール情報 
+    Transform transform_;
+	// 方向ベクトル
     Vector3 direction_;
+	// 速度ベクトル
     Vector3 velocity_;
-    Vector3 size_;
+	// 現在の生存時間
+    int time_;
+   	// 最大生存時間
+    int Maxtime_;
+public: // アクセッサ（Getter / Setter）
+    /// 弾の現在位置を取得
+    Vector3 GetTranslate() const { return transform_.translate ; }
+    /// 弾のサイズを取得
+    Vector3 GetScale() const { return transform_.scale; }
 
-    int time = 0;
-    int Maxtime = 500;
 
-public:
-    // 位置の取得・設定
-    Vector3 GetPosition() const { return position_; }
-    void SetPosition(const Vector3& pos) { position_ = pos; }
-    
-    Vector3 GetRadius() const { return size_; }
-    void SetRadius(const Vector3& pos) { size_ = pos; }
-
-    void SetScale(const Vector3& scale);
+    /// 弾の現在位置を設定
+    void SetTranslate(const Vector3& translate) {  transform_.translate = translate; } 
+    /// 弾のサイズを設定
+    void SetScale(const Vector3& scale) { transform_.scale = scale; }
 };

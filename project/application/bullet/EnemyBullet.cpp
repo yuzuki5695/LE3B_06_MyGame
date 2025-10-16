@@ -5,73 +5,108 @@
 
 using namespace MatrixVector;
 
+///====================================================
+/// コンストラクタ
+///====================================================
 EnemyBullet::EnemyBullet(){}
 
+///====================================================
+/// デストラクタ）
+///====================================================
 EnemyBullet::~EnemyBullet() { Finalize(); }
 
+///====================================================
+/// 終了処理
+///====================================================
+void EnemyBullet::Finalize() {
+    if (object_) {
+        object_.reset(); // メモリ開放
+    }
+}
+
+//====================================================
+/// 初期化処理（共通）
+/// ※今回は未使用、継承先や共通初期化用に残してある
+///====================================================
 void EnemyBullet::Initialize() {}
 
+///====================================================
+/// 初期化処理（発射設定付き）
+/// <param name="startPos">弾の発射位置（ワールド座標）</param>
+/// <param name="targetPos">弾が狙うターゲットの座標（ワールド座標）</param>
+/// <param name="speed">弾の移動速度</param>
+///====================================================
 void EnemyBullet::Initialize(const Vector3& startPos, const Vector3& targetPos, float speed) {
-	// 初期位置を設定
-	position_ = startPos;
-    size_ = { 0.5f,0.5f,0.5f };
+    // 弾の初期位置を設定
+    transform_.translate = startPos;
+    // 弾の大きさ（スケール）を設定
+    transform_.scale = { 0.5f,0.5f,0.5f };
+    // モデル未生成の場合はロード・生成する
     if (!object_) {
+        // モデルを読み込む
         ModelManager::GetInstance()->LoadModel("EnemyBullet.obj");
+        // 弾用の3Dオブジェクトを生成
         object_ = Object3d::Create(
             "EnemyBullet.obj",
-            Transform{ size_,{ 0.0f, 0.0f, 0.0f},position_ }
+            transform_
         );
+        // スケール設定
         object_->SetScale({ 0.5f, 0.5f, 0.5f });
-    } 
-    // 発射方向の初期化：ターゲットへのベクトル（正規化）
+    }
+    // 発射方向の計算：ターゲット方向ベクトルを正規化して向きを求める
     Vector3 dir = Normalize(targetPos - startPos);
+    // 速度ベクトルを計算（方向 × 速度）
     velocity_ = dir * speed;
-    active_ = true;
+    // 弾をアクティブ状態にする（Update対象にする）
+    active_ = true; 
+    // 弾の寿命管理用タイマー初期化
+    time_ = 0;
+    Maxtime_ = 500;
 }
 
-void EnemyBullet::Finalize() {
-	if (object_) {
-		object_.reset();
-	}
-}
-
+///====================================================
+/// 更新処理
+///====================================================
 void EnemyBullet::Update() {
-
-    // 速度ベクトル velocity_ によって位置を移動
-    position_ = position_ + velocity_;
-    // オブジェクトの位置を更新
-    object_->SetTranslate(position_);
+    // 速度ベクトルを加える
+    transform_.translate = transform_.translate + velocity_;
+    // 座標を更新
+    object_->SetTranslate(transform_.translate);
     // 更新処理
     object_->Update();
-        if (time < Maxtime) {
-        time++;
+    // 時間経過カウント（寿命制御）
+    if (time_ < Maxtime_) {
+        time_++;
     } else {
-        time = 0; 
+        // 一定時間経過後は非アクティブ化（削除対象）
+        time_ = 0;
         active_ = false;
     }
 }
 
+///====================================================
+/// 描画処理
+///====================================================
 void EnemyBullet::Draw() {       
 	object_->Draw();
 }
 
+///====================================================
+/// 当たり判定用OBBの取得
+///====================================================
 OBB EnemyBullet::GetOBB() const {
     OBB obb;
 
     // 中心は現在の位置
-    obb.center = position_;
+    obb.center = transform_.translate;
 
     // サイズ（スケール）の半分をハーフサイズにする
-    obb.halfSize = {
-        size_.x / 2.0f,
-        size_.y / 2.0f,
-        size_.z / 2.0f
-    };
+    obb.halfSize = { transform_.scale.x / 2.0f };
 
     // プレイヤーバレットは基本的に回転しないと想定して軸はXYZの単位ベクトルでOK
-    obb.axis[0] = Vector3{1, 0, 0}; // X軸
-    obb.axis[1] = Vector3{0, 1, 0}; // Y軸
-    obb.axis[2] = Vector3{0, 0, 1}; // Z軸
+    obb.axis[0] = {1, 0, 0}; // X軸
+    obb.axis[1] = {0, 1, 0}; // Y軸
+    obb.axis[2] = {0, 0, 1}; // Z軸
 
     return obb;
 }
