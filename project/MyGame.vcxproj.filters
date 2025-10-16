@@ -181,6 +181,9 @@
     <Filter Include="ヘッダー ファイル\application\fade">
       <UniqueIdentifier>{fca0a5c4-0cca-4f32-9665-08aef2b11991}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ヘッダー ファイル\engine\math\Collision">
+      <UniqueIdentifier>{5f01e14b-13b2-42aa-ae79-9affb9303730}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -589,6 +592,9 @@
     </ClInclude>
     <ClInclude Include="FadeManager.h">
       <Filter>ヘッダー ファイル\application\fade</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\math\OBB.h">
+      <Filter>ヘッダー ファイル\engine\math\Collision</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
