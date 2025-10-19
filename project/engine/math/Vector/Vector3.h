@@ -17,23 +17,32 @@ struct Vector3 final {
         assert(i < 3);
         return *(&x + i);
     }
-
-    // 足し算 引き算  
+    ///====================================================
+    /// 足し算 引き算 
+    ///====================================================
+    // (引数がfloat)
     Vector3 operator+(const Vector3& other) const { return { x + other.x, y + other.y, z + other.z }; }
     Vector3 operator-(const Vector3& other) const { return { x - other.x, y - other.y, z - other.z }; }
-    Vector3& operator+=(const Vector3& other) { x += other.x; y += other.y; z += other.z; return *this; }
-
-    // スカラー演算
+    Vector3& operator+=(const Vector3& other) { x += other.x; y += other.y; z += other.z; return *this; } 
+    ///====================================================
+    /// スカラー演算  
+    ///====================================================
+    // (引数がfloat)
     Vector3 operator*(float scalar) const { return { x * scalar, y * scalar, z * scalar }; }
     Vector3 operator/(float scalar) const { return { x / scalar, y / scalar, z / scalar }; }
     Vector3& operator*=(float scalar) { x *= scalar; y *= scalar; z *= scalar; return *this; }
     Vector3& operator/=(float scalar) { x /= scalar; y /= scalar; z /= scalar; return *this; }
+    // (引数がVector3) 
     friend Vector3 operator*(float scalar, const Vector3& vec) { return { scalar * vec.x, scalar * vec.y, scalar * vec.z }; }
-
-    // 比較
+    Vector3 operator/(const Vector3& other) const { return { x / other.x, y / other.y, z / other.z }; }
+    ///====================================================
+    /// 比較
+    ///====================================================
+    // (引数がVector3) 
     bool operator==(const Vector3& other) const { return x == other.x && y == other.y && z == other.z; }
     bool operator!=(const Vector3& other) const { return !(*this == other); }
-
-    // 単項マイナス
+    ///====================================================
+    /// 単項マイナス
+    ///====================================================
     Vector3 operator-() const { return { -x, -y, -z }; }
 };
