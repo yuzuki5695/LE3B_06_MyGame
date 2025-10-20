@@ -190,6 +190,12 @@
     <Filter Include="ヘッダー ファイル\application\collision">
       <UniqueIdentifier>{2b551131-8003-4282-b5ca-995d168aec00}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ソース ファイル\application\event">
+      <UniqueIdentifier>{560a6f91-295f-44f1-b0b7-b2aa1307c46e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\application\event">
+      <UniqueIdentifier>{2e44f535-1b69-4651-b91a-3c6c9d1fef4a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -371,6 +377,9 @@
     </ClCompile>
     <ClCompile Include="application\fade\FadeManager.cpp">
       <Filter>ソース ファイル\application\fade</Filter>
+    </ClCompile>
+    <ClCompile Include="application\event\EventManager.cpp">
+      <Filter>ソース ファイル\application\event</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -610,6 +619,9 @@
     </ClInclude>
     <ClInclude Include="application\collision\ICollisionObject .h">
       <Filter>ヘッダー ファイル\application\collision</Filter>
+    </ClInclude>
+    <ClInclude Include="application\event\EventManager.h">
+      <Filter>ヘッダー ファイル\application\event</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
