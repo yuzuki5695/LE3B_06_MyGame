@@ -1,15 +1,25 @@
 #pragma once
 #include <OBB.h>
+#include<Transform.h>
 
 class CollisionManager {
 public:
     /// <summary>
-    /// 2つのOBBが衝突しているか判定
+    /// 2つのOBBが衝突しているか判定（SAT）
     /// </summary>
-    static bool CheckCollision(const OBB& a, const OBB& b);
+    static bool CheckOBB(const OBB& a, const OBB& b);
 
-    // 必要に応じて追加：
-    // - プレイヤー弾 vs 敵
-    // - 敵弾 vs プレイヤー
-    // - オブジェクト同士の当たり判定
+    /// <summary>
+    /// 任意のゲームオブジェクト同士の衝突をチェックする
+    /// </summary>
+    template<typename T1, typename T2>
+    static bool CheckCollision(const T1& objA, const T2& objB) {
+        return CheckOBB(objA.GetOBB(), objB.GetOBB());
+    }
+
+    OBB GetBulletOBB(Transform transform,Vector3 scalar) const;
+
+    
+    bool IsOBBIntersect(const OBB& a, const OBB& b);
+
 };
