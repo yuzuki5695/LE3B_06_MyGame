@@ -106,7 +106,7 @@ OBB PlayerBullet::GetOBB() const {
     // サイズ（スケール）の半分をハーフサイズにする
     obb.halfSize = { transform_.scale / 2.0f };
 
-    // プレイヤーバレットは基本的に回転しないと想定して軸はXYZの単位ベクトルでOK
+    // 軸はXYZの単位ベクトル
     obb.axis[0] = { 1,0,0 }; // X軸
     obb.axis[1] = { 0,1,0 }; // Y軸
     obb.axis[2] = { 0,0,1 }; // Z軸
