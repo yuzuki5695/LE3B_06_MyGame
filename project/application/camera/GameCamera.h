@@ -39,12 +39,19 @@ private:
     float distanceAlongCurve = 0.0f;  // 現在の距離位置
 	float speed = 0.4f; // 移動の速さ
 
+
+    bool preMove_ = true;             // 最初のz=-200→-100移動をするか
+    float preMoveZ_ = -200.0f;        // 現在のZ位置
+    float preMoveTargetZ_ = -100.0f;  // 目的地Z
+    float preMoveSpeed_ = 0.02f;      // イージング速度（0.0〜1.0）
+    float preMoveT_ = 0.0f;           // イージング補間値
+    bool startBezierMove_ = false;    // ベジェ移動開始フラグ
 public:
 
     // getter 
 	Camera* Getcamera() { return camera_; }
     bool Getmovefige() { return movefige; }
-    Vector3 GetbezierPos() { return bezierPos_; }
+    Vector3 GetbezierPos() { return bezierPos_; } 
     // setter
     void Setmovefige(bool value) { movefige = value; }
     void SetbezierPos(Vector3 pos) { bezierPos_ = pos; }
