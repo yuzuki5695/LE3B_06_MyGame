@@ -36,7 +36,12 @@ void GamePlayScene::Initialize() {
     TextureManager::GetInstance()->LoadTexture("Gameplay/Move.png");
     TextureManager::GetInstance()->LoadTexture("Gameplay/Space.png");
     TextureManager::GetInstance()->LoadTexture("Gameplay/Shift.png");
-    TextureManager::GetInstance()->LoadTexture("Gameplay/StandardChange.png");
+    TextureManager::GetInstance()->LoadTexture("Gameplay/StandardChange.png");     
+    TextureManager::GetInstance()->LoadTexture("titlereturn.png");
+
+    
+    ui1_ = Sprite::Create("titlereturn.png", Vector2{ 1100.0f, 5.0f }, 0.0f, Vector2{ 150.0f,100.0f });
+    ui1_->SetTextureSize(Vector2{ 300.0f,200.0f });
 
     // .objファイルからモデルを読み込む
     ModelManager::GetInstance()->LoadModel("terrain.obj");
@@ -104,7 +109,11 @@ void GamePlayScene::Update() {
         // イベント終了 → プレイヤーを操作可能に
         player_->SetKeyActive(true);
         player_->SetReticleVisible(true);
+        if (Input::GetInstance()->Triggrkey(DIK_RETURN)) {
+            SceneManager::GetInstance()->ChangeScene("TITLE");
+        }
     }
+
 
     /*-------------------------------------------*/
     /*--------------Cameraの更新処理---------------*/
@@ -191,6 +200,9 @@ void GamePlayScene::Update() {
 
 #pragma region 全てのSprite個々の更新処理
 
+
+    ui1_->Update();
+
 #pragma endregion 全てのSprite個々の更新処理
 
 #pragma region  ImGuiの更新処理開始
@@ -247,6 +259,10 @@ void GamePlayScene::Draw() {
 
     if (!end) {    
         player_->DrawSprite();
+    }
+    
+    if (EventManager::GetInstance()->IsFinished()) {
+        ui1_->Draw();
     }
 
 	// イベントマネージャの描画処理

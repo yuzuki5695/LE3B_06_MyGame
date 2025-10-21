@@ -60,4 +60,6 @@ private: // メンバ変数
     std::unique_ptr <Skybox> Box_ = nullptr;
 	// イベント処理
     std::vector<EventManager> event_; 
+
+    std::unique_ptr <Sprite> ui1_;
 };
