@@ -22,9 +22,7 @@ void TitleScene::Initialize() {
     // カメラマネージャの初期化
     CameraManager::GetInstance()->Initialize(CameraTransform({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }));
 
-    TextureManager::GetInstance()->LoadTexture("Title/newstart.png");
-    TextureManager::GetInstance()->LoadTexture("Title/Enter.png");
-    TextureManager::GetInstance()->LoadTexture("uvChecker.png");
+    TextureManager::GetInstance()->LoadTexture("Title/UI_02.png");
     TextureManager::GetInstance()->LoadTexture("CubemapBox.dds");
     // .objファイルからモデルを読み込む
     ModelManager::GetInstance()->LoadModel("Title/Title.obj");
@@ -34,10 +32,10 @@ void TitleScene::Initialize() {
  
     Box_ = Skybox::Create("CubemapBox.dds", Transform{ { 1000.0f, 1000.0f, 1000.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 100.0f } });
 
-    ui1_ = Sprite::Create("Title/newstart.png", Vector2{ 420.0f, 500.0f }, 0.0f, Vector2{ 180.0f,90.0f });
+    ui1_ = Sprite::Create("Title/UI_02.png", Vector2{ 420.0f, 500.0f }, 0.0f, Vector2{ 180.0f,90.0f });
     ui1_->SetTextureSize(Vector2{ 180.0f,90.0f });
-    ui2_ = Sprite::Create("Title/Enter.png", Vector2{ 580.0f, 500.0f }, 0.0f, Vector2{ 180.0f,90.0f });
-    ui2_->SetTextureSize(Vector2{ 180.0f,90.0f });
+    ui2_ = Sprite::Create("Title/UI_02.png", Vector2{ 420.0f, 500.0f }, 0.0f, Vector2{ 360.0f,90.0f });
+    ui2_->SetTextureSize(Vector2{ 360.0f,90.0f });
 
 
     playertransform_ = { {1.0f, 1.0f, 1.0f}, {0.0f, 0.9f, 0.0f},  -20.0f,0.0f,40.0f };
@@ -173,7 +171,7 @@ void TitleScene::Draw() {
 	
     
     ui3_->Draw();
-    ui1_->Draw();
+    //ui1_->Draw();
     ui2_->Draw();
 
 	// フェードの描画
