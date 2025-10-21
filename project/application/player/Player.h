@@ -110,6 +110,11 @@ private:// メンバ変数
 	Vector3 bulletOffsetLeft  = { -0.5f, 0.0f, 0.0f }; // 左側の発射位置
 	Vector3 bulletOffsetRight = {  0.5f, 0.0f, 0.0f }; // 右側の発射位置
 
+
+	
+	bool iskeyActive_ = false;       // ← プレイヤーが操作可能か
+    bool isReticleVisible_ = false; // ← レティクル描画ON/OFF
+
 public:// メンバ変数
 	// getter
 	// 参照を返す（変更不可）
@@ -122,4 +127,12 @@ public:// メンバ変数
 	Vector3 GetPosition() const {
 		return transform_.translate;
 	}
+
+    // Getter
+    bool IsKeyActive() const { return iskeyActive_; }
+    bool IsReticleVisible() const { return isReticleVisible_; }
+
+    // Setter
+    void SetKeyActive(bool active) { iskeyActive_ = active; }
+    void SetReticleVisible(bool visible) { isReticleVisible_ = visible; }
 };

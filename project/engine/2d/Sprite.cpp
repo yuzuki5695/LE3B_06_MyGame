@@ -163,9 +163,14 @@ void Sprite::Draw() {
 }
 
 void Sprite::SetTexture(const std::string& textureFilePath) {
-	// テクスチャインデックスを取得
-	uint32_t newTextureIndex = TextureManager::GetInstance()->GetSrvIndex(textureFilePath);
-	// テクスチャインデックスを更新
+	// Resources/ を付ける（Createと同じ規則にする）
+	std::string fullPath = "Resources/" + textureFilePath;
+
+	// テクスチャパスを更新
+	this->textureFilePath_ = fullPath;
+
+	// 新しいテクスチャのSRVインデックスを取得
+	uint32_t newTextureIndex = TextureManager::GetInstance()->GetSrvIndex(fullPath);
 	this->textureindex = newTextureIndex;
 }
 

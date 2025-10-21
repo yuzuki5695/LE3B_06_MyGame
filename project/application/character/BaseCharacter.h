@@ -8,12 +8,26 @@ struct OBB {
     Vector3 axis[3];    // ローカル軸（回転を反映させたX, Y, Zベクトル）
 };
 
+/// <summary>
+/// ゲームキャラクターの基底クラス
+/// 初期化・更新・描画のインターフェイスを定義
+/// </summary>
 class BaseCharacter {
 public:
+    /// <summary>
+    /// デストラクタ
+    /// </summary> 
     virtual ~BaseCharacter() = default;
-
-    // 基本処理
+    /// <summary> 
+    /// 初期化処理 
+    /// </summary>
     virtual void Initialize() = 0;
+    /// <summary>
+    /// 更新処理
+    /// </summary>
     virtual void Update() = 0;
+    /// <summary>
+    /// 描画処理
+    /// </summary>
     virtual void Draw() = 0;
 };

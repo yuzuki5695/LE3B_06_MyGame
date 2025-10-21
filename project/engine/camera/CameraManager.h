@@ -6,6 +6,7 @@ enum class CameraMode {
     Default,
     Follow,
     GamePlay,
+    Event
 };
 
 struct CameraTransform {
@@ -44,15 +45,16 @@ private:
 
     Camera* defaultCamera_; // 追従しないカメラ(デフォルト)
     Camera* followCamera_;  // 追従用カメラ
-    GameCamera* gameCamera_;
+    GameCamera* gameCamera_; // ゲームプレイ用カメラ
+	Camera* eventCamera_;    // イベント用カメラ
 
     // ヘッダーかクラス内に追加
     bool addedInitialOffset_ = false;
 
     bool useFollowCamera_ = false; // カメラモード切替用フラグ
-    float waitTime_ = 0.0f;
-    bool activated_ = false;    
+    float waitTime_ = 0.0f;    
     bool moveFlag = false;
+    uint32_t activated_ ;
 
 public: // メンバ関数
     // 追従対象をセット（nullptrなら追従なし）
@@ -60,7 +62,11 @@ public: // メンバ関数
     Camera* GetFollowCamera() { return followCamera_; } // 追従カメラ取得
     Camera* GetActiveCamera();
     void SetCameraMode(CameraMode mode);
-
+    
     CameraMode GetcurrentMode() { return currentMode_; }
     GameCamera* GetGameCamera() { return gameCamera_; }
+
+
+    void SetMoveFlag(bool flag) { moveFlag = flag; }
+    bool GetMoveFlag() const { return moveFlag; }
 };

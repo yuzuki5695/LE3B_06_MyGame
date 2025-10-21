@@ -17,24 +17,20 @@ public:// メンバ関数
     /// </summary> 
 	virtual ~BaseBullet() = default;
     /// <summary>
-    /// 初期化処理（共通）
-    /// モデルや基本設定のロードなどを行う
+    /// 初期化処理
     /// </summary>
 	virtual void Initialize() = 0;
 	virtual void Initialize(const Vector3& startPos, const Vector3& targetPos, float speed) {};
     /// <summary>
     /// 終了処理
-    /// リソースの開放やオブジェクトの破棄を行う
     /// </summary>
 	virtual void Finalize() = 0;
     /// <summary>
     /// 更新処理
-    /// 弾の移動や寿命管理、衝突チェックなどを行う
     /// </summary>
 	virtual void Update() = 0;
     /// <summary>
     /// 描画処理
-    /// 弾のモデルを描画する
     /// </summary>
 	virtual void Draw() = 0;
 

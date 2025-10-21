@@ -69,14 +69,18 @@ private:
    	// 最大生存時間
     int Maxtime_;
 public: // アクセッサ（Getter / Setter）
-    /// 弾の現在位置を取得
+	/// Transformを取得
+    Transform GetTransform() const { return transform_; }
+    /// 現在位置を取得
     Vector3 GetTranslate() const { return transform_.translate ; }
-    /// 弾のサイズを取得
+    /// サイズを取得
     Vector3 GetScale() const { return transform_.scale; }
 
 
-    /// 弾の現在位置を設定
+    /// Transformを設定
+    void SetTranslate(const Transform& transform) {  transform_ = transform; } 
+    /// 現在位置を設定
     void SetTranslate(const Vector3& translate) {  transform_.translate = translate; } 
-    /// 弾のサイズを設定
+    /// サイズを設定
     void SetScale(const Vector3& scale) { transform_.scale = scale; }
 };
