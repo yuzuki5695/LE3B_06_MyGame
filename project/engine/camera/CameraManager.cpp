@@ -38,7 +38,7 @@ void CameraManager::Initialize(CameraTransform transform) {
     // ゲームカメラの生成
 	gameCamera_ = new GameCamera();
 	gameCamera_->Initialize();
-    moveFlag = true; 
+    moveFlag = false; 
     gameCamera_->Setmovefige(moveFlag);
 }
 

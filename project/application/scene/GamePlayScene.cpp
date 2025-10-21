@@ -19,8 +19,9 @@
 using namespace MatrixVector;
 
 void GamePlayScene::Finalize() {
-	BulletManager::GetInstance()->Finalize(); // 弾の解放処理
-   FadeManager::GetInstance()->Finalize();
+    BulletManager::GetInstance()->Finalize();  // 弾の解放処理
+    FadeManager::GetInstance()->Finalize();    //  フェードマネージャの解放処理
+    EventManager::GetInstance()->Finalize();   //  イベントマネージャの解放処理
 }
 
 void GamePlayScene::Initialize() {
@@ -31,7 +32,7 @@ void GamePlayScene::Initialize() {
     // テクスチャを読み込む
     TextureManager::GetInstance()->LoadTexture("uvChecker.png");
     TextureManager::GetInstance()->LoadTexture("monsterBall.png");
-    TextureManager::GetInstance()->LoadTexture("Black.png");
+    TextureManager::GetInstance()->LoadTexture("fade/Black.png");
     TextureManager::GetInstance()->LoadTexture("Gameplay/Move.png");
     TextureManager::GetInstance()->LoadTexture("Gameplay/Space.png");
     TextureManager::GetInstance()->LoadTexture("Gameplay/Shift.png");
@@ -48,16 +49,15 @@ void GamePlayScene::Initialize() {
 
     // オブジェクトの作成
     transform_ = { {20.0f, 1.0f, 300.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, -8.0f, 50.0f} };
-
+	// 地面の作成
     grass = Object3d::Create("Tile.obj", transform_);
-
+	// プレイヤーの作成と初期化
     player_ = std::make_unique<Player>();
     player_->Initialize(); // プレイヤーの初期化
     playerhp_ = player_->IsActive();
 
-
+	// 敵関連の初期化
     MAX_ENEMY = 14;
-
     // 敵出現トリガー
     spawnTriggers_ = {
     {40.0f, 5, false, MoveType::Horizontal},       // 全部動かない None
@@ -73,16 +73,17 @@ void GamePlayScene::Initialize() {
         enemy->SetActive(false);  // 非アクティブにしておく
         enemies_.emplace_back(std::move(enemy));
     }
-
+	// クリアゲート(仮)
     wall = Object3d::Create("wall.obj", Transform{ { 10.0f, 0.7f, 0.7f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 300.0f } });
-
+	// スカイボックスの作成
     TextureManager::GetInstance()->LoadTexture("CubemapBox.dds");
-
     Box_ = Skybox::Create("CubemapBox.dds", Transform{ { 1000.0f, 1000.0f, 1000.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 100.0f } });
-	
+	// ゴールフラグ初期化
     goal_ = false;
     // フェードマネージャの初期化
     FadeManager::GetInstance()->Initialize();
+	// イベントマネージャの初期化
+	EventManager::GetInstance()->Initialize("none");
 }
 
 void GamePlayScene::Update() {
@@ -92,9 +93,10 @@ void GamePlayScene::Update() {
         FadeManager::GetInstance()->StartFadeIn(1.0f, FadeStyle::SilhouetteExplode);
     }
     // フェードマネージャの更新   
-    FadeManager::GetInstance()->Update();
-
-
+    FadeManager::GetInstance()->Update(); 
+    // イベントマネージャの更新
+    EventManager::GetInstance()->Update();
+    
     /*-------------------------------------------*/
     /*--------------Cameraの更新処理---------------*/
     /*------------------------------------------*/
@@ -184,14 +186,11 @@ void GamePlayScene::Update() {
 
 #pragma region  ImGuiの更新処理開始
 #ifdef USE_IMGUI
-    Object3dCommon::GetInstance()->DrawImGui();
-
-    // Camera
-    CameraManager::GetInstance()->DrawImGui();
-
+	Object3dCommon::GetInstance()->DrawImGui(); // object3dのlightのImGui制御
+    CameraManager::GetInstance()->DrawImGui();  // カメラマネージャのImGui制御
+	FadeManager::GetInstance()->DrawImGui();    // フェードマネージャのImGui制御 
+	EventManager::GetInstance()->DrawImGui();   // イベントマネージャのImGui制御
     
-	FadeManager::GetInstance()->DrawImGui(); // フェードマネージャのImGui制御
-
 #endif // USE_IMGUI
 #pragma endregion ImGuiの更新処理終了 
 }
@@ -222,6 +221,8 @@ void GamePlayScene::Draw() {
         wall->Draw();
     }
 
+	// イベントマネージャの描画処理
+    EventManager::GetInstance()->Drawo3Dbject();
 
     // パーティクルの描画準備。パーティクルの描画に共通のグラフィックスコマンドを積む 
     ParticleCommon::GetInstance()->Commondrawing();
@@ -238,6 +239,9 @@ void GamePlayScene::Draw() {
     if (!end) {    
         player_->DrawSprite();
     }
+
+	// イベントマネージャの描画処理
+    EventManager::GetInstance()->Draw2DSprite();
 	// フェードマネージャの描画
     FadeManager::GetInstance()->Draw();
 #pragma endregion 全てのSprite個々の描画処理
