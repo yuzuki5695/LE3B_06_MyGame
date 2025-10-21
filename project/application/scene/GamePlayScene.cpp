@@ -83,7 +83,7 @@ void GamePlayScene::Initialize() {
     // フェードマネージャの初期化
     FadeManager::GetInstance()->Initialize();
 	// イベントマネージャの初期化
-	EventManager::GetInstance()->Initialize("none");
+	EventManager::GetInstance()->Initialize("gamestart");
 }
 
 void GamePlayScene::Update() {
@@ -96,7 +96,11 @@ void GamePlayScene::Update() {
     FadeManager::GetInstance()->Update(); 
     // イベントマネージャの更新
     EventManager::GetInstance()->Update();
-    
+	// ゲームスタートイベントが終了したらカメラ移動開始
+    if (EventManager::GetInstance()->IsFinished()) {
+        CameraManager::GetInstance()->GetGameCamera()->Setmovefige(true);
+    }
+
     /*-------------------------------------------*/
     /*--------------Cameraの更新処理---------------*/
     /*------------------------------------------*/
@@ -117,7 +121,7 @@ void GamePlayScene::Update() {
         // 更新処理
         grass->Update();
 
-
+        // イベント実行中はプレイヤ―を動かせない
         player_->Update();
 
         if (player_->GetPosition().z <= goalpos_) {

@@ -60,7 +60,11 @@ public: // メンバ関数
     Camera* GetFollowCamera() { return followCamera_; } // 追従カメラ取得
     Camera* GetActiveCamera();
     void SetCameraMode(CameraMode mode);
-
+    
     CameraMode GetcurrentMode() { return currentMode_; }
     GameCamera* GetGameCamera() { return gameCamera_; }
+
+
+    void SetMoveFlag(bool flag) { moveFlag = flag; }
+    bool GetMoveFlag() const { return moveFlag; }
 };

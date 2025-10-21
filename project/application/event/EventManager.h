@@ -52,6 +52,8 @@ public: // メンバ関数
     //void Start(EventState newState);
     
     void DrawImGui();
+    
+    void Reset();
 
 private:    // メンバ変数
     // イベントの種類
@@ -77,4 +79,12 @@ private:    // メンバ変数
     float missionTimer_ = 0.0f;   // 経過時間を記録
 
     bool timefige_;
+
+
+    bool isActive_ = false;    // イベント実行中フラグ
+    bool isFinished_ = false;  // イベント完了フラグ
+    
+public:
+    bool IsActive() const { return isActive_; }
+    bool IsFinished() const { return isFinished_; }
 };

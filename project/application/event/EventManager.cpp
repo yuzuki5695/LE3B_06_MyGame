@@ -50,6 +50,9 @@ void EventManager::Initialize(const std::string& stateName) {
     // 文字列によってstateを設定
     if (lower == "none") {
         state_ = EventState::None;
+
+    } else if (lower == "gamestart") {
+        state_ = EventState::GameStart;
         // 初期化
         sprite_ = Sprite::Create("Event/Black.png", Vector2{ 0.0f, 300.0f }, 0.0f, Vector2{ 1280.0f,150.0f });
         sprite_->SetColor(Vector4{ 1.0f, 1.0f, 1.0f, 0.0f });
@@ -57,8 +60,8 @@ void EventManager::Initialize(const std::string& stateName) {
         // スプライトサイズ
         size_ = { 1280.0f, 75.0f }; // 画面幅1280、高さ半分ずつくらいを想定
         // 左から右に動くスプライト（上側）
-        topSprite_ = Sprite::Create("Event/Startevent_02.png", Vector2{ -1280.0f, 300.0f }, 0.0f, size_);  
-        topSprite_->SetTextureSize(Vector2{ 1280.0f,75.0f }); 
+        topSprite_ = Sprite::Create("Event/Startevent_02.png", Vector2{ -1280.0f, 300.0f }, 0.0f, size_);
+        topSprite_->SetTextureSize(Vector2{ 1280.0f,75.0f });
         // 右から左に閉じるスプライト（下側）
         bottomSprite_ = Sprite::Create("Event/Startevent_01.png", Vector2{ 1280.0f, 375.0f }, 0.0f, size_);
         bottomSprite_->SetTextureSize(Vector2{ 1280.0f,75.0f });
@@ -71,11 +74,11 @@ void EventManager::Initialize(const std::string& stateName) {
         mission_->SetTextureSize(Vector2{ 300.0f,200.0f });
 
         timefige_ = false;
-        topPos_ = {0.0f,0.0f};
-        bottomPos_ = {0.0f,0.0f};
-
-    } else if (lower == "gamestart") {
-        state_ = EventState::GameStart;
+        topPos_ = { 0.0f,0.0f };
+        bottomPos_ = { 0.0f,0.0f };
+        
+        isActive_ = true;
+        isFinished_ = false;
     }
 }
 
@@ -84,6 +87,9 @@ void EventManager::Initialize(const std::string& stateName) {
 ///====================================================
 void EventManager::Update() {
     if (state_ == EventState::None) {
+
+
+    } else if (state_ == EventState::GameStart) {
         sprite_->Update();
         topSprite_->Update();
         bottomSprite_->Update();
@@ -166,10 +172,11 @@ void EventManager::Update() {
 
             if (topPos_.x >= 1280.0f && bottomPos_.x <= -1280.0f) {
                 missionalpha_ -= 0.05f;
-                if(missionalpha_ <=0.7f)
-                alpha_ -= 0.05f;
+                if (missionalpha_ <= 0.7f)
+                    alpha_ -= 0.05f;
                 if (alpha_ <= 0.0f && missionalpha_ <= 0.0f) {
-                    state_ = EventState::GameStart;
+                    state_ = EventState::None;
+                    Reset();
                 }
             }
 
@@ -180,9 +187,6 @@ void EventManager::Update() {
             mission_->SetColor({ 1.0f, 1.0f, 1.0f, missionalpha_ });
             break;
         }
-
-    } else if (state_ == EventState::GameStart) {
-
     }
 }
 	
@@ -191,9 +195,6 @@ void EventManager::Update() {
 ///====================================================
 void  EventManager::Drawo3Dbject(){
     if (state_ == EventState::None) {
-
-
-
 
     } else if (state_ == EventState::GameStart) {
 
@@ -205,15 +206,19 @@ void  EventManager::Drawo3Dbject(){
 ///====================================================
 void  EventManager::Draw2DSprite(){
     if (state_ == EventState::None) {
+
+    } else if (state_ == EventState::GameStart) {
         sprite_->Draw();
         topSprite_->Draw();
         bottomSprite_->Draw();
         mission_->Draw();
-
-
-    } else if (state_ == EventState::GameStart) {
-
     }
+}
+
+void EventManager::Reset() {
+    isActive_ = false;
+    isFinished_ = true;
+    timer_ = 0.0f;
 }
 
 void EventManager::DrawImGui() {
