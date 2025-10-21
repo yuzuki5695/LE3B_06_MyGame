@@ -27,7 +27,7 @@ void GamePlayScene::Finalize() {
 void GamePlayScene::Initialize() {
     // カメラマネージャの初期化
     CameraManager::GetInstance()->Initialize(CameraTransform({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }));
-    CameraManager::GetInstance()->SetCameraMode(CameraMode::GamePlay);
+    CameraManager::GetInstance()->SetCameraMode(CameraMode::Event);
 
     // テクスチャを読み込む
     TextureManager::GetInstance()->LoadTexture("uvChecker.png");
@@ -49,14 +49,16 @@ void GamePlayScene::Initialize() {
 
     // オブジェクトの作成
     transform_ = { {20.0f, 1.0f, 300.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, -8.0f, 50.0f} };
-	// 地面の作成
+    // 地面の作成
     grass = Object3d::Create("Tile.obj", transform_);
-	// プレイヤーの作成と初期化
+    // プレイヤーの作成と初期化
     player_ = std::make_unique<Player>();
     player_->Initialize(); // プレイヤーの初期化
     playerhp_ = player_->IsActive();
+    // カメラにプレイヤーを追わせる
+    CameraManager::GetInstance()->SetTarget(player_->GetPlayerObject());
 
-	// 敵関連の初期化
+    // 敵関連の初期化
     MAX_ENEMY = 14;
     // 敵出現トリガー
     spawnTriggers_ = {
@@ -73,17 +75,18 @@ void GamePlayScene::Initialize() {
         enemy->SetActive(false);  // 非アクティブにしておく
         enemies_.emplace_back(std::move(enemy));
     }
-	// クリアゲート(仮)
+    // クリアゲート(仮)
     wall = Object3d::Create("wall.obj", Transform{ { 10.0f, 0.7f, 0.7f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 300.0f } });
-	// スカイボックスの作成
+    // スカイボックスの作成
     TextureManager::GetInstance()->LoadTexture("CubemapBox.dds");
     Box_ = Skybox::Create("CubemapBox.dds", Transform{ { 1000.0f, 1000.0f, 1000.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 100.0f } });
-	// ゴールフラグ初期化
+    // ゴールフラグ初期化
     goal_ = false;
     // フェードマネージャの初期化
     FadeManager::GetInstance()->Initialize();
-	// イベントマネージャの初期化
-	EventManager::GetInstance()->Initialize("gamestart");
+    // イベントマネージャの初期化
+    EventManager::GetInstance()->Initialize("gamestart");
+    CameraManager::GetInstance()->GetGameCamera()->Setmovefige(true);
 }
 
 void GamePlayScene::Update() {
@@ -91,14 +94,16 @@ void GamePlayScene::Update() {
     if (!FadeManager::GetInstance()->IsFadeStart() && !FadeManager::GetInstance()->IsFading()) {
         // フェード開始
         FadeManager::GetInstance()->StartFadeIn(1.0f, FadeStyle::SilhouetteExplode);
-    }
+    }            
     // フェードマネージャの更新   
     FadeManager::GetInstance()->Update(); 
     // イベントマネージャの更新
-    EventManager::GetInstance()->Update();
-	// ゲームスタートイベントが終了したらカメラ移動開始
+    EventManager::GetInstance()->Update(); 	
+    // ゲームスタートイベントが終了したらプレイヤ―操作可能に
     if (EventManager::GetInstance()->IsFinished()) {
-        CameraManager::GetInstance()->GetGameCamera()->Setmovefige(true);
+        // イベント終了 → プレイヤーを操作可能に
+        player_->SetKeyActive(true);
+        player_->SetReticleVisible(true);
     }
 
     /*-------------------------------------------*/
@@ -121,7 +126,7 @@ void GamePlayScene::Update() {
         // 更新処理
         grass->Update();
 
-        // イベント実行中はプレイヤ―を動かせない
+
         player_->Update();
 
         if (player_->GetPosition().z <= goalpos_) {

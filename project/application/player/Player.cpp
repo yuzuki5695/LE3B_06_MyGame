@@ -40,14 +40,29 @@ void Player::Initialize() {
     originalColor_ = object->GetModel()->GetMaterialData()->color;
 }
 
-void Player::Update() {
+void Player::Update() {  
+    // --- アクティブでない場合、キー操作・射撃・ターゲット移動を無効化 ---
+    if (!iskeyActive_) {
+        // カメラ位置には追従させる（カットシーン中でも位置更新はOK）
+        GameCamera* gameCam = CameraManager::GetInstance()->GetGameCamera();
+        if (gameCam) {
+            Vector3 bezierPos = gameCam->GetbezierPos();
+            Vector3 relativeOffset = { 0.0f, -3.0f, 30.0f };
+            transform_.translate = bezierPos + relativeOffset;
+            object->SetTranslate(transform_.translate);
+            object->Update();
+        }
+        return; // ← 入力・射撃などをスキップ
+    }
+    // --- ここから通常の更新 ---
     GameCamera* gameCam = CameraManager::GetInstance()->GetGameCamera();
     if (gameCam) {
         Vector3 bezierPos = gameCam->GetbezierPos(); // ← Getter が必要
-        Vector3 relativeOffset = { 0.0f, -3.0f, 30.0f }; // カメラの前方に出すなど
+        Vector3 relativeOffset = { 0.0f, -3.0f, 30.0f }; // カメラの前方に出す
         transform_.translate = bezierPos + relativeOffset;
     }
-        // 現在時刻を取得（秒）
+    
+    // 現在時刻を取得（秒）
     float currentTime = static_cast<float>(std::chrono::duration<double>(std::chrono::high_resolution_clock::now().time_since_epoch()).count());
 
     // deltaTime を計算
@@ -83,11 +98,12 @@ void Player::Update() {
 void Player::Draw() {
     // プレイヤー描画
     object->Draw(); 
-    //target_->Draw();
 }
 
 void Player::DrawSprite() { 
-    targetreticle_->Draw();
+    if (isReticleVisible_) {
+        targetreticle_->Draw();
+    }
 }
 
 void Player::DebugImgui() {
