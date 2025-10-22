@@ -6,23 +6,30 @@
 #include<SoundPlayer.h>
 #include <Skybox.h>
 
-// ゲームクリアシーン
+/// <summary>
+/// ゲームオーバーシーン
+/// </summary>
 class GameOverScene : public BaseScene
 {
 public: // メンバ関数
-    // 初期化
+    /// <summary>
+    /// 初期化処理
+    /// </summary>
     void Initialize() override;
-    // 終了
+    /// <summary>
+    /// 終了処理
+    /// </summary>
     void Finalize() override;
-    // 毎フレーム更新
+    /// <summary>
+    /// 毎フレーム更新処理
+    /// </summary>
     void Update() override;
-    // 描画
+    /// <summary>
+    /// 描画処理
+    /// </summary>
     void Draw() override;
-private: // メンバ変数    
-    std::unique_ptr <Sprite> ui1_;
-            
-            
-    std::unique_ptr <Object3d> clear = nullptr;
-           
-    std::unique_ptr <Skybox> Box_ = nullptr;
+private: // メンバ変数        
+    std::unique_ptr <Sprite> ui1_ = nullptr;     // スプライト 
+    std::unique_ptr <Object3d> clear = nullptr;  // オブジェクト
+    std::unique_ptr <Skybox> Box_ = nullptr;     //　背景
 };
