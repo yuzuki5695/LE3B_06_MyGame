@@ -49,7 +49,7 @@ public:// メンバ関数
     /// </summary>
     void SetInactive() { active_ = false; }
 
-protected: 
+protected: // メンバ変数
     /// <summary>
     /// アクティブ状態フラグ
     /// true = 有効（描画・更新対象）

@@ -2,6 +2,7 @@
 #include<BaseCharacter.h>
 #include<Sprite.h>
 #include <ParticleEmitter.h>
+#include<OBB.h>
 
 class Player : public BaseCharacter {
 public:// メンバ関数

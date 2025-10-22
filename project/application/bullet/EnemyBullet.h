@@ -2,6 +2,7 @@
 #include <BaseBullet.h>
 #include <Transform.h>
 #include <BaseCharacter.h>
+#include<OBB.h>
 
 // ヘッダーの重複を防ぐ前方宣言
 class Object3d;
@@ -75,7 +76,6 @@ public:  // アクセッサ（Getter / Setter）
     Vector3 GetTranslate() const { return transform_.translate; }
     /// サイズを取得
     Vector3 GetScale() const { return transform_.scale; }  
-
 
     /// Transformを設定
     void SetTranslate(const Transform& transform) {  transform_ = transform; } 
