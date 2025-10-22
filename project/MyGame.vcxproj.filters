@@ -369,9 +369,6 @@
     <ClCompile Include="application\scene\GameOverScene.cpp">
       <Filter>ソース ファイル\application\scene</Filter>
     </ClCompile>
-    <ClCompile Include="application\character\CharacterManager.cpp">
-      <Filter>ソース ファイル\application\character</Filter>
-    </ClCompile>
     <ClCompile Include="application\Collision\CollisionManager.cpp">
       <Filter>ソース ファイル\application\collision</Filter>
     </ClCompile>
@@ -380,6 +377,9 @@
     </ClCompile>
     <ClCompile Include="application\event\EventManager.cpp">
       <Filter>ソース ファイル\application\event</Filter>
+    </ClCompile>
+    <ClCompile Include="application\character\CharacterManager.cpp">
+      <Filter>ソース ファイル\application\character</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
