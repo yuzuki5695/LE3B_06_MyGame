@@ -2,8 +2,13 @@
 #include <vector>
 #include <BaseCharacter.h>
 
+// ヘッダーの重複を防ぐ前方宣言
 class Player;
 
+///====================================================
+/// CharacterManager
+/// キャラクター（プレイヤー・敵など）を一括管理するマネージャクラス。
+///====================================================
 class CharacterManager {
 private:
 	static std::unique_ptr<CharacterManager> instance;
@@ -30,14 +35,20 @@ public: // メンバ関数
 	/// <summary>
 	/// 描画更新
 	/// </summary>
-	void Draw();
-    
+	void Draw(); 
+	/// <summary>
+    /// キャラクターの追加登録 (現状プレイヤ―用)
+    /// </summary> 
 	void AddCharacter(std::unique_ptr<BaseCharacter> character);
 private:// メンバ変数
 	std::vector<std::unique_ptr<BaseCharacter>> characters_; 	// キャラクター登録
 	Player* player_ = nullptr;								    // プレイヤーキャラクター
 public: // アクセッサ（Getter / Setter）
 	// getter
+
+	/// <summary>
+    /// プレイヤーキャラクターへのポインタを取得
+    /// </summary>
 	Player* GetPlayer() const {
 		assert(player_ != nullptr && "Player has not been registered!");
 		return player_;
