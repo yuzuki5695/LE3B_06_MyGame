@@ -13,30 +13,36 @@
 #include<ImGuiManager.h>
 #endif // USE_IMGUI
 
-// 静的メンバ変数の定義
+// シングルトン用インスタンス
 std::unique_ptr<FadeManager> FadeManager::instance = nullptr;
 
-// シングルトンインスタンスの取得
+///====================================================
+/// シングルトンインスタンスの取得
+///====================================================
 FadeManager* FadeManager::GetInstance() {
     if (!instance) {
         instance = std::make_unique<FadeManager>();
     }
     return instance.get();
 }
-
-// 終了
+///====================================================
+/// 終了処理
+///====================================================
 void FadeManager::Finalize() {
     instance.reset();  // `delete` 不要
 }
-
+///====================================================
+/// 初期化処理
+///====================================================
 void FadeManager::Initialize() {
-    // フェード用テクスチャの読み込み
+    // テクスチャの読み込み
     TextureManager::GetInstance()->LoadTexture("fade/Black.png");
+    TextureManager::GetInstance()->LoadTexture("fade/white.png");
     // フェード用スプライトの初期化
     sprite_ = Sprite::Create("fade/Black.png", Vector2{ 0.0f, 0.0f }, 0.0f, Vector2{ 1280.0f,720.0f });
     sprite_->SetColor({ 1.0f, 1.0f, 1.0f, 0.0f }); // 透明スタート         
 
-
+    // 各種初期値
     timer_ = 0.0f;
     duration_ = 1.0f;
     alpha_ = 0.0f;
@@ -44,7 +50,6 @@ void FadeManager::Initialize() {
     fadeEnd_ = false;
     t_ = 0.0f;
 
-    TextureManager::GetInstance()->LoadTexture("fade/white.png");
     // 画面を格子状に黒丸で埋める
     const int cols = 10;
     const int rows = 6;
@@ -76,7 +81,9 @@ void FadeManager::Initialize() {
         }
     }
 }
-
+/// =========================================================
+/// フェードイン開始
+/// =========================================================
 void FadeManager::StartFadeIn(float duration, FadeStyle style) {
     fadeType_ = FadeType::FadeIn;
     fadeStyle_ = style;
@@ -89,7 +96,9 @@ void FadeManager::StartFadeIn(float duration, FadeStyle style) {
     fadeEnd_ = false;
     isFading_ = true;
 }
-
+/// =========================================================
+/// フェードアウト開始
+/// =========================================================
 void FadeManager::StartFadeOut(float duration, FadeStyle style) {
     fadeType_ = FadeType::FadeOut;
     fadeStyle_ = style;
@@ -102,7 +111,9 @@ void FadeManager::StartFadeOut(float duration, FadeStyle style) {
     fadeEnd_ = false;
     isFading_ = true;
 }
-
+/// =========================================================
+/// 更新処理
+/// =========================================================
 void FadeManager::Update() {
     if (!isFading_) return;
 
@@ -113,7 +124,7 @@ void FadeManager::Update() {
     // 経過割合を求める
     t_ = std::clamp(timer_ / duration_, 0.0f, 1.0f);
         
-
+    // スタイル別処理
     switch (fadeStyle_) {
     case FadeStyle::Normal: UpdateNormalFade(); break;
     case FadeStyle::SilhouetteSlide: UpdateSilhouetteSlideFade(); break;
@@ -127,7 +138,9 @@ void FadeManager::Update() {
         fadeEnd_ = true;
     }
 }
-
+/// =========================================================
+///  通常フェードの更新処理
+/// =========================================================
 void FadeManager::UpdateNormalFade() {
     if (fadeType_ == FadeType::FadeOut) {
         // 透明 → 黒
@@ -140,7 +153,9 @@ void FadeManager::UpdateNormalFade() {
     sprite_->SetColor({ 0.0f, 0.0f, 0.0f, alpha_ });
     sprite_->Update();
 }
-   
+/// =========================================================
+/// スライドフェードの更新処理
+/// =========================================================
 void FadeManager::UpdateSilhouetteSlideFade() {
     const float maxScale = 1.0f;
     auto easeOutQuad = [](float t) { return 1 - (1 - t) * (1 - t); };
@@ -164,7 +179,9 @@ void FadeManager::UpdateSilhouetteSlideFade() {
         s.sprite->Update();
     }
 }
-
+// =========================================================
+// 爆発フェードの更新処理
+// =========================================================
 void FadeManager::UpdateSilhouetteExplodeFade() {
     const Vector2 center = { 1280.0f / 2, 720.0f / 2 };
 
@@ -251,8 +268,9 @@ void FadeManager::UpdateSilhouetteExplodeFade() {
         s.sprite->Update();
     }
 }
-
-
+/// =========================================================
+/// 描画処理
+/// =========================================================
 void FadeManager::Draw() {
     switch (fadeStyle_) {
     case FadeStyle::Normal:
@@ -270,8 +288,9 @@ void FadeManager::Draw() {
         break;
     }
 }
-
-// 🔸 ImGui制御関数
+/// =========================================================
+/// ImGuiデバッグ描画（コメントアウト）
+/// =========================================================
 void FadeManager::DrawImGui() {
 #ifdef _DEBUG
     //ImGui::Begin("Fade Manager");
