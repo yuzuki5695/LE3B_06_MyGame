@@ -3,16 +3,24 @@
 #include <Vector3.h>
 #include<vector>
 
-// ベジェ曲線の制御点の構造体
+/// <summary>
+/// ベジェ曲線の1点分の制御情報を保持する構造体
+/// </summary>
 struct BezierPoint {
     Vector3 handleLeft;
     Vector3 controlPoint;
     Vector3 handleRight;
 };
 
-// JSONファイルからベジェ曲線の制御点を読み込むクラス
+/// <summary>
+/// JSONファイルからベジェ曲線制御点を読み込むクラス
+/// </summary>
 class CurveJsonLoader {
 public:
-	// JSONファイルを読み込む
+    /// <summary>
+    /// 指定したパスのJSONファイルを読み込み、ベジェ制御点リストを返す
+    /// </summary>
+    /// <param name="filePath">JSONファイルのパス</param>
+    /// <returns>BezierPointの配列</returns>s
     std::vector<BezierPoint> LoadBezierFromJSON(const std::string& filePath);
 };
