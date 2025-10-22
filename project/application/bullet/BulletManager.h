@@ -22,22 +22,36 @@ public: // メンバ関数
     ~BulletManager() = default;
     // シングルトンインスタンスの取得
     static BulletManager* GetInstance();
-	// 終了処理
+    /// <summary>
+    /// 終了処理 
+    /// </summary> 
     void Finalize();
-    // 更新処理
+    /// <summary>
+    /// 更新処理 
+    /// </summary>
     void Update();
-	// 描画処理 
+    /// <summary>
+    /// 描画処理 
+    /// </summary>
     void Draw();
-
-	// 弾の追加
-    void AddPlayerBullet(std::unique_ptr<PlayerBullet> bullet); // プレイヤーの弾を受け取る
-	void AddEnemyBullet(std::unique_ptr<EnemyBullet> bullet);   // 敵の弾を受け取る
+    /// <summary>
+    /// プレイヤーの弾を登録
+    /// 外部から生成された弾をBulletManagerに登録する。
+    /// 登録された弾はUpdateやDraw処理で管理されるようになる。
+    /// </summary>
+    void AddPlayerBullet(std::unique_ptr<PlayerBullet> bullet);
+    /// <summary>
+    /// 敵の弾を登録
+    /// 外部から生成された弾をBulletManagerに登録する。
+    /// 登録された弾はUpdateやDraw処理で管理されるようになる。
+    /// </summary>
+    void AddEnemyBullet(std::unique_ptr<EnemyBullet> bullet);
 private:
-	// 弾のリスト
-	std::vector<std::unique_ptr<PlayerBullet>> playerBullets_; // プレイヤー
-	std::vector<std::unique_ptr<EnemyBullet>> enemyBullets_;   // 敵
+    // 弾のリスト
+    std::vector<std::unique_ptr<PlayerBullet>> playerBullets_; // プレイヤー
+    std::vector<std::unique_ptr<EnemyBullet>> enemyBullets_;   // 敵
 public: // アクセッサ（Getter / Setter）   
     // 弾のリストを外部から読み取る
     const std::vector<std::unique_ptr<PlayerBullet>>& GetPlayerBullets() const; // プレイヤー
-	const std::vector<std::unique_ptr<EnemyBullet>>& GetEnemyBullets() const;   // 敵
+    const std::vector<std::unique_ptr<EnemyBullet>>& GetEnemyBullets() const;   // 敵
 };
