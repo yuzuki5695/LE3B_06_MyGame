@@ -193,6 +193,9 @@
     <Filter Include="ヘッダー ファイル\application\event">
       <UniqueIdentifier>{2e44f535-1b69-4651-b91a-3c6c9d1fef4a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ソース ファイル\application\collision">
+      <UniqueIdentifier>{c7d8663d-47b8-4017-9149-5c426a1193a4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
