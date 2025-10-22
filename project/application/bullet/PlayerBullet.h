@@ -55,7 +55,7 @@ public: // メンバ関数
     /// </summary>
     /// <returns>弾のOBB（回転付き当たり判定）</returns>
     OBB GetOBB() const;
-private:
+private: // メンバ変数
 	// 3Dオブジェクト
     std::unique_ptr<Object3d> object_;	   
     // 位置・回転・スケール情報 

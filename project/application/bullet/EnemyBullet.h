@@ -76,7 +76,6 @@ public:  // アクセッサ（Getter / Setter）
     /// サイズを取得
     Vector3 GetScale() const { return transform_.scale; }  
 
-
     /// Transformを設定
     void SetTranslate(const Transform& transform) {  transform_ = transform; } 
     /// 現在位置を設定

@@ -46,7 +46,7 @@ public: // メンバ関数
     /// 登録された弾はUpdateやDraw処理で管理されるようになる。
     /// </summary>
     void AddEnemyBullet(std::unique_ptr<EnemyBullet> bullet);
-private:
+private: // メンバ変数
     // 弾のリスト
     std::vector<std::unique_ptr<PlayerBullet>> playerBullets_; // プレイヤー
     std::vector<std::unique_ptr<EnemyBullet>> enemyBullets_;   // 敵
