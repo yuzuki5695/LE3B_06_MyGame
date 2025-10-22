@@ -13,50 +13,54 @@
 #include<SkyboxCommon.h>
 #include<FadeManager.h>
 
+/// <summary>
+/// 終了処理
+/// </summary>
 void TitleScene::Finalize() {
     FadeManager::GetInstance()->Finalize();
 }
-
+/// <summary>
+/// 初期化処理
+/// </summary>
 void TitleScene::Initialize() {
 #pragma region 最初のシーンの初期化  
     // カメラマネージャの初期化
-    CameraManager::GetInstance()->Initialize(CameraTransform({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }));
-
+    CameraManager::GetInstance()->Initialize(CameraTransform({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f })); 
+    //  テクスチャの読み込み
     TextureManager::GetInstance()->LoadTexture("Title/UI_02.png");
     TextureManager::GetInstance()->LoadTexture("CubemapBox.dds");
-    // .objファイルからモデルを読み込む
+     // モデルの読み込み
     ModelManager::GetInstance()->LoadModel("Title/Title.obj");
     ModelManager::GetInstance()->LoadModel("Tile.obj");
     ModelManager::GetInstance()->LoadModel("Player.obj");
 
- 
+    // スカイボックス生成 
     Box_ = Skybox::Create("CubemapBox.dds", Transform{ { 1000.0f, 1000.0f, 1000.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 100.0f } });
-
+    // UIスプライト生成
     ui1_ = Sprite::Create("Title/UI_02.png", Vector2{ 420.0f, 500.0f }, 0.0f, Vector2{ 180.0f,90.0f });
     ui1_->SetTextureSize(Vector2{ 180.0f,90.0f });
     ui2_ = Sprite::Create("Title/UI_02.png", Vector2{ 420.0f, 500.0f }, 0.0f, Vector2{ 360.0f,90.0f });
     ui2_->SetTextureSize(Vector2{ 360.0f,90.0f });
-
-
+    // プレイヤーモデル生成（タイトル演出用） 
     playertransform_ = { {1.0f, 1.0f, 1.0f}, {0.0f, 0.9f, 0.0f},  -20.0f,0.0f,40.0f };
     player_ = Object3d::Create("Player.obj", playertransform_);
     startX = -20.0f;
     endX = -10.0f;
-
+    // モデル移動のパラメータ
     timer = 0.0f;
     moveDuration = 240.0f;  // 移動にかけるフレーム数（約2秒）     
     moveFinished = false;
     time = 0.0f;          // 経過時間 
-
     // フェードマネージャの初期化
     FadeManager::GetInstance()->Initialize();
-
+    // タイトルロゴスプライト生成
     ui3_ = Sprite::Create("Title/Title.png", Vector2{ 300.0f, 100.0f }, 0.0f, Vector2{ 600.0f,300.0f });
     ui3_->SetTextureSize(Vector2{ 600.0f,300.0f });
-
 #pragma endregion 最初のシーンの初期化
 }
-
+/// <summary>
+/// 毎フレーム更新処理
+/// </summary>
 void TitleScene::Update() {
     // フェードイン開始
     if (!FadeManager::GetInstance()->IsFadeStart() && !FadeManager::GetInstance()->IsFading()) {
@@ -86,7 +90,7 @@ void TitleScene::Update() {
     skyTrans.rotate.y += 0.001f; // Y軸回転（1フレームごとに少しずつ）
     Box_->SetRotate(skyTrans.rotate);
     Box_->Update();
-
+    // プレイヤーモデルの移動（
     if (!moveFinished) {
         // --- 位置のイージング ---
         timer += 1.0f;
@@ -113,10 +117,7 @@ void TitleScene::Update() {
     time += 0.03f;                     // 更新速度（0.05f は揺れの速さ） 
     playertransform_.translate.y = 0.0f + sinf(time) * 2.3f;  // 中心Y=-10.0f、振幅3.0f 
     player_->SetTranslate(playertransform_.translate);
-
-    //title_->Update();
     player_->Update();
-
 
 #pragma endregion 全てのObject3d個々の更新処理
 	ui3_->Update();
@@ -149,7 +150,9 @@ void TitleScene::Update() {
 #pragma endregion ImGuiの更新処理終了
 
 }
-
+/// <summary>
+/// 描画処理
+/// </summary>
 void TitleScene::Draw() {
 #pragma region 全てのObject3d個々の描画処理 
     // 箱オブジェクトの描画準備。3Dオブジェクトの描画に共通のグラフィックスコマンドを積む

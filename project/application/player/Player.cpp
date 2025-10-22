@@ -15,9 +15,15 @@
 
 using namespace MatrixVector;
 
+///=====================================================================
+/// デストラクタ
+///=====================================================================
 Player::~Player() {}
-
+///=====================================================================
+/// 初期化処理
+///=====================================================================
 void Player::Initialize() {	 
+    // モデル・テクスチャ読み込み
     ModelManager::GetInstance()->LoadModel("Player.obj");     
     ModelManager::GetInstance()->LoadModel("Bullet/PlayerBullet.obj");
     TextureManager::GetInstance()->LoadTexture("Target.png");
@@ -39,7 +45,9 @@ void Player::Initialize() {
 
     originalColor_ = object->GetModel()->GetMaterialData()->color;
 }
-
+///=====================================================================
+/// 更新処理
+///=====================================================================
 void Player::Update() {  
     // --- アクティブでない場合、キー操作・射撃・ターゲット移動を無効化 ---
     if (!iskeyActive_) {
@@ -68,8 +76,8 @@ void Player::Update() {
     // deltaTime を計算
     float deltaTime = currentTime - previousTime_;
     previousTime_ = currentTime;
-
-    UpdateBoostState(); // 追加：ブースト状態更新
+    // ブースト状態更新
+    UpdateBoostState(); 
 
     float currentSpeed = isBoosting_ ? boostSpeed_ : normalSpeed_;
     MoveInput(currentSpeed); // ブースト中は速く移動
@@ -83,8 +91,8 @@ void Player::Update() {
     DebugImgui();
     target_->SetTranslate(copypos);
     target_->Update();
-
-    UpdateReticlePosition();   // 追加：3D空間に合わせてスクリーン位置を更新
+    // 照準スプライトの位置更新（3D→2D変換)
+    UpdateReticlePosition();
     targetreticle_->Update();
  
     // 移動後の位置をObjectに反映
@@ -95,17 +103,24 @@ void Player::Update() {
     object->Update();
 }
 
+///=====================================================================
+/// 3D描画処理
+///=====================================================================
 void Player::Draw() {
     // プレイヤー描画
     object->Draw(); 
 }
-
+///=====================================================================
+/// スプライト描画処理
+///=====================================================================
 void Player::DrawSprite() { 
     if (isReticleVisible_) {
         targetreticle_->Draw();
     }
 }
-
+///=====================================================================
+/// デバッグ用ImGui
+///=====================================================================
 void Player::DebugImgui() {
 #ifdef USE_IMGUI
     ImGui::Begin("Player Control");
@@ -142,7 +157,9 @@ void Player::MoveInput(float speed) {
     transform_.translate.x = std::clamp(transform_.translate.x, -10.0f, 10.0f);
     transform_.translate.y = std::clamp(transform_.translate.y, -5.0f, 5.0f);
 }
-
+///=====================================================================
+/// ブースト状態更新処理
+///=====================================================================
 void Player::UpdateBoostState() {
     Input* input = Input::GetInstance();
 
@@ -172,7 +189,9 @@ void Player::UpdateBoostState() {
         }
     }
 }
-
+///=====================================================================
+/// ターゲットの移動処理
+///=====================================================================
 void Player::UpdateTargetPosition(Transform& targetTransform, float speed) {
     if (Input::GetInstance()->Pushkey(DIK_LEFT))  targetTransform.translate.x -= speed;
     if (Input::GetInstance()->Pushkey(DIK_RIGHT)) targetTransform.translate.x += speed;
@@ -180,8 +199,9 @@ void Player::UpdateTargetPosition(Transform& targetTransform, float speed) {
     if (Input::GetInstance()->Pushkey(DIK_DOWN))  targetTransform.translate.y -= speed;
 	copypos = targetpos_.translate + transform_.translate; // ターゲットの位置をプレイヤーの位置に合わせる
 }
-
-
+///=====================================================================
+/// 弾の発射処理
+///=====================================================================
 void Player::AttachBullet() {
     bulletTimer_ += 1.0f / 60.0f; // 毎フレーム経過時間を加算（60fps前提）
     // 30秒経過したら発射可能にする
@@ -197,55 +217,11 @@ void Player::AttachBullet() {
         BulletManager::GetInstance()->AddPlayerBullet(std::move(bullet));                 // BulletManagerに追加
         canShoot_ = false;                                                          // 弾を撃てる状態にする
     };
-
-
-    //// スペースキー押している間はチャージ
-    //if (Input::GetInstance()->Pushkey(DIK_SPACE)) {
-    //    isCharging_ = true;
-    //    chargeTime_ += 1.0f / 60.0f;                 // フレーム加算（60fps前提）
-    //    chargeTime_ = (chargeTime_ > maxChargeTime_) ? maxChargeTime_ : chargeTime_;
-    //    return; // 発射はまだ行わない
-    //}
-
-    //// スペースキーを離したタイミングで弾を撃つ
-    //if (isCharging_) {
-    //    isCharging_ = false;
-
-    //    // 発射するサイズをチャージ時間に応じて設定（最小0.5 最大3.0など）
-    //    float sizeScale = 0.5f + (chargeTime_ / maxChargeTime_) * 2.5f;
-
-    //    std::unique_ptr<PlayerBullet> bullet = std::make_unique<PlayerBullet>();
-    //    bullet->Initialize(transform_.translate, copypos, 3.0f); // 速度や初期位置
-
-    //    // サイズを反映
-    //    bullet->SetScale({ sizeScale, sizeScale, sizeScale });
-
-    //    BulletManager::GetInstance()->AddPlayerBullet(std::move(bullet));
-
-    //    chargeTime_ = 0.0f; // チャージタイマーリセット
-    //}
-
-    //if (isCharging_) {
-    //    isCharging_ = false;
-
-    //    float sizeScale = 0.5f + (chargeTime_ / maxChargeTime_) * 2.5f;
-
-    //    // 左弾
-    //    std::unique_ptr<PlayerBullet> leftBullet = std::make_unique<PlayerBullet>();
-    //    leftBullet->Initialize(transform_.translate + bulletOffsetLeft, copypos, 3.0f);
-    //    leftBullet->SetScale({ sizeScale, sizeScale, sizeScale });
-    //    BulletManager::GetInstance()->AddPlayerBullet(std::move(leftBullet));
-
-    //    // 右弾
-    //    std::unique_ptr<PlayerBullet> rightBullet = std::make_unique<PlayerBullet>();
-    //    rightBullet->Initialize(transform_.translate + bulletOffsetRight, copypos, 3.0f);
-    //    rightBullet->SetScale({ sizeScale, sizeScale, sizeScale });
-    //    BulletManager::GetInstance()->AddPlayerBullet(std::move(rightBullet));
-
-    //    chargeTime_ = 0.0f;
-    //}
 }
 
+///=====================================================================
+/// レティクル用3D座標 → 2Dスクリーン座標変換
+///=====================================================================
 void Player::UpdateReticlePosition() {
     // target_ が存在しない場合は何もしない
     if (!target_) return;
@@ -292,7 +268,9 @@ void Player::UpdateReticlePosition() {
     // ---- スプライトの位置更新 ----
     targetreticle_->SetPosition(reticleScreenPos_);
 }
-
+///=====================================================================
+/// OBB当たり判定取得
+///=====================================================================
 OBB Player::GetOBB() const {
     OBB obb;
 

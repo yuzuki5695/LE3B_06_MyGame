@@ -43,7 +43,7 @@ void EventManager::Initialize(const std::string& stateName) {
     TextureManager::GetInstance()->LoadTexture("Event/Startevent_02.png");
     TextureManager::GetInstance()->LoadTexture("Event/mission.png");
     TextureManager::GetInstance()->LoadTexture("Event/start.png");
-    // 小文字化（大文字小文字を区別しないため）
+    // 受け取った文字列を小文字に変換して比較（大文字小文字を区別しないため）
     std::string lower = stateName;
     std::transform(lower.begin(), lower.end(), lower.begin(), ::tolower);
 
@@ -52,6 +52,7 @@ void EventManager::Initialize(const std::string& stateName) {
         state_ = EventState::None;
 
     } else if (lower == "gamestart") {
+        // ゲーム開始イベントの初期化
         state_ = EventState::GameStart;
         // 初期化
         sprite_ = Sprite::Create("Event/Black.png", Vector2{ 0.0f, 300.0f }, 0.0f, Vector2{ 1280.0f,150.0f });
@@ -65,18 +66,18 @@ void EventManager::Initialize(const std::string& stateName) {
         // 右から左に閉じるスプライト（下側）
         bottomSprite_ = Sprite::Create("Event/Startevent_01.png", Vector2{ 1280.0f, 375.0f }, 0.0f, size_);
         bottomSprite_->SetTextureSize(Vector2{ 1280.0f,75.0f });
-        closeSpeed_ = 17.0f;
-
+        closeSpeed_ = 17.0f; 
+        // UIスプライト
         missionsize_ = { 300.0f,200.0f };
         mission_ = Sprite::Create("Event/mission.png", Vector2{ 500.0f, 265.0f }, 0.0f, missionsize_);
         missionalpha_ = 0.0f;
         mission_->SetColor(Vector4{ 1.0f, 1.0f, 1.0f, missionalpha_ });
         mission_->SetTextureSize(Vector2{ 300.0f,200.0f });
 
+        // 各種初期化
         timefige_ = false;
         topPos_ = { 0.0f,0.0f };
-        bottomPos_ = { 0.0f,0.0f };
-        
+        bottomPos_ = { 0.0f,0.0f }; 
         isActive_ = true;
         isFinished_ = false;
     }
@@ -87,15 +88,19 @@ void EventManager::Initialize(const std::string& stateName) {
 ///====================================================
 void EventManager::Update() {
     if (state_ == EventState::None) {
-
-
+        // イベントがない場合は何もしない
+        return;
     } else if (state_ == EventState::GameStart) {
+        // 各スプライトの更新
         sprite_->Update();
         topSprite_->Update();
         bottomSprite_->Update();
         mission_->Update();
-
+        // 演出フェーズごとに処理を分岐
         switch (phase_) {
+            // ------------------------------
+        // フェーズ1：黒背景のフェードイン
+        // ------------------------------
         case EventPhase::Phase1:
             alpha_ += 0.01f;  // 少しずつ明るくする
             sprite_->SetColor({ 1.0f, 1.0f, 1.0f, alpha_ }); // 色（RGBA）を更新
@@ -104,7 +109,10 @@ void EventManager::Update() {
                 alpha_ = 0.7f;
                 phase_ = EventPhase::Phase2;
             }
-            break;
+            break;            
+        // ------------------------------
+        // フェーズ2：上下のバーが中央へ閉じる
+        // ------------------------------
         case EventPhase::Phase2:
             // 上側の移動
             topPos_ = topSprite_->GetPosition();
@@ -130,6 +138,9 @@ void EventManager::Update() {
             }
 
             break;
+        // ------------------------------
+        // フェーズ3：MISSION文字のフェードイン
+        // ------------------------------
         case EventPhase::Phase3:
             missionalpha_ += 0.05f;  // 少しずつ明るくする
 
@@ -141,6 +152,9 @@ void EventManager::Update() {
 
             mission_->SetColor({ 1.0f, 1.0f, 1.0f, missionalpha_ }); // 色（RGBA）を更新
             break;
+        // ------------------------------
+        // フェーズ4：MISSION表示維持 → フェードアウト → “START”表示
+        // ------------------------------
         case EventPhase::Phase4:
             // 明るくなってから時間をカウント
             missionTimer_ += 1.0f / 60.0f; // 60fps換算（毎フレーム約0.016秒）
@@ -158,6 +172,9 @@ void EventManager::Update() {
             }
             mission_->SetColor({ 1.0f, 1.0f, 1.0f, missionalpha_ }); // 色（RGBA）を更新
             break;
+        // ------------------------------
+        // フェーズEnd：バーが外へ開いて終了
+        // ------------------------------
         case EventPhase::End:
             // 上側の移動
             if (topPos_.x < 1280.0f) { // さらにspriteの大きさ分移動
@@ -169,7 +186,7 @@ void EventManager::Update() {
                 bottomPos_.x -= closeSpeed_;
                 if (bottomPos_.x < -1280.0f) bottomPos_.x = -1280.0f;
             }
-
+            // 両方が完全に外に出たらフェードアウト完了
             if (topPos_.x >= 1280.0f && bottomPos_.x <= -1280.0f) {
                 missionalpha_ -= 0.05f;
                 if (missionalpha_ <= 0.7f)
@@ -215,12 +232,18 @@ void  EventManager::Draw2DSprite(){
     }
 }
 
+///====================================================
+/// リセット処理
+///====================================================
 void EventManager::Reset() {
     isActive_ = false;
     isFinished_ = true;
     timer_ = 0.0f;
 }
 
+///====================================================
+/// デバッグ表示
+///====================================================
 void EventManager::DrawImGui() {
 #ifdef USE_IMGUI
     ImGui::Begin("EventManager Debug");

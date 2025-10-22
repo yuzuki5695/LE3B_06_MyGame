@@ -18,12 +18,17 @@
 
 using namespace MatrixVector;
 
+///====================================================
+/// 終了処理（リソース解放）
+///====================================================
 void GamePlayScene::Finalize() {
     BulletManager::GetInstance()->Finalize();  // 弾の解放処理
     FadeManager::GetInstance()->Finalize();    //  フェードマネージャの解放処理
     EventManager::GetInstance()->Finalize();   //  イベントマネージャの解放処理
 }
-
+///====================================================
+/// 初期化処理
+///====================================================
 void GamePlayScene::Initialize() {
     // カメラマネージャの初期化
     CameraManager::GetInstance()->Initialize(CameraTransform({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }));
@@ -39,7 +44,7 @@ void GamePlayScene::Initialize() {
     TextureManager::GetInstance()->LoadTexture("Gameplay/StandardChange.png");     
     TextureManager::GetInstance()->LoadTexture("titlereturn.png");
 
-    
+    // タイトルに戻るUIを生成
     ui1_ = Sprite::Create("titlereturn.png", Vector2{ 1100.0f, 5.0f }, 0.0f, Vector2{ 150.0f,100.0f });
     ui1_->SetTextureSize(Vector2{ 300.0f,200.0f });
 
@@ -64,14 +69,13 @@ void GamePlayScene::Initialize() {
     CameraManager::GetInstance()->SetTarget(player_->GetPlayerObject());
 
     // 敵関連の初期化
-    MAX_ENEMY = 14;
+	MAX_ENEMY = 14; // 敵の最大数
     // 敵出現トリガー
     spawnTriggers_ = {
-    {40.0f, 5, false, MoveType::Horizontal},       // 全部動かない None
-    {120.0f, 5, false, MoveType::Vertical},  // 全部縦移動 Vertical
-    {190.0f, 5, false, MoveType::None} // 全部横移動  Horizontal
+    {40.0f, 5, false, MoveType::Horizontal},       // 全部動かない None(フォーメーション関数使用中)
+    {120.0f, 5, false, MoveType::Vertical},        // 全部縦移動 Vertical
+    {190.0f, 5, false, MoveType::None}             // 全部横移動  Horizontal
     };
-
     // 敵をリストに追加して初期化
     for (int i = 0; i < MAX_ENEMY; ++i) {
         std::unique_ptr<Enemy> enemy = std::make_unique<Enemy>();
@@ -91,9 +95,12 @@ void GamePlayScene::Initialize() {
     FadeManager::GetInstance()->Initialize();
     // イベントマネージャの初期化
     EventManager::GetInstance()->Initialize("gamestart");
+	// ゲームカメラの移動許可
     CameraManager::GetInstance()->GetGameCamera()->Setmovefige(true);
 }
-
+///====================================================
+/// 毎フレーム更新処理
+///====================================================
 void GamePlayScene::Update() {
     // フェードイン開始
     if (!FadeManager::GetInstance()->IsFadeStart() && !FadeManager::GetInstance()->IsFading()) {
@@ -114,30 +121,23 @@ void GamePlayScene::Update() {
         }
     }
 
-
     /*-------------------------------------------*/
     /*--------------Cameraの更新処理---------------*/
     /*------------------------------------------*/
     CameraManager::GetInstance()->Update();
 #pragma region 全てのObject3d個々の更新処理
-
     playerhp_ = player_->IsActive();
-
-
+	// 終了しない限り更新処理
     if (!end) {
-
         // 敵出現動作
         EnemySpawn();
-
+        // 各衝突判定
         CheckBulletEnemyCollisionsOBB();
         CheckEnemyBulletPlayerCollisionsOBB();
-
         // 更新処理
         grass->Update();
-
-
         player_->Update();
-
+        // プレイヤーがゴール手前なら敵も更新
         if (player_->GetPosition().z <= goalpos_) {
             // 敵の更新
             for (auto& enemy : enemies_) {
@@ -155,15 +155,13 @@ void GamePlayScene::Update() {
     // 敵がプレイヤーから離れすぎたら削除（過去の敵掃除）
     for (auto& enemy : enemies_) {
         if (!enemy->IsActive()) continue;
-
         float playerZ = player_->GetPosition().z;
         float spawnZ = enemy->GetSpawnBaseZ();  // 出現基準Z
-
         if (playerZ > spawnZ + 10) { // 出現位置より進んでたら削除
             enemy->Kill();
         }
     }
-
+    // ゴール判定処理
     if (player_->GetPosition().z >= goalpos_ && !end) {
         end = true;
         goal_ = true;
@@ -192,15 +190,14 @@ void GamePlayScene::Update() {
                 return e->IsDead();  // ← 出現前の非アクティブは残す！
             }),
         enemies_.end());
-
-    Box_->Update();
-
+    // スカイボックス更新
+    Box_->Update();     
+    // パーティクル更新
     ParticleManager::GetInstance()->Update();
 #pragma endregion 全てのObject3d個々の更新処理
 
 #pragma region 全てのSprite個々の更新処理
-
-
+    // スプライトの更新
     ui1_->Update();
 
 #pragma endregion 全てのSprite個々の更新処理
@@ -215,7 +212,9 @@ void GamePlayScene::Update() {
 #endif // USE_IMGUI
 #pragma endregion ImGuiの更新処理終了 
 }
-
+///====================================================
+/// 描画処理
+///====================================================
 void GamePlayScene::Draw() {
 #pragma region 全てのObject3d個々の描画処理
     // 箱オブジェクトの描画準備。3Dオブジェクトの描画に共通のグラフィックスコマンドを積む
@@ -231,7 +230,7 @@ void GamePlayScene::Draw() {
         // Bulletマネージャの描画処理
         BulletManager::GetInstance()->Draw();
     }
-
+    // プレイヤーがゴール地点に達するまでは敵や壁を描画
     if (player_->GetPosition().z <= goalpos_) {
         // 敵の更新
         for (auto& enemy : enemies_) {
@@ -253,14 +252,12 @@ void GamePlayScene::Draw() {
 #pragma region 全てのSprite個々の描画処理
     // Spriteの描画準備。Spriteの描画に共通のグラフィックスコマンドを積む
     SpriteCommon::GetInstance()->Commondrawing();
-    if (end || !playerhp_) {
-       // black->Draw();
-    }
-
+    // プレイヤーのUIスプライト描画
     if (!end) {    
         player_->DrawSprite();
     }
-    
+
+    // スタートイベント終了後にタイトルへ戻るボタンを描画   
     if (EventManager::GetInstance()->IsFinished()) {
         ui1_->Draw();
     }
@@ -271,7 +268,9 @@ void GamePlayScene::Draw() {
     FadeManager::GetInstance()->Draw();
 #pragma endregion 全てのSprite個々の描画処理
 }
-
+///====================================================
+/// 敵の出現処理
+///====================================================
 void GamePlayScene::EnemySpawn() {
     // プレイヤーの位置取得
     float playerZ = player_->GetPosition().z;
@@ -283,9 +282,7 @@ void GamePlayScene::EnemySpawn() {
         
             // --- フォーメーションの種類で分岐 ---
             if (tIndex == 0) {
-                //SpawnVFormation(trigger);  // △
                 SpawnReverseStepFormation(trigger);
-                //SpawnZigZagFormation(trigger);
 
             }  if (tIndex == 1) {
                 SpawnVFormation(trigger);
@@ -298,7 +295,9 @@ void GamePlayScene::EnemySpawn() {
         }
     }
 }
-
+///====================================================
+/// 敵出現パターン：ジグザグフォーメーション
+///====================================================
 void GamePlayScene::SpawnZigZagFormation(const EnemySpawnTrigger& trigger) {
     int activated = 0;
     const int numEnemies = 5;
@@ -324,7 +323,9 @@ void GamePlayScene::SpawnZigZagFormation(const EnemySpawnTrigger& trigger) {
         }
     }
 }
-
+///====================================================
+/// 敵出現パターン：逆ステップフォーメーション
+///====================================================
 void GamePlayScene::SpawnReverseStepFormation(const EnemySpawnTrigger& trigger) {
     int activated = 0;
 
@@ -352,8 +353,9 @@ void GamePlayScene::SpawnReverseStepFormation(const EnemySpawnTrigger& trigger) 
         }
     }
 }
-
-
+///====================================================
+/// 敵出現パターン：V字フォーメーション
+///====================================================
 void GamePlayScene::SpawnVFormation(const EnemySpawnTrigger& trigger) {
     int activated = 0;
 
@@ -406,7 +408,9 @@ void GamePlayScene::SpawnVFormation(const EnemySpawnTrigger& trigger) {
         }
     }
 }
-
+///====================================================
+/// OBB同士の当たり判定（分離軸定理）
+/// ====================================================
 bool GamePlayScene::IsOBBIntersect(const OBB& a, const OBB& b) {
     const float EPSILON = 1e-5f;
     Vector3 T = b.center - a.center;
@@ -455,7 +459,9 @@ bool GamePlayScene::IsOBBIntersect(const OBB& a, const OBB& b) {
 
     return true;
 }
-
+///====================================================
+/// プレイヤー弾 vs 敵の当たり判定
+///====================================================
 void GamePlayScene::CheckBulletEnemyCollisionsOBB() {
     const auto& bullets = BulletManager::GetInstance()->GetPlayerBullets();
 
@@ -477,7 +483,9 @@ void GamePlayScene::CheckBulletEnemyCollisionsOBB() {
         }
     }
 }
-
+///====================================================
+/// 敵弾 vs プレイヤーの当たり判定
+///====================================================
 void GamePlayScene::CheckEnemyBulletPlayerCollisionsOBB() {
     const auto& bullets = BulletManager::GetInstance()->GetEnemyBullets();
 

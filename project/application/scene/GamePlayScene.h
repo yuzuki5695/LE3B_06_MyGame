@@ -11,26 +11,56 @@
 #include<FadeManager.h>
 #include<EventManager.h>
 
-// ゲームプレイシーン
+/// <summary>
+/// ゲームプレイシーン
+/// </summary>
 class GamePlayScene : public BaseScene
 {
 public: // メンバ関数
-    // 初期化
+    /// <summary>
+    /// 初期化処理
+    /// </summary>
     void Initialize() override;
-    // 終了
+    /// <summary>
+    /// 終了処理
+    /// </summary>
     void Finalize() override;
-    // 毎フレーム更新
+    /// <summary>
+    /// 毎フレーム更新処理
+    /// </summary>
     void Update() override;
-    // 描画
+    /// <summary>
+    /// 描画処理
+    /// </summary>
     void Draw() override;
-	// 敵出現処理
+    /// <summary>
+    /// 敵出現処理（レベルデータに基づく）
+    /// </summary>
     void EnemySpawn();
-	bool IsOBBIntersect(const OBB& a, const OBB& b); // OBB同士の当たり判定
-    void CheckBulletEnemyCollisionsOBB();    // プレイヤーの弾と敵
-    void CheckEnemyBulletPlayerCollisionsOBB();    // プレイヤーと敵の弾
-	void SpawnVFormation(const EnemySpawnTrigger& trigger); // V字フォーメーション
-	void SpawnReverseStepFormation(const EnemySpawnTrigger& trigger); // 逆ステップフォーメーション
-	void SpawnZigZagFormation(const EnemySpawnTrigger& trigger); // ジグザグフォーメーション
+    /// <summary>
+    /// OBB同士の当たり判定
+    /// </summary>
+    bool IsOBBIntersect(const OBB& a, const OBB& b);
+    /// <summary>
+    /// プレイヤーの弾と敵との衝突判定処理
+    /// </summary>
+    void CheckBulletEnemyCollisionsOBB();
+    /// <summary>
+    /// 敵の弾とプレイヤーとの衝突判定処理
+    /// </summary>
+    void CheckEnemyBulletPlayerCollisionsOBB();
+    /// <summary>
+    /// V字フォーメーションでの敵出現処理
+    /// </summary>
+    void SpawnVFormation(const EnemySpawnTrigger& trigger);
+    /// <summary>
+    /// 逆ステップフォーメーションでの敵出現処理
+    /// </summary>
+    void SpawnReverseStepFormation(const EnemySpawnTrigger& trigger);
+    /// <summary>
+    /// ジグザグフォーメーションでの敵出現処理
+    /// </summary>
+    void SpawnZigZagFormation(const EnemySpawnTrigger& trigger);
 private: // メンバ変数
     // オブジェクトデータ
     // 地面
@@ -60,6 +90,6 @@ private: // メンバ変数
     std::unique_ptr <Skybox> Box_ = nullptr;
 	// イベント処理
     std::vector<EventManager> event_; 
-
+    /// UI(タイトルへ(仮))
     std::unique_ptr <Sprite> ui1_;
 };

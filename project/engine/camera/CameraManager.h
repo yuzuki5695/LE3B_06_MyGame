@@ -1,7 +1,7 @@
 #pragma once
 #include <Object3d.h>
 #include<GameCamera.h>
-
+// カメラモード
 enum class CameraMode {
     Default,
     Follow,
@@ -32,30 +32,27 @@ public: // メンバ関数
     void Initialize(CameraTransform Transform);
     // 更新処理
     void Update();
-
+	// カメラモード切替
     void ToggleCameraMode(bool followMode); // モード切替
-    void DrawImGui(); // ImGui描画
-
+    void DrawImGui(); // ImGui描画   
     void SetActiveCamera(); // アクティブカメラを設定
 
 private:
     // 現在のカメラモード
     CameraMode currentMode_;
     Object3d* target_ = nullptr; // 追従対象オブジェクト
-
     Camera* defaultCamera_; // 追従しないカメラ(デフォルト)
     Camera* followCamera_;  // 追従用カメラ
-    GameCamera* gameCamera_; // ゲームプレイ用カメラ
-	Camera* eventCamera_;    // イベント用カメラ
-
+    GameCamera* gameCamera_; // ゲームプレイ用カメラ 
+    // ゲームカメラ関連
+    bool moveFlag = false;
+    uint32_t activated_ ;
+    Camera* eventCamera_;    // イベント用カメラ
     // ヘッダーかクラス内に追加
     bool addedInitialOffset_ = false;
 
     bool useFollowCamera_ = false; // カメラモード切替用フラグ
     float waitTime_ = 0.0f;    
-    bool moveFlag = false;
-    uint32_t activated_ ;
-
 public: // メンバ関数
     // 追従対象をセット（nullptrなら追従なし）
     void SetTarget(Object3d* target);
