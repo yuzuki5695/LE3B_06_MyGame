@@ -2,6 +2,7 @@
 #include <BaseBullet.h>
 #include <Transform.h>
 #include <BaseCharacter.h>
+#include<OBB.h>
 
 // ヘッダーの重複を防ぐ前方宣言
 class Object3d;

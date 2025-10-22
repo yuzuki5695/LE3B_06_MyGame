@@ -4,6 +4,7 @@
 #include<Transform.h>
 #include<BaseCharacter.h>
 #include<Sprite.h>
+#include<OBB.h>
 
 class Player;
 
