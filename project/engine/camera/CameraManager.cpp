@@ -23,7 +23,7 @@ CameraManager* CameraManager::GetInstance() {
 void CameraManager::Finalize() {
     instance.reset();  // `delete` 不要
 }
-
+// 初期化
 void CameraManager::Initialize(CameraTransform transform) {
     // 初期状態はデフォルトカメラ
     currentMode_ = CameraMode::Default;
@@ -43,7 +43,7 @@ void CameraManager::Initialize(CameraTransform transform) {
 	// イベントカメラの生成   
     eventCamera_ = new Camera();
 }
-
+// 更新処理
 void CameraManager::Update() {
     if (gameCamera_->Getmovefige()) {
         gameCamera_->UpdateObjectPosition();
@@ -111,15 +111,15 @@ void CameraManager::Update() {
         break;
     }
 }
-
+// 追従対象をセット（nullptrなら追従なし）
 void CameraManager::SetTarget(Object3d* target) {
     target_ = target;
 }
-
+// カメラモード切替
 void CameraManager::ToggleCameraMode(bool followMode) {
     useFollowCamera_ = followMode;
 }
-
+// ImGui描画
 void CameraManager::DrawImGui() {
 #ifdef USE_IMGUI
     ImGui::Begin("CameraManager");
@@ -196,7 +196,7 @@ void CameraManager::DrawImGui() {
     ImGui::End();
 #endif // USE_IMGUI
 }
-
+// アクティブカメラを取得
 Camera* CameraManager::GetActiveCamera() {
     switch (currentMode_) {
     case CameraMode::Follow:
@@ -210,12 +210,12 @@ Camera* CameraManager::GetActiveCamera() {
         return defaultCamera_;
     }
 }
-
+// カメラモード設定
 void CameraManager::SetCameraMode(CameraMode mode) {
     currentMode_ = mode;
     SetActiveCamera(); // カメラ共通リソースへ反映
 }
-
+// アクティブカメラを共通リソースに設定
 void CameraManager::SetActiveCamera() {
     Camera* active = GetActiveCamera();
     if (active) {
