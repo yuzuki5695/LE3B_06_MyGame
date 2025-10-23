@@ -45,17 +45,10 @@ void CameraManager::Initialize(CameraTransform transform) {
 }
 // 更新処理
 void CameraManager::Update() {
-    if (gameCamera_->Getmovefige()) {
-        gameCamera_->UpdateObjectPosition();
-        gameCamera_->Update(); // ← これはプレイヤー追従のため常に動かす
-    }
-
     switch (currentMode_) {
     case CameraMode::GamePlay: 
         if (gameCamera_) {
-            if (gameCamera_ && gameCamera_->Getcamera()) {
-                gameCamera_->Getcamera()->Update();
-            }
+			gameCamera_->Update();
         }
         break;
     case CameraMode::Follow:
