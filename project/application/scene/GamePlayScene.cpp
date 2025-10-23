@@ -32,7 +32,7 @@ void GamePlayScene::Finalize() {
 void GamePlayScene::Initialize() {
     // カメラマネージャの初期化
     CameraManager::GetInstance()->Initialize(CameraTransform({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }));
-    CameraManager::GetInstance()->SetCameraMode(CameraMode::Event);
+    CameraManager::GetInstance()->SetCameraMode(CameraMode::GamePlay);
 
     // テクスチャを読み込む
     TextureManager::GetInstance()->LoadTexture("uvChecker.png");
@@ -107,19 +107,19 @@ void GamePlayScene::Update() {
         // フェード開始
         FadeManager::GetInstance()->StartFadeIn(1.0f, FadeStyle::SilhouetteExplode);
     }            
-    // フェードマネージャの更新   
-    FadeManager::GetInstance()->Update(); 
-    // イベントマネージャの更新
-    EventManager::GetInstance()->Update(); 	
+    //// フェードマネージャの更新   
+    //FadeManager::GetInstance()->Update(); 
+    //// イベントマネージャの更新
+    //EventManager::GetInstance()->Update(); 	
     // ゲームスタートイベントが終了したらプレイヤ―操作可能に
-    if (EventManager::GetInstance()->IsFinished()) {
+ //   if (EventManager::GetInstance()->IsFinished()) {
         // イベント終了 → プレイヤーを操作可能に
         player_->SetKeyActive(true);
         player_->SetReticleVisible(true);
-        if (Input::GetInstance()->Triggrkey(DIK_RETURN)) {
-            SceneManager::GetInstance()->ChangeScene("TITLE");
-        }
-    }
+        //if (Input::GetInstance()->Triggrkey(DIK_RETURN)) {
+        //    SceneManager::GetInstance()->ChangeScene("TITLE");
+        //}
+  //  }
 
     /*-------------------------------------------*/
     /*--------------Cameraの更新処理---------------*/
@@ -129,11 +129,11 @@ void GamePlayScene::Update() {
     playerhp_ = player_->IsActive();
 	// 終了しない限り更新処理
     if (!end) {
-        // 敵出現動作
-        EnemySpawn();
-        // 各衝突判定
-        CheckBulletEnemyCollisionsOBB();
-        CheckEnemyBulletPlayerCollisionsOBB();
+        //// 敵出現動作
+        //EnemySpawn();
+        //// 各衝突判定
+        //CheckBulletEnemyCollisionsOBB();
+        //CheckEnemyBulletPlayerCollisionsOBB();
         // 更新処理
         grass->Update();
         player_->Update();
