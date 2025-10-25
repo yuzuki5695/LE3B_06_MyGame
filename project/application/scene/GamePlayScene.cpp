@@ -97,6 +97,8 @@ void GamePlayScene::Initialize() {
     EventManager::GetInstance()->Initialize("gamestart");
 	// ゲームカメラの移動許可
     CameraManager::GetInstance()->GetGameCamera()->Setmovefige(true);
+
+	goalpos_ = 280.0f;
 }
 ///====================================================
 /// 毎フレーム更新処理

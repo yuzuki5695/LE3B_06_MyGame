@@ -687,5 +687,8 @@
     <None Include="Resources\levels\untitled.json">
       <Filter>リソース ファイル</Filter>
     </None>
+    <None Include="Resources\levels\rail_curve_data.json">
+      <Filter>リソース ファイル</Filter>
+    </None>
   </ItemGroup>
 </Project>

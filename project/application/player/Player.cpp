@@ -41,6 +41,7 @@ void Player::Initialize() {
     reticleScreenPos = { 640.0f, 360.0f }; // 画面中央 (仮に1280x720の場合)
     targetreticle_ = Sprite::Create("Target.png", reticleScreenPos, 0.0f, Vector2{ 100.0f, 100.0f });
     targetreticle_->SetTextureSize(Vector2{ 512.0f, 512.0f });
+   	targetreticle_->SetAnchorPoint(Vector2{ 0.5f, 0.5f }); // 中心基準
     previousTime_ = 0.0f;
 
     originalColor_ = object->GetModel()->GetMaterialData()->color;
@@ -49,27 +50,30 @@ void Player::Initialize() {
 /// 更新処理
 ///=====================================================================
 void Player::Update() {  
-    // --- アクティブでない場合、キー操作・射撃・ターゲット移動を無効化 ---
-    if (!iskeyActive_) {
-        // カメラ位置には追従させる（カットシーン中でも位置更新はOK）
-        GameCamera* gameCam = CameraManager::GetInstance()->GetGameCamera();
-        if (gameCam) {
-            Vector3 bezierPos = gameCam->GetbezierPos();
-            Vector3 relativeOffset = { 0.0f, -3.0f, 30.0f };
-            transform_.translate = bezierPos + relativeOffset;
-            object->SetTranslate(transform_.translate);
-            object->Update();
-        }
-        return; // ← 入力・射撃などをスキップ
-    }
-    // --- ここから通常の更新 ---
     GameCamera* gameCam = CameraManager::GetInstance()->GetGameCamera();
-    if (gameCam) {
-        Vector3 bezierPos = gameCam->GetbezierPos(); // ← Getter が必要
-        Vector3 relativeOffset = { 0.0f, -3.0f, 30.0f }; // カメラの前方に出す
-        transform_.translate = bezierPos + relativeOffset;
-    }
-    
+    if (!gameCam) return;
+
+    Vector3 bezierPos = gameCam->GetbezierPos();
+    Vector3 relativeOffset = { 0.0f, -3.0f, 30.0f };
+
+    // カメラの回転を取得（前方ベクトルから計算）
+    Vector3 cameraForward = gameCam->GetForward(); // ← Getterを用意
+    Vector3 cameraRight   = Normalize(Cross({0,1,0}, cameraForward));
+    Vector3 cameraUp      = Normalize(Cross(cameraForward, cameraRight));
+
+    // カメラ座標系でオフセット変換
+    Vector3 worldOffset =
+        cameraRight   * relativeOffset.x +
+        cameraUp      * relativeOffset.y +
+        cameraForward * relativeOffset.z;
+
+    // === プレイヤー位置更新 ===
+    transform_.translate = bezierPos + worldOffset;
+
+    // === プレイヤー向き更新（カメラと同じ方向）===
+    Vector3 playerForward = cameraForward;
+    transform_.rotate = gameCam->Getcamera()->GetRotate(); // または LookAtRotation(playerForward)
+
     // 現在時刻を取得（秒）
     float currentTime = static_cast<float>(std::chrono::duration<double>(std::chrono::high_resolution_clock::now().time_since_epoch()).count());
 
@@ -130,33 +134,48 @@ void Player::DebugImgui() {
     ImGui::End();
 #endif // USE_IMGUI
 }
-
 void Player::MoveInput(float speed) {
-    if (Input::GetInstance()->Pushkey(DIK_A)) moveDelta.x -= speed;
-    if (Input::GetInstance()->Pushkey(DIK_D)) moveDelta.x += speed;
-    if (Input::GetInstance()->Pushkey(DIK_W)) moveDelta.y += speed;
-    if (Input::GetInstance()->Pushkey(DIK_S)) moveDelta.y -= speed;
+    // === 入力処理 ===
+    Vector3 moveDelta = {0, 0, 0};
+    Input* input = Input::GetInstance();
+    if (input->Pushkey(DIK_A)) moveDelta.x -= speed;
+    if (input->Pushkey(DIK_D)) moveDelta.x += speed;
+    if (input->Pushkey(DIK_W)) moveDelta.y += speed;
+    if (input->Pushkey(DIK_S)) moveDelta.y -= speed;
 
-    // --- 入力による移動量を制限 ---
-    moveDelta.x = std::clamp(moveDelta.x, -10.0f, 10.0f);
-    moveDelta.y = std::clamp(moveDelta.y, -5.0f, 8.0f);
+    // === 相対移動を制限（画面内の範囲）===
+    // ここは「カメラから見たローカル座標」上での制限
+    relativePos_.x = std::clamp(relativePos_.x + moveDelta.x, -10.0f, 10.0f);
+    relativePos_.y = std::clamp(relativePos_.y + moveDelta.y, -2.5f, 9.0f);
 
-    // 回転角度の処理
-    float targetZ = 0.0f;
-    float tiltAmount = isBoosting_ ? 6.0f : 0.3f;
+    // === カメラ情報の取得 ===
+    GameCamera* gameCam = CameraManager::GetInstance()->GetGameCamera();
+    if (!gameCam) return;
 
-    if (Input::GetInstance()->Pushkey(DIK_A)) targetZ = tiltAmount;
-    else if (Input::GetInstance()->Pushkey(DIK_D)) targetZ = -tiltAmount;
+    Vector3 cameraPos = gameCam->GetbezierPos();
+    Vector3 forward = gameCam->GetForward();
+    Vector3 right   = Normalize(Cross({0, 1, 0}, forward));
+    Vector3 up      = Normalize(Cross(forward, right));
 
-    transform_.rotate.z += (targetZ - transform_.rotate.z) * 0.1f;
+    // === カメラ基準の相対座標をワールド変換 ===
+    Vector3 baseOffset = { 0.0f, -3.0f, 30.0f }; // カメラの前方に配置
+    Vector3 totalOffset =
+        right   * relativePos_.x +
+        up      * relativePos_.y +
+        forward * baseOffset.z +
+        up      * baseOffset.y; // baseOffsetのYも考慮
 
-    // --- プレイヤーの位置を更新 ---
-    transform_.translate += moveDelta;
+    transform_.translate = cameraPos + totalOffset;
 
-    // --- 最終的な位置の制限 ---
-    transform_.translate.x = std::clamp(transform_.translate.x, -10.0f, 10.0f);
-    transform_.translate.y = std::clamp(transform_.translate.y, -5.0f, 5.0f);
+    // === 回転（カメラ方向に合わせる）===
+    transform_.rotate = gameCam->Getcamera()->GetRotate();
+
+    // === モデル更新 ===
+    object->SetTranslate(transform_.translate);
+    object->SetRotate(transform_.rotate);
+    object->Update();
 }
+
 ///=====================================================================
 /// ブースト状態更新処理
 ///=====================================================================
@@ -193,49 +212,81 @@ void Player::UpdateBoostState() {
 /// ターゲットの移動処理
 ///=====================================================================
 void Player::UpdateTargetPosition(Transform& targetTransform, float speed) {
+    // --- 入力でターゲットを動かす ---
     if (Input::GetInstance()->Pushkey(DIK_LEFT))  targetTransform.translate.x -= speed;
     if (Input::GetInstance()->Pushkey(DIK_RIGHT)) targetTransform.translate.x += speed;
     if (Input::GetInstance()->Pushkey(DIK_UP))    targetTransform.translate.y += speed;
     if (Input::GetInstance()->Pushkey(DIK_DOWN))  targetTransform.translate.y -= speed;
-	copypos = targetpos_.translate + transform_.translate; // ターゲットの位置をプレイヤーの位置に合わせる
+
+    // --- カメラ基準でターゲットを配置する ---
+    GameCamera* gameCam = CameraManager::GetInstance()->GetGameCamera();
+    if (!gameCam) return;
+
+    Vector3 cameraPos = gameCam->GetbezierPos();
+    Vector3 forward = gameCam->GetForward();
+    Vector3 right   = Normalize(Cross({0, 1, 0}, forward));
+    Vector3 up      = Normalize(Cross(forward, right));
+
+    // 画面中央からの相対オフセット
+    Vector3 offset =
+        right * targetTransform.translate.x +
+        up    * targetTransform.translate.y +
+        forward * 30.0f; // カメラの前方方向に固定距離
+
+    // プレイヤーの位置に加算
+    copypos = transform_.translate + offset;
+    target_->SetTranslate(copypos);
+    target_->Update();
 }
+
 ///=====================================================================
 /// 弾の発射処理
 ///=====================================================================
 void Player::AttachBullet() {
-    bulletTimer_ += 1.0f / 60.0f; // 毎フレーム経過時間を加算（60fps前提）
-    // 30秒経過したら発射可能にする
+    bulletTimer_ += 1.0f / 60.0f;
     if (bulletTimer_ >= bulletInterval_) {
         canShoot_ = true;
-        bulletTimer_ = 0.0f; // タイマーリセット
+        bulletTimer_ = 0.0f;
     }
-    // 弾が撃てるか確認
+
     if (!canShoot_) return;
-    if (Input::GetInstance()->Pushkey(DIK_SPACE)) {                                 // スペースキーが押されたら弾を撃つ
-        std::unique_ptr<PlayerBullet> bullet = std::make_unique<PlayerBullet>();		// 弾を生成
-        bullet->Initialize(transform_.translate, copypos, 3.0f);                     // 初期位置などを設定
-        BulletManager::GetInstance()->AddPlayerBullet(std::move(bullet));                 // BulletManagerに追加
-        canShoot_ = false;                                                          // 弾を撃てる状態にする
-    };
+    if (Input::GetInstance()->Pushkey(DIK_SPACE)) {
+        GameCamera* gameCam = CameraManager::GetInstance()->GetGameCamera();
+        if (!gameCam) return;
+        // カメラ情報
+        Vector3 cameraForward = gameCam->GetForward();
+
+        // 弾の初期位置（プレイヤーの少し前）
+        Vector3 bulletStartPos = transform_.translate + gameCam->GetForward() * 2.0f;
+
+        // --- ターゲット（レティクル3D）方向へ発射 ---
+        Vector3 targetPos = target_->GetTranslate();
+        Vector3 shootDir = Normalize(targetPos - bulletStartPos);
+
+        std::unique_ptr<PlayerBullet> bullet = std::make_unique<PlayerBullet>();
+        bullet->Initialize(bulletStartPos, bulletStartPos + shootDir * 10.0f,cameraForward, 3.0f);
+
+
+        BulletManager::GetInstance()->AddPlayerBullet(std::move(bullet));
+
+        canShoot_ = false;
+    }
 }
+
 
 ///=====================================================================
 /// レティクル用3D座標 → 2Dスクリーン座標変換
 ///=====================================================================
 void Player::UpdateReticlePosition() {
-    // target_ が存在しない場合は何もしない
-    if (!target_) return;
+    if (!target_ || !targetreticle_) return;
 
-    // 3Dターゲットのワールド座標を取得
+    // 3Dターゲット位置
     Vector3 targetWorldPos = target_->GetTranslate();
-    targetWorldPos.y += 1.8f; // 必要に応じて調整 
-    targetWorldPos.x -= 1.85f; // 必要に応じて調整
 
-    // カメラ情報取得（あなたのエンジンの構造によって変更）
+    // --- カメラから2Dスクリーン座標に変換 ---
     Camera* camera = CameraManager::GetInstance()->GetActiveCamera();
     const Matrix4x4& viewProj = camera->GetViewProjectionMatrix();
 
-    // ---- ワールド座標 → クリップ座標へ変換 ----
     Vector4 clipPos = {
         targetWorldPos.x * viewProj.m[0][0] + targetWorldPos.y * viewProj.m[1][0] + targetWorldPos.z * viewProj.m[2][0] + viewProj.m[3][0],
         targetWorldPos.x * viewProj.m[0][1] + targetWorldPos.y * viewProj.m[1][1] + targetWorldPos.z * viewProj.m[2][1] + viewProj.m[3][1],
@@ -243,31 +294,20 @@ void Player::UpdateReticlePosition() {
         targetWorldPos.x * viewProj.m[0][3] + targetWorldPos.y * viewProj.m[1][3] + targetWorldPos.z * viewProj.m[2][3] + viewProj.m[3][3]
     };
 
-    // ---- 正規化デバイス座標（NDC）へ ----
     if (clipPos.w != 0.0f) {
         clipPos.x /= clipPos.w;
         clipPos.y /= clipPos.w;
-        clipPos.z /= clipPos.w;
     }
 
-    // ---- ③ スプライトの中心補正 ----
-    Vector2 spriteSize = targetreticle_->GetSize();
-    Vector2 centeredPos = {
-        reticleScreenPos_.x - spriteSize.x * 0.5f,
-        reticleScreenPos_.y - spriteSize.y * 0.5f
-    };
-
-    // ---- NDC → スクリーン座標へ変換 ----
-    // ※ 画面サイズに合わせて計算 (例: 1280x720)
     const float screenWidth = 1280.0f;
     const float screenHeight = 720.0f;
 
     reticleScreenPos_.x = (clipPos.x * 0.5f + 0.5f) * screenWidth;
     reticleScreenPos_.y = (-clipPos.y * 0.5f + 0.5f) * screenHeight;
 
-    // ---- スプライトの位置更新 ----
     targetreticle_->SetPosition(reticleScreenPos_);
 }
+
 ///=====================================================================
 /// OBB当たり判定取得
 ///=====================================================================
