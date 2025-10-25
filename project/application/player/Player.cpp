@@ -227,6 +227,18 @@ void Player::UpdateTargetPosition(Transform& targetTransform, float speed) {
     Vector3 right   = Normalize(Cross({0, 1, 0}, forward));
     Vector3 up      = Normalize(Cross(forward, right));
 
+    // === プレイヤーとの相対位置に応じたターゲット制限 ===
+    // 画面内に相当する仮想座標範囲（例：X=-10～10, Y=-5～5 に対応させる）
+    const float maxX = 12.0f;
+    const float minX = -12.0f;
+    const float maxY = 7.0f;
+    const float minY = -7.0f;
+
+    // --- 範囲内にクランプ（これで「画面外に出たら動かない」）---
+    targetTransform.translate.x = std::clamp(targetTransform.translate.x, minX, maxX);
+    targetTransform.translate.y = std::clamp(targetTransform.translate.y, minY, maxY);
+
+
     // 画面中央からの相対オフセット
     Vector3 offset =
         right * targetTransform.translate.x +

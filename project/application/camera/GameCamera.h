@@ -33,8 +33,6 @@ public:
 
     Quaternion ForwardToQuaternion(const Vector3& forward);
     Vector3 Slerp(const Vector3& v0, const Vector3& v1, float t);
- //   Vector3 QuaternionToEuler(const Quaternion& q);
-
 private: // メンバ変数
     CurveJsonLoader* Jsondata = nullptr;         // ベジェ制御点を読み込むローダー
     Camera* camera_ = nullptr;                   // 実際に描画で使用されるカメラインスタンス
