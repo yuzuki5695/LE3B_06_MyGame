@@ -4,6 +4,13 @@
 #include <Camera.h>
 #include <Vector3.h>
 #include <CurveJsonLoader.h>
+///====================================================
+/// クォータニオン構造体（簡易版）
+///====================================================
+struct Quaternion {
+    float w, x, y, z;
+};
+
 
 ///====================================================
 /// GameCameraクラス
@@ -24,13 +31,19 @@ public:
     void Update();
     Vector3 LookAtRotation(const Vector3& forward);
 
+    Quaternion ForwardToQuaternion(const Vector3& forward);
+    Vector3 Slerp(const Vector3& v0, const Vector3& v1, float t);
+ //   Vector3 QuaternionToEuler(const Quaternion& q);
+
 private: // メンバ変数
     CurveJsonLoader* Jsondata = nullptr;         // ベジェ制御点を読み込むローダー
     Camera* camera_ = nullptr;                   // 実際に描画で使用されるカメラインスタンス
     Vector3 bezierPos_;                          // 現在のベジェ曲線上の位置
-    std::vector<BezierPoint> bezierPoints;       // JSONから読み込んだベジェ制御点群
+    std::vector<BezierPoint> bezierPoints;       // 移動に使う制御点データ
 	bool movefige;                               // ベジェ曲線に沿って移動するフラグ      	
-    float speed;                          // 移動の速さ
+    float speed;                             // 移動速度
+    Vector3 prevForward = {0,0,1};        // 前フレームの向きベクトル（回転補間用）        
+    int currentSegment = 0; // レール上の現在のセグメントインデックス
 public: // アクセッサ（Getter / Setter）
     // getter 
 	Camera* Getcamera() { return camera_; }
@@ -39,4 +52,9 @@ public: // アクセッサ（Getter / Setter）
     // setter
     void Setmovefige(bool value) { movefige = value; }
     void SetbezierPos(Vector3 pos) { bezierPos_ = pos; }
+// 前方ベクトルを取得
+    Vector3 GetForward() const {
+        // 回転行列を使わずforwardを保持している場合はこちら
+        return prevForward;
+    }
 };
