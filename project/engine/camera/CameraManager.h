@@ -47,7 +47,6 @@ private:
     // ゲームカメラ関連
     bool moveFlag = false;
     uint32_t activated_ ;
-    Camera* eventCamera_;    // イベント用カメラ
     // ヘッダーかクラス内に追加
     bool addedInitialOffset_ = false;
 

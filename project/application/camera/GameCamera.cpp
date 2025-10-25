@@ -27,6 +27,13 @@ void GameCamera::Initialize() {
 ///====================================================
 void GameCamera::Update() {
     if (!movefige || bezierPoints.size() < 2) return;
+    
+    // 範囲チェック（最後まで行ったら停止 or ループ）
+    if (currentSegment >= bezierPoints.size() - 1) {
+        // 最後まで行ったら停止する場合：
+        movefige = false;
+        return;
+    }
 
     // 現在のセグメント start / end
     const Vector3& start = bezierPoints[currentSegment].controlPoint;
@@ -39,6 +46,12 @@ void GameCamera::Update() {
     if (dist <= speed) {
         // セグメント終了
         bezierPos_ = end;
+
+        // 現在の制御点を「通過済み」にする
+        if (!bezierPoints[currentSegment].passed) {
+            bezierPoints[currentSegment].passed = true;
+        }
+
         currentSegment++;
         if (currentSegment >= bezierPoints.size() - 1) {
             movefige = false; // 最後の点に到達

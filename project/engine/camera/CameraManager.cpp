@@ -40,8 +40,6 @@ void CameraManager::Initialize(CameraTransform transform) {
 	gameCamera_->Initialize();
     moveFlag = false; 
     gameCamera_->Setmovefige(moveFlag);
-	// イベントカメラの生成   
-    eventCamera_ = new Camera();
 }
 // 更新処理
 void CameraManager::Update() {
@@ -65,35 +63,6 @@ void CameraManager::Update() {
                 followCamera_->SetRotate(Vector3(0.0f, angleY, 0.0f));
             }
             followCamera_->Update();
-        }
-        break;
-    case CameraMode::Event:
-        if (eventCamera_ && target_) {
-            // カメラの位置を固定（例：原点）
-            Vector3 cameraPos = { 3.0f, -5.0f, -100.0f };
-            eventCamera_->SetTranslate(cameraPos);
-
-            // プレイヤー（ターゲット）の位置
-            Vector3 targetPos = target_->GetTranslate();
-
-            // カメラからターゲットへの方向ベクトル
-            Vector3 toTarget = targetPos - cameraPos;
-
-            // 正規化
-            Normalize(toTarget);
-
-            // 水平角度（Y軸）と垂直角度（X軸）を算出
-            float angleY = std::atan2(toTarget.x, toTarget.z);
-            float distanceXZ = std::sqrt(toTarget.x * toTarget.x + toTarget.z * toTarget.z);
-            float angleX = -std::atan2(toTarget.y, distanceXZ);
-
-            // 回転設定
-            eventCamera_->SetRotate(Vector3(angleX, angleY, 0.0f));
-            eventCamera_->Update();
-
-            if (gameCamera_->GetbezierPos().z >= -100.0f) {
-				currentMode_ = CameraMode::GamePlay;
-            }
         }
         break;
     case CameraMode::Default:
@@ -158,11 +127,7 @@ void CameraManager::DrawImGui() {
         break;
     case CameraMode::GamePlay:
         activeCamera = gameCamera_->Getcamera();
-        modeName = "GamePlay";
-        break;
-    case CameraMode::Event:   // ★ イベントカメラの追加
-        activeCamera = eventCamera_;
-        modeName = "Event";
+        modeName = "GamePlay";        
         break;
     }
     ImGui::Text("Current Mode: %s", modeName);
@@ -176,15 +141,12 @@ void CameraManager::DrawImGui() {
         if (ImGui::DragFloat3(label2, &rotate.x, 0.01f)) {
             activeCamera->SetRotate(rotate);
         }
-    }
+        if (currentMode_ == CameraMode::GamePlay) {
+            if (ImGui::Checkbox("isBezier", &moveFlag)) {
+                gameCamera_->Setmovefige(moveFlag);
+            }
+        }
 
-    if (ImGui::Checkbox("isBezier", &moveFlag)) {
-        gameCamera_->Setmovefige(moveFlag);
-    }
-    Vector3 bezierPos = gameCamera_->GetbezierPos();
-    Vector3 rotate = gameCamera_->Getcamera()->GetRotate();
-    if (ImGui::DragFloat3("BezierTranslate", &bezierPos.x, 0.01f)) {
-        gameCamera_->SetbezierPos(bezierPos);
     }
     ImGui::End();
 #endif // USE_IMGUI
@@ -196,8 +158,6 @@ Camera* CameraManager::GetActiveCamera() {
         return followCamera_ ? followCamera_ : defaultCamera_;
     case CameraMode::GamePlay:
         return gameCamera_ ? gameCamera_->Getcamera() : nullptr;
-      case CameraMode::Event:
-        return eventCamera_ ? eventCamera_ : defaultCamera_;
     case CameraMode::Default:
     default:
         return defaultCamera_;
