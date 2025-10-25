@@ -53,14 +53,9 @@ void GamePlayScene::Initialize() {
     ModelManager::GetInstance()->LoadModel("monsterBallUV.obj");
     ModelManager::GetInstance()->LoadModel("Bullet/PlayerBullet.obj");
     ModelManager::GetInstance()->LoadModel("EnemyBullet.obj");
-    ModelManager::GetInstance()->LoadModel("Tile.obj");
     ModelManager::GetInstance()->LoadModel("Clear.obj");
     ModelManager::GetInstance()->LoadModel("wall.obj");
 
-    // オブジェクトの作成
-    transform_ = { {20.0f, 1.0f, 300.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, -8.0f, 50.0f} };
-    // 地面の作成
-    grass = Object3d::Create("Tile.obj", transform_);
     // プレイヤーの作成と初期化
     player_ = std::make_unique<Player>();
     player_->Initialize(); // プレイヤーの初期化
@@ -99,6 +94,9 @@ void GamePlayScene::Initialize() {
     CameraManager::GetInstance()->GetGameCamera()->Setmovefige(true);
 
 	goalpos_ = 280.0f;
+
+	stageManager_ = std::make_unique<StageManager>();
+	stageManager_->Initialize();
 }
 ///====================================================
 /// 毎フレーム更新処理
@@ -123,6 +121,8 @@ void GamePlayScene::Update() {
         //}
   //  }
 
+        stageManager_->Update();
+
     /*-------------------------------------------*/
     /*--------------Cameraの更新処理---------------*/
     /*------------------------------------------*/
@@ -137,7 +137,6 @@ void GamePlayScene::Update() {
         //CheckBulletEnemyCollisionsOBB();
         //CheckEnemyBulletPlayerCollisionsOBB();
         // 更新処理
-        grass->Update();
         player_->Update();
         // プレイヤーがゴール手前なら敵も更新
         if (player_->GetPosition().z <= goalpos_) {
@@ -210,7 +209,7 @@ void GamePlayScene::Update() {
     CameraManager::GetInstance()->DrawImGui();  // カメラマネージャのImGui制御
 	FadeManager::GetInstance()->DrawImGui();    // フェードマネージャのImGui制御 
 	EventManager::GetInstance()->DrawImGui();   // イベントマネージャのImGui制御
-    
+	stageManager_->DebugImGui(); 			  // ステージマネージャのImGui制御
 #endif // USE_IMGUI
 #pragma endregion ImGuiの更新処理終了 
 }
@@ -224,9 +223,9 @@ void GamePlayScene::Draw() {
     Box_->Draw();
     // 3Dオブジェクトの描画準備。3Dオブジェクトの描画に共通のグラフィックスコマンドを積む
     Object3dCommon::GetInstance()->Commondrawing();
+    stageManager_->Draw();
 
     // 描画処理
-    grass->Draw();
     if (!end) {
         player_->Draw();
         // Bulletマネージャの描画処理

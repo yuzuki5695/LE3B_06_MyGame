@@ -10,6 +10,7 @@
 #include<Enemy.h>
 #include<FadeManager.h>
 #include<EventManager.h>
+#include<StageManager.h>
 
 /// <summary>
 /// ゲームプレイシーン
@@ -63,12 +64,9 @@ public: // メンバ関数
     void SpawnZigZagFormation(const EnemySpawnTrigger& trigger);
 private: // メンバ変数
     // オブジェクトデータ
-    // 地面
-    std::unique_ptr <Object3d> grass = nullptr; 
     // プレイヤー
 	std::unique_ptr <Player> player_ = nullptr;
     bool playerhp_ = true;
-    Transform transform_;
 	// キャラクターローダー
     std::unique_ptr<CharacterLoader> levelLoader_ = nullptr;
     // レベルデータ格納用インスタンスを生成
@@ -92,4 +90,5 @@ private: // メンバ変数
     std::vector<EventManager> event_; 
     /// UI(タイトルへ(仮))
     std::unique_ptr <Sprite> ui1_;
+    std::unique_ptr <StageManager> stageManager_ = nullptr;
 };

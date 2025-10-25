@@ -70,9 +70,9 @@ void CharacterLoader::LoadObjectsRecursive(const nlohmann::json& objectJson, Lev
                 // file_name を取得（例: "uvChecker"）
                 objectData.fileName = objectJson["file_name"];
 
-                // .obj を付けたパスでロード（例: "uvChecker.obj"）
-                std::string modelPath = objectData.fileName + ".obj";
-                ModelManager::GetInstance()->LoadModel(modelPath);
+                //// .obj を付けたパスでロード（例: "uvChecker.obj"）
+                //std::string modelPath = objectData.fileName + ".obj";
+                //ModelManager::GetInstance()->LoadModel(modelPath);
             }
 
 

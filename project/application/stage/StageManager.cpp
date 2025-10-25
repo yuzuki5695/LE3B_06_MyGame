@@ -1,0 +1,96 @@
+#include "StageManager.h"
+#include <ModelManager.h>
+#ifdef USE_IMGUI
+#include<ImGuiManager.h>
+#endif // USE_IMGUI
+
+void StageManager::Initialize() {
+    // LevelLoader のインスタンスを生成
+    loader_ = new CharacterLoader();
+    levelData_ = loader_->LoadFile("stage");  // ←ここでロード
+
+    // 敵モデルをあらかじめ読み込む
+    ModelManager::GetInstance()->LoadModel("Enemy.obj");
+    ModelManager::GetInstance()->LoadModel("Tile.obj");
+    
+    // オブジェクトの作成
+    // 地面の作成
+    grass = Object3d::Create("Tile.obj", Transform({ 20.0f, 1.0f, 300.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, -8.0f, 50.0f }));
+
+    //// レベルデータからオブジェクトを読み込む
+    //for (auto& objData : levelData_->objects) {
+    //    // Point_ で始まるファイル名のみ対象
+    //    if (objData.fileName.rfind("Point_", 0) == 0) {
+
+    //        Transform tr;
+    //        tr.scale = objData.scaling;
+    //        tr.rotate = objData.rotation;
+    //        tr.translate = objData.translation;
+
+    //        // モデルは固定で Enemy.obj を使用
+    //        std::string modelName = "Enemy.obj";
+
+    //        // Object3d を生成
+    //        auto obj = Object3d::Create(modelName, tr);
+    //        debugObjects_.push_back(std::move(obj));
+    //    }
+    //} 
+
+    showDebugObjects_ = false; // デフォルトは非表示
+#ifdef _DEBUG
+    // === デバッグ可視化用オブジェクト ===
+    ModelManager::GetInstance()->LoadModel("Enemy.obj"); // 目印用モデル（SphereやCubeなど）
+
+    for (auto& objData : levelData_->objects) {
+        // Point_ で始まるオブジェクトをデバッグ可視化対象にする
+        if (objData.fileName.rfind("Point_", 0) == 0) {
+            Transform tr;
+            tr.scale = { 0.5f, 0.5f, 0.5f }; // 小さく目印表示
+            tr.rotate = objData.rotation;
+            tr.translate = objData.translation;
+
+            auto debugObj = Object3d::Create("Enemy.obj", tr);
+            debugObjects_.push_back(std::move(debugObj));
+        }
+    }
+#endif
+}
+
+void StageManager::Update() {
+#ifdef _DEBUG
+    if (showDebugObjects_) {
+        // 各オブジェクトの更新
+        for (auto& obj : debugObjects_) {
+            obj->Update();
+        }
+    }
+#endif
+
+    // 地面    
+    grass->Update();
+
+}
+
+void StageManager::Draw() {
+#ifdef _DEBUG
+    if (showDebugObjects_) {
+        // 各オブジェクトの描画
+        for (auto& obj : debugObjects_) {
+            obj->Draw();
+        }
+    }
+#endif
+
+
+    grass->Draw();
+}
+    
+void StageManager::DebugImGui() {
+#ifdef USE_IMGUI
+    ImGui::Begin("Stage Debug");
+    ImGui::Checkbox("Show Debug Objects", &showDebugObjects_);
+    ImGui::Text("Loaded objects: %d", (int)object3ds_.size());
+    ImGui::Text("Debug points: %d", (int)debugObjects_.size());
+    ImGui::End();
+#endif
+}
