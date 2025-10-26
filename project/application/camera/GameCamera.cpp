@@ -26,13 +26,22 @@ void GameCamera::Initialize() {
 /// 更新処理（複数制御点対応＋向き補間）
 ///====================================================
 void GameCamera::Update() {
-    if (!movefige || bezierPoints.size() < 2) return;
-    
-    // 範囲チェック（最後まで行ったら停止 or ループ）
+    if (bezierPoints.size() < 2) return;    
+    // 範囲チェック（最後まで行ったら停止）
     if (currentSegment >= bezierPoints.size() - 1) {
         // 最後まで行ったら停止する場合：
         movefige = false;
         return;
+    }
+
+    // ---- 停止中でも再開条件を確認 ----
+    if (!movefige) {
+        // 次の制御点の「通過許可」が出ていれば再開
+        if (bezierPoints[currentSegment].passed && bezierPoints[currentSegment].passed) {
+            movefige = true; // ここで再開できる
+        } else {
+            return; // 許可が出るまで完全停止
+        }
     }
 
     // 現在のセグメント start / end
@@ -46,20 +55,23 @@ void GameCamera::Update() {
     if (dist <= speed) {
         // セグメント終了
         bezierPos_ = end;
-
-        // 現在の制御点を「通過済み」にする
-        if (!bezierPoints[currentSegment].passed) {
-            bezierPoints[currentSegment].passed = true;
-        }
+        // 現在の制御点を通過済みに
+        bezierPoints[currentSegment].passed = true;
 
         currentSegment++;
         if (currentSegment >= bezierPoints.size() - 1) {
-            movefige = false; // 最後の点に到達
+            movefige = false;
+            return;
+        }
+
+        // 次の制御点が未許可なら停止
+        if (!bezierPoints[currentSegment].passed) {
+            movefige = false;
+            return;
         }
     } else {
         // 方向ベクトルに沿って speed 移動
-        Vector3 move = Normalize(dir) * speed;
-        bezierPos_ += move;
+        bezierPos_ +=  Normalize(dir) * speed;
     }
 
     // カメラ位置更新

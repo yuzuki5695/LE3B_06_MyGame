@@ -100,9 +100,6 @@ void CameraManager::DrawImGui() {
     if (ImGui::RadioButton("GamePlay", mode == 2)) {
         mode = 2;
     }
-    ImGui::SameLine();  
-    if (ImGui::RadioButton("Event", mode == 3)) { mode = 3; } 
-
     // モードが変わったら切り替える
     CameraMode newMode = static_cast<CameraMode>(mode);
     if (newMode != currentMode_) {
@@ -144,6 +141,33 @@ void CameraManager::DrawImGui() {
         if (currentMode_ == CameraMode::GamePlay) {
             if (ImGui::Checkbox("isBezier", &moveFlag)) {
                 gameCamera_->Setmovefige(moveFlag);
+            }
+            ImGui::Text("Bezier Control Points");  
+            
+            // ---- BezierPoint 操作用UI ----
+            auto& points = gameCamera_->GetBezierPoints();
+
+            if (ImGui::Button("Mark All as Passed")) {
+                gameCamera_->MarkAllAsPassed();
+            }
+            ImGui::SameLine();
+            if (ImGui::Button("Set All True")) {
+                gameCamera_->SetAllPassed(true);
+            }
+            ImGui::SameLine();
+            if (ImGui::Button("Set All False")) {
+                gameCamera_->SetAllPassed(false);
+            }
+
+            ImGui::Separator();
+
+            // ---- 各制御点ごと ----
+            for (size_t i = 0; i < points.size(); ++i) {
+                std::string label = "Point " + std::to_string(i);
+                bool flag = points[i].passed;
+                if (ImGui::Checkbox(label.c_str(), &flag)) {
+                    points[i].passed = flag;
+                }
             }
         }
 
