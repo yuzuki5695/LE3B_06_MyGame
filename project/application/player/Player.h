@@ -113,7 +113,7 @@ private:// メンバ変数
 	Vector3 bulletOffsetRight = {  0.5f, 0.0f, 0.0f }; // 右側の発射位置	
 	bool iskeyActive_ = false;       // ← プレイヤーが操作可能か
     bool isReticleVisible_ = false; // ← レティクル描画ON/OFF
-
+    Vector3 relativePos_ = {0, 0, 0}; // カメラ内での相対位置（スクリーン座標的）
 public:// メンバ変数
 	// getter
 	// 参照を返す（変更不可）

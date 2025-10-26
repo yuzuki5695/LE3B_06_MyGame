@@ -40,7 +40,10 @@ public: // メンバ関数
     /// <param name="startPos">発射位置（ワールド座標）</param>
     /// <param name="targetPos">狙うターゲットの位置（ワールド座標）</param>
     /// <param name="speed">弾の速度</param>
-    void Initialize(const Vector3& startPos, const Vector3& targetPos, float speed) override;
+    void Initialize(const Vector3& startPos, const Vector3& targetPos,float speed) override;
+
+    void Initialize(const Vector3& startPos, const Vector3& targetPos, const Vector3& cameraForward, float speed);
+
     /// <summary>
     /// 更新処理
     /// 移動・寿命管理・衝突判定などを行う

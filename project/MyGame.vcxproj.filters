@@ -196,6 +196,12 @@
     <Filter Include="ソース ファイル\application\collision">
       <UniqueIdentifier>{c7d8663d-47b8-4017-9149-5c426a1193a4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ソース ファイル\application\stage">
+      <UniqueIdentifier>{956b23a1-c000-4af9-816b-d60f4377254e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\application\stage">
+      <UniqueIdentifier>{1d514fa6-6226-4b6e-ad61-846cfd2e44bb}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -377,6 +383,9 @@
     </ClCompile>
     <ClCompile Include="application\character\CharacterManager.cpp">
       <Filter>ソース ファイル\application\character</Filter>
+    </ClCompile>
+    <ClCompile Include="application\stage\StageManager.cpp">
+      <Filter>ソース ファイル\application\stage</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -614,6 +623,9 @@
     <ClInclude Include="application\event\EventManager.h">
       <Filter>ヘッダー ファイル\application\event</Filter>
     </ClInclude>
+    <ClInclude Include="application\stage\StageManager.h">
+      <Filter>ヘッダー ファイル\application\stage</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Resources\shaders\Sprite\Sprite.PS.hlsl">
@@ -685,6 +697,9 @@
       <Filter>リソース ファイル</Filter>
     </None>
     <None Include="Resources\levels\untitled.json">
+      <Filter>リソース ファイル</Filter>
+    </None>
+    <None Include="Resources\levels\rail_curve_data.json">
       <Filter>リソース ファイル</Filter>
     </None>
   </ItemGroup>

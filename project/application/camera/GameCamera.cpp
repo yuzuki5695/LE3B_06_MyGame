@@ -1,5 +1,6 @@
 #include "GameCamera.h"
-#include<MatrixVector.h>
+#include <MatrixVector.h>
+#include <algorithm> 
 
 using namespace MatrixVector;
 
@@ -7,172 +8,126 @@ using namespace MatrixVector;
 /// 初期化処理
 ///====================================================
 void GameCamera::Initialize() {
-	// ベジェ曲線の制御点読み込み用インスタンスを生成
     Jsondata = new CurveJsonLoader();
-    // jsonファイルからベジェ曲線の制御点を読み込む
     bezierPoints = Jsondata->LoadBezierFromJSON("Resources/levels/bezier.json");
-	// 初期位置をベジェ曲線の始点に設定
-    const BezierPoint& start = bezierPoints[segmentIndex];
-    const BezierPoint& end = bezierPoints[segmentIndex + 1];
-    bezierPos_ = BezierInterpolate(
-        start.controlPoint,
-        start.handleRight,
-        end.handleLeft,
-        end.controlPoint,
-        t
-    );
 
-	// カメラ生成
+    speed = 0.2f;        // 1フレームあたり移動距離
+    movefige = true;
+    currentSegment = 0;
+
     camera_ = new Camera();
+    bezierPos_ = bezierPoints[0].controlPoint;
     camera_->SetTranslate(bezierPos_);
-    camera_->SetRotate({ 0, 0, 0 });
-    // 
-    movefige = false;
+    prevForward = {0, 0, 1}; // 初期向き
+    camera_->SetRotate(LookAtRotation(prevForward));
 }
 
 ///====================================================
-/// 更新化処理
+/// 更新処理（複数制御点対応＋向き補間）
 ///====================================================
 void GameCamera::Update() {
-    // カメラの位置を更新 
-    camera_->SetTranslate(bezierPos_);
-    camera_->Update();
-}
+    if (bezierPoints.size() < 2) return;    
+    // 範囲チェック（最後まで行ったら停止）
+    if (currentSegment >= bezierPoints.size() - 1) {
+        // 最後まで行ったら停止する場合：
+        movefige = false;
+        return;
+    }
 
-///====================================================
-/// ベジェ曲線の制御点を設定
-///====================================================
-Vector3 GameCamera::BezierInterpolate(const Vector3& p0, const Vector3& p1, const Vector3& p2, const Vector3& p3, float t) {
-    float u = 1.0f - t;
-    float tt = t * t;
-    float uu = u * u;
-    float uuu = uu * u;
-    float ttt = tt * t;
+    // ---- 停止中でも再開条件を確認 ----
+    if (!movefige) {
+        // 次の制御点の「通過許可」が出ていれば再開
+        if (bezierPoints[currentSegment].passed && bezierPoints[currentSegment].passed) {
+            movefige = true; // ここで再開できる
+        } else {
+            return; // 許可が出るまで完全停止
+        }
+    }
 
-    Vector3 result;
-    // (1 - t)^3 * P0 : 始点の寄与（tが小さいほど影響大）
-    result = uuu * p0;
-    // 3 * (1 - t)^2 * t * P1 : 第1制御点の寄与（曲線の立ち上がり方向）
-    result += 3 * uu * t * p1;
-    // 3 * (1 - t) * t^2 * P2 : 第2制御点の寄与（曲線の終わり方向）
-    result += 3 * u * tt * p2;
-    // t^3 * P3 : 終点の寄与（tが1に近づくほど影響大）
-    result += ttt * p3;
+    // 現在のセグメント start / end
+    const Vector3& start = bezierPoints[currentSegment].controlPoint;
+    const Vector3& end = bezierPoints[currentSegment + 1].controlPoint;
 
-    return result;
-}
-///====================================================
-/// ベジェ曲線に沿ったオブジェクト位置更新
-///====================================================
-void GameCamera::UpdateObjectPosition() {
-    if (segmentIndex + 1 < bezierPoints.size())
-    {
-        // 速度は距離ベースで制御（0〜1000の範囲で距離を進める例）
-        distanceAlongCurve += speed; // speedは距離単位で
+    // 移動ベクトル
+    Vector3 dir = end - bezierPos_;
+    float dist = Length(dir);
 
-        // 曲線長計算がまだなら初期化
-        if (curveLengths.empty())
-            CalculateCurveLength();
+    if (dist <= speed) {
+        // セグメント終了
+        bezierPos_ = end;
+        // 現在の制御点を通過済みに
+        bezierPoints[currentSegment].passed = true;
 
-        // 距離を曲線長の範囲内に制限
-        if (distanceAlongCurve > totalCurveLength)
-        {
-            distanceAlongCurve = totalCurveLength; // 最後の位置で止める
-            movefige = false;                      // 移動を停止する
-            bezierPos_ = bezierPoints.back().controlPoint; // 最後の点に固定
+        currentSegment++;
+        if (currentSegment >= bezierPoints.size() - 1) {
+            movefige = false;
             return;
         }
 
-        // 曲線長に対応するtを取得
-        t = GetTForDistance(distanceAlongCurve);
-
-        // tを元にベジェ曲線の位置計算
-        const BezierPoint& start = bezierPoints[segmentIndex];
-        const BezierPoint& end = bezierPoints[segmentIndex + 1];
-        bezierPos_ = BezierInterpolate(
-            start.controlPoint,
-            start.handleRight,
-            end.handleLeft,
-            end.controlPoint,
-            t
-        );
-
-        // 必要ならsegmentIndexの更新などの処理も検討（ここは曲線全体の長さ1本のときは不要）
-    } else
-    {
-        // 最後の点に固定
-        bezierPos_ = bezierPoints.back().controlPoint;
-    }
-}
-///====================================================
-/// 曲線長の計算
-/// 曲線を細かく分割して長さ計算用のデータを作る（1回だけ呼ぶ）
-///====================================================
-void GameCamera::CalculateCurveLength(){
-    const int steps = 1000; // 分割数（必要に応じて調整）
-    curveLengths.clear();
-    curveLengths.push_back(0.0f); // 始点の長さ0
-
-    // 始点座標
-    Vector3 prevPos = BezierInterpolate(
-        bezierPoints[0].controlPoint,
-        bezierPoints[0].handleRight,
-        bezierPoints[1].handleLeft,
-        bezierPoints[1].controlPoint,
-        0.0f
-    );
-
-    float length = 0.0f;
-    for (int i = 1; i <= steps; i++) {
-        float t = (float)i / steps;
-         // 現在座標を計算
-        Vector3 currPos = BezierInterpolate(
-            bezierPoints[segmentIndex].controlPoint,
-            bezierPoints[segmentIndex].handleRight,
-            bezierPoints[segmentIndex + 1].handleLeft,
-            bezierPoints[segmentIndex + 1].controlPoint,
-            t
-        );
-        // 直線距離を加算
-        length += Length(currPos - prevPos); // Length()はVector3の距離計算関数
-        curveLengths.push_back(length);
-        prevPos = currPos;
-    }
-    // 曲線全体の長さを保存
-    totalCurveLength = length;
-}
-
-///====================================================
-/// 距離に対応する補間係数tを取得
-///====================================================
-float GameCamera::GetTForDistance(float distance) const
-{
-    if (distance <= 0) return 0.0f;
-    if (distance >= totalCurveLength) return 1.0f;
-
-    // 曲線長配列から距離に最も近い区間を探す（二分探索など高速化可）
-    int low = 0;
-    int high = (int)curveLengths.size() - 1;
-
-    while (low < high) {
-        int mid = (low + high) / 2;
-        if (curveLengths[mid] < distance) {
-            low = mid + 1;
-        } else {
-            high = mid;
+        // 次の制御点が未許可なら停止
+        if (!bezierPoints[currentSegment].passed) {
+            movefige = false;
+            return;
         }
+    } else {
+        // 方向ベクトルに沿って speed 移動
+        bezierPos_ +=  Normalize(dir) * speed;
     }
 
-    int idx = low;
-    if (idx == 0) return 0.0f;
+    // カメラ位置更新
+    camera_->SetTranslate(bezierPos_);
 
-    // 区間内での線形補間
-    float lengthBefore = curveLengths[idx - 1];
-    float lengthAfter = curveLengths[idx];
-    float segmentFraction = (distance - lengthBefore) / (lengthAfter - lengthBefore);
+    // === 向き補間（改良版） ===
+    Vector3 targetForward;
 
-    float tBefore = (float)(idx - 1) / (curveLengths.size() - 1);
-    float tAfter = (float)idx / (curveLengths.size() - 1);
+    if (currentSegment < bezierPoints.size() - 1) {
+        // 次の制御点とさらに次の制御点を使って、滑らかな接線方向を求める
+        Vector3 next = bezierPoints[currentSegment + 1].controlPoint;
+        Vector3 next2 = (currentSegment + 2 < bezierPoints.size()) ?
+            bezierPoints[currentSegment + 2].controlPoint : next;
 
-    return tBefore + segmentFraction * (tAfter - tBefore);
+        // 現在→次の方向を0.7、次→次の次の方向を0.3混ぜる（曲がりを緩やかに）
+        targetForward = Normalize((next - bezierPos_) * 0.7f + (next2 - next) * 0.3f);
+    } else {
+        targetForward = prevForward;
+    }
+
+    // 前回のforwardと今回のforwardの角度差を計算
+    float dot = std::clamp(Dot(prevForward, targetForward), -1.0f, 1.0f);
+    float angle = acosf(dot);
+
+    // 曲がる角度が大きいほど補間を速く、小さいほどゆっくり
+    float smooth = std::clamp(angle * 0.1f, 0.02f, 0.15f);
+
+    // 球面線形補間（Slerp）で向きを滑らかに補間
+    Vector3 newForward = Slerp(prevForward, targetForward, smooth);
+    newForward = Normalize(newForward);
+
+    // カメラ回転更新
+    camera_->SetRotate(LookAtRotation(newForward));
+    prevForward = newForward;
+
+    camera_->Update();
+}
+///====================================================
+/// LookAt 用の回転計算（簡易版）
+/// forward: 向きベクトル
+///====================================================
+Vector3 GameCamera::LookAtRotation(const Vector3& forward) {
+    Vector3 rot;
+    rot.y = atan2f(forward.x, forward.z); // Yaw
+    rot.x = asinf(-forward.y);            // Pitch
+    rot.z = 0.0f;                         // Roll
+    return rot;
+}
+///====================================================
+/// 球面線形補間 (Slerp)
+///====================================================
+Vector3 GameCamera::Slerp(const Vector3& v0, const Vector3& v1, float t) {
+    float dot = Dot(v0, v1);
+    dot = std::clamp(dot, -1.0f, 1.0f); // 安全クランプ
+
+    float theta = acosf(dot) * t;
+    Vector3 relative = Normalize(v1 - v0 * dot);
+    return Normalize(v0 * cosf(theta) + relative * sinf(theta));
 }

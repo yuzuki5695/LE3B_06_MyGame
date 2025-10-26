@@ -32,7 +32,7 @@ void GamePlayScene::Finalize() {
 void GamePlayScene::Initialize() {
     // カメラマネージャの初期化
     CameraManager::GetInstance()->Initialize(CameraTransform({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }));
-    CameraManager::GetInstance()->SetCameraMode(CameraMode::Event);
+    CameraManager::GetInstance()->SetCameraMode(CameraMode::GamePlay);
 
     // テクスチャを読み込む
     TextureManager::GetInstance()->LoadTexture("uvChecker.png");
@@ -53,14 +53,9 @@ void GamePlayScene::Initialize() {
     ModelManager::GetInstance()->LoadModel("monsterBallUV.obj");
     ModelManager::GetInstance()->LoadModel("Bullet/PlayerBullet.obj");
     ModelManager::GetInstance()->LoadModel("EnemyBullet.obj");
-    ModelManager::GetInstance()->LoadModel("Tile.obj");
     ModelManager::GetInstance()->LoadModel("Clear.obj");
     ModelManager::GetInstance()->LoadModel("wall.obj");
 
-    // オブジェクトの作成
-    transform_ = { {20.0f, 1.0f, 300.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, -8.0f, 50.0f} };
-    // 地面の作成
-    grass = Object3d::Create("Tile.obj", transform_);
     // プレイヤーの作成と初期化
     player_ = std::make_unique<Player>();
     player_->Initialize(); // プレイヤーの初期化
@@ -97,6 +92,11 @@ void GamePlayScene::Initialize() {
     EventManager::GetInstance()->Initialize("gamestart");
 	// ゲームカメラの移動許可
     CameraManager::GetInstance()->GetGameCamera()->Setmovefige(true);
+
+	goalpos_ = 280.0f;
+
+	stageManager_ = std::make_unique<StageManager>();
+	stageManager_->Initialize();
 }
 ///====================================================
 /// 毎フレーム更新処理
@@ -107,19 +107,21 @@ void GamePlayScene::Update() {
         // フェード開始
         FadeManager::GetInstance()->StartFadeIn(1.0f, FadeStyle::SilhouetteExplode);
     }            
-    // フェードマネージャの更新   
-    FadeManager::GetInstance()->Update(); 
-    // イベントマネージャの更新
-    EventManager::GetInstance()->Update(); 	
+    //// フェードマネージャの更新   
+    //FadeManager::GetInstance()->Update(); 
+    //// イベントマネージャの更新
+    //EventManager::GetInstance()->Update(); 	
     // ゲームスタートイベントが終了したらプレイヤ―操作可能に
-    if (EventManager::GetInstance()->IsFinished()) {
+ //   if (EventManager::GetInstance()->IsFinished()) {
         // イベント終了 → プレイヤーを操作可能に
         player_->SetKeyActive(true);
         player_->SetReticleVisible(true);
-        if (Input::GetInstance()->Triggrkey(DIK_RETURN)) {
-            SceneManager::GetInstance()->ChangeScene("TITLE");
-        }
-    }
+        //if (Input::GetInstance()->Triggrkey(DIK_RETURN)) {
+        //    SceneManager::GetInstance()->ChangeScene("TITLE");
+        //}
+  //  }
+
+        stageManager_->Update();
 
     /*-------------------------------------------*/
     /*--------------Cameraの更新処理---------------*/
@@ -129,13 +131,12 @@ void GamePlayScene::Update() {
     playerhp_ = player_->IsActive();
 	// 終了しない限り更新処理
     if (!end) {
-        // 敵出現動作
-        EnemySpawn();
-        // 各衝突判定
-        CheckBulletEnemyCollisionsOBB();
-        CheckEnemyBulletPlayerCollisionsOBB();
+        //// 敵出現動作
+        //EnemySpawn();
+        //// 各衝突判定
+        //CheckBulletEnemyCollisionsOBB();
+        //CheckEnemyBulletPlayerCollisionsOBB();
         // 更新処理
-        grass->Update();
         player_->Update();
         // プレイヤーがゴール手前なら敵も更新
         if (player_->GetPosition().z <= goalpos_) {
@@ -208,7 +209,7 @@ void GamePlayScene::Update() {
     CameraManager::GetInstance()->DrawImGui();  // カメラマネージャのImGui制御
 	FadeManager::GetInstance()->DrawImGui();    // フェードマネージャのImGui制御 
 	EventManager::GetInstance()->DrawImGui();   // イベントマネージャのImGui制御
-    
+	stageManager_->DebugImGui(); 			  // ステージマネージャのImGui制御
 #endif // USE_IMGUI
 #pragma endregion ImGuiの更新処理終了 
 }
@@ -222,9 +223,9 @@ void GamePlayScene::Draw() {
     Box_->Draw();
     // 3Dオブジェクトの描画準備。3Dオブジェクトの描画に共通のグラフィックスコマンドを積む
     Object3dCommon::GetInstance()->Commondrawing();
+    stageManager_->Draw();
 
     // 描画処理
-    grass->Draw();
     if (!end) {
         player_->Draw();
         // Bulletマネージャの描画処理
