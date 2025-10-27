@@ -1,7 +1,7 @@
-# Blender 4.1.1 MTL File: 'Player.blend'
+# Blender 4.1.1 MTL File: 'player_version_0.1.blend'
 # www.blender.org
 
-newmtl マテリアル.003
+newmtl マテリアル
 Ns 250.000000
 Ka 1.000000 1.000000 1.000000
 Ks 0.500000 0.500000 0.500000

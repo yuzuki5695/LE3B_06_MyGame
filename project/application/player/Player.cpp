@@ -24,14 +24,14 @@ Player::~Player() {}
 ///=====================================================================
 void Player::Initialize() {	 
     // モデル・テクスチャ読み込み
-    ModelManager::GetInstance()->LoadModel("Player.obj");     
+    ModelManager::GetInstance()->LoadModel("Gameplay/Model/Player/Player.obj");     
     ModelManager::GetInstance()->LoadModel("Bullet/PlayerBullet.obj");
     TextureManager::GetInstance()->LoadTexture("Target.png");
 
     // プレイヤーの初期位置と回転を設定
     transform_ = { {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f},  0.0f,0.0f,0.0f };
     // プレイヤー生成
-    object = Object3d::Create("Player.obj", transform_);
+    object = Object3d::Create("Gameplay/Model/Player/Player.obj", transform_);
 
     targetpos_ = { {0.3f, 0.3f, 0.3f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 30.0f} };
     target_= Object3d::Create("Bullet/PlayerBullet.obj", targetpos_);
