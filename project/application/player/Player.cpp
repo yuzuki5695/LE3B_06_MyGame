@@ -46,9 +46,6 @@ void Player::Initialize() {
    	targetreticle_->SetAnchorPoint(Vector2{ 0.5f, 0.5f }); // 中心基準
     previousTime_ = 0.0f;
 
-    originalColor_ = object->GetModel()->GetMaterialData()->color;
-
-
     // 死亡関連
     deathTimer_ = 0.0f;
     //// 回転速度（バラバラに回る感じ）
@@ -394,18 +391,4 @@ void Player::StartDeathEffect() {
     // --- 回転も時間で増加（イージング的）---
     transform_.rotate.x += 0.004f + 0.002f * sinf(t * 0.5f);
     transform_.rotate.z += 0.003f + 0.0015f * cosf(t * 0.4f);
-
-    // --- マテリアルを赤くフェード ---
-    Model* model = object->GetModel();
-    if (model) {
-        Material* material = model->GetMaterialData();
-        if (material) {
-            // 徐々に赤に近づける
-            float fadeSpeed = 0.02f; // 赤くなるスピード
-            Vector3 targetColor = { 1.0f, 0.0f, 0.0f }; // 真っ赤
-            material->color.x += (targetColor.x - material->color.x) * fadeSpeed;
-            material->color.y += (targetColor.y - material->color.y) * fadeSpeed;
-            material->color.z += (targetColor.z - material->color.z) * fadeSpeed;
-        }
-    }
 }
