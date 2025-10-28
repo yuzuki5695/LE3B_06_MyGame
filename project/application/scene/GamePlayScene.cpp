@@ -132,6 +132,8 @@ void GamePlayScene::Update() {
         player_->SetKeyActive(true);
         player_->SetReticleVisible(true);
         if (Input::GetInstance()->Triggrkey(DIK_RETURN)) {
+            CameraManager::GetInstance()->GetGameCamera()->SwitchView(ViewType::Sub);
+            FadeManager::GetInstance()->StartFadeOut(1.0f, FadeStyle::Normal);
             end = true;
         }
     }
@@ -178,17 +180,13 @@ void GamePlayScene::Update() {
             enemy->Kill();
         }
     }
-    // ゴール判定処理
-    if (player_->GetPosition().z >= goalpos_ && !end) {
-        end = true;
-        goal_ = true;
+    if (player_->GetPosition().z >= 250.0f && CameraManager::GetInstance()->GetGameCamera()->GetMode() == ViewType::Main) {
+        CameraManager::GetInstance()->GetGameCamera()->SwitchView(ViewType::Sub);
+        FadeManager::GetInstance()->StartFadeOut(1.0f, FadeStyle::Normal);
+        // フェード開始             
+        end = false;
     }
 
-	//// ゴールしたらフェードアウト開始
- //   if (goal_) {
- //       FadeManager::GetInstance()->StartFadeOut(1.0f, FadeStyle::Normal);
- //       goal_ = false;
- //   }
     // フェードアウトが完了したら次のシーンへ
     if (FadeManager::GetInstance()->IsFadeEnd() && FadeManager::GetInstance()->GetFadeType() == FadeType::FadeOut) {
         //if (!playerhp_) {

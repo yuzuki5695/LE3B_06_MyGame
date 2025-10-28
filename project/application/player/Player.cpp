@@ -52,6 +52,7 @@ void Player::Initialize() {
     deathRotateSpeed_ = { 0.05f, 0.07f, 0.02f };
     // 軽くスケールを上げる演出など
     transform_.scale = { 0.5f, 0.5f, 0.5f };
+    fallVelocity = { 0.0f,0.0f,0.0f };
 }
 ///=====================================================================
 /// 更新処理
@@ -375,7 +376,6 @@ OBB Player::GetOBB() const {
 
 void Player::StartDeathEffect() {
     static float t = 0.0f;        // 時間経過
-    static Vector3 fallVelocity;
     const float gravity = 0.05f;
     const float gravitz = 0.01f;
 

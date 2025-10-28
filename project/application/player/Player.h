@@ -134,6 +134,10 @@ private:// メンバ変数
 	Vector3 deathStartPos_;
 
 	    float deathFallSpeed_ = 0.5f; // 下方向に落ちるスピード
+
+		
+		Vector3 fallVelocity;
+
 public:// メンバ変数
 	// getter
 	// 参照を返す（変更不可）
