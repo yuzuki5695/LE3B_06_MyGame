@@ -25,7 +25,7 @@ void GamePlayScene::Finalize() {
     BulletManager::GetInstance()->Finalize();  // 弾の解放処理
     FadeManager::GetInstance()->Finalize();    //  フェードマネージャの解放処理
     EventManager::GetInstance()->Finalize();   //  イベントマネージャの解放処理
-	stageManager_->Finalize();			  // ステージマネージャの解放処理
+    StageManager::GetInstance()->Finalize();		  // ステージマネージャの解放処理
 }
 ///====================================================
 /// 初期化処理
@@ -96,8 +96,8 @@ void GamePlayScene::Initialize() {
 
 	goalpos_ = 280.0f;
 
-	stageManager_ = std::make_unique<StageManager>();
-	stageManager_->Initialize();
+    StageManager::GetInstance()->Initialize();
+
     end = false;
 }
 ///====================================================
@@ -135,7 +135,8 @@ void GamePlayScene::Update() {
         }
     }
 
-    stageManager_->Update();
+
+    StageManager::GetInstance()->Update();
 
     /*-------------------------------------------*/
     /*--------------Cameraの更新処理---------------*/
@@ -182,20 +183,20 @@ void GamePlayScene::Update() {
         goal_ = true;
     }
 
-	// ゴールしたらフェードアウト開始
-    if (goal_) {
-        FadeManager::GetInstance()->StartFadeOut(1.0f, FadeStyle::Normal);
-        goal_ = false;
-    }
+	//// ゴールしたらフェードアウト開始
+ //   if (goal_) {
+ //       FadeManager::GetInstance()->StartFadeOut(1.0f, FadeStyle::Normal);
+ //       goal_ = false;
+ //   }
     // フェードアウトが完了したら次のシーンへ
     if (FadeManager::GetInstance()->IsFadeEnd() && FadeManager::GetInstance()->GetFadeType() == FadeType::FadeOut) {
-        if (!playerhp_) {
+        //if (!playerhp_) {
+        //    // シーン切り替え
+        //    SceneManager::GetInstance()->ChangeScene("GAMEOVER");
+        //} else {
             // シーン切り替え
             SceneManager::GetInstance()->ChangeScene("GAMEOVER");
-        } else {
-            // シーン切り替え
-            SceneManager::GetInstance()->ChangeScene("GAMECLEAR");
-        }
+        //}
     }
 
     // 死んだ敵の削除
@@ -241,8 +242,8 @@ void GamePlayScene::Draw() {
     SkyboxCommon::GetInstance()->Commondrawing();
     Box_->Draw();
     // 3Dオブジェクトの描画準備。3Dオブジェクトの描画に共通のグラフィックスコマンドを積む
-    Object3dCommon::GetInstance()->Commondrawing();
-    stageManager_->Draw();
+    Object3dCommon::GetInstance()->Commondrawing(); 
+    StageManager::GetInstance()->Draw();
 
     // 描画処理
    // if (!end) {

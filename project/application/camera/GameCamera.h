@@ -57,8 +57,8 @@ public:
 
 private: // メンバ変数
     CurveJsonLoader* Jsondata = nullptr;         // ベジェ制御点を読み込むローダー
-    Camera* maincamera_ = nullptr;  // 実際に描画で使用されるカメラインスタンス  
-    Camera* subcamera_ = nullptr; // サブカメラ用インスタンス
+    std::unique_ptr<Camera> maincamera_ = nullptr;  // 実際に描画で使用されるカメラインスタンス  
+    std::unique_ptr<Camera> subcamera_ = nullptr; // サブカメラ用インスタンス
     Vector3 bezierPos_;                          // 現在のベジェ曲線上の位置
     std::vector<BezierPoint> bezierPoints;       // 移動に使う制御点データ
     bool movefige;                               // ベジェ曲線に沿って移動するフラグ      	
@@ -94,7 +94,7 @@ private: // メンバ変数
 
 public: // アクセッサ（Getter / Setter）
     // getter 
-    Camera* Getcamera() { return maincamera_; }
+    Camera* Getcamera() { return maincamera_.get(); }
     bool Getmovefige() { return movefige; }
     Vector3 GetbezierPos() { return bezierPos_; }
     // setter
@@ -121,37 +121,9 @@ public: // アクセッサ（Getter / Setter）
     Camera* GetActiveCamera() {
         switch (mode_) {
         case ViewType::Sub:
-            return subcamera_;
+            return subcamera_.get();
         default:
-            return maincamera_;
+            return maincamera_.get();
         }
-    }
-
-    // --- カメラモードの切り替え（外部操作用）---
-    void SetMode(ViewType newMode) {
-        // 現在と同じなら何もしない
-        if (mode_ == newMode) return;
-
-        // トランジションを使う場合（イージングで切り替え）
-        startPos_ = GetActiveCamera()->GetTranslate();
-        startRot_ = GetActiveCamera()->GetRotate();
-
-        transitionTarget_ = newMode;
-        transitionTimer_ = 0.0f;
-
-        // 切り替え先の位置・回転を決める
-        switch (newMode) {
-        case ViewType::Main:
-            endPos_ = maincamera_->GetTranslate();
-            endRot_ = maincamera_->GetRotate();
-            break;
-
-        case ViewType::Sub:
-            endPos_ = subcamera_->GetTranslate();
-            endRot_ = subcamera_->GetRotate();
-            break;
-        }
-
-        mode_ = ViewType::Transition; // ← トランジションモードに入る
     }
 };

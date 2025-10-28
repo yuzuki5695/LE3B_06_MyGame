@@ -18,13 +18,13 @@ void GameCamera::Initialize() {
     currentSegment = 0;
 
     // メインカメラ生成、初期化
-    maincamera_ = new Camera;
+    maincamera_ = std::make_unique<Camera>();
     bezierPos_ = bezierPoints[0].controlPoint;
     maincamera_->SetTranslate(bezierPos_);
     prevForward = { 0, 0, 1 }; // 初期向き
     maincamera_->SetRotate(LookAtRotation(prevForward));
     // サブカメラ生成、初期化
-    subcamera_ = new Camera;
+    subcamera_ = std::make_unique<Camera>();
     subcamera_->SetTranslate({ 2, 0, -3 });  // 定点視点の例
     subcamera_->SetRotate({ 0.0f, 0.0f, 0.0f });
     followInitialized_ = false;

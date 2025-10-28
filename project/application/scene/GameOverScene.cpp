@@ -28,7 +28,8 @@ void GameOverScene::Initialize() {
 	// モデルの読み込み
     ModelManager::GetInstance()->LoadModel("GameOver.obj");
 	// テクスチャの読み込み
-    TextureManager::GetInstance()->LoadTexture("TitleEnter.png");
+    TextureManager::GetInstance()->LoadTexture("TitleEnter.png");      
+    TextureManager::GetInstance()->LoadTexture("CubemapBox.dds");
     ui1_ = Sprite::Create("TitleEnter.png", Vector2{ 500.0f, 500.0f }, 0.0f, Vector2{ 250.0f,90.0f });
     ui1_->SetTextureSize(Vector2{ 250.0f,90.0f });
     clear = Object3d::Create("GameOver.obj", Transform{ { 1.0f, 1.0f, 1.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 30.0f } });
