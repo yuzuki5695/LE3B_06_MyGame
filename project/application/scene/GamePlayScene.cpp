@@ -44,9 +44,10 @@ void GamePlayScene::Initialize() {
     TextureManager::GetInstance()->LoadTexture("Gameplay/Shift.png");
     TextureManager::GetInstance()->LoadTexture("Gameplay/StandardChange.png");     
     TextureManager::GetInstance()->LoadTexture("titlereturn.png");
+    TextureManager::GetInstance()->LoadTexture("titlereturn02.png");
 
     // タイトルに戻るUIを生成
-    ui1_ = Sprite::Create("titlereturn.png", Vector2{ 1100.0f, 5.0f }, 0.0f, Vector2{ 150.0f,100.0f });
+    ui1_ = Sprite::Create("titlereturn02.png", Vector2{ 1100.0f, 5.0f }, 0.0f, Vector2{ 150.0f,100.0f });
     ui1_->SetTextureSize(Vector2{ 300.0f,200.0f });
 
     // .objファイルからモデルを読み込む
