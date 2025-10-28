@@ -4,6 +4,26 @@
 #include<ImGuiManager.h>
 #endif // USE_IMGUI
 
+void StageManager::Finalize() {
+    // loader_ の開放
+    if (loader_) {
+        delete loader_;
+        loader_ = nullptr;
+    }
+
+    // levelData_ の開放（必要なら）
+    if (levelData_) {
+        delete levelData_;
+        levelData_ = nullptr;
+    }
+    // 地面オブジェクトの解放
+    grass.reset();
+    // デバッグオブジェクトのクリア
+    debugObjects_.clear();
+    // その他の3Dオブジェクトもクリア
+    object3ds_.clear();
+}
+
 void StageManager::Initialize() {
     // LevelLoader のインスタンスを生成
     loader_ = new CharacterLoader();

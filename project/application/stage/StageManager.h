@@ -9,7 +9,7 @@
 class StageManager
 {
 public:
-
+    void Finalize();
     void Initialize();
     void Update();
     void Draw();

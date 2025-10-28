@@ -25,6 +25,7 @@ void GamePlayScene::Finalize() {
     BulletManager::GetInstance()->Finalize();  // 弾の解放処理
     FadeManager::GetInstance()->Finalize();    //  フェードマネージャの解放処理
     EventManager::GetInstance()->Finalize();   //  イベントマネージャの解放処理
+	stageManager_->Finalize();			  // ステージマネージャの解放処理
 }
 ///====================================================
 /// 初期化処理
@@ -97,6 +98,7 @@ void GamePlayScene::Initialize() {
 
 	stageManager_ = std::make_unique<StageManager>();
 	stageManager_->Initialize();
+    end = false;
 }
 ///====================================================
 /// 毎フレーム更新処理
@@ -107,10 +109,18 @@ void GamePlayScene::Update() {
         // フェード開始
         FadeManager::GetInstance()->StartFadeIn(1.0f, FadeStyle::SilhouetteExplode);
     }            
-    //// フェードマネージャの更新   
-    //FadeManager::GetInstance()->Update(); 
+    // フェードマネージャの更新   
+    FadeManager::GetInstance()->Update(); 
     //// イベントマネージャの更新
     //EventManager::GetInstance()->Update(); 	
+    
+    if (end) {
+        // フェード開始             
+        FadeManager::GetInstance()->StartFadeOut(1.0f, FadeStyle::Normal);
+        end = false;
+    }
+                
+
     // ゲームスタートイベントが終了したらプレイヤ―操作可能に
  //   if (EventManager::GetInstance()->IsFinished()) {
         // イベント終了 → プレイヤーを操作可能に
@@ -204,8 +214,13 @@ void GamePlayScene::Update() {
 #pragma endregion 全てのSprite個々の更新処理
 
 #pragma region  ImGuiの更新処理開始
-#ifdef USE_IMGUI
-	Object3dCommon::GetInstance()->DrawImGui(); // object3dのlightのImGui制御
+#ifdef USE_IMGUI 
+    ImGui::Begin("=== GamePlayScene Debug ===");
+    // 「end」フラグを切り返すチェックボックス
+    ImGui::Checkbox("End Flag", &end);
+    ImGui::End();
+
+    Object3dCommon::GetInstance()->DrawImGui(); // object3dのlightのImGui制御
     CameraManager::GetInstance()->DrawImGui();  // カメラマネージャのImGui制御
 	FadeManager::GetInstance()->DrawImGui();    // フェードマネージャのImGui制御 
 	EventManager::GetInstance()->DrawImGui();   // イベントマネージャのImGui制御
