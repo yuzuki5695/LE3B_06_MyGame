@@ -10,24 +10,26 @@ using namespace MatrixVector;
 void GameCamera::Initialize() {
     Jsondata = new CurveJsonLoader();
     bezierPoints = Jsondata->LoadBezierFromJSON("Resources/levels/bezier.json");
-	// カメラの初期設定
+    // カメラの初期設定
     mode_ = ViewType::Main;
 
     speed = 0.2f;        // 1フレームあたり移動距離
     movefige = true;
     currentSegment = 0;
 
-	// メインカメラ生成、初期化
-    maincamera_ = std::make_unique<Camera>();
+    // メインカメラ生成、初期化
+    maincamera_ = new Camera;
     bezierPos_ = bezierPoints[0].controlPoint;
     maincamera_->SetTranslate(bezierPos_);
     prevForward = { 0, 0, 1 }; // 初期向き
     maincamera_->SetRotate(LookAtRotation(prevForward));
-	// サブカメラ生成、初期化
-    subcamera_ = std::make_unique<Camera>();
+    // サブカメラ生成、初期化
+    subcamera_ = new Camera;
     subcamera_->SetTranslate({ 2, 0, -3 });  // 定点視点の例
     subcamera_->SetRotate({ 0.0f, 0.0f, 0.0f });
     followInitialized_ = false;
+
+    subOffset_ = {5.5f,-3.0f,10.0f};
 }
 
 ///====================================================
@@ -55,7 +57,7 @@ void GameCamera::Update() {
 
     // ターゲット位置を常に毎フレーム参照
     {
-        Vector3 targetPos = followTarget_->GetWorldPosition();
+        Vector3 targetPos = followTarget_->GetTranslate();
         UpdateSubCameraFollow(targetPos, subOffset_);
     }
         break;
@@ -125,8 +127,15 @@ void GameCamera::SwitchView(ViewType targetType) {
     }
 }
 
-void GameCamera::UpdateTransition() {
-    transitionTimer_ += 1.0f / 60.0f; // 1フレームあたりの経過時間（固定FPS想定）
+void GameCamera::UpdateTransition() {    
+    // --- フレームごとの進行 ---
+    float speedMultiplier = 1.0f;
+
+    // 🎯 メイン → サブ のときだけ速度2倍
+    if (transitionTarget_ == ViewType::Sub) {
+        speedMultiplier = 5.0f;
+    } 
+    transitionTimer_ += (1.0f / 60.0f) * speedMultiplier;    
     float t = transitionTimer_ / transitionDuration_;
 
     if (t >= 1.0f) {
@@ -256,21 +265,22 @@ void GameCamera::UpdateCameraRotation() {
 void GameCamera::UpdateSubCameraFollow(const Vector3& targetPos, const Vector3& offset) {
     if (!subcamera_) return;
 
-
-    Vector3 desiredPos = targetPos + offset;
-
-    // --- イージング追従 ---
-    Vector3 currentPos = subcamera_->GetTranslate();
-    float followSpeed = 0.2f;  // ← 追従スピード（0.1～0.3くらいが自然）
-    Vector3 newPos = Vector3::Lerp(currentPos, desiredPos, followSpeed);
-    subcamera_->SetTranslate(newPos);
+    // --- カメラを固定位置に配置 ---
+    subcamera_->SetTranslate(offset);
 
     // --- ターゲット方向を向く ---
-    Vector3 dir = targetPos - newPos;
-    if (Length(dir) > 0.0001f) {
-        dir = Normalize(dir);
-        float yaw = atan2(dir.x, dir.z);
-        float pitch = -asin(dir.y);
+    Vector3 toTarget = targetPos - offset;
+
+    if (Length(toTarget) > 0.0001f) {
+        toTarget = Normalize(toTarget);
+
+        // Y軸（水平）回転
+        float yaw = std::atan2(toTarget.x, toTarget.z);
+
+        // X軸（垂直）回転
+        float distanceXZ = std::sqrt(toTarget.x * toTarget.x + toTarget.z * toTarget.z);
+        float pitch = -std::atan2(toTarget.y, distanceXZ);
+
         subcamera_->SetRotate({ pitch, yaw, 0.0f });
     }
 }

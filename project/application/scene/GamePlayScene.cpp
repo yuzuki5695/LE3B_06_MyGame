@@ -111,26 +111,29 @@ void GamePlayScene::Update() {
     }
     // フェードマネージャの更新   
     FadeManager::GetInstance()->Update();
-    //// イベントマネージャの更新
-    //EventManager::GetInstance()->Update(); 	
+    // イベントマネージャの更新
+    EventManager::GetInstance()->Update(); 	
 
-    if (end) {
-        player_->SetDead_(true);
+    if (end && CameraManager::GetInstance()->GetGameCamera()->GetMode() == ViewType::Main) {
+        CameraManager::GetInstance()->GetGameCamera()->SwitchView(ViewType::Sub);
+        FadeManager::GetInstance()->StartFadeOut(1.0f, FadeStyle::Normal);
         // フェード開始             
-       //FadeManager::GetInstance()->StartFadeOut(1.0f, FadeStyle::Normal);
         end = false;
     }
 
+    if (CameraManager::GetInstance()->GetGameCamera()->GetMode() == ViewType::Sub) {
+        player_->SetDead_(true);
+    }
 
     // ゲームスタートイベントが終了したらプレイヤ―操作可能に
- //   if (EventManager::GetInstance()->IsFinished()) {
-        // イベント終了 → プレイヤーを操作可能に
-    player_->SetKeyActive(true);
-    player_->SetReticleVisible(true);
-    //if (Input::GetInstance()->Triggrkey(DIK_RETURN)) {
-    //    SceneManager::GetInstance()->ChangeScene("TITLE");
-    //}
-//  }
+    if (EventManager::GetInstance()->IsFinished()) {
+        //   イベント終了 → プレイヤーを操作可能に
+        player_->SetKeyActive(true);
+        player_->SetReticleVisible(true);
+        if (Input::GetInstance()->Triggrkey(DIK_RETURN)) {
+            end = true;
+        }
+    }
 
     stageManager_->Update();
 

@@ -91,20 +91,22 @@ void Player::Update() {
     // deltaTime を計算
     float deltaTime = currentTime - previousTime_;
     previousTime_ = currentTime;
-                
-    float currentSpeed = isBoosting_ ? boostSpeed_ : normalSpeed_; 
-    UpdateBoostState(); 
-    MoveInput(currentSpeed); // ブースト中は速く移動 
+    
+    if (iskeyActive_) {
+        float currentSpeed = isBoosting_ ? boostSpeed_ : normalSpeed_;
+        UpdateBoostState();
+        MoveInput(currentSpeed); // ブースト中は速く移動 
 
-    // アクティブ中はキー操作を受け付ける
-    if (isDeadEffectActive_) {
-        // プレイヤ―死亡演出
-        StartDeathEffect();
-    } else {        
-        // ターゲットを矢印キーで動かす
-        UpdateTargetPosition(targetpos_, 0.2f);   // ターゲットに使う
-        // 弾の発射
-        AttachBullet();
+        // アクティブ中はキー操作を受け付ける
+        if (isDeadEffectActive_) {
+            // プレイヤ―死亡演出
+            StartDeathEffect();
+        } else {
+            // ターゲットを矢印キーで動かす
+            UpdateTargetPosition(targetpos_, 0.2f);   // ターゲットに使う
+            // 弾の発射
+            AttachBullet();
+        }
     }
 
     // デバッグ中のImGui表示
@@ -374,14 +376,18 @@ OBB Player::GetOBB() const {
 
 void Player::StartDeathEffect() {
     static float t = 0.0f;        // 時間経過
-    static float fallVelocity = 0.0f;
+    static Vector3 fallVelocity;
     const float gravity = 0.004f;
+    const float gravitz = 0.01f;
 
     t += 1.0f / 60.0f;            // 60FPS換算
-    fallVelocity += gravity;
+    fallVelocity.x = 0.0f;
+    fallVelocity.y += gravity;
+    fallVelocity.z += gravitz;
 
     // --- 徐々に加速する落下 ---
-    transform_.translate.y -= fallVelocity;
+    transform_.translate.y -= fallVelocity.y;
+    transform_.translate.z += fallVelocity.z;
 
     // --- 回転も時間で増加（イージング的）---
     transform_.rotate.x += 0.004f + 0.002f * sinf(t * 0.5f);
