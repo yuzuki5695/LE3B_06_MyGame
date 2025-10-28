@@ -6,6 +6,13 @@
 #include<SoundPlayer.h>
 #include <Skybox.h>
 
+struct PartInfo {
+    std::unique_ptr<Object3d> obj;
+    Transform transform;
+    Vector3 fallSpeed;
+    Vector3 rotateSpeed;
+};
+
 /// <summary>
 /// ゲームオーバーシーン
 /// </summary>
@@ -28,8 +35,10 @@ public: // メンバ関数
     /// 描画処理
     /// </summary>
     void Draw() override;
-private: // メンバ変数        
+private: // メンバ変数      
+    std::vector<PartInfo> partsList; // 複数のパーツ用
+    int partCount_ = 7; // 生成するオブジェクト数
     std::unique_ptr <Sprite> ui1_ = nullptr;     // スプライト 
-    std::unique_ptr <Object3d> clear = nullptr;  // オブジェクト
     std::unique_ptr <Skybox> Box_ = nullptr;     //　背景
+
 };

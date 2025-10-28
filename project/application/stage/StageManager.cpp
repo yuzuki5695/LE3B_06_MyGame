@@ -21,9 +21,9 @@ void StageManager::Finalize() {
     // 地面オブジェクトの解放
     //grass.reset();
     // デバッグオブジェクトのクリア
-   // debugObjects_.clear();
+   // debugObjects_.parts();
     // その他の3Dオブジェクトもクリア
- //   object3ds_.clear();
+ //   object3ds_.parts();
 }
 
 void StageManager::Initialize() {

@@ -12,6 +12,7 @@
 #include <ParticleCommon.h>
 #include<SkyboxCommon.h>
 #include<FadeManager.h>
+#include <random>
 ///====================================================
 /// 終了処理
 ///====================================================
@@ -25,15 +26,53 @@ void GameOverScene::Initialize() {
     // カメラマネージャの初期化
     CameraManager::GetInstance()->Initialize(CameraTransform({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }));
     CameraManager::GetInstance()->SetCameraMode(CameraMode::Default);
-	// モデルの読み込み
-    ModelManager::GetInstance()->LoadModel("GameOver.obj");
-	// テクスチャの読み込み
-    TextureManager::GetInstance()->LoadTexture("TitleEnter.png");      
+    // モデルの読み込み    
+    ModelManager::GetInstance()->LoadModel("Gameover/parts_01.obj");
+
+    // テクスチャの読み込み
+    TextureManager::GetInstance()->LoadTexture("TitleEnter.png");
     TextureManager::GetInstance()->LoadTexture("CubemapBox.dds");
     ui1_ = Sprite::Create("TitleEnter.png", Vector2{ 500.0f, 500.0f }, 0.0f, Vector2{ 250.0f,90.0f });
     ui1_->SetTextureSize(Vector2{ 250.0f,90.0f });
-    clear = Object3d::Create("GameOver.obj", Transform{ { 1.0f, 1.0f, 1.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 30.0f } });
     Box_ = Skybox::Create("CubemapBox.dds", Transform{ { 1000.0f, 1000.0f, 1000.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 100.0f } });
+
+    // ランダムXを生成（-0.5～0.5の範囲）
+    std::random_device rd;
+    std::mt19937 randomEngine(rd());
+    std::uniform_real_distribution<float> transformY(5.0f, 10.0f);
+    std::uniform_real_distribution<float> distX(-12.0f, 10.0f);
+    std::uniform_real_distribution<float> distY(0.01f, 0.03f);
+    std::uniform_real_distribution<float> rotateX(-0.01f, 0.01f);
+    std::uniform_real_distribution<float> rotateY(-0.01f, 0.01f);
+    std::uniform_real_distribution<float> rotateZ(-0.01f, 0.01f);
+
+    std::vector<std::string> textureNames = {
+    "Gameover/parts_01.obj",
+    "Gameover/parts_01.obj",
+    "Gameover/parts_01.obj",     
+    "Gameover/parts_01.obj", 
+    "Gameover/parts_01.obj",
+    };
+    for (int i = 0; i < partCount_; ++i) {
+        PartInfo part;
+
+        part.transform = { {1.0f, 1.0f, 1.0f}, {0.0f,0.0f,0.0f}, {distX(randomEngine), transformY(randomEngine), 30.0f} };
+        // 1つ目はそのまま、それ以降は2個ずつテクスチャを切り替え
+        int textureIndex = 0; // 1つ目は 0
+        if (i > 0) {
+            textureIndex = ((i - 1) / 2) + 1; // 2個ごとに切り替え
+            if (textureIndex >= textureNames.size()) textureIndex = textureNames.size() - 1; // 配列オーバー防止
+        }
+           
+        part.obj = Object3d::Create("Gameover/parts_01.obj", part.transform);
+        part.obj->SetModel(textureNames[textureIndex]); // 後からテクスチャを設定
+
+        part.fallSpeed = { 0.0f, distY(randomEngine), 0.0f }; // Y軸落下
+        part.rotateSpeed = { rotateX(randomEngine), rotateY(randomEngine), rotateZ(randomEngine) };
+
+        partsList.push_back(std::move(part));
+    }
+
     // フェードマネージャの初期化
     FadeManager::GetInstance()->Initialize();
 }
@@ -66,9 +105,23 @@ void GameOverScene::Update() {
     CameraManager::GetInstance()->Update();
 
 #pragma region 全てのObject3d個々の更新処理
-
     Box_->Update();   // 背景の更新
-	clear->Update(); // オブジェクトの更新
+
+    for (PartInfo& part : partsList) {
+        // 落下
+        part.transform.translate.y -= part.fallSpeed.y;
+        if (part.transform.translate.y < -10.0f) {
+            part.transform.translate.y = -10.0f; // 地面で止める
+        }
+
+        // 回転
+        part.transform.rotate -= part.rotateSpeed;
+
+        // 更新反映
+        part.obj->SetTranslate(part.transform.translate);
+        part.obj->SetRotate(part.transform.rotate);
+        part.obj->Update();
+    }
 
 #pragma endregion 全てのObject3d個々の更新処理
 
@@ -99,8 +152,10 @@ void GameOverScene::Draw() {
 
     // 3Dオブジェクトの描画準備。3Dオブジェクトの描画に共通のグラフィックスコマンドを積む
     Object3dCommon::GetInstance()->Commondrawing();
-
-    clear->Draw();// オブジェクトの描画
+    
+    for (PartInfo& part : partsList) {
+        part.obj->Draw();
+    }
 
     // パーティクルの描画準備。パーティクルの描画に共通のグラフィックスコマンドを積む 
     ParticleCommon::GetInstance()->Commondrawing();

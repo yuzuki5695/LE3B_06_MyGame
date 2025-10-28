@@ -55,4 +55,12 @@ struct Vector3 final {
     static Vector3 Lerp(const Vector3& start, const Vector3& end, float t) {
         return start + (end - start) * t;
     }
+
+    Vector3& operator-=(const Vector3& other) {
+        x -= other.x;
+        y -= other.y;
+        z -= other.z;
+        return *this;
+    }
+
 };
