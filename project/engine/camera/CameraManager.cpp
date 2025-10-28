@@ -45,9 +45,9 @@ void CameraManager::Initialize(CameraTransform transform) {
 void CameraManager::Update() {
     switch (currentMode_) {
     case CameraMode::GamePlay: 
-        if (gameCamera_) {
-			gameCamera_->Update();
-        }
+        gameCamera_->Update(); 
+        // GameCameraにも追従対象を渡す  
+        gameCamera_->SetFollowTarget(target_);
         break;
     case CameraMode::Follow:
         if (followCamera_) {
@@ -142,8 +142,8 @@ void CameraManager::DrawImGui() {
             if (ImGui::Checkbox("isBezier", &moveFlag)) {
                 gameCamera_->Setmovefige(moveFlag);
             }
-            ImGui::Text("Bezier Control Points");  
-            
+            ImGui::Text("Bezier Control Points");
+
             // ---- BezierPoint 操作用UI ----
             auto& points = gameCamera_->GetBezierPoints();
 
@@ -169,6 +169,23 @@ void CameraManager::DrawImGui() {
                     points[i].passed = flag;
                 }
             }
+
+
+            // 現在モードを int に変換
+            int currentView = static_cast<int>(gameCamera_->GetCurrentView());
+            const char* viewNames[] = { "Main", "Sub", "Transition" };
+
+            // ラジオボタン
+            if (ImGui::RadioButton("Main", currentView == 0)) {
+                gameCamera_->SwitchView(ViewType::Main);
+            }
+            ImGui::SameLine();
+            if (ImGui::RadioButton("Sub", currentView == 1)) {
+                gameCamera_->SwitchView(ViewType::Sub);
+            }
+
+            // 状態確認用
+            ImGui::Text("Current: %s", viewNames[currentView]);
         }
 
     }

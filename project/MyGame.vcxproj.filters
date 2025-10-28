@@ -626,6 +626,9 @@
     <ClInclude Include="application\stage\StageManager.h">
       <Filter>ヘッダー ファイル\application\stage</Filter>
     </ClInclude>
+    <ClInclude Include="engine\math\Quaternion.h">
+      <Filter>ヘッダー ファイル\engine\math</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Resources\shaders\Sprite\Sprite.PS.hlsl">

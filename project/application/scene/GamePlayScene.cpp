@@ -108,39 +108,41 @@ void GamePlayScene::Update() {
     if (!FadeManager::GetInstance()->IsFadeStart() && !FadeManager::GetInstance()->IsFading()) {
         // フェード開始
         FadeManager::GetInstance()->StartFadeIn(1.0f, FadeStyle::SilhouetteExplode);
-    }            
+    }
     // フェードマネージャの更新   
-    FadeManager::GetInstance()->Update(); 
+    FadeManager::GetInstance()->Update();
     //// イベントマネージャの更新
     //EventManager::GetInstance()->Update(); 	
-    
+
     if (end) {
+        player_->SetDead_(true);
         // フェード開始             
-        FadeManager::GetInstance()->StartFadeOut(1.0f, FadeStyle::Normal);
+       //FadeManager::GetInstance()->StartFadeOut(1.0f, FadeStyle::Normal);
         end = false;
     }
-                
+
 
     // ゲームスタートイベントが終了したらプレイヤ―操作可能に
  //   if (EventManager::GetInstance()->IsFinished()) {
         // イベント終了 → プレイヤーを操作可能に
-        player_->SetKeyActive(true);
-        player_->SetReticleVisible(true);
-        //if (Input::GetInstance()->Triggrkey(DIK_RETURN)) {
-        //    SceneManager::GetInstance()->ChangeScene("TITLE");
-        //}
-  //  }
+    player_->SetKeyActive(true);
+    player_->SetReticleVisible(true);
+    //if (Input::GetInstance()->Triggrkey(DIK_RETURN)) {
+    //    SceneManager::GetInstance()->ChangeScene("TITLE");
+    //}
+//  }
 
-        stageManager_->Update();
+    stageManager_->Update();
 
     /*-------------------------------------------*/
     /*--------------Cameraの更新処理---------------*/
     /*------------------------------------------*/
     CameraManager::GetInstance()->Update();
+    CameraManager::GetInstance()->GetGameCamera()->SetFollowTarget(player_->GetPlayerObject());
 #pragma region 全てのObject3d個々の更新処理
     playerhp_ = player_->IsActive();
-	// 終了しない限り更新処理
-    if (!end) {
+    // 終了しない限り更新処理
+//    if (!end) {
         //// 敵出現動作
         //EnemySpawn();
         //// 各衝突判定
@@ -160,8 +162,7 @@ void GamePlayScene::Update() {
         wall->Update();
         // Bulletマネージャの更新処理
         BulletManager::GetInstance()->Update();
-
-    }
+  //  }
 
     // 敵がプレイヤーから離れすぎたら削除（過去の敵掃除）
     for (auto& enemy : enemies_) {
@@ -220,11 +221,11 @@ void GamePlayScene::Update() {
     ImGui::Checkbox("End Flag", &end);
     ImGui::End();
 
-    Object3dCommon::GetInstance()->DrawImGui(); // object3dのlightのImGui制御
+  //  Object3dCommon::GetInstance()->DrawImGui(); // object3dのlightのImGui制御
     CameraManager::GetInstance()->DrawImGui();  // カメラマネージャのImGui制御
-	FadeManager::GetInstance()->DrawImGui();    // フェードマネージャのImGui制御 
-	EventManager::GetInstance()->DrawImGui();   // イベントマネージャのImGui制御
-	stageManager_->DebugImGui(); 			  // ステージマネージャのImGui制御
+//	FadeManager::GetInstance()->DrawImGui();    // フェードマネージャのImGui制御 
+///	EventManager::GetInstance()->DrawImGui();   // イベントマネージャのImGui制御
+	//stageManager_->DebugImGui(); 			  // ステージマネージャのImGui制御
 #endif // USE_IMGUI
 #pragma endregion ImGuiの更新処理終了 
 }
@@ -241,11 +242,11 @@ void GamePlayScene::Draw() {
     stageManager_->Draw();
 
     // 描画処理
-    if (!end) {
+   // if (!end) {
         player_->Draw();
         // Bulletマネージャの描画処理
         BulletManager::GetInstance()->Draw();
-    }
+  //  }
     // プレイヤーがゴール地点に達するまでは敵や壁を描画
     if (player_->GetPosition().z <= goalpos_) {
         // 敵の更新
@@ -479,50 +480,50 @@ bool GamePlayScene::IsOBBIntersect(const OBB& a, const OBB& b) {
 /// プレイヤー弾 vs 敵の当たり判定
 ///====================================================
 void GamePlayScene::CheckBulletEnemyCollisionsOBB() {
-    const auto& bullets = BulletManager::GetInstance()->GetPlayerBullets();
+    //const auto& bullets = BulletManager::GetInstance()->GetPlayerBullets();
 
-    for (const std::unique_ptr<PlayerBullet>& bullet : bullets) {
-        if (!bullet->IsActive()) continue;
+    //for (const std::unique_ptr<PlayerBullet>& bullet : bullets) {
+    //    if (!bullet->IsActive()) continue;
 
-        for (auto& enemy : enemies_) {
-            if (!enemy->IsActive()) continue;
+    //    for (auto& enemy : enemies_) {
+    //        if (!enemy->IsActive()) continue;
 
-            OBB bulletOBB = bullet->GetOBB(); // bulletがOBB情報を持っている必要あり
-            OBB enemyOBB = enemy->GetOBB();   // 敵のOBBも同様に
+    //        OBB bulletOBB = bullet->GetOBB(); // bulletがOBB情報を持っている必要あり
+    //        OBB enemyOBB = enemy->GetOBB();   // 敵のOBBも同様に
 
-            if (IsOBBIntersect(bulletOBB, enemyOBB)) {
-                bullet->SetInactive();
-                enemy->SetInactive();
-                // パーティクル生成など
-                break;
-            }
-        }
-    }
+    //        if (IsOBBIntersect(bulletOBB, enemyOBB)) {
+    //            bullet->SetInactive();
+    //            enemy->SetInactive();
+    //            // パーティクル生成など
+    //            break;
+    //        }
+    //    }
+    //}
 }
 ///====================================================
 /// 敵弾 vs プレイヤーの当たり判定
 ///====================================================
 void GamePlayScene::CheckEnemyBulletPlayerCollisionsOBB() {
-    const auto& bullets = BulletManager::GetInstance()->GetEnemyBullets();
+    //const auto& bullets = BulletManager::GetInstance()->GetEnemyBullets();
 
-    if (!player_ || !player_->IsActive()) return;
+    //if (!player_ || !player_->IsActive()) return;
 
-    OBB playerOBB = player_->GetOBB(); // プレイヤーがOBBを返すようにしておく必要あり
+    //OBB playerOBB = player_->GetOBB(); // プレイヤーがOBBを返すようにしておく必要あり
 
-    for (const std::unique_ptr<EnemyBullet>& bullet : bullets) {
-        if (!bullet->IsActive()) continue;
+    //for (const std::unique_ptr<EnemyBullet>& bullet : bullets) {
+    //    if (!bullet->IsActive()) continue;
 
-        OBB bulletOBB = bullet->GetOBB(); // 弾にもOBBが必要
+    //    OBB bulletOBB = bullet->GetOBB(); // 弾にもOBBが必要
 
-        if (IsOBBIntersect(bulletOBB, playerOBB)) {
-            bullet->SetInactive();
-            player_->SetInactive();  // プレイヤーを無効にする
+    //    if (IsOBBIntersect(bulletOBB, playerOBB)) {
+    //        bullet->SetInactive();
+    //        player_->SetInactive();  // プレイヤーを無効にする
 
-            end = true;
-            // フェード開始             
-            FadeManager::GetInstance()->StartFadeOut(1.0f, FadeStyle::Normal);
-            // ヒットエフェクトなど追加
-            break;
-        }
-    }
+    //        end = true;
+    //        // フェード開始             
+    //        FadeManager::GetInstance()->StartFadeOut(1.0f, FadeStyle::Normal);
+    //        // ヒットエフェクトなど追加
+    //        break;
+    //    }
+    //}
 }
