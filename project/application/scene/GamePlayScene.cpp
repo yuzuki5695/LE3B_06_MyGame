@@ -73,14 +73,14 @@ void GamePlayScene::Initialize() {
     {120.0f, 5, false, MoveType::Vertical},        // 全部縦移動 Vertical
     {190.0f, 5, false, MoveType::None}             // 全部横移動  Horizontal
     };
-    // 敵をリストに追加して初期化
-    for (int i = 0; i < MAX_ENEMY; ++i) {
-        std::unique_ptr<Enemy> enemy = std::make_unique<Enemy>();
-        enemy->Initialize();
-        enemy->SetPlayer(player_.get());
-        enemy->SetActive(false);  // 非アクティブにしておく
-        enemies_.emplace_back(std::move(enemy));
-    }
+    //// 敵をリストに追加して初期化
+    //for (int i = 0; i < MAX_ENEMY; ++i) {
+    //    std::unique_ptr<Enemy> enemy = std::make_unique<Enemy>();
+    //    enemy->Initialize();
+    //    enemy->SetPlayer(player_.get());
+    //    enemy->SetActive(false);  // 非アクティブにしておく
+    //    enemies_.emplace_back(std::move(enemy));
+    //}
     // クリアゲート(仮)
     wall = Object3d::Create("wall.obj", Transform{ { 10.0f, 0.7f, 0.7f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 300.0f } });
     // スカイボックスの作成
@@ -96,7 +96,7 @@ void GamePlayScene::Initialize() {
     CameraManager::GetInstance()->GetGameCamera()->Setmovefige(true);
 
 	goalpos_ = 280.0f;
-
+    // ステージマネージャの初期化
     StageManager::GetInstance()->Initialize();
 
     end = false;
@@ -113,21 +113,21 @@ void GamePlayScene::Update() {
     // フェードマネージャの更新   
     FadeManager::GetInstance()->Update();
     // イベントマネージャの更新
-    EventManager::GetInstance()->Update(); 	
+  //  EventManager::GetInstance()->Update(); 	
 
-    if (end && CameraManager::GetInstance()->GetGameCamera()->GetMode() == ViewType::Main) {
-        CameraManager::GetInstance()->GetGameCamera()->SwitchView(ViewType::Sub);
-        FadeManager::GetInstance()->StartFadeOut(1.0f, FadeStyle::Normal);
-        // フェード開始             
-        end = false;
-    }
+    //if (end && CameraManager::GetInstance()->GetGameCamera()->GetMode() == ViewType::Main) {
+    //    CameraManager::GetInstance()->GetGameCamera()->SwitchView(ViewType::Sub);
+    //    FadeManager::GetInstance()->StartFadeOut(1.0f, FadeStyle::Normal);
+    //    // フェード開始             
+    //    end = false;
+    //}
 
     if (CameraManager::GetInstance()->GetGameCamera()->GetMode() == ViewType::Sub) {
         player_->SetDead_(true);
     }
 
     // ゲームスタートイベントが終了したらプレイヤ―操作可能に
-    if (EventManager::GetInstance()->IsFinished()) {
+    //if (EventManager::GetInstance()->IsFinished()) {
         //   イベント終了 → プレイヤーを操作可能に
         player_->SetKeyActive(true);
         player_->SetReticleVisible(true);
@@ -136,7 +136,7 @@ void GamePlayScene::Update() {
             FadeManager::GetInstance()->StartFadeOut(1.0f, FadeStyle::Normal);
             end = true;
         }
-    }
+    //}
 
 
     StageManager::GetInstance()->Update();
@@ -144,8 +144,8 @@ void GamePlayScene::Update() {
     /*-------------------------------------------*/
     /*--------------Cameraの更新処理---------------*/
     /*------------------------------------------*/
-    CameraManager::GetInstance()->Update();
     CameraManager::GetInstance()->GetGameCamera()->SetFollowTarget(player_->GetPlayerObject());
+    CameraManager::GetInstance()->Update();
 #pragma region 全てのObject3d個々の更新処理
     playerhp_ = player_->IsActive();
     // 終了しない限り更新処理
@@ -180,12 +180,12 @@ void GamePlayScene::Update() {
             enemy->Kill();
         }
     }
-    if (player_->GetPosition().z >= 250.0f && CameraManager::GetInstance()->GetGameCamera()->GetMode() == ViewType::Main) {
-        CameraManager::GetInstance()->GetGameCamera()->SwitchView(ViewType::Sub);
-        FadeManager::GetInstance()->StartFadeOut(1.0f, FadeStyle::Normal);
-        // フェード開始             
-        end = false;
-    }
+    //if (player_->GetPosition().z >= 250.0f && CameraManager::GetInstance()->GetGameCamera()->GetMode() == ViewType::Main) {
+    //    CameraManager::GetInstance()->GetGameCamera()->SwitchView(ViewType::Sub);
+    //    FadeManager::GetInstance()->StartFadeOut(1.0f, FadeStyle::Normal);
+    //    // フェード開始             
+    //    end = false;
+    //}
 
     // フェードアウトが完了したら次のシーンへ
     if (FadeManager::GetInstance()->IsFadeEnd() && FadeManager::GetInstance()->GetFadeType() == FadeType::FadeOut) {
@@ -198,13 +198,13 @@ void GamePlayScene::Update() {
         //}
     }
 
-    // 死んだ敵の削除
-    enemies_.erase(
-        std::remove_if(enemies_.begin(), enemies_.end(),
-            [](const std::unique_ptr<Enemy>& e) {
-                return e->IsDead();  // ← 出現前の非アクティブは残す！
-            }),
-        enemies_.end());
+    //// 死んだ敵の削除
+    //enemies_.erase(
+    //    std::remove_if(enemies_.begin(), enemies_.end(),
+    //        [](const std::unique_ptr<Enemy>& e) {
+    //            return e->IsDead();  // ← 出現前の非アクティブは残す！
+    //        }),
+    //    enemies_.end());
     // スカイボックス更新
     Box_->Update();     
     // パーティクル更新
@@ -253,11 +253,11 @@ void GamePlayScene::Draw() {
     // プレイヤーがゴール地点に達するまでは敵や壁を描画
     if (player_->GetPosition().z <= goalpos_) {
         // 敵の更新
-        for (auto& enemy : enemies_) {
-            if (enemy->IsActive()) {
-                enemy->Draw();
-            }
-        }
+        //for (auto& enemy : enemies_) {
+        //    if (enemy->IsActive()) {
+        //        enemy->Draw();
+        //    }
+        //}
         wall->Draw();
     }
 
