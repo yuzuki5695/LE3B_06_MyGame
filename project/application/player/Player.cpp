@@ -91,11 +91,12 @@ void Player::Update() {
     // deltaTime を計算
     float deltaTime = currentTime - previousTime_;
     previousTime_ = currentTime;
-    
-    if (iskeyActive_) {
-        float currentSpeed = isBoosting_ ? boostSpeed_ : normalSpeed_;
+
+            float currentSpeed = isBoosting_ ? boostSpeed_ : normalSpeed_;
         UpdateBoostState();
         MoveInput(currentSpeed); // ブースト中は速く移動 
+
+    if (iskeyActive_) {
 
         // アクティブ中はキー操作を受け付ける
         if (isDeadEffectActive_) {
@@ -157,12 +158,12 @@ void Player::MoveInput(float speed) {
     // === 入力処理 ===
     Vector3 moveDelta = {0, 0, 0};
     Input* input = Input::GetInstance();
-    if (cameramod->GetMode() == ViewType::Main && !isDeadEffectActive_) {
+ //   if (cameramod->GetMode() == ViewType::Main && !isDeadEffectActive_) {
         if (input->Pushkey(DIK_A)) moveDelta.x -= speed;
         if (input->Pushkey(DIK_D)) moveDelta.x += speed;
         if (input->Pushkey(DIK_W)) moveDelta.y += speed;
         if (input->Pushkey(DIK_S)) moveDelta.y -= speed;
-    }
+   // }
 
     // === 相対移動を制限（画面内の範囲）===
     // ここは「カメラから見たローカル座標」上での制限
