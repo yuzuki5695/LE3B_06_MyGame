@@ -8,8 +8,18 @@
 /// </summary>
 class StageManager
 {
-public:
+private:
+    static std::unique_ptr<StageManager> instance;
 
+    StageManager(StageManager&) = delete;
+    StageManager& operator=(StageManager&) = delete;
+public: // メンバ関数
+    StageManager() = default;
+    ~StageManager() = default;
+    // シングルトンインスタンスの取得
+    static StageManager* GetInstance();
+    // 終了
+    void Finalize();
     void Initialize();
     void Update();
     void Draw();

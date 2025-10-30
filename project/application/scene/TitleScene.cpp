@@ -32,7 +32,7 @@ void TitleScene::Initialize() {
      // モデルの読み込み
     ModelManager::GetInstance()->LoadModel("Title/Title.obj");
     ModelManager::GetInstance()->LoadModel("Tile.obj");
-    ModelManager::GetInstance()->LoadModel("Player.obj");
+    ModelManager::GetInstance()->LoadModel("Title/Model/Player/Player.obj");
 
     // スカイボックス生成 
     Box_ = Skybox::Create("CubemapBox.dds", Transform{ { 1000.0f, 1000.0f, 1000.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 100.0f } });
@@ -43,7 +43,7 @@ void TitleScene::Initialize() {
     ui2_->SetTextureSize(Vector2{ 360.0f,90.0f });
     // プレイヤーモデル生成（タイトル演出用） 
     playertransform_ = { {1.0f, 1.0f, 1.0f}, {0.0f, 0.9f, 0.0f},  -20.0f,0.0f,40.0f };
-    player_ = Object3d::Create("Player.obj", playertransform_);
+    player_ = Object3d::Create("Title/Model/Player/Player.obj", playertransform_);
     startX = -20.0f;
     endX = -10.0f;
     // モデル移動のパラメータ

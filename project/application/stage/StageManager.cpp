@@ -4,6 +4,28 @@
 #include<ImGuiManager.h>
 #endif // USE_IMGUI
 
+// 静的メンバ変数の定義
+std::unique_ptr<StageManager> StageManager::instance = nullptr;
+
+// シングルトンインスタンスの取得
+StageManager* StageManager::GetInstance() {
+    if (!instance) {
+        instance = std::make_unique<StageManager>();
+    }
+    return instance.get();
+}
+
+// 終了
+void StageManager::Finalize() {
+    instance.reset();  // `delete` 不要
+    // 地面オブジェクトの解放
+    //grass.reset();
+    // デバッグオブジェクトのクリア
+   // debugObjects_.parts();
+    // その他の3Dオブジェクトもクリア
+ //   object3ds_.parts();
+}
+
 void StageManager::Initialize() {
     // LevelLoader のインスタンスを生成
     loader_ = new CharacterLoader();

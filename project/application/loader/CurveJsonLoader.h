@@ -10,7 +10,7 @@ struct BezierPoint {
     Vector3 handleLeft;
     Vector3 controlPoint;
     Vector3 handleRight;
-    bool passed = false;  // ← この制御点を通過したか
+    bool passed = true;  // ← この制御点を通過したか
 };
 
 /// <summary>

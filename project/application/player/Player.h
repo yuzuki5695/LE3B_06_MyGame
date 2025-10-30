@@ -72,6 +72,15 @@ public:// メンバ関数
 		isHit_ = true;
 		hitEffectTimer_ = 0.0f;
 	}
+
+	/// <summary>
+	/// プレイヤー死亡演出の開始
+	/// </summary>
+	void StartDeathEffect();
+	void SetDeadInactive() { isDeadEffectActive_ = true; }
+	// アクティブ状態の取得・設定
+    bool IsDead() const { return isDeadEffectActive_; }
+	void SetDead_(bool isactive) { isDeadEffectActive_ = isactive; }
 private:// メンバ変数
 	bool active_ = true;
 	std::unique_ptr <Object3d> object = nullptr;  // プレイヤーの3Dオブジェクト
@@ -114,6 +123,21 @@ private:// メンバ変数
 	bool iskeyActive_ = false;       // ← プレイヤーが操作可能か
     bool isReticleVisible_ = false; // ← レティクル描画ON/OFF
     Vector3 relativePos_ = {0, 0, 0}; // カメラ内での相対位置（スクリーン座標的）
+
+	
+	// 死亡関連
+	bool isDeadEffectActive_ = false;  // 死亡演出中フラグ
+    float deathTimer_ = 0.0f;         // 死亡演出の経過時間
+    float deathDuration_ = 2.0f;      // 演出全体の長さ（秒）
+    Vector3 deathVelocity_ = {};      // 落下用の速度ベクトル
+    Vector3 deathRotateSpeed_ = {};   // 回転スピード
+	Vector3 deathStartPos_;
+
+	    float deathFallSpeed_ = 0.5f; // 下方向に落ちるスピード
+
+		
+		Vector3 fallVelocity;
+
 public:// メンバ変数
 	// getter
 	// 参照を返す（変更不可）

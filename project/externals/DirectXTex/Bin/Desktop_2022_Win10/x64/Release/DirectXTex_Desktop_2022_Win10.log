@@ -1,6 +1,5 @@
-﻿  BC6HBC7.cpp
-  BCDirectCompute.cpp
-  DirectXTexHDR.cpp
+﻿  DirectXTexHDR.cpp
+  DirectXTexMipMaps.cpp
   DirectXTexTGA.cpp
   DirectXTexWIC.cpp
   コードを生成中...
