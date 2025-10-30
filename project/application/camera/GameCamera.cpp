@@ -29,7 +29,7 @@ void GameCamera::Initialize() {
     subcamera_->SetRotate({ 0.0f, 0.0f, 0.0f });
     followInitialized_ = false;
 
-    subOffset_ = {5.5f,-3.0f,10.0f};
+    subOffset_ = {5.5f,-1.0f,15.0f};
 }
 
 ///====================================================
@@ -54,14 +54,22 @@ void GameCamera::Update() {
         break;
     case ViewType::Sub:
         if (!followTarget_) return;
+        // 一度だけターゲット方向を向く
+        if (followTarget_) {
+            Vector3 targetPos = followTarget_->GetWorldPosition();
+            Vector3 desiredPos = targetPos + subOffset_;
+            subcamera_->SetTranslate(desiredPos);
 
-    // ターゲット位置を常に毎フレーム参照
-    {
-        Vector3 targetPos = followTarget_->GetTranslate();
-        UpdateSubCameraFollow(targetPos, subOffset_);
-    }
+            Vector3 dir = targetPos - desiredPos;
+            if (Length(dir) > 0.0001f) {
+                dir = Normalize(dir);
+                float yaw = atan2(dir.x, dir.z);
+                float pitch = -asin(dir.y);
+                subcamera_->SetRotate({ pitch, yaw, 0.0f });
+            }
+        }
+        followInitialized_ = true; // ✅ 一度だけ設定
         break;
-
     case ViewType::Transition:
         UpdateTransition();
         break;
@@ -264,12 +272,13 @@ void GameCamera::UpdateCameraRotation() {
 // GameCamera内
 void GameCamera::UpdateSubCameraFollow(const Vector3& targetPos, const Vector3& offset) {
     if (!subcamera_) return;
-
+        // --- 正: ワールド位置 = ターゲット位置 + オフセット ---
+    Vector3 worldPos = targetPos + offset;
     // --- カメラを固定位置に配置 ---
-    subcamera_->SetTranslate(offset);
+    subcamera_->SetTranslate(worldPos);
 
     // --- ターゲット方向を向く ---
-    Vector3 toTarget = targetPos - offset;
+    Vector3 toTarget = targetPos - worldPos;
 
     if (Length(toTarget) > 0.0001f) {
         toTarget = Normalize(toTarget);

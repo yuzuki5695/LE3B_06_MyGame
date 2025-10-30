@@ -94,7 +94,9 @@ private: // メンバ変数
 
 public: // アクセッサ（Getter / Setter）
     // getter 
-    Camera* Getcamera() { return maincamera_.get(); }
+    Camera* GetMainCamera() { return maincamera_.get(); }
+    Camera* GetSubCamera() { return subcamera_.get(); }
+
     bool Getmovefige() { return movefige; }
     Vector3 GetbezierPos() { return bezierPos_; }
     // setter
@@ -122,7 +124,10 @@ public: // アクセッサ（Getter / Setter）
         switch (mode_) {
         case ViewType::Sub:
             return subcamera_.get();
-        default:
+        case ViewType::Main:
+            return maincamera_.get();
+        case ViewType::Transition:
+            // Transition中は maincamera_ をベースに更新していることが多い
             return maincamera_.get();
         }
     }

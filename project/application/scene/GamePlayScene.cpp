@@ -123,7 +123,7 @@ void GamePlayScene::Update() {
     //}
 
     if (CameraManager::GetInstance()->GetGameCamera()->GetMode() == ViewType::Sub) {
-       // player_->SetDead_(true);
+        player_->SetDead_(true);
     }
 
     // ゲームスタートイベントが終了したらプレイヤ―操作可能に

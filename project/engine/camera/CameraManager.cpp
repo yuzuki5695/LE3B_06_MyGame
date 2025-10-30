@@ -123,7 +123,7 @@ void CameraManager::DrawImGui() {
         modeName = "Follow";
         break;
     case CameraMode::GamePlay:
-        activeCamera = gameCamera_->Getcamera();
+        activeCamera = gameCamera_->GetActiveCamera();
         modeName = "GamePlay";        
         break;
     }
@@ -198,7 +198,7 @@ Camera* CameraManager::GetActiveCamera() {
     case CameraMode::Follow:
         return followCamera_ ? followCamera_ : defaultCamera_;
     case CameraMode::GamePlay:
-        return gameCamera_ ? gameCamera_->Getcamera() : nullptr;
+        return gameCamera_ ? gameCamera_->GetActiveCamera() : nullptr;
     case CameraMode::Default:
     default:
         return defaultCamera_;
@@ -212,8 +212,22 @@ void CameraManager::SetCameraMode(CameraMode mode) {
 // アクティブカメラを共通リソースに設定
 void CameraManager::SetActiveCamera() {
     Camera* active = GetActiveCamera();
-    if (active) {
-        Object3dCommon::GetInstance()->SetDefaultCamera(active);
-        ParticleCommon::GetInstance()->SetDefaultCamera(active);
+
+    // ゲームカメラの場合は、内部の複数のカメラも適用
+    if (currentMode_ == CameraMode::GamePlay && gameCamera_) {
+        auto mainCam = gameCamera_->GetMainCamera();
+        auto subCam = gameCamera_->GetSubCamera();
+
+        if (mainCam) {
+            Object3dCommon::GetInstance()->SetDefaultCamera(mainCam);
+            ParticleCommon::GetInstance()->SetDefaultCamera(mainCam);
+        }
+        if (subCam) {
+            Object3dCommon::GetInstance()->SetDefaultCamera(subCam);
+            ParticleCommon::GetInstance()->SetDefaultCamera(subCam);
+        }
     }
+    // 共通リソースにアクティブカメラを設定
+    Object3dCommon::GetInstance()->SetDefaultCamera(active);
+    ParticleCommon::GetInstance()->SetDefaultCamera(active);
 }

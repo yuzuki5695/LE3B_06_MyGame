@@ -191,7 +191,7 @@ void Player::MoveInput(float speed) {
 
     // === 回転（カメラ方向に合わせる） メインカメラのみ===
     if (gameCam->GetMode() == ViewType::Main) {
-        transform_.rotate = gameCam->Getcamera()->GetRotate();
+        transform_.rotate = gameCam->GetMainCamera()->GetRotate();
     }
     // === モデル更新 ===
     object->SetTranslate(transform_.translate);
