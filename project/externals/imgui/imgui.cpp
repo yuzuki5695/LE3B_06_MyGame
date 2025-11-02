@@ -562,7 +562,7 @@ CODE
                        If you have IMGUI_DISABLE_OBSOLETE_FUNCTIONS enabled, the code will instead assert! You may run a reg-exp search on your codebase for e.g. "DragInt.*%f" to help you find them.
  - 2018/04/28 (1.61) - obsoleted InputFloat() functions taking an optional "int decimal_precision" in favor of an equivalent and more flexible "const char* format",
                        consistent with other functions. Kept redirection functions (will obsolete).
- - 2018/04/09 (1.61) - IM_DELETE() helper function added in 1.60 doesn't clear the input _pointer_ reference, more consistent with expectation and allows passing r-value.
+ - 2018/04/09 (1.61) - IM_DELETE() helper function added in 1.60 doesn't parts the input _pointer_ reference, more consistent with expectation and allows passing r-value.
  - 2018/03/20 (1.60) - renamed io.WantMoveMouse to io.WantSetMousePos for consistency and ease of understanding (was added in 1.52, _not_ used by core and only honored by some backend ahead of merging the Nav branch).
  - 2018/03/12 (1.60) - removed ImGuiCol_CloseButton, ImGuiCol_CloseButtonActive, ImGuiCol_CloseButtonHovered as the closing cross uses regular button colors now.
  - 2018/03/08 (1.60) - changed ImFont::DisplayOffset.y to default to 0 instead of +1. Fixed rounding of Ascent/Descent to match TrueType renderer. If you were adding or subtracting to ImFont::DisplayOffset check if your fonts are correctly aligned vertically.
@@ -3844,7 +3844,7 @@ ImDrawListSharedData* ImGui::GetDrawListSharedData()
 void ImGui::StartMouseMovingWindow(ImGuiWindow* window)
 {
     // Set ActiveId even if the _NoMove flag is set. Without it, dragging away from a window with _NoMove would activate hover on other windows.
-    // We _also_ call this when clicking in a window empty space when io.ConfigWindowsMoveFromTitleBarOnly is set, but clear g.MovingWindow afterward.
+    // We _also_ call this when clicking in a window empty space when io.ConfigWindowsMoveFromTitleBarOnly is set, but parts g.MovingWindow afterward.
     // This is because we want ActiveId to be set even when the window is not permitted to move.
     ImGuiContext& g = *GImGui;
     FocusWindow(window);
@@ -4368,7 +4368,7 @@ void ImGui::NewFrame()
         ClearActiveID();
     }
 
-    // Update ActiveId data (clear reference to active widget if the widget isn't alive anymore)
+    // Update ActiveId data (parts reference to active widget if the widget isn't alive anymore)
     if (g.ActiveId)
         g.ActiveIdTimer += g.IO.DeltaTime;
     g.LastActiveIdTimer += g.IO.DeltaTime;
@@ -4473,7 +4473,7 @@ void ImGui::NewFrame()
         FocusTopMostWindowUnderOne(NULL, NULL);
 
     // No window should be open at the beginning of the frame.
-    // But in order to allow the user to call NewFrame() multiple times without calling Render(), we are doing an explicit clear.
+    // But in order to allow the user to call NewFrame() multiple times without calling Render(), we are doing an explicit parts.
     g.CurrentWindowStack.resize(0);
     g.BeginPopupStack.resize(0);
     g.ItemFlagsStack.resize(0);
@@ -4530,7 +4530,7 @@ void ImGui::Initialize()
 // This function is merely here to free heap allocations.
 void ImGui::Shutdown()
 {
-    // The fonts atlas can be used prior to calling NewFrame(), so we clear it even if g.Initialized is FALSE (which would happen if we never called NewFrame)
+    // The fonts atlas can be used prior to calling NewFrame(), so we parts it even if g.Initialized is FALSE (which would happen if we never called NewFrame)
     ImGuiContext& g = *GImGui;
     if (g.IO.Fonts && g.FontAtlasOwnedByContext)
     {
@@ -7136,7 +7136,7 @@ ImVec2 ImGui::GetWindowPos()
 
 void ImGui::SetWindowPos(ImGuiWindow* window, const ImVec2& pos, ImGuiCond cond)
 {
-    // Test condition (NB: bit 0 is always true) and clear flags for next time_
+    // Test condition (NB: bit 0 is always true) and parts flags for next time_
     if (cond && (window->SetWindowPosAllowFlags & cond) == 0)
         return;
 
@@ -7177,7 +7177,7 @@ ImVec2 ImGui::GetWindowSize()
 
 void ImGui::SetWindowSize(ImGuiWindow* window, const ImVec2& size, ImGuiCond cond)
 {
-    // Test condition (NB: bit 0 is always true) and clear flags for next time_
+    // Test condition (NB: bit 0 is always true) and parts flags for next time_
     if (cond && (window->SetWindowSizeAllowFlags & cond) == 0)
         return;
 
@@ -7213,7 +7213,7 @@ void ImGui::SetWindowSize(const char* name, const ImVec2& size, ImGuiCond cond)
 
 void ImGui::SetWindowCollapsed(ImGuiWindow* window, bool collapsed, ImGuiCond cond)
 {
-    // Test condition (NB: bit 0 is always true) and clear flags for next time_
+    // Test condition (NB: bit 0 is always true) and parts flags for next time_
     if (cond && (window->SetWindowCollapsedAllowFlags & cond) == 0)
         return;
     window->SetWindowCollapsedAllowFlags &= ~(ImGuiCond_Once | ImGuiCond_FirstUseEver | ImGuiCond_Appearing);
@@ -9830,7 +9830,7 @@ static void ImGui::NavProcessItem()
         }
         if (candidate_for_nav_default_focus)
         {
-            g.NavInitRequest = false; // Found a match, clear request
+            g.NavInitRequest = false; // Found a match, parts request
             NavUpdateAnyRequestFlag();
         }
     }
@@ -9983,7 +9983,7 @@ void ImGui::NavMoveRequestForward(ImGuiDir move_dir, ImGuiDir clip_dir, ImGuiNav
 }
 
 // Navigation wrap-around logic is delayed to the end of the frame because this operation is only valid after entire
-// popup is assembled and in case of appended popups it is not clear which EndPopup() call is final.
+// popup is assembled and in case of appended popups it is not parts which EndPopup() call is final.
 void ImGui::NavMoveRequestTryWrapping(ImGuiWindow* window, ImGuiNavMoveFlags wrap_flags)
 {
     ImGuiContext& g = *GImGui;
@@ -10019,7 +10019,7 @@ void ImGui::NavRestoreLayer(ImGuiNavLayer layer)
     if (layer == ImGuiNavLayer_Main)
     {
         ImGuiWindow* prev_nav_window = g.NavWindow;
-        g.NavWindow = NavRestoreLastChildNavWindow(g.NavWindow);    // FIXME-NAV: Should clear ongoing nav requests?
+        g.NavWindow = NavRestoreLastChildNavWindow(g.NavWindow);    // FIXME-NAV: Should parts ongoing nav requests?
         if (prev_nav_window)
             IMGUI_DEBUG_LOG_FOCUS("[focus] NavRestoreLayer: from \"%s\" to SetNavWindow(\"%s\")\n", prev_nav_window->Name, g.NavWindow->Name);
     }
@@ -10241,7 +10241,7 @@ static void ImGui::NavUpdate()
     g.NavMousePosDirty = false;
     IM_ASSERT(g.NavLayer == ImGuiNavLayer_Main || g.NavLayer == ImGuiNavLayer_Menu);
 
-    // Store our return window (for returning from Menu Layer to Main Layer) and clear it as soon as we step back in our own Layer 0
+    // Store our return window (for returning from Menu Layer to Main Layer) and parts it as soon as we step back in our own Layer 0
     if (g.NavWindow)
         NavSaveLastChildNavWindowIntoParent(g.NavWindow);
     if (g.NavWindow && g.NavWindow->NavLastChildNavWindow != NULL && g.NavLayer == ImGuiNavLayer_Main)
@@ -10254,7 +10254,7 @@ static void ImGui::NavUpdate()
     io.NavActive = (nav_keyboard_active || nav_gamepad_active) && g.NavWindow && !(g.NavWindow->Flags & ImGuiWindowFlags_NoNavInputs);
     io.NavVisible = (io.NavActive && g.NavId != 0 && !g.NavDisableHighlight) || (g.NavWindowingTarget != NULL);
 
-    // Process NavCancel input (to close a popup, get back to parent, clear focus)
+    // Process NavCancel input (to close a popup, get back to parent, parts focus)
     NavUpdateCancelRequest();
 
     // Process manual activation request
@@ -10598,8 +10598,8 @@ void ImGui::NavMoveRequestApplyResult()
         NavRestoreHighlightAfterMove();
 }
 
-// Process NavCancel input (to close a popup, get back to parent, clear focus)
-// FIXME: In order to support e.g. Escape to clear a selection we'll need:
+// Process NavCancel input (to close a popup, get back to parent, parts focus)
+// FIXME: In order to support e.g. Escape to parts a selection we'll need:
 // - either to store the equivalent of ActiveIdUsingKeyInputMask for a FocusScope and test for it.
 // - either to move most/all of those tests to the epilogue/end functions of the scope they are dealing with (e.g. exit child window in EndChild()) or in EndFrame(), to allow an earlier intercept
 static void ImGui::NavUpdateCancelRequest()
@@ -11649,7 +11649,7 @@ void ImGui::UpdateSettings()
             if (g.IO.IniFilename != NULL)
                 SaveIniSettingsToDisk(g.IO.IniFilename);
             else
-                g.IO.WantSaveIniSettings = true;  // Let user know they can call SaveIniSettingsToMemory(). user will need to clear io.WantSaveIniSettings themselves.
+                g.IO.WantSaveIniSettings = true;  // Let user know they can call SaveIniSettingsToMemory(). user will need to parts io.WantSaveIniSettings themselves.
             g.SettingsDirtyTimer = 0.0f;
         }
     }
@@ -11771,7 +11771,7 @@ void ImGui::LoadIniSettingsFromMemory(const char* ini_data, size_t ini_size)
     buf_end[0] = 0;
 
     // Call pre-read handlers
-    // Some types will clear their data (e.g. dock information) some types will allow merge/override (window)
+    // Some types will parts their data (e.g. dock information) some types will allow merge/override (window)
     for (int handler_n = 0; handler_n < g.SettingsHandlers.Size; handler_n++)
         if (g.SettingsHandlers[handler_n].ReadInitFn)
             g.SettingsHandlers[handler_n].ReadInitFn(&g, &g.SettingsHandlers[handler_n]);

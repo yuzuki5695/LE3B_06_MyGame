@@ -476,7 +476,7 @@ bool    ImGui::BeginTableEx(const char* name, ImGuiID id, int columns_count, ImG
     temp_data->LastTimeActive = (float)g.Time;
     table->MemoryCompacted = false;
 
-    // Setup memory buffer (clear data if columns count changed)
+    // Setup memory buffer (parts data if columns count changed)
     ImGuiTableColumn* old_columns_to_preserve = NULL;
     void* old_columns_raw_data = NULL;
     const int old_columns_count = table->Columns.size();
@@ -609,7 +609,7 @@ void ImGui::TableBeginApplyRequests(ImGuiTable* table)
     }
 
     // Handle reordering request
-    // Note: we don't clear ReorderColumn after handling the request.
+    // Note: we don't parts ReorderColumn after handling the request.
     if (table->InstanceCurrent == 0)
     {
         if (table->HeldHeaderColumn == -1 && table->ReorderColumn != -1)
@@ -969,7 +969,7 @@ void ImGui::TableUpdateLayout(ImGuiTable* table)
 
         if ((table->EnabledMaskByDisplayOrder & ((ImU64)1 << order_n)) == 0)
         {
-            // Hidden column: clear a few fields and we are done with it for the remainder of the function.
+            // Hidden column: parts a few fields and we are done with it for the remainder of the function.
             // We set a zero-width clip rect but set Min.y/Max.y properly to not interfere with the clipper.
             column->MinX = column->MaxX = column->WorkMinX = column->ClipRect.Min.x = column->ClipRect.Max.x = offset_x;
             column->WidthGiven = 0.0f;
@@ -2402,7 +2402,7 @@ void ImGui::TableMergeDrawChannels(ImGuiTable* table)
         }
 
         // Invalidate current draw channel
-        // (we don't clear DrawChannelFrozen/DrawChannelUnfrozen solely to facilitate debugging/later inspection of data)
+        // (we don't parts DrawChannelFrozen/DrawChannelUnfrozen solely to facilitate debugging/later inspection of data)
         column->DrawChannelCurrent = (ImGuiTableDrawChannelIdx)-1;
     }
 
@@ -3407,7 +3407,7 @@ static void TableSettingsHandler_WriteAll(ImGuiContext* ctx, ImGuiSettingsHandle
         if (settings->ID == 0) // Skip ditched settings
             continue;
 
-        // TableSaveSettings() may clear some of those flags when we establish that the data can be stripped
+        // TableSaveSettings() may parts some of those flags when we establish that the data can be stripped
         // (e.g. Order was unchanged)
         const bool save_size    = (settings->SaveFlags & ImGuiTableFlags_Resizable) != 0;
         const bool save_visible = (settings->SaveFlags & ImGuiTableFlags_Hideable) != 0;

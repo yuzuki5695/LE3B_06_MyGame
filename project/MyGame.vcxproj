@@ -209,6 +209,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="engine\math\Model\ModelDate.h" />
     <ClInclude Include="engine\math\Model\Vertex.h" />
     <ClInclude Include="engine\math\OBB.h" />
+    <ClInclude Include="engine\math\Quaternion.h" />
     <ClInclude Include="engine\math\Vector\Transform.h" />
     <ClInclude Include="engine\math\Vector\Vector2.h" />
     <ClInclude Include="engine\math\Vector\Vector3.h" />
@@ -260,7 +261,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\levels\bezier.json" />
-    <None Include="Resources\levels\rail_curve_data.json" />
     <None Include="Resources\levels\untitled.json" />
     <None Include="Resources\shaders\Fullscreen\Fullscreen.hlsli" />
     <None Include="Resources\shaders\Object3d\Object3d.hlsli" />

@@ -12,6 +12,8 @@
 #include <algorithm>
 #include <chrono>
 #include <algorithm> // std::max を使用するために必要
+#include <Skybox.h>
+#include<ModelDate.h>
 
 using namespace MatrixVector;
 
@@ -24,14 +26,14 @@ Player::~Player() {}
 ///=====================================================================
 void Player::Initialize() {	 
     // モデル・テクスチャ読み込み
-    ModelManager::GetInstance()->LoadModel("Player.obj");     
+    ModelManager::GetInstance()->LoadModel("Gameplay/Model/Player/Player.obj");     
     ModelManager::GetInstance()->LoadModel("Bullet/PlayerBullet.obj");
     TextureManager::GetInstance()->LoadTexture("Target.png");
 
     // プレイヤーの初期位置と回転を設定
     transform_ = { {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f},  0.0f,0.0f,0.0f };
     // プレイヤー生成
-    object = Object3d::Create("Player.obj", transform_);
+    object = Object3d::Create("Gameplay/Model/Player/Player.obj", transform_);
 
     targetpos_ = { {0.3f, 0.3f, 0.3f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 30.0f} };
     target_= Object3d::Create("Bullet/PlayerBullet.obj", targetpos_);
@@ -44,12 +46,18 @@ void Player::Initialize() {
    	targetreticle_->SetAnchorPoint(Vector2{ 0.5f, 0.5f }); // 中心基準
     previousTime_ = 0.0f;
 
-    originalColor_ = object->GetModel()->GetMaterialData()->color;
+    // 死亡関連
+    deathTimer_ = 0.0f;
+    //// 回転速度（バラバラに回る感じ）
+    deathRotateSpeed_ = { 0.05f, 0.07f, 0.02f };
+    // 軽くスケールを上げる演出など
+    transform_.scale = { 0.5f, 0.5f, 0.5f };
+    fallVelocity = { 0.0f,0.0f,0.0f };
 }
 ///=====================================================================
 /// 更新処理
 ///=====================================================================
-void Player::Update() {  
+void Player::Update() {
     GameCamera* gameCam = CameraManager::GetInstance()->GetGameCamera();
     if (!gameCam) return;
 
@@ -58,21 +66,24 @@ void Player::Update() {
 
     // カメラの回転を取得（前方ベクトルから計算）
     Vector3 cameraForward = gameCam->GetForward(); // ← Getterを用意
-    Vector3 cameraRight   = Normalize(Cross({0,1,0}, cameraForward));
-    Vector3 cameraUp      = Normalize(Cross(cameraForward, cameraRight));
+    Vector3 cameraRight = Normalize(Cross({ 0,1,0 }, cameraForward));
+    Vector3 cameraUp = Normalize(Cross(cameraForward, cameraRight));
 
     // カメラ座標系でオフセット変換
     Vector3 worldOffset =
-        cameraRight   * relativeOffset.x +
-        cameraUp      * relativeOffset.y +
+        cameraRight * relativeOffset.x +
+        cameraUp * relativeOffset.y +
         cameraForward * relativeOffset.z;
 
     // === プレイヤー位置更新 ===
     transform_.translate = bezierPos + worldOffset;
 
-    // === プレイヤー向き更新（カメラと同じ方向）===
+    // === プレイヤー向き更新（カメラと同じ方向：メイン時のみ）===
     Vector3 playerForward = cameraForward;
-    transform_.rotate = gameCam->Getcamera()->GetRotate(); // または LookAtRotation(playerForward)
+    // 現在のカメラモードを確認
+    if (gameCam->GetMode() == ViewType::Main) {
+        transform_.rotate = gameCam->GetActiveCamera()->GetRotate();
+    }
 
     // 現在時刻を取得（秒）
     float currentTime = static_cast<float>(std::chrono::duration<double>(std::chrono::high_resolution_clock::now().time_since_epoch()).count());
@@ -80,16 +91,24 @@ void Player::Update() {
     // deltaTime を計算
     float deltaTime = currentTime - previousTime_;
     previousTime_ = currentTime;
-    // ブースト状態更新
-    UpdateBoostState(); 
 
-    float currentSpeed = isBoosting_ ? boostSpeed_ : normalSpeed_;
-    MoveInput(currentSpeed); // ブースト中は速く移動
+            float currentSpeed = isBoosting_ ? boostSpeed_ : normalSpeed_;
+        UpdateBoostState();
+        MoveInput(currentSpeed); // ブースト中は速く移動 
 
-    // ターゲットを矢印キーで動かす
-    UpdateTargetPosition(targetpos_,0.2f);   // ターゲットに使う
-    // 弾の発射
-    AttachBullet();
+    if (iskeyActive_) {
+
+        // アクティブ中はキー操作を受け付ける
+        if (isDeadEffectActive_ && active_ == false) {
+            // プレイヤ―死亡演出
+            StartDeathEffect();
+        } else {
+            // ターゲットを矢印キーで動かす
+            UpdateTargetPosition(targetpos_, 0.2f);   // ターゲットに使う
+            // 弾の発射
+            AttachBullet();
+        }
+    }
 
     // デバッグ中のImGui表示
     DebugImgui();
@@ -98,7 +117,7 @@ void Player::Update() {
     // 照準スプライトの位置更新（3D→2D変換)
     UpdateReticlePosition();
     targetreticle_->Update();
- 
+
     // 移動後の位置をObjectに反映
     object->SetTranslate(transform_.translate);
     object->SetRotate(transform_.rotate);
@@ -135,13 +154,16 @@ void Player::DebugImgui() {
 #endif // USE_IMGUI
 }
 void Player::MoveInput(float speed) {
+   GameCamera* cameramod = CameraManager::GetInstance()->GetGameCamera();
     // === 入力処理 ===
     Vector3 moveDelta = {0, 0, 0};
     Input* input = Input::GetInstance();
-    if (input->Pushkey(DIK_A)) moveDelta.x -= speed;
-    if (input->Pushkey(DIK_D)) moveDelta.x += speed;
-    if (input->Pushkey(DIK_W)) moveDelta.y += speed;
-    if (input->Pushkey(DIK_S)) moveDelta.y -= speed;
+ //   if (cameramod->GetMode() == ViewType::Main && !isDeadEffectActive_) {
+        if (input->Pushkey(DIK_A)) moveDelta.x -= speed;
+        if (input->Pushkey(DIK_D)) moveDelta.x += speed;
+        if (input->Pushkey(DIK_W)) moveDelta.y += speed;
+        if (input->Pushkey(DIK_S)) moveDelta.y -= speed;
+   // }
 
     // === 相対移動を制限（画面内の範囲）===
     // ここは「カメラから見たローカル座標」上での制限
@@ -167,9 +189,10 @@ void Player::MoveInput(float speed) {
 
     transform_.translate = cameraPos + totalOffset;
 
-    // === 回転（カメラ方向に合わせる）===
-    transform_.rotate = gameCam->Getcamera()->GetRotate();
-
+    // === 回転（カメラ方向に合わせる） メインカメラのみ===
+    if (gameCam->GetMode() == ViewType::Main) {
+        transform_.rotate = gameCam->GetMainCamera()->GetRotate();
+    }
     // === モデル更新 ===
     object->SetTranslate(transform_.translate);
     object->SetRotate(transform_.rotate);
@@ -350,4 +373,23 @@ OBB Player::GetOBB() const {
     obb.axis[2] = Normalize(Multiply4x4x3(rotMat, Vector3{ 0, 0, 1 })); // Z軸
 
     return obb;
+}
+
+void Player::StartDeathEffect() {
+    static float t = 0.0f;        // 時間経過
+    const float gravity = 0.05f;
+    const float gravitz = 0.01f;
+
+    t += 1.0f / 60.0f;            // 60FPS換算
+    fallVelocity.x = 0.0f;
+    fallVelocity.y += gravity;
+    fallVelocity.z += gravitz;
+
+    // --- 徐々に加速する落下 ---
+    transform_.translate.y -= fallVelocity.y;
+    transform_.translate.z += fallVelocity.z;
+
+    // --- 回転も時間で増加（イージング的）---
+    transform_.rotate.x += 0.004f + 0.002f * sinf(t * 0.5f);
+    transform_.rotate.z += 0.003f + 0.0015f * cosf(t * 0.4f);
 }

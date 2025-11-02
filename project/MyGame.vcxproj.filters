@@ -626,6 +626,9 @@
     <ClInclude Include="application\stage\StageManager.h">
       <Filter>ヘッダー ファイル\application\stage</Filter>
     </ClInclude>
+    <ClInclude Include="engine\math\Quaternion.h">
+      <Filter>ヘッダー ファイル\engine\math</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Resources\shaders\Sprite\Sprite.PS.hlsl">
@@ -697,9 +700,6 @@
       <Filter>リソース ファイル</Filter>
     </None>
     <None Include="Resources\levels\untitled.json">
-      <Filter>リソース ファイル</Filter>
-    </None>
-    <None Include="Resources\levels\rail_curve_data.json">
       <Filter>リソース ファイル</Filter>
     </None>
   </ItemGroup>

@@ -25,6 +25,7 @@ void GamePlayScene::Finalize() {
     BulletManager::GetInstance()->Finalize();  // 弾の解放処理
     FadeManager::GetInstance()->Finalize();    //  フェードマネージャの解放処理
     EventManager::GetInstance()->Finalize();   //  イベントマネージャの解放処理
+    StageManager::GetInstance()->Finalize();		  // ステージマネージャの解放処理
 }
 ///====================================================
 /// 初期化処理
@@ -43,9 +44,10 @@ void GamePlayScene::Initialize() {
     TextureManager::GetInstance()->LoadTexture("Gameplay/Shift.png");
     TextureManager::GetInstance()->LoadTexture("Gameplay/StandardChange.png");     
     TextureManager::GetInstance()->LoadTexture("titlereturn.png");
+    TextureManager::GetInstance()->LoadTexture("titlereturn02.png");
 
     // タイトルに戻るUIを生成
-    ui1_ = Sprite::Create("titlereturn.png", Vector2{ 1100.0f, 5.0f }, 0.0f, Vector2{ 150.0f,100.0f });
+    ui1_ = Sprite::Create("titlereturn02.png", Vector2{ 1100.0f, 5.0f }, 0.0f, Vector2{ 150.0f,100.0f });
     ui1_->SetTextureSize(Vector2{ 300.0f,200.0f });
 
     // .objファイルからモデルを読み込む
@@ -67,9 +69,9 @@ void GamePlayScene::Initialize() {
 	MAX_ENEMY = 14; // 敵の最大数
     // 敵出現トリガー
     spawnTriggers_ = {
-    {40.0f, 5, false, MoveType::Horizontal},       // 全部動かない None(フォーメーション関数使用中)
+    {60.0f, 5, false, MoveType::Horizontal},       // 全部動かない None(フォーメーション関数使用中)
     {120.0f, 5, false, MoveType::Vertical},        // 全部縦移動 Vertical
-    {190.0f, 5, false, MoveType::None}             // 全部横移動  Horizontal
+    {500.0f, 5, false, MoveType::None}             // 全部横移動  Horizontal
     };
     // 敵をリストに追加して初期化
     for (int i = 0; i < MAX_ENEMY; ++i) {
@@ -80,7 +82,7 @@ void GamePlayScene::Initialize() {
         enemies_.emplace_back(std::move(enemy));
     }
     // クリアゲート(仮)
-    wall = Object3d::Create("wall.obj", Transform{ { 10.0f, 0.7f, 0.7f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 300.0f } });
+    wall = Object3d::Create("wall.obj", Transform{ { 10.0f, 0.7f, 0.7f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 230.0f } });
     // スカイボックスの作成
     TextureManager::GetInstance()->LoadTexture("CubemapBox.dds");
     Box_ = Skybox::Create("CubemapBox.dds", Transform{ { 1000.0f, 1000.0f, 1000.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 100.0f } });
@@ -93,10 +95,11 @@ void GamePlayScene::Initialize() {
 	// ゲームカメラの移動許可
     CameraManager::GetInstance()->GetGameCamera()->Setmovefige(true);
 
-	goalpos_ = 280.0f;
+	goalpos_ = 230.0f;
+    // ステージマネージャの初期化
+    StageManager::GetInstance()->Initialize();
 
-	stageManager_ = std::make_unique<StageManager>();
-	stageManager_->Initialize();
+    end = false;
 }
 ///====================================================
 /// 毎フレーム更新処理
@@ -106,36 +109,54 @@ void GamePlayScene::Update() {
     if (!FadeManager::GetInstance()->IsFadeStart() && !FadeManager::GetInstance()->IsFading()) {
         // フェード開始
         FadeManager::GetInstance()->StartFadeIn(1.0f, FadeStyle::SilhouetteExplode);
-    }            
-    //// フェードマネージャの更新   
-    //FadeManager::GetInstance()->Update(); 
-    //// イベントマネージャの更新
-    //EventManager::GetInstance()->Update(); 	
+    }
+    // フェードマネージャの更新   
+    FadeManager::GetInstance()->Update();
+    // イベントマネージャの更新
+    EventManager::GetInstance()->Update(); 	
+
+    if (end && CameraManager::GetInstance()->GetGameCamera()->GetMode() == ViewType::Main) {
+        FadeManager::GetInstance()->StartFadeOut(1.0f, FadeStyle::Normal);
+        CameraManager::GetInstance()->GetGameCamera()->SwitchView(ViewType::Sub);
+        // フェード開始             
+        end = false;
+    }
+    
+    if (player_->GetPosition().z >= goalpos_ && CameraManager::GetInstance()->GetGameCamera()->GetMode() == ViewType::Main) {
+        FadeManager::GetInstance()->StartFadeOut(1.0f, FadeStyle::Normal);
+        goalpos_ = 1000.0f;
+        // フェード開始             
+        end = false;
+    }
+
+    if (CameraManager::GetInstance()->GetGameCamera()->GetMode() == ViewType::Sub) {
+        player_->SetDead_(true);
+    }
+
     // ゲームスタートイベントが終了したらプレイヤ―操作可能に
- //   if (EventManager::GetInstance()->IsFinished()) {
-        // イベント終了 → プレイヤーを操作可能に
+    if (EventManager::GetInstance()->IsFinished()) {
+        //   イベント終了 → プレイヤーを操作可能に
         player_->SetKeyActive(true);
         player_->SetReticleVisible(true);
-        //if (Input::GetInstance()->Triggrkey(DIK_RETURN)) {
-        //    SceneManager::GetInstance()->ChangeScene("TITLE");
-        //}
-  //  }
+    }
 
-        stageManager_->Update();
+
+    StageManager::GetInstance()->Update();
 
     /*-------------------------------------------*/
     /*--------------Cameraの更新処理---------------*/
     /*------------------------------------------*/
+    CameraManager::GetInstance()->GetGameCamera()->SetFollowTarget(player_->GetPlayerObject());
     CameraManager::GetInstance()->Update();
 #pragma region 全てのObject3d個々の更新処理
     playerhp_ = player_->IsActive();
-	// 終了しない限り更新処理
+    // 終了しない限り更新処理
     if (!end) {
-        //// 敵出現動作
-        //EnemySpawn();
-        //// 各衝突判定
-        //CheckBulletEnemyCollisionsOBB();
-        //CheckEnemyBulletPlayerCollisionsOBB();
+        // 敵出現動作
+        EnemySpawn();
+        // 各衝突判定
+        CheckBulletEnemyCollisionsOBB();
+        CheckEnemyBulletPlayerCollisionsOBB();
         // 更新処理
         player_->Update();
         // プレイヤーがゴール手前なら敵も更新
@@ -150,7 +171,6 @@ void GamePlayScene::Update() {
         wall->Update();
         // Bulletマネージャの更新処理
         BulletManager::GetInstance()->Update();
-
     }
 
     // 敵がプレイヤーから離れすぎたら削除（過去の敵掃除）
@@ -162,17 +182,7 @@ void GamePlayScene::Update() {
             enemy->Kill();
         }
     }
-    // ゴール判定処理
-    if (player_->GetPosition().z >= goalpos_ && !end) {
-        end = true;
-        goal_ = true;
-    }
 
-	// ゴールしたらフェードアウト開始
-    if (goal_) {
-        FadeManager::GetInstance()->StartFadeOut(1.0f, FadeStyle::Normal);
-        goal_ = false;
-    }
     // フェードアウトが完了したら次のシーンへ
     if (FadeManager::GetInstance()->IsFadeEnd() && FadeManager::GetInstance()->GetFadeType() == FadeType::FadeOut) {
         if (!playerhp_) {
@@ -204,12 +214,17 @@ void GamePlayScene::Update() {
 #pragma endregion 全てのSprite個々の更新処理
 
 #pragma region  ImGuiの更新処理開始
-#ifdef USE_IMGUI
-	Object3dCommon::GetInstance()->DrawImGui(); // object3dのlightのImGui制御
+#ifdef USE_IMGUI 
+    ImGui::Begin("=== GamePlayScene Debug ===");
+    // 「end」フラグを切り返すチェックボックス
+    ImGui::Checkbox("End Flag", &end);
+    ImGui::End();
+
+  //  Object3dCommon::GetInstance()->DrawImGui(); // object3dのlightのImGui制御
     CameraManager::GetInstance()->DrawImGui();  // カメラマネージャのImGui制御
-	FadeManager::GetInstance()->DrawImGui();    // フェードマネージャのImGui制御 
-	EventManager::GetInstance()->DrawImGui();   // イベントマネージャのImGui制御
-	stageManager_->DebugImGui(); 			  // ステージマネージャのImGui制御
+//	FadeManager::GetInstance()->DrawImGui();    // フェードマネージャのImGui制御 
+///	EventManager::GetInstance()->DrawImGui();   // イベントマネージャのImGui制御
+	//stageManager_->DebugImGui(); 			  // ステージマネージャのImGui制御
 #endif // USE_IMGUI
 #pragma endregion ImGuiの更新処理終了 
 }
@@ -222,8 +237,8 @@ void GamePlayScene::Draw() {
     SkyboxCommon::GetInstance()->Commondrawing();
     Box_->Draw();
     // 3Dオブジェクトの描画準備。3Dオブジェクトの描画に共通のグラフィックスコマンドを積む
-    Object3dCommon::GetInstance()->Commondrawing();
-    stageManager_->Draw();
+    Object3dCommon::GetInstance()->Commondrawing(); 
+    StageManager::GetInstance()->Draw();
 
     // 描画処理
     if (!end) {
@@ -254,13 +269,13 @@ void GamePlayScene::Draw() {
     // Spriteの描画準備。Spriteの描画に共通のグラフィックスコマンドを積む
     SpriteCommon::GetInstance()->Commondrawing();
     // プレイヤーのUIスプライト描画
-    if (!end) {    
+    if (!end) {
         player_->DrawSprite();
     }
 
     // スタートイベント終了後にタイトルへ戻るボタンを描画   
     if (EventManager::GetInstance()->IsFinished()) {
-        ui1_->Draw();
+        //ui1_->Draw();
     }
 
 	// イベントマネージャの描画処理
@@ -504,8 +519,6 @@ void GamePlayScene::CheckEnemyBulletPlayerCollisionsOBB() {
             player_->SetInactive();  // プレイヤーを無効にする
 
             end = true;
-            // フェード開始             
-            FadeManager::GetInstance()->StartFadeOut(1.0f, FadeStyle::Normal);
             // ヒットエフェクトなど追加
             break;
         }

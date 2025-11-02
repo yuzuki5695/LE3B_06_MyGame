@@ -71,7 +71,7 @@ private: // メンバ変数
     std::unique_ptr<CharacterLoader> levelLoader_ = nullptr;
     // レベルデータ格納用インスタンスを生成
     LevelData* levelData = nullptr;
-    bool end = false;
+    bool end;
     // 最大数
     int MAX_ENEMY;
 	// 敵リスト
@@ -90,5 +90,4 @@ private: // メンバ変数
     std::vector<EventManager> event_; 
     /// UI(タイトルへ(仮))
     std::unique_ptr <Sprite> ui1_;
-    std::unique_ptr <StageManager> stageManager_ = nullptr;
 };
