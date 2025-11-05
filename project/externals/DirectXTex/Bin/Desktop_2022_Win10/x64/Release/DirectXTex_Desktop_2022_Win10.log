@@ -1,6 +1,2 @@
-﻿  DirectXTexHDR.cpp
-  DirectXTexMipMaps.cpp
-  DirectXTexTGA.cpp
-  DirectXTexWIC.cpp
-  コードを生成中...
+﻿  DirectXTexMipMaps.cpp
   DirectXTex_Desktop_2022_Win10.vcxproj -> C:\Users\小野田悠月\source\repos\LE3B\MyGame\project\externals\DirectXTex\Bin\Desktop_2022_Win10\x64\Release\DirectXTex.lib

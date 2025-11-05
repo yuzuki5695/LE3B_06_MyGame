@@ -99,7 +99,7 @@ void Player::Update() {
     if (iskeyActive_) {
 
         // アクティブ中はキー操作を受け付ける
-        if (isDeadEffectActive_) {
+        if (isDeadEffectActive_ && active_ == false) {
             // プレイヤ―死亡演出
             StartDeathEffect();
         } else {
