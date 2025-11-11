@@ -5,6 +5,7 @@
 #include <Player.h>
 #include <algorithm> 
 #include <ModelManager.h>
+#include <CameraManager.h>
 
 using namespace MatrixVector;
 
@@ -101,24 +102,6 @@ void Enemy::Update() {
     // 位置をobjectから取得して同期する
     transform_.translate = object->GetTranslate(); // ← 追加
 
-    //// --- プレイヤーとの距離調整 ---
-    //if (player_) {
-    //    Vector3 playerPos = player_->GetPosition();
-
-    //    // 一定距離を維持したいZ距離
-    //    const float targetZDistance = 30.0f;
-
-    //    // 現在の距離
-    //    float currentZDist = transform_.translate.z - playerPos.z;
-
-    //    // プレイヤーに追従（Z軸距離を一定に保つ）
-    //    // 緩やかに補正する（追従スピード0.05くらい）
-    //    float followSpeed = 0.05f;
-    //    float desiredZ = playerPos.z + targetZDistance;
-    //    transform_.translate.z += (desiredZ - transform_.translate.z) * followSpeed;
-    //}
-
-
     if (!isDying_) {
         switch (moveType_) {
         case MoveType::None:
@@ -161,14 +144,37 @@ void Enemy::AttachBullet(const Vector3& playerPos) {
 
     // 弾が撃てるか確認
     if (!canShoot_) return;
-    
-    if (canShoot_) {
-        std::unique_ptr<EnemyBullet> bullet = std::make_unique<EnemyBullet>();		// 弾を生成
-        // 次の発射間隔をランダムに再設定
-        bulletInterval_ = bulletIntervalDist_(randomEngine);
-        bullet->Initialize(transform_.translate, playerPos, 0.8f);                     // 初期位置などを設定
-        BulletManager::GetInstance()->AddEnemyBullet(std::move(bullet));                 // BulletManagerに追加
-    }
+
+    // === カメラ情報を取得 ===
+    GameCamera* gameCam = CameraManager::GetInstance()->GetGameCamera();
+    if (!gameCam) return;
+    Vector3 cameraForward = gameCam->GetForward();
+
+    // === 弾の初期位置（敵の少し前）===
+    Vector3 bulletStartPos = transform_.translate + cameraForward * 2.0f;
+
+    // --- プレイヤー方向を狙う ---
+    Vector3 targetPos = playerPos;
+
+    // --- 撃つ方向を計算 ---
+    Vector3 shootDir = Normalize(targetPos - bulletStartPos);
+
+    // === 弾生成 ===
+    std::unique_ptr<EnemyBullet> bullet = std::make_unique<EnemyBullet>();
+ 
+    // 弾初期化：プレイヤー弾と同じ形式
+    bullet->Initialize(
+        bulletStartPos,
+        bulletStartPos + shootDir * 10.0f, // 飛行方向
+        cameraForward,                      // カメラの向き（回転補正用）
+        0.8f                                // 弾速
+    );
+
+    // BulletManagerに登録
+    BulletManager::GetInstance()->AddEnemyBullet(std::move(bullet));
+
+    // 発射後クールダウン設定
+    bulletInterval_ = bulletIntervalDist_(randomEngine);
     canShoot_ = false;
 }
 
