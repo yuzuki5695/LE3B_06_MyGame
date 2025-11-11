@@ -66,7 +66,7 @@ void GamePlayScene::Initialize() {
     CameraManager::GetInstance()->SetTarget(player_->GetPlayerObject());
 
     // 敵関連の初期化
-	MAX_ENEMY = 14; // 敵の最大数
+	MAX_ENEMY = 15; // 敵の最大数
     // 敵出現トリガー
     spawnTriggers_ = {
     {Vector3{0.0f,0.0f,60.0f},30.0f, 5, false, MoveType::Horizontal},       // 全部動かない None(フォーメーション関数使用中)

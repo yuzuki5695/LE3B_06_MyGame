@@ -93,7 +93,7 @@ void Player::Update() {
     previousTime_ = currentTime;
 
             float currentSpeed = isBoosting_ ? boostSpeed_ : normalSpeed_;
-        UpdateBoostState();
+        //UpdateBoostState();
         MoveInput(currentSpeed); // ブースト中は速く移動 
 
     if (iskeyActive_) {
@@ -164,6 +164,10 @@ void Player::MoveInput(float speed) {
         if (input->Pushkey(DIK_W)) moveDelta.y += speed;
         if (input->Pushkey(DIK_S)) moveDelta.y -= speed;
    // }
+    
+    // === 相対移動を制限（画面内の範囲）===
+    float oldX = relativePos_.x;
+    float oldY = relativePos_.y;
 
     // === 相対移動を制限（画面内の範囲）===
     // ここは「カメラから見たローカル座標」上での制限
@@ -189,10 +193,45 @@ void Player::MoveInput(float speed) {
 
     transform_.translate = cameraPos + totalOffset;
 
-    // === 回転（カメラ方向に合わせる） メインカメラのみ===
-    if (gameCam->GetMode() == ViewType::Main) {
-        transform_.rotate = gameCam->GetMainCamera()->GetRotate();
+  // === ★ スムーズ傾き制御 ===
+    static float tiltX = 0.0f;  // ピッチ（上下）
+    static float tiltZ = 0.0f;  // ロール（左右）
+    const float tiltSpeed = 0.1f;   // 傾き変化スピード（0.1～0.2くらい）
+    const float maxTiltX = 0.4f;    // 上下最大角
+    const float maxTiltZ = 0.4f;   // 左右最大角
+    const float returnSpeed = 0.08f; // 中立に戻る速さ
+
+    // 横方向の傾き
+    if (relativePos_.x != oldX) {
+        float dir = (relativePos_.x - oldX) > 0 ? 1.0f : -1.0f;
+        tiltZ += -dir * tiltSpeed;
+    } else {
+        // 入力なし or 制限 → 徐々に戻す
+        tiltZ = tiltZ * (1.0f - returnSpeed);
     }
+
+    // 縦方向の傾き
+    if (relativePos_.y != oldY) {
+        float dir = (relativePos_.y - oldY) > 0 ? -1.0f : 1.0f;
+        tiltX += dir * tiltSpeed;
+    } else {
+        tiltX = tiltX * (1.0f - returnSpeed);
+    }
+
+    // 傾き角を制限
+    tiltZ = std::clamp(tiltZ, -maxTiltZ, maxTiltZ);
+    tiltX = std::clamp(tiltX, -maxTiltX, maxTiltX);
+
+    // === 回転反映 ===
+    if (gameCam->GetMode() == ViewType::Main) {
+        Vector3 baseRot = gameCam->GetMainCamera()->GetRotate();
+        transform_.rotate = {
+            baseRot.x + tiltX,
+            baseRot.y,
+            baseRot.z + tiltZ
+        };
+    }
+
     // === モデル更新 ===
     object->SetTranslate(transform_.translate);
     object->SetRotate(transform_.rotate);
