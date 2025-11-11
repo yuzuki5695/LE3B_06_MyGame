@@ -62,6 +62,8 @@ public: // メンバ関数
     /// ジグザグフォーメーションでの敵出現処理
     /// </summary>
     void SpawnZigZagFormation(const EnemySpawnTrigger& trigger);
+    void CheckEnemyPlayerCollisionsOBB();
+
 private: // メンバ変数
     // オブジェクトデータ
     // プレイヤー

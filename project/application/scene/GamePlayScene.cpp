@@ -69,9 +69,9 @@ void GamePlayScene::Initialize() {
 	MAX_ENEMY = 14; // 敵の最大数
     // 敵出現トリガー
     spawnTriggers_ = {
-    {60.0f, 5, false, MoveType::Horizontal},       // 全部動かない None(フォーメーション関数使用中)
-    {120.0f, 5, false, MoveType::Vertical},        // 全部縦移動 Vertical
-    {500.0f, 5, false, MoveType::None}             // 全部横移動  Horizontal
+    {30.0f, 5, false, MoveType::Horizontal},       // 全部動かない None(フォーメーション関数使用中)
+    {60.0f, 5, false, MoveType::Vertical},        // 全部縦移動 Vertical
+    {150.0f, 5, false, MoveType::None}             // 全部横移動  Horizontal
     };
     // 敵をリストに追加して初期化
     for (int i = 0; i < MAX_ENEMY; ++i) {
@@ -112,8 +112,8 @@ void GamePlayScene::Update() {
     }
     // フェードマネージャの更新   
     FadeManager::GetInstance()->Update();
-    // イベントマネージャの更新
-    EventManager::GetInstance()->Update(); 	
+    //// イベントマネージャの更新
+    //EventManager::GetInstance()->Update(); 	
 
     if (end && CameraManager::GetInstance()->GetGameCamera()->GetMode() == ViewType::Main) {
         FadeManager::GetInstance()->StartFadeOut(1.0f, FadeStyle::Normal);
@@ -134,11 +134,11 @@ void GamePlayScene::Update() {
     }
 
     // ゲームスタートイベントが終了したらプレイヤ―操作可能に
-    if (EventManager::GetInstance()->IsFinished()) {
+   // if (EventManager::GetInstance()->IsFinished()) {
         //   イベント終了 → プレイヤーを操作可能に
         player_->SetKeyActive(true);
         player_->SetReticleVisible(true);
-    }
+   // }
 
 
     StageManager::GetInstance()->Update();
@@ -157,6 +157,7 @@ void GamePlayScene::Update() {
         // 各衝突判定
         CheckBulletEnemyCollisionsOBB();
         CheckEnemyBulletPlayerCollisionsOBB();
+        CheckEnemyPlayerCollisionsOBB();
         // 更新処理
         player_->Update();
         // プレイヤーがゴール手前なら敵も更新
@@ -164,6 +165,7 @@ void GamePlayScene::Update() {
             // 敵の更新
             for (auto& enemy : enemies_) {
                 if (enemy->IsActive()) {
+                    enemy->SetPlayer(player_.get());
                     enemy->Update();
                 }
             }
@@ -520,6 +522,31 @@ void GamePlayScene::CheckEnemyBulletPlayerCollisionsOBB() {
 
             end = true;
             // ヒットエフェクトなど追加
+            break;
+        }
+    }
+}
+///====================================================
+/// 敵 vs プレイヤー の当たり判定
+///====================================================
+void GamePlayScene::CheckEnemyPlayerCollisionsOBB() {
+    if (!player_ || !player_->IsActive()) return;
+
+    // プレイヤーのOBBを取得
+    OBB playerOBB = player_->GetOBB();
+
+    for (auto& enemy : enemies_) {
+        if (!enemy->IsActive()) continue;
+
+        // 敵のOBBを取得
+        OBB enemyOBB = enemy->GetOBB();
+
+        // 衝突判定
+        if (IsOBBIntersect(playerOBB, enemyOBB)) {
+            player_->SetInactive();
+            enemy->SetInactive();
+            end = true; // ゲームオーバーへ遷移など
+
             break;
         }
     }

@@ -100,6 +100,25 @@ void Enemy::Update() {
 
     // 位置をobjectから取得して同期する
     transform_.translate = object->GetTranslate(); // ← 追加
+
+    //// --- プレイヤーとの距離調整 ---
+    //if (player_) {
+    //    Vector3 playerPos = player_->GetPosition();
+
+    //    // 一定距離を維持したいZ距離
+    //    const float targetZDistance = 30.0f;
+
+    //    // 現在の距離
+    //    float currentZDist = transform_.translate.z - playerPos.z;
+
+    //    // プレイヤーに追従（Z軸距離を一定に保つ）
+    //    // 緩やかに補正する（追従スピード0.05くらい）
+    //    float followSpeed = 0.05f;
+    //    float desiredZ = playerPos.z + targetZDistance;
+    //    transform_.translate.z += (desiredZ - transform_.translate.z) * followSpeed;
+    //}
+
+
     if (!isDying_) {
         switch (moveType_) {
         case MoveType::None:
