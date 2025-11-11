@@ -65,7 +65,7 @@ void GamePlayScene::Initialize() {
     ModelManager::GetInstance()->LoadModel("Bullet/PlayerBullet.obj");
     ModelManager::GetInstance()->LoadModel("Bullet/EnemyBullet.obj");
     ModelManager::GetInstance()->LoadModel("Clear.obj");
-    ModelManager::GetInstance()->LoadModel("wall.obj");
+    ModelManager::GetInstance()->LoadModel("Gameplay/Model/Goal/Goal.obj");
 
     // プレイヤーの作成と初期化
     player_ = std::make_unique<Player>();
@@ -93,7 +93,7 @@ void GamePlayScene::Initialize() {
         enemies_.emplace_back(std::move(enemy));
     }
     // クリアゲート(仮)
-    wall = Object3d::Create("wall.obj", Transform{ { 10.0f, 0.7f, 0.7f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 500.0f } });
+    wall = Object3d::Create("Gameplay/Model/Goal/Goal.obj", Transform{ { 2.0f, 2.0f, 2.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 2.0f, 500.0f } });
     // スカイボックスの作成
     TextureManager::GetInstance()->LoadTexture("CubemapBox.dds");
     Box_ = Skybox::Create("CubemapBox.dds", Transform{ { 1000.0f, 1000.0f, 1000.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 100.0f } });
@@ -170,7 +170,7 @@ void GamePlayScene::Update() {
         // 各衝突判定
         CheckBulletEnemyCollisionsOBB();
         CheckEnemyBulletPlayerCollisionsOBB();
-        CheckEnemyPlayerCollisionsOBB();
+       // CheckEnemyPlayerCollisionsOBB();
         // 更新処理
         player_->Update();
         // プレイヤーがゴール手前なら敵も更新
@@ -574,7 +574,7 @@ void GamePlayScene::CheckEnemyPlayerCollisionsOBB() {
     OBB playerOBB = player_->GetOBB();
 
     for (auto& enemy : enemies_) {
-        if (!enemy->IsActive()) continue;
+        if (!enemy->IsActive() || enemy->IsDead()) continue;
 
         // 敵のOBBを取得
         OBB enemyOBB = enemy->GetOBB();
