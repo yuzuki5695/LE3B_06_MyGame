@@ -29,10 +29,12 @@ void GameClearScene::Initialize() {
     // モデルの読み込み
     ModelManager::GetInstance()->LoadModel("Clear.obj");
     // テクスチャの読み込み
-    TextureManager::GetInstance()->LoadTexture("TitleEnter.png");
-    TextureManager::GetInstance()->LoadTexture("CubemapBox.dds");
-    ui1_ = Sprite::Create("TitleEnter.png", Vector2{ 500.0f, 500.0f }, 0.0f, Vector2{ 250.0f,90.0f });
-    ui1_->SetTextureSize(Vector2{ 250.0f,90.0f });
+    TextureManager::GetInstance()->LoadTexture("CubemapBox.dds");    
+    TextureManager::GetInstance()->LoadTexture("Gameclear/Texture/UI_01.png");
+
+    ui1_ = Sprite::Create("Gameclear/Texture/UI_01.png", Vector2{ 650.0f, 500.0f }, 0.0f, Vector2{ 360.0f,100.0f });
+    ui1_->SetAnchorPoint(Vector2{ 0.5f, 0.5f }); // 中心基準
+    ui1_->SetTextureSize(Vector2{ 360.0f,100.0f });
 
     clear = Object3d::Create("Clear.obj", Transform{ { 1.0f, 1.0f, 1.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 30.0f } });
     Box_ = Skybox::Create("CubemapBox.dds", Transform{ { 1000.0f, 1000.0f, 1000.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 100.0f } });

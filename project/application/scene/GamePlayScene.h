@@ -92,4 +92,7 @@ private: // メンバ変数
     std::vector<EventManager> event_; 
     /// UI(タイトルへ(仮))
     std::unique_ptr <Sprite> ui1_;
+    std::vector<std::unique_ptr<Sprite>> uis_;
+    uint32_t MAXui_;
+
 };

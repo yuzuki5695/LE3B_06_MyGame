@@ -18,7 +18,7 @@ void MyGame::Initialize() {
 	// GAMEPLAY           ゲームプレイ
 	// GAMECLEAR          ゲームクリア
     // GAMEOVER           ゲームオーバー
-    SceneManager::GetInstance()->ChangeScene("GAMEPLAY");
+    SceneManager::GetInstance()->ChangeScene("GAMECLEAR");
 }
 
 void MyGame::Update() {

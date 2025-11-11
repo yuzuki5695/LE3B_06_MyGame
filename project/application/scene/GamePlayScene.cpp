@@ -36,15 +36,24 @@ void GamePlayScene::Initialize() {
     CameraManager::GetInstance()->SetCameraMode(CameraMode::GamePlay);
 
     // テクスチャを読み込む
-    TextureManager::GetInstance()->LoadTexture("uvChecker.png");
-    TextureManager::GetInstance()->LoadTexture("monsterBall.png");
-    TextureManager::GetInstance()->LoadTexture("fade/Black.png");
     TextureManager::GetInstance()->LoadTexture("Gameplay/Move.png");
     TextureManager::GetInstance()->LoadTexture("Gameplay/Space.png");
     TextureManager::GetInstance()->LoadTexture("Gameplay/Shift.png");
     TextureManager::GetInstance()->LoadTexture("Gameplay/StandardChange.png");     
     TextureManager::GetInstance()->LoadTexture("titlereturn.png");
     TextureManager::GetInstance()->LoadTexture("titlereturn02.png");
+        
+    TextureManager::GetInstance()->LoadTexture("Gameplay/Texture/UI_01.png");
+    TextureManager::GetInstance()->LoadTexture("Gameplay/Texture/UI_02.png");
+    TextureManager::GetInstance()->LoadTexture("Gameplay/Texture/UI_03.png");
+
+    MAXui_ = 1;
+    uis_.push_back(Sprite::Create("Gameplay/Texture/UI_01.png", Vector2{ 8.0f, 430.0f }, 0.0f, Vector2{ 100.0f,80.0f })); 
+    uis_.push_back(Sprite::Create("Gameplay/Texture/UI_02.png", Vector2{ 8.0f, 530.0f }, 0.0f, Vector2{ 100.0f,80.0f })); 
+    uis_.push_back(Sprite::Create("Gameplay/Texture/UI_03.png", Vector2{ 8.0f, 630.0f }, 0.0f, Vector2{ 100.0f,80.0f })); 
+    uis_[0]->SetTextureSize(Vector2{100.0f,80.0f});
+    uis_[1]->SetTextureSize(Vector2{100.0f,80.0f});
+    uis_[2]->SetTextureSize(Vector2{100.0f,80.0f});
 
     // タイトルに戻るUIを生成
     ui1_ = Sprite::Create("titlereturn02.png", Vector2{ 1100.0f, 5.0f }, 0.0f, Vector2{ 150.0f,100.0f });
@@ -217,6 +226,10 @@ void GamePlayScene::Update() {
     // スプライトの更新
     ui1_->Update();
 
+    for (std::unique_ptr<Sprite>& ui : uis_) {
+        ui->Update();
+    }
+
 #pragma endregion 全てのSprite個々の更新処理
 
 #pragma region  ImGuiの更新処理開始
@@ -282,6 +295,10 @@ void GamePlayScene::Draw() {
     // スタートイベント終了後にタイトルへ戻るボタンを描画   
     if (EventManager::GetInstance()->IsFinished()) {
         //ui1_->Draw();
+    }
+    
+    for (std::unique_ptr<Sprite>& ui : uis_) {
+        ui->Draw();
     }
 
 	// イベントマネージャの描画処理
