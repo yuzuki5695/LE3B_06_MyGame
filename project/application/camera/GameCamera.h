@@ -92,6 +92,7 @@ private: // メンバ変数
     float yaw;
     float pitch;
     bool followInitialized_;
+    float t_ = 0.0f;
 
 public: // アクセッサ（Getter / Setter）
     // getter 

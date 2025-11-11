@@ -36,7 +36,7 @@ void GameCamera::Initialize() {
 /// 更新処理（複数制御点対応＋向き補間）
 ///====================================================
 void GameCamera::Update() {
-    if (bezierPoints.size() < 2) return;    
+    if (bezierPoints.size() < 3) return;    
     // 範囲チェック（最後まで行ったら停止）
     if (currentSegment >= bezierPoints.size() - 1) {
         // 最後まで行ったら停止する場合：
@@ -228,11 +228,10 @@ void GameCamera::UpdateBezierMovement() {
 
 
     // --- 補完モード（それ以降） ---
-    static float t = 0.0f;
-    t += speed * 0.01f; // イージング進行速度（調整可能）
+    t_ += speed * 0.01f; // イージング進行速度（調整可能）
 
-    if (t >= 1.0f) {
-        t = 0.0f;
+    if (t_ >= 1.0f) {
+        t_ = 0.0f;
         currentSegment++;
         bezierPos_ = end;
 
@@ -249,7 +248,7 @@ void GameCamera::UpdateBezierMovement() {
             bezierPoints[currentSegment + 2].controlPoint : end;
 
         // Cubic Catmull-Rom スプライン補間（滑らかに繋がる）
-        bezierPos_ = CatmullRom(p0, p1, p2, p3, t);
+        bezierPos_ = CatmullRom(p0, p1, p2, p3, t_);
     }
 }
 

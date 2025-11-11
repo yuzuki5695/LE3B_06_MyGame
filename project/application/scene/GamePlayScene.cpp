@@ -81,7 +81,6 @@ void GamePlayScene::Initialize() {
     {Vector3{0.0f,0.0f,150.0f}, 5, false, MoveType::Horizontal},       // 全部動かない None(フォーメーション関数使用中)
     {Vector3{0.0f,0.0f,250.0f}, 5, false, MoveType::Vertical},        // 全部縦移動 Vertical
     {Vector3{0.0f,0.0f,350.0f}, 5, false, MoveType::None},             // 全部横移動  Horizontal
-    {Vector3{0.0f,0.0f,450.0f}, 5, false, MoveType::Horizontal}             // 全部横移動  Horizontal
     };
 
     // 敵をリストに追加して初期化
