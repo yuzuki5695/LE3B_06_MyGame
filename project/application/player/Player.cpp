@@ -92,19 +92,19 @@ void Player::Update() {
     float deltaTime = currentTime - previousTime_;
     previousTime_ = currentTime;
 
-            float currentSpeed = isBoosting_ ? boostSpeed_ : normalSpeed_;
-        //UpdateBoostState();
-        MoveInput(currentSpeed); // ブースト中は速く移動 
 
     if (iskeyActive_) {
-
+        float currentSpeed = isBoosting_ ? boostSpeed_ : normalSpeed_;
+        //UpdateBoostState();
+        MoveInput(currentSpeed); // ブースト中は速く移動 
+     
         // アクティブ中はキー操作を受け付ける
         if (isDeadEffectActive_ && active_ == false) {
             // プレイヤ―死亡演出
             StartDeathEffect();
         } else {
             // ターゲットを矢印キーで動かす
-            UpdateTargetPosition(targetpos_, 0.2f);   // ターゲットに使う
+            UpdateTargetPosition(targetpos_, 0.4f);   // ターゲットに使う
             // 弾の発射
             AttachBullet();
         }
