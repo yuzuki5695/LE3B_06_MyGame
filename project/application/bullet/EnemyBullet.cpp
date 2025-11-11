@@ -63,6 +63,44 @@ void EnemyBullet::Initialize(const Vector3& startPos, const Vector3& targetPos, 
     time_ = 0;
     Maxtime_ = 500;
 }
+///====================================================
+/// 初期化処理（発射設定付き）
+/// <param name="startPos">弾の発射位置</param>
+/// <param name="targetPos">狙うターゲットの位置</param>
+/// <param name="speed">弾の速度</param>
+///====================================================
+void EnemyBullet::Initialize(const Vector3& startPos, const Vector3& targetPos, const Vector3& cameraForward, float speed) {
+    // 初期位置を設定
+    transform_.translate = startPos;
+    // 弾の大きさ（スケール）を設定  
+    transform_.scale = { 0.5f, 0.5f, 0.5f };
+    // モデルがまだ読み込まれていなければロード＆生成
+    if (!object_) {
+        // モデルを読み込む
+        ModelManager::GetInstance()->LoadModel("Bullet/EnemyBullet.obj");
+        // 弾用の3Dオブジェクトを生成（Transform情報を渡す）
+        object_ = Object3d::Create("Bullet/EnemyBullet.obj", transform_);
+        // スケール設定
+        object_->SetScale({ 0.5f, 0.5f, 0.5f });
+    }
+
+    // --- カメラ前方向に基づく修正 ---
+    // 完全にターゲット方向へ飛ばす
+    // 弾の向き計算
+    Vector3 forward = Normalize(targetPos - startPos); // プレイヤー方向
+
+    // ターゲット方向をカメラの前方向に「寄せる」
+    float yaw   = std::atan2(forward.x, forward.z);
+    float pitch = -std::asin(forward.y);
+    transform_.rotate = { pitch, yaw + DirectX::XM_PI, 0.0f };
+    // 速度ベクトルを計算（方向 × 速度）
+    velocity_ = forward * speed;
+    // 弾をアクティブ状態にする（Update対象にする）
+    active_ = true;
+    // 弾の寿命管理用タイマー初期化
+    time_ = 0;
+    Maxtime_ = 1000;
+}
 
 ///====================================================
 /// 更新処理
@@ -72,6 +110,8 @@ void EnemyBullet::Update() {
     transform_.translate = transform_.translate + velocity_;
     // 座標を更新
     object_->SetTranslate(transform_.translate);
+    object_->SetRotate(transform_.rotate);
+    object_->SetScale(transform_.scale);
     // 更新処理
     object_->Update();
     // 時間経過カウント（寿命制御）
@@ -101,7 +141,7 @@ OBB EnemyBullet::GetOBB() const {
     obb.center = transform_.translate;
 
     // サイズ（スケール）の半分をハーフサイズにする
-    obb.halfSize = { transform_.scale.x / 2.0f };
+    obb.halfSize = { transform_.scale.x };
 
     // 軸はXYZの単位ベクトル
     obb.axis[0] = {1, 0, 0}; // X軸

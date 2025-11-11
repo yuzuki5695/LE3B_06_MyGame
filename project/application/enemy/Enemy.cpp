@@ -5,6 +5,7 @@
 #include <Player.h>
 #include <algorithm> 
 #include <ModelManager.h>
+#include <CameraManager.h>
 
 using namespace MatrixVector;
 
@@ -29,7 +30,8 @@ void Enemy::Initialize() {
     Vector3 xyz = { distX(randomEngine), distY(randomEngine),distZ(randomEngine) };
     // 弾の発射間隔をランダム設定（2〜7秒）
     transform_ = { { 1.0f, 1.0f, 1.0f }, { 0.0f, 0.0f, 0.0f },xyz };
-    object = Object3d::Create("Enemy.obj", transform_);
+    object = Object3d::Create("Enemy.obj", transform_); 
+    object->SetScale({1.0f, 1.0f, 1.0f}); // 安定したサイズを明示
     bulletIntervalDist_ = std::uniform_real_distribution<float>(2.0f, 7.0f); // 発射間隔を決定する分布
     bulletInterval_ = bulletIntervalDist_(randomEngine); // 最初の間隔を決定
     // 移動方向をランダムに設定
@@ -100,6 +102,7 @@ void Enemy::Update() {
 
     // 位置をobjectから取得して同期する
     transform_.translate = object->GetTranslate(); // ← 追加
+
     if (!isDying_) {
         switch (moveType_) {
         case MoveType::None:
@@ -142,14 +145,26 @@ void Enemy::AttachBullet(const Vector3& playerPos) {
 
     // 弾が撃てるか確認
     if (!canShoot_) return;
-    
-    if (canShoot_) {
-        std::unique_ptr<EnemyBullet> bullet = std::make_unique<EnemyBullet>();		// 弾を生成
-        // 次の発射間隔をランダムに再設定
-        bulletInterval_ = bulletIntervalDist_(randomEngine);
-        bullet->Initialize(transform_.translate, playerPos, 0.8f);                     // 初期位置などを設定
-        BulletManager::GetInstance()->AddEnemyBullet(std::move(bullet));                 // BulletManagerに追加
-    }
+
+    // 弾の初期位置：敵の前方方向（敵向きに少し前進）
+    Vector3 forward = Normalize(moveDirection_); // 敵の進行方向ベクトル
+    Vector3 bulletStartPos = transform_.translate + forward * 1.0f;
+
+    // プレイヤーを狙う
+    Vector3 targetPos = playerPos;
+    Vector3 shootDir = Normalize(targetPos - bulletStartPos);
+
+    std::unique_ptr<EnemyBullet> bullet = std::make_unique<EnemyBullet>();
+    bullet->Initialize(
+        bulletStartPos,
+        bulletStartPos + shootDir * 10.0f,
+        shootDir, // 敵弾は shootDir を渡して回転補正
+        0.8f
+    );
+
+    BulletManager::GetInstance()->AddEnemyBullet(std::move(bullet));
+
+    bulletInterval_ = bulletIntervalDist_(randomEngine);
     canShoot_ = false;
 }
 
@@ -162,9 +177,9 @@ OBB Enemy::GetOBB() const {
     obb.center = transform_.translate;
     // ハーフサイズ（スケールの半分）
     obb.halfSize = {
-        transform_.scale.x / 2.0f, 
-        transform_.scale.y / 2.0f, 
-        transform_.scale.z / 2.0f
+        transform_.scale.x / 1.0f, 
+        transform_.scale.y / 1.0f, 
+        transform_.scale.z / 1.0f
     };
     // 回転行列（XYZ順で回転を合成）
     Matrix4x4 rotX = MakeRotateXMatrix(transform_.rotate.x);
