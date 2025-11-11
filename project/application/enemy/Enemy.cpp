@@ -5,6 +5,7 @@
 #include <Player.h>
 #include <algorithm> 
 #include <ModelManager.h>
+#include <CameraManager.h>
 
 using namespace MatrixVector;
 
@@ -18,30 +19,43 @@ Enemy::~Enemy() {}
 ///====================================================
 void Enemy::Initialize() {
     ModelManager::GetInstance()->LoadModel("Enemy.obj");
-    // 乱数エンジンを初期化
-    std::random_device rd;// 乱数生成器
-    randomEngine = std::mt19937(rd()); 
-    // 初期座標をランダム生成
-    std::uniform_real_distribution<float> distX(-12.0f, 12.0f);
-    std::uniform_real_distribution<float> distY(0.0f, 1.0f);
-    std::uniform_real_distribution<float> distZ(50.0f, 100.0f);
-    // Transform設定
-    Vector3 xyz = { distX(randomEngine), distY(randomEngine),distZ(randomEngine) };
-    // 弾の発射間隔をランダム設定（2〜7秒）
-    transform_ = { { 1.0f, 1.0f, 1.0f }, { 0.0f, 0.0f, 0.0f },xyz };
-    object = Object3d::Create("Enemy.obj", transform_);
-    bulletIntervalDist_ = std::uniform_real_distribution<float>(2.0f, 7.0f); // 発射間隔を決定する分布
-    bulletInterval_ = bulletIntervalDist_(randomEngine); // 最初の間隔を決定
-    // 移動方向をランダムに設定
-    std::uniform_int_distribution<int> typeDist(0, 2); 
-    int type = typeDist(randomEngine);
-    moveType_ = static_cast<MoveType>(type);
-    moveDirDist_ = std::uniform_real_distribution<float>(5.9f, 6.0f);
-    moveDirection_ = Normalize(Vector3{
-        moveDirDist_(randomEngine),
-        moveDirDist_(randomEngine),
-        moveDirDist_(randomEngine)
-        });
+    // LevelLoader のインスタンスを生成
+    loader_ = new CharacterLoader();
+    levelData_ = loader_->LoadFile("enemy");  // ←ここでロード
+
+    // --- レベルデータ内の全オブジェクトをEnemyとして生成 ---
+    for (auto& objData : levelData_->objects) {
+        // 各オブジェクトのTransform設定
+        Transform tr;
+        tr.scale = { 1.0f, 1.0f, 1.0f };
+        tr.rotate = objData.rotation;
+        tr.translate = objData.translation;
+
+        // Enemyを生成（1体ごとに独立したインスタンス）
+        std::unique_ptr<Enemy> enemy = std::make_unique<Enemy>();
+
+        // Enemy内部のObject3dを設定
+        enemy->object = Object3d::Create("Enemy.obj", tr);
+        enemy->transform_ = tr;
+
+        // --- 乱数設定など各個体用の初期化 ---
+        enemy->randomEngine.seed(std::random_device{}());
+        enemy->bulletIntervalDist_ = std::uniform_real_distribution<float>(2.0f, 7.0f);
+        enemy->bulletInterval_ = enemy->bulletIntervalDist_(enemy->randomEngine);
+        enemy->moveDirDist_ = std::uniform_real_distribution<float>(5.9f, 6.0f);
+        enemy->moveDirection_ = Normalize(Vector3{
+            enemy->moveDirDist_(enemy->randomEngine),
+            enemy->moveDirDist_(enemy->randomEngine),
+            enemy->moveDirDist_(enemy->randomEngine)
+            });
+
+        // moveTypeはランダムに決定（必要に応じて固定可）
+        std::uniform_int_distribution<int> typeDist(0, 2);
+        int type = typeDist(enemy->randomEngine);
+        enemy->moveType_ = static_cast<MoveType>(type);
+        // 敵リストに登録
+        enemies_.push_back(std::move(enemy->object));
+    }
 
 }
 /// <summary> 
@@ -86,6 +100,12 @@ void Enemy::SetnewTranslate(const Vector3& pos, MoveType moveType) {
 /// 更新処理
 ///====================================================
 void Enemy::Update() {
+    for (auto& enemy : enemies_) {
+        if (IsActive()) {
+            enemy->Update();
+        }
+    }
+
     // 死亡判定中（スケール縮小アニメーション）
     if (isDying_) {
         deathTimer_ += 1.0f / 120.0f; // 60FPS前提
@@ -97,9 +117,23 @@ void Enemy::Update() {
             isDead_ = true; // スケールが0になったので削除許可
         }
     }
+    // --- 距離維持モードの場合 ---
+    if (followPlayer_) {
+        GameCamera* gameCam = CameraManager::GetInstance()->GetGameCamera();
+        if (!gameCam) return;
 
-    // 位置をobjectから取得して同期する
-    transform_.translate = object->GetTranslate(); // ← 追加
+        Vector3 playerPos = gameCam->GetbezierPos();
+        Vector3 cameraForward = gameCam->GetForward();
+        Vector3 cameraRight = Normalize(Cross({ 0,1,0 }, cameraForward));
+        Vector3 cameraUp = Normalize(Cross(cameraForward, cameraRight));
+
+        // 前方方向に指定距離だけ進んだ位置
+        Vector3 basePos = playerPos + cameraForward * followDistance_;
+
+        // 位置をobjectから取得して同期する
+        transform_.translate = basePos; // ← 追加
+    }
+
     if (!isDying_) {
         switch (moveType_) {
         case MoveType::None:
@@ -122,6 +156,14 @@ void Enemy::Update() {
         AttachBullet(playerPos);// プレイヤーの位置を狙って弾発射
     }
     object->Update();
+
+    // 死んだ敵の削除
+    enemies_.erase(
+        std::remove_if(enemies_.begin(), enemies_.end(),
+            [](const std::unique_ptr<Enemy>& e) {
+                return e->IsDead();  // ← 出現前の非アクティブは残す！
+            }),
+        enemies_.end());
 }
 ///====================================================
 /// 描画処理
@@ -177,4 +219,15 @@ OBB Enemy::GetOBB() const {
     obb.axis[1] = Normalize(Multiply4x4x3(rotMat, Vector3{ 0, 1, 0 })); // Y軸
     obb.axis[2] = Normalize(Multiply4x4x3(rotMat, Vector3{ 0, 0, 1 })); // Z軸
     return obb;
+}
+
+void Enemy::SetFollowPlayer(float distance, MoveType moveType) {
+    followPlayer_ = true;
+    followDistance_ = distance;
+    moveType_ = moveType;
+
+    // X/Y方向のオフセットをランダムに決めても良い
+    std::uniform_real_distribution<float> distX(-10.0f, 10.0f);
+    std::uniform_real_distribution<float> distY(-3.0f, 5.0f);
+    localOffset_ = { distX(randomEngine), distY(randomEngine), 0.0f };
 }

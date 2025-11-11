@@ -50,18 +50,8 @@ public: // メンバ関数
     /// 敵の弾とプレイヤーとの衝突判定処理
     /// </summary>
     void CheckEnemyBulletPlayerCollisionsOBB();
-    /// <summary>
-    /// V字フォーメーションでの敵出現処理
-    /// </summary>
-    void SpawnVFormation(const EnemySpawnTrigger& trigger);
-    /// <summary>
-    /// 逆ステップフォーメーションでの敵出現処理
-    /// </summary>
-    void SpawnReverseStepFormation(const EnemySpawnTrigger& trigger);
-    /// <summary>
-    /// ジグザグフォーメーションでの敵出現処理
-    /// </summary>
-    void SpawnZigZagFormation(const EnemySpawnTrigger& trigger);
+
+
 private: // メンバ変数
     // オブジェクトデータ
     // プレイヤー

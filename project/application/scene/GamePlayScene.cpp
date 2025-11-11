@@ -58,6 +58,7 @@ void GamePlayScene::Initialize() {
     ModelManager::GetInstance()->LoadModel("Clear.obj");
     ModelManager::GetInstance()->LoadModel("wall.obj");
 
+
     // プレイヤーの作成と初期化
     player_ = std::make_unique<Player>();
     player_->Initialize(); // プレイヤーの初期化
@@ -69,7 +70,7 @@ void GamePlayScene::Initialize() {
 	MAX_ENEMY = 14; // 敵の最大数
     // 敵出現トリガー
     spawnTriggers_ = {
-    {60.0f, 5, false, MoveType::Horizontal},       // 全部動かない None(フォーメーション関数使用中)
+    {30.0f, 5, false, MoveType::Horizontal},       // 全部動かない None(フォーメーション関数使用中)
     {120.0f, 5, false, MoveType::Vertical},        // 全部縦移動 Vertical
     {500.0f, 5, false, MoveType::None}             // 全部横移動  Horizontal
     };
@@ -112,8 +113,8 @@ void GamePlayScene::Update() {
     }
     // フェードマネージャの更新   
     FadeManager::GetInstance()->Update();
-    // イベントマネージャの更新
-    EventManager::GetInstance()->Update(); 	
+    //// イベントマネージャの更新
+    //EventManager::GetInstance()->Update(); 	
 
     if (end && CameraManager::GetInstance()->GetGameCamera()->GetMode() == ViewType::Main) {
         FadeManager::GetInstance()->StartFadeOut(1.0f, FadeStyle::Normal);
@@ -134,11 +135,11 @@ void GamePlayScene::Update() {
     }
 
     // ゲームスタートイベントが終了したらプレイヤ―操作可能に
-    if (EventManager::GetInstance()->IsFinished()) {
+    //if (EventManager::GetInstance()->IsFinished()) {
         //   イベント終了 → プレイヤーを操作可能に
         player_->SetKeyActive(true);
         player_->SetReticleVisible(true);
-    }
+  //  }
 
 
     StageManager::GetInstance()->Update();
@@ -153,10 +154,10 @@ void GamePlayScene::Update() {
     // 終了しない限り更新処理
     if (!end) {
         // 敵出現動作
-        EnemySpawn();
+       // EnemySpawn();
         // 各衝突判定
-        CheckBulletEnemyCollisionsOBB();
-        CheckEnemyBulletPlayerCollisionsOBB();
+      //  CheckBulletEnemyCollisionsOBB();
+       // CheckEnemyBulletPlayerCollisionsOBB();
         // 更新処理
         player_->Update();
         // プレイヤーがゴール手前なら敵も更新
@@ -194,13 +195,7 @@ void GamePlayScene::Update() {
         }
     }
 
-    // 死んだ敵の削除
-    enemies_.erase(
-        std::remove_if(enemies_.begin(), enemies_.end(),
-            [](const std::unique_ptr<Enemy>& e) {
-                return e->IsDead();  // ← 出現前の非アクティブは残す！
-            }),
-        enemies_.end());
+
     // スカイボックス更新
     Box_->Update();     
     // パーティクル更新
@@ -288,142 +283,19 @@ void GamePlayScene::Draw() {
 /// 敵の出現処理
 ///====================================================
 void GamePlayScene::EnemySpawn() {
-    // プレイヤーの位置取得
-    float playerZ = player_->GetPosition().z;
+    //// プレイヤーの位置取得
+    //float playerZ = player_->GetPosition().z;
 
-    for (size_t tIndex = 0; tIndex < spawnTriggers_.size(); ++tIndex) {
-        auto& trigger = spawnTriggers_[tIndex];
+    //for (size_t tIndex = 0; tIndex < spawnTriggers_.size(); ++tIndex) {
+    //    auto& trigger = spawnTriggers_[tIndex];
 
-        if (!trigger.hasSpawned && playerZ >= trigger.zThreshold) {
-        
-            // --- フォーメーションの種類で分岐 ---
-            if (tIndex == 0) {
-                SpawnReverseStepFormation(trigger);
+    //    if (!trigger.hasSpawned && playerZ >= trigger.zThreshold) {
 
-            }  if (tIndex == 1) {
-                SpawnVFormation(trigger);
-            
-            }if (tIndex == 2) {                               
-                SpawnZigZagFormation(trigger);
-
-            }
-            trigger.hasSpawned = true;
-        }
-    }
+    //        trigger.hasSpawned = true;
+    //    }
+    //}
 }
-///====================================================
-/// 敵出現パターン：ジグザグフォーメーション
-///====================================================
-void GamePlayScene::SpawnZigZagFormation(const EnemySpawnTrigger& trigger) {
-    int activated = 0;
-    const int numEnemies = 5;
 
-    const float baseY = 5.0f;           // 中央Y
-    const float baseZ = trigger.zThreshold + 50.0f;
-
-    // X座標とY座標を個別指定（5体）
-    const float xPositions[5] = { -1.5f, 1.5f, 0.0f, -1.5f, 1.5f };
-    const float yPositions[5] = { 2.0f, 2.0f, 0.0f, -2.0f, -2.0f };
-
-    for (auto& enemy : enemies_) {
-        if (!enemy->IsActive() && activated < numEnemies) {
-
-            float posX = xPositions[activated];
-            float posY = baseY + yPositions[activated];
-            float posZ = baseZ;
-
-            enemy->SetnewTranslate(Vector3{ posX, posY, posZ }, trigger.moveType);
-            enemy->SetActive(true);
-
-            ++activated;
-        }
-    }
-}
-///====================================================
-/// 敵出現パターン：逆ステップフォーメーション
-///====================================================
-void GamePlayScene::SpawnReverseStepFormation(const EnemySpawnTrigger& trigger) {
-    int activated = 0;
-
-    const float baseX = 0.0f;     // 左右中央
-    const float baseY = 5.0f;     // 一番上
-    const float baseZ = trigger.zThreshold + 80.0f; // プレイヤーより少し前
-
-    const float stepX = 1.5f;     // 横ズレ
-    const float stepY = -1.2f;    // 縦ズレ
-    const float stepZ = 5.0f;     // 奥行き方向
-
-    for (auto& enemy : enemies_) {
-        if (!enemy->IsActive()) {
-            // X方向のズレを逆に
-            float posX = baseX - (stepX * activated); // ← 反転
-            float posY = baseY + (stepY * activated);
-            float posZ = baseZ - (stepZ * activated);
-
-            // 敵をそのまま配置
-            enemy->SetnewTranslate(Vector3{ posX, posY, posZ }, trigger.moveType);
-            enemy->SetActive(true);
-
-            ++activated;
-            if (activated >= trigger.spawnCount) break;
-        }
-    }
-}
-///====================================================
-/// 敵出現パターン：V字フォーメーション
-///====================================================
-void GamePlayScene::SpawnVFormation(const EnemySpawnTrigger& trigger) {
-    int activated = 0;
-
-    // 基準位置
-    const float baseX = 0.0f;    // 中央
-    const float baseY = 1.0f;    // 一番上
-    const float stepX = 3.0f;    // 横の間隔
-    const float stepY = -2.0f;   // 縦の間隔
-    const float baseZ = trigger.zThreshold + 60.0f;
-
-    for (auto& enemy : enemies_) {
-        if (!enemy->IsActive()) {
-            float posX = baseX;
-            float posY = baseY;
-
-            // 出現位置をactivatedの順で決定
-            switch (activated) {
-            case 0: // 真ん中（頂点）
-                posX = baseX;
-                posY = baseY;
-                break;
-            case 1: // 左上
-                posX = baseX - stepX;
-                posY = baseY + stepY;
-                break;
-            case 2: // 右上
-                posX = baseX + stepX;
-                posY = baseY + stepY;
-                break;
-            case 3: // 左下
-                posX = baseX - stepX * 2;
-                posY = baseY + stepY * 2;
-                break;
-            case 4: // 右下
-                posX = baseX + stepX * 2;
-                posY = baseY + stepY * 2;
-                break;
-            default:
-                // spawnCountが5を超えた場合の安全策
-                posX = baseX + (activated - 2) * stepX;
-                posY = baseY + stepY * 3;
-                break;
-            }
-
-            enemy->SetnewTranslate(Vector3{ posX, posY, baseZ }, trigger.moveType);
-            enemy->SetActive(true);
-
-            ++activated;
-            if (activated >= trigger.spawnCount) break;
-        }
-    }
-}
 ///====================================================
 /// OBB同士の当たり判定（分離軸定理）
 /// ====================================================
@@ -479,48 +351,48 @@ bool GamePlayScene::IsOBBIntersect(const OBB& a, const OBB& b) {
 /// プレイヤー弾 vs 敵の当たり判定
 ///====================================================
 void GamePlayScene::CheckBulletEnemyCollisionsOBB() {
-    const auto& bullets = BulletManager::GetInstance()->GetPlayerBullets();
+    //const auto& bullets = BulletManager::GetInstance()->GetPlayerBullets();
 
-    for (const std::unique_ptr<PlayerBullet>& bullet : bullets) {
-        if (!bullet->IsActive()) continue;
+    //for (const std::unique_ptr<PlayerBullet>& bullet : bullets) {
+    //    if (!bullet->IsActive()) continue;
 
-        for (auto& enemy : enemies_) {
-            if (!enemy->IsActive()) continue;
+    //    for (auto& enemy : enemies_) {
+    //        if (!enemy->IsActive()) continue;
 
-            OBB bulletOBB = bullet->GetOBB(); // bulletがOBB情報を持っている必要あり
-            OBB enemyOBB = enemy->GetOBB();   // 敵のOBBも同様に
+    //        OBB bulletOBB = bullet->GetOBB(); // bulletがOBB情報を持っている必要あり
+    //        OBB enemyOBB = enemy->GetOBB();   // 敵のOBBも同様に
 
-            if (IsOBBIntersect(bulletOBB, enemyOBB)) {
-                bullet->SetInactive();
-                enemy->SetInactive();
-                // パーティクル生成など
-                break;
-            }
-        }
-    }
+    //        if (IsOBBIntersect(bulletOBB, enemyOBB)) {
+    //            bullet->SetInactive();
+    //            enemy->SetInactive();
+    //            // パーティクル生成など
+    //            break;
+    //        }
+    //    }
+    //}
 }
 ///====================================================
 /// 敵弾 vs プレイヤーの当たり判定
 ///====================================================
 void GamePlayScene::CheckEnemyBulletPlayerCollisionsOBB() {
-    const auto& bullets = BulletManager::GetInstance()->GetEnemyBullets();
+    //const auto& bullets = BulletManager::GetInstance()->GetEnemyBullets();
 
-    if (!player_ || !player_->IsActive()) return;
+    //if (!player_ || !player_->IsActive()) return;
 
-    OBB playerOBB = player_->GetOBB(); // プレイヤーがOBBを返すようにしておく必要あり
+    //OBB playerOBB = player_->GetOBB(); // プレイヤーがOBBを返すようにしておく必要あり
 
-    for (const std::unique_ptr<EnemyBullet>& bullet : bullets) {
-        if (!bullet->IsActive()) continue;
+    //for (const std::unique_ptr<EnemyBullet>& bullet : bullets) {
+    //    if (!bullet->IsActive()) continue;
 
-        OBB bulletOBB = bullet->GetOBB(); // 弾にもOBBが必要
+    //    OBB bulletOBB = bullet->GetOBB(); // 弾にもOBBが必要
 
-        if (IsOBBIntersect(bulletOBB, playerOBB)) {
-            bullet->SetInactive();
-            player_->SetInactive();  // プレイヤーを無効にする
+    //    if (IsOBBIntersect(bulletOBB, playerOBB)) {
+    //        bullet->SetInactive();
+    //        player_->SetInactive();  // プレイヤーを無効にする
 
-            end = true;
-            // ヒットエフェクトなど追加
-            break;
-        }
-    }
+    //        end = true;
+    //        // ヒットエフェクトなど追加
+    //        break;
+    //    }
+    //}
 }

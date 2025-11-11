@@ -5,6 +5,7 @@
 #include<BaseCharacter.h>
 #include<Sprite.h>
 #include<OBB.h>
+#include <CharacterLoader.h>
 
 // ヘッダーの重複を防ぐ前方宣言
 class Player;
@@ -99,6 +100,9 @@ public: // メンバ関数
     /// <param name="pos">新しい座標</param>
     /// <param name="moveType">移動タイプ</param>
     void SetnewTranslate(const Vector3& pos, MoveType moveType);
+
+    void SetFollowPlayer(float distance, MoveType moveType);
+
 private: // メンバ変数
 	// ポインタ
     Player* player_; // プレイヤー
@@ -129,6 +133,19 @@ private: // メンバ変数
     const float deathDuration_ = 1.0f;       // 死亡アニメーション時間（秒）
     bool isActive_ = false;                  // 有効かどうか
     bool isDead_ = false;                    // 完全に削除済みかどうか
+
+
+    bool followPlayer_ = false;
+    float followDistance_ = 20.0f; // プレイヤー前方距離
+    Vector3 localOffset_ = { 0.0f, 0.0f, 0.0f }; // X/Y の個別移動用
+    
+    // ポインタ
+    CharacterLoader* loader_ = nullptr;
+    // レベルデータ格納用インスタンスを生成
+    LevelData* levelData_ = nullptr;    
+    // --- 本番オブジェクト ---
+    std::vector<std::unique_ptr<Object3d>> enemies_;  // 通常ゲーム用
+
 public:   // アクセッサ（Getter / Setter）
 	float GetSpawnBaseZ() const { return spawnBaseZ_; }
 };
