@@ -23,7 +23,6 @@ enum class MoveType {
 /// </summary>
 struct EnemySpawnTrigger {
     Vector3 Position;   // 出現位置
-    float zThreshold;   // 出現するZ座標の閾値
     int spawnCount;     // 同時に出現させる数
     bool hasSpawned;    // すでに出現済みかどうか
     MoveType moveType;  // 敵の移動タイプ

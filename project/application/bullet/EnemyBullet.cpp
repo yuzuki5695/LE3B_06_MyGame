@@ -86,14 +86,15 @@ void EnemyBullet::Initialize(const Vector3& startPos, const Vector3& targetPos, 
 
     // --- カメラ前方向に基づく修正 ---
     // 完全にターゲット方向へ飛ばす
-    Vector3 dir = Normalize(targetPos - startPos);
+    // 弾の向き計算
+    Vector3 forward = Normalize(targetPos - startPos); // プレイヤー方向
 
     // ターゲット方向をカメラの前方向に「寄せる」
-    float yaw = std::atan2(dir.x, dir.z);
-    float pitch = -std::asin(dir.y);
-    transform_.rotate = { pitch, yaw, 0.0f };
+    float yaw   = std::atan2(forward.x, forward.z);
+    float pitch = -std::asin(forward.y);
+    transform_.rotate = { pitch, yaw + DirectX::XM_PI, 0.0f };
     // 速度ベクトルを計算（方向 × 速度）
-    velocity_ = dir * speed;
+    velocity_ = forward * speed;
     // 弾をアクティブ状態にする（Update対象にする）
     active_ = true;
     // 弾の寿命管理用タイマー初期化

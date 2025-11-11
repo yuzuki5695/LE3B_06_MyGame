@@ -66,12 +66,13 @@ void GamePlayScene::Initialize() {
     CameraManager::GetInstance()->SetTarget(player_->GetPlayerObject());
 
     // 敵関連の初期化
-	MAX_ENEMY = 15; // 敵の最大数
+	MAX_ENEMY = 20; // 敵の最大数
     // 敵出現トリガー
     spawnTriggers_ = {
-    {Vector3{0.0f,0.0f,60.0f},30.0f, 5, false, MoveType::Horizontal},       // 全部動かない None(フォーメーション関数使用中)
-    {Vector3{0.0f,0.0f,90.0f},60.0f, 5, false, MoveType::Vertical},        // 全部縦移動 Vertical
-    {Vector3{0.0f,0.0f,120.0f},150.0f, 5, false, MoveType::None}             // 全部横移動  Horizontal
+    {Vector3{0.0f,0.0f,150.0f}, 5, false, MoveType::Horizontal},       // 全部動かない None(フォーメーション関数使用中)
+    {Vector3{0.0f,0.0f,250.0f}, 5, false, MoveType::Vertical},        // 全部縦移動 Vertical
+    {Vector3{0.0f,0.0f,350.0f}, 5, false, MoveType::None},             // 全部横移動  Horizontal
+    {Vector3{0.0f,0.0f,450.0f}, 5, false, MoveType::Horizontal}             // 全部横移動  Horizontal
     };
 
     // 敵をリストに追加して初期化
@@ -83,7 +84,7 @@ void GamePlayScene::Initialize() {
         enemies_.emplace_back(std::move(enemy));
     }
     // クリアゲート(仮)
-    wall = Object3d::Create("wall.obj", Transform{ { 10.0f, 0.7f, 0.7f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 230.0f } });
+    wall = Object3d::Create("wall.obj", Transform{ { 10.0f, 0.7f, 0.7f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 500.0f } });
     // スカイボックスの作成
     TextureManager::GetInstance()->LoadTexture("CubemapBox.dds");
     Box_ = Skybox::Create("CubemapBox.dds", Transform{ { 1000.0f, 1000.0f, 1000.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 100.0f } });
@@ -96,7 +97,7 @@ void GamePlayScene::Initialize() {
 	// ゲームカメラの移動許可
     CameraManager::GetInstance()->GetGameCamera()->Setmovefige(true);
 
-	goalpos_ = 230.0f;
+	goalpos_ = 500.0f;
     // ステージマネージャの初期化
     StageManager::GetInstance()->Initialize();
 
@@ -113,8 +114,8 @@ void GamePlayScene::Update() {
     }
     // フェードマネージャの更新   
     FadeManager::GetInstance()->Update();
-    //// イベントマネージャの更新
-    //EventManager::GetInstance()->Update(); 	
+    // イベントマネージャの更新
+    EventManager::GetInstance()->Update(); 	
 
     if (end && CameraManager::GetInstance()->GetGameCamera()->GetMode() == ViewType::Main) {
         FadeManager::GetInstance()->StartFadeOut(1.0f, FadeStyle::Normal);
@@ -124,7 +125,9 @@ void GamePlayScene::Update() {
     }
     
     if (player_->GetPosition().z >= goalpos_ && CameraManager::GetInstance()->GetGameCamera()->GetMode() == ViewType::Main) {
-        FadeManager::GetInstance()->StartFadeOut(1.0f, FadeStyle::Normal);
+        FadeManager::GetInstance()->StartFadeOut(1.0f, FadeStyle::Normal);              
+        player_->SetKeyActive(false);
+        player_->SetReticleVisible(false);
         goalpos_ = 1000.0f;
         // フェード開始             
         end = false;
@@ -135,11 +138,11 @@ void GamePlayScene::Update() {
     }
 
     // ゲームスタートイベントが終了したらプレイヤ―操作可能に
-   // if (EventManager::GetInstance()->IsFinished()) {
+    if (EventManager::GetInstance()->IsFinished() && CameraManager::GetInstance()->GetGameCamera()->GetMode() == ViewType::Main) {
         //   イベント終了 → プレイヤーを操作可能に
         player_->SetKeyActive(true);
         player_->SetReticleVisible(true);
-   // }
+    }
 
 
     StageManager::GetInstance()->Update();

@@ -37,7 +37,7 @@ void StageManager::Initialize() {
     
     // オブジェクトの作成
     // 地面の作成
-    grass = Object3d::Create("Tile.obj", Transform({ 20.0f, 1.0f, 300.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, -8.0f, 50.0f }));
+    grass = Object3d::Create("Tile.obj", Transform({ 1000.0f, 1.0f, 1000.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, -8.0f, 50.0f }));
 
     //// レベルデータからオブジェクトを読み込む
     //for (auto& objData : levelData_->objects) {
