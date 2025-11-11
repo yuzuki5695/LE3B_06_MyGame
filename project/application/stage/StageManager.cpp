@@ -27,7 +27,7 @@ void StageManager::Finalize() {
 }
 
 void StageManager::Initialize() {
-    // LevelLoader のインスタンスを生成
+    // LevelLoader のインスタンスを生成s
     loader_ = new CharacterLoader();
     levelData_ = loader_->LoadFile("stage");  // ←ここでロード
 
