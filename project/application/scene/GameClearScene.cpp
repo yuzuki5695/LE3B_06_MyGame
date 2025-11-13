@@ -25,7 +25,7 @@ void GameClearScene::Finalize() {
 void GameClearScene::Initialize() {
     // カメラマネージャの初期化
     CameraManager::GetInstance()->Initialize(CameraTransform({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }));
-    CameraManager::GetInstance()->SetCameraMode(CameraMode::Default);
+   // CameraManager::GetInstance()->SetCameraMode(CameraMode::Default);
     // モデルの読み込み
     ModelManager::GetInstance()->LoadModel("Clear.obj");
     // テクスチャの読み込み

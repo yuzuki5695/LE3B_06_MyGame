@@ -38,31 +38,23 @@ public: // メンバ関数
     void SetActiveCamera(); // アクティブカメラを設定
 
 private:
-    // 現在のカメラモード
-    CameraMode currentMode_;
-    Object3d* target_ = nullptr; // 追従対象オブジェクト
-    Camera* defaultCamera_; // 追従しないカメラ(デフォルト)
-    Camera* followCamera_;  // 追従用カメラ
-    GameCamera* gameCamera_; // ゲームプレイ用カメラ 
-    // ゲームカメラ関連
-    bool moveFlag = false;
-    uint32_t activated_ ;
-    // ヘッダーかクラス内に追加
-    bool addedInitialOffset_ = false;
 
-    bool useFollowCamera_ = false; // カメラモード切替用フラグ
-    float waitTime_ = 0.0f;
+    std::unique_ptr<Camera> mainCamera_;                 //　メインカメラ
+    std::vector<std::unique_ptr<Camera>> subCameras_;    // サブカメラ
+    std::unordered_map<std::string, std::unique_ptr<Camera>> cameraMap_;    // サブカメラを複数使用する場合の登録用カメラ
+
 public: // メンバ関数
-    // 追従対象をセット（nullptrなら追従なし）
-    void SetTarget(Object3d* target);
-    Camera* GetFollowCamera() { return followCamera_; } // 追従カメラ取得
+    //// 追従対象をセット（nullptrなら追従なし）
+    //void SetTarget(Object3d* target);
+    //Camera* GetFollowCamera() { return followCamera_; } // 追従カメラ取得
     Camera* GetActiveCamera();
-    void SetCameraMode(CameraMode mode);
     
-    CameraMode GetcurrentMode() { return currentMode_; }
-    GameCamera* GetGameCamera() { return gameCamera_; }
+    //void SetCameraMode(CameraMode mode);
+    //
+    //CameraMode GetcurrentMode() { return currentMode_; }
+    //GameCamera* GetGameCamera() { return gameCamera_; }
 
 
-    void SetMoveFlag(bool flag) { moveFlag = flag; }
-    bool GetMoveFlag() const { return moveFlag; }
+    //void SetMoveFlag(bool flag) { moveFlag = flag; }
+    //bool GetMoveFlag() const { return moveFlag; }
 };
