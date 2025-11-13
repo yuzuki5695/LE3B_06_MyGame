@@ -55,6 +55,8 @@ public:
     void UpdateSubCameraFollow(const Vector3& targetPos, const Vector3& offset);
 
     Vector3 CatmullRom(const Vector3& p0, const Vector3& p1, const Vector3& p2, const Vector3& p3, float t);
+    
+    Camera* GetActiveCamera();
 
 private: // メンバ変数
     CurveJsonLoader* Jsondata = nullptr;         // ベジェ制御点を読み込むローダー
@@ -122,15 +124,5 @@ public: // アクセッサ（Getter / Setter）
         followInitialized_ = false;
     }
     ViewType GetMode() const { return mode_; }
-    Camera* GetActiveCamera() {
-        switch (mode_) {
-        case ViewType::Sub:
-            return subcamera_.get();
-        case ViewType::Main:
-            return maincamera_.get();
-        case ViewType::Transition:
-            // Transition中は maincamera_ をベースに更新していることが多い
-            return maincamera_.get();
-        }
-    }
+
 };

@@ -320,3 +320,16 @@ Vector3 GameCamera::CatmullRom(const Vector3& p0, const Vector3& p1, const Vecto
         (-p0 + 3.0f*p1 - 3.0f*p2 + p3) * t3
     );
 }
+
+Camera* GameCamera::GetActiveCamera() {
+    switch (mode_) {
+    case ViewType::Sub:
+        return subcamera_.get();
+    case ViewType::Main:
+        return maincamera_.get();
+    case ViewType::Transition:
+        // Transition中は maincamera_ をベースに更新していることが多い
+        return maincamera_.get();
+    }
+    return maincamera_.get(); // ←安全のためデフォルトを返す
+}
