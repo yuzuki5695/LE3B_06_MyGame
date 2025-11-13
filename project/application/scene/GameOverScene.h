@@ -51,7 +51,7 @@ public: // メンバ関数
 
 private: // メンバ変数      
     std::vector<PartInfo> partsList; // 複数のパーツ用
-    int partCount_; // 生成するオブジェクト数
+    uint32_t partCount_; // 生成するオブジェクト数
     std::unique_ptr <Sprite> ui1_ = nullptr;     // UIスプライト 
     std::unique_ptr <Sprite> ui2_ = nullptr;     // UIスプライト 
     std::unique_ptr <Skybox> Box_ = nullptr;     //　背景

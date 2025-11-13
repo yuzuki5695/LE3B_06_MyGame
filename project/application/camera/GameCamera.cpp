@@ -36,7 +36,7 @@ void GameCamera::Initialize() {
 /// 更新処理（複数制御点対応＋向き補間）
 ///====================================================
 void GameCamera::Update() {
-    if (bezierPoints.size() < 2) return;    
+    if (bezierPoints.size() < 3) return;    
     // 範囲チェック（最後まで行ったら停止）
     if (currentSegment >= bezierPoints.size() - 1) {
         // 最後まで行ったら停止する場合：
@@ -210,30 +210,45 @@ void GameCamera::UpdateBezierMovement() {
     const Vector3& start = bezierPoints[currentSegment].controlPoint;
     const Vector3& end = bezierPoints[currentSegment + 1].controlPoint;
 
-    // 移動ベクトル
-    Vector3 dir = end - bezierPos_;
-    float dist = Length(dir);
 
-    if (dist <= speed) {
-        // セグメント終了
-        bezierPos_ = end;
-        // 現在の制御点を通過済みに
-        bezierPoints[currentSegment].passed = true;
+    // --- 直線モード（start → point_01） ---
+    if (currentSegment == 0) {
+        Vector3 dir = end - bezierPos_;
+        float dist = Length(dir);
 
+        if (dist <= speed) {
+            bezierPos_ = end;
+            bezierPoints[currentSegment].passed = true;
+            currentSegment++;
+        } else {
+            bezierPos_ += Normalize(dir) * speed; // ベクトル直進
+        }
+        return;
+    }
+
+
+    // --- 補完モード（それ以降） ---
+    t_ += speed * 0.01f; // イージング進行速度（調整可能）
+
+    if (t_ >= 1.0f) {
+        t_ = 0.0f;
         currentSegment++;
+        bezierPos_ = end;
+
         if (currentSegment >= bezierPoints.size() - 1) {
             movefige = false;
             return;
         }
-
-        // 次の制御点が未許可なら停止
-        if (!bezierPoints[currentSegment].passed) {
-            movefige = false;
-            return;
-        }
     } else {
-        // 方向ベクトルに沿って speed 移動
-        bezierPos_ += Normalize(dir) * speed;
+        // 次セグメントの制御点群（前後を参照して曲線化）
+        Vector3 p0 = (currentSegment > 0) ? bezierPoints[currentSegment - 1].controlPoint : start;
+        Vector3 p1 = start;
+        Vector3 p2 = end;
+        Vector3 p3 = (currentSegment + 2 < bezierPoints.size()) ?
+            bezierPoints[currentSegment + 2].controlPoint : end;
+
+        // Cubic Catmull-Rom スプライン補間（滑らかに繋がる）
+        bezierPos_ = CatmullRom(p0, p1, p2, p3, t_);
     }
 }
 
@@ -292,4 +307,29 @@ void GameCamera::UpdateSubCameraFollow(const Vector3& targetPos, const Vector3& 
 
         subcamera_->SetRotate({ pitch, yaw, 0.0f });
     }
+}
+
+Vector3 GameCamera::CatmullRom(const Vector3& p0, const Vector3& p1, const Vector3& p2, const Vector3& p3, float t) {
+    float t2 = t * t;
+    float t3 = t2 * t;
+
+    return 0.5f * (
+        (2.0f * p1) +
+        (-p0 + p2) * t +
+        (2.0f*p0 - 5.0f*p1 + 4.0f*p2 - p3) * t2 +
+        (-p0 + 3.0f*p1 - 3.0f*p2 + p3) * t3
+    );
+}
+
+Camera* GameCamera::GetActiveCamera() {
+    switch (mode_) {
+    case ViewType::Sub:
+        return subcamera_.get();
+    case ViewType::Main:
+        return maincamera_.get();
+    case ViewType::Transition:
+        // Transition中は maincamera_ をベースに更新していることが多い
+        return maincamera_.get();
+    }
+    return maincamera_.get(); // ←安全のためデフォルトを返す
 }
