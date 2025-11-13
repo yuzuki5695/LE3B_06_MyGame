@@ -170,6 +170,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="engine\base\DirectXCommon\ViewportManager.cpp" />
     <ClCompile Include="engine\base\DirectXCommon\SwapChainManager.cpp" />
     <ClCompile Include="application\stage\StageManager.cpp" />
+    <ClCompile Include="TitleCamera.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="application\bullet\BaseBullet.h" />
@@ -184,6 +185,8 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\loader\CurveJsonLoader.h" />
     <ClInclude Include="application\player\Player.h" />
     <ClInclude Include="application\scene\GameOverScene.h" />
+    <ClInclude Include="engine\camera\CameraTransform.h" />
+    <ClInclude Include="engine\camera\CameraMode.h" />
     <ClInclude Include="engine\3d\Skybox.h" />
     <ClInclude Include="engine\3d\SkyboxCommon.h" />
     <ClInclude Include="engine\base\ViewManager\DsvManager.h" />
@@ -252,6 +255,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\camera\GameCamera.h" />
     <ClInclude Include="application\event\EventManager.h" />
     <ClInclude Include="application\stage\StageManager.h" />
+    <ClInclude Include="TitleCamera.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="externals\DirectXTex\DirectXTex_Desktop_2022_Win10.vcxproj">

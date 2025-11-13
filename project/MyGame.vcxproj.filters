@@ -387,6 +387,9 @@
     <ClCompile Include="application\stage\StageManager.cpp">
       <Filter>ソース ファイル\application\stage</Filter>
     </ClCompile>
+    <ClCompile Include="TitleCamera.cpp">
+      <Filter>ソース ファイル\application\camera</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="engine\2d\Sprite.h">
@@ -628,6 +631,15 @@
     </ClInclude>
     <ClInclude Include="engine\math\Quaternion.h">
       <Filter>ヘッダー ファイル\engine\math</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\camera\CameraMode.h">
+      <Filter>ヘッダー ファイル\engine\camera</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\camera\CameraTransform.h">
+      <Filter>ヘッダー ファイル\engine\camera</Filter>
+    </ClInclude>
+    <ClInclude Include="TitleCamera.h">
+      <Filter>ヘッダー ファイル\application\camera</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -145,6 +145,8 @@ void TitleScene::Update() {
     ImGui::End();
 
 	FadeManager::GetInstance()->DrawImGui(); // フェードマネージャのImGui制御
+        
+    CameraManager::GetInstance()->DrawImGui();  // カメラマネージャのImGui制御
 
 #endif // USE_IMGUI
 #pragma endregion ImGuiの更新処理終了

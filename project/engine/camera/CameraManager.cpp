@@ -2,6 +2,12 @@
 #include <Object3dCommon.h>
 #include <ParticleCommon.h>
 #include <MatrixVector.h>
+#ifdef min
+#undef min
+#endif
+#ifdef max
+#undef max
+#endif
 #ifdef USE_IMGUI
 #include <ImGuiManager.h>
 #endif // USE_IMGUI
@@ -23,225 +29,158 @@ CameraManager* CameraManager::GetInstance() {
 void CameraManager::Finalize() {
     instance.reset();  // `delete` 不要
 }
+
 // 初期化
 void CameraManager::Initialize(CameraTransform transform) {
-    //   // 初期状態はデフォルトカメラ
-    //   currentMode_ = CameraMode::Default;
-       //useFollowCamera_ = false;
-    //   
-    //   // すべてのカメラを作っておく
-    //   defaultCamera_ = new Camera();
-    //   defaultCamera_->SetTranslate(transform.translate);
-    //   defaultCamera_->SetRotate(transform.rotate);
-    //   // オブジェクト追従カメラの生成
-    //   followCamera_ = new Camera();
-    //   // ゲームカメラの生成
-       //gameCamera_ = new GameCamera();
-       //gameCamera_->Initialize();
-    //   moveFlag = false; 
-    //   gameCamera_->Setmovefige(moveFlag);
-
-
+    // 初期化はメインカメラでモードはデフォルト
+    Typeview_ = ViewCameraType::Main; 
+    currentMode_ = CameraMode::Default;
+    switchType_ = CameraSwitchType::Instant;
+    
+    // --- メインカメラの初期化--- //
     mainCamera_ = std::make_unique<Camera>();
     mainCamera_->SetTranslate(transform.translate);
     mainCamera_->SetRotate(transform.rotate);
+
+    // --- サブカメラ群登録 --- //
+    subCamerasMap_.clear();
+    // 固定カメラ
+    std::unique_ptr<Camera> followCam = std::make_unique<Camera>();
+    followCam->SetTranslate(Vector3{ 0.0f,-10.0f,-50.0f });
+    followCam->SetRotate(Vector3{0.0f,0.0f,0.0f});
+    subCamerasMap_["Default"] = std::move(followCam);
+        
+    deltaTime_ = 3.0f;
+
 }
+
 // 更新処理
 void CameraManager::Update() {
-   
-    mainCamera_->Update();
+    Camera* cam = nullptr;
+    // --- メインカメラ更新 --- //
+    if(mainCamera_) mainCamera_->Update();
+    // --- サブカメラ群の更新 --- //
+    for(auto& [name, cam] : subCamerasMap_) if(cam) cam->Update();
+    
+    tempCamera_.Update();
 
+    // 補間中
+    if(easing_ && targetCamera_) {
+        easeTimer_ += 0.0167f; // ← deltaTime_ ではなく実際のフレーム経過時間を使う
+        float t = std::clamp(easeTimer_ / easeTime_, 0.0f, 1.0f);
 
+        // 線形補間（必要ならスムーズステップ）
+        float easeT = t * t * (3 - 2 * t); // SmoothStep
 
-    //switch (currentMode_) {
-    //case CameraMode::GamePlay: 
-    //    gameCamera_->Update(); 
-    //    // GameCameraにも追従対象を渡す  
-    //    gameCamera_->SetFollowTarget(target_);
-    //    break;
-    //case CameraMode::Follow:
-    //    if (followCamera_) {
-    //        if (target_) {
-    //            Vector3 targetPos = target_->GetTranslate();
-    //            Vector3 offset(0.0f, 3.0f, -30.0f);
-    //            Vector3 cameraPos = targetPos + offset;
+        tempCamera_.SetTranslate(cameraLerp(startPos_, targetPos_, easeT));
+        tempCamera_.SetRotate(cameraLerp(startRot_, targetRot_, easeT));
 
-    //            followCamera_->SetTranslate(cameraPos);
+        if(t >= 1.0f) {
+            // 補間完了
+            easing_ = false;
+            targetCamera_ = nullptr;
 
-    //            Vector3 toTarget = targetPos - cameraPos;
-    //            float angleY = std::atan2(toTarget.x, toTarget.z);
-    //            followCamera_->SetRotate(Vector3(0.0f, angleY, 0.0f));
-    //        }
-    //        followCamera_->Update();
-    //    }
-    //    break;
-    //case CameraMode::Default:
-    //    if (defaultCamera_) {
-    //        // デフォルトカメラの位置と回転を更新
-    //        defaultCamera_->Update();
-    //    }
-    //    break;
-    //}
+            // 補間後はアクティブカメラを目標に合わせる
+            Typeview_ = (Typeview_ == ViewCameraType::Main) ? ViewCameraType::Sub : ViewCameraType::Main;
+        }
+    }
+
+    SetActiveCamera();
 }
-// 追従対象をセット（nullptrなら追従なし）
-//void CameraManager::SetTarget(Object3d* target) {
-//   // target_ = target;
-//}
-//// カメラモード切替
-//void CameraManager::ToggleCameraMode(bool followMode) {
-// //   useFollowCamera_ = followMode;
-//}
-// ImGui描画
-void CameraManager::DrawImGui() {
-//#ifdef USE_IMGUI
-//    ImGui::Begin("CameraManager");
-//
-//    // ラジオボタンでモード選択
-//    int mode = static_cast<int>(currentMode_);
-//    ImGui::Text("Camera Mode");
-//    if (ImGui::RadioButton("Default", mode == 0)) {
-//        mode = 0;
-//    }
-//    ImGui::SameLine();
-//    if (ImGui::RadioButton("Follow", mode == 1)) {
-//        mode = 1;
-//    }
-//    ImGui::SameLine();
-//    if (ImGui::RadioButton("GamePlay", mode == 2)) {
-//        mode = 2;
-//    }
-//    // モードが変わったら切り替える
-//    CameraMode newMode = static_cast<CameraMode>(mode);
-//    if (newMode != currentMode_) {
-//        currentMode_ = newMode;
-//        SetActiveCamera();
-//    }
-//
-//    // 現在のカメラを取得して編集
-//    Camera* activeCamera = nullptr;
-//    const char* modeName = "";
-//    const char* label = "Translate";
-//    const char* label2 = "Rotate";
-//
-//    switch (currentMode_) {
-//    case CameraMode::Default:
-//        activeCamera = defaultCamera_;
-//        modeName = "Default";
-//        break;
-//    case CameraMode::Follow:
-//        activeCamera = followCamera_;
-//        modeName = "Follow";
-//        break;
-//    case CameraMode::GamePlay:
-//        activeCamera = gameCamera_->GetActiveCamera();
-//        modeName = "GamePlay";        
-//        break;
-//    }
-//    ImGui::Text("Current Mode: %s", modeName);
-//
-//    if (activeCamera) {
-//        Vector3 pos = activeCamera->GetTranslate();
-//        Vector3 rotate = activeCamera->GetRotate();
-//        if (ImGui::DragFloat3(label, &pos.x, 0.01f)) {
-//            activeCamera->SetTranslate(pos);
-//        }
-//        if (ImGui::DragFloat3(label2, &rotate.x, 0.01f)) {
-//            activeCamera->SetRotate(rotate);
-//        }
-//        if (currentMode_ == CameraMode::GamePlay) {
-//            if (ImGui::Checkbox("isBezier", &moveFlag)) {
-//                gameCamera_->Setmovefige(moveFlag);
-//            }
-//            ImGui::Text("Bezier Control Points");
-//
-//            // ---- BezierPoint 操作用UI ----
-//            auto& points = gameCamera_->GetBezierPoints();
-//
-//            if (ImGui::Button("Mark All as Passed")) {
-//                gameCamera_->MarkAllAsPassed();
-//            }
-//            ImGui::SameLine();
-//            if (ImGui::Button("Set All True")) {
-//                gameCamera_->SetAllPassed(true);
-//            }
-//            ImGui::SameLine();
-//            if (ImGui::Button("Set All False")) {
-//                gameCamera_->SetAllPassed(false);
-//            }
-//
-//            ImGui::Separator();
-//
-//            // ---- 各制御点ごと ----
-//            for (size_t i = 0; i < points.size(); ++i) {
-//                std::string label = "Point " + std::to_string(i);
-//                bool flag = points[i].passed;
-//                if (ImGui::Checkbox(label.c_str(), &flag)) {
-//                    points[i].passed = flag;
-//                }
-//            }
-//
-//
-//            // 現在モードを int に変換
-//            int currentView = static_cast<int>(gameCamera_->GetCurrentView());
-//            const char* viewNames[] = { "Main", "Sub", "Transition" };
-//
-//            // ラジオボタン
-//            if (ImGui::RadioButton("Main", currentView == 0)) {
-//                gameCamera_->SwitchView(ViewType::Main);
-//            }
-//            ImGui::SameLine();
-//            if (ImGui::RadioButton("Sub", currentView == 1)) {
-//                gameCamera_->SwitchView(ViewType::Sub);
-//            }
-//
-//            // 状態確認用
-//            ImGui::Text("Current: %s", viewNames[currentView]);
-//        }
-//
-//    }
-//    ImGui::End();
-//#endif // USE_IMGUI
-}
+
 // アクティブカメラを取得
 Camera* CameraManager::GetActiveCamera() {
-
-
+    if(easing_ && targetCamera_) return &tempCamera_;
+    switch(Typeview_) {
+        case ViewCameraType::Main: return mainCamera_.get();
+        case ViewCameraType::Sub:  
+            if(subCamerasMap_.count("Default")) return subCamerasMap_["Default"].get();
+            break;
+    }
     return mainCamera_.get();
-
-    //switch (currentMode_) {
-    //case CameraMode::Follow:
-    //    return followCamera_ ? followCamera_ : defaultCamera_;
-    //case CameraMode::GamePlay:
-    //    return gameCamera_ ? gameCamera_->GetActiveCamera() : nullptr;
-    //case CameraMode::Default:
-    //default:
-    //    return defaultCamera_;
-    //}
 }
-//// カメラモード設定
-//void CameraManager::SetCameraMode(CameraMode mode) {
-//    currentMode_ = mode;
-//    SetActiveCamera(); // カメラ共通リソースへ反映
-//}
+
+void CameraManager::SetViewType(ViewCameraType type, CameraSwitchType switchType)
+{
+    Camera* targetCam = nullptr;
+    switch(type) {
+        case ViewCameraType::Main: targetCam = mainCamera_.get(); break;
+        case ViewCameraType::Sub:
+            if(subCamerasMap_.count("Default")) targetCam = subCamerasMap_["Default"].get();
+            break;
+    }
+    if(!targetCam) return;
+
+    switchType_ = switchType;
+
+    if(switchType == CameraSwitchType::Ease) {
+        targetCamera_ = targetCam;
+
+        Camera* currentCam = GetActiveCamera();
+        startPos_ = currentCam->GetTranslate();
+        startRot_ = currentCam->GetRotate();
+
+        targetPos_ = targetCamera_->GetTranslate();
+        targetRot_ = targetCamera_->GetRotate();
+
+        easeTimer_ = 0.0f;
+        easeTime_ = 3.0f;  // ここで3秒間に固定
+        easing_ = true;
+    } else {
+        Typeview_ = type;
+        easing_ = false;
+        targetCamera_ = nullptr;
+    }
+}
+
+
+// カメラモード設定
+void CameraManager::SetCameraMode(CameraMode mode) {
+    currentMode_ = mode;
+    SetActiveCamera(); // カメラ共通リソースへ反映
+}
+
 // アクティブカメラを共通リソースに設定
 void CameraManager::SetActiveCamera() {
     Camera* active = GetActiveCamera();
-
-    //// ゲームカメラの場合は、内部の複数のカメラも適用
-    //if (currentMode_ == CameraMode::GamePlay && gameCamera_) {
-    //    auto mainCam = gameCamera_->GetMainCamera();
-    //    auto subCam = gameCamera_->GetSubCamera();
-
-    //    if (mainCam) {
-    //        Object3dCommon::GetInstance()->SetDefaultCamera(mainCam);
-    //        ParticleCommon::GetInstance()->SetDefaultCamera(mainCam);
-    //    }
-    //    if (subCam) {
-    //        Object3dCommon::GetInstance()->SetDefaultCamera(subCam);
-    //        ParticleCommon::GetInstance()->SetDefaultCamera(subCam);
-    //    }
-    //}
-    //// 共通リソースにアクティブカメラを設定
+    // 共通リソースにアクティブカメラを設定
     Object3dCommon::GetInstance()->SetDefaultCamera(active);
     ParticleCommon::GetInstance()->SetDefaultCamera(active);
+}
+
+// ImGui描画
+void CameraManager::DrawImGui() {
+#ifdef USE_IMGUI
+    ImGui::Begin("Camera Manager");
+
+    // カメラタイプ切り替え
+    const char* viewTypes[] = { "Main", "Sub" };
+    int currentView = static_cast<int>(Typeview_);
+    if (ImGui::Combo("View Type", &currentView, viewTypes, IM_ARRAYSIZE(viewTypes))) {
+        SetViewType(static_cast<ViewCameraType>(currentView), switchType_);
+    }
+
+    // イージング / 瞬間切替
+    const char* switchTypes[] = { "Instant", "Ease" };
+    int currentSwitch = static_cast<int>(switchType_);
+    if (ImGui::Combo("Switch Type", &currentSwitch, switchTypes, IM_ARRAYSIZE(switchTypes))) {
+        switchType_ = static_cast<CameraSwitchType>(currentSwitch);
+    }
+
+    // イージング速度
+    ImGui::DragFloat("Ease Time", &easeTime_, 0.01f, 0.01f, 5.0f);
+
+    // --- 選択中カメラを取得 ---
+    Camera* cam = GetActiveCamera();
+    if (cam) {
+        Vector3& pos = cam->GetTranslate();  // 書き換え用参照
+        Vector3& rot = cam->GetRotate();
+        // 位置を操作
+        ImGui::DragFloat3("Position", &pos.x, 0.1f);
+        // 回転を操作
+        ImGui::DragFloat3("Rotation", &rot.x, 0.001f);
+    }
+
+    ImGui::End();
+#endif // USE_IMGUI
 }
