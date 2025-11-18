@@ -41,11 +41,10 @@ void GameClearScene::Initialize() {
     clear = Object3d::Create("Clear.obj", Transform{ { 1.0f, 1.0f, 1.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 30.0f } });
     Box_ = Skybox::Create("CubemapBox.dds", Transform{ { 1000.0f, 1000.0f, 1000.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 100.0f } });
 
-
-
-    player_ =  Object3d::Create("Gameplay/Model/Player/Player.obj", Transform{ { 1.0f, 1.0f, 1.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 30.0f } });
-
-    offset_ = { 0.0f,0.0f,30.0f };
+    offset_ = { { 1.0f, 1.0f, 1.0f }, { 0.0f, 1.5f, 0.0f }, { -70.0f, 0.0f, 30.0f } };
+    player_ = Object3d::Create("Gameplay/Model/Player/Player.obj", offset_); 
+    startOffset_ = { -70.0f, 0.0f, 30.0f };  
+    endOffset_ = { 0.0f, 0.0f, 30.0f };
 
     // フェードマネージャの初期化
     FadeManager::GetInstance()->Initialize();
@@ -62,17 +61,11 @@ void GameClearScene::Update() {
     }
     // フェードマネージャの更新処理
     FadeManager::GetInstance()->Update();
- 
-    //// ゲームシーンへの入力処理
-    //if (Input::GetInstance()->Triggrkey(DIK_RETURN) && !FadeManager::GetInstance()->IsFading() && FadeManager::GetInstance()->IsFadeEnd()) {
-    //    // フェード開始
-    //    FadeManager::GetInstance()->StartFadeOut(1.0f,FadeStyle::SilhouetteSlide);
-    //}
 
-    //// フェードアウト完了後にタイトルへ
-    //if (FadeManager::GetInstance()->IsFadeEnd() && FadeManager::GetInstance()->GetFadeType() == FadeType::FadeOut) {
-    //    SceneManager::GetInstance()->ChangeScene("TITLE");
-    //}
+    // フェードアウト完了後にタイトルへ
+    if (FadeManager::GetInstance()->IsFadeEnd() && FadeManager::GetInstance()->GetFadeType() == FadeType::FadeOut) {
+        SceneManager::GetInstance()->ChangeScene("TITLE");
+    }
 
     /*-------------------------------------------*/
     /*--------------Cameraの更新処理---------------*/
@@ -85,8 +78,8 @@ void GameClearScene::Update() {
 	Box_->Update();   // 背景の更新
 	clear->Update(); // オブジェクトの更新
 
-    offset_.y += 0.01f;
-    player_->SetTranslate(offset_);
+
+    UpdateStep();
     player_->Update();
 
 #pragma endregion 全てのObject3d個々の更新処理
@@ -101,7 +94,6 @@ void GameClearScene::Update() {
 
     // Camera
     CameraManager::GetInstance()->DrawImGui();
-
 
 #endif // USE_IMGUI
 #pragma endregion ImGuiの更新処理終了
@@ -137,4 +129,103 @@ void GameClearScene::Draw() {
     // フェードマネージャの描画
     FadeManager::GetInstance()->Draw();
 #pragma endregion 全てのSprite個々の描画処理
+}
+
+
+void GameClearScene::UpdateStep() {
+    switch (step_)
+    {
+    case 0:
+        Step1_MovePlayerAndSwitchCamera();
+        break;
+
+    case 1:
+        Step2_WaitOrDoSomething();
+
+        break;
+    case 2:
+        Step3_MoveCameraOnInput();
+        break;
+    }
+}
+
+void GameClearScene::Step1_MovePlayerAndSwitchCamera()
+{
+    // イージング処理
+    bool finished = EaseMove(offset_.translate, startOffset_, endOffset_, easeT_, easeSpeed_);
+
+    player_->SetTranslate(offset_.translate);
+
+    if (finished)
+    {
+        // カメラモード変更（Follow → FixedLookAt）
+        CameraManager::GetInstance()->GetClearCamera()->SetFollowMode(FollowMode::FixedLookAt);
+
+        // 次のステップへ
+        step_ = 1;
+    }
+}
+
+void GameClearScene::Step2_WaitOrDoSomething()
+{
+    Camera* cam = CameraManager::GetInstance()->GetClearCamera()->GetActiveCamera();
+
+    /*-----------------------------------------------*/
+    /* ① カメラの X を 0 → 5 へイージング移動     */
+    /*-----------------------------------------------*/
+    if (step2CamT_ < 1.0f) {
+        step2CamT_ += 0.01f;    // 速度
+        if (step2CamT_ > 1.0f) step2CamT_ = 1.0f;
+
+        float ease = EaseOutCubic(step2CamT_);
+        float startX = 0.0f;
+        float endX = 7.0f;
+
+        Vector3 cp = cam->GetTranslate();
+        cp.x = startX + (endX - startX) * ease;
+        cam->SetTranslate(cp);
+    }
+    Vector3 pos = player_->GetTranslate();
+
+    // プレイヤー揺れ or Y補完
+    if (!step2FinishPlayerEase_) {
+        step2Time_ += 0.03f;
+        pos.y = sinf(step2Time_) * 2.3f;
+        player_->SetTranslate(pos);
+    } else {
+        pos.y = Vector3::Lerp(pos, Vector3{ pos.x, 0.0f, pos.z }, 0.1f).y;
+        player_->SetTranslate(pos);
+
+        // 完全に0になったらStep3へ
+        if (fabs(pos.y) < 0.01f) {
+            step_ = 2;
+        }
+    }
+
+    // ボタンでStep3に進める
+    if (Input::GetInstance()->Triggrkey(DIK_RETURN) && step2CamT_ == 1.0f) {
+        step2FinishPlayerEase_ = true;  // Y補完開始
+    }
+}
+
+void GameClearScene::Step3_MoveCameraOnInput()
+{
+    Camera* cam = CameraManager::GetInstance()->GetClearCamera()->GetActiveCamera();
+
+    // フリーモードに切り替え
+    CameraManager::GetInstance()->GetClearCamera()->SetFollowMode(FollowMode::FreeOffset);
+
+    // Step3中もプレイヤーのY座標は0に固定
+    Vector3 playerPos = player_->GetTranslate();
+    playerPos.x += 2.0f;
+    player_->SetTranslate(playerPos);
+ 
+  // 移動開始からのタイマー更新
+    step3Timer_ += 1.0f / 60.0f; // 1フレーム想定 = 1/60秒
+
+    // 1秒経過したら一瞬フェード処理
+    if (!step3FadeTriggered_ && step3Timer_ >= 1.0f && !FadeManager::GetInstance()->IsFading() && FadeManager::GetInstance()->IsFadeEnd()) {
+        FadeManager::GetInstance()->StartFadeOut(1.0f, FadeStyle::SilhouetteSlide); // 0.1秒だけの短いフェード
+        step3FadeTriggered_ = true;
+    }
 }

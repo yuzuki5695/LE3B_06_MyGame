@@ -200,7 +200,46 @@ void CameraManager::DrawImGui() {
             // 状態確認用
             ImGui::Text("Current: %s", viewNames[currentView]);
         }
+        if (currentMode_ == CameraMode::ClearCamera) {
 
+            ImGui::Separator();
+            ImGui::Text("Clear Camera Settings");
+
+            // ---- FollowMode ----
+            int fMode = static_cast<int>(clearCamera_->GetFollowMode());
+            const char* followModeNames[] = {
+                "Use Initial Offset",  // 0
+                "Free Offset",         // 1
+                "Fixed LookAt"         // 2
+            };
+
+            if (ImGui::Combo("Follow Mode", &fMode, followModeNames, IM_ARRAYSIZE(followModeNames))) {
+                clearCamera_->SetFollowMode(static_cast<FollowMode>(fMode));
+            }
+
+            // ---- 初期オフセット保存フラグ ----
+            bool saveFlag = clearCamera_->GetSavesaveInitialOffsetFlag();
+            if (ImGui::Checkbox("Save Initial Offset Once", &saveFlag)) {
+                clearCamera_->SetSavesaveInitialOffsetFlag(saveFlag);
+            }
+
+            // ---- Player Transform 編集 ----
+            ImGui::Separator();
+            ImGui::Text("Player Transform");
+
+            if (target_) {
+                Vector3 pos = target_->GetTranslate();
+                Vector3 rot = target_->GetRotate();
+
+                if (ImGui::DragFloat3("Player Position", &pos.x, 0.1f)) {
+                    target_->SetTranslate(pos);
+                }
+
+                if (ImGui::DragFloat3("Player Rotation", &rot.x, 0.1f)) {
+                    target_->SetRotate(rot);
+                }
+            }
+        }
     }
     ImGui::End();
 #endif // USE_IMGUI

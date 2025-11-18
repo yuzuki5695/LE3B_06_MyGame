@@ -75,12 +75,12 @@ void GameOverScene::Initialize() {
     };
 
     partCount_ = 7;
-    for (int i = 0; i < partCount_; ++i) {
+    for (size_t i = 0; i < partCount_; ++i) {
         PartInfo part;
 
         part.transform = { {1.0f, 1.0f, 1.0f}, {0.0f,0.0f,0.0f}, {distX(randomEngine), transformY(randomEngine), 30.0f} };
         // 1つ目はそのまま、それ以降は2個ずつテクスチャを切り替え
-        int textureIndex = 0; // 1つ目は 0
+        size_t textureIndex = 0; // 1つ目は 0
         if (i > 0) {
             textureIndex = ((i - 1) / 2) + 1; // 2個ごとに切り替え
             if (textureIndex >= textureNames.size()) textureIndex = textureNames.size() - 1; // 配列オーバー防止
