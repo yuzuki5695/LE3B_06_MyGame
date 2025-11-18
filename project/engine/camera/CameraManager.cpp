@@ -40,14 +40,16 @@ void CameraManager::Initialize(CameraTransform transform) {
 	gameCamera_->Initialize();
     moveFlag = false; 
     gameCamera_->Setmovefige(moveFlag);
+    clearCamera_ = new ClearCamera();
+    clearCamera_->Initialize();
 }
 // 更新処理
 void CameraManager::Update() {
     switch (currentMode_) {
-    case CameraMode::GamePlay: 
-        gameCamera_->Update(); 
+    case CameraMode::GamePlay:
         // GameCameraにも追従対象を渡す  
         gameCamera_->SetFollowTarget(target_);
+        gameCamera_->Update();
         break;
     case CameraMode::Follow:
         if (followCamera_) {
@@ -64,6 +66,10 @@ void CameraManager::Update() {
             }
             followCamera_->Update();
         }
+        break;    
+    case CameraMode::ClearCamera:
+        clearCamera_->SetTarget(target_);
+        clearCamera_->Update();
         break;
     case CameraMode::Default:
         if (defaultCamera_) {
@@ -199,6 +205,8 @@ Camera* CameraManager::GetActiveCamera() {
         return followCamera_ ? followCamera_ : defaultCamera_;
     case CameraMode::GamePlay:
         return gameCamera_ ? gameCamera_->GetActiveCamera() : nullptr;
+    case CameraMode::ClearCamera:
+        return clearCamera_ ? clearCamera_->GetActiveCamera() : nullptr;
     case CameraMode::Default:
     default:
         return defaultCamera_;

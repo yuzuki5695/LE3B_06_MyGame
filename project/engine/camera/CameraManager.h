@@ -1,11 +1,14 @@
 #pragma once
 #include <Object3d.h>
 #include<GameCamera.h>
+#include<ClearCamera.h>
+
 // カメラモード
 enum class CameraMode {
     Default,
     Follow,
     GamePlay,
+    ClearCamera,
     Event
 };
 
@@ -44,6 +47,7 @@ private:
     Camera* defaultCamera_; // 追従しないカメラ(デフォルト)
     Camera* followCamera_;  // 追従用カメラ
     GameCamera* gameCamera_; // ゲームプレイ用カメラ 
+    ClearCamera* clearCamera_; // クリア用カメラ
     // ゲームカメラ関連
     bool moveFlag = false;
     uint32_t activated_ ;
@@ -61,7 +65,7 @@ public: // メンバ関数
     
     CameraMode GetcurrentMode() { return currentMode_; }
     GameCamera* GetGameCamera() { return gameCamera_; }
-
+    ClearCamera* GetClearCamera() { return clearCamera_; }
 
     void SetMoveFlag(bool flag) { moveFlag = flag; }
     bool GetMoveFlag() const { return moveFlag; }

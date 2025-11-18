@@ -34,5 +34,5 @@ private: // メンバ変数
     std::unique_ptr <Skybox> Box_ = nullptr;     //　背景
     
     std::unique_ptr <Object3d> player_ = nullptr;  // オブジェクト
-
+    Vector3 offset_;
 };

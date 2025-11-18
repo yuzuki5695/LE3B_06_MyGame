@@ -25,7 +25,7 @@ void GameClearScene::Finalize() {
 void GameClearScene::Initialize() {
     // カメラマネージャの初期化
     CameraManager::GetInstance()->Initialize(CameraTransform({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }));
-    CameraManager::GetInstance()->SetCameraMode(CameraMode::Default);
+    CameraManager::GetInstance()->SetCameraMode(CameraMode::ClearCamera);
     // モデルの読み込み
     ModelManager::GetInstance()->LoadModel("Clear.obj");
     ModelManager::GetInstance()->LoadModel("Gameplay/Model/Player/Player.obj");
@@ -45,6 +45,8 @@ void GameClearScene::Initialize() {
 
     player_ =  Object3d::Create("Gameplay/Model/Player/Player.obj", Transform{ { 1.0f, 1.0f, 1.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 30.0f } });
 
+    offset_ = { 0.0f,0.0f,30.0f };
+
     // フェードマネージャの初期化
     FadeManager::GetInstance()->Initialize();
 }
@@ -61,20 +63,21 @@ void GameClearScene::Update() {
     // フェードマネージャの更新処理
     FadeManager::GetInstance()->Update();
  
-    // ゲームシーンへの入力処理
-    if (Input::GetInstance()->Triggrkey(DIK_RETURN) && !FadeManager::GetInstance()->IsFading() && FadeManager::GetInstance()->IsFadeEnd()) {
-        // フェード開始
-        FadeManager::GetInstance()->StartFadeOut(1.0f,FadeStyle::SilhouetteSlide);
-    }
+    //// ゲームシーンへの入力処理
+    //if (Input::GetInstance()->Triggrkey(DIK_RETURN) && !FadeManager::GetInstance()->IsFading() && FadeManager::GetInstance()->IsFadeEnd()) {
+    //    // フェード開始
+    //    FadeManager::GetInstance()->StartFadeOut(1.0f,FadeStyle::SilhouetteSlide);
+    //}
 
-    // フェードアウト完了後にタイトルへ
-    if (FadeManager::GetInstance()->IsFadeEnd() && FadeManager::GetInstance()->GetFadeType() == FadeType::FadeOut) {
-        SceneManager::GetInstance()->ChangeScene("TITLE");
-    }
+    //// フェードアウト完了後にタイトルへ
+    //if (FadeManager::GetInstance()->IsFadeEnd() && FadeManager::GetInstance()->GetFadeType() == FadeType::FadeOut) {
+    //    SceneManager::GetInstance()->ChangeScene("TITLE");
+    //}
 
     /*-------------------------------------------*/
     /*--------------Cameraの更新処理---------------*/
-    /*------------------------------------------*/
+    /*------------------------------------------*/ 
+    CameraManager::GetInstance()->SetTarget(player_.get());
     CameraManager::GetInstance()->Update();
 
 #pragma region 全てのObject3d個々の更新処理    
@@ -82,7 +85,8 @@ void GameClearScene::Update() {
 	Box_->Update();   // 背景の更新
 	clear->Update(); // オブジェクトの更新
 
-
+    offset_.y += 0.01f;
+    player_->SetTranslate(offset_);
     player_->Update();
 
 #pragma endregion 全てのObject3d個々の更新処理
