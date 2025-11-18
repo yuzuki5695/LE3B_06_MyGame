@@ -106,6 +106,9 @@ void CameraManager::DrawImGui() {
     if (ImGui::RadioButton("GamePlay", mode == 2)) {
         mode = 2;
     }
+    if (ImGui::RadioButton("ClearCamera", mode == 3)) {
+        mode = 3;
+    }
     // モードが変わったら切り替える
     CameraMode newMode = static_cast<CameraMode>(mode);
     if (newMode != currentMode_) {
@@ -130,7 +133,11 @@ void CameraManager::DrawImGui() {
         break;
     case CameraMode::GamePlay:
         activeCamera = gameCamera_->GetActiveCamera();
-        modeName = "GamePlay";        
+        modeName = "GamePlay";
+        break;
+    case CameraMode::ClearCamera:
+        activeCamera = clearCamera_->GetActiveCamera();
+        modeName = "ClearCamera";
         break;
     }
     ImGui::Text("Current Mode: %s", modeName);
