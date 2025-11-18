@@ -24,7 +24,7 @@ void GameClearScene::Finalize() {
 ///====================================================
 void GameClearScene::Initialize() {
     // カメラマネージャの初期化
-    CameraManager::GetInstance()->Initialize(CameraTransform({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }));
+    CameraManager::GetInstance()->Initialize(CameraTransform({ -15.0f, 15.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }));
     CameraManager::GetInstance()->SetCameraMode(CameraMode::ClearCamera);
     // モデルの読み込み
     ModelManager::GetInstance()->LoadModel("Clear.obj");
@@ -38,12 +38,11 @@ void GameClearScene::Initialize() {
     ui1_->SetAnchorPoint(Vector2{ 0.5f, 0.5f }); // 中心基準
     ui1_->SetTextureSize(Vector2{ 360.0f,100.0f });
 
-    clear = Object3d::Create("Clear.obj", Transform{ { 1.0f, 1.0f, 1.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 30.0f } });
     Box_ = Skybox::Create("CubemapBox.dds", Transform{ { 1000.0f, 1000.0f, 1000.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 100.0f } });
 
     offset_ = { { 1.0f, 1.0f, 1.0f }, { 0.0f, 1.5f, 0.0f }, { -70.0f, 0.0f, 30.0f } };
     player_ = Object3d::Create("Gameplay/Model/Player/Player.obj", offset_); 
-    startOffset_ = { -70.0f, 0.0f, 30.0f };  
+    startOffset_ = { -170.0f, 50.0f, 30.0f };  
     endOffset_ = { 0.0f, 0.0f, 30.0f };
 
     // フェードマネージャの初期化
@@ -76,7 +75,6 @@ void GameClearScene::Update() {
 #pragma region 全てのObject3d個々の更新処理    
 
 	Box_->Update();   // 背景の更新
-	clear->Update(); // オブジェクトの更新
 
 
     UpdateStep();
@@ -110,8 +108,6 @@ void GameClearScene::Draw() {
 
     // 3Dオブジェクトの描画準備。3Dオブジェクトの描画に共通のグラフィックスコマンドを積む
     Object3dCommon::GetInstance()->Commondrawing();
-    
-    clear->Draw();// オブジェクトの描画
 
 
     player_->Draw();
@@ -151,6 +147,36 @@ void GameClearScene::UpdateStep() {
 
 void GameClearScene::Step1_MovePlayerAndSwitchCamera()
 {
+    Camera* cam = CameraManager::GetInstance()->GetClearCamera()->GetActiveCamera();
+ 
+    if (!step1CamMoveStart_) {
+        // 100進むと座標は -70
+        if (offset_.translate.x > -80.0f) {
+            step1CamMoveStart_ = true;
+        }
+    }
+
+    if (step1CamMoveStart_ && step1CamT_ < 1.0f) {
+
+        step1CamT_ += 0.02f; // カメラの速さ調整
+        if (step1CamT_ > 1.0f) step1CamT_ = 1.0f;
+
+        float e = EaseOutCubic(step1CamT_);
+
+        float startX = -15.0f;
+        float endX = 0.0f;
+
+        float startY = 15.0f;
+        float endY = 0.0f;
+
+        Vector3 camPos = cam->GetTranslate();
+
+        camPos.x = startX + (endX - startX) * e;
+        camPos.y = startY + (endY - startY) * e;
+
+        cam->SetTranslate(camPos);
+    }
+
     // イージング処理
     bool finished = EaseMove(offset_.translate, startOffset_, endOffset_, easeT_, easeSpeed_);
 
@@ -171,7 +197,7 @@ void GameClearScene::Step2_WaitOrDoSomething()
     Camera* cam = CameraManager::GetInstance()->GetClearCamera()->GetActiveCamera();
 
     /*-----------------------------------------------*/
-    /* ① カメラの X を 0 → 5 へイージング移動     */
+    /* ① カメラの X を 0 → 8 へイージング移動     */
     /*-----------------------------------------------*/
     if (step2CamT_ < 1.0f) {
         step2CamT_ += 0.01f;    // 速度
@@ -179,7 +205,7 @@ void GameClearScene::Step2_WaitOrDoSomething()
 
         float ease = EaseOutCubic(step2CamT_);
         float startX = 0.0f;
-        float endX = 7.0f;
+        float endX = 8.0f;
 
         Vector3 cp = cam->GetTranslate();
         cp.x = startX + (endX - startX) * ease;
@@ -190,7 +216,7 @@ void GameClearScene::Step2_WaitOrDoSomething()
     // プレイヤー揺れ or Y補完
     if (!step2FinishPlayerEase_) {
         step2Time_ += 0.03f;
-        pos.y = sinf(step2Time_) * 2.3f;
+        pos.y = sinf(step2Time_) * 1.3f;
         player_->SetTranslate(pos);
     } else {
         pos.y = Vector3::Lerp(pos, Vector3{ pos.x, 0.0f, pos.z }, 0.1f).y;
@@ -211,21 +237,94 @@ void GameClearScene::Step2_WaitOrDoSomething()
 void GameClearScene::Step3_MoveCameraOnInput()
 {
     Camera* cam = CameraManager::GetInstance()->GetClearCamera()->GetActiveCamera();
-
-    // フリーモードに切り替え
     CameraManager::GetInstance()->GetClearCamera()->SetFollowMode(FollowMode::FreeOffset);
 
-    // Step3中もプレイヤーのY座標は0に固定
-    Vector3 playerPos = player_->GetTranslate();
-    playerPos.x += 2.0f;
-    player_->SetTranslate(playerPos);
- 
-  // 移動開始からのタイマー更新
-    step3Timer_ += 1.0f / 60.0f; // 1フレーム想定 = 1/60秒
+    // Step3時間更新
+    step3Timer_ += (1.0f / 60.0f);
 
-    // 1秒経過したら一瞬フェード処理
-    if (!step3FadeTriggered_ && step3Timer_ >= 1.0f && !FadeManager::GetInstance()->IsFading() && FadeManager::GetInstance()->IsFadeEnd()) {
-        FadeManager::GetInstance()->StartFadeOut(1.0f, FadeStyle::SilhouetteSlide); // 0.1秒だけの短いフェード
+    Vector3 pos = player_->GetTranslate();
+
+    /*-----------------------------------------------*/
+    /* ① Step3開始時の「一度だけ後ろに下がる動き」 */
+    /*-----------------------------------------------*/
+    if (!step3BackJumpDone_)
+    {
+        float backDuration = 0.3f;        // 0.5秒かけて後ろへ
+        float backDistance = -15.0f;      // 大きく下がる距離
+
+        float t = step3Timer_ / backDuration;
+        if (t > 1.0f) {
+            t = 1.0f;
+            step3BackJumpDone_ = true;
+        }
+
+        float ease = EaseOutBack(t);
+
+        pos.x = startStep3PosX_ + backDistance * ease;
+        pos.y = 0.0f;
+        // --- 回転：1.5 → 3.0 へ ---
+        Vector3 rot = player_->GetRotate();
+        float startRot = 1.5f;
+        float endRot = 3.0f;
+
+        rot.y = startRot + (endRot - startRot) * ease;  // ← イージング回転
+
+        // プレイヤーに設定
+        player_->SetTranslate(pos);
+        player_->SetRotate(rot);
+
+        return;
+    }
+
+    /*-----------------------------------------------*/
+    /* ② カメラへ向かって X/Y/Z 移動（加速付き）   */
+    /*-----------------------------------------------*/
+
+    // Z の進捗 (30 → 0)
+    float t = (30.0f - pos.z) / 30.0f;
+    t = std::clamp(t, 0.0f, 1.0f);
+
+    // 加速する速度
+    float baseSpeed = 1.0f;
+    float accelPower = 6.0f;
+    float speed = baseSpeed + EaseOutCubic(t) * accelPower;
+
+    // Z を前へ
+    pos.z -= speed;
+
+    /*-----------------------------------------------*/
+    // 追加：X に横方向のカーブを入れる
+    /*-----------------------------------------------*/
+
+    // X の最大曲がり幅
+    float maxCurve = 25.0f;     // ← 好きな値にする（大きいほど横移動が強い）
+
+    // 進行に合わせてカーブが減る（最初大きく→最後0へ）
+    float curveX = EaseOutCubic(1.0f - t) * maxCurve;
+
+    /*-----------------------------------------------*/
+    // 斜め上へ（Yは上昇）＋ カーブX追加
+    /*-----------------------------------------------*/
+    float rise = EaseOutCubic(t) * 15.0f;
+
+    Vector3 targetPos = { curveX,rise,pos.z };
+
+    // X/Y をなめらかに寄せる
+    pos = Vector3::Lerp(pos, targetPos, 0.12f);
+
+    player_->SetTranslate(pos);
+
+
+
+    /*-----------------------------------------------*/
+    /* ③ 1秒後に一瞬フェード処理                  */
+    /*-----------------------------------------------*/
+    if (!step3FadeTriggered_ &&
+        step3Timer_ >= 1.0f &&
+        !FadeManager::GetInstance()->IsFading() &&
+        FadeManager::GetInstance()->IsFadeEnd())
+    {
+        FadeManager::GetInstance()->StartFadeOut(2.0f, FadeStyle::SilhouetteSlide);
         step3FadeTriggered_ = true;
     }
 }
