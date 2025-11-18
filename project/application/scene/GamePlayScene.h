@@ -87,8 +87,11 @@ private: // メンバ変数
 	// ゴールフラグ
     bool goal_ = false;
 	// スカイボックス
-    std::unique_ptr <Skybox> Box_ = nullptr;
-	// イベント処理
+    //std::unique_ptr <Skybox> Box_ = nullptr;	
+    // スカイボックス      
+    std::unique_ptr <Object3d> Box_ = nullptr;
+
+    // イベント処理
     std::vector<EventManager> event_; 
     /// UI(タイトルへ(仮))
     std::unique_ptr <Sprite> ui1_;

@@ -33,20 +33,42 @@ void GameClearScene::Initialize() {
     // テクスチャの読み込み
     TextureManager::GetInstance()->LoadTexture("CubemapBox.dds");
     TextureManager::GetInstance()->LoadTexture("Gameclear/Texture/UI_01.png");
+    TextureManager::GetInstance()->LoadTexture("Gameclear/Texture/Mission.png");
+    TextureManager::GetInstance()->LoadTexture("Gameclear/Texture/Complete.png");
 
-    ui1_ = Sprite::Create("Gameclear/Texture/UI_01.png", Vector2{ 650.0f, 500.0f }, 0.0f, Vector2{ 360.0f,100.0f });
-    ui1_->SetAnchorPoint(Vector2{ 0.5f, 0.5f }); // 中心基準
-    ui1_->SetTextureSize(Vector2{ 360.0f,100.0f });
+
 
     Box_ = Skybox::Create("CubemapBox.dds", Transform{ { 1000.0f, 1000.0f, 1000.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 100.0f } });
 
     offset_ = { { 1.0f, 1.0f, 1.0f }, { 0.0f, 1.5f, 0.0f }, { -70.0f, 0.0f, 30.0f } };
-    player_ = Object3d::Create("Gameplay/Model/Player/Player.obj", offset_); 
-    startOffset_ = { -170.0f, 50.0f, 30.0f };  
+    player_ = Object3d::Create("Gameplay/Model/Player/Player.obj", offset_);
+    startOffset_ = { -170.0f, 50.0f, 30.0f };
     endOffset_ = { 0.0f, 0.0f, 30.0f };
 
     // フェードマネージャの初期化
     FadeManager::GetInstance()->Initialize();
+
+
+    ui1_ = Sprite::Create("Gameclear/Texture/UI_01.png", Vector2{ 950.0f, 450.0f }, 0.0f, Vector2{ 360.0f,100.0f });
+    ui1_->SetAnchorPoint(Vector2{ 0.5f, 0.5f }); // 中心基準
+    ui1_->SetTextureSize(Vector2{ 360.0f,100.0f });
+        
+
+    ui2Timer_ = 0.0f;
+    ui2Duration_ = 60.0f;
+    ui3Timer_ = 0.0f;
+    ui3Duration_ = 60.0f;;
+    ui2StartPos = { 1280.0f, 10.0f }; // 上にずらした初期位置
+    ui2EndPos = { 600.0f, 10.0f }; // 最終位置（現在の値）
+    ui3StartPos = { 1280.0f, 130.0f };
+    ui3EndPos = { 800.0f, 130.0f };
+    
+    ui2_ = Sprite::Create("Gameclear/Texture/Mission.png", ui2StartPos, 0.0f, Vector2{ 400.0f,150.0f });
+    ui2_->SetTextureSize(Vector2{ 400.0f,150.0f });
+
+    ui3_ = Sprite::Create("Gameclear/Texture/Complete.png", ui3StartPos, 0.0f, Vector2{ 400.0f,150.0f });
+    ui3_->SetTextureSize(Vector2{ 400.0f,150.0f });
+
 }
 
 ///====================================================
@@ -85,6 +107,8 @@ void GameClearScene::Update() {
 #pragma region 全てのSprite個々の更新処理
 
 	ui1_->Update(); // スプライトの更新
+    ui2_->Update();
+    ui3_->Update();
 
 #pragma endregion 全てのSprite個々の更新処理
 #pragma region  ImGuiの更新処理開始
@@ -120,8 +144,15 @@ void GameClearScene::Draw() {
     // Spriteの描画準備。Spriteの描画に共通のグラフィックスコマンドを積む
     SpriteCommon::GetInstance()->Commondrawing();
 
-    ui1_->Draw(); // スプライトの描画
- 
+    if (ui2_->GetPosition().x == ui2EndPos.x && step_ == 1) {
+        ui1_->Draw(); // スプライトの描画 
+    }
+
+    if (step_ != 0) {
+        ui2_->Draw();
+        ui3_->Draw();
+    }
+
     // フェードマネージャの描画
     FadeManager::GetInstance()->Draw();
 #pragma endregion 全てのSprite個々の描画処理
@@ -211,6 +242,30 @@ void GameClearScene::Step2_WaitOrDoSomething()
         cp.x = startX + (endX - startX) * ease;
         cam->SetTranslate(cp);
     }
+    if (ui2Timer_ < ui2Duration_ && ui2_->GetPosition().x != ui2EndPos.x) {
+        ui2Timer_++;
+
+        float t = ui2Timer_ / ui2Duration_;
+        float easeT = EaseOutBack(t);
+        Vector2 newPos1 = {
+            ui2StartPos.x + (ui2EndPos.x - ui2StartPos.x) * easeT,
+            ui2StartPos.y + (ui2EndPos.y - ui2StartPos.y) * easeT
+        };
+        ui2_->SetPosition(newPos1);
+    }
+
+    if (ui3Timer_ < ui3Duration_ && ui2_->GetPosition().x != ui3EndPos.x && ui2_->GetPosition().x < 900) {
+        ui3Timer_++;
+
+        float t = ui3Timer_ / ui3Duration_;
+        float easeT = EaseOutBack(t);
+        Vector2 newPos1 = {
+            ui3StartPos.x + (ui3EndPos.x - ui3StartPos.x) * easeT,
+            ui3StartPos.y + (ui3EndPos.y - ui3StartPos.y) * easeT
+        };
+        ui3_->SetPosition(newPos1);
+    }
+
     Vector3 pos = player_->GetTranslate();
 
     // プレイヤー揺れ or Y補完
@@ -230,6 +285,14 @@ void GameClearScene::Step2_WaitOrDoSomething()
 
     // ボタンでStep3に進める
     if (Input::GetInstance()->Triggrkey(DIK_RETURN) && step2CamT_ == 1.0f) {
+        if (!step2FinishPlayerEase_) {
+            ui2Timer_ = 0;
+            ui3Timer_ = 0;
+            ui2StartPos = { 600.0f, 10.0f }; // 上にずらした初期位置 
+            ui2EndPos = { 1280.0f, 10.0f }; // 最終位置（現在の値）
+            ui3StartPos = { 800.0f, 130.0f };
+            ui3EndPos = { 2480.0f, 130.0f };
+        }
         step2FinishPlayerEase_ = true;  // Y補完開始
     }
 }
@@ -238,6 +301,31 @@ void GameClearScene::Step3_MoveCameraOnInput()
 {
     Camera* cam = CameraManager::GetInstance()->GetClearCamera()->GetActiveCamera();
     CameraManager::GetInstance()->GetClearCamera()->SetFollowMode(FollowMode::FreeOffset);
+
+    if (ui2Timer_ < ui2Duration_ && ui2_->GetPosition().x != ui2EndPos.x) {
+        ui2Timer_++; 
+
+        float t = ui2Timer_ / ui2Duration_;
+        float easeT = EaseOutBack(t);
+        Vector2 newPos1 = {
+            ui2StartPos.x + (ui2EndPos.x - ui2StartPos.x) * easeT,
+            ui2StartPos.y + (ui2EndPos.y - ui2StartPos.y) * easeT
+        };
+        ui2_->SetPosition(newPos1);
+    }
+
+    if (ui3Timer_ < ui3Duration_ && ui2_->GetPosition().x != ui3EndPos.x && ui2_->GetPosition().x > 900) {
+        ui3Timer_++;
+
+        float t = ui3Timer_ / ui3Duration_;
+        float easeT = EaseOutBack(t);
+        Vector2 newPos1 = {
+            ui3StartPos.x + (ui3EndPos.x - ui3StartPos.x) * easeT,
+            ui3StartPos.y + (ui3EndPos.y - ui3StartPos.y) * easeT
+        };
+        ui3_->SetPosition(newPos1);
+    }
+
 
     // Step3時間更新
     step3Timer_ += (1.0f / 60.0f);
@@ -324,7 +412,7 @@ void GameClearScene::Step3_MoveCameraOnInput()
         !FadeManager::GetInstance()->IsFading() &&
         FadeManager::GetInstance()->IsFadeEnd())
     {
-        FadeManager::GetInstance()->StartFadeOut(2.0f, FadeStyle::SilhouetteSlide);
+        FadeManager::GetInstance()->StartFadeOut(1.3f, FadeStyle::SilhouetteSlide);
         step3FadeTriggered_ = true;
     }
 }

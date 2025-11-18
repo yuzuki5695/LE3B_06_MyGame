@@ -100,7 +100,18 @@ private: // メンバ変数
 
 
 
-    std::unique_ptr <Sprite> ui1_ = nullptr;     // スプライト      
-    std::unique_ptr <Sprite> ui1_ = nullptr;     // スプライト 
+    std::unique_ptr <Sprite> ui2_ = nullptr;     // スプライト      
+    std::unique_ptr <Sprite> ui3_ = nullptr;     // スプライト 
+   
+    // UI移動制御用の変数
+    float ui2Timer_;
+    float ui2Duration_; // 約1秒
+    float ui3Timer_;
+    float ui3Duration_;
+
+    Vector2 ui2StartPos; // 上にずらした初期位置
+    Vector2 ui2EndPos; // 最終位置（現在の値）
+    Vector2 ui3StartPos; // 上にずらした初期位置
+    Vector2 ui3EndPos; // 最終位置（現在の値）
 
 };

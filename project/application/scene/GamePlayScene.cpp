@@ -96,7 +96,10 @@ void GamePlayScene::Initialize() {
     wall = Object3d::Create("Gameplay/Model/Goal/Goal.obj", Transform{ { 2.0f, 2.0f, 2.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 2.0f, 500.0f } });
     // スカイボックスの作成
     TextureManager::GetInstance()->LoadTexture("CubemapBox.dds");
-    Box_ = Skybox::Create("CubemapBox.dds", Transform{ { 1000.0f, 1000.0f, 1000.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 100.0f } });
+//    Box_ = Skybox::Create("CubemapBox.dds", Transform{ { 1000.0f, 1000.0f, 1000.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 100.0f } });
+    ModelManager::GetInstance()->LoadModel("Gameplay/Box.obj");
+    Box_ = Object3d::Create("Gameplay/Box.obj", Transform{ { 1000.0f, 1000.0f, 1000.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f } });
+
     // ゴールフラグ初期化
     goal_ = false;
     // フェードマネージャの初期化
@@ -254,10 +257,11 @@ void GamePlayScene::Draw() {
 #pragma region 全てのObject3d個々の描画処理
     // 箱オブジェクトの描画準備。3Dオブジェクトの描画に共通のグラフィックスコマンドを積む
     SkyboxCommon::GetInstance()->Commondrawing();
-    Box_->Draw();
+    //Box_->Draw();
     // 3Dオブジェクトの描画準備。3Dオブジェクトの描画に共通のグラフィックスコマンドを積む
     Object3dCommon::GetInstance()->Commondrawing(); 
     StageManager::GetInstance()->Draw();
+    Box_->Draw();
 
     // 描画処理
     if (!end) {
