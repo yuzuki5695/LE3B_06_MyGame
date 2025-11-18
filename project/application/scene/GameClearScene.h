@@ -32,4 +32,7 @@ private: // メンバ変数
     std::unique_ptr <Sprite> ui1_ = nullptr;     // スプライト 
     std::unique_ptr <Object3d> clear = nullptr;  // オブジェクト
     std::unique_ptr <Skybox> Box_ = nullptr;     //　背景
+    
+    std::unique_ptr <Object3d> player_ = nullptr;  // オブジェクト
+
 };
