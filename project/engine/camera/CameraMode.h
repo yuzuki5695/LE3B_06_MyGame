@@ -6,6 +6,14 @@ enum class ViewCameraType  {
     Main,      // メイン
     Sub,       // サブ
 };
+//  シーンごとのカメラ
+enum class SceneCameraType {
+    Title,
+    Gameplay,
+    GameClear,
+    GameOver,
+};
+
 // カメラの状態
 enum class CameraMode {
     Default,      // 手動 or 固定視点カメラ
