@@ -22,19 +22,62 @@ public:
 
     virtual ~BaseEmitter() = default;
     virtual void Update() = 0;   // ← 動作ごとに違う
-    void Emit() { ParticleManager::GetInstance()->Emit(name_, transform_, color_, count_, velocity_, frequency_, random_); }
+    void Emit() {
+        auto& group = ParticleManager::GetInstance()->GetGroup(name_);
+
+        // 現在生存中のパーティクル数
+        uint32_t aliveCount = static_cast<uint32_t>(group.particles.size());
+
+        // 残り発生可能数
+        uint32_t remaining = maxParticles_ > aliveCount ? maxParticles_ - aliveCount : 0;
+        if (remaining == 0) return;
+
+        // 1回の発生数は残りを超えないように
+        uint32_t emitCount = std::min(emitPerTick_, remaining);
+
+        ParticleManager::GetInstance()->Emit(name_, transform_, color_, emitCount, velocity_, frequency_, random_);
+    }
+
     void SetTarget(Object3d* obj) { target_ = obj; } // FollowEmitter用 getter/setter
 
-       
+
     // ImGui
     virtual void DrawImGuiUI() {
 #ifdef USE_IMGUI
         if (ImGui::CollapsingHeader(name_.c_str())) {
             ImGui::DragInt("Count", reinterpret_cast<int*>(&count_), 1, 1, 1000);
-            ImGui::DragFloat3("Position", &transform_.translate.x, 0.01f);
+
+            // Transform 調整
+            ImGui::Text("Transform");
+            ImGui::DragFloat3("Translate", &transform_.translate.x, 0.01f);
+            ImGui::DragFloat3("Rotate", &transform_.rotate.x, 0.1f);
+            ImGui::DragFloat3("Scale", &transform_.scale.x, 0.01f);
+
+            // Velocity 調整
+            ImGui::Text("Velocity");
+            ImGui::DragFloat3("Velocity Translate", &velocity_.translate.x, 0.01f);
+            ImGui::DragFloat3("Velocity Rotate", &velocity_.rotate.x, 0.01f);
+            ImGui::DragFloat3("Velocity Scale", &velocity_.scale.x, 0.01f);
+            // Color
             ImGui::ColorEdit4("Color", &color_.x);
-            ImGui::DragFloat("Frequency", &frequency_, 0.01f, 0.0f, 10.0f);
+
+            // 発生周期(Frequency)の調整
+            ImGui::DragFloat("Frequency (sec)", &frequency_, 0.01f, 0.0f, 60.0f);
+            // --- 初期タイマー値 ---
+            ImGui::DragFloat("Initial Elapsed Time", &frequencyTime_, 0.01f, 0.0f, 60.0f);            
             random_.DrawImGuiUI(); // RandomParameter の UI
+
+            // ランダムパラメータのUI
+            random_.DrawImGuiUI();
+
+            // 連続発生関連
+            ImGui::Separator();
+            ImGui::Text("Continuous Emission Settings");
+            ImGui::DragInt("Max Particles", reinterpret_cast<int*>(&maxParticles_), 1, 1, 10000);
+            ImGui::DragInt("Emit Per Tick", reinterpret_cast<int*>(&emitPerTick_), 1, 1, 100);
+
+            // 値の制限チェック（最大 < 最小にならないように）
+            if (emitPerTick_ > static_cast<int>(maxParticles_)) emitPerTick_ = maxParticles_;
         }
 #endif // USE_IMGUI
     }
@@ -50,4 +93,8 @@ protected:
     RandomParameter random_;
 
     Object3d* target_ = nullptr; // ← FollowEmitter用
+public:
+    uint32_t maxParticles_ = 100;   // 最大生成数
+    uint32_t emitPerTick_ = 1;      // 1回のEmitで出す数
+    uint32_t currentParticles_ = 0; // 現在生成済みパーティクル数
 };

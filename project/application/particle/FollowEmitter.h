@@ -5,17 +5,28 @@ class FollowEmitter : public BaseEmitter {
 public:
     using BaseEmitter::BaseEmitter;
 
+        
+    Vector3 offset_{-1.3f, 0.0f, 0.0f}; // ターゲットとの相対オフセット 
+    // 初期化フラグ
+    bool initialized_ = false;
+    float emitInterval_ = 0.06f;         // 発生間隔（秒）
+
     void Update() override {
-        // ターゲットがあれば位置を同期
         if (target_) {
-            transform_.translate = target_->GetTransform().translate;
+            transform_.translate = target_->GetTransform().translate + offset_;
         }
 
-        // 発生周期制御
+        // 発生タイマー更新
         frequencyTime_ += 1.0f / 60.0f;
-        if (frequencyTime_ >= frequency_) {
-            frequencyTime_ = 0.0f;
+
+        // 発生
+        if (frequencyTime_ >= emitInterval_) {
+            // Emit 直前に transform を確定
+            if (target_) {
+                transform_.translate = target_->GetTransform().translate + offset_;
+            }
             Emit();
+            frequencyTime_ = 0.0f;
         }
     }
 
@@ -29,6 +40,10 @@ public:
             } else {
                 ImGui::Text("No target assigned");
             }
+            // オフセットを調整可能に
+            ImGui::DragFloat3("Offset", &offset_.x, 0.1f); 
+            // 発生間隔を調整可能に
+            ImGui::DragFloat("Emit Interval (sec)", &emitInterval_, 0.01f, 0.0f, 60.0f);
         }
 #endif // USE_IMGUI
     }
