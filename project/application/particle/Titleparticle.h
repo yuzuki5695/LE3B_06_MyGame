@@ -2,7 +2,7 @@
 #include <ParticleManager.h>
 #include <ParticleEmitter.h>
 
-class particle {
+class Titleparticle {
 public: // メンバ関数
     /// <summary>
     /// 初期化処理
@@ -12,10 +12,6 @@ public: // メンバ関数
     /// 毎フレームの更新処理
     /// </summary>
     void Update();
-    /// <summary>
-    /// 描画処理
-    /// </summary>
-    void Draw();
 
 private: // メンバ変数
     // エミッター生成

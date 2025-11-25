@@ -63,7 +63,7 @@
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)engine\2d;$(ProjectDir)engine\3d;$(ProjectDir)engine\audio;$(ProjectDir)engine\base;$(ProjectDir)engine\io;$(ProjectDir)engine\math;$(ProjectDir)engine\scene;$(ProjectDir)engine\3d\Particle;$(ProjectDir)engine\camera;$(ProjectDir)engine\base\DirectXCommon;$(ProjectDir)engine\base\Utility;$(ProjectDir)engine\base\ViewManager;$(ProjectDir)engine\math\Light;$(ProjectDir)engine\math\Matrix;$(ProjectDir)engine\math\Model;$(ProjectDir)engine\math\Vector;$(ProjectDir)engine\resource;$(ProjectDir)externals\nlohmann;$(ProjectDir)application\scene;$(ProjectDir)application\character;$(ProjectDir)application\player;$(ProjectDir)application\bullet;$(ProjectDir)application\loader;$(ProjectDir)application\camera;$(ProjectDir)application\enemy;$(ProjectDir)externals\assimp\include;$(ProjectDir)engine\math\collision;$(ProjectDir)application\collision;$(ProjectDir)application\fade;$(ProjectDir)application\event;$(ProjectDir)application\stage;$(ProjectDir)application\particle</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)engine\2d;$(ProjectDir)engine\3d;$(ProjectDir)engine\audio;$(ProjectDir)engine\base;$(ProjectDir)engine\io;$(ProjectDir)engine\math;$(ProjectDir)engine\scene;$(ProjectDir)engine\3d\Particle;$(ProjectDir)engine\camera;$(ProjectDir)engine\base\DirectXCommon;$(ProjectDir)engine\base\Utility;$(ProjectDir)engine\base\ViewManager;$(ProjectDir)engine\math\Light;$(ProjectDir)engine\math\Matrix;$(ProjectDir)engine\math\Model;$(ProjectDir)engine\math\Vector;$(ProjectDir)engine\resource;$(ProjectDir)externals\nlohmann;$(ProjectDir)application\scene;$(ProjectDir)application\character;$(ProjectDir)application\player;$(ProjectDir)application\bullet;$(ProjectDir)application\loader;$(ProjectDir)application\camera;$(ProjectDir)application\enemy;$(ProjectDir)externals\assimp\include;$(ProjectDir)engine\math\collision;$(ProjectDir)application\collision;$(ProjectDir)application\fade;$(ProjectDir)application\event;$(ProjectDir)application\stage;$(ProjectDir)application\particle;$(ProjectDir)engine\math\ParticleData</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -89,7 +89,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)engine\2d;$(ProjectDir)engine\3d;$(ProjectDir)engine\audio;$(ProjectDir)engine\base;$(ProjectDir)engine\io;$(ProjectDir)engine\math;$(ProjectDir)engine\scene;$(ProjectDir)engine\3d\Particle;$(ProjectDir)engine\camera;$(ProjectDir)engine\base\DirectXCommon;$(ProjectDir)engine\base\Utility;$(ProjectDir)engine\base\ViewManager;$(ProjectDir)engine\math\Light;$(ProjectDir)engine\math\Matrix;$(ProjectDir)engine\math\Model;$(ProjectDir)engine\math\Vector;$(ProjectDir)engine\resource;$(ProjectDir)externals\nlohmann;$(ProjectDir)application\scene;$(ProjectDir)application\character;$(ProjectDir)application\player;$(ProjectDir)application\bullet;$(ProjectDir)application\loader;$(ProjectDir)application\camera;$(ProjectDir)application\enemy;$(ProjectDir)externals\assimp\include;$(ProjectDir)engine\math\collision;$(ProjectDir)application\collision;$(ProjectDir)application\fade;$(ProjectDir)application\event;$(ProjectDir)application\stage;$(ProjectDir)application\particle</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)engine\2d;$(ProjectDir)engine\3d;$(ProjectDir)engine\audio;$(ProjectDir)engine\base;$(ProjectDir)engine\io;$(ProjectDir)engine\math;$(ProjectDir)engine\scene;$(ProjectDir)engine\3d\Particle;$(ProjectDir)engine\camera;$(ProjectDir)engine\base\DirectXCommon;$(ProjectDir)engine\base\Utility;$(ProjectDir)engine\base\ViewManager;$(ProjectDir)engine\math\Light;$(ProjectDir)engine\math\Matrix;$(ProjectDir)engine\math\Model;$(ProjectDir)engine\math\Vector;$(ProjectDir)engine\resource;$(ProjectDir)externals\nlohmann;$(ProjectDir)application\scene;$(ProjectDir)application\character;$(ProjectDir)application\player;$(ProjectDir)application\bullet;$(ProjectDir)application\loader;$(ProjectDir)application\camera;$(ProjectDir)application\enemy;$(ProjectDir)externals\assimp\include;$(ProjectDir)engine\math\collision;$(ProjectDir)application\collision;$(ProjectDir)application\fade;$(ProjectDir)application\event;$(ProjectDir)application\stage;$(ProjectDir)application\particle;$(ProjectDir)engine\math\ParticleData</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -169,7 +169,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="engine\base\DirectXCommon\ViewportManager.cpp" />
     <ClCompile Include="engine\base\DirectXCommon\SwapChainManager.cpp" />
     <ClCompile Include="application\stage\StageManager.cpp" />
-    <ClCompile Include="application\particle\particle.cpp" />
+    <ClCompile Include="application\particle\Titleparticle.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="application\bullet\BaseBullet.h" />
@@ -253,7 +253,11 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\camera\GameCamera.h" />
     <ClInclude Include="application\event\EventManager.h" />
     <ClInclude Include="application\stage\StageManager.h" />
-    <ClInclude Include="application\particle\particle.h" />
+    <ClInclude Include="application\particle\Titleparticle.h" />
+    <ClInclude Include="engine\math\ParticleData\Particle.h" />
+    <ClInclude Include="engine\math\ParticleData\ParticleRandomData.h" />
+    <ClInclude Include="engine\math\ParticleData\RandomParameter.h" />
+    <ClInclude Include="engine\math\ParticleData\Velocity.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="externals\DirectXTex\DirectXTex_Desktop_2022_Win10.vcxproj">

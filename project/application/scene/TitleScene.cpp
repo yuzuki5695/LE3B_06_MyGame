@@ -61,7 +61,7 @@ void TitleScene::Initialize() {
     ui3_ = Sprite::Create("Title/Title.png", Vector2{ 300.0f, 100.0f }, 0.0f, Vector2{ 600.0f,300.0f });
     ui3_->SetTextureSize(Vector2{ 600.0f,300.0f });
 
-    particle_ = std::make_unique<particle>();
+    particle_ = std::make_unique<Titleparticle>();
     particle_->Initialize();
 
 #pragma endregion 最初のシーンの初期化

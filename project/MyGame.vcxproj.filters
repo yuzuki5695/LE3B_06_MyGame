@@ -208,6 +208,9 @@
     <Filter Include="ヘッダー ファイル\application\particle">
       <UniqueIdentifier>{011d6773-ba5d-4cbd-8fef-1cafdc1ce734}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ヘッダー ファイル\engine\math\ParticleData">
+      <UniqueIdentifier>{6097d3fe-118f-47e4-bd6e-e1b5ff9d9be5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -396,7 +399,7 @@
     <ClCompile Include="application\camera\ClearCamera.cpp">
       <Filter>ソース ファイル\application\camera</Filter>
     </ClCompile>
-    <ClCompile Include="application\particle\particle.cpp">
+    <ClCompile Include="application\particle\Titleparticle.cpp">
       <Filter>ソース ファイル\application\particle</Filter>
     </ClCompile>
   </ItemGroup>
@@ -644,8 +647,20 @@
     <ClInclude Include="application\camera\ClearCamera.h">
       <Filter>ヘッダー ファイル\application\camera</Filter>
     </ClInclude>
-    <ClInclude Include="application\particle\particle.h">
+    <ClInclude Include="application\particle\Titleparticle.h">
       <Filter>ヘッダー ファイル\application\particle</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\math\ParticleData\RandomParameter.h">
+      <Filter>ヘッダー ファイル\engine\math\ParticleData</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\math\ParticleData\ParticleRandomData.h">
+      <Filter>ヘッダー ファイル\engine\math\ParticleData</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\math\ParticleData\Velocity.h">
+      <Filter>ヘッダー ファイル\engine\math\ParticleData</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\math\ParticleData\Particle.h">
+      <Filter>ヘッダー ファイル\engine\math\ParticleData</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

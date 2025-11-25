@@ -9,44 +9,8 @@
 #include <Transform.h>
 #include<Model.h>
 #include<ParticleModel.h>
-
-struct Velocity {
-	Vector3 translate;
-	Vector3 rotate;
-	Vector3 scale;
-};
-
-struct RandomParameter {
-	// ランダムな速度の範囲
-	Vector3 offsetMin;
-	Vector3 offsetMax;
-	// ランダムな回転の範囲
-	Vector3 rotateMin;
-	Vector3 rotateMax;
-	// ランダムなスケールの範囲
-	Vector3 scaleMin;
-	Vector3 scaleMax;
-	// ランダムな色の範囲
-	float colorMin; // 最小値
-	float colorMax; // 最大値
-	// ランダムな寿命の範囲を追加
-	float lifetimeMin;
-	float lifetimeMax;
-	// ランダムな速度の範囲を追加
-	Velocity velocityMin;
-	Velocity velocityMax;
-};
-
-struct ParticleRandomData {
-	Vector3 offset;
-	Vector3 rotation;
-	Vector3 scale;
-	Velocity velocity;
-	float lifetime;
-	Vector4 color;
-	Vector3 rotationSpeed;  // 回転速度
-	Vector3 scaleSpeed;     // スケール変化速度
-};
+#include <RandomParameter.h>
+#include <ParticleRandomData.h>
 
 // 3Dオブジェクト共通部
 class ParticleManager

@@ -1,10 +1,10 @@
-#include "particle.h"
+#include "Titleparticle.h"
 #include <numbers>
 #ifdef USE_IMGUI
 #include<ImGuiManager.h>
 #endif // USE_IMGUI
 
-void particle::Initialize() {
+void Titleparticle::Initialize() {
     // パーティクルグループ生成
     ParticleManager::GetInstance()->CreateParticleGroup("Particles", "Resources/uvChecker.png", "Particle.obj", VertexType::Model);  
 //    ParticleManager::GetInstance()->CreateParticleGroup("Circle", "Resources/circle2.png", "plane.obj", VertexType::Model);                 // モデルで生成
@@ -43,7 +43,7 @@ void particle::Initialize() {
     );
 }
 
-void particle::Update() {
+void Titleparticle::Update() {
 
     circle_->Update();
 
@@ -56,9 +56,4 @@ void particle::Update() {
     }
 
 #endif // USE_IMGUI
-}
-
-void particle::Draw() {
-
-
 }
