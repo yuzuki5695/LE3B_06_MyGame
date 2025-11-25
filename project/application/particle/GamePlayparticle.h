@@ -20,5 +20,6 @@ private: // メンバ変数
     std::unique_ptr <FollowEmitter> particles_;
     // ランダムパラメータ
     RandomParameter random_;
-
+        // エミッター生成
+    std::unique_ptr <FollowEmitter> particles_02_;
 };
