@@ -26,7 +26,7 @@ void TitleScene::Finalize() {
 void TitleScene::Initialize() {
 #pragma region 最初のシーンの初期化  
     // カメラマネージャの初期化
-    CameraManager::GetInstance()->Initialize(CameraTransform({ 0.0f, 4.0f, -15.0f }, { 0.0f, 0.0f, 0.0f })); 
+    CameraManager::GetInstance()->Initialize(CameraTransform({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f })); 
     //  テクスチャの読み込み
     TextureManager::GetInstance()->LoadTexture("Title/UI_02.png");
     TextureManager::GetInstance()->LoadTexture("CubemapBox.dds");
