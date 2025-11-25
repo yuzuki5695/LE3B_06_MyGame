@@ -662,10 +662,10 @@
     <ClInclude Include="engine\math\ParticleData\Particle.h">
       <Filter>ヘッダー ファイル\engine\math\ParticleData</Filter>
     </ClInclude>
-    <ClInclude Include="InstanceData.h">
+    <ClInclude Include="engine\math\ParticleData\InstanceData.h">
       <Filter>ヘッダー ファイル\engine\math\ParticleData</Filter>
     </ClInclude>
-    <ClInclude Include="ParticleGroup.h">
+    <ClInclude Include="engine\math\ParticleData\ParticleGroup.h">
       <Filter>ヘッダー ファイル\engine\math\ParticleData</Filter>
     </ClInclude>
   </ItemGroup>

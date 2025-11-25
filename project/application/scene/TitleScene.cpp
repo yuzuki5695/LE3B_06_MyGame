@@ -62,7 +62,7 @@ void TitleScene::Initialize() {
     ui3_->SetTextureSize(Vector2{ 600.0f,300.0f });
 
     particle_ = std::make_unique<Titleparticle>();
-    particle_->Initialize();
+    particle_->Initialize(player_.get());
 
 #pragma endregion 最初のシーンの初期化
 }

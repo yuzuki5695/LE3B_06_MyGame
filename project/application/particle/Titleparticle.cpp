@@ -4,41 +4,34 @@
 #include<ImGuiManager.h>
 #endif // USE_IMGUI
 
-void Titleparticle::Initialize() {
+void Titleparticle::Initialize(Object3d* target) {
     // パーティクルグループ生成
     ParticleManager::GetInstance()->CreateParticleGroup("Particles", "Resources/uvChecker.png", "Particle.obj", VertexType::Model);
-    //    ParticleManager::GetInstance()->CreateParticleGroup("Circle", "Resources/circle2.png", "plane.obj", VertexType::Model);                 // モデルで生成
 
-        // パーティクルにランダム変数を組み込む[デフォルトは全て0] 
+    // パーティクルにランダム変数を組み込む[デフォルトは全て0] 
     random_
         //    .SetRotateZ(-std::numbers::pi_v<float>, std::numbers::pi_v<float>)
         .SetColor(0.0f, 1.0f)
         .SetOffset({ 0.0f,0.0f,0.0f }, { 1.0f, 1.0f, 1.0f });
 
     // 発生
-    circle_ = std::make_unique <ParticleEmitter>(
+    particles_ = std::make_unique <FollowEmitter>(
         "Particles",                                                                           // パーティクルグループ名
         2,                                                                                     // 発生数
-		Transform{ { 1.0f, 1.0f, 1.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 30.0f } },        // サイズ,回転,位置
-        Vector4{1.0f,1.0f,1.0f,1.0f},                                                          // カラー
+        Transform{ { 1.0f, 1.0f, 1.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 30.0f } },        // サイズ,回転,位置
+        Vector4{ 1.0f,1.0f,1.0f,1.0f },                                                          // カラー
         1.5f,                                                                                  // 発生周期 or 寿命（自由に定義可能）
         0.0f,                                                                                  // 経過時間（基本は0から開始）
         Velocity{ {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0} },                 // ← 風
-		random_                                                                                // ランダムパラメータ（速度、回転、スケール、色などの範囲を指定）
+        random_                                                                                // ランダムパラメータ（速度、回転、スケール、色などの範囲を指定）
     );
+
+    // ターゲットを設定
+    particles_->SetTarget(target);
 }
 
 void Titleparticle::Update() {
+    particles_->Update();
 
-    circle_->Update();
-
-
-#ifdef USE_IMGUI
-    //    ParticleManager::GetInstance()->DebugUpdata();
-
-    if (circle_) {
-        circle_->DrawImGuiUI();
-    }
-
-#endif // USE_IMGUI
+    particles_->DrawImGuiUI();
 }
