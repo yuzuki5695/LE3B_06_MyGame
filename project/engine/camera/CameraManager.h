@@ -1,10 +1,13 @@
 #pragma once
 #include <Object3d.h>
-#include<GameCamera.h>
-#include<CameraMode.h>
 #include<CameraTransform.h>
+#include<CameraTypes.h>
 #include<TitleCamera.h>
+#include<GameCamera.h>
 
+using namespace CameraTypes;
+
+// カメラマネージャ
 class CameraManager {
 private:
     static std::unique_ptr<CameraManager> instance;
@@ -33,18 +36,30 @@ public: // メンバ関数
         return a + (b - a) * t;
     }
 
+    // 各シーンのサブカメラの登録
+    void RegisterSubCameras(std::vector<std::unique_ptr<Camera>>& cameras, const std::string& prefix);
+
 private: // メンバ変数
-    ViewCameraType Typeview_;   // 使用するカメラのタイプ  
-    SceneCameraType activeSceneCameraType_;  // シーンごとのカメラの状態
-    CameraMode currentMode_; // カメラの状態 
-    CameraSwitchType switchType_ = CameraSwitchType::Instant; // カメラの切替方法
-    std::unique_ptr<Camera> mainCamera_;                                   //　メインカメラ(基本1つ)
+    ViewCameraType Typeview_;                                                  // 使用するカメラのタイプ  
+    SceneCameraType activeSceneCameraType_;                                    // シーンごとのカメラの状態
+    CameraMode currentMode_;                                                   // カメラの状態 
+    CameraSwitchType switchType_ = CameraSwitchType::Instant;                  // カメラの切替方法
+    std::unique_ptr<Camera> mainCamera_;                                       //　メインカメラ(基本1つ)
+    CameraTransform maintrans_;                                                // カメラの座標
     std::unordered_map<std::string, std::unique_ptr<Camera>> subCamerasMap_;   // サブカメラ(複数の設置に対応できる)
-    Camera* activeCamera_ = nullptr;
+    std::string activeSubCameraName_;                                          // 登録したサブカメラの名前
+    Camera* activeCamera_ = nullptr;                                           // アクティブ中のカメラ
+    // タイトル専用カメラ
     std::unique_ptr<TitleCamera> titlecamera_;
 
+
+
+
+    //// Debug用フリーカメラ
+    //std::unique_ptr<Camera> debugFreeCamera_;
+    //bool useDebugCamera_ = false;              // Debugカメラを使用中かどうかのフラグ
 public: // メンバ関数
-        
+
     Camera* GetActiveCamera();
 
 
@@ -66,5 +81,4 @@ public: // メンバ関数
     }
 
     void SetActiveCamera();
-
 };

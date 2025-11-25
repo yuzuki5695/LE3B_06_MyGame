@@ -2,12 +2,6 @@
 #include <Object3dCommon.h>
 #include <ParticleCommon.h>
 #include <MatrixVector.h>
-#ifdef min
-#undef min
-#endif
-#ifdef max
-#undef max
-#endif
 #ifdef USE_IMGUI
 #include <ImGuiManager.h>
 #endif // USE_IMGUI
@@ -32,48 +26,72 @@ void CameraManager::Finalize() {
 
 // 初期化
 void CameraManager::Initialize(CameraTransform transform) {
-    // 初期化はメインカメラでモードはデフォルト
-    Typeview_ = ViewCameraType::Main;
-    activeSceneCameraType_ = SceneCameraType::Title;
-    currentMode_ = CameraMode::Default;
-    switchType_ = CameraSwitchType::Instant;
-
-    // --- メインカメラの初期化--- //
+    // 各構造体の初期化
+    Typeview_ = ViewCameraType::Main;                     // メイン
+    activeSceneCameraType_ = SceneCameraType::Title;      // タイトル(シーンマネージャで管理されているため変える必要なし)
+    currentMode_ = CameraMode::Default;                   // デフォルト
+    switchType_ = CameraSwitchType::Instant;              // 瞬間的に切り替わる
+    maintrans_ = transform;                               // 引数を入れる
+    // --- メインカメラの生成、初期化--- //
     mainCamera_ = std::make_unique<Camera>();
-    mainCamera_->SetTranslate(transform.translate);
-    mainCamera_->SetRotate(transform.rotate);
-
+    mainCamera_->SetTranslate(maintrans_.translate);
+    mainCamera_->SetRotate(maintrans_.rotate); 
+    activeCamera_ =  mainCamera_.get();  // 初期化時はメインカメラをアクティブにする
     // --- サブカメラ群登録 --- //
     subCamerasMap_.clear();
-    // 固定カメラ
-    std::unique_ptr<Camera> followCam = std::make_unique<Camera>();
-    followCam->SetTranslate(Vector3{ 0.0f,-10.0f,-50.0f });
-    followCam->SetRotate(Vector3{ 0.0f,0.0f,0.0f });
-    subCamerasMap_["Default"] = std::move(followCam);
 
-    titlecamera_ =  std::make_unique<TitleCamera>();
+    // タイトル用カメラの生成、初期化
+    titlecamera_ = std::make_unique<TitleCamera>();
     titlecamera_->Initialize();
-
+    // サブカメラの登録
+    RegisterSubCameras(titlecamera_->GetSubCameras(), "SubCamera");
+    
+    // TitleCamera の出力を MainCamera に反映
+    maintrans_  = titlecamera_->GetMainTransform();
 }
 
 // 更新処理
 void CameraManager::Update() {
-    Camera* cam = nullptr;
-    // --- メインカメラ更新 --- //
-    if(mainCamera_) mainCamera_->Update();
-    // --- サブカメラ群の更新 --- //
-    for(auto& [name, cam] : subCamerasMap_) if(cam) cam->Update();
+    switch (activeSceneCameraType_) {
+    case SceneCameraType::Title:
+        // タイトルカメラの更新処理
+        titlecamera_->Update();
 
-    titlecamera_->Update(1.0f);
+        mainCamera_->SetTranslate(maintrans_.translate);
+        mainCamera_->SetRotate(maintrans_.rotate);
+        break;
+    case SceneCameraType::Gameplay:
+
+        break;
+    case SceneCameraType::GameClear:
+
+
+        break;
+    case SceneCameraType::GameOver:
+
+        break;
+    }
+
+    // --- メインカメラ更新 --- //
+    if (mainCamera_) mainCamera_->Update();
+    // --- サブカメラ群の更新 --- //
+    for (auto& [name, activeCamera_] : subCamerasMap_) if (activeCamera_) activeCamera_->Update();
+
 
     SetActiveCamera();
 }
 // アクティブカメラを取得
 Camera* CameraManager::GetActiveCamera() {
     switch (Typeview_) {
-    case ViewCameraType::Main: return mainCamera_.get();
+    case ViewCameraType::Main:
+        return mainCamera_.get();
     case ViewCameraType::Sub:
-        if (subCamerasMap_.count("Default")) return subCamerasMap_["Default"].get();
+        if (!activeSubCameraName_.empty() && subCamerasMap_.count(activeSubCameraName_)) {
+            return subCamerasMap_[activeSubCameraName_].get();
+        }
+        else if (!subCamerasMap_.empty()) {
+            return subCamerasMap_.begin()->second.get(); // 最初のサブカメラ
+        }
         break;
     }
     return mainCamera_.get();
@@ -87,61 +105,158 @@ void CameraManager::SetCameraMode(CameraMode mode) {
 
 // アクティブカメラを共通リソースに設定
 void CameraManager::SetActiveCamera() { 
-    switch (activeSceneCameraType_) {
-    case SceneCameraType::Title:
-        activeCamera_ = titlecamera_->GetMainCamera();
-        break;
-
-    case SceneCameraType::Gameplay:
-        activeCamera_ = mainCamera_.get();
-        break;
-
-    case SceneCameraType::GameClear:
-        activeCamera_ = mainCamera_.get();
-        break;
-
-    case SceneCameraType::GameOver:
-        activeCamera_ = mainCamera_.get();
-        break;
-    }
+    activeCamera_ = GetActiveCamera();
     // 共通リソースにアクティブカメラを設定
     Object3dCommon::GetInstance()->SetDefaultCamera(activeCamera_);
     ParticleCommon::GetInstance()->SetDefaultCamera(activeCamera_);
 }
 
+
+// ViewCameraType → const char*
+const char* ToString(CameraTypes::ViewCameraType type) {
+    switch (type) {
+    case CameraTypes::ViewCameraType::Main: return "Main";
+    case CameraTypes::ViewCameraType::Sub: return "Sub";
+    }
+    return "Unknown";
+}
+
+// SceneCameraType → const char*
+const char* ToString(CameraTypes::SceneCameraType type) {
+    switch (type) {
+    case CameraTypes::SceneCameraType::Title: return "Title";
+    case CameraTypes::SceneCameraType::Gameplay: return "Gameplay";
+    case CameraTypes::SceneCameraType::GameClear: return "GameClear";
+    case CameraTypes::SceneCameraType::GameOver: return "GameOver";
+    }
+    return "Unknown";
+}
+
+// CameraMode → const char*
+const char* ToString(CameraTypes::CameraMode mode) {
+    switch (mode) {
+    case CameraTypes::CameraMode::Default: return "Default";
+    case CameraTypes::CameraMode::Follow: return "Follow";
+    case CameraTypes::CameraMode::Event: return "Event";
+    case CameraTypes::CameraMode::Transition: return "Transition";
+    case CameraTypes::CameraMode::Debug: return "Debug";
+    }
+    return "Unknown";
+}
+
 // ImGui描画
 void CameraManager::DrawImGui() {
 #ifdef USE_IMGUI
-   // ImGui::Begin("Camera Manager");
+    ImGui::Begin("Camera Manager");
 
-   // // カメラタイプ切り替え
-   // const char* viewTypes[] = { "Main", "Sub" };
-   // int currentView = static_cast<int>(Typeview_);
-   // if (ImGui::Combo("View Type", &currentView, viewTypes, IM_ARRAYSIZE(viewTypes))) {
-   //     SetViewType(static_cast<ViewCameraType>(currentView), switchType_);
-   // }
+    // ================================================================
+    // 状態を表示（変更不可）
+    // ================================================================
+    ImGui::Text("=== Current Camera Status ===");
 
-   // // イージング / 瞬間切替
-   // const char* switchTypes[] = { "Instant", "Ease" };
-   // int currentSwitch = static_cast<int>(switchType_);
-   // if (ImGui::Combo("Switch Type", &currentSwitch, switchTypes, IM_ARRAYSIZE(switchTypes))) {
-   //     switchType_ = static_cast<CameraSwitchType>(currentSwitch);
-   // }
+    ImGui::Text("View Camera Type : %s", ToString(Typeview_));
+    ImGui::Text("Scene Camera Type : %s", ToString(activeSceneCameraType_));
+    ImGui::Text("Camera Mode : %s", ToString(currentMode_));
 
-   // // イージング速度
-   //// ImGui::DragFloat("Ease Time", &easeTime_, 0.01f, 0.01f, 5.0f);
+    // 現在のアクティブカメラを文字列で表示
+    Camera* activeCam = GetActiveCamera();
+    if (activeCam) {
+        std::string activeCamName = "Main Camera";
 
-   // // --- 選択中カメラを取得 ---
-   // Camera* cam = GetActiveCamera();
-   // if (cam) {
-   //     Vector3& pos = cam->GetTranslate();  // 書き換え用参照
-   //     Vector3& rot = cam->GetRotate();
-   //     // 位置を操作
-   //     ImGui::DragFloat3("Position", &pos.x, 0.1f);
-   //     // 回転を操作
-   //     ImGui::DragFloat3("Rotation", &rot.x, 0.001f);
-   // }
+        // サブカメラに含まれているか確認
+        for (auto& [name, cam] : subCamerasMap_) {
+            if (cam.get() == activeCam) {
+                activeCamName = name; // 見つかったら名前をセット
+                break;
+            }
+        }
 
-   // ImGui::End();
-#endif // USE_IMGUI
+        ImGui::Text("Active Camera : %s", activeCamName.c_str());
+
+        // 位置・回転も表示
+        Vector3 pos = activeCam->GetTranslate();
+        Vector3 rot = activeCam->GetRotate();
+        ImGui::Text("Position: (%.2f, %.2f, %.2f)", pos.x, pos.y, pos.z);
+        ImGui::Text("Rotation: (%.2f, %.2f, %.2f)", rot.x, rot.y, rot.z);
+    }
+
+    // 今のシーンにあるメインとサブカメラの個数を表示
+    int mainCamCount = mainCamera_ ? 1 : 0;
+    int subCamCount = static_cast<int>(subCamerasMap_.size());
+    ImGui::Text("Main Camera Count: %d", mainCamCount);
+    ImGui::Text("Sub Camera Count: %d", subCamCount);
+
+
+    ImGui::Separator();
+
+    // ================================================================
+    // ① アクティブカメラ種別（Main / Sub）
+    // ================================================================
+
+    // アクティブカメラ切替（ラジオボタン形式）
+    ImGui::Text("Active Camera");
+
+    // ラジオボタンのIDを動的に生成
+    int radioIdx = 0;
+
+    // メインカメラ
+    if (ImGui::RadioButton(("Main Camera##" + std::to_string(radioIdx++)).c_str(),
+        Typeview_ == ViewCameraType::Main && activeSubCameraName_.empty()))
+    {
+        Typeview_ = ViewCameraType::Main;
+        activeSubCameraName_.clear();
+        SetActiveCamera();
+    }
+    // サブカメラ群
+    for (auto& [name, cam] : subCamerasMap_) {
+        if (ImGui::RadioButton((name + "##" + std::to_string(radioIdx++)).c_str(),
+            Typeview_ == ViewCameraType::Sub && activeSubCameraName_ == name))
+        {
+            Typeview_ = ViewCameraType::Sub;
+            activeSubCameraName_ = name;
+            SetActiveCamera();
+        }
+    }
+
+    ImGui::Separator();
+    // ================================================================
+    // ② 個々のカメラ Debug（transform 調整 UI）
+    // ================================================================
+
+    if (ImGui::TreeNode("Main Camera")) {
+        Vector3 pos = maintrans_.translate;
+        Vector3 rot = maintrans_.rotate;
+
+        if (ImGui::DragFloat3("Position", &pos.x, 0.1f)) {
+            maintrans_.translate = pos;
+        }
+        if (ImGui::DragFloat3("Rotation", &rot.x, 0.1f)) {
+            maintrans_.rotate = rot;
+        }
+        ImGui::TreePop();
+    }
+
+    if (ImGui::TreeNode("Sub Cameras")) {
+        int idx = 0;
+        for (auto& [name, cam] : subCamerasMap_) {
+            std::string label = name + "##" + std::to_string(idx++);
+            if (ImGui::TreeNode(label.c_str())) {
+                cam->DebugUpdate();
+                ImGui::TreePop();
+            }
+        }
+        ImGui::TreePop();
+    }
+
+    ImGui::End();
+#endif
+}
+
+void CameraManager::RegisterSubCameras(std::vector<std::unique_ptr<Camera>>&cameras, const std::string& prefix) {
+    int idx = 0;
+    for (auto& cam : cameras) {
+        std::string name = prefix + "_" + std::to_string(idx++);
+        subCamerasMap_[name] = std::move(cam); // 安全にムーブ
+    }
+    cameras.clear(); // 元のベクターは空になる
 }

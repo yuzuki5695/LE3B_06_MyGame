@@ -632,7 +632,7 @@
     <ClInclude Include="engine\math\Quaternion.h">
       <Filter>ヘッダー ファイル\engine\math</Filter>
     </ClInclude>
-    <ClInclude Include="engine\camera\CameraMode.h">
+    <ClInclude Include="engine\camera\CameraTypes.h">
       <Filter>ヘッダー ファイル\engine\camera</Filter>
     </ClInclude>
     <ClInclude Include="engine\camera\CameraTransform.h">
