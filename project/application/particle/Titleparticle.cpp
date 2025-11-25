@@ -6,33 +6,18 @@
 
 void Titleparticle::Initialize() {
     // パーティクルグループ生成
-    ParticleManager::GetInstance()->CreateParticleGroup("Particles", "Resources/uvChecker.png", "Particle.obj", VertexType::Model);  
-//    ParticleManager::GetInstance()->CreateParticleGroup("Circle", "Resources/circle2.png", "plane.obj", VertexType::Model);                 // モデルで生成
+    ParticleManager::GetInstance()->CreateParticleGroup("Particles", "Resources/uvChecker.png", "Particle.obj", VertexType::Model);
+    //    ParticleManager::GetInstance()->CreateParticleGroup("Circle", "Resources/circle2.png", "plane.obj", VertexType::Model);                 // モデルで生成
 
-    random_ = { 
-        //座標
-        {0.0f,0.0f,0.0f},  // 最小
-		{0.0f,0.0f,0.0f},  // 最大
-        // 回転
-        {0.0f,0.0f,-std::numbers::pi_v<float>},  // 最小
-        {0.0f,0.0f, std::numbers::pi_v<float>},  // 最大
-        // サイズ
-        {0.0f,0.0f,0.0f}, // 最小
-        {0.0f,0.0f,0.0f}, // 最大
-        // カラー
-        0.0f,  // 最小
-        1.0f,  // 最大
-        // 寿命
-        0.0f, // 最小
-        0.0f, // 最大
-        // 速度
-        {{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f}},// 最小
-        {{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f}} // 最大
-    };
+        // パーティクルにランダム変数を組み込む[デフォルトは全て0] 
+    random_
+        //    .SetRotateZ(-std::numbers::pi_v<float>, std::numbers::pi_v<float>)
+        .SetColor(0.0f, 1.0f)
+        .SetOffset({ 0.0f,0.0f,0.0f }, { 1.0f, 1.0f, 1.0f });
 
     // 発生
     circle_ = std::make_unique <ParticleEmitter>(
-        "Particles",                                                                              // パーティクルグループ名
+        "Particles",                                                                           // パーティクルグループ名
         2,                                                                                     // 発生数
 		Transform{ { 1.0f, 1.0f, 1.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 30.0f } },        // サイズ,回転,位置
         Vector4{1.0f,1.0f,1.0f,1.0f},                                                          // カラー
