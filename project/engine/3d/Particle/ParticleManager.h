@@ -3,44 +3,14 @@
 #include<SrvManager.h>
 #include<random>
 #include<Vector2.h>
-#include<Vector3.h>
-#include<Vector4.h>
-#include<Matrix4x4.h>
-#include <Transform.h>
 #include<Model.h>
 #include<ParticleModel.h>
-#include <RandomParameter.h>
-#include <ParticleRandomData.h>
+#include<RandomParameter.h>
+#include<ParticleRandomData.h>
+#include<ParticleGroup.h>
 
 // 3Dオブジェクト共通部
-class ParticleManager
-{
-public:	
-	// パーティクル
-	struct Particle {
-		Transform transform;
-		Velocity Velocity;
-		float lifetime;
-		float currentTime;
-		Vector4 color;
-	};
-	// インスタンスデータ
-	struct InstanceData
-	{
-		Matrix4x4 WVP;
-		Matrix4x4 World;
-		Vector4 color;
-	};
-	// パーティクルグループ
-	struct ParticleGroup {
-		std::unique_ptr<ParticleModel> model;                  // パーティクルモデル
-		MaterialDate materialData;                             // マテリアルデータ(テクスチャファイルパスとテクスチャ用SRVインデックス)
-		std::list<Particle> particles;                         // パーティクルのリスト
-		uint32_t srvindex;                                     // インスタンシング用SRVインデックス
-		Microsoft::WRL::ComPtr <ID3D12Resource> Resource;      // インスタンシングリソース
-		uint32_t kNumInstance;                                 // インスタンス数
-		InstanceData* instanceData = nullptr;                  // インスタンシングデータを書き込むためのポインタ
-	};
+class ParticleManager {
 private:
 	static std::unique_ptr<ParticleManager> instance;
 

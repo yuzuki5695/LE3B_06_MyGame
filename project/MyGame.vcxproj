@@ -258,6 +258,8 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="engine\math\ParticleData\ParticleRandomData.h" />
     <ClInclude Include="engine\math\ParticleData\RandomParameter.h" />
     <ClInclude Include="engine\math\ParticleData\Velocity.h" />
+    <ClInclude Include="InstanceData.h" />
+    <ClInclude Include="ParticleGroup.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="externals\DirectXTex\DirectXTex_Desktop_2022_Win10.vcxproj">
