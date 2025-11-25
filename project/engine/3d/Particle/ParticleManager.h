@@ -7,7 +7,6 @@
 #include<Vector4.h>
 #include<Matrix4x4.h>
 #include <Transform.h>
-#include<Camera.h>
 #include<Model.h>
 #include<ParticleModel.h>
 
@@ -115,7 +114,6 @@ private: // メンバ変数
 	// ポインタ
 	DirectXCommon* dxCommon_;
 	SrvManager* srvmanager_;
-	Camera* camera_;
 	// ランダムエンジン
 	std::mt19937 randomEngine;
 	//最大インスタンス
@@ -132,7 +130,4 @@ public:
 		return particleGroups[name];
 	}
 	uint32_t GetMaxInstanceCount() const { return MaxInstanceCount; }
-
-	// setter
-	void SetCamera(Camera* camera) { this->camera_ = camera; }
 };
