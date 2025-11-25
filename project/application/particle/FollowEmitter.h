@@ -6,7 +6,7 @@ public:
     using BaseEmitter::BaseEmitter;
 
         
-    Vector3 offset_{-1.3f, 0.0f, 0.0f}; // ターゲットとの相対オフセット 
+    Vector3 offset_{ 0.0f, 0.0f, 0.0f }; // ターゲットとの相対オフセット 
     // 初期化フラグ
     bool initialized_ = false;
     float emitInterval_ = 0.06f;         // 発生間隔（秒）

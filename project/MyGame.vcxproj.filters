@@ -402,6 +402,9 @@
     <ClCompile Include="application\particle\Titleparticle.cpp">
       <Filter>ソース ファイル\application\particle</Filter>
     </ClCompile>
+    <ClCompile Include="application\particle\GamePlayparticle.cpp">
+      <Filter>ソース ファイル\application\particle</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="engine\2d\Sprite.h">
@@ -667,6 +670,9 @@
     </ClInclude>
     <ClInclude Include="engine\math\ParticleData\ParticleGroup.h">
       <Filter>ヘッダー ファイル\engine\math\ParticleData</Filter>
+    </ClInclude>
+    <ClInclude Include="application\particle\GamePlayparticle.h">
+      <Filter>ヘッダー ファイル\application\particle</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
