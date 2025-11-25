@@ -12,6 +12,7 @@
 #include <ParticleCommon.h>
 #include<SkyboxCommon.h>
 #include<FadeManager.h>
+#include <numbers>
 
 /// <summary>
 /// 終了処理
@@ -25,7 +26,7 @@ void TitleScene::Finalize() {
 void TitleScene::Initialize() {
 #pragma region 最初のシーンの初期化  
     // カメラマネージャの初期化
-    CameraManager::GetInstance()->Initialize(CameraTransform({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f })); 
+    CameraManager::GetInstance()->Initialize(CameraTransform({ 0.0f, 4.0f, -15.0f }, { 0.0f, 0.0f, 0.0f })); 
     //  テクスチャの読み込み
     TextureManager::GetInstance()->LoadTexture("Title/UI_02.png");
     TextureManager::GetInstance()->LoadTexture("CubemapBox.dds");
@@ -33,6 +34,9 @@ void TitleScene::Initialize() {
     ModelManager::GetInstance()->LoadModel("Title/Title.obj");
     ModelManager::GetInstance()->LoadModel("Tile.obj");
     ModelManager::GetInstance()->LoadModel("Title/Model/Player/Player.obj");
+
+    TextureManager::GetInstance()->LoadTexture("uvChecker.png");
+    ModelManager::GetInstance()->LoadModel("Particle/Particle.obj");
 
     // スカイボックス生成 
     Box_ = Skybox::Create("CubemapBox.dds", Transform{ { 1000.0f, 1000.0f, 1000.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 100.0f } });
@@ -56,6 +60,10 @@ void TitleScene::Initialize() {
     // タイトルロゴスプライト生成
     ui3_ = Sprite::Create("Title/Title.png", Vector2{ 300.0f, 100.0f }, 0.0f, Vector2{ 600.0f,300.0f });
     ui3_->SetTextureSize(Vector2{ 600.0f,300.0f });
+
+    particle_ = std::make_unique<particle>();
+    particle_->Initialize();
+
 #pragma endregion 最初のシーンの初期化
 }
 /// <summary>
@@ -119,6 +127,10 @@ void TitleScene::Update() {
     player_->SetTranslate(playertransform_.translate);
     player_->Update();
 
+
+    ParticleManager::GetInstance()->Update(); 
+    particle_->Update();
+
 #pragma endregion 全てのObject3d個々の更新処理
 	ui3_->Update();
     ui1_->Update();
@@ -143,7 +155,7 @@ void TitleScene::Update() {
     player_->SetRotate(playertransform_.rotate);
 
     ImGui::End();
-
+    CameraManager::GetInstance()->DrawImGui();
 	FadeManager::GetInstance()->DrawImGui(); // フェードマネージャのImGui制御
 
 #endif // USE_IMGUI
@@ -157,7 +169,7 @@ void TitleScene::Draw() {
 #pragma region 全てのObject3d個々の描画処理 
     // 箱オブジェクトの描画準備。3Dオブジェクトの描画に共通のグラフィックスコマンドを積む
     SkyboxCommon::GetInstance()->Commondrawing();
-    Box_->Draw();
+  //  Box_->Draw();
 
     // 3Dオブジェクトの描画準備。3Dオブジェクトの描画に共通のグラフィックスコマンドを積む
     Object3dCommon::GetInstance()->Commondrawing();
@@ -166,6 +178,7 @@ void TitleScene::Draw() {
 
     // パーティクルの描画準備。パーティクルの描画に共通のグラフィックスコマンドを積む 
     ParticleCommon::GetInstance()->Commondrawing();
+    ParticleManager::GetInstance()->Draw();
 #pragma endregion 全てのObject3d個々の描画処理
 
 #pragma region 全てのSprite個々の描画処理
@@ -173,7 +186,7 @@ void TitleScene::Draw() {
     SpriteCommon::GetInstance()->Commondrawing();
 	
     
-    ui3_->Draw();
+  //  ui3_->Draw();
     //ui1_->Draw();
     ui2_->Draw();
 

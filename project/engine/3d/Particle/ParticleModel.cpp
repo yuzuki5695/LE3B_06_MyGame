@@ -28,23 +28,23 @@ void ParticleModel::Initialize(DirectXCommon* birectxcommon, const std::string& 
         TextureManager::GetInstance()->LoadTexture(modelDate.material.textureFilePath);
         // 読み込んだテクスチャの番号を取得
         modelDate.material.textureindex = TextureManager::GetInstance()->GetSrvIndex(modelDate.material.textureFilePath);
-	} else if (vertexType_ == VertexType::Ring) { // リングの頂点データを作成
-        VertexDataRing();
-	} else if (vertexType_ == VertexType::Sphere) { // 球の頂点データを作成
-        VertexDataSphere();
-	} else if (vertexType_ == VertexType::Cylinder) { // 円柱の頂点データを作成
-        VertexDataCylinder();
-	} else if (vertexType_ == VertexType::Star) { // 星の頂点データを作成
-        VertexDataStar();
-    } else if (vertexType_ == VertexType::Spiral) { // スパイラル状の頂点データを作成
-        VertexDataSpiral();
-    } else if (vertexType_ == VertexType::Circle) { // サークルの頂点データを作成
-        VertexDataCircle();
-    } else if (vertexType_ == VertexType::Box) { // 正方形の頂点データを作成
-        VertexDataBox();
-    } else if (vertexType_ == VertexType::Cloud) { // 正方形の頂点データを作成
-        VertexDataCloud();
-    }
+	}// else if (vertexType_ == VertexType::Ring) { // リングの頂点データを作成
+ //       VertexDataRing();
+	//} else if (vertexType_ == VertexType::Sphere) { // 球の頂点データを作成
+ //       VertexDataSphere();
+	//} else if (vertexType_ == VertexType::Cylinder) { // 円柱の頂点データを作成
+ //       VertexDataCylinder();
+	//} else if (vertexType_ == VertexType::Star) { // 星の頂点データを作成
+ //       VertexDataStar();
+ //   } else if (vertexType_ == VertexType::Spiral) { // スパイラル状の頂点データを作成
+ //       VertexDataSpiral();
+ //   } else if (vertexType_ == VertexType::Circle) { // サークルの頂点データを作成
+ //       VertexDataCircle();
+ //   } else if (vertexType_ == VertexType::Box) { // 正方形の頂点データを作成
+ //       VertexDataBox();
+ //   } else if (vertexType_ == VertexType::Cloud) { // 正方形の頂点データを作成
+ //       VertexDataCloud();
+ //   }
 }
 
 void ParticleModel::Draw() {

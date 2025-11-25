@@ -202,6 +202,12 @@
     <Filter Include="ヘッダー ファイル\application\stage">
       <UniqueIdentifier>{1d514fa6-6226-4b6e-ad61-846cfd2e44bb}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ソース ファイル\application\particle">
+      <UniqueIdentifier>{45d766ea-6c30-4a34-b627-986bf7984c91}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\application\particle">
+      <UniqueIdentifier>{011d6773-ba5d-4cbd-8fef-1cafdc1ce734}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -389,6 +395,9 @@
     </ClCompile>
     <ClCompile Include="application\camera\ClearCamera.cpp">
       <Filter>ソース ファイル\application\camera</Filter>
+    </ClCompile>
+    <ClCompile Include="application\particle\particle.cpp">
+      <Filter>ソース ファイル\application\particle</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -634,6 +643,9 @@
     </ClInclude>
     <ClInclude Include="application\camera\ClearCamera.h">
       <Filter>ヘッダー ファイル\application\camera</Filter>
+    </ClInclude>
+    <ClInclude Include="application\particle\particle.h">
+      <Filter>ヘッダー ファイル\application\particle</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
