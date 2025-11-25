@@ -1,5 +1,6 @@
 #pragma once
 #include<BaseEmitter.h>
+#include<CameraManager.h>
 
 class FollowEmitter : public BaseEmitter {
 public:
@@ -14,6 +15,11 @@ public:
     void Update() override {
         if (target_) {
             transform_.translate = target_->GetTransform().translate + offset_;
+            // カメラの向きに合わせて回転
+            GameCamera* gameCam = CameraManager::GetInstance()->GetGameCamera();
+            if (gameCam) {
+                transform_.rotate = gameCam->GetActiveCamera()->GetRotate();
+            }
         }
 
         // 発生タイマー更新
@@ -47,4 +53,14 @@ public:
         }
 #endif // USE_IMGUI
     }
+
+
+
+    // FollowEmitter.h
+    void SetOffset(const Vector3& offset) { offset_ = offset; }
+    Vector3 GetOffset() const { return offset_; }
+
+    void SetVelocity(const Velocity& v) { velocity_ = v; }
+    Velocity GetVelocity() const { return velocity_; }
+
 };

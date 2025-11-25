@@ -13,6 +13,7 @@
 #include<SkyboxCommon.h>
 #include <FadeManager.h>
 
+
 ///====================================================
 /// 終了処理
 ///====================================================
@@ -44,6 +45,8 @@ void GameClearScene::Initialize() {
     player_ = Object3d::Create("Gameplay/Model/Player/Player.obj", offset_);
     startOffset_ = { -170.0f, 50.0f, 30.0f };
     endOffset_ = { 0.0f, 0.0f, 30.0f };
+    particle_ = std::make_unique<GameClearparticle>();
+    particle_->Initialize(player_.get());
 
     // フェードマネージャの初期化
     FadeManager::GetInstance()->Initialize();
@@ -102,6 +105,9 @@ void GameClearScene::Update() {
     UpdateStep();
     player_->Update();
 
+    // パーティクル更新
+    ParticleManager::GetInstance()->Update();
+    particle_->Update();
 #pragma endregion 全てのObject3d個々の更新処理
 
 #pragma region 全てのSprite個々の更新処理
@@ -138,6 +144,7 @@ void GameClearScene::Draw() {
 
     // パーティクルの描画準備。パーティクルの描画に共通のグラフィックスコマンドを積む 
     ParticleCommon::GetInstance()->Commondrawing();
+    ParticleManager::GetInstance()->Draw();
 #pragma endregion 全てのObject3d個々の描画処理
 
 #pragma region 全てのSprite個々の描画処理
@@ -223,9 +230,10 @@ void GameClearScene::Step1_MovePlayerAndSwitchCamera()
     }
 }
 
-void GameClearScene::Step2_WaitOrDoSomething()
-{
+void GameClearScene::Step2_WaitOrDoSomething() {
     Camera* cam = CameraManager::GetInstance()->GetClearCamera()->GetActiveCamera();
+    // Step2 の間はパーティクルを下に落とさない
+    particle_->SetVelocity(Velocity{ {-0.06f, 0.0f, 0.0f},{ 0.0f,  0.0f, 0.0f},{ 0.0f,  0.0f, 0.0f} });
 
     /*-----------------------------------------------*/
     /* ① カメラの X を 0 → 8 へイージング移動     */

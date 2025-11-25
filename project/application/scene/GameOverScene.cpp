@@ -94,7 +94,15 @@ void GameOverScene::Initialize() {
 
         partsList.push_back(std::move(part));
     }
+    std::vector<Object3d*> partTargets;
+    partTargets.reserve(partsList.size());  // 最適化
 
+    for (auto& part : partsList) {
+        partTargets.push_back(part.obj.get());  // unique_ptr → raw pointer に変換
+    }
+    particles_ = std::make_unique<GameOverparticle>();
+    particles_->Initialize(partTargets);
+    
     // フェードマネージャの初期化
     FadeManager::GetInstance()->Initialize();
 }
@@ -133,7 +141,10 @@ void GameOverScene::Update() {
     Box_->Update();   // 背景の更新
    
     UpdateParts(); //  落下処理
-
+   
+    // パーティクル更新
+    ParticleManager::GetInstance()->Update(); 
+    particles_->Update();
 #pragma endregion 全てのObject3d個々の更新処理
 
 #pragma region 全てのSprite個々の更新処理
@@ -172,6 +183,7 @@ void GameOverScene::Draw() {
 
     // パーティクルの描画準備。パーティクルの描画に共通のグラフィックスコマンドを積む 
     ParticleCommon::GetInstance()->Commondrawing();
+    ParticleManager::GetInstance()->Draw();
 #pragma endregion 全てのObject3d個々の描画処理
 
 #pragma region 全てのSprite個々の描画処理
@@ -191,8 +203,8 @@ void GameOverScene::UpdateParts() {
         if (!FadeManager::GetInstance()->IsFading() && FadeManager::GetInstance()->IsFadeEnd() || phase_ == 2) {
             // 落下
             part.transform.translate.y -= part.fallSpeed.y;
-            if (part.transform.translate.y < -10.0f) {
-                part.transform.translate.y = -10.0f; // 地面で止める
+            if (part.transform.translate.y < -20.0f) {
+                part.transform.translate.y = -20.0f; // 地面で止める
             }
 
             // 回転

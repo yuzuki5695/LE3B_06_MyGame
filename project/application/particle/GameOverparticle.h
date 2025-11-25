@@ -4,12 +4,12 @@
 #include<FollowEmitter.h>
 
 // タイトル専用パーティクル
-class Titleparticle {
+class GameOverparticle {
 public: // メンバ関数
     /// <summary>
     /// 初期化処理
     /// </summary>
-    void Initialize(Object3d* target);
+    void Initialize(const std::vector<Object3d*>& targets);
     /// <summary>
     /// 毎フレームの更新処理
     /// </summary>
@@ -17,10 +17,8 @@ public: // メンバ関数
 
 private: // メンバ変数
     // エミッター生成
-    std::unique_ptr <FollowEmitter> particles_;
+    std::vector<std::unique_ptr<FollowEmitter>> emitters_;
     // ランダムパラメータ
     RandomParameter random_;
-    // エミッター生成
-    std::unique_ptr <FollowEmitter> particles_02_;
 
 };

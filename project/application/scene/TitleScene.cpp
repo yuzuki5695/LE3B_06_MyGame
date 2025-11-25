@@ -169,7 +169,7 @@ void TitleScene::Draw() {
 #pragma region 全てのObject3d個々の描画処理 
     // 箱オブジェクトの描画準備。3Dオブジェクトの描画に共通のグラフィックスコマンドを積む
     SkyboxCommon::GetInstance()->Commondrawing();
-  //  Box_->Draw();
+    Box_->Draw();
 
     // 3Dオブジェクトの描画準備。3Dオブジェクトの描画に共通のグラフィックスコマンドを積む
     Object3dCommon::GetInstance()->Commondrawing();
@@ -186,7 +186,7 @@ void TitleScene::Draw() {
     SpriteCommon::GetInstance()->Commondrawing();
 	
     
-  //  ui3_->Draw();
+    ui3_->Draw();
     //ui1_->Draw();
     ui2_->Draw();
 
