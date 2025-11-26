@@ -29,7 +29,7 @@ void GamePlayparticle::Initialize(Object3d* target) {
 
     // ターゲットを設定
     particles_->SetTarget(target);
-    particles_->maxParticles_ = 200;   // 最大200個まで
+    particles_->maxParticles_ = 400;   // 最大200個まで
     particles_->emitPerTick_ = 2;      // 1回のUpdateで2個ずつ発生
     particles_->SetOffset({ 0.0f, 0.3f, 0.0f });
 
@@ -46,7 +46,7 @@ void GamePlayparticle::Initialize(Object3d* target) {
     );
     // ターゲットを設定
     particles_02_->SetTarget(target);
-    particles_02_->maxParticles_ = 100;   // 最大200個まで
+    particles_02_->maxParticles_ = 250;   // 最大200個まで
     particles_02_->emitPerTick_ = 1;      // 1回のUpdateで2個ずつ発生
     particles_02_->SetOffset({ 0.0f, 0.3f, 0.0f });
 }

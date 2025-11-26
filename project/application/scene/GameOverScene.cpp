@@ -129,6 +129,7 @@ void GameOverScene::Update() {
 
     // フェードアウト完了後にタイトルへ
     if (FadeManager::GetInstance()->IsFadeEnd() && FadeManager::GetInstance()->GetFadeType() == FadeType::FadeOut) {
+        particles_->Finalize();
         SceneManager::GetInstance()->ChangeScene("TITLE");
     }
 

@@ -10,4 +10,5 @@ struct Particle {
 	float lifetime;
 	float currentTime;
 	Vector4 color;
+    Vector4 startColor; // ← 追加：発生時の元色を保持する
 };

@@ -13,13 +13,22 @@ public:
     float emitInterval_ = 0.06f;         // 発生間隔（秒）
 
     void Update() override {
-        if (target_) {
-            transform_.translate = target_->GetTransform().translate + offset_;
-            // カメラの向きに合わせて回転
-            GameCamera* gameCam = CameraManager::GetInstance()->GetGameCamera();
-            if (gameCam) {
-                transform_.rotate = gameCam->GetActiveCamera()->GetRotate();
-            }
+        // ターゲット未設定なら Emit しない（絶対条件）
+        if (!target_) {
+            return;
+        }
+
+        // 毎フレームターゲット位置へ追従
+        transform_.translate = target_->GetTransform().translate + offset_;
+        if (auto cam = CameraManager::GetInstance()->GetGameCamera()) {
+            transform_.rotate = cam->GetActiveCamera()->GetRotate();
+        }
+
+        // 初期化直後は emit を禁止（1フレームだけ）
+        if (!initialized_) {
+            initialized_ = true;
+            frequencyTime_ = 0.0f;
+            return;   // ★ Emit はまだ禁止
         }
 
         // 発生タイマー更新

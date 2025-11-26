@@ -1,5 +1,6 @@
 #include "SceneManager.h"
 #include <cassert>
+#include <ParticleManager.h>
 
 // 静的メンバ変数の定義
 std::unique_ptr<SceneManager> SceneManager::instance = nullptr;
@@ -33,6 +34,9 @@ void SceneManager::Update() {
 		if (scene_) {
 			scene_->Finalize();
 		}
+		
+		// 全パーティクル削除
+		ParticleManager::GetInstance()->ClearAll();
 
 		// シーン切り替え
 		scene_ = std::move(nextScene_); // 所有権を移動

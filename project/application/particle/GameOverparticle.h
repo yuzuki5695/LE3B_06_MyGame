@@ -15,10 +15,12 @@ public: // メンバ関数
     /// </summary>
     void Update();
 
+    void Finalize();
+
 private: // メンバ変数
     // エミッター生成
     std::vector<std::unique_ptr<FollowEmitter>> emitters_;
     // ランダムパラメータ
     RandomParameter random_;
-
+    std::vector<std::unique_ptr<FollowEmitter>> emitters2_;
 };

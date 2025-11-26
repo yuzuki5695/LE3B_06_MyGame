@@ -32,6 +32,10 @@ void ParticleManager::Finalize() {
     instance.reset();
 }
 
+void ParticleManager::ClearAll() {
+    particleGroups.clear();   // 全てのパーティクルグループを削除
+}
+
 void ParticleManager::Initialize(DirectXCommon* birectxcommon, SrvManager* srvmanager) {
     // NULL検出
     assert(birectxcommon);
@@ -98,7 +102,16 @@ void ParticleManager::Update() {
             particleIterator->transform.scale.x += particleIterator->Velocity.scale.x;
             particleIterator->transform.scale.y += particleIterator->Velocity.scale.y;
             particleIterator->transform.scale.z += particleIterator->Velocity.scale.z;
-            
+
+
+            // --- 色フェードは startColor を基に毎フレーム算出（累積乗算しない） ---
+            Vector4 displayColor = particleIterator->startColor;
+            displayColor.x *= fade;
+            displayColor.y *= fade;
+            displayColor.z *= fade;
+            displayColor.w = fade; // alpha は fade で上書き
+
+
             // world行列の計算
             Matrix4x4 scaleMatrix = MakeScaleMatrix((*particleIterator).transform.scale);
             // 回転行列を各軸ごとに作成して合成
@@ -128,8 +141,16 @@ void ParticleManager::Update() {
         }
 
         // 描画で使用するインスタンス数を更新
-        group.kNumInstance = counter; 
-    }
+        group.kNumInstance = counter;
+
+        // 未使用領域を必ずクリア（GPU にゴミが残らないように）
+        for (uint32_t i = counter; i < MaxInstanceCount; ++i) {
+            group.instanceData[i].color = {0.0f, 0.0f, 0.0f, 0.0f};
+            // 必要なら WVP もゼロ化しておく（安全策）
+            group.instanceData[i].WVP = MakeIdentity4x4(); // or zero matrix
+            group.instanceData[i].World = MakeIdentity4x4();
+        }
+    } 
 }
 
 void ParticleManager::Draw() {
@@ -228,6 +249,7 @@ void ParticleManager::Emit(const std::string& name, const Transform& transform, 
         newParticle.transform.rotate = { transform.rotate.x + randData.rotation.x, transform.rotate.y + randData.rotation.y, transform.rotate.z + randData.rotation.z };
         newParticle.transform.scale = { transform.scale.x + randData.scale.x, transform.scale.y + randData.scale.y, transform.scale.z + randData.scale.z };
         newParticle.color = { color.x + randData.color.x,color.y + randData.color.y ,color.z + randData.color.z ,color.w + randData.color.w };
+        newParticle.startColor = newParticle.color; // ← ここで元色を保持
         newParticle.lifetime = randData.lifetime;
         newParticle.currentTime = 0.0f;
         newParticle.Velocity.translate = randData.velocity.translate;

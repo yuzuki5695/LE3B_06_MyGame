@@ -30,6 +30,8 @@ public: // メンバ関数
 	void Update();
 	// 描画処理
 	void Draw();
+	    
+	void ClearAll();
 
 	// パーティクルグループの作成
 	void CreateParticleGroup(const std::string& name, const std::string& textureFilepath, const std::string& filename, VertexType vertexType);
@@ -56,6 +58,9 @@ private: // メンバ変数
 	Matrix4x4 backToFrontMatrix;
 	// パーティクルグループコンテナ
 	std::unordered_map<std::string, ParticleGroup> particleGroups;
+	
+	float t;
+	float fade;
 
 public:
 	// getter
