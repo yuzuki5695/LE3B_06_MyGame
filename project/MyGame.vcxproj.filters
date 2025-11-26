@@ -387,7 +387,10 @@
     <ClCompile Include="application\stage\StageManager.cpp">
       <Filter>ソース ファイル\application\stage</Filter>
     </ClCompile>
-    <ClCompile Include="TitleCamera.cpp">
+    <ClCompile Include="application\camera\TitleCamera.cpp">
+      <Filter>ソース ファイル\application\camera</Filter>
+    </ClCompile>
+    <ClCompile Include="application\camera\GameOverCamera.cpp">
       <Filter>ソース ファイル\application\camera</Filter>
     </ClCompile>
   </ItemGroup>
@@ -638,7 +641,10 @@
     <ClInclude Include="engine\camera\CameraTransform.h">
       <Filter>ヘッダー ファイル\engine\camera</Filter>
     </ClInclude>
-    <ClInclude Include="TitleCamera.h">
+    <ClInclude Include="application\camera\TitleCamera.h">
+      <Filter>ヘッダー ファイル\application\camera</Filter>
+    </ClInclude>
+    <ClInclude Include="application\camera\GameOverCamera.h">
       <Filter>ヘッダー ファイル\application\camera</Filter>
     </ClInclude>
   </ItemGroup>

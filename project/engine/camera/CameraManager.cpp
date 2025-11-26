@@ -45,39 +45,52 @@ void CameraManager::Initialize(CameraTransform transform) {
     titlecamera_->Initialize();
     // サブカメラの登録
     RegisterSubCameras(titlecamera_->GetSubCameras(), "SubCamera");
-    
-    // TitleCamera の出力を MainCamera に反映
-    maintrans_  = titlecamera_->GetMainTransform();
+    // ゲームプレイ用カメラの生成、初期化
+    //gamecamera_ = std::make_unique<GameCamera>();
+   // gamecamera_->Initialize();
+    // ゲームオーバー用カメラの生成、初期化
+    gameovercamera_ = std::make_unique<GameOverCamera>();
+    gameovercamera_->Initialize();
 }
 
 // 更新処理
 void CameraManager::Update() {
     switch (activeSceneCameraType_) {
-    case SceneCameraType::Title:
-        // タイトルカメラの更新処理
+    case SceneCameraType::Title:                                  ///---タイトルシーン---///
+        // 一度だけTitleCameraの出力をMainCameraに反映
+        if (sceneCameraJustChanged_) {
+            maintrans_ = titlecamera_->GetMainTransform();
+        }
+        // タイトル用カメラの更新処理
         titlecamera_->Update();
-
-        mainCamera_->SetTranslate(maintrans_.translate);
-        mainCamera_->SetRotate(maintrans_.rotate);
         break;
-    case SceneCameraType::Gameplay:
+    case SceneCameraType::Gameplay:                                  ///---タイトルシーン---///
+      //  gamecamera_->Update();
 
         break;
-    case SceneCameraType::GameClear:
+    case SceneCameraType::GameClear:                                  ///---タイトルシーン---///
 
 
         break;
-    case SceneCameraType::GameOver:
-
+    case SceneCameraType::GameOver:                                  ///---ゲームオーバーシーン---///
+        // 一度だけGameOverCameraの出力をMainCameraに反映
+        if (sceneCameraJustChanged_) {
+            maintrans_ = gameovercamera_->GetMainTransform();
+        }
+        // ゲームオーバー用カメラの生成、初期化
+        gameovercamera_->Update();
         break;
     }
+    
+    // ---- メインカメラへ値を反映 ----
+    mainCamera_->SetTranslate(maintrans_.translate);
+    mainCamera_->SetRotate(maintrans_.rotate);
 
     // --- メインカメラ更新 --- //
     if (mainCamera_) mainCamera_->Update();
     // --- サブカメラ群の更新 --- //
     for (auto& [name, activeCamera_] : subCamerasMap_) if (activeCamera_) activeCamera_->Update();
-
-
+    // アクティブカメラを共通リソースに設定
     SetActiveCamera();
 }
 // アクティブカメラを取得

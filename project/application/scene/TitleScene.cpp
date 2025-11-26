@@ -77,7 +77,7 @@ void TitleScene::Update() {
 
     // フェードアウトが完了したら次のシーンへ
     if (FadeManager::GetInstance()->IsFadeEnd() && FadeManager::GetInstance()->GetFadeType() == FadeType::FadeOut) {
-        SceneManager::GetInstance()->ChangeScene("GAMEPLAY");
+        SceneManager::GetInstance()->ChangeScene("GAMEOVER");
     }
 
     /*-------------------------------------------*/

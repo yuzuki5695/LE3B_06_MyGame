@@ -4,6 +4,7 @@
 #include<CameraTypes.h>
 #include<TitleCamera.h>
 #include<GameCamera.h>
+#include<GameOverCamera.h>
 
 using namespace CameraTypes;
 
@@ -51,9 +52,13 @@ private: // メンバ変数
     Camera* activeCamera_ = nullptr;                                           // アクティブ中のカメラ
     // タイトル専用カメラ
     std::unique_ptr<TitleCamera> titlecamera_;
+    // ゲームプレイ用カメラ
+    std::unique_ptr<GameCamera> gamecamera_;
+    // ゲームオーバー用カメラ
+    std::unique_ptr<GameOverCamera> gameovercamera_;
 
 
-
+    bool sceneCameraJustChanged_ = false;
 
     //// Debug用フリーカメラ
     //std::unique_ptr<Camera> debugFreeCamera_;

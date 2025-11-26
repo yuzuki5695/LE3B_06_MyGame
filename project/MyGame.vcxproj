@@ -112,6 +112,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="application\bullet\BulletManager.cpp" />
     <ClCompile Include="application\bullet\EnemyBullet.cpp" />
     <ClCompile Include="application\bullet\PlayerBullet.cpp" />
+    <ClCompile Include="application\camera\GameOverCamera.cpp" />
     <ClCompile Include="application\character\CharacterManager.cpp" />
     <ClCompile Include="application\enemy\Enemy.cpp" />
     <ClCompile Include="application\fade\FadeManager.cpp" />
@@ -170,13 +171,14 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="engine\base\DirectXCommon\ViewportManager.cpp" />
     <ClCompile Include="engine\base\DirectXCommon\SwapChainManager.cpp" />
     <ClCompile Include="application\stage\StageManager.cpp" />
-    <ClCompile Include="TitleCamera.cpp" />
+    <ClCompile Include="application\camera\TitleCamera.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="application\bullet\BaseBullet.h" />
     <ClInclude Include="application\bullet\BulletManager.h" />
     <ClInclude Include="application\bullet\EnemyBullet.h" />
     <ClInclude Include="application\bullet\PlayerBullet.h" />
+    <ClInclude Include="application\camera\GameOverCamera.h" />
     <ClInclude Include="application\character\BaseCharacter.h" />
     <ClInclude Include="application\character\CharacterManager.h" />
     <ClInclude Include="application\enemy\Enemy.h" />
@@ -255,7 +257,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\camera\GameCamera.h" />
     <ClInclude Include="application\event\EventManager.h" />
     <ClInclude Include="application\stage\StageManager.h" />
-    <ClInclude Include="TitleCamera.h" />
+    <ClInclude Include="application\camera\TitleCamera.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="externals\DirectXTex\DirectXTex_Desktop_2022_Win10.vcxproj">
