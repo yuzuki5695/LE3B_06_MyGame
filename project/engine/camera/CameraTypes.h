@@ -8,12 +8,12 @@ namespace CameraTypes {
         Main,      // メイン
         Sub,       // サブ
     };
-    //  シーンごとのカメラタイプ
+    //  シーンごとのカメラのタイプ
     enum class SceneCameraType {
-        Title,
-        Gameplay,
-        GameClear,
-        GameOver,
+        Title,         // タイトル
+        Gameplay,      // ゲームプレイ
+        GameClear,     // ゲームクリア
+        GameOver,      // ゲームオーバー
     };
     // カメラの状態
     enum class CameraMode {
