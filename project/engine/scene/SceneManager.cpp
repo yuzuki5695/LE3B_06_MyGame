@@ -44,9 +44,7 @@ void SceneManager::Update() {
 		scene_->Initialize();
 
 		// ---- シーン変更通知をカメラへ ----
-		CameraManager::GetInstance()->SetSceneCameraType(
-			CameraManager::GetInstance()->ConvertSceneNameToCameraType(scene_->GetSceneName())
-		);
+		CameraManager::GetInstance()->NotifySceneChangedByName(scene_->GetSceneName());
 	}
 
 	// 実行中シーンを更新する

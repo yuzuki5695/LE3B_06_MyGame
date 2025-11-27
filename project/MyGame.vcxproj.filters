@@ -647,6 +647,9 @@
     <ClInclude Include="application\camera\GameOverCamera.h">
       <Filter>ヘッダー ファイル\application\camera</Filter>
     </ClInclude>
+    <ClInclude Include="application\camera\SceneCameraBase.h">
+      <Filter>ヘッダー ファイル\application\camera</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Resources\shaders\Sprite\Sprite.PS.hlsl">

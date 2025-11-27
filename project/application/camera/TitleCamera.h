@@ -1,32 +1,20 @@
 #pragma once
-#include <Camera.h>
-#include <memory>
-#include<CameraTransform.h>
-#include <vector>
+#include<SceneCameraBase.h>
 
 // タイトル専用カメラ
-class TitleCamera
-{
-public: // メンバs関数
+class TitleCamera : public SceneCameraBase {
+public: // メンバ関数
     /// <summary>
     /// 初期化処理
     /// </summary>
-    void Initialize();
+    void Initialize() override;
     /// <summary>
     /// 更新処理
     /// </summary> 
-    void Update();
+    void Update() override;
 
-
-private: // メンバ変数
-    CameraTransform maintransform_;
-    std::vector<std::unique_ptr<Camera>> subCameras_;
-
-public: // アクセッサ（Getter / Setter）
-    // サブカメラ情報の取得
-    std::vector<std::unique_ptr<Camera>>& GetSubCameras() { return subCameras_; }
-    // サブカメラ追加
-    void AddSubCamera(const CameraTransform& trans);
-    void AddSubCameras(const std::vector<CameraTransform>& transforms);
-    const CameraTransform& GetMainTransform() const { return maintransform_; }
+    // サブカメラの追加
+    void AddSubCamera(const CameraTransform& trans) override;
+    // サブカメラの追加（複数登録に対応）
+    void AddSubCameras(const std::vector<CameraTransform>& transforms) override;
 };

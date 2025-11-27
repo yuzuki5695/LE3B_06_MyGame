@@ -1,25 +1,20 @@
 #pragma once
-#include <Camera.h>
-#include <memory>
-#include<CameraTransform.h>
-#include <vector>
+#include<SceneCameraBase.h>
 
 // ゲームオーバー専用カメラ
-class GameOverCamera
-{
-public: // メンバs関数
+class GameOverCamera : public SceneCameraBase {
+public: // メンバ関数
     /// <summary>
     /// 初期化処理
     /// </summary>
-    void Initialize();
+    void Initialize() override;
     /// <summary>
     /// 更新処理
     /// </summary> 
-    void Update();
+    void Update() override;
 
-private: // メンバ変数
-    CameraTransform maintransform_;
-
-public: // アクセッサ（Getter / Setter）
-    const CameraTransform& GetMainTransform() const { return maintransform_; }
+    // サブカメラの追加
+    void AddSubCamera(const CameraTransform& trans) override;
+    // サブカメラの追加（複数登録に対応）
+    void AddSubCameras(const std::vector<CameraTransform>& transforms) override;
 };

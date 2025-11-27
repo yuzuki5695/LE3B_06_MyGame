@@ -37,53 +37,35 @@ public: // メンバ関数
         return a + (b - a) * t;
     }
 
-    // 各シーンのサブカメラの登録
-    void RegisterSubCameras(std::vector<std::unique_ptr<Camera>>& cameras, const std::string& prefix);
-
 private: // メンバ変数
     ViewCameraType Typeview_;                                                  // 使用するカメラのタイプ  
-    SceneCameraType activeSceneCameraType_;                                    // シーンごとのカメラの状態
+    SceneCameraType activeSceneCameraType_;                                    // カメラがどこのsシーンにあるか
     CameraMode currentMode_;                                                   // カメラの状態 
     CameraSwitchType switchType_ = CameraSwitchType::Instant;                  // カメラの切替方法
     std::unique_ptr<Camera> mainCamera_;                                       //　メインカメラ(基本1つ)
     CameraTransform maintrans_;                                                // カメラの座標
-    std::unordered_map<std::string, std::unique_ptr<Camera>> subCamerasMap_;   // サブカメラ(複数の設置に対応できる)
+    std::unordered_map<std::string, std::shared_ptr<Camera>> subCamerasMap_;   // サブカメラ(複数の設置に対応できる)
     std::string activeSubCameraName_;                                          // 登録したサブカメラの名前
     Camera* activeCamera_ = nullptr;                                           // アクティブ中のカメラ
-    // タイトル専用カメラ
-    std::unique_ptr<TitleCamera> titlecamera_;
-    // ゲームプレイ用カメラ
-    std::unique_ptr<GameCamera> gamecamera_;
-    // ゲームオーバー用カメラ
-    std::unique_ptr<GameOverCamera> gameovercamera_;
 
+    std::unique_ptr<SceneCameraBase> titlecamera_;
+    std::unique_ptr<SceneCameraBase> gameovercamera_;
+    SceneCameraBase* currentSceneCamera_;
 
+    SceneCameraType lastSceneCameraType_ = SceneCameraType::Title;
     bool sceneCameraJustChanged_ = false;
 
     //// Debug用フリーカメラ
     //std::unique_ptr<Camera> debugFreeCamera_;
     //bool useDebugCamera_ = false;              // Debugカメラを使用中かどうかのフラグ
 public: // メンバ関数
-
     Camera* GetActiveCamera();
 
+    void RegisterSubCameras(const std::vector<std::shared_ptr<Camera>>& cameras, const std::string& prefix);
 
-    void SetSceneCameraType(SceneCameraType type) {
-        activeSceneCameraType_ = type;
-    }
+    void NotifySceneChangedByName(const std::string& sceneName);
 
-    SceneCameraType GetSceneCameraType() const {
-        return activeSceneCameraType_;
-    }
-
-    SceneCameraType ConvertSceneNameToCameraType(const std::string& name) {
-        if (name == "TITLE")     return SceneCameraType::Title;
-        if (name == "GAMEPLAY")  return SceneCameraType::Gameplay;
-        if (name == "GAMECLEAR") return SceneCameraType::GameClear;
-        if (name == "GAMEOVER")  return SceneCameraType::GameOver;
-
-        return SceneCameraType::Title; // デフォルト
-    }
+    void OnSceneChanged(SceneCameraType type);
 
     void SetActiveCamera();
 };
