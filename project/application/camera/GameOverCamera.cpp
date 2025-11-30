@@ -2,7 +2,7 @@
 
 void GameOverCamera::Initialize() {
     // カメラの値の初期化
-    maintransform_ = { { 0.0f,0.0f,0.0f },{ 0.0f, 0.0f, 0.0f} };
+    transform_ = { { 0.0f,0.0f,0.0f },{ 0.0f, 0.0f, 0.0f} };
 }
 
 void GameOverCamera::Update(){}

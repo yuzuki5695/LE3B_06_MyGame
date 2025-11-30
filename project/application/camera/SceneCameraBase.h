@@ -20,15 +20,23 @@ public:
     virtual void Update() = 0;
 
     /// メインカメラ Transform の取得
-    const CameraTransform& GetMainTransform() const { return maintransform_; }
+    const CameraTransform& GetMainTransform() const { return transform_; }
     /// サブカメラの追加
     virtual void AddSubCamera(const CameraTransform& trans) {} 
-    // サブカメラの追加（複数登録に対応）
+    /// サブカメラの追加（複数登録に対応）
     virtual void AddSubCameras(const std::vector<CameraTransform>& transforms) {} 
-    // サブカメラ生成
-    virtual std::vector<std::shared_ptr<Camera>> MoveSubCameras() { return std::move(subcameras_); }
-    virtual std::vector<std::shared_ptr<Camera>> GetSubCameras() const { return subcameras_; }
+    /// サブカメラ生成（CameraManager に所有権を渡す）
+    virtual std::vector<std::unique_ptr<Camera>> MoveSubCameras() { return std::move(subcameras_); }
+
+    /// サブカメラをコピーして取得（CameraManager の初期化用）
+    virtual std::vector<std::shared_ptr<Camera>> GetSubCameras() const {
+        std::vector<std::shared_ptr<Camera>> result;
+        for (const auto& cam : subcameras_) {
+            result.push_back(std::make_shared<Camera>(*cam)); // Camera のコピーコンストラクタを使用
+        }
+        return result;
+    }
 protected:
-    CameraTransform maintransform_;
-    std::vector<std::shared_ptr<Camera>> subcameras_; // デフォルトは空
+    CameraTransform transform_;                       // メインカメラ用の位置・回転
+    std::vector<std::unique_ptr<Camera>> subcameras_; // サブカメラ群(デフォルトは空)
 };

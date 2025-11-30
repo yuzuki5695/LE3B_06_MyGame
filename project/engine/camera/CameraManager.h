@@ -44,7 +44,7 @@ private: // メンバ変数
     CameraSwitchType switchType_ = CameraSwitchType::Instant;                  // カメラの切替方法
     std::unique_ptr<Camera> mainCamera_;                                       //　メインカメラ(基本1つ)
     CameraTransform maintrans_;                                                // カメラの座標
-    std::unordered_map<std::string, std::shared_ptr<Camera>> subCamerasMap_;   // サブカメラ(複数の設置に対応できる)
+    std::unordered_map<std::string, std::unique_ptr<Camera>> subCamerasMap_;   // サブカメラ(複数の設置に対応できる)
     std::string activeSubCameraName_;                                          // 登録したサブカメラの名前
     Camera* activeCamera_ = nullptr;                                           // アクティブ中のカメラ
 
@@ -61,7 +61,8 @@ private: // メンバ変数
 public: // メンバ関数
     Camera* GetActiveCamera();
 
-    void RegisterSubCameras(const std::vector<std::shared_ptr<Camera>>& cameras, const std::string& prefix);
+    void RegisterSubCamerasCopy(const std::vector<std::unique_ptr<Camera>>& cameras, const std::string& prefix);
+    void RegisterSubCameras(std::vector<std::unique_ptr<Camera>>&& cameras, const std::string& prefix);
 
     void NotifySceneChangedByName(const std::string& sceneName);
 
