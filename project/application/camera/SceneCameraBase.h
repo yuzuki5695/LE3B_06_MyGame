@@ -28,14 +28,6 @@ public:
     /// サブカメラ生成（CameraManager に所有権を渡す）
     virtual std::vector<std::unique_ptr<Camera>> MoveSubCameras() { return std::move(subcameras_); }
 
-    /// サブカメラをコピーして取得（CameraManager の初期化用）
-    virtual std::vector<std::shared_ptr<Camera>> GetSubCameras() const {
-        std::vector<std::shared_ptr<Camera>> result;
-        for (const auto& cam : subcameras_) {
-            result.push_back(std::make_shared<Camera>(*cam)); // Camera のコピーコンストラクタを使用
-        }
-        return result;
-    }
 protected:
     CameraTransform transform_;                       // メインカメラ用の位置・回転
     std::vector<std::unique_ptr<Camera>> subcameras_; // サブカメラ群(デフォルトは空)

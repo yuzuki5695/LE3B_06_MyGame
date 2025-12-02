@@ -61,7 +61,6 @@ private: // メンバ変数
 public: // メンバ関数
     Camera* GetActiveCamera();
 
-    void RegisterSubCamerasCopy(const std::vector<std::unique_ptr<Camera>>& cameras, const std::string& prefix);
     void RegisterSubCameras(std::vector<std::unique_ptr<Camera>>&& cameras, const std::string& prefix);
 
     void NotifySceneChangedByName(const std::string& sceneName);

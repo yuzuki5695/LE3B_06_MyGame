@@ -48,9 +48,6 @@ void CameraManager::Initialize(CameraTransform transform) {
     // 初期のシーンははタイトルカメラ
     currentSceneCamera_ = titlecamera_.get();
     sceneCameraJustChanged_ = true;
-    // タイトルシーンのサブカメラをコピーして登録
-    // 初期化時はコピーで登録
-    //RegisterSubCamerasCopy(currentSceneCamera_->GetSubCameras(), "SubCamera");
 }
 
 // 更新処理
@@ -255,16 +252,6 @@ void CameraManager::SetActiveCamera() {
     ParticleCommon::GetInstance()->SetDefaultCamera(activeCamera_);
 }
 
-void CameraManager::RegisterSubCamerasCopy(const std::vector<std::unique_ptr<Camera>>& cameras, const std::string& prefix) {
-    subCamerasMap_.clear();
-    int idx = 0;
-    for (const auto& cam : cameras) {
-        std::string name = prefix + "_" + std::to_string(idx++);
-        auto copyCam = std::make_unique<Camera>(*cam); // Camera のコピーコンストラクタを用意する
-        subCamerasMap_[name] = std::move(copyCam);
-    }
-}
-
 void CameraManager::RegisterSubCameras(std::vector<std::unique_ptr<Camera>>&& cameras, const std::string& prefix) {
     // 既存のサブカメラは破棄
     subCamerasMap_.clear();
@@ -275,7 +262,6 @@ void CameraManager::RegisterSubCameras(std::vector<std::unique_ptr<Camera>>&& ca
         // unique_ptr の所有権を map にムーブ
         subCamerasMap_[name] = std::move(cam);
     }
-    // cameras 内の要素は全てムーブされるので、元の vector は空になる
 }
 
 void CameraManager::OnSceneChanged(SceneCameraType type) {
@@ -289,7 +275,10 @@ void CameraManager::OnSceneChanged(SceneCameraType type) {
         currentSceneCamera_ = gameovercamera_.get();
         break;
     }
-
+    // シーン切替時に Initialize() を呼んでサブカメラを再生成
+    if (currentSceneCamera_) {
+        currentSceneCamera_->Initialize();
+    }
     sceneCameraJustChanged_ = true;
 }
 
@@ -307,5 +296,6 @@ void CameraManager::NotifySceneChangedByName(const std::string& sceneName) {
         sceneCameraJustChanged_ = true;
         lastSceneCameraType_ = activeSceneCameraType_;
         activeSceneCameraType_ = newType;
+        OnSceneChanged(newType);
     }
 }
