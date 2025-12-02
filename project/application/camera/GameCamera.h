@@ -1,11 +1,9 @@
 #pragma once
-#include <vector>
-#include <memory>
-#include <Camera.h>
 #include <Vector3.h>
 #include <CurveJsonLoader.h>
 #include<Quaternion.h>
 #include <Object3d.h>
+#include<SceneCameraBase.h>
 
 enum class ViewType  {
     Main,  // メイン(レールカメラ)
@@ -24,7 +22,7 @@ enum class SubCamType {
 /// カーブデータ（制御点）はJSONファイルから読み込む
 /// </summary>
 ///====================================================
-class GameCamera {
+class GameCamera : public SceneCameraBase {
 public:
     /// <summary>
     /// 初期化処理
@@ -57,11 +55,15 @@ public:
     Vector3 CatmullRom(const Vector3& p0, const Vector3& p1, const Vector3& p2, const Vector3& p3, float t);
     
     Camera* GetActiveCamera();
+    
+    // サブカメラの追加
+    void AddSubCamera(const CameraTransform& trans) override;
+    // サブカメラの追加（複数登録に対応）
+    void AddSubCameras(const std::vector<CameraTransform>& transforms) override;
 
 private: // メンバ変数
     CurveJsonLoader* Jsondata = nullptr;         // ベジェ制御点を読み込むローダー
-    std::unique_ptr<Camera> maincamera_ = nullptr;  // 実際に描画で使用されるカメラインスタンス  
-    std::unique_ptr<Camera> subcamera_ = nullptr; // サブカメラ用インスタンス
+
     Vector3 bezierPos_;                          // 現在のベジェ曲線上の位置
     std::vector<BezierPoint> bezierPoints;       // 移動に使う制御点データ
     bool movefige;                               // ベジェ曲線に沿って移動するフラグ      	
@@ -98,9 +100,6 @@ private: // メンバ変数
 
 public: // アクセッサ（Getter / Setter）
     // getter 
-    Camera* GetMainCamera() { return maincamera_.get(); }
-    Camera* GetSubCamera() { return subcamera_.get(); }
-
     bool Getmovefige() { return movefige; }
     Vector3 GetbezierPos() { return bezierPos_; }
     // setter

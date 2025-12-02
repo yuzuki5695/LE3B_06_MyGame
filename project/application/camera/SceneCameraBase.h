@@ -21,6 +21,10 @@ public:
 
     /// メインカメラ Transform の取得
     const CameraTransform& GetMainTransform() const { return transform_; }
+    /// メインカメラRotateの設定
+    void SetMainRotate(const Vector3& trans) { transform_.rotate = trans; }
+    /// メインカメラTranslateの設定
+    void SetMainTranslate(const Vector3& trans) { transform_.translate = trans; }
     /// サブカメラの追加
     virtual void AddSubCamera(const CameraTransform& trans) {} 
     /// サブカメラの追加（複数登録に対応）

@@ -54,6 +54,7 @@ private: // メンバ変数
     Camera* activeCamera_ = nullptr;                                           // アクティブ中のカメラ
     // 各シーン用カメラ
     std::unique_ptr<SceneCameraBase> titlecamera_;
+    std::unique_ptr<GameCamera> gameplaycamera_;
     std::unique_ptr<SceneCameraBase> gameovercamera_;
     SceneCameraBase* currentSceneCamera_;
     // 前回のシーンカメラタイプ
@@ -69,4 +70,6 @@ public: // メンバ関数
     Camera* GetActiveCamera();
     // アクティブカメラを更新し、共通リソースに設定する
     void SetActiveCamera();
+
+    ViewCameraType GetTypeview() const { return Typeview_; }
 };

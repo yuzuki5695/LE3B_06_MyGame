@@ -58,72 +58,72 @@ void Player::Initialize() {
 /// 更新処理
 ///=====================================================================
 void Player::Update() {
-  //  GameCamera* gameCam = CameraManager::GetInstance()->GetGameCamera();
-    //if (!gameCam) return;
+    Camera* activeCam  = CameraManager::GetInstance()->GetActiveCamera();
+    if (!activeCam ) return;
 
-    //Vector3 bezierPos = gameCam->GetbezierPos();
-    //Vector3 relativeOffset = { 0.0f, -3.0f, 30.0f };
+    Vector3 bezierPos = activeCam->GetTranslate();
+    Vector3 relativeOffset = { 0.0f, -3.0f, 30.0f };
 
-    //// カメラの回転を取得（前方ベクトルから計算）
-    //Vector3 cameraForward = gameCam->GetForward(); // ← Getterを用意
-    //Vector3 cameraRight = Normalize(Cross({ 0,1,0 }, cameraForward));
-    //Vector3 cameraUp = Normalize(Cross(cameraForward, cameraRight));
+    // カメラの回転を取得（前方ベクトルから計算）
+    Vector3 cameraForward = activeCam ->GetForward(); // ← Getterを用意
+    Vector3 cameraRight = Normalize(Cross({ 0,1,0 }, cameraForward));
+    Vector3 cameraUp = Normalize(Cross(cameraForward, cameraRight));
 
-    //// カメラ座標系でオフセット変換
-    //Vector3 worldOffset =
-    //    cameraRight * relativeOffset.x +
-    //    cameraUp * relativeOffset.y +
-    //    cameraForward * relativeOffset.z;
+    // カメラ座標系でオフセット変換
+    Vector3 worldOffset =
+        cameraRight * relativeOffset.x +
+        cameraUp * relativeOffset.y +
+        cameraForward * relativeOffset.z;
 
-    //// === プレイヤー位置更新 ===
-    //transform_.translate = bezierPos + worldOffset;
+    // === プレイヤー位置更新 ===
+    transform_.translate = bezierPos + worldOffset;
 
-    //// === プレイヤー向き更新（カメラと同じ方向：メイン時のみ）===
-    //Vector3 playerForward = cameraForward;
-    //// 現在のカメラモードを確認
-    //if (gameCam->GetMode() == ViewType::Main) {
-    //    transform_.rotate = gameCam->GetActiveCamera()->GetRotate();
-    //}
+    // === プレイヤー向き更新（カメラと同じ方向：メイン時のみ）===
+    Vector3 playerForward = cameraForward;
+    // 現在のカメラモードを確認
+    if (CameraManager::GetInstance()->GetTypeview() == ViewCameraType::Main) {
+        transform_.rotate = activeCam->GetRotate();
+    }
 
-    //// 現在時刻を取得（秒）
-    //float currentTime = static_cast<float>(std::chrono::duration<double>(std::chrono::high_resolution_clock::now().time_since_epoch()).count());
+    // 現在時刻を取得（秒）
+    float currentTime = static_cast<float>(std::chrono::duration<double>(std::chrono::high_resolution_clock::now().time_since_epoch()).count());
 
-    //// deltaTime を計算
-    //float deltaTime = currentTime - previousTime_;
-    //previousTime_ = currentTime;
+    // deltaTime を計算
+    float deltaTime = currentTime - previousTime_;
+    previousTime_ = currentTime;
 
 
-    //if (iskeyActive_) {
-    //    float currentSpeed = isBoosting_ ? boostSpeed_ : normalSpeed_;
-    //    //UpdateBoostState();
-    //    MoveInput(currentSpeed); // ブースト中は速く移動 
-    // 
-    //    // アクティブ中はキー操作を受け付ける
-    //    if (isDeadEffectActive_ && active_ == false) {
-    //        // プレイヤ―死亡演出
-    //        StartDeathEffect();
-    //    } else {
-    //        // ターゲットを矢印キーで動かす
-    //        UpdateTargetPosition(targetpos_, 0.4f);   // ターゲットに使う
-    //        // 弾の発射
-    //        AttachBullet();
-    //    }
-    //}
+    if (iskeyActive_) {
+        float currentSpeed = isBoosting_ ? boostSpeed_ : normalSpeed_;
+        //UpdateBoostState();
+        MoveInput(currentSpeed); // ブースト中は速く移動 
+     
+        // アクティブ中はキー操作を受け付ける
+        if (isDeadEffectActive_ && active_ == false) {
+            // プレイヤ―死亡演出
+            StartDeathEffect();
+        } else {
+            // ターゲットを矢印キーで動かす
+            UpdateTargetPosition(targetpos_, 0.4f);   // ターゲットに使う
+            // 弾の発射
+            AttachBullet();
+        }
+    }
 
-    //// デバッグ中のImGui表示
-    //DebugImgui();
-    //target_->SetTranslate(copypos);
-    //target_->Update();
-    //// 照準スプライトの位置更新（3D→2D変換)
-    //UpdateReticlePosition();
-    //targetreticle_->Update();
+    // デバッグ中のImGui表示
+    DebugImgui();
+    target_->SetTranslate(copypos);
+    target_->Update();
+    // 照準スプライトの位置更新（3D→2D変換)
+    UpdateReticlePosition();
+    targetreticle_->Update();
 
-    //// 移動後の位置をObjectに反映
-    //object->SetTranslate(transform_.translate);
-    //object->SetRotate(transform_.rotate);
-    //object->SetScale(transform_.scale);
-    //// プレイヤー更新
-    //object->Update();
+    // 移動後の位置をObjectに反映
+    object->SetTranslate(transform_.translate);
+    object->SetRotate(transform_.rotate);
+    object->SetScale(transform_.scale);
+    // プレイヤー更新
+    object->Update();
 }
 
 ///=====================================================================

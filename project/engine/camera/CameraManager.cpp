@@ -41,6 +41,9 @@ void CameraManager::Initialize(CameraTransform transform) {
     // タイトル用カメラの生成、初期化
     titlecamera_ = std::make_unique<TitleCamera>();
     titlecamera_->Initialize();
+    // ゲームプレイ用カメラの生成、初期化
+    gameplaycamera_ = std::make_unique<GameCamera>();
+    gameplaycamera_->Initialize();
     // ゲームオーバー用カメラの生成、初期化
     gameovercamera_ = std::make_unique<GameOverCamera>();
     gameovercamera_->Initialize();
@@ -54,22 +57,23 @@ void CameraManager::Initialize(CameraTransform transform) {
 void CameraManager::Update() {
     // シーンカメラが変わったら一度だけTransformとサブカメラを反映
     if (sceneCameraJustChanged_) {
-        // メインカメラの Transform を更新
-        maintrans_ = currentSceneCamera_->GetMainTransform();
         // 前のサブカメラを破棄
         subCamerasMap_.clear();
         // 新しいシーンに切り替えるときのみムーブ
-        RegisterSubCameras(std::move(currentSceneCamera_->MoveSubCameras()), "SubCamera");
+        if (currentSceneCamera_) { RegisterSubCameras(std::move(currentSceneCamera_->MoveSubCameras()), "SubCamera"); }
         sceneCameraJustChanged_ = false;
     }
 
     // 現在のシーンカメラの更新
-    currentSceneCamera_->Update();
+    if (currentSceneCamera_) { currentSceneCamera_->Update(); }
 
     // メインカメラに値を反映
-    mainCamera_->SetTranslate(maintrans_.translate);
-    mainCamera_->SetRotate(maintrans_.rotate);
-    mainCamera_->Update();
+    if (mainCamera_ && currentSceneCamera_) {
+        maintrans_ = currentSceneCamera_->GetMainTransform();
+        mainCamera_->SetTranslate(maintrans_.translate);
+        mainCamera_->SetRotate(maintrans_.rotate);
+        mainCamera_->Update();
+    }
 
     // サブカメラ更新
     for (std::pair<const std::string, std::unique_ptr<Camera>>& subcameras : subCamerasMap_) {
@@ -184,14 +188,15 @@ void CameraManager::DrawImGui() {
     // ================================================================
 
     if (ImGui::TreeNode("Main Camera")) {
-        Vector3 pos = maintrans_.translate;
-        Vector3 rot = maintrans_.rotate;
+        maintrans_= currentSceneCamera_->GetMainTransform(); // 初期値だけ取得
 
-        if (ImGui::DragFloat3("Position", &pos.x, 0.1f)) {
-            maintrans_.translate = pos;
+        if (ImGui::DragFloat3("Position", &maintrans_.translate.x, 0.1f)) {
+            mainCamera_->SetTranslate(maintrans_.translate);
+            currentSceneCamera_->SetMainTranslate(maintrans_.translate); // 新規にセッターを作る
         }
-        if (ImGui::DragFloat3("Rotation", &rot.x, 0.1f)) {
-            maintrans_.rotate = rot;
+        if (ImGui::DragFloat3("Rotation", &maintrans_.rotate.x, 0.1f)) {
+            mainCamera_->SetRotate(maintrans_.rotate);
+            currentSceneCamera_->SetMainRotate(maintrans_.rotate); // 新規にセッターを作る
         }
         ImGui::TreePop();
     }
@@ -262,6 +267,9 @@ void CameraManager::OnSceneChanged(SceneCameraType type) {
     switch (type) {
     case SceneCameraType::Title:
         currentSceneCamera_ = titlecamera_.get();
+        break;
+    case SceneCameraType::Gameplay:
+        currentSceneCamera_ = gameplaycamera_.get();
         break;
     case SceneCameraType::GameOver:
         currentSceneCamera_ = gameovercamera_.get();

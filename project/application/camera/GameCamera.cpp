@@ -4,6 +4,25 @@
 
 using namespace MatrixVector;
 
+void GameCamera::AddSubCamera(const CameraTransform& trans) {
+    // 新しいサブカメラインスタンスを生成
+    std::unique_ptr<Camera> cam = std::make_unique<Camera>();
+
+    // 渡されたCameraTransformを元に、位置と角度を設定
+    cam->SetTranslate(trans.translate);
+    cam->SetRotate(trans.rotate);
+
+    // サブカメラリストへ追加
+    subcameras_.push_back(std::move(cam)); // 所有権を移動
+}
+
+void GameCamera::AddSubCameras(const std::vector<CameraTransform>& transforms) {
+    for (const CameraTransform& trans : transforms) {
+        // サブカメラを複数登録する
+        AddSubCamera(trans);
+    }
+}
+
 ///====================================================
 /// 初期化処理
 ///====================================================
@@ -17,26 +36,23 @@ void GameCamera::Initialize() {
     movefige = true;
     currentSegment = 0;
 
-    // メインカメラ生成、初期化
-    maincamera_ = std::make_unique<Camera>();
-    bezierPos_ = bezierPoints[0].controlPoint;
-    maincamera_->SetTranslate(bezierPos_);
+    subOffset_ = { 5.5f,-1.0f,15.0f };
+    followInitialized_ = false;   
     prevForward = { 0, 0, 1 }; // 初期向き
-    maincamera_->SetRotate(LookAtRotation(prevForward));
-    // サブカメラ生成、初期化
-    subcamera_ = std::make_unique<Camera>();
-    subcamera_->SetTranslate({ 2, 0, -3 });  // 定点視点の例
-    subcamera_->SetRotate({ 0.0f, 0.0f, 0.0f });
-    followInitialized_ = false;
 
-    subOffset_ = {5.5f,-1.0f,15.0f};
+    // メイン
+    transform_ = { bezierPos_,LookAtRotation(prevForward) };
+    // サブカメラ登録
+    std::vector<CameraTransform> subCams = { { {2, 0, -3}, {0, 0, 0} } };
+    // サブカメラを追加
+   // AddSubCameras(subCams); 
 }
 
 ///====================================================
 /// 更新処理（複数制御点対応＋向き補間）
 ///====================================================
 void GameCamera::Update() {
-    if (bezierPoints.size() < 3) return;    
+    if (bezierPoints.size() < 3) return;
     // 範囲チェック（最後まで行ったら停止）
     if (currentSegment >= bezierPoints.size() - 1) {
         // 最後まで行ったら停止する場合：
@@ -44,40 +60,10 @@ void GameCamera::Update() {
         return;
     }
 
-    switch (mode_) {
-    case ViewType::Main:
-        if (CheckAndResumeMovement())
-            UpdateBezierMovement();
-
-        maincamera_->SetTranslate(bezierPos_);
-        UpdateCameraRotation();
-        break;
-    case ViewType::Sub:
-        if (!followTarget_) return;
-        // 一度だけターゲット方向を向く
-        if (followTarget_) {
-            Vector3 targetPos = followTarget_->GetWorldPosition();
-            Vector3 desiredPos = targetPos + subOffset_;
-            subcamera_->SetTranslate(desiredPos);
-
-            Vector3 dir = targetPos - desiredPos;
-            if (Length(dir) > 0.0001f) {
-                dir = Normalize(dir);
-                float yaw = atan2(dir.x, dir.z);
-                float pitch = -asin(dir.y);
-                subcamera_->SetRotate({ pitch, yaw, 0.0f });
-            }
-        }
-        followInitialized_ = true; // ✅ 一度だけ設定
-        break;
-    case ViewType::Transition:
-        UpdateTransition();
-        break;
-    }
-
-	//// カメラ更新
-    maincamera_->Update();
-    subcamera_->Update();
+    if (CheckAndResumeMovement())
+        UpdateBezierMovement();
+    transform_.translate = bezierPos_;
+    UpdateCameraRotation();
 }
 
 void GameCamera::SwitchView(ViewType targetType) {
@@ -92,28 +78,29 @@ void GameCamera::SwitchView(ViewType targetType) {
     transitionTimer_ = 0.0f;
 
     // 現在カメラ位置・回転を取得
-    startPos_ = maincamera_->GetTranslate();
-    startRot_ = maincamera_->GetRotate();
-
+    startPos_ = transform_.translate;
+    startRot_ = transform_.rotate;
+                
+    std::unique_ptr<Camera>& subcam = subcameras_[0];
     // 目標位置・回転（サブ or メイン）を設定
     if (targetType == ViewType::Sub) {
             // --- 重要: subcamera をターゲット基準で初期化しておく ---
-        if (followTarget_) {
+        if (followTarget_) {    
             Vector3 targetPos = followTarget_->GetWorldPosition();
             Vector3 desiredPos = targetPos + subOffset_;
-            subcamera_->SetTranslate(desiredPos);
+            subcam->SetTranslate(desiredPos);
 
             Vector3 dir = targetPos - desiredPos;
             if (Length(dir) > 0.0001f) {
                 dir = Normalize(dir);
                 float yaw = atan2(dir.x, dir.z);
                 float pitch = -asin(dir.y);
-                subcamera_->SetRotate({ pitch, yaw, 0.0f });
+                subcam->SetRotate({ pitch, yaw, 0.0f });
             }
         }
 
-        endPos_ = subcamera_->GetTranslate();
-        endRot_ = subcamera_->GetRotate();
+        endPos_ = subcam->GetTranslate();
+        endRot_ = subcam->GetRotate();
         
         // 🟢 修正点: サブモード移行時は初期化を未完にする
         //followInitialized_ = false;
@@ -165,8 +152,8 @@ void GameCamera::UpdateTransition() {
     Quaternion qInterp = Quaternion::Slerp(qStart, qEnd, easeT);
     Vector3 interpRot = qInterp.ToEuler();
 
-    maincamera_->SetTranslate(interpPos);
-    maincamera_->SetRotate(interpRot);
+    transform_.translate = interpPos;
+    transform_.rotate = interpRot;
 }
 
 ///====================================================
@@ -280,17 +267,18 @@ void GameCamera::UpdateCameraRotation() {
     newForward = Normalize(newForward);
 
     // カメラ回転更新
-    maincamera_->SetRotate(LookAtRotation(newForward));
+    transform_.rotate = LookAtRotation(newForward);
     prevForward = newForward;
 }
 
 // GameCamera内
 void GameCamera::UpdateSubCameraFollow(const Vector3& targetPos, const Vector3& offset) {
-    if (!subcamera_) return;
+    std::unique_ptr<Camera>& subcam = subcameras_[0];
+    if (!subcam) return;
         // --- 正: ワールド位置 = ターゲット位置 + オフセット ---
     Vector3 worldPos = targetPos + offset;
-    // --- カメラを固定位置に配置 ---
-    subcamera_->SetTranslate(worldPos);
+    // subcam カメラを固定位置に配置 ---
+    subcam->SetTranslate(worldPos);
 
     // --- ターゲット方向を向く ---
     Vector3 toTarget = targetPos - worldPos;
@@ -305,7 +293,7 @@ void GameCamera::UpdateSubCameraFollow(const Vector3& targetPos, const Vector3& 
         float distanceXZ = std::sqrt(toTarget.x * toTarget.x + toTarget.z * toTarget.z);
         float pitch = -std::atan2(toTarget.y, distanceXZ);
 
-        subcamera_->SetRotate({ pitch, yaw, 0.0f });
+        subcam->SetRotate({ pitch, yaw, 0.0f });
     }
 }
 
@@ -319,17 +307,4 @@ Vector3 GameCamera::CatmullRom(const Vector3& p0, const Vector3& p1, const Vecto
         (2.0f*p0 - 5.0f*p1 + 4.0f*p2 - p3) * t2 +
         (-p0 + 3.0f*p1 - 3.0f*p2 + p3) * t3
     );
-}
-
-Camera* GameCamera::GetActiveCamera() {
-    switch (mode_) {
-    case ViewType::Sub:
-        return subcamera_.get();
-    case ViewType::Main:
-        return maincamera_.get();
-    case ViewType::Transition:
-        // Transition中は maincamera_ をベースに更新していることが多い
-        return maincamera_.get();
-    }
-    return maincamera_.get(); // ←安全のためデフォルトを返す
 }
