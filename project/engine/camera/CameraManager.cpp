@@ -72,8 +72,9 @@ void CameraManager::Update() {
     mainCamera_->Update();
 
     // サブカメラ更新
-    for (auto& [_, cam] : subCamerasMap_) cam->Update();
-
+    for (std::pair<const std::string, std::unique_ptr<Camera>>& subcameras : subCamerasMap_) {
+        subcameras.second->Update();
+    }
     // アクティブ登録
     SetActiveCamera();
 }
