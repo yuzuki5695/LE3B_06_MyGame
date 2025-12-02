@@ -45,7 +45,7 @@ void CameraManager::Initialize(CameraTransform transform) {
     gameovercamera_ = std::make_unique<GameOverCamera>();
     gameovercamera_->Initialize();
 
-    // 初期のシーンははタイトルカメラ
+    // 初期のシーンはタイトルカメラ
     currentSceneCamera_ = titlecamera_.get();
     sceneCameraJustChanged_ = true;
 }
@@ -56,13 +56,10 @@ void CameraManager::Update() {
     if (sceneCameraJustChanged_) {
         // メインカメラの Transform を更新
         maintrans_ = currentSceneCamera_->GetMainTransform();
-
         // 前のサブカメラを破棄
         subCamerasMap_.clear();
-
         // 新しいシーンに切り替えるときのみムーブ
         RegisterSubCameras(std::move(currentSceneCamera_->MoveSubCameras()), "SubCamera");
-
         sceneCameraJustChanged_ = false;
     }
 
@@ -123,8 +120,8 @@ void CameraManager::DrawImGui() {
     // ================================================================
     ImGui::Text("=== Current Camera Status ===");
 
-    ImGui::Text("View Camera Type : %s", ToString(Typeview_));
     ImGui::Text("Scene Camera Type : %s", ToString(activeSceneCameraType_));
+    ImGui::Text("View Camera Type : %s", ToString(Typeview_));
     ImGui::Text("Camera Mode : %s", ToString(currentMode_));
 
     // 現在のアクティブカメラを文字列で表示
@@ -141,12 +138,6 @@ void CameraManager::DrawImGui() {
         }
 
         ImGui::Text("Active Camera : %s", activeCamName.c_str());
-
-        // 位置・回転も表示
-        Vector3 pos = activeCam->GetTranslate();
-        Vector3 rot = activeCam->GetRotate();
-        ImGui::Text("Position: (%.2f, %.2f, %.2f)", pos.x, pos.y, pos.z);
-        ImGui::Text("Rotation: (%.2f, %.2f, %.2f)", rot.x, rot.y, rot.z);
     }
 
     // 今のシーンにあるメインとサブカメラの個数を表示
@@ -240,33 +231,33 @@ Camera* CameraManager::GetActiveCamera() {
 
 // カメラモード設定
 void CameraManager::SetCameraMode(CameraMode mode) {
-    currentMode_ = mode;
-    SetActiveCamera(); // カメラ共通リソースへ反映
+    currentMode_ = mode;   // モードを変更
+    SetActiveCamera();     // カメラ共通リソースへ反映
 }
 
 // アクティブカメラを共通リソースに設定
 void CameraManager::SetActiveCamera() { 
-    activeCamera_ = GetActiveCamera();
+    activeCamera_ = GetActiveCamera(); // アクティブカメラを取得
     // 共通リソースにアクティブカメラを設定
     Object3dCommon::GetInstance()->SetDefaultCamera(activeCamera_);
     ParticleCommon::GetInstance()->SetDefaultCamera(activeCamera_);
 }
 
+// サブカメラを一括登録
 void CameraManager::RegisterSubCameras(std::vector<std::unique_ptr<Camera>>&& cameras, const std::string& prefix) {
-    // 既存のサブカメラは破棄
-    subCamerasMap_.clear();
+    subCamerasMap_.clear();    // 既存のサブカメラは破棄
 
     int idx = 0;
-    for (auto& cam : cameras) {
+    for (std::unique_ptr<Camera>& cam : cameras) {
         std::string name = prefix + "_" + std::to_string(idx++);
-        // unique_ptr の所有権を map にムーブ
-        subCamerasMap_[name] = std::move(cam);
+        subCamerasMap_[name] = std::move(cam); // ムーブで登録
     }
 }
 
+// 各シーン用カメラの切替
 void CameraManager::OnSceneChanged(SceneCameraType type) {
     activeSceneCameraType_ = type;
-
+    // シーンタイプに応じたカメラを設定
     switch (type) {
     case SceneCameraType::Title:
         currentSceneCamera_ = titlecamera_.get();
@@ -275,13 +266,17 @@ void CameraManager::OnSceneChanged(SceneCameraType type) {
         currentSceneCamera_ = gameovercamera_.get();
         break;
     }
-    // シーン切替時に Initialize() を呼んでサブカメラを再生成
+    // シーン切替時に初期化を呼んでサブカメラを再生成
     if (currentSceneCamera_) {
         currentSceneCamera_->Initialize();
     }
+    // imguiのサブカメラ選択をリセット
+    Typeview_ = ViewCameraType::Main;  // メインカメラに戻す
+    activeSubCameraName_.clear();
     sceneCameraJustChanged_ = true;
 }
 
+// シーンマネージャーから現在のシ―ンを判定する
 void CameraManager::NotifySceneChangedByName(const std::string& sceneName) {
     SceneCameraType newType;
 
@@ -291,11 +286,11 @@ void CameraManager::NotifySceneChangedByName(const std::string& sceneName) {
     else if (sceneName == "GAMEOVER")  newType = SceneCameraType::GameOver;
     else newType = SceneCameraType::Title;
 
-    // 変更検知
+    // 変更を検知しシーンが変わったら処理
     if (newType != activeSceneCameraType_) {
         sceneCameraJustChanged_ = true;
         lastSceneCameraType_ = activeSceneCameraType_;
         activeSceneCameraType_ = newType;
-        OnSceneChanged(newType);
+        OnSceneChanged(newType);// 各シーン用カメラの切替もここで反映する
     }
 }
