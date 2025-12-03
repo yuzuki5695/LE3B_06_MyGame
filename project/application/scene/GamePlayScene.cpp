@@ -145,12 +145,12 @@ void GamePlayScene::Update() {
     //    player_->SetDead_(true);
     //}
 
-    //// ゲームスタートイベントが終了したらプレイヤ―操作可能に
-    //if (EventManager::GetInstance()->IsFinished() && CameraManager::GetInstance()->GetGameCamera()->GetMode() == ViewType::Main) {
-    //    //   イベント終了 → プレイヤーを操作可能に
-    //    player_->SetKeyActive(true);
-    //    player_->SetReticleVisible(true);
-    //}
+    // ゲームスタートイベントが終了したらプレイヤ―操作可能に
+    if (EventManager::GetInstance()->IsFinished() && CameraManager::GetInstance()->GetTypeview() == ViewCameraType::Main) {
+        //   イベント終了 → プレイヤーを操作可能に
+        player_->SetKeyActive(true);
+        player_->SetReticleVisible(true);
+    }
 
 
     StageManager::GetInstance()->Update();
