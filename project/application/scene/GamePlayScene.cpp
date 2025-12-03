@@ -72,7 +72,7 @@ void GamePlayScene::Initialize() {
     player_->Initialize(); // プレイヤーの初期化
     playerhp_ = player_->IsActive();
     // カメラにプレイヤーを追わせる
-//    CameraManager::GetInstance()->SetTarget(player_->GetPlayerObject());
+    //CameraManager::GetInstance()->SetTarget(player_->GetPlayerObject());
 
     // 敵関連の初期化
 	MAX_ENEMY = 20; // 敵の最大数

@@ -41,4 +41,5 @@ public:
 	void SetAspectRatio(const float& aspectRatio) { this->aspectRatio = aspectRatio; }
 	void SetNearClip(const float& nearClip) { this->nearClip = nearClip; }
 	void Setfarclip(const float& farclip) { this->farclip = farclip; }
+	void SetForward() const;
 };

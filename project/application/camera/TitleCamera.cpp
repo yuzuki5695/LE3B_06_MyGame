@@ -11,11 +11,7 @@ void TitleCamera::Initialize() {
     AddSubCameras(subCams);
 }
 
-void TitleCamera::Update(){
-
-
-    transform_.translate.x -= 0.01f;
-}
+void TitleCamera::Update() {}
 
 void TitleCamera::AddSubCamera(const CameraTransform& trans) {
     // 新しいサブカメラインスタンスを生成

@@ -58,32 +58,40 @@ void Player::Initialize() {
 /// 更新処理
 ///=====================================================================
 void Player::Update() {
-    Camera* activeCam  = CameraManager::GetInstance()->GetActiveCamera();
-    if (!activeCam ) return;
+    CameraManager* camMgr = CameraManager::GetInstance();
+    Camera* activeCam = camMgr->GetActiveCamera();
+    GameCamera* gameCam = camMgr->GetGameplayCamera(); 
 
-    Vector3 bezierPos = activeCam->GetTranslate();
-    Vector3 relativeOffset = { 0.0f, -3.0f, 30.0f };
+    // カメラのベジェ位置（レール上の実座標）
+    Vector3 camPos = gameCam->GetBezierPos();
 
-    // カメラの回転を取得（前方ベクトルから計算）
-    Vector3 cameraForward = activeCam ->GetForward(); // ← Getterを用意
-    Vector3 cameraRight = Normalize(Cross({ 0,1,0 }, cameraForward));
-    Vector3 cameraUp = Normalize(Cross(cameraForward, cameraRight));
+    // カメラの向き（すでに正規化されている前提）
+    Vector3 forward = gameCam->GetForward();
+    Vector3 right   = gameCam->GetRight();
+    Vector3 up      = gameCam->GetUp();
 
-    // カメラ座標系でオフセット変換
-    Vector3 worldOffset =
-        cameraRight * relativeOffset.x +
-        cameraUp * relativeOffset.y +
-        cameraForward * relativeOffset.z;
+    // ====== カメラ基準のプレイヤーオフセット ======
+    // プレイヤーの基準位置（カメラからの相対座標）
+    Vector3 cameraBaseOffset = { 0.0f, -3.0f, 30.0f };
 
-    // === プレイヤー位置更新 ===
-    transform_.translate = bezierPos + worldOffset;
+    // カメラ座標系に変換
+    Vector3 cameraBaseWorld =
+        right   * cameraBaseOffset.x +
+        up      * cameraBaseOffset.y +
+        forward * cameraBaseOffset.z;
 
-    // === プレイヤー向き更新（カメラと同じ方向：メイン時のみ）===
-    Vector3 playerForward = cameraForward;
-    // 現在のカメラモードを確認
-    if (CameraManager::GetInstance()->GetTypeview() == ViewCameraType::Main) {
-        transform_.rotate = activeCam->GetRotate();
-    }
+    // ====== 最終プレイヤー位置 ======
+   // transform_.translate = camPos + cameraBaseWorld;
+
+    //// === プレイヤー向き更新（カメラと同じ方向：メイン時のみ）===
+    //Vector3 playerForward = forward;
+    //// 現在のカメラモードを確認
+    //if (CameraManager::GetInstance()->GetTypeview() == ViewCameraType::Main) {
+    transform_.rotate = activeCam->GetRotate();
+    //}
+
+
+
 
     // 現在時刻を取得（秒）
     float currentTime = static_cast<float>(std::chrono::duration<double>(std::chrono::high_resolution_clock::now().time_since_epoch()).count());
@@ -109,6 +117,8 @@ void Player::Update() {
             AttachBullet();
         }
     }
+        // 最終位置 = カメラ基準 + 入力による相対移動
+    transform_.translate = camPos + cameraBaseWorld + right * relativePos_.x + up * relativePos_.y;
 
     // デバッグ中のImGui表示
     DebugImgui();
@@ -154,88 +164,82 @@ void Player::DebugImgui() {
 #endif // USE_IMGUI
 }
 void Player::MoveInput(float speed) {
- // // GameCamera* cameramod = CameraManager::GetInstance()->GetGameCamera();
- //   // === 入力処理 ===
- //   Vector3 moveDelta = {0, 0, 0};
- //   Input* input = Input::GetInstance();
- ////   if (cameramod->GetMode() == ViewType::Main && !isDeadEffectActive_) {
- //       if (input->Pushkey(DIK_A)) moveDelta.x -= speed;
- //       if (input->Pushkey(DIK_D)) moveDelta.x += speed;
- //       if (input->Pushkey(DIK_W)) moveDelta.y += speed;
- //       if (input->Pushkey(DIK_S)) moveDelta.y -= speed;
- //  // }
- //   
- //   // === 相対移動を制限（画面内の範囲）===
- //   float oldX = relativePos_.x;
- //   float oldY = relativePos_.y;
+   // === 入力処理 ===
+    Vector3 moveDelta = {0, 0, 0};
+    Input* input = Input::GetInstance();
+    if (CameraManager::GetInstance()->GetTypeview() == ViewCameraType::Main && !isDeadEffectActive_) {
+        if (input->Pushkey(DIK_A)) moveDelta.x -= speed;
+        if (input->Pushkey(DIK_D)) moveDelta.x += speed;
+        if (input->Pushkey(DIK_W)) moveDelta.y += speed;
+        if (input->Pushkey(DIK_S)) moveDelta.y -= speed;
+    }
+    
+    // === 相対移動を制限（画面内の範囲）===
+    float oldX = relativePos_.x;
+    float oldY = relativePos_.y;
 
- //   // === 相対移動を制限（画面内の範囲）===
- //   // ここは「カメラから見たローカル座標」上での制限
- //   relativePos_.x = std::clamp(relativePos_.x + moveDelta.x, -10.0f, 10.0f);
- //   relativePos_.y = std::clamp(relativePos_.y + moveDelta.y, -2.5f, 9.0f);
+    // === 相対移動を制限（画面内の範囲）===
+    // ここは「カメラから見たローカル座標」上での制限
+    relativePos_.x = std::clamp(relativePos_.x + moveDelta.x, -10.0f, 10.0f);
+    relativePos_.y = std::clamp(relativePos_.y + moveDelta.y, -2.5f, 9.0f);
 
- //   // === カメラ情報の取得 ===
- // //  GameCamera* gameCam = CameraManager::GetInstance()->GetGameCamera();
- //   if (!gameCam) return;
+    //// === カメラ情報の取得 ===
+    //GameCamera* gameCam = CameraManager::GetInstance()->GetGameCamera();
+    //if (!gameCam) return;
 
- //   Vector3 cameraPos = gameCam->GetbezierPos();
- //   Vector3 forward = gameCam->GetForward();
- //   Vector3 right   = Normalize(Cross({0, 1, 0}, forward));
- //   Vector3 up      = Normalize(Cross(forward, right));
+    //Vector3 cameraPos = gameCam->GetbezierPos();
+    //Vector3 forward = gameCam->GetForward();
+    //Vector3 right   = Normalize(Cross({0, 1, 0}, forward));
+    //Vector3 up      = Normalize(Cross(forward, right));
 
- //   // === カメラ基準の相対座標をワールド変換 ===
- //   Vector3 baseOffset = { 0.0f, -3.0f, 30.0f }; // カメラの前方に配置
- //   Vector3 totalOffset =
- //       right   * relativePos_.x +
- //       up      * relativePos_.y +
- //       forward * baseOffset.z +
- //       up      * baseOffset.y; // baseOffsetのYも考慮
+    //// === カメラ基準の相対座標をワールド変換 ===
+    //Vector3 baseOffset = { 0.0f, -3.0f, 30.0f }; // カメラの前方に配置
+    //Vector3 totalOffset =
+    //    right   * relativePos_.x +
+    //    up      * relativePos_.y +
+    //    forward * baseOffset.z +
+    //    up      * baseOffset.y; // baseOffsetのYも考慮
 
- //   transform_.translate = cameraPos + totalOffset;
+    //transform_.translate += totalOffset;
 
- // // === ★ スムーズ傾き制御 ===
- //   static float tiltX = 0.0f;  // ピッチ（上下）
- //   static float tiltZ = 0.0f;  // ロール（左右）
- //   const float tiltSpeed = 0.1f;   // 傾き変化スピード（0.1～0.2くらい）
- //   const float maxTiltX = 0.4f;    // 上下最大角
- //   const float maxTiltZ = 0.4f;   // 左右最大角
- //   const float returnSpeed = 0.08f; // 中立に戻る速さ
+  //// === ★ スムーズ傾き制御 ===
+  //  static float tiltX = 0.0f;  // ピッチ（上下）
+  //  static float tiltZ = 0.0f;  // ロール（左右）
+  //  const float tiltSpeed = 0.1f;   // 傾き変化スピード（0.1～0.2くらい）
+  //  const float maxTiltX = 0.4f;    // 上下最大角
+  //  const float maxTiltZ = 0.4f;   // 左右最大角
+  //  const float returnSpeed = 0.08f; // 中立に戻る速さ
 
- //   // 横方向の傾き
- //   if (relativePos_.x != oldX) {
- //       float dir = (relativePos_.x - oldX) > 0 ? 1.0f : -1.0f;
- //       tiltZ += -dir * tiltSpeed;
- //   } else {
- //       // 入力なし or 制限 → 徐々に戻す
- //       tiltZ = tiltZ * (1.0f - returnSpeed);
- //   }
+  //  // 横方向の傾き
+  //  if (relativePos_.x != oldX) {
+  //      float dir = (relativePos_.x - oldX) > 0 ? 1.0f : -1.0f;
+  //      tiltZ += -dir * tiltSpeed;
+  //  } else {
+  //      // 入力なし or 制限 → 徐々に戻す
+  //      tiltZ = tiltZ * (1.0f - returnSpeed);
+  //  }
 
- //   // 縦方向の傾き
- //   if (relativePos_.y != oldY) {
- //       float dir = (relativePos_.y - oldY) > 0 ? -1.0f : 1.0f;
- //       tiltX += dir * tiltSpeed;
- //   } else {
- //       tiltX = tiltX * (1.0f - returnSpeed);
- //   }
+  //  // 縦方向の傾き
+  //  if (relativePos_.y != oldY) {
+  //      float dir = (relativePos_.y - oldY) > 0 ? -1.0f : 1.0f;
+  //      tiltX += dir * tiltSpeed;
+  //  } else {
+  //      tiltX = tiltX * (1.0f - returnSpeed);
+  //  }
 
- //   // 傾き角を制限
- //   tiltZ = std::clamp(tiltZ, -maxTiltZ, maxTiltZ);
- //   tiltX = std::clamp(tiltX, -maxTiltX, maxTiltX);
+  //  // 傾き角を制限
+  //  tiltZ = std::clamp(tiltZ, -maxTiltZ, maxTiltZ);
+  //  tiltX = std::clamp(tiltX, -maxTiltX, maxTiltX);
 
- //   // === 回転反映 ===
- //   if (gameCam->GetMode() == ViewType::Main) {
- //       Vector3 baseRot = gameCam->GetMainCamera()->GetRotate();
- //       transform_.rotate = {
- //           baseRot.x + tiltX,
- //           baseRot.y,
- //           baseRot.z + tiltZ
- //       };
- //   }
-
- //   // === モデル更新 ===
- //   object->SetTranslate(transform_.translate);
- //   object->SetRotate(transform_.rotate);
- //   object->Update();
+  //  // === 回転反映 ===
+    //if (CameraManager::GetInstance()->GetTypeview() == ViewCameraType::Main) {
+    //    Vector3 baseRot = gameCam->GetMainCamera()->GetRotate();
+    //    transform_.rotate = {
+    //        baseRot.x + tiltX,
+    //        baseRot.y,
+    //        baseRot.z + tiltZ
+    //    };
+    //}
 }
 
 ///=====================================================================

@@ -5,16 +5,6 @@
 #include <Object3d.h>
 #include<SceneCameraBase.h>
 
-enum class ViewType  {
-    Main,  // メイン(レールカメラ)
-    Sub,    // サブ(固定または追従カメラ)
-    Transition // 切り替え中
-};
-enum class SubCamType {
-    Fixed,      // 定点カメラ
-    Follow      // 対象追従カメラ
-};
-
 ///====================================================
 /// GameCameraクラス
 /// <summary>
@@ -42,20 +32,20 @@ public:
     void UpdateBezierMovement();
     void UpdateCameraRotation();
 
-    void SwitchView(ViewType  targetType); // ← カメラ切り替えを開始する
+    //void SwitchView(ViewType  targetType); // ← カメラ切り替えを開始する
     // イージング移動
     void UpdateTransition();
 
-    ViewType GetCurrentView() const { return mode_; }
+    // ViewType GetCurrentView() const { return mode_; }
 
-    void SetCurrentView(ViewType view) { mode_ = view; }
+   //  void SetCurrentView(ViewType view) { mode_ = view; }
 
     void UpdateSubCameraFollow(const Vector3& targetPos, const Vector3& offset);
 
     Vector3 CatmullRom(const Vector3& p0, const Vector3& p1, const Vector3& p2, const Vector3& p3, float t);
-    
+
     Camera* GetActiveCamera();
-    
+
     // サブカメラの追加
     void AddSubCamera(const CameraTransform& trans) override;
     // サブカメラの追加（複数登録に対応）
@@ -70,34 +60,11 @@ private: // メンバ変数
     float speed;                             // 移動速度
     Vector3 prevForward = { 0,0,1 };        // 前フレームの向きベクトル（回転補間用）        
     int currentSegment = 0; // レール上の現在のセグメントインデックス
-
-    ViewType  mode_ = ViewType::Main;   // 現在のモード
-    ViewType  transitionTarget_ = ViewType::Main;
-
-    Vector3 subPosition_ = { 0, 0, 0 };    // サブカメラ固定位置
-    Vector3 subTarget_ = { 0, 0, 0 };    // サブカメラが見る対象
-    bool subFollow_ = false;               // 対象追従フラグ
-    bool recoveringFromSub_ = false;
-    float recoverTimer_ = 0.0f;
-    float recoverDuration_ = 1.0f; // 1秒間かけて復帰
-
-    Vector3 startPos_;
-    Vector3 startRot_;
-    Vector3 endPos_;
-    Vector3 endRot_;
-
-    float transitionTimer_ = 0.0f;
-    float transitionDuration_ = 1.0f; // 1秒で切り替え
-
-    Object3d* followTarget_ = nullptr; // 追従対象
-    Vector3 subOffset_ = { 0, 5, -10 }; // サブカメラのオフセット位置
-    bool followMode_ = true; // 追従モード or 固定モード
-
-    float yaw;
-    float pitch;
-    bool followInitialized_;
     float t_ = 0.0f;
 
+    Vector3 forward_ = { 0,0,1 };
+    Vector3 up_      = { 0,1,0 };
+    Vector3 right_   = { 1,0,0 };
 public: // アクセッサ（Getter / Setter）
     // getter 
     bool Getmovefige() { return movefige; }
@@ -105,23 +72,27 @@ public: // アクセッサ（Getter / Setter）
     // setter
     void Setmovefige(bool value) { movefige = value; }
     void SetbezierPos(Vector3 pos) { bezierPos_ = pos; }
-    // 前方ベクトルを取得
-    Vector3 GetForward() const {
-        // 回転行列を使わずforwardを保持している場合はこちら
-        return prevForward;
-    }
     // BezierPoint の取得
     std::vector<BezierPoint>& GetBezierPoints() { return bezierPoints; }
     // すべての passed を ON/OFF
     void SetAllPassed(bool flag) { for (auto& point : bezierPoints) { point.passed = flag; } }
     // 一度通過した扱いにする（すべて true）
     void MarkAllAsPassed() { for (auto& point : bezierPoints) { if (!point.passed) point.passed = true; } }
-    // プレイヤーなど追従対象をセット
-    void SetFollowTarget(Object3d* target) {
-        followTarget_ = target;
-        // ターゲットが変わったら初期化フラグを立てる（次回Subモードでリセットされる）      
-        followInitialized_ = false;
-    }
-    ViewType GetMode() const { return mode_; }
 
+
+    Vector3 GetBezierPos() const {
+        return bezierPos_;
+    }
+
+    Vector3 GetForward() const {
+        return forward_; // UpdateCameraRotation() 内で更新済み
+    }
+
+    Vector3 GetUp() const {
+        return up_;      // これもカメラ更新で求めておく
+    }
+
+    Vector3 GetRight() const {
+        return right_;
+    }
 };

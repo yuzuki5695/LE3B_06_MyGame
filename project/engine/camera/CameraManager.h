@@ -62,6 +62,9 @@ private: // メンバ変数
     // シーン切替直後Update時に一度だけ各シーン用カメラの情報を反映
     bool sceneCameraJustChanged_ = false;
 
+        
+   // Object3d* target_ = nullptr; // 追従対象オブジェクト
+
     //// Debug用フリーカメラ
     //std::unique_ptr<Camera> debugFreeCamera_;
     //bool useDebugCamera_ = false;              // Debugカメラを使用中かどうかのフラグ
@@ -72,4 +75,12 @@ public: // メンバ関数
     void SetActiveCamera();
 
     ViewCameraType GetTypeview() const { return Typeview_; }
+    CameraMode GetMode() const { return currentMode_; }
+    void SetMode(CameraMode mode) { currentMode_ = mode; }
+
+    GameCamera* GetGameCamera() const { return gameplaycamera_.get(); };
+    // ゲーム用カメラ（GameCamera）を返す getter
+GameCamera* GetGameplayCamera() const { 
+    return gameplaycamera_.get(); 
+}
 };
