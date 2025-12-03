@@ -39,17 +39,21 @@ void CameraManager::Initialize(CameraTransform transform) {
     activeCamera_ = mainCamera_.get();  // 初期化時はメインカメラをアクティブにする
 
     // タイトル用カメラの生成、初期化
-    titlecamera_ = std::make_unique<TitleCamera>();
-    titlecamera_->Initialize();
+    title_ = std::make_unique<TitleCamera>();
+    title_->Initialize();
     // ゲームプレイ用カメラの生成、初期化
-    gameplaycamera_ = std::make_unique<GameCamera>();
-    gameplaycamera_->Initialize();
+    gameplay_ = std::make_unique<GameCamera>();
+    gameplay_->Initialize();
+    // ゲームクリア用カメラの生成、初期化
+    gameclear_ = std::make_unique<GameClearCamera>();
+    gameclear_->Initialize();
     // ゲームオーバー用カメラの生成、初期化
-    gameovercamera_ = std::make_unique<GameOverCamera>();
-    gameovercamera_->Initialize();
+    gameover_ = std::make_unique<GameOverCamera>();
+    gameover_->Initialize();
+
 
     // 初期のシーンはタイトルカメラ
-    currentSceneCamera_ = titlecamera_.get();
+    currentSceneCamera_ = title_.get();
     sceneCameraJustChanged_ = true;
 }
 
@@ -266,13 +270,16 @@ void CameraManager::OnSceneChanged(SceneCameraType type) {
     // シーンタイプに応じたカメラを設定
     switch (type) {
     case SceneCameraType::Title:
-        currentSceneCamera_ = titlecamera_.get();
+        currentSceneCamera_ = title_.get();
         break;
     case SceneCameraType::Gameplay:
-        currentSceneCamera_ = gameplaycamera_.get();
+        currentSceneCamera_ = gameplay_.get();
+        break;
+    case SceneCameraType::GameClear:
+        currentSceneCamera_ = gameclear_.get();
         break;
     case SceneCameraType::GameOver:
-        currentSceneCamera_ = gameovercamera_.get();
+        currentSceneCamera_ = gameover_.get();
         break;
     }
     // シーン切替時に初期化を呼んでサブカメラを再生成

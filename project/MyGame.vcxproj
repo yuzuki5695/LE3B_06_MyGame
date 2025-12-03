@@ -112,6 +112,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="application\bullet\BulletManager.cpp" />
     <ClCompile Include="application\bullet\EnemyBullet.cpp" />
     <ClCompile Include="application\bullet\PlayerBullet.cpp" />
+    <ClCompile Include="application\camera\GameClearCamera.cpp" />
     <ClCompile Include="application\camera\GameOverCamera.cpp" />
     <ClCompile Include="application\character\CharacterManager.cpp" />
     <ClCompile Include="application\enemy\Enemy.cpp" />
@@ -178,6 +179,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\bullet\BulletManager.h" />
     <ClInclude Include="application\bullet\EnemyBullet.h" />
     <ClInclude Include="application\bullet\PlayerBullet.h" />
+    <ClInclude Include="application\camera\GameClearCamera.h" />
     <ClInclude Include="application\camera\GameOverCamera.h" />
     <ClInclude Include="application\camera\SceneCameraBase.h" />
     <ClInclude Include="application\character\BaseCharacter.h" />

@@ -125,21 +125,21 @@ void GamePlayScene::Update() {
     // イベントマネージャの更新
     EventManager::GetInstance()->Update(); 	
 
-    //if (end && CameraManager::GetInstance()->GetGameCamera()->GetMode() == ViewType::Main) {
-    //    FadeManager::GetInstance()->StartFadeOut(1.0f, FadeStyle::Normal);
-    //    CameraManager::GetInstance()->GetGameCamera()->SwitchView(ViewType::Sub);
-    //    // フェード開始             
-    //    end = false;
-    //}
-    //
-    //if (player_->GetPosition().z >= goalpos_ && CameraManager::GetInstance()->GetGameCamera()->GetMode() == ViewType::Main) {
-    //    FadeManager::GetInstance()->StartFadeOut(1.0f, FadeStyle::Normal);              
-    //    player_->SetKeyActive(false);
-    //    player_->SetReticleVisible(false);
-    //    goalpos_ = 1000.0f;
-    //    // フェード開始             
-    //    end = false;
-    //}
+    if (end && CameraManager::GetInstance()->GetTypeview() == ViewCameraType::Main) {
+        FadeManager::GetInstance()->StartFadeOut(1.0f, FadeStyle::Normal);
+        //CameraManager::GetInstance()->GetGameCamera()->SwitchView(ViewType::Sub);
+        // フェード開始             
+        end = false;
+    }
+    
+    if (player_->GetPosition().z >= goalpos_ && CameraManager::GetInstance()->GetTypeview() == ViewCameraType::Main) {
+        FadeManager::GetInstance()->StartFadeOut(1.0f, FadeStyle::Normal);
+        player_->SetKeyActive(false);
+        player_->SetReticleVisible(false);
+        goalpos_ = 1000.0f;
+        // フェード開始             
+        end = false;
+    }
 
     //if (CameraManager::GetInstance()->GetGameCamera()->GetMode() == ViewType::Sub) {
     //    player_->SetDead_(true);

@@ -5,6 +5,7 @@
 #include<TitleCamera.h>
 #include<GameCamera.h>
 #include<GameOverCamera.h>
+#include<GameClearCamera.h>
 
 using namespace CameraTypes;
 
@@ -52,19 +53,20 @@ private: // メンバ変数
     std::unordered_map<std::string, std::unique_ptr<Camera>> subCamerasMap_;   // サブカメラ(複数の設置に対応できる)
     std::string activeSubCameraName_;                                          // 登録したサブカメラの名前
     Camera* activeCamera_ = nullptr;                                           // アクティブ中のカメラ
-    // 各シーン用カメラ
-    std::unique_ptr<SceneCameraBase> titlecamera_;
-    std::unique_ptr<GameCamera> gameplaycamera_;
-    std::unique_ptr<SceneCameraBase> gameovercamera_;
+    // 各シーン用カメラクラス
+    std::unique_ptr<TitleCamera> title_;      // タイトル
+    std::unique_ptr<GameCamera> gameplay_;        // ゲームプレイ
+    std::unique_ptr<GameClearCamera> gameclear_;  // ゲームオーバー
+    std::unique_ptr<GameOverCamera> gameover_;    // ゲームクリア
+
+
     SceneCameraBase* currentSceneCamera_;
     // 前回のシーンカメラタイプ
     SceneCameraType lastSceneCameraType_ = SceneCameraType::Title;
     // シーン切替直後Update時に一度だけ各シーン用カメラの情報を反映
     bool sceneCameraJustChanged_ = false;
 
-        
-   // Object3d* target_ = nullptr; // 追従対象オブジェクト
-
+    // Object3d* target_ = nullptr; // 追従対象オブジェクト
     //// Debug用フリーカメラ
     //std::unique_ptr<Camera> debugFreeCamera_;
     //bool useDebugCamera_ = false;              // Debugカメラを使用中かどうかのフラグ
@@ -77,10 +79,7 @@ public: // メンバ関数
     ViewCameraType GetTypeview() const { return Typeview_; }
     CameraMode GetMode() const { return currentMode_; }
     void SetMode(CameraMode mode) { currentMode_ = mode; }
-
-    GameCamera* GetGameCamera() const { return gameplaycamera_.get(); };
+    GameCamera* GetGameCamera() const { return gameplay_.get(); };
     // ゲーム用カメラ（GameCamera）を返す getter
-GameCamera* GetGameplayCamera() const { 
-    return gameplaycamera_.get(); 
-}
+    GameCamera* GetGameplayCamera() const { return gameplay_.get(); }
 };
