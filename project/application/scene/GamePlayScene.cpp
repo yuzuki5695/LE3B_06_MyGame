@@ -64,7 +64,6 @@ void GamePlayScene::Initialize() {
     ModelManager::GetInstance()->LoadModel("monsterBallUV.obj");
     ModelManager::GetInstance()->LoadModel("Bullet/PlayerBullet.obj");
     ModelManager::GetInstance()->LoadModel("Bullet/EnemyBullet.obj");
-    ModelManager::GetInstance()->LoadModel("Clear.obj");
     ModelManager::GetInstance()->LoadModel("Gameplay/Model/Goal/Goal.obj");
 
     // プレイヤーの作成と初期化
