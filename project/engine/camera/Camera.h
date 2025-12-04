@@ -13,7 +13,7 @@ public: // メンバ関数
 	// ImGuiの更新
 	void DebugUpdate();
 private: // メンバ変数
-	Transform  transform;
+	Transform transform;
 	Matrix4x4 worldMatrix;
 	Matrix4x4 viewMatrix;
 	Matrix4x4 projectionMatrix;
@@ -41,4 +41,5 @@ public:
 	void SetAspectRatio(const float& aspectRatio) { this->aspectRatio = aspectRatio; }
 	void SetNearClip(const float& nearClip) { this->nearClip = nearClip; }
 	void Setfarclip(const float& farclip) { this->farclip = farclip; }
+	void SetForward() const;
 };

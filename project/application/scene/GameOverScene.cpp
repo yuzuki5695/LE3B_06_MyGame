@@ -25,7 +25,7 @@ void GameOverScene::Finalize() {
 void GameOverScene::Initialize() {
     // カメラマネージャの初期化
     CameraManager::GetInstance()->Initialize(CameraTransform({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }));
-    CameraManager::GetInstance()->SetCameraMode(CameraMode::Default);
+   // CameraManager::GetInstance()->SetCameraMode(CameraMode::Default);
     // モデルの読み込み    
     ModelManager::GetInstance()->LoadModel("Gameover/Model/parts_01.obj");
     ModelManager::GetInstance()->LoadModel("Gameover/Model/parts_02.obj");

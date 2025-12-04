@@ -202,6 +202,12 @@
     <Filter Include="ヘッダー ファイル\application\stage">
       <UniqueIdentifier>{1d514fa6-6226-4b6e-ad61-846cfd2e44bb}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ヘッダー ファイル\engine\math\Easing">
+      <UniqueIdentifier>{dd67d91e-27df-46e4-b34a-c55c296e5fd1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\engine\math\Easing">
+      <UniqueIdentifier>{97eaff47-422d-4b71-86af-e4d42b61b8d3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -386,6 +392,18 @@
     </ClCompile>
     <ClCompile Include="application\stage\StageManager.cpp">
       <Filter>ソース ファイル\application\stage</Filter>
+    </ClCompile>
+    <ClCompile Include="application\camera\TitleCamera.cpp">
+      <Filter>ソース ファイル\application\camera</Filter>
+    </ClCompile>
+    <ClCompile Include="application\camera\GameOverCamera.cpp">
+      <Filter>ソース ファイル\application\camera</Filter>
+    </ClCompile>
+    <ClCompile Include="application\camera\GameClearCamera.cpp">
+      <Filter>ソース ファイル\application\camera</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\math\Easing\Easing.cpp">
+      <Filter>ソース ファイル\engine\math\Easing</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -628,6 +646,27 @@
     </ClInclude>
     <ClInclude Include="engine\math\Quaternion.h">
       <Filter>ヘッダー ファイル\engine\math</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\camera\CameraTypes.h">
+      <Filter>ヘッダー ファイル\engine\camera</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\camera\CameraTransform.h">
+      <Filter>ヘッダー ファイル\engine\camera</Filter>
+    </ClInclude>
+    <ClInclude Include="application\camera\TitleCamera.h">
+      <Filter>ヘッダー ファイル\application\camera</Filter>
+    </ClInclude>
+    <ClInclude Include="application\camera\GameOverCamera.h">
+      <Filter>ヘッダー ファイル\application\camera</Filter>
+    </ClInclude>
+    <ClInclude Include="application\camera\SceneCameraBase.h">
+      <Filter>ヘッダー ファイル\application\camera</Filter>
+    </ClInclude>
+    <ClInclude Include="application\camera\GameClearCamera.h">
+      <Filter>ヘッダー ファイル\application\camera</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\math\Easing\Easing.h">
+      <Filter>ヘッダー ファイル\engine\math\Easing</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

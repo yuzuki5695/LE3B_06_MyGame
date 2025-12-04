@@ -1,5 +1,6 @@
 #include "SceneManager.h"
 #include <cassert>
+#include<CameraManager.h>
 
 // 静的メンバ変数の定義
 std::unique_ptr<SceneManager> SceneManager::instance = nullptr;
@@ -41,6 +42,9 @@ void SceneManager::Update() {
 		scene_->SetSceneManeger(this);
 		// 次のシーンを初期化する
 		scene_->Initialize();
+
+		// ---- シーン変更通知をカメラへ ----
+		CameraManager::GetInstance()->NotifySceneChangedByName(scene_->GetSceneName());
 	}
 
 	// 実行中シーンを更新する
