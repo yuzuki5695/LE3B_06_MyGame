@@ -21,7 +21,12 @@ public: // メンバ関数
     // --- 追従対象を設定 ---
     void SetTarget(Object3d* target) { target_ = target; }
 
+    void MoveCameraX(float ease) {
+        float startX = 0.0f;
+        float endX = 8.0f;
 
+        transform_.translate.x = startX + (endX - startX) * ease;
+    }
 private: // メンバ変数
    
     // 追従対象

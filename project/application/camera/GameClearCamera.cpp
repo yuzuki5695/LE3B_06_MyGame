@@ -12,21 +12,23 @@ void GameClearCamera::Initialize() {
 }
 
 void GameClearCamera::Update() {
-    // カメラ位置は固定（maincamera_->SetTranslate を呼ばない）
+    // カメラ位置は固定 
+    // デフォルトのみに適応
+    if (CameraManager::GetInstance()->GetMode() == CameraMode::Default) {
+        Vector3 camPos = transform_.translate;
+        Vector3 targetPos = target_->GetWorldPosition();
+        Vector3 dir = targetPos - camPos;
 
-    Vector3 camPos = transform_.translate;
-    Vector3 targetPos = target_->GetWorldPosition();
-    Vector3 dir = targetPos - camPos;
+        // 正規化（ゼロ割対策）
+        if (Length(dir) > 0.0001f) {
+            dir = Normalize(dir);
 
-    // 正規化（ゼロ割対策）
-    if (Length(dir) > 0.0001f) {
-        dir = Normalize(dir);
+            // --- ターゲット方向へ回転を設定 ---
+            float yaw = atan2f(dir.x, dir.z);
+            float pitch = -asinf(dir.y);
 
-        // --- ターゲット方向へ回転を設定 ---
-        float yaw = atan2f(dir.x, dir.z);
-        float pitch = -asinf(dir.y);
-
-        transform_.rotate = { pitch, yaw, 0.0f };
+            transform_.rotate = { pitch, yaw, 0.0f };
+        }
     }
 }
 
