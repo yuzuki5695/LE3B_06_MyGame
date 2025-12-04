@@ -1,19 +1,15 @@
 #pragma once
 #include <Object3d.h>
+#include<CameraTransform.h>
+#include<CameraTypes.h>
+#include<TitleCamera.h>
 #include<GameCamera.h>
-// カメラモード
-enum class CameraMode {
-    Default,
-    Follow,
-    GamePlay,
-    Event
-};
+#include<GameOverCamera.h>
+#include<GameClearCamera.h>
 
-struct CameraTransform {
-    Vector3 translate; // カメラの位置
-    Vector3 rotate; // カメラの回転
-};
+using namespace CameraTypes;
 
+// カメラマネージャ
 class CameraManager {
 private:
     static std::unique_ptr<CameraManager> instance;
@@ -26,43 +22,66 @@ public: // メンバ関数
     // シングルトンインスタンスの取得
     static CameraManager* GetInstance();
     // 終了
-    void Finalize();
-
-    // 初期化
+    void Finalize(); 
+    /// <summary>
+    /// 初期化処理
+    /// </summary>
     void Initialize(CameraTransform Transform);
-    // 更新処理
+    /// <summary>
+    /// 更新処理
+    /// </summary> 
     void Update();
-	// カメラモード切替
-    void ToggleCameraMode(bool followMode); // モード切替
-    void DrawImGui(); // ImGui描画   
-    void SetActiveCamera(); // アクティブカメラを設定
+    // ImGui描画   
+    void DrawImGui();
+    // カメラモード設定
+    void SetCameraMode(CameraMode mode); 
+    // サブカメラを一括登録
+    void RegisterSubCameras(std::vector<std::unique_ptr<Camera>>&& cameras, const std::string& prefix);
+    // シーンマネージャーから現在のシ―ンを判定する
+    void NotifySceneChangedByName(const std::string& sceneName);
+    // 各シーン用カメラの切替
+    void OnSceneChanged(SceneCameraType type);
 
-private:
-    // 現在のカメラモード
-    CameraMode currentMode_;
-    Object3d* target_ = nullptr; // 追従対象オブジェクト
-    Camera* defaultCamera_; // 追従しないカメラ(デフォルト)
-    Camera* followCamera_;  // 追従用カメラ
-    GameCamera* gameCamera_; // ゲームプレイ用カメラ 
-    // ゲームカメラ関連
-    bool moveFlag = false;
-    uint32_t activated_ ;
-    // ヘッダーかクラス内に追加
-    bool addedInitialOffset_ = false;
 
-    bool useFollowCamera_ = false; // カメラモード切替用フラグ
-    float waitTime_ = 0.0f;
+private: // メンバ変数
+    ViewCameraType Typeview_;                                                  // 使用するカメラのタイプ  
+    SceneCameraType activeSceneCameraType_;                                    // カメラがどこのシーンにあるか
+    CameraMode currentMode_;                                                   // カメラの状態 
+    CameraSwitchType switchType_ = CameraSwitchType::Instant;                  // カメラの切替方法
+    std::unique_ptr<Camera> mainCamera_;                                       //　メインカメラ(基本1つ)
+    CameraTransform maintrans_;                                                // カメラの座標
+    std::unordered_map<std::string, std::unique_ptr<Camera>> subCamerasMap_;   // サブカメラ(複数の設置に対応できる)
+    std::string activeSubCameraName_;                                          // 登録したサブカメラの名前
+    Camera* activeCamera_ = nullptr;                                           // アクティブ中のカメラ
+    // 各シーン用カメラクラス
+    std::unique_ptr<TitleCamera> title_;      // タイトル
+    std::unique_ptr<GameCamera> gameplay_;        // ゲームプレイ
+    std::unique_ptr<GameClearCamera> gameclear_;  // ゲームオーバー
+    std::unique_ptr<GameOverCamera> gameover_;    // ゲームクリア
+
+
+    SceneCameraBase* currentSceneCamera_;
+    // 前回のシーンカメラタイプ
+    SceneCameraType lastSceneCameraType_ = SceneCameraType::Title;
+    // シーン切替直後Update時に一度だけ各シーン用カメラの情報を反映
+    bool sceneCameraJustChanged_ = false;
+
+    // Object3d* target_ = nullptr; // 追従対象オブジェクト
+    //// Debug用フリーカメラ
+    //std::unique_ptr<Camera> debugFreeCamera_;
+    //bool useDebugCamera_ = false;              // Debugカメラを使用中かどうかのフラグ
+
 public: // メンバ関数
-    // 追従対象をセット（nullptrなら追従なし）
-    void SetTarget(Object3d* target);
-    Camera* GetFollowCamera() { return followCamera_; } // 追従カメラ取得
+    // 現在アクティブなカメラ
     Camera* GetActiveCamera();
-    void SetCameraMode(CameraMode mode);
-    
-    CameraMode GetcurrentMode() { return currentMode_; }
-    GameCamera* GetGameCamera() { return gameCamera_; }
+    // アクティブカメラを更新し、共通リソースに設定する
+    void SetActiveCamera();
 
-
-    void SetMoveFlag(bool flag) { moveFlag = flag; }
-    bool GetMoveFlag() const { return moveFlag; }
+    ViewCameraType GetTypeview() const { return Typeview_; }
+    CameraMode GetMode() const { return currentMode_; }
+    void SetMode(CameraMode mode) { currentMode_ = mode; }
+    GameCamera* GetGameCamera() const { return gameplay_.get(); };
+    // ゲーム用カメラ（GameCamera）を返す getter
+    GameCamera* GetGameplayCamera() const { return gameplay_.get(); }
+    GameClearCamera* GetGameClearCamera() { return gameclear_.get(); }
 };

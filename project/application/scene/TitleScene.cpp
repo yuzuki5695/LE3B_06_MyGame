@@ -77,7 +77,7 @@ void TitleScene::Update() {
 
     // フェードアウトが完了したら次のシーンへ
     if (FadeManager::GetInstance()->IsFadeEnd() && FadeManager::GetInstance()->GetFadeType() == FadeType::FadeOut) {
-        SceneManager::GetInstance()->ChangeScene("GAMEPLAY");
+        SceneManager::GetInstance()->ChangeScene("GAMECLEAR");
     }
 
     /*-------------------------------------------*/
@@ -145,6 +145,8 @@ void TitleScene::Update() {
     ImGui::End();
 
 	FadeManager::GetInstance()->DrawImGui(); // フェードマネージャのImGui制御
+        
+    CameraManager::GetInstance()->DrawImGui();  // カメラマネージャのImGui制御
 
 #endif // USE_IMGUI
 #pragma endregion ImGuiの更新処理終了
