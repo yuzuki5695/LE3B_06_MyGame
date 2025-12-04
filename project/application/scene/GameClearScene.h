@@ -9,8 +9,7 @@
 /// <summary>
 /// ゲームクリアシーン
 /// </summary>
-class GameClearScene : public BaseScene
-{
+class GameClearScene : public BaseScene {
 public: // メンバ関数
     /// <summary>
     /// 初期化処理
@@ -28,8 +27,22 @@ public: // メンバ関数
     /// 描画処理
     /// </summary>
     void Draw() override;
+
+
+
+
 private: // メンバ変数
     std::unique_ptr <Sprite> ui1_ = nullptr;     // スプライト 
-    std::unique_ptr <Object3d> clear = nullptr;  // オブジェクト
     std::unique_ptr <Skybox> Box_ = nullptr;     //　背景
+
+
+    std::unique_ptr <Object3d> player_ = nullptr;  // オブジェクト        
+    Transform offset_;
+
+
+public: // メンバ関数
+
+
+
+
 };

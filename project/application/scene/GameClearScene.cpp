@@ -25,20 +25,30 @@ void GameClearScene::Finalize() {
 void GameClearScene::Initialize() {
     // カメラマネージャの初期化
     CameraManager::GetInstance()->Initialize(CameraTransform({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }));
-   // CameraManager::GetInstance()->SetCameraMode(CameraMode::Default);
-    // モデルの読み込み
-    ModelManager::GetInstance()->LoadModel("Clear.obj");
+    // メインカメラは固定モード
+    CameraManager::GetInstance()->SetCameraMode(CameraMode::Default);
+    // モデルの読み込み  
+    ModelManager::GetInstance()->LoadModel("Gameplay/Model/Player/Player.obj");
+
+
     // テクスチャの読み込み
     TextureManager::GetInstance()->LoadTexture("CubemapBox.dds");    
     TextureManager::GetInstance()->LoadTexture("Gameclear/Texture/UI_01.png");
+    TextureManager::GetInstance()->LoadTexture("Gameclear/Texture/Mission.png");
+    TextureManager::GetInstance()->LoadTexture("Gameclear/Texture/Complete.png");
 
     ui1_ = Sprite::Create("Gameclear/Texture/UI_01.png", Vector2{ 650.0f, 500.0f }, 0.0f, Vector2{ 360.0f,100.0f });
     ui1_->SetAnchorPoint(Vector2{ 0.5f, 0.5f }); // 中心基準
     ui1_->SetTextureSize(Vector2{ 360.0f,100.0f });
+   
+    //offset_ = { { 1.0f, 1.0f, 1.0f }, { 0.0f, 1.5f, 0.0f }, { -70.0f, 0.0f, 30.0f } };
+    offset_ = { { 1.0f, 1.0f, 1.0f }, { 0.0f, 1.5f, 0.0f }, { -70.0f, 0.0f, 30.0f } };
+    player_ = Object3d::Create("Gameplay/Model/Player/Player.obj", offset_);
+    // 追従対象を設定
+    CameraManager::GetInstance()->GetGameClearCamera()->SetTarget(player_.get());
 
-    clear = Object3d::Create("Clear.obj", Transform{ { 1.0f, 1.0f, 1.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 30.0f } });
     Box_ = Skybox::Create("CubemapBox.dds", Transform{ { 1000.0f, 1000.0f, 1000.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 100.0f } });
- 
+
     // フェードマネージャの初期化
     FadeManager::GetInstance()->Initialize();
 }
@@ -73,13 +83,13 @@ void GameClearScene::Update() {
 #pragma region 全てのObject3d個々の更新処理    
 
 	Box_->Update();   // 背景の更新
-	clear->Update(); // オブジェクトの更新
+	player_->Update(); // オブジェクトの更新
 
 #pragma endregion 全てのObject3d個々の更新処理
 
 #pragma region 全てのSprite個々の更新処理
 
-	ui1_->Update(); // スプライトの更新
+	//ui1_->Update(); // スプライトの更新
 
 #pragma endregion 全てのSprite個々の更新処理
 #pragma region  ImGuiの更新処理開始
@@ -105,7 +115,7 @@ void GameClearScene::Draw() {
     // 3Dオブジェクトの描画準備。3Dオブジェクトの描画に共通のグラフィックスコマンドを積む
     Object3dCommon::GetInstance()->Commondrawing();
     
-    clear->Draw();// オブジェクトの描画
+    player_->Draw();// オブジェクトの描画
 
     // パーティクルの描画準備。パーティクルの描画に共通のグラフィックスコマンドを積む 
     ParticleCommon::GetInstance()->Commondrawing();
@@ -115,7 +125,7 @@ void GameClearScene::Draw() {
     // Spriteの描画準備。Spriteの描画に共通のグラフィックスコマンドを積む
     SpriteCommon::GetInstance()->Commondrawing();
 
-    ui1_->Draw(); // スプライトの描画
+   // ui1_->Draw(); // スプライトの描画
  
     // フェードマネージャの描画
     FadeManager::GetInstance()->Draw();

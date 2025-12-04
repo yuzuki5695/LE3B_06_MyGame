@@ -70,6 +70,7 @@ private: // メンバ変数
     //// Debug用フリーカメラ
     //std::unique_ptr<Camera> debugFreeCamera_;
     //bool useDebugCamera_ = false;              // Debugカメラを使用中かどうかのフラグ
+
 public: // メンバ関数
     // 現在アクティブなカメラ
     Camera* GetActiveCamera();
@@ -82,4 +83,5 @@ public: // メンバ関数
     GameCamera* GetGameCamera() const { return gameplay_.get(); };
     // ゲーム用カメラ（GameCamera）を返す getter
     GameCamera* GetGameplayCamera() const { return gameplay_.get(); }
+    GameClearCamera* GetGameClearCamera() { return gameclear_.get(); }
 };
