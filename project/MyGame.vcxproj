@@ -114,6 +114,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="application\bullet\PlayerBullet.cpp" />
     <ClCompile Include="application\camera\GameClearCamera.cpp" />
     <ClCompile Include="application\camera\GameOverCamera.cpp" />
+    <ClCompile Include="application\camera\GamePlayCamera.cpp" />
     <ClCompile Include="application\character\CharacterManager.cpp" />
     <ClCompile Include="application\enemy\Enemy.cpp" />
     <ClCompile Include="application\fade\FadeManager.cpp" />
@@ -152,7 +153,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="application\scene\GameClearScene.cpp" />
     <ClCompile Include="engine\base\DirectXCommon\FenceManager.cpp" />
     <ClCompile Include="engine\base\DirectXCommon\FPSController.cpp" />
-    <ClCompile Include="application\camera\GameCamera.cpp" />
     <ClCompile Include="application\event\EventManager.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="engine\math\MatrixVector.cpp" />
@@ -182,6 +182,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\bullet\PlayerBullet.h" />
     <ClInclude Include="application\camera\GameClearCamera.h" />
     <ClInclude Include="application\camera\GameOverCamera.h" />
+    <ClInclude Include="application\camera\GamePlayCamera.h" />
     <ClInclude Include="application\camera\SceneCameraBase.h" />
     <ClInclude Include="application\character\BaseCharacter.h" />
     <ClInclude Include="application\character\CharacterManager.h" />

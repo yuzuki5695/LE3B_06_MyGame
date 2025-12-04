@@ -360,9 +360,6 @@
     <ClCompile Include="application\loader\CurveJsonLoader.cpp">
       <Filter>ソース ファイル\application\loader</Filter>
     </ClCompile>
-    <ClCompile Include="application\camera\GameCamera.cpp">
-      <Filter>ソース ファイル\application\camera</Filter>
-    </ClCompile>
     <ClCompile Include="application\loader\CharacterLoader.cpp">
       <Filter>ソース ファイル\application\loader</Filter>
     </ClCompile>
@@ -404,6 +401,9 @@
     </ClCompile>
     <ClCompile Include="engine\math\Easing\Easing.cpp">
       <Filter>ソース ファイル\engine\math\Easing</Filter>
+    </ClCompile>
+    <ClCompile Include="application\camera\GamePlayCamera.cpp">
+      <Filter>ソース ファイル\application\camera</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -667,6 +667,9 @@
     </ClInclude>
     <ClInclude Include="engine\math\Easing\Easing.h">
       <Filter>ヘッダー ファイル\engine\math\Easing</Filter>
+    </ClInclude>
+    <ClInclude Include="application\camera\GamePlayCamera.h">
+      <Filter>ソース ファイル\application\camera</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
