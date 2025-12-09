@@ -7,6 +7,7 @@ namespace CameraTypes {
     enum class ViewCameraType {
         Main,      // メイン
         Sub,       // サブ
+        Debug,     // デバック
     };
     //  シーンごとのカメラのタイプ
     enum class SceneCameraType {
@@ -21,7 +22,7 @@ namespace CameraTypes {
         Follow,       // 追従カメラ（プレイヤーなどを追う）
         Event,        // イベント・演出用カメラ
         Transition,   // 切替中
-        Debug,        // フリー移動
+        Debug,        // デバック(フリー移動)
     };
     // 切り替え時の移動方法
     enum class CameraSwitchType {

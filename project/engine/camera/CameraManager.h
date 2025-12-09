@@ -3,7 +3,7 @@
 #include<CameraTransform.h>
 #include<CameraTypes.h>
 #include<TitleCamera.h>
-#include<GameCamera.h>
+#include<GamePlayCamera.h>
 #include<GameOverCamera.h>
 #include<GameClearCamera.h>
 
@@ -55,7 +55,7 @@ private: // メンバ変数
     Camera* activeCamera_ = nullptr;                                           // アクティブ中のカメラ
     // 各シーン用カメラクラス
     std::unique_ptr<TitleCamera> title_;      // タイトル
-    std::unique_ptr<GameCamera> gameplay_;        // ゲームプレイ
+    std::unique_ptr<GamePlayCamera> gameplay_;        // ゲームプレイ
     std::unique_ptr<GameClearCamera> gameclear_;  // ゲームオーバー
     std::unique_ptr<GameOverCamera> gameover_;    // ゲームクリア
 
@@ -80,8 +80,8 @@ public: // メンバ関数
     ViewCameraType GetTypeview() const { return Typeview_; }
     CameraMode GetMode() const { return currentMode_; }
     void SetMode(CameraMode mode) { currentMode_ = mode; }
-    GameCamera* GetGameCamera() const { return gameplay_.get(); };
+    GamePlayCamera* GetGameCamera() const { return gameplay_.get(); };
     // ゲーム用カメラ（GameCamera）を返す getter
-    GameCamera* GetGameplayCamera() const { return gameplay_.get(); }
+    GamePlayCamera* GetGameplayCamera() const { return gameplay_.get(); }
     GameClearCamera* GetGameClearCamera() { return gameclear_.get(); }
 };

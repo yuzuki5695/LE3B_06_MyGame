@@ -208,6 +208,15 @@
     <Filter Include="ソース ファイル\engine\math\Easing">
       <UniqueIdentifier>{97eaff47-422d-4b71-86af-e4d42b61b8d3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ソース ファイル\application\particle">
+      <UniqueIdentifier>{0d377709-ece8-4a7d-9b05-29fc250084e0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\engine\math\ParticleData">
+      <UniqueIdentifier>{ab309e3a-ec4e-44c9-8978-c114a46308b8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\application\particle">
+      <UniqueIdentifier>{3264e2f4-9fdc-482b-ad88-dcef28660e8d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -360,9 +369,6 @@
     <ClCompile Include="application\loader\CurveJsonLoader.cpp">
       <Filter>ソース ファイル\application\loader</Filter>
     </ClCompile>
-    <ClCompile Include="application\camera\GameCamera.cpp">
-      <Filter>ソース ファイル\application\camera</Filter>
-    </ClCompile>
     <ClCompile Include="application\loader\CharacterLoader.cpp">
       <Filter>ソース ファイル\application\loader</Filter>
     </ClCompile>
@@ -404,6 +410,21 @@
     </ClCompile>
     <ClCompile Include="engine\math\Easing\Easing.cpp">
       <Filter>ソース ファイル\engine\math\Easing</Filter>
+    </ClCompile>
+    <ClCompile Include="application\camera\GamePlayCamera.cpp">
+      <Filter>ソース ファイル\application\camera</Filter>
+    </ClCompile>
+    <ClCompile Include="application\particle\Titleparticle.cpp">
+      <Filter>ソース ファイル\application\particle</Filter>
+    </ClCompile>
+    <ClCompile Include="application\particle\GamePlayparticle.cpp">
+      <Filter>ソース ファイル\application\particle</Filter>
+    </ClCompile>
+    <ClCompile Include="application\particle\GameClearparticle.cpp">
+      <Filter>ソース ファイル\application\particle</Filter>
+    </ClCompile>
+    <ClCompile Include="application\particle\GameOverparticle.cpp">
+      <Filter>ソース ファイル\application\particle</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -667,6 +688,45 @@
     </ClInclude>
     <ClInclude Include="engine\math\Easing\Easing.h">
       <Filter>ヘッダー ファイル\engine\math\Easing</Filter>
+    </ClInclude>
+    <ClInclude Include="application\camera\GamePlayCamera.h">
+      <Filter>ソース ファイル\application\camera</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\math\ParticleData\InstanceData.h">
+      <Filter>ヘッダー ファイル\engine\math\ParticleData</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\math\ParticleData\Particle.h">
+      <Filter>ヘッダー ファイル\engine\math\ParticleData</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\math\ParticleData\ParticleGroup.h">
+      <Filter>ヘッダー ファイル\engine\math\ParticleData</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\math\ParticleData\ParticleRandomData.h">
+      <Filter>ヘッダー ファイル\engine\math\ParticleData</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\math\ParticleData\RandomParameter.h">
+      <Filter>ヘッダー ファイル\engine\math\ParticleData</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\math\ParticleData\Velocity.h">
+      <Filter>ヘッダー ファイル\engine\math\ParticleData</Filter>
+    </ClInclude>
+    <ClInclude Include="application\particle\BaseEmitter.h">
+      <Filter>ヘッダー ファイル\application\particle</Filter>
+    </ClInclude>
+    <ClInclude Include="application\particle\FollowEmitter.h">
+      <Filter>ヘッダー ファイル\application\particle</Filter>
+    </ClInclude>
+    <ClInclude Include="application\particle\Titleparticle.h">
+      <Filter>ヘッダー ファイル\application\particle</Filter>
+    </ClInclude>
+    <ClInclude Include="application\particle\GamePlayparticle.h">
+      <Filter>ヘッダー ファイル\application\particle</Filter>
+    </ClInclude>
+    <ClInclude Include="application\particle\GameClearparticle.h">
+      <Filter>ヘッダー ファイル\application\particle</Filter>
+    </ClInclude>
+    <ClInclude Include="application\particle\GameOverparticle.h">
+      <Filter>ヘッダー ファイル\application\particle</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

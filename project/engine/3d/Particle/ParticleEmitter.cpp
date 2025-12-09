@@ -7,11 +7,7 @@
 // テクスチャを定義
 std::vector<std::string> ParticleEmitter::textureList_ = {
 	"Resources/uvChecker.png",
-	"Resources/monsterBall.png",
-	"Resources/circle.png",
-	"Resources/grass.png",
 	"Resources/circle2.png",
-	"Resources/gradationLine.png"
 };
 
 ParticleEmitter::ParticleEmitter(const std::string& name, const uint32_t count, const Transform& transform, const Vector4& color, const float lifetime, const float currentTime, const Velocity& Velocity, const RandomParameter& randomParameter) {

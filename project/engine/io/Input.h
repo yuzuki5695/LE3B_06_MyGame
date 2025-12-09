@@ -71,4 +71,5 @@ private: // メンバ変数
 public: // getter setter
 	bool GetMouseInput() { return useMouseInput_; }		
 	void SetMouseInput(bool mouse) { useMouseInput_ = mouse; }
+    const DIMOUSESTATE& GetMouseState() const { return mouseState; }
 };

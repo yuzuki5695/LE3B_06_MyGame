@@ -56,6 +56,10 @@ void TitleScene::Initialize() {
     // タイトルロゴスプライト生成
     ui3_ = Sprite::Create("Title/Title.png", Vector2{ 300.0f, 100.0f }, 0.0f, Vector2{ 600.0f,300.0f });
     ui3_->SetTextureSize(Vector2{ 600.0f,300.0f });
+ 
+    particle_ = std::make_unique<Titleparticle>();
+    particle_->Initialize(player_.get());
+
 #pragma endregion 最初のシーンの初期化
 }
 /// <summary>
@@ -119,6 +123,9 @@ void TitleScene::Update() {
     player_->SetTranslate(playertransform_.translate);
     player_->Update();
 
+
+    ParticleManager::GetInstance()->Update(); 
+    particle_->Update();
 #pragma endregion 全てのObject3d個々の更新処理
 	ui3_->Update();
     ui1_->Update();
@@ -168,6 +175,7 @@ void TitleScene::Draw() {
 
     // パーティクルの描画準備。パーティクルの描画に共通のグラフィックスコマンドを積む 
     ParticleCommon::GetInstance()->Commondrawing();
+    ParticleManager::GetInstance()->Draw();
 #pragma endregion 全てのObject3d個々の描画処理
 
 #pragma region 全てのSprite個々の描画処理

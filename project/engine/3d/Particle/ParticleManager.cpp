@@ -10,6 +10,7 @@
 #include<ImGuiManager.h>
 #endif // USE_IMGUI
 #include <ResourceFactory.h>
+#include <CameraManager.h>
 
 using namespace MatrixVector;
 using namespace Microsoft::WRL;
@@ -31,6 +32,10 @@ void ParticleManager::Finalize() {
     instance.reset();
 }
 
+void ParticleManager::ClearAll() {
+    particleGroups.clear();   // 全てのパーティクルグループを削除
+}
+
 void ParticleManager::Initialize(DirectXCommon* birectxcommon, SrvManager* srvmanager) {
     // NULL検出
     assert(birectxcommon);
@@ -49,13 +54,14 @@ void ParticleManager::Update() {
     Matrix4x4 billboardMatrix;
     Matrix4x4 viewMatrix;
     Matrix4x4 projectionMatrix;
-    // ビルボード行列: パーティクルがカメラに向くように変換
-    if (camera_) {
+    // カメラを CameraManager 経由で取得
+    Camera* activeCamera = CameraManager::GetInstance()->GetActiveCamera();
+    if (activeCamera) {
         // カメラのワールド行列を取得し、ビルボード行列を計算
-        billboardMatrix = Multiply(backToFrontMatrix, camera_->GetWorldMatrix());  // 修正: GetWorldMatrix
+        billboardMatrix = Multiply(backToFrontMatrix, activeCamera->GetWorldMatrix());  // 修正: GetWorldMatrix
         // カメラからビュー行列とプロジェクション行列を取得
-        viewMatrix = camera_->GetViewMatrix();
-        projectionMatrix = camera_->GetProjectionMatrix();
+        viewMatrix = activeCamera->GetViewMatrix();
+        projectionMatrix = activeCamera->GetProjectionMatrix();
     } else {
         // カメラがない場合の処理（必要であれば）
     }
@@ -95,7 +101,7 @@ void ParticleManager::Update() {
             particleIterator->transform.scale.x += particleIterator->Velocity.scale.x;
             particleIterator->transform.scale.y += particleIterator->Velocity.scale.y;
             particleIterator->transform.scale.z += particleIterator->Velocity.scale.z;
-            
+
             // world行列の計算
             Matrix4x4 scaleMatrix = MakeScaleMatrix((*particleIterator).transform.scale);
             // 回転行列を各軸ごとに作成して合成
@@ -125,7 +131,14 @@ void ParticleManager::Update() {
         }
 
         // 描画で使用するインスタンス数を更新
-        group.kNumInstance = counter; 
+        group.kNumInstance = counter;
+        // 未使用領域を必ずクリア（GPU にゴミが残らないように）
+        for (uint32_t i = counter; i < MaxInstanceCount; ++i) {
+            group.instanceData[i].color = { 0.0f, 0.0f, 0.0f, 0.0f };
+            // 必要なら WVP もゼロ化しておく（安全策）
+            group.instanceData[i].WVP = MakeIdentity4x4(); // or zero matrix
+            group.instanceData[i].World = MakeIdentity4x4();
+        }
     }
 }
 
@@ -209,7 +222,6 @@ void ParticleManager::Emit(const std::string& name, const Transform& transform, 
     }
 
     ParticleGroup& group = it->second;
-    camera_ = Object3dCommon::GetInstance()->GetDefaultCamera();
 
     size_t currentParticleCount = group.particles.size();
     if (currentParticleCount + count > MaxInstanceCount) {

@@ -6,6 +6,7 @@
 #include<SoundPlayer.h>
 #include <Skybox.h>
 #include<FadeManager.h>
+#include<Titleparticle.h>
 
 /// <summary>
 /// タイトルシーン
@@ -48,4 +49,7 @@ private: // メンバ変数
     // フェード制御        
     float time = 0.0f;          // 経過時間 
     bool hasCheckedFade_ = false; // フェード処理済みかどうか
+
+    std::unique_ptr <Titleparticle> particle_;
+
 };

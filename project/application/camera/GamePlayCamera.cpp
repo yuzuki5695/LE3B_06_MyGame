@@ -1,4 +1,4 @@
-#include "GameCamera.h"
+#include "GamePlayCamera.h"
 #include<MatrixVector.h>
 #include<algorithm> 
 #include<CameraManager.h>
@@ -8,7 +8,7 @@ using namespace MatrixVector;
 ///====================================================
 /// 初期化処理
 ///====================================================
-void GameCamera::Initialize() {
+void GamePlayCamera::Initialize() {
     Jsondata = new CurveJsonLoader();
     bezierPoints = Jsondata->LoadBezierFromJSON("Resources/levels/bezier.json");
     // カメラの初期設定
@@ -24,9 +24,9 @@ void GameCamera::Initialize() {
     // メイン
     transform_ = { bezierPos_,LookAtRotation(prevForward) };
     // サブカメラ登録 
-    // std::vector<CameraTransform> subCams = { { {2, 0, -3}, {0, 0, 0} } };
+    std::vector<CameraTransform> subCams = { { {2, 0, -3}, {0, 0, 0} } };
     // サブカメラを追加
-    //AddSubCameras(subCams); 
+    AddSubCameras(subCams); 
 
    // メインカメラは追従モードにする
    CameraManager::GetInstance()->SetMode(CameraMode::Follow);
@@ -35,7 +35,7 @@ void GameCamera::Initialize() {
 ///====================================================
 /// 更新処理（複数制御点対応＋向き補間）
 ///====================================================
-void GameCamera::Update() {
+void GamePlayCamera::Update() {
     if (bezierPoints.size() < 3) return;
     // 範囲チェック（最後まで行ったら停止）
     if (currentSegment >= bezierPoints.size() - 1) {
@@ -52,7 +52,7 @@ void GameCamera::Update() {
      
 }
 
-bool GameCamera::CheckAndResumeMovement() {
+bool GamePlayCamera::CheckAndResumeMovement() {
     if (!movefige) {
         // 再開条件：現在と次の制御点が「通過許可済み」
         if (bezierPoints[currentSegment].passed && bezierPoints[currentSegment].passed) {
@@ -68,7 +68,7 @@ bool GameCamera::CheckAndResumeMovement() {
 /// LookAt 用の回転計算（簡易版）
 /// forward: 向きベクトル
 ///====================================================
-Vector3 GameCamera::LookAtRotation(const Vector3& forward) {
+Vector3 GamePlayCamera::LookAtRotation(const Vector3& forward) {
     Vector3 rot;
     rot.y = atan2f(forward.x, forward.z); // Yaw
     rot.x = asinf(-forward.y);            // Pitch
@@ -78,7 +78,7 @@ Vector3 GameCamera::LookAtRotation(const Vector3& forward) {
 ///====================================================
 /// 球面線形補間 (Slerp)
 ///====================================================
-Vector3 GameCamera::Slerp(const Vector3& v0, const Vector3& v1, float t) {
+Vector3 GamePlayCamera::Slerp(const Vector3& v0, const Vector3& v1, float t) {
     float dot = Dot(v0, v1);
     dot = std::clamp(dot, -1.0f, 1.0f); // 安全クランプ
 
@@ -88,7 +88,7 @@ Vector3 GameCamera::Slerp(const Vector3& v0, const Vector3& v1, float t) {
 }
 
 
-void GameCamera::UpdateBezierMovement() {
+void GamePlayCamera::UpdateBezierMovement() {
     // 現在のセグメント start / end
     const Vector3& start = bezierPoints[currentSegment].controlPoint;
     const Vector3& end = bezierPoints[currentSegment + 1].controlPoint;
@@ -135,7 +135,7 @@ void GameCamera::UpdateBezierMovement() {
     }
 }
 
-void GameCamera::UpdateCameraRotation() {
+void GamePlayCamera::UpdateCameraRotation() {
     // === 向き補間（改良版） ===
     Vector3 targetForward;
 
@@ -181,7 +181,7 @@ void GameCamera::UpdateCameraRotation() {
     transform_.rotate = LookAtRotation(forward_);
 }
 
-Vector3 GameCamera::CatmullRom(const Vector3& p0, const Vector3& p1, const Vector3& p2, const Vector3& p3, float t) {
+Vector3 GamePlayCamera::CatmullRom(const Vector3& p0, const Vector3& p1, const Vector3& p2, const Vector3& p3, float t) {
     float t2 = t * t;
     float t3 = t2 * t;
 
@@ -193,7 +193,7 @@ Vector3 GameCamera::CatmullRom(const Vector3& p0, const Vector3& p1, const Vecto
     );
 }
 
-void GameCamera::AddSubCamera(const CameraTransform& trans) {
+void GamePlayCamera::AddSubCamera(const CameraTransform& trans) {
     // 新しいサブカメラインスタンスを生成
     std::unique_ptr<Camera> cam = std::make_unique<Camera>();
 
@@ -205,7 +205,7 @@ void GameCamera::AddSubCamera(const CameraTransform& trans) {
     subcameras_.push_back(std::move(cam)); // 所有権を移動
 }
 
-void GameCamera::AddSubCameras(const std::vector<CameraTransform>& transforms) {
+void GamePlayCamera::AddSubCameras(const std::vector<CameraTransform>& transforms) {
     for (const CameraTransform& trans : transforms) {
         // サブカメラを複数登録する
         AddSubCamera(trans);

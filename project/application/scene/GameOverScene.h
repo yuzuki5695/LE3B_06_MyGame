@@ -5,6 +5,7 @@
 #include<ParticleEmitter.h>
 #include<SoundPlayer.h>
 #include <Skybox.h>
+#include<GameOverparticle.h>
 
 struct PartInfo {
     std::unique_ptr<Object3d> obj;
@@ -67,4 +68,6 @@ private: // メンバ変数
     Vector2 ui2StartPos;
     Vector2 ui2EndPos;
     uint32_t phase_;
+    
+    std::unique_ptr <GameOverparticle> particles_;
 };

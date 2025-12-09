@@ -3,82 +3,15 @@
 #include<SrvManager.h>
 #include<random>
 #include<Vector2.h>
-#include<Vector3.h>
-#include<Vector4.h>
-#include<Matrix4x4.h>
-#include <Transform.h>
-#include<Camera.h>
 #include<Model.h>
 #include<ParticleModel.h>
-
-struct Velocity {
-	Vector3 translate;
-	Vector3 rotate;
-	Vector3 scale;
-};
-
-struct RandomParameter {
-	// ランダムな速度の範囲
-	Vector3 offsetMin;
-	Vector3 offsetMax;
-	// ランダムな回転の範囲
-	Vector3 rotateMin;
-	Vector3 rotateMax;
-	// ランダムなスケールの範囲
-	Vector3 scaleMin;
-	Vector3 scaleMax;
-	// ランダムな色の範囲
-	float colorMin; // 最小値
-	float colorMax; // 最大値
-	// ランダムな寿命の範囲を追加
-	float lifetimeMin;
-	float lifetimeMax;
-	// ランダムな速度の範囲を追加
-	Velocity velocityMin;
-	Velocity velocityMax;
-};
-
-struct ParticleRandomData {
-	Vector3 offset;
-	Vector3 rotation;
-	Vector3 scale;
-	Velocity velocity;
-	float lifetime;
-	Vector4 color;
-	Vector3 rotationSpeed;  // 回転速度
-	Vector3 scaleSpeed;     // スケール変化速度
-};
+#include<RandomParameter.h>
+#include<ParticleRandomData.h>
+#include<ParticleGroup.h>
 
 // 3Dオブジェクト共通部
-class ParticleManager
-{
-public:	
-	// パーティクル
-	struct Particle {
-		Transform transform;
-		Velocity Velocity;
-		float lifetime;
-		float currentTime;
-		Vector4 color;
-	};
-	// インスタンスデータ
-	struct InstanceData
-	{
-		Matrix4x4 WVP;
-		Matrix4x4 World;
-		Vector4 color;
-	};
-	// パーティクルグループ
-	struct ParticleGroup {
-		std::unique_ptr<ParticleModel> model;                  // パーティクルモデル
-		MaterialDate materialData;                             // マテリアルデータ(テクスチャファイルパスとテクスチャ用SRVインデックス)
-		std::list<Particle> particles;                         // パーティクルのリスト
-		uint32_t srvindex;                                     // インスタンシング用SRVインデックス
-		Microsoft::WRL::ComPtr <ID3D12Resource> Resource;      // インスタンシングリソース
-		uint32_t kNumInstance;                                 // インスタンス数
-		InstanceData* instanceData = nullptr;                  // インスタンシングデータを書き込むためのポインタ
-	};
-private:
+class ParticleManager {
+public:
 	static std::unique_ptr<ParticleManager> instance;
 
 	ParticleManager(ParticleManager&) = delete;
@@ -100,7 +33,7 @@ public: // メンバ関数
 
 	// パーティクルグループの作成
 	void CreateParticleGroup(const std::string& name, const std::string& textureFilepath, const std::string& filename, VertexType vertexType);
-	
+
 	// 発生
 	void Emit(const std::string& name, const Transform& transform, const Vector4& color, uint32_t count, const Velocity& velocity, float lifetime, const RandomParameter& randomParameter);
 
@@ -108,14 +41,15 @@ public: // メンバ関数
 	void SetParticleGroupModel(const std::string& name, const std::string& modelFilepath);
 
 	void DebugUpdata();
-	
+
 	ParticleRandomData GenerateRandomParticleData(const RandomParameter& param, const Velocity& baseVelocity, float baseLifetime, std::mt19937& randomEngine);
+	
+	void ClearAll();
 
 private: // メンバ変数
 	// ポインタ
 	DirectXCommon* dxCommon_;
 	SrvManager* srvmanager_;
-	Camera* camera_;
 	// ランダムエンジン
 	std::mt19937 randomEngine;
 	//最大インスタンス
@@ -133,6 +67,4 @@ public:
 	}
 	uint32_t GetMaxInstanceCount() const { return MaxInstanceCount; }
 
-	// setter
-	void SetCamera(Camera* camera) { this->camera_ = camera; }
 };

@@ -6,13 +6,13 @@
 #include<SceneCameraBase.h>
 
 ///====================================================
-/// GameCameraクラス
+/// GamePlayCameraクラス
 /// <summary>
 /// ベジェ曲線をもとにカメラを自動移動させるクラス
 /// カーブデータ（制御点）はJSONファイルから読み込む
 /// </summary>
 ///====================================================
-class GameCamera : public SceneCameraBase {
+class GamePlayCamera : public SceneCameraBase {
 public:
     /// <summary>
     /// 初期化処理

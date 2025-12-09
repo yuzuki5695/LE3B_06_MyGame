@@ -42,7 +42,7 @@ void CameraManager::Initialize(CameraTransform transform) {
     title_ = std::make_unique<TitleCamera>();
     title_->Initialize();
     // ゲームプレイ用カメラの生成、初期化
-    gameplay_ = std::make_unique<GameCamera>();
+    gameplay_ = std::make_unique<GamePlayCamera>();
     gameplay_->Initialize();
     // ゲームクリア用カメラの生成、初期化
     gameclear_ = std::make_unique<GameClearCamera>();
@@ -281,10 +281,6 @@ void CameraManager::OnSceneChanged(SceneCameraType type) {
     case SceneCameraType::GameOver:
         currentSceneCamera_ = gameover_.get();
         break;
-    }
-    // シーン切替時に初期化を呼んでサブカメラを再生成
-    if (currentSceneCamera_) {
-        currentSceneCamera_->Initialize();
     }
     // imguiのサブカメラ選択をリセット
     Typeview_ = ViewCameraType::Main;  // メインカメラに戻す
