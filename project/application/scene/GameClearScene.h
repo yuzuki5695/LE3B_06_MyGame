@@ -5,6 +5,7 @@
 #include<ParticleEmitter.h>
 #include<SoundPlayer.h>
 #include <Skybox.h>
+#include<GameClearparticle.h>
 
 /// <summary>
 /// ゲームクリアシーン
@@ -88,7 +89,6 @@ private: // メンバ変数
     Vector2 ui2EndPos; // 最終位置（現在の値）
     Vector2 ui3StartPos; // 上にずらした初期位置
     Vector2 ui3EndPos; // 最終位置（現在の値）
-public: // メンバ関数
 
-
+    std::unique_ptr <GameClearparticle> particle_;
 };

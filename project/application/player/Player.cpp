@@ -60,7 +60,7 @@ void Player::Initialize() {
 void Player::Update() {
     CameraManager* camMgr = CameraManager::GetInstance();
     Camera* activeCam = camMgr->GetActiveCamera();
-    GameCamera* gameCam = camMgr->GetGameplayCamera(); 
+    GamePlayCamera* gameCam = camMgr->GetGameplayCamera(); 
 
     // カメラのベジェ位置（レール上の実座標）
     Vector3 camPos = gameCam->GetBezierPos();
@@ -255,7 +255,7 @@ void Player::UpdateTargetPosition(Transform& targetTransform, float speed) {
     if (Input::GetInstance()->Pushkey(DIK_DOWN))  targetTransform.translate.y -= speed;
 
     // --- カメラ基準でターゲットを配置する ---
-    GameCamera* gameCam = CameraManager::GetInstance()->GetGameCamera();
+    GamePlayCamera* gameCam = CameraManager::GetInstance()->GetGameCamera();
     if (!gameCam) return;
 
     Vector3 cameraPos = gameCam->GetbezierPos();
@@ -299,7 +299,7 @@ void Player::AttachBullet() {
 
     if (!canShoot_) return;
     if (Input::GetInstance()->Pushkey(DIK_SPACE)) {
-        GameCamera* gameCam = CameraManager::GetInstance()->GetGameCamera();
+        GamePlayCamera* gameCam = CameraManager::GetInstance()->GetGameCamera();
         if (!gameCam) return;
         // カメラ情報
         Vector3 cameraForward = gameCam->GetForward();
