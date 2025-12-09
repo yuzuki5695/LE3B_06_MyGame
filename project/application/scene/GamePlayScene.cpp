@@ -163,14 +163,14 @@ void GamePlayScene::Update() {
     }
 
         
-    //// フェードアウトが完了したら次のシーンへ
-    //if (!end && Input::GetInstance()->Triggrkey(DIK_RETURN)) {
-    //    player_->SetInactive();
-    //    //CameraManager::GetInstance()->SetMode(CameraMode::Transition);
-    //    //player_->SetKeyActive(false);
-    //    //player_->SetDead_(true);
-    //    end =true;
-    //}
+    // フェードアウトが完了したら次のシーンへ
+    if (!end && Input::GetInstance()->Triggrkey(DIK_RETURN)) {
+        player_->SetInactive();
+        //CameraManager::GetInstance()->SetMode(CameraMode::Transition);
+        //player_->SetKeyActive(false);
+        //player_->SetDead_(true);
+        end =true;
+    }
 
     StageManager::GetInstance()->Update();
 

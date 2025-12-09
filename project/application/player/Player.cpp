@@ -397,12 +397,12 @@ OBB Player::GetOBB() const {
     return obb;
 }
 
-void Player::StartDeathEffect() { 
+void Player::StartDeathEffect() {
     static float t = 0.0f;        // 時間経過
     const float fallSpeedY = 0.02f;   // 下に落ちる速さ
     const float fallSpeedZ = 0.2f;   // 手前に流れる速さ
 
-        
+
     t += 1.0f / 60.0f;            // 60FPS換算
 
     // 加速しない。一定量だけ動かす
@@ -413,4 +413,19 @@ void Player::StartDeathEffect() {
     // --- 回転も時間で増加（イージング的）---
     transform_.rotate.x += 0.004f + 0.002f * sinf(t * 0.5f);
     transform_.rotate.z += 0.003f + 0.0015f * cosf(t * 0.4f);
+
+    // ---- ここから点滅処理 ----
+
+    // 点滅周期（値を小さくすると高速点滅）
+    float blinkSpeed = 50.0f;
+
+    // 0〜1 を高速で往復する値
+    float s = (sinf(t * blinkSpeed) + 1.0f) * 0.5f;
+
+    // ある程度の閾値を超えた時だけ赤くする（パッシング感UP）
+    if (s > 0.85f) {
+        object->SetMaterialColor({ 1.0f, 0.0f, 0.0f, 1.0f }); // 赤
+    } else {
+        object->SetMaterialColor({ 1.0f, 1.0f, 1.0f, 1.0f }); // 通常色
+    }
 }
