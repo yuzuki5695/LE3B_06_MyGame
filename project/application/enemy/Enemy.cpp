@@ -100,6 +100,7 @@ void Enemy::Update() {
         }
     }
 
+
     // 位置をobjectから取得して同期する
     transform_.translate = object->GetTranslate(); // ← 追加
 
@@ -116,11 +117,12 @@ void Enemy::Update() {
             break;
         }
     }
+
     // 現在の座標を同期
     object->SetTranslate(transform_.translate);
 
     // 弾発射処理（プレイヤーが存在する場合）
-    if (player_ && !isDying_) {
+    if (player_ || !isDying_) {
         Vector3 playerPos = player_->GetPosition();
         AttachBullet(playerPos);// プレイヤーの位置を狙って弾発射
     }

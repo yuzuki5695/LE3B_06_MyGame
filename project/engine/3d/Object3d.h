@@ -64,5 +64,7 @@ public:
 	void SetTranslate(const Vector3& translate) { this->transform_.translate = translate; }
 	void SetCamera(Camera* camera) { this->camera = camera; }
 
+	const Vector4 GetMaterialColor() const { return model->GetMaterialData()->color; }
+
 	void SetMaterialColor(const Vector4& color);
 };

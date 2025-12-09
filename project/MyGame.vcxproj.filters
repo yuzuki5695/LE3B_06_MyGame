@@ -435,6 +435,9 @@
     <ClCompile Include="engine\math\MathUtil.cpp">
       <Filter>ソース ファイル\engine\math</Filter>
     </ClCompile>
+    <ClCompile Include="application\particle\DefaultParticleEmitter.cpp">
+      <Filter>ソース ファイル\application\particle</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="engine\2d\Sprite.h">
@@ -742,6 +745,9 @@
     </ClInclude>
     <ClInclude Include="engine\math\MathUtil.h">
       <Filter>ヘッダー ファイル\engine\math</Filter>
+    </ClInclude>
+    <ClInclude Include="application\particle\DefaultParticleEmitter.h">
+      <Filter>ヘッダー ファイル\application\particle</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

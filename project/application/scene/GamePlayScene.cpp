@@ -162,15 +162,15 @@ void GamePlayScene::Update() {
         player_->SetReticleVisible(true);
     }
 
-        
-    // フェードアウトが完了したら次のシーンへ
-    if (!end && Input::GetInstance()->Triggrkey(DIK_RETURN)) {
-        player_->SetInactive();
-        //CameraManager::GetInstance()->SetMode(CameraMode::Transition);
-        //player_->SetKeyActive(false);
-        //player_->SetDead_(true);
-        end =true;
-    }
+    //    
+    //// フェードアウトが完了したら次のシーンへ
+    //if (!end && Input::GetInstance()->Triggrkey(DIK_RETURN)) {
+    //    player_->SetInactive();
+    //    //CameraManager::GetInstance()->SetMode(CameraMode::Transition);
+    //    //player_->SetKeyActive(false);
+    //    //player_->SetDead_(true);
+    //    end =true;
+    //}
 
     StageManager::GetInstance()->Update();
 
@@ -348,8 +348,8 @@ void GamePlayScene::EnemySpawn() {
         if (!trigger.hasSpawned && distanceForward >= 0.0f && distanceForward < 10.0f) {
             // --- 出現パターン分岐 ---
             switch (tIndex) {
-            case 0: SpawnZigZagFormation(trigger); break;
-            case 1: SpawnZigZagFormation(trigger); break;
+            case 0: SpawnVFormation(trigger); break;
+            case 1: SpawnReverseStepFormation(trigger); break;
             case 2: SpawnZigZagFormation(trigger); break;
             }
             trigger.hasSpawned = true;
@@ -395,96 +395,96 @@ void GamePlayScene::SpawnZigZagFormation(const EnemySpawnTrigger& trigger) {
         }
     }
 }
-/////====================================================
-///// 敵出現パターン：逆ステップフォーメーション（姿勢対応）
-/////====================================================
-//void GamePlayScene::SpawnReverseStepFormation(const EnemySpawnTrigger& trigger) {
-//    // プレイヤー・カメラ情報を取得
-//    Vector3 playerPos = player_->GetPosition();
-//    GameCamera* gameCam = CameraManager::GetInstance()->GetGameCamera();
-//    if (!gameCam) return;
-//
-//    Vector3 forward = Normalize(gameCam->GetForward());
-//    Vector3 right   = Normalize(Cross({ 0,1,0 }, forward));
-//    Vector3 up      = Normalize(Cross(forward, right));
-//
-//    // 敵配置設定
-//    int activated = 0;
-//    const float baseY = 5.0f;
-//    const float forwardBase = 80.0f;
-//    const float stepX = 1.5f;
-//    const float stepY = -1.2f;
-//    const float stepZ = 5.0f;
-//
-//    for (auto& enemy : enemies_) {
-//        if (!enemy->IsActive()) {
-//            Vector3 spawnPos =
-//                playerPos +
-//                forward * (forwardBase - stepZ * activated) +
-//                right   * -(stepX * activated) +
-//                up      * (baseY + stepY * activated);
-//
-//            enemy->SetnewTranslate(spawnPos, trigger.moveType);
-//            enemy->SetActive(true);
-//
-//            ++activated;
-//            if (activated >= trigger.spawnCount) break;
-//        }
-//    }
-//}
-/////====================================================
-///// 敵出現パターン：V字フォーメーション（姿勢対応）
-/////====================================================
-//void GamePlayScene::SpawnVFormation(const EnemySpawnTrigger& trigger) {
-//    // プレイヤー・カメラ情報を取得
-//    Vector3 playerPos = player_->GetPosition();
-//    GameCamera* gameCam = CameraManager::GetInstance()->GetGameCamera();
-//    if (!gameCam) return;
-//
-//    Vector3 forward = Normalize(gameCam->GetForward());
-//    Vector3 right   = Normalize(Cross({ 0,1,0 }, forward));
-//    Vector3 up      = Normalize(Cross(forward, right));
-//
-//    // 敵配置設定
-//    int activated = 0;
-//
-//    const float forwardDist = 60.0f;  // 前方距離
-//    const float baseY = 1.0f;
-//    const float stepX = 3.0f;
-//    const float stepY = -2.0f;
-//
-//    for (auto& enemy : enemies_) {
-//        if (!enemy->IsActive()) {
-//            float x = 0.0f;
-//            float y = 0.0f;
-//
-//            switch (activated) {
-//            case 0: x =  0.0f; y =  0.0f; break;               // 中央
-//            case 1: x = -stepX; y = stepY; break;              // 左上
-//            case 2: x =  stepX; y = stepY; break;              // 右上
-//            case 3: x = -stepX * 2; y = stepY * 2; break;      // 左下
-//            case 4: x =  stepX * 2; y = stepY * 2; break;      // 右下
-//            default:
-//                x = (activated - 2) * stepX;
-//                y = stepY * 3;
-//                break;
-//            }
-//
-//            Vector3 spawnPos =
-//                playerPos +
-//                forward * forwardDist +
-//                right * x +
-//                up * (baseY + y);
-//
-//            enemy->SetnewTranslate(spawnPos, trigger.moveType);
-//            enemy->SetActive(true);
-//
-//            ++activated;
-//            if (activated >= trigger.spawnCount) break;
-//        }
-//    }
-//}
-//
+///====================================================
+/// 敵出現パターン：逆ステップフォーメーション（姿勢対応）
+///====================================================
+void GamePlayScene::SpawnReverseStepFormation(const EnemySpawnTrigger& trigger) {
+    // プレイヤー・カメラ情報を取得
+    Vector3 playerPos = player_->GetPosition();
+    GamePlayCamera* gameCam = CameraManager::GetInstance()->GetGameplayCamera(); 
+    if (!gameCam) return;
+
+    Vector3 forward = Normalize(gameCam->GetForward());
+    Vector3 right   = Normalize(Cross({ 0,1,0 }, forward));
+    Vector3 up      = Normalize(Cross(forward, right));
+
+    // 敵配置設定
+    int activated = 0;
+    const float baseY = 5.0f;
+    const float forwardBase = 80.0f;
+    const float stepX = 1.5f;
+    const float stepY = -1.2f;
+    const float stepZ = 5.0f;
+
+    for (auto& enemy : enemies_) {
+        if (!enemy->IsActive()) {
+            Vector3 spawnPos =
+                playerPos +
+                forward * (forwardBase - stepZ * activated) +
+                right   * -(stepX * activated) +
+                up      * (baseY + stepY * activated);
+
+            enemy->SetnewTranslate(spawnPos, trigger.moveType);
+            enemy->SetActive(true);
+
+            ++activated;
+            if (activated >= trigger.spawnCount) break;
+        }
+    }
+}
+///====================================================
+/// 敵出現パターン：V字フォーメーション（姿勢対応）
+///====================================================
+void GamePlayScene::SpawnVFormation(const EnemySpawnTrigger& trigger) {
+    // プレイヤー・カメラ情報を取得
+    Vector3 playerPos = player_->GetPosition();
+    GamePlayCamera* gameCam = CameraManager::GetInstance()->GetGameplayCamera(); 
+    if (!gameCam) return;
+
+    Vector3 forward = Normalize(gameCam->GetForward());
+    Vector3 right   = Normalize(Cross({ 0,1,0 }, forward));
+    Vector3 up      = Normalize(Cross(forward, right));
+
+    // 敵配置設定
+    int activated = 0;
+
+    const float forwardDist = 60.0f;  // 前方距離
+    const float baseY = 1.0f;
+    const float stepX = 3.0f;
+    const float stepY = -2.0f;
+
+    for (auto& enemy : enemies_) {
+        if (!enemy->IsActive()) {
+            float x = 0.0f;
+            float y = 0.0f;
+
+            switch (activated) {
+            case 0: x =  0.0f; y =  0.0f; break;               // 中央
+            case 1: x = -stepX; y = stepY; break;              // 左上
+            case 2: x =  stepX; y = stepY; break;              // 右上
+            case 3: x = -stepX * 2; y = stepY * 2; break;      // 左下
+            case 4: x =  stepX * 2; y = stepY * 2; break;      // 右下
+            default:
+                x = (activated - 2) * stepX;
+                y = stepY * 3;
+                break;
+            }
+
+            Vector3 spawnPos =
+                playerPos +
+                forward * forwardDist +
+                right * x +
+                up * (baseY + y);
+
+            enemy->SetnewTranslate(spawnPos, trigger.moveType);
+            enemy->SetActive(true);
+
+            ++activated;
+            if (activated >= trigger.spawnCount) break;
+        }
+    }
+}
+
 
 ///====================================================
 /// プレイヤー弾 vs 敵の当たり判定
@@ -504,6 +504,8 @@ void GamePlayScene::CheckBulletEnemyCollisionsOBB() {
             if (IsOBBIntersect(bulletOBB, enemyOBB)) {
                 bullet->SetInactive();
                 enemy->SetInactive();
+                
+                particles_->AddHitPosition(enemy->GetPosition());
                 // パーティクル生成など
                 break;
             }
@@ -553,7 +555,6 @@ void GamePlayScene::CheckEnemyPlayerCollisionsOBB() {
         // 衝突判定
         if (IsOBBIntersect(playerOBB, enemyOBB)) {
             player_->SetInactive();
-            enemy->SetInactive();
             end = true; // ゲームオーバーへ遷移など
 
             break;

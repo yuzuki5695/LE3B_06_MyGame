@@ -50,11 +50,11 @@ public: // メンバ関数
     /// <summary>
     /// V字フォーメーションでの敵出現処理
     /// </summary>
-  // void SpawnVFormation(const EnemySpawnTrigger& trigger);
+   void SpawnVFormation(const EnemySpawnTrigger& trigger);
     /// <summary>
     /// 逆ステップフォーメーションでの敵出現処理
     /// </summary>
-  //  void SpawnReverseStepFormation(const EnemySpawnTrigger& trigger);
+    void SpawnReverseStepFormation(const EnemySpawnTrigger& trigger);
     /// <summary>
     /// ジグザグフォーメーションでの敵出現処理
     /// </summary>

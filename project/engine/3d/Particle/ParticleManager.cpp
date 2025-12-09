@@ -73,7 +73,7 @@ void ParticleManager::Update() {
 
     // 各パーティクルグループの処理
     for (auto& [name, group] : particleGroups) {
-        uint32_t counter = 0;
+        group.kNumInstance = 0;
         for (auto particleIterator = group.particles.begin(); particleIterator != group.particles.end();) {
             // パーティクルの現在の時間を増加させる
             (*particleIterator).currentTime += 1.0f / 60.0f;  // 60fpsで時間をカウントアップ
@@ -87,6 +87,12 @@ void ParticleManager::Update() {
             // 透明度の更新（時間に基づいてフェード）
             float alpha = 1.0f - (*particleIterator).currentTime / (*particleIterator).lifetime;
             (*particleIterator).color.w = alpha;
+
+            
+            if (particleIterator->useGravity) {
+                particleIterator->Velocity.translate.y -= 0.003f; // 重力として速度に加える
+            }
+
 
             // 速度を足す
             // 座標
@@ -118,25 +124,19 @@ void ParticleManager::Update() {
             Matrix4x4 viewProjectionMatrix = Multiply(viewMatrix, projectionMatrix);
             Matrix4x4 worldViewProjectionMatrix = Multiply(worldMatrix, viewProjectionMatrix);
 
-            // インスタンスデータに更新した行列を設定
-            if (counter < group.kNumInstance) {
-                group.instanceData[counter].WVP = worldViewProjectionMatrix;
-                group.instanceData[counter].World = worldMatrix;
-                group.instanceData[counter].color = (*particleIterator).color;
-                ++counter;
-            }
+            // ★ 正しく格納
+            group.instanceData[group.kNumInstance].WVP = worldViewProjectionMatrix;
+            group.instanceData[group.kNumInstance].World = worldMatrix;
+            group.instanceData[group.kNumInstance].color = particleIterator->color;
+            ++group.kNumInstance;
 
-            // 次のパーティクルに進む
             ++particleIterator;
         }
 
-        // 描画で使用するインスタンス数を更新
-        group.kNumInstance = counter;
-        // 未使用領域を必ずクリア（GPU にゴミが残らないように）
-        for (uint32_t i = counter; i < MaxInstanceCount; ++i) {
-            group.instanceData[i].color = { 0.0f, 0.0f, 0.0f, 0.0f };
-            // 必要なら WVP もゼロ化しておく（安全策）
-            group.instanceData[i].WVP = MakeIdentity4x4(); // or zero matrix
+        // 未使用領域のクリアは「描画数より後ろ」だけ
+        for (uint32_t i = group.kNumInstance; i < MaxInstanceCount; ++i) {
+            group.instanceData[i].color = { 0,0,0,0 };
+            group.instanceData[i].WVP = MakeIdentity4x4();
             group.instanceData[i].World = MakeIdentity4x4();
         }
     }
@@ -237,13 +237,14 @@ void ParticleManager::Emit(const std::string& name, const Transform& transform, 
         newParticle.transform.translate = { transform.translate.x + randData.offset.x, transform.translate.y + randData.offset.y, transform.translate.z + randData.offset.z };
         newParticle.transform.rotate = { transform.rotate.x + randData.rotation.x, transform.rotate.y + randData.rotation.y, transform.rotate.z + randData.rotation.z };
         newParticle.transform.scale = { transform.scale.x + randData.scale.x, transform.scale.y + randData.scale.y, transform.scale.z + randData.scale.z };
-        newParticle.color = { color.x + randData.color.x,color.y + randData.color.y ,color.z + randData.color.z ,color.w + randData.color.w };
+        newParticle.color = { color.x + randData.color.x,color.y + randData.color.y ,color.z + randData.color.z ,color.w };
         newParticle.lifetime = randData.lifetime;
         newParticle.currentTime = 0.0f;
         newParticle.Velocity.translate = randData.velocity.translate;
         newParticle.Velocity.rotate = randData.velocity.rotate;
         newParticle.Velocity.scale = randData.velocity.scale;
 
+        newParticle.useGravity = (name == "Firework");
         // 作成したパーティクルをパーティクルリストに追加
         group.particles.push_back(newParticle);
     }
