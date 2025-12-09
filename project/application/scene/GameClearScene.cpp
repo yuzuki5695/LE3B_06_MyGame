@@ -71,7 +71,9 @@ void GameClearScene::Initialize() {
     offset_ = { { 1.0f, 1.0f, 1.0f }, { 0.0f, 1.5f, 0.0f }, { -70.0f, 0.0f, 30.0f } };
     player_ = Object3d::Create("Gameplay/Model/Player/Player.obj", offset_);  
     startOffset_ = { -170.0f, 50.0f, 30.0f };
-    endOffset_ = { 0.0f, 0.0f, 30.0f };
+    endOffset_ = { 0.0f, 0.0f, 30.0f };    
+    particle_ = std::make_unique<GameClearparticle>();
+    particle_->Initialize(player_.get());
 
     // 追従対象を設定
     CameraManager::GetInstance()->GetGameClearCamera()->SetTarget(player_.get());
@@ -110,6 +112,9 @@ void GameClearScene::Update() {
     UpdateStep();	
     player_->Update(); // オブジェクトの更新
 
+    // パーティクル更新
+    ParticleManager::GetInstance()->Update();
+    particle_->Update();
 #pragma endregion 全てのObject3d個々の更新処理
 
 #pragma region 全てのSprite個々の更新処理
@@ -147,6 +152,7 @@ void GameClearScene::Draw() {
 
     // パーティクルの描画準備。パーティクルの描画に共通のグラフィックスコマンドを積む 
     ParticleCommon::GetInstance()->Commondrawing();
+    ParticleManager::GetInstance()->Draw();
 #pragma endregion 全てのObject3d個々の描画処理
 
 #pragma region 全てのSprite個々の描画処理
@@ -188,7 +194,6 @@ void GameClearScene::Step1_MovePlayerAndSwitchCamera() {
     Camera* cam = CameraManager::GetInstance()->GetActiveCamera();
 
     if (!step1CamMoveStart_) {
-        // 100進むと座標は -70
         if (offset_.translate.x > -80.0f) {
             step1CamMoveStart_ = true;
         }
@@ -213,6 +218,7 @@ void GameClearScene::Step1_MovePlayerAndSwitchCamera() {
         camPos.y = startY + (endY - startY) * e;
 
         cam->SetTranslate(camPos);
+        particle_->SetVelocity(Velocity{ {-0.06f, 0.0f, 0.0f},{ 0.0f,  0.0f, 0.0f},{ 0.0f,  0.0f, 0.0f} });
     }
 
     // イージング処理
@@ -229,6 +235,9 @@ void GameClearScene::Step1_MovePlayerAndSwitchCamera() {
 
 void GameClearScene::Step2_WaitOrDoSomething() {
     Camera* cam = CameraManager::GetInstance()->GetActiveCamera();
+    
+    // Step2 の間はパーティクルを下に落とさない
+    particle_->SetVelocity(Velocity{ {-0.06f, 0.0f, 0.0f},{ 0.0f,  0.0f, 0.0f},{ 0.0f,  0.0f, 0.0f} });
 
     // メインカメラはイベントモード     
     CameraManager::GetInstance()->SetCameraMode(CameraMode::Event);
