@@ -120,6 +120,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="application\fade\FadeManager.cpp" />
     <ClCompile Include="application\loader\CharacterLoader.cpp" />
     <ClCompile Include="application\loader\CurveJsonLoader.cpp" />
+    <ClCompile Include="application\particle\Titleparticle.cpp" />
     <ClCompile Include="application\player\Player.cpp" />
     <ClCompile Include="application\scene\GameOverScene.cpp" />
     <ClCompile Include="application\scene\GamePlayScene.cpp" />
@@ -190,6 +191,9 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\fade\FadeManager.h" />
     <ClInclude Include="application\loader\CharacterLoader.h" />
     <ClInclude Include="application\loader\CurveJsonLoader.h" />
+    <ClInclude Include="application\particle\BaseEmitter.h" />
+    <ClInclude Include="application\particle\FollowEmitter.h" />
+    <ClInclude Include="application\particle\Titleparticle.h" />
     <ClInclude Include="application\player\Player.h" />
     <ClInclude Include="application\scene\GameOverScene.h" />
     <ClInclude Include="engine\math\Easing\Easing.h" />

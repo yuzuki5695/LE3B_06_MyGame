@@ -214,6 +214,9 @@
     <Filter Include="ヘッダー ファイル\engine\math\ParticleData">
       <UniqueIdentifier>{ab309e3a-ec4e-44c9-8978-c114a46308b8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ヘッダー ファイル\application\particle">
+      <UniqueIdentifier>{3264e2f4-9fdc-482b-ad88-dcef28660e8d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -410,6 +413,9 @@
     </ClCompile>
     <ClCompile Include="application\camera\GamePlayCamera.cpp">
       <Filter>ソース ファイル\application\camera</Filter>
+    </ClCompile>
+    <ClCompile Include="application\particle\Titleparticle.cpp">
+      <Filter>ソース ファイル\application\particle</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -694,6 +700,15 @@
     </ClInclude>
     <ClInclude Include="engine\math\ParticleData\Velocity.h">
       <Filter>ヘッダー ファイル\engine\math\ParticleData</Filter>
+    </ClInclude>
+    <ClInclude Include="application\particle\BaseEmitter.h">
+      <Filter>ヘッダー ファイル\application\particle</Filter>
+    </ClInclude>
+    <ClInclude Include="application\particle\FollowEmitter.h">
+      <Filter>ヘッダー ファイル\application\particle</Filter>
+    </ClInclude>
+    <ClInclude Include="application\particle\Titleparticle.h">
+      <Filter>ヘッダー ファイル\application\particle</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
