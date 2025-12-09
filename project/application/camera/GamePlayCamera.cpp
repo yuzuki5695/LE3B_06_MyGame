@@ -2,7 +2,9 @@
 #include<MatrixVector.h>
 #include<algorithm> 
 #include<CameraManager.h>
+#include<MathUtil.h>
 
+using namespace MathUtil;
 using namespace MatrixVector;
 
 ///====================================================
@@ -26,10 +28,12 @@ void GamePlayCamera::Initialize() {
     // サブカメラ登録 
     std::vector<CameraTransform> subCams = { { {2, 0, -3}, {0, 0, 0} } };
     // サブカメラを追加
-    AddSubCameras(subCams); 
+    AddSubCameras(subCams);
 
-   // メインカメラは追従モードにする
-   CameraManager::GetInstance()->SetMode(CameraMode::Follow);
+    // メインカメラは追従モードにする
+    CameraManager::GetInstance()->SetMode(CameraMode::Follow);
+
+//    CameraManager::GetInstance()->SetTypeview(ViewCameraType::Sub);
 }
 
 ///====================================================
@@ -63,28 +67,6 @@ bool GamePlayCamera::CheckAndResumeMovement() {
         }
     }
     return true; // 通常進行OK
-}
-///====================================================
-/// LookAt 用の回転計算（簡易版）
-/// forward: 向きベクトル
-///====================================================
-Vector3 GamePlayCamera::LookAtRotation(const Vector3& forward) {
-    Vector3 rot;
-    rot.y = atan2f(forward.x, forward.z); // Yaw
-    rot.x = asinf(-forward.y);            // Pitch
-    rot.z = 0.0f;                         // Roll
-    return rot;
-}
-///====================================================
-/// 球面線形補間 (Slerp)
-///====================================================
-Vector3 GamePlayCamera::Slerp(const Vector3& v0, const Vector3& v1, float t) {
-    float dot = Dot(v0, v1);
-    dot = std::clamp(dot, -1.0f, 1.0f); // 安全クランプ
-
-    float theta = acosf(dot) * t;
-    Vector3 relative = Normalize(v1 - v0 * dot);
-    return Normalize(v0 * cosf(theta) + relative * sinf(theta));
 }
 
 

@@ -22,10 +22,8 @@ public:
     /// 更新処理
     /// </summary>
     void Update();
-    Vector3 LookAtRotation(const Vector3& forward);
 
-    Quaternion ForwardToQuaternion(const Vector3& forward);
-    Vector3 Slerp(const Vector3& v0, const Vector3& v1, float t);
+    //Quaternion ForwardToQuaternion(const Vector3& forward);
 
     // 移動停止・再開の確認
     bool CheckAndResumeMovement();

@@ -78,6 +78,7 @@ public: // メンバ関数
     void SetActiveCamera();
 
     ViewCameraType GetTypeview() const { return Typeview_; }
+    void SetTypeview(ViewCameraType type) { Typeview_ = type; }
     CameraMode GetMode() const { return currentMode_; }
     void SetMode(CameraMode mode) { currentMode_ = mode; }
     GamePlayCamera* GetGameCamera() const { return gameplay_.get(); };

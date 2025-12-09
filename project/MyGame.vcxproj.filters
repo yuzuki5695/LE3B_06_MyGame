@@ -432,6 +432,9 @@
     <ClCompile Include="engine\math\Collision\Collision.cpp">
       <Filter>ソース ファイル\engine\math\collision</Filter>
     </ClCompile>
+    <ClCompile Include="engine\math\MathUtil.cpp">
+      <Filter>ソース ファイル\engine\math</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="engine\2d\Sprite.h">
@@ -692,9 +695,6 @@
     <ClInclude Include="engine\math\Easing\Easing.h">
       <Filter>ヘッダー ファイル\engine\math\Easing</Filter>
     </ClInclude>
-    <ClInclude Include="application\camera\GamePlayCamera.h">
-      <Filter>ソース ファイル\application\camera</Filter>
-    </ClInclude>
     <ClInclude Include="engine\math\ParticleData\InstanceData.h">
       <Filter>ヘッダー ファイル\engine\math\ParticleData</Filter>
     </ClInclude>
@@ -736,6 +736,12 @@
     </ClInclude>
     <ClInclude Include="engine\math\Collision\Collision.h">
       <Filter>ヘッダー ファイル\engine\math\collision</Filter>
+    </ClInclude>
+    <ClInclude Include="application\camera\GamePlayCamera.h">
+      <Filter>ヘッダー ファイル\application\camera</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\math\MathUtil.h">
+      <Filter>ヘッダー ファイル\engine\math</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
