@@ -22,7 +22,7 @@ public: // メンバ関数
     // シングルトンインスタンスの取得
     static CameraManager* GetInstance();
     // 終了
-    void Finalize(); 
+    void Finalize();
     /// <summary>
     /// 初期化処理
     /// </summary>
@@ -34,7 +34,7 @@ public: // メンバ関数
     // ImGui描画   
     void DrawImGui();
     // カメラモード設定
-    void SetCameraMode(CameraMode mode); 
+    void SetCameraMode(CameraMode mode);
     // サブカメラを一括登録
     void RegisterSubCameras(std::vector<std::unique_ptr<Camera>>&& cameras, const std::string& prefix);
     // シーンマネージャーから現在のシ―ンを判定する
@@ -66,11 +66,6 @@ private: // メンバ変数
     // シーン切替直後Update時に一度だけ各シーン用カメラの情報を反映
     bool sceneCameraJustChanged_ = false;
 
-    // Object3d* target_ = nullptr; // 追従対象オブジェクト
-    //// Debug用フリーカメラ
-    //std::unique_ptr<Camera> debugFreeCamera_;
-    //bool useDebugCamera_ = false;              // Debugカメラを使用中かどうかのフラグ
-
 public: // メンバ関数
     // 現在アクティブなカメラ
     Camera* GetActiveCamera();
@@ -85,4 +80,32 @@ public: // メンバ関数
     // ゲーム用カメラ（GameCamera）を返す getter
     GamePlayCamera* GetGameplayCamera() const { return gameplay_.get(); }
     GameClearCamera* GetGameClearCamera() { return gameclear_.get(); }
+
+    CameraSwitchType GetSwitchType() const { return switchType_; }
+    void SetSwitchType(CameraSwitchType type) { switchType_ = type; }
+
+    Camera* GetMainCamera() const {
+        return mainCamera_.get();
+    }
+
+    const CameraTransform& GetMainCameraTransform() const {
+        return maintrans_;
+    }
+
+    Camera* GetSubCamera(const std::string& name) {
+        auto it = subCamerasMap_.find(name);
+        if (it != subCamerasMap_.end()) {
+            return it->second.get();
+        }
+        return nullptr;
+    }
+
+    const std::unordered_map<std::string, std::unique_ptr<Camera>>& GetSubCameraMap() const {
+        return subCamerasMap_;
+    }
+
+    void SetGamecameraTarget(Object3d* target) {
+        if (!gameplay_) return;
+        gameplay_->SetFollowTarget(target);
+    }
 };

@@ -59,16 +59,16 @@ void Player::Initialize() {
 ///=====================================================================
 void Player::Update() {
     CameraManager* camMgr = CameraManager::GetInstance();
-    Camera* activeCam = camMgr->GetActiveCamera();
-    GamePlayCamera* gameCam = camMgr->GetGameplayCamera(); 
+    Camera* activeCam = camMgr->GetMainCamera();
+    GamePlayCamera* gameCam = camMgr->GetGameplayCamera();
 
     // カメラのベジェ位置（レール上の実座標）
     Vector3 camPos = gameCam->GetBezierPos();
 
     // カメラの向き（すでに正規化されている前提）
     Vector3 forward = gameCam->GetForward();
-    Vector3 right   = gameCam->GetRight();
-    Vector3 up      = gameCam->GetUp();
+    Vector3 right = gameCam->GetRight();
+    Vector3 up = gameCam->GetUp();
 
     // ====== カメラ基準のプレイヤーオフセット ======
     // プレイヤーの基準位置（カメラからの相対座標）
@@ -76,12 +76,14 @@ void Player::Update() {
 
     // カメラ座標系に変換
     Vector3 cameraBaseWorld =
-        right   * cameraBaseOffset.x +
-        up      * cameraBaseOffset.y +
+        right * cameraBaseOffset.x +
+        up * cameraBaseOffset.y +
         forward * cameraBaseOffset.z;
-
-    // ===== プレイヤー回転（カメラ方向 + tilt） =====
-    transform_.rotate = activeCam->GetRotate();
+    // メインカメラ中
+    if (CameraManager::GetInstance()->GetTypeview() == ViewCameraType::Main) {
+        // ===== プレイヤー回転（カメラ方向 + tilt） =====
+        transform_.rotate = activeCam->GetRotate();
+    }
 
     // 現在時刻を取得（秒）
     float currentTime = static_cast<float>(std::chrono::duration<double>(std::chrono::high_resolution_clock::now().time_since_epoch()).count());
@@ -90,16 +92,19 @@ void Player::Update() {
     float deltaTime = currentTime - previousTime_;
     previousTime_ = currentTime;
 
+    if (CameraManager::GetInstance()->GetTypeview() == ViewCameraType::Sub) {
+        // プレイヤ―死亡演出
+        StartDeathEffect();
+    }
 
     if (iskeyActive_) {
         float currentSpeed = isBoosting_ ? boostSpeed_ : normalSpeed_;
         //UpdateBoostState();
         MoveInput(currentSpeed); // ブースト中は速く移動 
-     
         // アクティブ中はキー操作を受け付ける
         if (isDeadEffectActive_ && active_ == false) {
             // プレイヤ―死亡演出
-            StartDeathEffect();
+//            StartDeathEffect();
         } else {
             // ターゲットを矢印キーで動かす
             UpdateTargetPosition(targetpos_, 0.4f);   // ターゲットに使う
@@ -107,9 +112,16 @@ void Player::Update() {
             AttachBullet();
         }
     }
-     
-    // 最終位置 = カメラ基準 + 入力による相対移動
-    transform_.translate = camPos + cameraBaseWorld + right * relativePos_.x + up * relativePos_.y;
+
+    Vector3 basePos = camPos + cameraBaseWorld + right * relativePos_.x + up * relativePos_.y;
+
+    // サブカメラ中は死亡オフセット加算
+    if (CameraManager::GetInstance()->GetTypeview() == ViewCameraType::Sub) {
+        transform_.translate = basePos + deathOffset_;
+    } else {
+        transform_.translate = basePos;
+    }
+
 
     // デバッグ中のImGui表示
     DebugImgui();
@@ -385,19 +397,18 @@ OBB Player::GetOBB() const {
     return obb;
 }
 
-void Player::StartDeathEffect() {
+void Player::StartDeathEffect() { 
     static float t = 0.0f;        // 時間経過
-    const float gravity = 0.05f;
-    const float gravitz = 0.01f;
+    const float fallSpeedY = 0.02f;   // 下に落ちる速さ
+    const float fallSpeedZ = 0.2f;   // 手前に流れる速さ
 
+        
     t += 1.0f / 60.0f;            // 60FPS換算
-    fallVelocity.x = 0.0f;
-    fallVelocity.y += gravity;
-    fallVelocity.z += gravitz;
 
-    // --- 徐々に加速する落下 ---
-    transform_.translate.y -= fallVelocity.y;
-    transform_.translate.z += fallVelocity.z;
+    // 加速しない。一定量だけ動かす
+    deathOffset_.y -= fallSpeedY;
+    deathOffset_.z += fallSpeedZ;
+
 
     // --- 回転も時間で増加（イージング的）---
     transform_.rotate.x += 0.004f + 0.002f * sinf(t * 0.5f);

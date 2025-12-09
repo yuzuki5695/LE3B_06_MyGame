@@ -34,8 +34,8 @@ void GamePlayScene::Finalize() {
 ///====================================================
 void GamePlayScene::Initialize() {
     // カメラマネージャの初期化
-    CameraManager::GetInstance()->Initialize(CameraTransform({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }));
-   // CameraManager::GetInstance()->SetCameraMode(CameraMode::GamePlay);
+    CameraManager::GetInstance()->Initialize(CameraTransform({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }));     
+    CameraManager::GetInstance()->SetTypeview(ViewCameraType::Main);
 
     // テクスチャを読み込む
     TextureManager::GetInstance()->LoadTexture("Gameplay/Move.png");
@@ -71,9 +71,10 @@ void GamePlayScene::Initialize() {
     // プレイヤーの作成と初期化
     player_ = std::make_unique<Player>();
     player_->Initialize(); // プレイヤーの初期化
+    CameraManager::GetInstance()->SetGamecameraTarget(player_->GetPlayerObject());
     playerhp_ = player_->IsActive();
     // カメラにプレイヤーを追わせる
-    //CameraManager::GetInstance()->SetTarget(player_->GetPlayerObject());    
+
     // パーティクル
     particles_ = std::make_unique<GamePlayparticle>();
     particles_->Initialize(player_->GetPlayerObject());
@@ -129,13 +130,22 @@ void GamePlayScene::Update() {
     // イベントマネージャの更新
     EventManager::GetInstance()->Update(); 	
 
+    // 死亡演出
     if (end && CameraManager::GetInstance()->GetTypeview() == ViewCameraType::Main) {
-        FadeManager::GetInstance()->StartFadeOut(1.0f, FadeStyle::Normal);
-        //CameraManager::GetInstance()->GetGameCamera()->SwitchView(ViewType::Sub);
+        CameraManager::GetInstance()->SetMode(CameraMode::Default);   
+        CameraManager::GetInstance()->SetTypeview(ViewCameraType::Sub);
+        player_->SetKeyActive(false);
+        player_->SetReticleVisible(false);
         // フェード開始             
         end = false;
     }
-    
+
+    if (CameraManager::GetInstance()->GetTypeview() == ViewCameraType::Sub && CameraManager::GetInstance()->GetMode() == CameraMode::Default) {
+        FadeManager::GetInstance()->StartFadeOut(1.0f, FadeStyle::Normal);
+        CameraManager::GetInstance()->SetMode(CameraMode::Follow);
+    }
+
+    // ゴール演出
     if (player_->GetPosition().z >= goalpos_ && CameraManager::GetInstance()->GetTypeview() == ViewCameraType::Main) {
         FadeManager::GetInstance()->StartFadeOut(1.0f, FadeStyle::Normal);
         player_->SetKeyActive(false);
@@ -145,10 +155,6 @@ void GamePlayScene::Update() {
         end = false;
     }
 
-    //if (CameraManager::GetInstance()->GetGameCamera()->GetMode() == ViewType::Sub) {
-    //    player_->SetDead_(true);
-    //}
-
     // ゲームスタートイベントが終了したらプレイヤ―操作可能に
     if (EventManager::GetInstance()->IsFinished() && CameraManager::GetInstance()->GetTypeview() == ViewCameraType::Main) {
         //   イベント終了 → プレイヤーを操作可能に
@@ -156,13 +162,23 @@ void GamePlayScene::Update() {
         player_->SetReticleVisible(true);
     }
 
+        
+    //// フェードアウトが完了したら次のシーンへ
+    //if (!end && Input::GetInstance()->Triggrkey(DIK_RETURN)) {
+    //    player_->SetInactive();
+    //    //CameraManager::GetInstance()->SetMode(CameraMode::Transition);
+    //    //player_->SetKeyActive(false);
+    //    //player_->SetDead_(true);
+    //    end =true;
+    //}
 
     StageManager::GetInstance()->Update();
 
     /*-------------------------------------------*/
     /*--------------Cameraの更新処理---------------*/
     /*------------------------------------------*/
- //   CameraManager::GetInstance()->GetGameCamera()->SetFollowTarget(player_->GetPlayerObject());
+    // サブカメラはプレイヤーを追わせる
+    CameraManager::GetInstance()->SetGamecameraTarget(player_->GetPlayerObject());
     CameraManager::GetInstance()->Update();
 #pragma region 全てのObject3d個々の更新処理
     playerhp_ = player_->IsActive();
