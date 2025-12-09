@@ -202,8 +202,8 @@ void GameOverScene::UpdateParts() {
         if (!FadeManager::GetInstance()->IsFading() && FadeManager::GetInstance()->IsFadeEnd() || phase_ == 2) {
             // 落下
             part.transform.translate.y -= part.fallSpeed.y;
-            if (part.transform.translate.y < -10.0f) {
-                part.transform.translate.y = -10.0f; // 地面で止める
+            if (part.transform.translate.y < -20.0f) {
+                part.transform.translate.y = -20.0f; // 地面で止める
             }
 
             // 回転

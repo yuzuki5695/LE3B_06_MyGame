@@ -48,7 +48,7 @@ void Player::Initialize() {
 
     // 死亡関連
     deathTimer_ = 0.0f;
-    //// 回転速度（バラバラに回る感じ）
+    // 回転速度（バラバラに回る感じ）
     deathRotateSpeed_ = { 0.05f, 0.07f, 0.02f };
     // 軽くスケールを上げる演出など
     transform_.scale = { 0.5f, 0.5f, 0.5f };
@@ -82,9 +82,6 @@ void Player::Update() {
 
     // ===== プレイヤー回転（カメラ方向 + tilt） =====
     transform_.rotate = activeCam->GetRotate();
-
-
-
 
     // 現在時刻を取得（秒）
     float currentTime = static_cast<float>(std::chrono::duration<double>(std::chrono::high_resolution_clock::now().time_since_epoch()).count());
@@ -312,7 +309,7 @@ void Player::AttachBullet() {
         Vector3 shootDir = Normalize(targetPos - bulletStartPos);
 
         std::unique_ptr<PlayerBullet> bullet = std::make_unique<PlayerBullet>();
-        bullet->Initialize(bulletStartPos, bulletStartPos + shootDir * 10.0f,cameraForward, 3.0f);
+        bullet->Initialize(bulletStartPos, bulletStartPos + shootDir * 10.0f,cameraForward, 5.0f);
 
 
         BulletManager::GetInstance()->AddPlayerBullet(std::move(bullet));
