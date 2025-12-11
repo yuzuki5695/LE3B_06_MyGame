@@ -145,8 +145,12 @@ void TitleScene::Update() {
 #pragma endregion 全てのSprite個々の更新処理
 #pragma region  ImGuiの更新処理開始
 #ifdef USE_IMGUI
+
     // ImGuiでTileの位置・回転・スケールを変更
-    ImGui::Begin("Tile Controller");
+    //ImGui::Begin("Tile Controller");
+    
+    ImGui::Begin("タイトルコントローラー");
+
 
     ImGui::Text("Position");
     ImGui::DragFloat3("Translation", &playertransform_.translate.x, 0.1f);
@@ -160,9 +164,9 @@ void TitleScene::Update() {
 
     ImGui::End();
 
-	FadeManager::GetInstance()->DrawImGui(); // フェードマネージャのImGui制御
+	//FadeManager::GetInstance()->DrawImGui(); // フェードマネージャのImGui制御
         
-    CameraManager::GetInstance()->DrawImGui();  // カメラマネージャのImGui制御
+   // CameraManager::GetInstance()->DrawImGui();  // カメラマネージャのImGui制御
 
 #endif // USE_IMGUI
 #pragma endregion ImGuiの更新処理終了
