@@ -137,6 +137,8 @@ private:// メンバ変数
 
 		
 		Vector3 fallVelocity;
+		
+		Vector3 deathOffset_;
 
 public:// メンバ変数
 	// getter

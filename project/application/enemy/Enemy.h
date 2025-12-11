@@ -68,10 +68,12 @@ public: // メンバ関数
     /// 敵が死んだ判定へ移行
     /// </summary>
 	void SetInactive() {
-		if (!isDying_) {
-			isDying_ = true; 
-			deathTimer_ = 0.0f;
-		}
+        if (!isDying_) {
+            isDying_ = true;
+            deathTimer_ = 0.0f;
+            iscollar_ = true;   // 点滅・アニメーション中も更新可能
+            isActive_ = true; // 死亡演出中も更新・描画可能にする
+        }
 	}
     /// <summary>
     /// 現在のアクティブ状態を取得
@@ -126,9 +128,20 @@ private: // メンバ変数
     //====================================================
     bool isDying_ = false;                   // 死亡エフェクト中かどうか
     float deathTimer_ = 0.0f;                // 死亡経過時間
-    const float deathDuration_ = 1.0f;       // 死亡アニメーション時間（秒）
+    const float deathDuration_ = 0.4f;       // 死亡アニメーション時間（秒）
     bool isActive_ = false;                  // 有効かどうか
     bool isDead_ = false;                    // 完全に削除済みかどうか
+
+
+        
+    bool iscollar_ = false;                  // 有効かどうか
+
 public:   // アクセッサ（Getter / Setter）
 	float GetSpawnBaseZ() const { return spawnBaseZ_; }
+     
+	// Transformのpositionを返すgetter
+	Vector3 GetPosition() const {
+		return transform_.translate;
+	}
+
 };

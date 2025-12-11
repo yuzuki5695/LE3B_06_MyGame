@@ -68,5 +68,18 @@ public:
 	// getter
 
 	Material* GetMaterialData() { return materialData; }
+	
+	void SetMaterialData(Vector4 color) { materialData->color = color; }
+void SetMaterial(Material* material) {
+    if (materialData) delete materialData; // 既存の解放
+    materialData = material;
+}
 
+	// materialDataをコピーして独立させる
+	std::unique_ptr<Material> CloneMaterial() const {
+		if (materialData) {
+			return std::make_unique<Material>(*materialData);
+		}
+		return nullptr;
+	}
 };

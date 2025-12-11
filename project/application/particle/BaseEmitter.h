@@ -11,10 +11,7 @@
 class BaseEmitter {
 public:
     //ほとんどのメンバ変数をコンストラクタの引数として受け取り、メンバ変数に代入する
-    BaseEmitter(const std::string& name, const uint32_t count,
-        const Transform& transform, const Vector4& color,
-        float lifetime, float currentTime,
-        const Velocity& Velocity, const RandomParameter& randomParameter)
+    BaseEmitter(const std::string& name, const uint32_t count, const Transform& transform, const Vector4& color, float lifetime, float currentTime, const Velocity& Velocity, const RandomParameter& randomParameter)
         : name_(name), count_(count), transform_(transform), color_(color),
         frequency_(lifetime), frequencyTime_(currentTime), velocity_(Velocity),
         random_(randomParameter) {
@@ -35,7 +32,7 @@ public:
         // 1回の発生数は残りを超えないように
         uint32_t emitCount = std::min(emitPerTick_, remaining);
 
-        ParticleManager::GetInstance()->Emit(name_, transform_, color_, emitCount, velocity_, frequency_, random_);
+        ParticleManager::GetInstance()->Emit(name_, transform_, color_, emitCount, velocity_, frequency_, random_);  
     }
 
     void SetTarget(Object3d* obj) { target_ = obj; } // FollowEmitter用 getter/setter
@@ -93,8 +90,15 @@ protected:
     RandomParameter random_;
 
     Object3d* target_ = nullptr; // ← FollowEmitter用
+   
+    bool useGravity_ = false;
+
 public:
     uint32_t maxParticles_ = 100;   // 最大生成数
     uint32_t emitPerTick_ = 1;      // 1回のEmitで出す数
     uint32_t currentParticles_ = 0; // 現在生成済みパーティクル数
+
+  
+    void SetUseGravity(bool enable) { useGravity_ = enable; }
+
 };

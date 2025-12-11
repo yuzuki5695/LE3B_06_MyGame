@@ -72,6 +72,8 @@ private: // メンバ変数
     int time_;
    	// 最大生存時間
     int Maxtime_;
+
+
 public: // アクセッサ（Getter / Setter）
 	/// Transformを取得
     Transform GetTransform() const { return transform_; }

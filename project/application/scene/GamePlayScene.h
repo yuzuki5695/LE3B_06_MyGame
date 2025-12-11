@@ -40,10 +40,6 @@ public: // メンバ関数
     /// </summary>
     void EnemySpawn();
     /// <summary>
-    /// OBB同士の当たり判定
-    /// </summary>
-    bool IsOBBIntersect(const OBB& a, const OBB& b);
-    /// <summary>
     /// プレイヤーの弾と敵との衝突判定処理
     /// </summary>
     void CheckBulletEnemyCollisionsOBB();
@@ -54,7 +50,7 @@ public: // メンバ関数
     /// <summary>
     /// V字フォーメーションでの敵出現処理
     /// </summary>
-    void SpawnVFormation(const EnemySpawnTrigger& trigger);
+   void SpawnVFormation(const EnemySpawnTrigger& trigger);
     /// <summary>
     /// 逆ステップフォーメーションでの敵出現処理
     /// </summary>
