@@ -128,7 +128,7 @@ private: // メンバ変数
     //====================================================
     bool isDying_ = false;                   // 死亡エフェクト中かどうか
     float deathTimer_ = 0.0f;                // 死亡経過時間
-    const float deathDuration_ = 0.3f;       // 死亡アニメーション時間（秒）
+    const float deathDuration_ = 0.4f;       // 死亡アニメーション時間（秒）
     bool isActive_ = false;                  // 有効かどうか
     bool isDead_ = false;                    // 完全に削除済みかどうか
 

@@ -95,6 +95,25 @@ void Enemy::Update() {
         Vector3 scale = { 1.0f - t,1.0f - t ,1.0f - t };
 
         object->SetScale(scale);
+
+
+        // ランダム回転（毎フレーム少しずつ変化）
+        std::uniform_real_distribution<float> rotDist(-5.0f, 5.0f); // 1フレームあたりの回転量（度）
+        Vector3 currentRot = object->GetRotate(); // Object3d側にGetRotateが必要
+        currentRot.x += rotDist(randomEngine);
+        currentRot.y += rotDist(randomEngine);
+        currentRot.z += rotDist(randomEngine);
+        object->SetRotate(currentRot);
+
+        // ランダム移動（吹っ飛ぶ演出）
+        std::uniform_real_distribution<float> moveDist(-0.2f, 0.2f); // x,y方向
+        std::uniform_real_distribution<float> moveZDist(0.1f, 0.3f);  // z方向は必ず前方へ
+        Vector3 currentPos = object->GetTranslate();
+        currentPos.x += moveDist(randomEngine);
+        currentPos.y += moveDist(randomEngine);
+        currentPos.z += moveZDist(randomEngine); // zは正方向
+        object->SetTranslate(currentPos);
+
         if (t >= 1.0f) {
             isDead_ = true; // スケールが0になったので削除許可
         }
@@ -154,22 +173,47 @@ void Enemy::AttachBullet(const Vector3& playerPos) {
 
     // プレイヤーを狙う
     Vector3 targetPos = playerPos;
-    Vector3 shootDir = Normalize(targetPos - bulletStartPos);
+    Vector3 dir = targetPos - bulletStartPos; // 弾からプレイヤー方向へのベクトル
 
+
+
+   // カメラ情報
+    GamePlayCamera* gameCam = CameraManager::GetInstance()->GetGameplayCamera();
+    Vector3 shootDir;
+    if (gameCam) {
+        Vector3 camForward = gameCam->GetForward();
+        Vector3 camRight   = gameCam->GetRight();
+        Vector3 camUp      = gameCam->GetUp();
+
+        // プレイヤー方向ベクトルをカメラ基準に変換
+        float localX = Dot(dir, camRight);
+        float localY = Dot(dir, camUp);
+        float localZ = Dot(dir, camForward);
+
+        Vector3 localDir = { localX, localY, localZ };
+
+        // 必要に応じてY軸だけ補正するなら localY を調整
+        // localY = 0.0f; // 水平射出の場合
+
+        // 再びワールド座標系に変換
+        shootDir = Normalize(camRight * localDir.x + camUp * localDir.y + camForward * localDir.z);
+    } else {
+        shootDir = Normalize(dir);
+    }
+
+     // 弾生成
     std::unique_ptr<EnemyBullet> bullet = std::make_unique<EnemyBullet>();
     bullet->Initialize(
         bulletStartPos,
         bulletStartPos + shootDir * 10.0f,
-        shootDir, // 敵弾は shootDir を渡して回転補正
+        shootDir,
         0.8f
     );
 
     BulletManager::GetInstance()->AddEnemyBullet(std::move(bullet));
-
     bulletInterval_ = bulletIntervalDist_(randomEngine);
     canShoot_ = false;
 }
-
 ///====================================================
 /// OBB（当たり判定用）を取得
 ///====================================================
