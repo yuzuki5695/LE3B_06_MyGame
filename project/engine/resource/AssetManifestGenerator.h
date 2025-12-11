@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 #include <vector>
+#include <unordered_map>
 
 class AssetManifestGenerator {
 public:
@@ -15,6 +16,11 @@ public:
     // - manifest が存在しない場合は作る
     // - または overwriteIfOlder==true の場合、manifest が最終更新日時より古ければ再生成
     bool GenerateIfNeeded(bool overwriteIfOlder = true);
+
+    // マージ生成（差分を検出して必要な場合のみ上書き）
+    //  - forceMerge == true : 出力ファイルが存在していてもマージ処理を行う
+    //  - forceMerge == false: 既存があれば何もしない（従来の振る舞い）
+    bool GenerateMerged(bool forceMerge = false);
 
     // 除外ディレクトリ（例: ".git", "Temp"）を追加
     void AddExcludeDirectory(const std::string& dirName);
@@ -35,7 +41,9 @@ private:
     // internal helpers
     bool IsAssetExtension(const std::string& ext) const;
     std::string MakeIdFromRelativePath(const std::string& rel) const;
-
-    // New: determine category for an asset (textures/models/audio/others)
     std::string DetermineCategory(const std::string& relPath, const std::string& ext) const;
+
+    // merge helpers
+    bool LoadSimpleManifest(const std::string& path, std::unordered_map<std::string, std::string>& outMap) const;
+    std::string BuildJsonStringFromCategorized(const std::unordered_map<std::string, std::unordered_map<std::string, std::string>>& categorized) const;
 };

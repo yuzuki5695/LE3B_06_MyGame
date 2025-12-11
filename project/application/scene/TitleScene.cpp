@@ -27,9 +27,8 @@ void TitleScene::Initialize() {
 #pragma region 最初のシーンの初期化  
     AssetManifestGenerator gen("Resources", "Resources/manifest.json");
     gen.AddExcludeDirectory("EditorTemp");
-
-    // 既存 manifest があっても「差分マージ」して必要な場合だけ上書きしたい場合
-    gen.Generate(true);
+    // 差分マージを強制的に試みる（存在していても差分が無ければ書き換えない）
+    gen.GenerateMerged(true);
 
 
 
