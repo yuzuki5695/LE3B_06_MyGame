@@ -438,6 +438,9 @@
     <ClCompile Include="application\particle\DefaultParticleEmitter.cpp">
       <Filter>ソース ファイル\application\particle</Filter>
     </ClCompile>
+    <ClCompile Include="engine\resource\AssetManifestGenerator.cpp">
+      <Filter>ソース ファイル\engine\resource</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="engine\2d\Sprite.h">
@@ -748,6 +751,9 @@
     </ClInclude>
     <ClInclude Include="application\particle\DefaultParticleEmitter.h">
       <Filter>ヘッダー ファイル\application\particle</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\resource\AssetManifestGenerator.h">
+      <Filter>ヘッダー ファイル\engine\resource</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

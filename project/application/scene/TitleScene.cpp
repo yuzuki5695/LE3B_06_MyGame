@@ -12,6 +12,7 @@
 #include <ParticleCommon.h>
 #include<SkyboxCommon.h>
 #include<FadeManager.h>
+#include<AssetManifestGenerator.h>
 
 /// <summary>
 /// 終了処理
@@ -24,12 +25,20 @@ void TitleScene::Finalize() {
 /// </summary>
 void TitleScene::Initialize() {
 #pragma region 最初のシーンの初期化  
+    AssetManifestGenerator gen("Resources", "Resources/manifest.json");
+    gen.AddExcludeDirectory("EditorTemp");
+
+    // 既存 manifest があっても「差分マージ」して必要な場合だけ上書きしたい場合
+    gen.Generate(true);
+
+
+
     // カメラマネージャの初期化
-    CameraManager::GetInstance()->Initialize(CameraTransform({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f })); 
+    CameraManager::GetInstance()->Initialize(CameraTransform({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }));
     //  テクスチャの読み込み
     TextureManager::GetInstance()->LoadTexture("Title/UI_02.png");
     TextureManager::GetInstance()->LoadTexture("CubemapBox.dds");
-     // モデルの読み込み
+    // モデルの読み込み
     ModelManager::GetInstance()->LoadModel("Title/Title.obj");
     ModelManager::GetInstance()->LoadModel("Tile.obj");
     ModelManager::GetInstance()->LoadModel("Title/Model/Player/Player.obj");
@@ -56,12 +65,13 @@ void TitleScene::Initialize() {
     // タイトルロゴスプライト生成
     ui3_ = Sprite::Create("Title/Title.png", Vector2{ 300.0f, 100.0f }, 0.0f, Vector2{ 600.0f,300.0f });
     ui3_->SetTextureSize(Vector2{ 600.0f,300.0f });
- 
+
     particle_ = std::make_unique<Titleparticle>();
     particle_->Initialize(player_.get());
 
 #pragma endregion 最初のシーンの初期化
 }
+
 /// <summary>
 /// 毎フレーム更新処理
 /// </summary>
