@@ -64,7 +64,7 @@ void ImGuiManager::Initialize([[maybe_unused]] WinApp* winApp, [[maybe_unused]] 
 	/// フォントの読み込み処理
 	///=========================================
 
-	// 日本語を扱えれるようWindowsのFontsフォルダからフォント読み込み
+	// 日本語を扱えれるようFontフォルダからフォントを読み込むためのファイルパス
 	std::string fontPath = "Resources/Font/meiryo.ttc";  // 使用するフォント(今回使用しているのはWindows専用のメイリオ(Meiryo)フォント。Vista(2007)以降Windowsに標準搭載)
 
 	//	フォント読み込み時のオプション

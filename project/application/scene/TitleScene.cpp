@@ -147,16 +147,14 @@ void TitleScene::Update() {
 #ifdef USE_IMGUI
 
     // ImGuiでTileの位置・回転・スケールを変更
-    //ImGui::Begin("Tile Controller");
-    
     ImGui::Begin("タイトルコントローラー");
 
 
-    ImGui::Text("Position");
-    ImGui::DragFloat3("Translation", &playertransform_.translate.x, 0.1f);
+    ImGui::Text("座標");
+    ImGui::DragFloat3("座標", &playertransform_.translate.x, 0.1f);
 
-    ImGui::Text("Rotation");
-    ImGui::DragFloat3("Rotation", &playertransform_.rotate.x, 0.1f);
+    ImGui::Text("回転");
+    ImGui::DragFloat3("回転", &playertransform_.rotate.x, 0.1f);
 
     
     player_->SetTranslate(playertransform_.translate);
