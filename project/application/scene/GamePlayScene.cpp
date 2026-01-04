@@ -186,11 +186,12 @@ void GamePlayScene::Update() {
     //float progress = currentDistance / kCourseLength;
     //progress = std::clamp(progress, 0.0f, 1.0f);
     //float playerX = minX + (maxX - minX) * progress;
-    Vector2 playerPos = player_ui_->GetPosition();
-    playerPos.x += 0.1f;
 
-    player_ui_->SetPosition(playerPos);
-
+    if (EventManager::GetInstance()->IsFinished()) {
+        Vector2 playerPos = player_ui_->GetPosition();
+        playerPos.x += 0.1f;
+        player_ui_->SetPosition(playerPos);
+    }
 
     //    
         //// フェードアウトが完了したら次のシーンへ
