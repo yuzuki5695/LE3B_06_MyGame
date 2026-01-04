@@ -48,6 +48,9 @@ void GamePlayScene::Initialize() {
     TextureManager::GetInstance()->LoadTexture("Gameplay/Texture/UI_01.png");
     TextureManager::GetInstance()->LoadTexture("Gameplay/Texture/UI_02.png");
     TextureManager::GetInstance()->LoadTexture("Gameplay/Texture/UI_03.png");
+    
+    TextureManager::GetInstance()->LoadTexture("Gameplay/Gage.png");
+    TextureManager::GetInstance()->LoadTexture("Gameplay/Player_ui.png");
 
     MAXui_ = 1;
     uis_.push_back(Sprite::Create("Gameplay/Texture/UI_01.png", Vector2{ 8.0f, 430.0f }, 0.0f, Vector2{ 100.0f,80.0f })); 
@@ -56,6 +59,13 @@ void GamePlayScene::Initialize() {
     uis_[0]->SetTextureSize(Vector2{100.0f,80.0f});
     uis_[1]->SetTextureSize(Vector2{100.0f,80.0f});
     uis_[2]->SetTextureSize(Vector2{100.0f,80.0f});
+
+
+    gage_ = Sprite::Create("Gameplay/Gage.png", Vector2{ 380.0f, 10.0f }, 0.0f, Vector2{ 500.0f,30.0f });
+    gage_->SetTextureSize(Vector2{ 500.0f,30.0f });     	
+  
+    player_ui_ = Sprite::Create("Gameplay/Player_ui.png", Vector2{ 385.0f, 12.3f }, 0.0f, Vector2{ 25.0f,25.0f });
+    player_ui_->SetTextureSize(Vector2{ 25.0f,25.0f });     	
 
     // タイトルに戻るUIを生成
     ui1_ = Sprite::Create("titlereturn02.png", Vector2{ 1100.0f, 5.0f }, 0.0f, Vector2{ 150.0f,100.0f });
@@ -115,6 +125,11 @@ void GamePlayScene::Initialize() {
     StageManager::GetInstance()->Initialize();
 
     end = false;
+ gagePos = gage_->GetPosition();
+ gageSize = gage_->GetTextureSize();
+
+ playerSize = player_ui_->GetTextureSize();
+
 }
 ///====================================================
 /// 毎フレーム更新処理
@@ -128,11 +143,11 @@ void GamePlayScene::Update() {
     // フェードマネージャの更新   
     FadeManager::GetInstance()->Update();
     // イベントマネージャの更新
-    EventManager::GetInstance()->Update(); 	
+    EventManager::GetInstance()->Update();
 
     // 死亡演出
     if (end && CameraManager::GetInstance()->GetTypeview() == ViewCameraType::Main) {
-        CameraManager::GetInstance()->SetMode(CameraMode::Default);   
+        CameraManager::GetInstance()->SetMode(CameraMode::Default);
         CameraManager::GetInstance()->SetTypeview(ViewCameraType::Sub);
         player_->SetKeyActive(false);
         player_->SetReticleVisible(false);
@@ -162,15 +177,30 @@ void GamePlayScene::Update() {
         player_->SetReticleVisible(true);
     }
 
+    //float gageLeft = gagePos.x;
+    //float gageRight = gagePos.x + gageSize.x;
+
+    //// アイコンがはみ出さない範囲
+    //float minX = gageLeft + playerSize.x * 0.5f;
+    //float maxX = gageRight - playerSize.x * 0.5f;
+    //float progress = currentDistance / kCourseLength;
+    //progress = std::clamp(progress, 0.0f, 1.0f);
+    //float playerX = minX + (maxX - minX) * progress;
+    Vector2 playerPos = player_ui_->GetPosition();
+    playerPos.x += 0.1f;
+
+    player_ui_->SetPosition(playerPos);
+
+
     //    
-    //// フェードアウトが完了したら次のシーンへ
-    //if (!end && Input::GetInstance()->Triggrkey(DIK_RETURN)) {
-    //    player_->SetInactive();
-    //    //CameraManager::GetInstance()->SetMode(CameraMode::Transition);
-    //    //player_->SetKeyActive(false);
-    //    //player_->SetDead_(true);
-    //    end =true;
-    //}
+        //// フェードアウトが完了したら次のシーンへ
+        //if (!end && Input::GetInstance()->Triggrkey(DIK_RETURN)) {
+        //    player_->SetInactive();
+        //    //CameraManager::GetInstance()->SetMode(CameraMode::Transition);
+        //    //player_->SetKeyActive(false);
+        //    //player_->SetDead_(true);
+        //    end =true;
+        //}
 
     StageManager::GetInstance()->Update();
 
@@ -188,7 +218,7 @@ void GamePlayScene::Update() {
         EnemySpawn();
         // 各衝突判定
         CheckBulletEnemyCollisionsOBB();
-        CheckEnemyBulletPlayerCollisionsOBB(); 
+        CheckEnemyBulletPlayerCollisionsOBB();
         CheckEnemyPlayerCollisionsOBB();
         // 更新処理
         player_->Update();
@@ -236,7 +266,7 @@ void GamePlayScene::Update() {
             }),
         enemies_.end());
     // スカイボックス更新
-    Box_->Update();     
+    Box_->Update();
     // パーティクル更新
     ParticleManager::GetInstance()->Update();
     particles_->Update();
@@ -250,20 +280,23 @@ void GamePlayScene::Update() {
         ui->Update();
     }
 
+    gage_->Update();
+    player_ui_->Update();
+
 #pragma endregion 全てのSprite個々の更新処理
 
 #pragma region  ImGuiの更新処理開始
 #ifdef USE_IMGUI 
-    ImGui::Begin("=== GamePlayScene Debug ===");
-    // 「end」フラグを切り返すチェックボックス
-    ImGui::Checkbox("End Flag", &end);
-    ImGui::End();
+    // ImGui::Begin("=== GamePlayScene Debug ===");
+     // 「end」フラグを切り返すチェックボックス
+    // ImGui::Checkbox("End Flag", &end);
+    // ImGui::End();
 
-  //  Object3dCommon::GetInstance()->DrawImGui(); // object3dのlightのImGui制御
+   //  Object3dCommon::GetInstance()->DrawImGui(); // object3dのlightのImGui制御
     CameraManager::GetInstance()->DrawImGui();  // カメラマネージャのImGui制御
-//	FadeManager::GetInstance()->DrawImGui();    // フェードマネージャのImGui制御 
-///	EventManager::GetInstance()->DrawImGui();   // イベントマネージャのImGui制御
-	//stageManager_->DebugImGui(); 			  // ステージマネージャのImGui制御
+    //	FadeManager::GetInstance()->DrawImGui();    // フェードマネージャのImGui制御 
+    ///	EventManager::GetInstance()->DrawImGui();   // イベントマネージャのImGui制御
+        //stageManager_->DebugImGui(); 			  // ステージマネージャのImGui制御
 #endif // USE_IMGUI
 #pragma endregion ImGuiの更新処理終了 
 }
@@ -320,6 +353,9 @@ void GamePlayScene::Draw() {
     for (std::unique_ptr<Sprite>& ui : uis_) {
         ui->Draw();
     }
+    
+    gage_->Draw();
+    player_ui_->Draw();
 
 	// イベントマネージャの描画処理
     EventManager::GetInstance()->Draw2DSprite();
