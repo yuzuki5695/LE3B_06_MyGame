@@ -15,7 +15,8 @@ class Player;
 enum class MoveType {
     None,       // 移動しない
     Vertical,   // 縦方向に移動
-    Horizontal  // 横方向に移動
+    Horizontal,  // 横方向に移動
+    Diagonal
 };
 
 
@@ -133,6 +134,7 @@ private: // メンバ変数
 
     // 状態遷移
     State state_ = State::Dead;
+
 
     // Spawn演出用
     float spawnTimer_ = 0.0f;

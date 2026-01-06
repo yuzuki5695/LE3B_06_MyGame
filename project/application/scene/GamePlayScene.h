@@ -50,6 +50,7 @@ public: // メンバ関数
 
     void StartStageProgressUI();
     void UpdateStageProgressUI();
+    void UpdateRandomMove();
 
 private: // メンバ変数
     // オブジェクトデータ
@@ -89,4 +90,6 @@ private: // メンバ変数
     float uiStartRailLength_ = 0.0f;
     bool uiProgressStarted_ = false;
     bool uiProgressFinished_ = false;
+
+
 };

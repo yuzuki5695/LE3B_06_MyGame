@@ -102,7 +102,7 @@ void GamePlayScene::Initialize() {
     enemySpawner_ = std::make_unique<EnemySpawner>(); enemySpawner_->Initialize(player_.get(), CameraManager::GetInstance(), &enemies_);
 
     // クリアゲート(仮)
-    wall = Object3d::Create("Gameplay/Model/Goal/Goal.obj", Transform{ { 2.0f, 2.0f, 2.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 2.0f, 500.0f } });
+    wall = Object3d::Create("Gameplay/Model/Goal/Goal.obj", Transform{ { 2.0f, 2.0f, 2.0f }, { 0.0f, 0.0f, 0.0f }, { 8.0f, 39.0f, 800.0f } });
     // スカイボックスの作成
     TextureManager::GetInstance()->LoadTexture("CubemapBox.dds");
     Box_ = Skybox::Create("CubemapBox.dds", Transform{ { 1000.0f, 1000.0f, 1000.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 100.0f } });
@@ -182,8 +182,10 @@ void GamePlayScene::Update() {
     playerhp_ = player_->IsActive();
     // 終了しない限り更新処理
     if (!end) {
-        // 敵出現動作
-        enemySpawner_->Update();
+        if (EventManager::GetInstance()->IsFinished() ){
+            // 敵出現動作
+            enemySpawner_->Update();
+        }
         // 各衝突判定
         CheckBulletEnemyCollisionsOBB();
         CheckEnemyBulletPlayerCollisionsOBB(); 
@@ -210,7 +212,7 @@ void GamePlayScene::Update() {
         if (!enemy->IsActive()) continue;
         float playerZ = player_->GetPosition().z;
         float spawnZ = enemy->GetSpawnBaseZ();  // 出現基準Z
-        if (playerZ > spawnZ + 10) { // 出現位置より進んでたら削除
+        if (playerZ > spawnZ + 30) { // 出現位置より進んでたら削除
             enemy->Kill();
         }
     }
@@ -299,9 +301,8 @@ void GamePlayScene::Draw() {
                 enemy->Draw();
             }
         }
-        wall->Draw();
     }
-
+    wall->Draw();
 	// イベントマネージャの描画処理
     EventManager::GetInstance()->Drawo3Dbject();
 

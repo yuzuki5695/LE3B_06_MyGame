@@ -16,7 +16,7 @@ void GamePlayCamera::Initialize() {
     // カメラの初期設定
     //mode_ = ViewType::Main;
 
-    speed = 0.2f;        // 1フレームあたり移動距離
+    speed = 0.3f;        // 1フレームあたり移動距離
     movefige = true;
     currentSegment = 0;
 

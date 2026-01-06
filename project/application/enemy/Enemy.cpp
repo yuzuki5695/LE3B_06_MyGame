@@ -40,12 +40,8 @@ void Enemy::Initialize() {
     std::uniform_int_distribution<int> typeDist(0, 2);
     int type = typeDist(randomEngine);
     moveType_ = static_cast<MoveType>(type);
-    moveDirDist_ = std::uniform_real_distribution<float>(5.9f, 6.0f);
-    moveDirection_ = Normalize(Vector3{
-        moveDirDist_(randomEngine),
-        moveDirDist_(randomEngine),
-        moveDirDist_(randomEngine)
-        });
+    moveDirDist_ = std::uniform_real_distribution<float>(-1.5f, 1.5f);
+    moveDirection_ = Vector3{ moveDirDist_(randomEngine),moveDirDist_(randomEngine),moveDirDist_(randomEngine) };
 }
 
 ///====================================================
@@ -65,6 +61,7 @@ void Enemy::Update() {
     case State::Dead:
         return;
     }
+    
 
     // 位置をobjectから取得して同期する
     transform_.translate = object->GetTranslate(); // ← 追加
@@ -211,6 +208,11 @@ void Enemy::UpdateSpawn() {
         s
     };
     object->SetScale(transform_.scale);
+
+    if (t >= 0.6) {
+
+    }
+
     if (t >= 1.0f) {
         transform_.scale = { 1,1,1 }; // 念のため収束
         state_ = State::Active;
@@ -231,19 +233,26 @@ void Enemy::UpdateActive() {
     if (player_) {
         AttachBullet(player_->GetPosition());
     }
-
     switch (moveType_) {
     case MoveType::Vertical:
         transform_.translate.y += moveDirection_.y * moveSpeed_;
+        object->SetTranslate(transform_.translate);
         break;
     case MoveType::Horizontal:
         transform_.translate.x += moveDirection_.x * moveSpeed_;
+        object->SetTranslate(transform_.translate);
+        break;
+    case MoveType::Diagonal: {
+        moveDirection_ = Normalize(moveDirection_); // 斜めの場合は正規化
+        transform_.translate.x += moveDirection_.x * moveSpeed_;
+        transform_.translate.y += moveDirection_.y * moveSpeed_;
+        object->SetTranslate(transform_.translate);
         break;
     case MoveType::None:
         break;
     }
+    }
 }
-
 void Enemy::UpdateDying() {
     // 死亡判定中（スケール縮小アニメーション）
     if (isDying_) {
