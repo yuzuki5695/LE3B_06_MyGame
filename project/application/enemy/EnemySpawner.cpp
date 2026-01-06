@@ -8,11 +8,32 @@ void EnemySpawner::Initialize(Player* player, CameraManager* cameraManager, std:
     cameraManager_ = cameraManager;
     enemies_ = enemies;
 
-    spawnTriggers_ = {
-        {Vector3{0.0f,0.0f,150.0f}, 5, false, MoveType::Horizontal},
-        {Vector3{0.0f,0.0f,250.0f}, 5, false, MoveType::Vertical},
-        {Vector3{0.0f,0.0f,350.0f}, 5, false, MoveType::None},
-    };
+    //spawnTriggers_ = {
+    //    {Vector3{0.0f,0.0f,150.0f}, 5, false, MoveType::Horizontal},
+    //    {Vector3{0.0f,0.0f,250.0f}, 5, false, MoveType::Vertical},
+    //    {Vector3{0.0f,0.0f,350.0f}, 5, false, MoveType::None},
+    //};
+       
+    // ★ Loader を生成
+    levelLoader_ = std::make_unique<EnemyLoader>();
+
+    // ★ レベルデータ読み込み
+    levelData = levelLoader_->LoadFile("Enemy");
+
+
+    for (const auto& e : levelData->enemies) {
+        EnemySpawnTrigger trigger;
+        trigger.Position = e.translation;
+        trigger.spawnCount = 1;
+        trigger.hasSpawned = false;
+
+        trigger.moveType =
+            (e.enemyType == 1) ? MoveType::Horizontal :
+            (e.enemyType == 2) ? MoveType::Vertical :
+            MoveType::None;
+
+        spawnTriggers_.push_back(trigger);
+    }
 }
 
 void EnemySpawner::Update() {
@@ -47,78 +68,7 @@ void EnemySpawner::EnemySpawn() {
         }
     }
 }
-///====================================================
-/// 敵出現パターン：ジグザグフォーメーション
-///====================================================
-void EnemySpawner::SpawnZigZagFormation(const EnemySpawnTrigger& trigger) {
-    //Vector3 playerPos = player_->GetPosition();
-    //GamePlayCamera* gameCam = cameraManager_->GetGameplayCamera();
-    //if (!gameCam) return;
 
-    //Vector3 forward = Normalize(gameCam->GetForward());
-    //Vector3 right = Normalize(Cross({ 0,1,0 }, forward));
-    //Vector3 up = Normalize(Cross(forward, right));
-
-    //int activated = 0;
-
-    //const float forwardDist = 50.0f;
-    //const float baseY = 5.0f;
-
-    //const float xOffsets[5] = { -1.5f, 1.5f, 0.0f, -1.5f, 1.5f };
-    //const float yOffsets[5] = { 2.0f, 2.0f, 0.0f, -2.0f, -2.0f };
-
-    //for (auto& enemy : *enemies_) {
-    //    if (!enemy->IsActive() && activated < trigger.spawnCount) {
-
-    //        Vector3 spawnPos =
-    //            playerPos +
-    //            forward * forwardDist +
-    //            right * xOffsets[activated] +
-    //            up * (baseY + yOffsets[activated]);
-    //          enemy->Spawn(spawnPos, trigger.moveType);
-    //        enemy->SetActive(true);
-
-    //        ++activated;
-    //    }
-    //}
-}
-
-///====================================================
-/// 敵出現パターン：逆ステップフォーメーション（姿勢対応）
-///====================================================
-void EnemySpawner::SpawnReverseStepFormation(const EnemySpawnTrigger& trigger) {
-  //  // プレイヤー・カメラ情報を取得
-  //  Vector3 playerPos = player_->GetPosition();
-  //  GamePlayCamera* gameCam = CameraManager::GetInstance()->GetGameplayCamera(); 
-  //  if (!gameCam) return;
-
-  //  Vector3 forward = Normalize(gameCam->GetForward());
-  //  Vector3 right   = Normalize(Cross({ 0,1,0 }, forward));
-  //  Vector3 up      = Normalize(Cross(forward, right));
-
-  //  // 敵配置設定
-  //  int activated = 0;
-  //  const float baseY = 5.0f;
-  //  const float forwardBase = 80.0f;
-  //  const float stepX = 1.5f;
-  //  const float stepY = -1.2f;
-  //  const float stepZ = 5.0f;
-
-  //  for (auto& enemy : *enemies_) {
-  //      if (!enemy->IsActive()) {
-  //          Vector3 spawnPos =
-  //              playerPos +
-  //              forward * (forwardBase - stepZ * activated) +
-  //              right   * -(stepX * activated) +
-  //              up      * (baseY + stepY * activated);
-  //enemy->Spawn(spawnPos, trigger.moveType);
-  //          enemy->SetActive(true);
-
-  //          ++activated;
-  //          if (activated >= trigger.spawnCount) break;
-  //      }
-  //  }
-}
 ///====================================================
 /// 敵出現パターン：V字フォーメーション（姿勢対応）
 ///====================================================
@@ -172,4 +122,20 @@ void EnemySpawner::SpawnVFormation(const EnemySpawnTrigger& trigger) {
             if (activated >= trigger.spawnCount) break;
         }
     }
+}
+
+
+
+///====================================================
+/// 敵出現パターン：ジグザグフォーメーション
+///====================================================
+void EnemySpawner::SpawnZigZagFormation(const EnemySpawnTrigger& trigger) {
+
+}
+
+///====================================================
+/// 敵出現パターン：逆ステップフォーメーション（姿勢対応）
+///====================================================
+void EnemySpawner::SpawnReverseStepFormation(const EnemySpawnTrigger& trigger) {
+
 }

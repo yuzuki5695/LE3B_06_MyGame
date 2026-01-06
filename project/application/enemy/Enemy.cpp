@@ -34,7 +34,7 @@ void Enemy::Initialize() {
     transform_ = { { 1.0f, 1.0f, 1.0f }, { 0.0f, 0.0f, 0.0f },xyz };
     object = Object3d::Create("Enemy.obj", transform_);
     object->SetScale({ 1.0f, 1.0f, 1.0f }); // 安定したサイズを明示
-    bulletIntervalDist_ = std::uniform_real_distribution<float>(1.0f, 1.0f); // 発射間隔を決定する分布
+    bulletIntervalDist_ = std::uniform_real_distribution<float>(0.2f, 3.0f); // 発射間隔を決定する分布
     bulletInterval_ = bulletIntervalDist_(randomEngine); // 最初の間隔を決定
     // 移動方向をランダムに設定
     std::uniform_int_distribution<int> typeDist(0, 2);

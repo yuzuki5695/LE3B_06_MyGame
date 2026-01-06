@@ -2,7 +2,7 @@
 #include <Player.h>
 #include <CameraManager.h>
 #include <Enemy.h>
-
+#include<EnemyLoader.h>
 
 /// <summary>
 /// 敵の出現条件（トリガー）を定義する構造体
@@ -31,4 +31,9 @@ private:
     CameraManager* cameraManager_ = nullptr;
     std::vector<std::unique_ptr<Enemy>>* enemies_ = nullptr;
     std::vector<EnemySpawnTrigger> spawnTriggers_;
+
+    // キャラクターローダー
+    std::unique_ptr<EnemyLoader> levelLoader_ = nullptr;
+    // レベルデータ格納用インスタンスを生成
+    LevelEnemyData* levelData = nullptr;
 };
