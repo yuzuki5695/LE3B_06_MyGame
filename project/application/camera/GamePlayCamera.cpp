@@ -16,7 +16,7 @@ void GamePlayCamera::Initialize() {
     // カメラの初期設定
     //mode_ = ViewType::Main;
 
-    speed = 0.2f;        // 1フレームあたり移動距離
+    speed = 0.5f;        // 1フレームあたり移動距離
     movefige = true;
     currentSegment = 0;
 
@@ -102,11 +102,11 @@ void GamePlayCamera::UpdateBezierMovement() {
     const Vector3& end = bezierPoints[currentSegment + 1].controlPoint;
     Vector3 oldPos = bezierPos_;
 
-
     // --- 直線モード（start → point_01） ---
     if (currentSegment == 0) {
         Vector3 dir = end - bezierPos_;
         float dist = Length(dir);
+
 
         if (dist <= speed) {
             bezierPos_ = end;
@@ -145,7 +145,6 @@ void GamePlayCamera::UpdateBezierMovement() {
         // Cubic Catmull-Rom スプライン補間（滑らかに繋がる）
         bezierPos_ = CatmullRom(p0, p1, p2, p3, t_);
     }
-
     float moved = Length(bezierPos_ - oldPos);
     currentRailLength_ += moved;
 

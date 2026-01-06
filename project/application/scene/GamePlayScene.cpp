@@ -89,7 +89,7 @@ void GamePlayScene::Initialize() {
     particles_->Initialize(player_->GetPlayerObject());
 
     // 敵関連の初期化
-	MAX_ENEMY = 50; // 敵の最大数
+	MAX_ENEMY = 300; // 敵の最大数
     // 敵をリストに追加して初期化
     for (int i = 0; i < MAX_ENEMY; ++i) {
         std::unique_ptr<Enemy> enemy = std::make_unique<Enemy>();
@@ -114,8 +114,6 @@ void GamePlayScene::Initialize() {
     EventManager::GetInstance()->Initialize("gamestart");
 	// ゲームカメラの移動許可
    // CameraManager::GetInstance()->GetGameCamera()->Setmovefige(true);
-
-	goalpos_ = 500.0f;
     // ステージマネージャの初期化
     StageManager::GetInstance()->Initialize();
 
@@ -151,12 +149,12 @@ void GamePlayScene::Update() {
     }
 
     // ゴール演出
-    if (player_->GetPosition().z >= goalpos_ && CameraManager::GetInstance()->GetTypeview() == ViewCameraType::Main) {
+    if (!goal_ && player_->GetPosition().z >= CameraManager::GetInstance()->GetGameplayCamera()->GetBezierPoints().back().controlPoint.z && CameraManager::GetInstance()->GetTypeview() == ViewCameraType::Main) {
         FadeManager::GetInstance()->StartFadeOut(1.0f, FadeStyle::Normal);
         player_->SetKeyActive(false);
         player_->SetReticleVisible(false);
-        goalpos_ = 1000.0f;
         // フェード開始             
+        goal_ = true;
         end = false;
     }
 
@@ -192,8 +190,8 @@ void GamePlayScene::Update() {
         CheckEnemyPlayerCollisionsOBB();
         // 更新処理
         player_->Update();
-        // プレイヤーがゴール手前なら敵も更新
-        if (player_->GetPosition().z <= goalpos_) {
+        // プレイヤーがゴール手前までは敵も更新
+        if (player_->GetPosition().z <=  CameraManager::GetInstance()->GetGameplayCamera()->GetBezierPoints().back().controlPoint.z) {
             // 敵の更新
             for (auto& enemy : enemies_) {
                 if (enemy->IsActive()) {
@@ -288,7 +286,7 @@ void GamePlayScene::Draw() {
         BulletManager::GetInstance()->Draw();
     }
     // プレイヤーがゴール地点に達するまでは敵や壁を描画
-    if (player_->GetPosition().z <= goalpos_) {
+    if (player_->GetPosition().z <= CameraManager::GetInstance()->GetGameplayCamera()->GetBezierPoints().back().controlPoint.z) {
         // 敵の更新
         for (auto& enemy : enemies_) {
             if (enemy->IsActive()) {

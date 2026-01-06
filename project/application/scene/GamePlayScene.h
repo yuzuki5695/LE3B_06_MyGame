@@ -70,8 +70,6 @@ private: // メンバ変数
     std::vector<EnemySpawnTrigger> spawnTriggers_;
     // クリアゲート(仮)
     std::unique_ptr <Object3d> wall = nullptr;
-    // ゴール判定用Z座標
-    float goalpos_ = 300.0f;
     // ゴールフラグ
     bool goal_ = false;
     // スカイボックス

@@ -121,6 +121,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="application\fade\FadeManager.cpp" />
     <ClCompile Include="application\loader\CharacterLoader.cpp" />
     <ClCompile Include="application\loader\CurveJsonLoader.cpp" />
+    <ClCompile Include="application\loader\EnemyLoader.cpp" />
     <ClCompile Include="application\particle\DefaultParticleEmitter.cpp" />
     <ClCompile Include="application\particle\GameClearparticle.cpp" />
     <ClCompile Include="application\particle\GameOverparticle.cpp" />
@@ -199,6 +200,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\fade\FadeManager.h" />
     <ClInclude Include="application\loader\CharacterLoader.h" />
     <ClInclude Include="application\loader\CurveJsonLoader.h" />
+    <ClInclude Include="application\loader\EnemyLoader.h" />
     <ClInclude Include="application\particle\BaseEmitter.h" />
     <ClInclude Include="application\particle\DefaultParticleEmitter.h" />
     <ClInclude Include="application\particle\FollowEmitter.h" />
