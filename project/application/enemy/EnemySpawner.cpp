@@ -14,17 +14,17 @@ void EnemySpawner::Initialize(Player* player, CameraManager* cameraManager, std:
     //    {Vector3{0.0f,0.0f,350.0f}, 5, false, MoveType::None},
     //};
        
-    // ★ Loader を生成
+    // Loader を生成
     levelLoader_ = std::make_unique<EnemyLoader>();
 
-    // ★ レベルデータ読み込み
+    // レベルデータ読み込み
     levelData = levelLoader_->LoadFile("Enemy");
 
 
     for (const auto& e : levelData->enemies) {
         EnemySpawnTrigger trigger;
         trigger.Position = e.translation;
-        trigger.spawnCount = 1;
+        trigger.spawnCount = 5;
         trigger.hasSpawned = false;
 
         trigger.moveType =

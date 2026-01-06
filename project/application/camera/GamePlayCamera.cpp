@@ -16,7 +16,7 @@ void GamePlayCamera::Initialize() {
     // カメラの初期設定
     //mode_ = ViewType::Main;
 
-    speed = 0.5f;        // 1フレームあたり移動距離
+    speed = 0.2f;        // 1フレームあたり移動距離
     movefige = true;
     currentSegment = 0;
 
@@ -113,17 +113,26 @@ void GamePlayCamera::UpdateBezierMovement() {
             bezierPoints[currentSegment].passed = true;
             currentSegment++;
         } else {
-            //bezierPos_ += Normalize(dir) * speed; // ベクトル直進
-            Vector3 move = Normalize(dir) * speed;
-            bezierPos_ += move;
-            currentRailLength_ += Length(move); // ★追加
+            bezierPos_ += Normalize(dir) * speed; // ベクトル直進
+            currentRailLength_ += Length(Normalize(dir) * speed); // ★追加
         }
         return;
     }
 
-
     // --- 補完モード（それ以降） ---
-    t_ += speed * 0.01f; // イージング進行速度（調整可能）
+    // 現在のセグメント長を取得（Catmull-Rom補間を距離基準で進めるため）
+    Vector3 p0 = (currentSegment > 0) ? bezierPoints[currentSegment - 1].controlPoint : start;
+    Vector3 p1 = start;
+    Vector3 p2 = end;
+    Vector3 p3 = (currentSegment + 2 < bezierPoints.size()) ? bezierPoints[currentSegment + 2].controlPoint : end;
+  
+    // 簡易的にセグメント長を「直線距離」で近似
+    float segmentLength = Length(p2 - p1);
+    if (segmentLength < 0.0001f) segmentLength = 0.0001f;
+
+    // t の増分を距離基準で計算
+    float deltaT = speed / segmentLength;
+    t_ += deltaT;
 
     if (t_ >= 1.0f) {
         t_ = 0.0f;
@@ -135,19 +144,11 @@ void GamePlayCamera::UpdateBezierMovement() {
             return;
         }
     } else {
-        // 次セグメントの制御点群（前後を参照して曲線化）
-        Vector3 p0 = (currentSegment > 0) ? bezierPoints[currentSegment - 1].controlPoint : start;
-        Vector3 p1 = start;
-        Vector3 p2 = end;
-        Vector3 p3 = (currentSegment + 2 < bezierPoints.size()) ?
-            bezierPoints[currentSegment + 2].controlPoint : end;
-
-        // Cubic Catmull-Rom スプライン補間（滑らかに繋がる）
+        // Catmull-Rom 補間
         bezierPos_ = CatmullRom(p0, p1, p2, p3, t_);
     }
-    float moved = Length(bezierPos_ - oldPos);
-    currentRailLength_ += moved;
-
+    // 移動距離を累積
+    currentRailLength_ += Length(bezierPos_ - oldPos);
     prevPos_ = bezierPos_;
 }
 
