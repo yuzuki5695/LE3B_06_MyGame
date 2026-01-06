@@ -33,8 +33,23 @@ void GamePlayCamera::Initialize() {
     // メインカメラは追従モードにする
     CameraManager::GetInstance()->SetMode(CameraMode::Follow);
 
-    followInitialized_ = false;  
-    subOffset_ = {5.5f,-1.0f,15.0f};
+    followInitialized_ = false;
+    subOffset_ = { 5.5f,-1.0f,15.0f };
+
+    railInfo_.totalLength = 0.0f;
+    railInfo_.segmentLengths.clear();
+
+    for (size_t i = 0; i + 1 < bezierPoints.size(); ++i) {
+        float len = Length(
+            bezierPoints[i + 1].controlPoint -
+            bezierPoints[i].controlPoint
+        );
+        railInfo_.segmentLengths.push_back(len);
+        railInfo_.totalLength += len;
+    }
+
+    currentRailLength_ = 0.0f;
+    prevPos_ = bezierPos_;
 }
 
 ///====================================================
@@ -85,6 +100,7 @@ void GamePlayCamera::UpdateBezierMovement() {
     // 現在のセグメント start / end
     const Vector3& start = bezierPoints[currentSegment].controlPoint;
     const Vector3& end = bezierPoints[currentSegment + 1].controlPoint;
+    Vector3 oldPos = bezierPos_;
 
 
     // --- 直線モード（start → point_01） ---
@@ -97,7 +113,10 @@ void GamePlayCamera::UpdateBezierMovement() {
             bezierPoints[currentSegment].passed = true;
             currentSegment++;
         } else {
-            bezierPos_ += Normalize(dir) * speed; // ベクトル直進
+            //bezierPos_ += Normalize(dir) * speed; // ベクトル直進
+            Vector3 move = Normalize(dir) * speed;
+            bezierPos_ += move;
+            currentRailLength_ += Length(move); // ★追加
         }
         return;
     }
@@ -126,6 +145,11 @@ void GamePlayCamera::UpdateBezierMovement() {
         // Cubic Catmull-Rom スプライン補間（滑らかに繋がる）
         bezierPos_ = CatmullRom(p0, p1, p2, p3, t_);
     }
+
+    float moved = Length(bezierPos_ - oldPos);
+    currentRailLength_ += moved;
+
+    prevPos_ = bezierPos_;
 }
 
 void GamePlayCamera::UpdateCameraRotation() {
@@ -284,4 +308,8 @@ void GamePlayCamera::UpdateSubCameraFollow() {
         float pitch = -asinf(dir.y);
         subCam->SetRotate({ pitch, yaw, 0.0f });
     }
+}
+float GamePlayCamera::GetRailProgressRate() const {
+    if (railInfo_.totalLength <= 0.0001f) return 0.0f;
+    return std::clamp(currentRailLength_ / railInfo_.totalLength, 0.0f, 1.0f);
 }

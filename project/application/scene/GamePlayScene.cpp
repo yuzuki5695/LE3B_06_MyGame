@@ -48,6 +48,10 @@ void GamePlayScene::Initialize() {
     TextureManager::GetInstance()->LoadTexture("Gameplay/Texture/UI_01.png");
     TextureManager::GetInstance()->LoadTexture("Gameplay/Texture/UI_02.png");
     TextureManager::GetInstance()->LoadTexture("Gameplay/Texture/UI_03.png");
+        
+    TextureManager::GetInstance()->LoadTexture("Gameplay/Texture/Gage.png");
+    TextureManager::GetInstance()->LoadTexture("Gameplay/Texture/Player_ui.png");
+    
 
     MAXui_ = 1;
     uis_.push_back(Sprite::Create("Gameplay/Texture/UI_01.png", Vector2{ 8.0f, 430.0f }, 0.0f, Vector2{ 100.0f,80.0f })); 
@@ -60,6 +64,11 @@ void GamePlayScene::Initialize() {
     // タイトルに戻るUIを生成
     ui1_ = Sprite::Create("titlereturn02.png", Vector2{ 1100.0f, 5.0f }, 0.0f, Vector2{ 150.0f,100.0f });
     ui1_->SetTextureSize(Vector2{ 300.0f,200.0f });
+    
+    gage_ = Sprite::Create("Gameplay/Texture/Gage.png", Vector2{ 380.0f, 10.0f }, 0.0f, Vector2{ 500.0f,30.0f });
+    gage_->SetTextureSize(Vector2{ 500.0f,30.0f });     	 
+    player_ui_ = Sprite::Create("Gameplay/Texture/Player_ui.png", Vector2{ 380.0f, 12.3f }, 0.0f, Vector2{ 25.0f,25.0f });
+    player_ui_->SetTextureSize(Vector2{ 25.0f,25.0f });     
 
     // .objファイルからモデルを読み込む
     ModelManager::GetInstance()->LoadModel("terrain.obj");
@@ -160,17 +169,12 @@ void GamePlayScene::Update() {
         //   イベント終了 → プレイヤーを操作可能に
         player_->SetKeyActive(true);
         player_->SetReticleVisible(true);
+        // 進行度を設定
+        StartStageProgressUI();
     }
-
-    //    
-    //// フェードアウトが完了したら次のシーンへ
-    //if (!end && Input::GetInstance()->Triggrkey(DIK_RETURN)) {
-    //    player_->SetInactive();
-    //    //CameraManager::GetInstance()->SetMode(CameraMode::Transition);
-    //    //player_->SetKeyActive(false);
-    //    //player_->SetDead_(true);
-    //    end =true;
-    //}
+    
+    // ===== UI進行更新 =====
+    UpdateStageProgressUI();
 
     StageManager::GetInstance()->Update();
 
@@ -250,6 +254,8 @@ void GamePlayScene::Update() {
         ui->Update();
     }
 
+    gage_->Update();
+    player_ui_->Update();
 #pragma endregion 全てのSprite個々の更新処理
 
 #pragma region  ImGuiの更新処理開始
@@ -320,6 +326,9 @@ void GamePlayScene::Draw() {
     for (std::unique_ptr<Sprite>& ui : uis_) {
         ui->Draw();
     }
+
+    gage_->Draw();
+    player_ui_->Draw();
 
 	// イベントマネージャの描画処理
     EventManager::GetInstance()->Draw2DSprite();
@@ -560,4 +569,41 @@ void GamePlayScene::CheckEnemyPlayerCollisionsOBB() {
             break;
         }
     }
+}
+
+void GamePlayScene::StartStageProgressUI() {
+    if (uiProgressStarted_) return;
+    uiStartRailLength_ = CameraManager::GetInstance()->GetGameplayCamera()->GetCurrentRailLength();
+
+    uiProgressStarted_ = true;
+}
+
+void GamePlayScene::UpdateStageProgressUI() {
+    if (!uiProgressStarted_ || uiProgressFinished_) return;
+
+    auto* cam = CameraManager::GetInstance()->GetGameplayCamera();
+
+    float current = cam->GetCurrentRailLength();
+    float total   = cam->GetTotalRailLength();
+
+    float uiTotalLength = total - uiStartRailLength_;
+    if (uiTotalLength <= 0.0001f) return;
+
+    float progress = (current - uiStartRailLength_) / uiTotalLength;
+
+    if (progress >= 1.0f) {
+        progress = 1.0f;
+        uiProgressFinished_ = true;
+    }
+
+    progress = std::clamp(progress, 0.0f, 1.0f);
+
+    constexpr float gageX = 380.0f;
+    constexpr float gageWidth = 500.0f;
+    constexpr float playerWidth = 25.0f;
+
+    float movableWidth = gageWidth - playerWidth;
+    float uiX = gageX + progress * movableWidth;
+
+    player_ui_->SetPosition(Vector2{ uiX, 12.3f });
 }

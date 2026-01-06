@@ -5,6 +5,11 @@
 #include <Object3d.h>
 #include<SceneCameraBase.h>
 
+struct RailInfo {
+    float totalLength = 0.0f;
+    std::vector<float> segmentLengths;
+};
+
 ///====================================================
 /// GamePlayCameraクラス
 /// <summary>
@@ -111,6 +116,9 @@ private: // メンバ変数
     Vector3 mainTargetRot_;
 
 
+    RailInfo railInfo_;
+    float currentRailLength_ = 0.0f;
+    Vector3 prevPos_;
 public: // アクセッサ（Getter / Setter）
     // getter 
     bool Getmovefige() { return movefige; }
@@ -146,4 +154,10 @@ public: // アクセッサ（Getter / Setter）
     void SetFollowTarget(Object3d* target) {
         followTarget_ = target;
     }
+
+    float GetRailProgressRate() const;
+
+    float GetTotalRailLength() const { return railInfo_.totalLength; }
+    float GetCurrentRailLength() const { return currentRailLength_; }
+
 };
