@@ -4,6 +4,16 @@
 #include <Enemy.h>
 
 
+/// <summary>
+/// 敵の出現条件（トリガー）を定義する構造体
+/// </summary>
+struct EnemySpawnTrigger {
+    Vector3 Position;   // 出現位置
+    int spawnCount;     // 同時に出現させる数
+    bool hasSpawned;    // すでに出現済みかどうか
+    MoveType moveType;  // 敵の移動タイプ
+};
+
 class EnemySpawner {
 public:
     void Initialize(Player* player, CameraManager* camera, std::vector<std::unique_ptr<Enemy>>* enemies);

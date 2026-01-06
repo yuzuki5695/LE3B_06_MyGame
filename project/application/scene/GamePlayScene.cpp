@@ -352,7 +352,7 @@ void GamePlayScene::CheckBulletEnemyCollisionsOBB() {
 
             if (IsOBBIntersect(bulletOBB, enemyOBB)) {
                 bullet->SetInactive();
-                enemy->SetInactive();
+                enemy->OnHit();
                 
                 particles_->AddHitPosition(enemy->GetPosition());
                 // パーティクル生成など

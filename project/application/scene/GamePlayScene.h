@@ -88,7 +88,7 @@ private: // メンバ変数
     std::unique_ptr <Sprite> gage_;
     std::unique_ptr <Sprite> player_ui_;
     // ===== UI進行管理 =====
-float uiStartRailLength_ = 0.0f;
-bool uiProgressStarted_ = false;
-bool uiProgressFinished_ = false;
+    float uiStartRailLength_ = 0.0f;
+    bool uiProgressStarted_ = false;
+    bool uiProgressFinished_ = false;
 };

@@ -18,22 +18,20 @@ enum class MoveType {
     Horizontal  // 横方向に移動
 };
 
-/// <summary>
-/// 敵の出現条件（トリガー）を定義する構造体
-/// </summary>
-struct EnemySpawnTrigger {
-    Vector3 Position;   // 出現位置
-    int spawnCount;     // 同時に出現させる数
-    bool hasSpawned;    // すでに出現済みかどうか
-    MoveType moveType;  // 敵の移動タイプ
-};
 
 /// <summary>
 /// 敵キャラクタークラス
 /// </summary>
 class Enemy : public BaseCharacter {
 public: // メンバ関数
-	/// <summary>
+    enum class State {
+        Spawn,   // 出現演出中
+        Active,  // 通常行動
+        Dying,   // 死亡演出
+        Dead
+    };
+
+    /// <summary>
     /// デストラクタ
     /// </summary>
 	~Enemy() override;
@@ -41,12 +39,6 @@ public: // メンバ関数
     /// 初期化処理
     /// </summary>
 	void Initialize() override;	    
-    /// <summary>
-    /// 出現時の初期化処理
-    /// </summary>
-    /// <param name="baseZ">出現位置の基準となるZ座標</param>
-    /// <param name="moveType">移動タイプ（縦・横など）</param>
-    void SetInitialize(float baseZ, MoveType moveType);
 	/// <summary>
     /// 更新処理
     /// </summary>
@@ -95,12 +87,13 @@ public: // メンバ関数
     /// 敵のOBB（当たり判定）を取得
     /// </summary>
     OBB GetOBB() const;
-    /// <summary>
-    /// 新しい座標と移動タイプを設定
-    /// </summary>
-    /// <param name="pos">新しい座標</param>
-    /// <param name="moveType">移動タイプ</param>
-    void SetnewTranslate(const Vector3& pos, MoveType moveType);
+
+    void Spawn(const Vector3& pos, MoveType moveType);
+    void UpdateSpawn();
+    void OnHit();   // ← これを追加
+    void UpdateActive();
+    void UpdateDying();
+
 private: // メンバ変数
 	// ポインタ
     Player* player_; // プレイヤー
@@ -135,6 +128,17 @@ private: // メンバ変数
 
         
     bool iscollar_ = false;                  // 有効かどうか
+    
+    float t;
+
+    // 状態遷移
+    State state_ = State::Dead;
+
+    // Spawn演出用
+    float spawnTimer_ = 0.0f;
+    float spawnDuration_ = 1.0f; // 1秒演出
+    Vector3 spawnStartPos_;
+    Vector3 spawnTargetPos_;
 
 public:   // アクセッサ（Getter / Setter）
 	float GetSpawnBaseZ() const { return spawnBaseZ_; }
