@@ -100,7 +100,7 @@ void Enemy::AttachBullet(const Vector3& playerPos) {
     // プレイヤーを狙う
     Vector3 targetPos = playerPos;
     Vector3 dir = targetPos - bulletStartPos; // 弾からプレイヤー方向へのベクトル
-    syu
+
     // カメラ情報
     GamePlayCamera* gameCam = CameraManager::GetInstance()->GetGameplayCamera();
     Vector3 shootDir;
