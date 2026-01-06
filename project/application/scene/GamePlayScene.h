@@ -12,6 +12,7 @@
 #include<EventManager.h>
 #include<StageManager.h>
 #include<GamePlayparticle.h>
+#include <EnemySpawner.h>
 
 /// <summary>
 /// ゲームプレイシーン
@@ -35,10 +36,7 @@ public: // メンバ関数
     /// 描画処理
     /// </summary>
     void Draw() override;
-    /// <summary>
-    /// 敵出現処理（レベルデータに基づく）
-    /// </summary>
-    void EnemySpawn();
+
     /// <summary>
     /// プレイヤーの弾と敵との衝突判定処理
     /// </summary>
@@ -47,18 +45,7 @@ public: // メンバ関数
     /// 敵の弾とプレイヤーとの衝突判定処理
     /// </summary>
     void CheckEnemyBulletPlayerCollisionsOBB();
-    /// <summary>
-    /// V字フォーメーションでの敵出現処理
-    /// </summary>
-    void SpawnVFormation(const EnemySpawnTrigger& trigger);
-    /// <summary>
-    /// 逆ステップフォーメーションでの敵出現処理
-    /// </summary>
-    void SpawnReverseStepFormation(const EnemySpawnTrigger& trigger);
-    /// <summary>
-    /// ジグザグフォーメーションでの敵出現処理
-    /// </summary>
-    void SpawnZigZagFormation(const EnemySpawnTrigger& trigger);
+
     void CheckEnemyPlayerCollisionsOBB();
 
     void StartStageProgressUI();
@@ -78,6 +65,7 @@ private: // メンバ変数
     int MAX_ENEMY;
     // 敵リスト
     std::vector<std::unique_ptr<Enemy>> enemies_;
+    std::unique_ptr<EnemySpawner> enemySpawner_;
     // 敵出現トリガーリスト
     std::vector<EnemySpawnTrigger> spawnTriggers_;
     // クリアゲート(仮)
