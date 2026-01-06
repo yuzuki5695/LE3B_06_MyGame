@@ -270,7 +270,15 @@ void Enemy::UpdateDying() {
         currentPos.y += moveDist(randomEngine);
         currentPos.z += moveZDist(randomEngine); // zは正方向
         object->SetTranslate(currentPos);
-
+         
+        // パーティクルを早めに発動
+        if (!hasTriggeredParticle_ && t >= 0.5f) { // 30%経過したら発動
+            hasTriggeredParticle_ = true;
+            // 死亡時コールバックを呼ぶ
+            if (onDeathCallback) {
+                onDeathCallback(currentPos);
+            }
+        }
         if (t >= 1.0f) {
             isDead_ = true; // スケールが0になったので削除許可
             SetActive(false);

@@ -234,7 +234,13 @@ void GamePlayScene::Update() {
             }),
         enemies_.end());
     // スカイボックス更新
-    Box_->Update();     
+    Box_->Update(); 
+
+    for (auto& enemy : enemies_) {
+        enemy->onDeathCallback = [this](const Vector3& pos) {
+            particles_->AddHitPosition(pos);
+            };
+    }
     // パーティクル更新
     ParticleManager::GetInstance()->Update();
     particles_->Update();
@@ -352,7 +358,7 @@ void GamePlayScene::CheckBulletEnemyCollisionsOBB() {
                 bullet->SetInactive();
                 enemy->OnHit();
                 
-                particles_->AddHitPosition(enemy->GetPosition());
+               // particles_->AddHitPosition(enemy->GetPosition());
                 // パーティクル生成など
                 break;
             }

@@ -139,9 +139,12 @@ private: // メンバ変数
     float spawnDuration_ = 1.0f; // 1秒演出
     Vector3 spawnStartPos_;
     Vector3 spawnTargetPos_;
-
+    bool hasTriggeredParticle_ = false;
 public:   // アクセッサ（Getter / Setter）
-	float GetSpawnBaseZ() const { return spawnBaseZ_; }
+	   
+    std::function<void(const Vector3&)> onDeathCallback;
+
+    float GetSpawnBaseZ() const { return spawnBaseZ_; }
      
 	// Transformのpositionを返すgetter
 	Vector3 GetPosition() const {
