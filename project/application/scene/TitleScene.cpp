@@ -13,6 +13,10 @@
 #include<SkyboxCommon.h>
 #include<FadeManager.h>
 
+namespace {
+    constexpr float kFadeDuration = 1.0f;
+}
+
 void TitleScene::Finalize() {
     FadeManager::GetInstance()->Finalize();
 }
@@ -75,8 +79,11 @@ void TitleScene::InitializeUI() {
 }
 
 void TitleScene::Update() {
+    // シーン開始時にフェードインを開始
     UpdateFadeIn();
+    // キー操作でのフェードアウトを開始
     UpdateFadeOut();
+    // 次のシーンへ移行する
     UpdateSceneTransition();
 
     /*-------------------------------------------*/
@@ -154,7 +161,6 @@ void TitleScene::Update() {
 
 #endif // USE_IMGUI
 #pragma endregion ImGuiの更新処理終了
-
 }
 
 void TitleScene::Draw() {
@@ -187,30 +193,31 @@ void TitleScene::Draw() {
 }
 
 void TitleScene::UpdateFadeIn() {
-    auto* fade = FadeManager::GetInstance();
-
+    // タイトルシーンにおけるフェード制御を担当
+    FadeManager* fade = FadeManager::GetInstance();
+    // フェードが未開始かつ実行中でない場合のみフェードインを開始
     if (!fade->IsFadeStart() && !fade->IsFading()) {
-        fade->StartFadeIn(1.0f, FadeStyle::SilhouetteSlide);
+        fade->StartFadeIn(kFadeDuration, FadeStyle::SilhouetteSlide);
     }
-
+    // フェード状態の更新
     fade->Update();
 }
 
 void TitleScene::UpdateFadeOut() {
-    auto* fade = FadeManager::GetInstance();
-
+    // タイトルシーンにおけるフェード制御を担当
+    FadeManager* fade = FadeManager::GetInstance(); 
+    // フェード中ではなくフェード完了状態の時にEnterキーを押すとフェードアウト開始
     if (Input::GetInstance()->Triggrkey(DIK_RETURN) && !fade->IsFading() && fade->IsFadeEnd()) {
-
-        fade->StartFadeOut(1.0f, FadeStyle::SilhouetteExplode);
+        fade->StartFadeOut(kFadeDuration, FadeStyle::SilhouetteExplode);
     }
 }
 
 void TitleScene::UpdateSceneTransition() {
-    auto* fade = FadeManager::GetInstance();
-
-    if (fade->IsFadeEnd() &&
-        fade->GetFadeType() == FadeType::FadeOut) {
-
+    // タイトルシーンにおけるフェード制御を担当
+    FadeManager* fade = FadeManager::GetInstance();
+    // フェードアウト完了後にシーン遷移処理を行う
+    if (fade->IsFadeEnd() && fade->GetFadeType() == FadeType::FadeOut) {
+        // ゲームプレイシーンへ移行
         SceneManager::GetInstance()->ChangeScene("GAMEPLAY");
     }
 }

@@ -43,9 +43,17 @@ public: // メンバ関数
     /// UIスプライトの生成と初期化を行う
     /// </summary> 
     void InitializeUI();
-
+    /// <summary>
+    /// フェードイン開始および更新処理
+    /// </summary>
     void UpdateFadeIn();
+    /// <summary>
+    /// 入力に応じたフェードアウト開始処理
+    /// </summary>
     void UpdateFadeOut();
+    /// <summary>
+    /// フェード完了後のシーン遷移処理
+    /// </summary>
     void UpdateSceneTransition();
 private: // メンバ変数
     std::unique_ptr <Sprite> ui_title_;
