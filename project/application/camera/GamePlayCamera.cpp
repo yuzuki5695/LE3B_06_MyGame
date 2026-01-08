@@ -2,7 +2,9 @@
 #include<MatrixVector.h>
 #include<algorithm> 
 #include<CameraManager.h>
+#include<MathUtil.h>
 
+using namespace MathUtil;
 using namespace MatrixVector;
 
 ///====================================================
@@ -14,7 +16,7 @@ void GamePlayCamera::Initialize() {
     // カメラの初期設定
     //mode_ = ViewType::Main;
 
-    speed = 0.2f;        // 1フレームあたり移動距離
+    speed = 0.3f;        // 1フレームあたり移動距離
     movefige = true;
     currentSegment = 0;
 
@@ -24,12 +26,30 @@ void GamePlayCamera::Initialize() {
     // メイン
     transform_ = { bezierPos_,LookAtRotation(prevForward) };
     // サブカメラ登録 
-    std::vector<CameraTransform> subCams = { { {2, 0, -3}, {0, 0, 0} } };
+    std::vector<CameraTransform> subCams = { { {2, 0, 50}, {0, 0, 0} } };
     // サブカメラを追加
-    AddSubCameras(subCams); 
+    AddSubCameras(subCams);
 
-   // メインカメラは追従モードにする
-   CameraManager::GetInstance()->SetMode(CameraMode::Follow);
+    // メインカメラは追従モードにする
+    CameraManager::GetInstance()->SetMode(CameraMode::Follow);
+
+    followInitialized_ = false;
+    subOffset_ = { 5.5f,-1.0f,15.0f };
+
+    railInfo_.totalLength = 0.0f;
+    railInfo_.segmentLengths.clear();
+
+    for (size_t i = 0; i + 1 < bezierPoints.size(); ++i) {
+        float len = Length(
+            bezierPoints[i + 1].controlPoint -
+            bezierPoints[i].controlPoint
+        );
+        railInfo_.segmentLengths.push_back(len);
+        railInfo_.totalLength += len;
+    }
+
+    currentRailLength_ = 0.0f;
+    prevPos_ = bezierPos_;
 }
 
 ///====================================================
@@ -43,13 +63,23 @@ void GamePlayCamera::Update() {
         movefige = false;
         return;
     }
-    if (CameraManager::GetInstance()->GetTypeview() ==ViewCameraType::Main && CameraManager::GetInstance()->GetMode() == CameraMode::Follow) {
-        if (CheckAndResumeMovement()) 
-        UpdateBezierMovement();
+
+    if (CameraManager::GetInstance()->GetMode() == CameraMode::Transition) {
+//        UpdateTransition();
+
+        CameraManager::GetInstance()->SetTypeview(ViewCameraType::Sub);
+
+
+    } else if (CameraManager::GetInstance()->GetTypeview() == ViewCameraType::Main && CameraManager::GetInstance()->GetMode() == CameraMode::Follow) {
+        if (CheckAndResumeMovement())
+            UpdateBezierMovement();
         transform_.translate = bezierPos_;
         UpdateCameraRotation();
+    } else if (CameraManager::GetInstance()->GetTypeview() == ViewCameraType::Sub) {     // サブカメラの処理
+        UpdateSubCameraFollow();
     }
-     
+
+
 }
 
 bool GamePlayCamera::CheckAndResumeMovement() {
@@ -64,40 +94,19 @@ bool GamePlayCamera::CheckAndResumeMovement() {
     }
     return true; // 通常進行OK
 }
-///====================================================
-/// LookAt 用の回転計算（簡易版）
-/// forward: 向きベクトル
-///====================================================
-Vector3 GamePlayCamera::LookAtRotation(const Vector3& forward) {
-    Vector3 rot;
-    rot.y = atan2f(forward.x, forward.z); // Yaw
-    rot.x = asinf(-forward.y);            // Pitch
-    rot.z = 0.0f;                         // Roll
-    return rot;
-}
-///====================================================
-/// 球面線形補間 (Slerp)
-///====================================================
-Vector3 GamePlayCamera::Slerp(const Vector3& v0, const Vector3& v1, float t) {
-    float dot = Dot(v0, v1);
-    dot = std::clamp(dot, -1.0f, 1.0f); // 安全クランプ
-
-    float theta = acosf(dot) * t;
-    Vector3 relative = Normalize(v1 - v0 * dot);
-    return Normalize(v0 * cosf(theta) + relative * sinf(theta));
-}
 
 
 void GamePlayCamera::UpdateBezierMovement() {
     // 現在のセグメント start / end
     const Vector3& start = bezierPoints[currentSegment].controlPoint;
     const Vector3& end = bezierPoints[currentSegment + 1].controlPoint;
-
+    Vector3 oldPos = bezierPos_;
 
     // --- 直線モード（start → point_01） ---
     if (currentSegment == 0) {
         Vector3 dir = end - bezierPos_;
         float dist = Length(dir);
+
 
         if (dist <= speed) {
             bezierPos_ = end;
@@ -105,13 +114,25 @@ void GamePlayCamera::UpdateBezierMovement() {
             currentSegment++;
         } else {
             bezierPos_ += Normalize(dir) * speed; // ベクトル直進
+            currentRailLength_ += Length(Normalize(dir) * speed); // ★追加
         }
         return;
     }
 
-
     // --- 補完モード（それ以降） ---
-    t_ += speed * 0.01f; // イージング進行速度（調整可能）
+    // 現在のセグメント長を取得（Catmull-Rom補間を距離基準で進めるため）
+    Vector3 p0 = (currentSegment > 0) ? bezierPoints[currentSegment - 1].controlPoint : start;
+    Vector3 p1 = start;
+    Vector3 p2 = end;
+    Vector3 p3 = (currentSegment + 2 < bezierPoints.size()) ? bezierPoints[currentSegment + 2].controlPoint : end;
+  
+    // 簡易的にセグメント長を「直線距離」で近似
+    float segmentLength = Length(p2 - p1);
+    if (segmentLength < 0.0001f) segmentLength = 0.0001f;
+
+    // t の増分を距離基準で計算
+    float deltaT = speed / segmentLength;
+    t_ += deltaT;
 
     if (t_ >= 1.0f) {
         t_ = 0.0f;
@@ -123,16 +144,12 @@ void GamePlayCamera::UpdateBezierMovement() {
             return;
         }
     } else {
-        // 次セグメントの制御点群（前後を参照して曲線化）
-        Vector3 p0 = (currentSegment > 0) ? bezierPoints[currentSegment - 1].controlPoint : start;
-        Vector3 p1 = start;
-        Vector3 p2 = end;
-        Vector3 p3 = (currentSegment + 2 < bezierPoints.size()) ?
-            bezierPoints[currentSegment + 2].controlPoint : end;
-
-        // Cubic Catmull-Rom スプライン補間（滑らかに繋がる）
+        // Catmull-Rom 補間
         bezierPos_ = CatmullRom(p0, p1, p2, p3, t_);
     }
+    // 移動距離を累積
+    currentRailLength_ += Length(bezierPos_ - oldPos);
+    prevPos_ = bezierPos_;
 }
 
 void GamePlayCamera::UpdateCameraRotation() {
@@ -210,4 +227,89 @@ void GamePlayCamera::AddSubCameras(const std::vector<CameraTransform>& transform
         // サブカメラを複数登録する
         AddSubCamera(trans);
     }
+}
+
+void GamePlayCamera::UpdateTransition() {
+    auto* cm = CameraManager::GetInstance();
+
+    Camera* mainCam = cm->GetMainCamera();
+    Camera* subCam = cm->GetActiveCamera();
+
+    if (!mainCam || !subCam || !followTarget_) return;
+
+    // 初回だけ初期位置を保存
+    if (!isTransitioning_) {
+        isTransitioning_ = true;
+
+        mainStartPos_ = mainCam->GetTranslate();
+        mainStartRot_ = mainCam->GetRotate();
+
+        subStartPos_ = subCam->GetTranslate();
+
+        Vector3 targetPos = followTarget_->GetWorldPosition();
+
+        mainTargetPos_ = targetPos + subOffset_;
+        subTargetPos_ = targetPos + subOffset_;
+
+        transitionTimer_ = 0.0f;
+    }
+
+    transitionTimer_ += 1.0f / 60.0f;
+    float t = transitionTimer_ / transitionDuration_;
+    if (t > 1.0f) t = 1.0f;
+
+    // イージング
+    float easeT = t * t * (3.0f - 2.0f * t);
+
+    // メインカメラ補間
+    Vector3 mainPos = mainStartPos_ * (1 - easeT) + mainTargetPos_ * easeT;
+    mainCam->SetTranslate(mainPos);
+
+    // サブカメラも“少し遅れて”追従
+    float followEase = 0.1f;
+    Vector3 subNow = subCam->GetTranslate();
+    Vector3 subPos = subNow + (subTargetPos_ - subNow) * followEase;
+    subCam->SetTranslate(subPos);
+
+    // 向き更新
+    Vector3 dir = Normalize(mainTargetPos_ - mainPos);
+    float yaw = atan2f(dir.x, dir.z);
+    float pitch = -asinf(dir.y);
+    mainCam->SetRotate({ pitch, yaw, 0.0f });
+
+    // 完了処理
+    if (t >= 1.0f) {
+        cm->SetTypeview(ViewCameraType::Sub);
+        cm->SetCameraMode(CameraMode::Default);
+        isTransitioning_ = false;
+    }
+}
+
+
+void GamePlayCamera::UpdateSubCameraFollow() {
+    if (!followTarget_) return;
+
+    Camera* subCam = CameraManager::GetInstance()->GetActiveCamera();
+    if (!subCam) return;
+
+    Vector3 targetPos = followTarget_->GetWorldPosition();
+    Vector3 desiredPos = targetPos + subOffset_;
+
+    // ※ 追従もイージング化
+    float ease = 0.15f;
+    Vector3 nowPos = subCam->GetTranslate();
+    Vector3 newPos = nowPos + (desiredPos - nowPos) * ease;
+    subCam->SetTranslate(newPos);
+
+    Vector3 dir = targetPos - newPos;
+    if (Length(dir) > 0.0001f) {
+        dir = Normalize(dir);
+        float yaw = atan2f(dir.x, dir.z);
+        float pitch = -asinf(dir.y);
+        subCam->SetRotate({ pitch, yaw, 0.0f });
+    }
+}
+float GamePlayCamera::GetRailProgressRate() const {
+    if (railInfo_.totalLength <= 0.0001f) return 0.0f;
+    return std::clamp(currentRailLength_ / railInfo_.totalLength, 0.0f, 1.0f);
 }

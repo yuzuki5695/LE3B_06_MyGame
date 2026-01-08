@@ -223,7 +223,12 @@ void CameraManager::DrawImGui() {
 }
 
 // アクティブカメラを取得
-Camera* CameraManager::GetActiveCamera() {
+Camera* CameraManager::GetActiveCamera() {  
+    // Transition中は常にメインカメラを返す
+    if (currentMode_ == CameraMode::Transition) {
+        return mainCamera_.get();
+    }
+
     switch (Typeview_) {
     case ViewCameraType::Main:
         return mainCamera_.get();

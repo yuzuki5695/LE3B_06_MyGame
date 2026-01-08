@@ -217,6 +217,9 @@
     <Filter Include="ヘッダー ファイル\application\particle">
       <UniqueIdentifier>{3264e2f4-9fdc-482b-ad88-dcef28660e8d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ソース ファイル\engine\math\collision">
+      <UniqueIdentifier>{f4077ff3-9d86-403e-9ef0-1bebb837b1f8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -425,6 +428,21 @@
     </ClCompile>
     <ClCompile Include="application\particle\GameOverparticle.cpp">
       <Filter>ソース ファイル\application\particle</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\math\Collision\Collision.cpp">
+      <Filter>ソース ファイル\engine\math\collision</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\math\MathUtil.cpp">
+      <Filter>ソース ファイル\engine\math</Filter>
+    </ClCompile>
+    <ClCompile Include="application\particle\DefaultParticleEmitter.cpp">
+      <Filter>ソース ファイル\application\particle</Filter>
+    </ClCompile>
+    <ClCompile Include="application\enemy\EnemySpawner.cpp">
+      <Filter>ソース ファイル\application\enemy</Filter>
+    </ClCompile>
+    <ClCompile Include="application\loader\EnemyLoader.cpp">
+      <Filter>ソース ファイル\application\loader</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -653,9 +671,6 @@
     <ClInclude Include="application\bullet\EnemyBullet.h">
       <Filter>ヘッダー ファイル\application\bullet</Filter>
     </ClInclude>
-    <ClInclude Include="engine\math\OBB.h">
-      <Filter>ヘッダー ファイル\engine\math\collision</Filter>
-    </ClInclude>
     <ClInclude Include="application\fade\FadeManager.h">
       <Filter>ヘッダー ファイル\application\fade</Filter>
     </ClInclude>
@@ -688,9 +703,6 @@
     </ClInclude>
     <ClInclude Include="engine\math\Easing\Easing.h">
       <Filter>ヘッダー ファイル\engine\math\Easing</Filter>
-    </ClInclude>
-    <ClInclude Include="application\camera\GamePlayCamera.h">
-      <Filter>ソース ファイル\application\camera</Filter>
     </ClInclude>
     <ClInclude Include="engine\math\ParticleData\InstanceData.h">
       <Filter>ヘッダー ファイル\engine\math\ParticleData</Filter>
@@ -727,6 +739,27 @@
     </ClInclude>
     <ClInclude Include="application\particle\GameOverparticle.h">
       <Filter>ヘッダー ファイル\application\particle</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\math\Collision\OBB.h">
+      <Filter>ヘッダー ファイル\engine\math\collision</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\math\Collision\Collision.h">
+      <Filter>ヘッダー ファイル\engine\math\collision</Filter>
+    </ClInclude>
+    <ClInclude Include="application\camera\GamePlayCamera.h">
+      <Filter>ヘッダー ファイル\application\camera</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\math\MathUtil.h">
+      <Filter>ヘッダー ファイル\engine\math</Filter>
+    </ClInclude>
+    <ClInclude Include="application\particle\DefaultParticleEmitter.h">
+      <Filter>ヘッダー ファイル\application\particle</Filter>
+    </ClInclude>
+    <ClInclude Include="application\enemy\EnemySpawner.h">
+      <Filter>ソース ファイル\application\enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="application\loader\EnemyLoader.h">
+      <Filter>ソース ファイル\application\loader</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

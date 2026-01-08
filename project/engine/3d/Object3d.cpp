@@ -110,15 +110,25 @@ void Object3d::SetModel(const std::string& filePath) {
     model = ModelManager::GetInstance()->FindModel(filePath);
 }
 
+void Object3d::SetMaterialColor(const Vector4& color) {
+    if (!model) return;   // モデルが無いなら何もしない
+
+    Material* mat = model->GetMaterialData();
+    if (!mat) return;     // マテリアルが無いなら何もしない
+
+    mat->color = color;   // GPUにマップ済みのCBufferを書き換える
+}
+
 std::unique_ptr<Object3d> Object3d::Create(std::string filePath, Transform transform) {
-    std::unique_ptr<Object3d> object3d = std::make_unique<Object3d>();   
+    std::unique_ptr<Object3d> object3d = std::make_unique<Object3d>();
     // 初期化
     object3d->Initialize(Object3dCommon::GetInstance());
     // モデルを検索してセットする
     object3d->model = ModelManager::GetInstance()->FindModel(filePath);
+    // 初期色をセット
+    object3d->SetMaterialColor({ 1.0f, 1.0f, 1.0f, 1.0f });
     // 座標をセット
     object3d->transform_ = transform;
-  
     return object3d;
 }
 

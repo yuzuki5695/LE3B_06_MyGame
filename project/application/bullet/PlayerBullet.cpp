@@ -135,8 +135,8 @@ OBB PlayerBullet::GetOBB() const {
     // 中心は現在の位置
     obb.center = transform_.translate;
 
-    // サイズ（スケール）の半分をハーフサイズにする
-    obb.halfSize = { transform_.scale / 2.0f };
+    // サイズ（スケール）
+    obb.halfSize = { transform_.scale};
 
     // 軸はXYZの単位ベクトル
     obb.axis[0] = { 1,0,0 }; // X軸

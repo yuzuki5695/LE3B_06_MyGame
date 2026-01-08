@@ -117,9 +117,12 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="application\camera\GamePlayCamera.cpp" />
     <ClCompile Include="application\character\CharacterManager.cpp" />
     <ClCompile Include="application\enemy\Enemy.cpp" />
+    <ClCompile Include="application\enemy\EnemySpawner.cpp" />
     <ClCompile Include="application\fade\FadeManager.cpp" />
     <ClCompile Include="application\loader\CharacterLoader.cpp" />
     <ClCompile Include="application\loader\CurveJsonLoader.cpp" />
+    <ClCompile Include="application\loader\EnemyLoader.cpp" />
+    <ClCompile Include="application\particle\DefaultParticleEmitter.cpp" />
     <ClCompile Include="application\particle\GameClearparticle.cpp" />
     <ClCompile Include="application\particle\GameOverparticle.cpp" />
     <ClCompile Include="application\particle\GamePlayparticle.cpp" />
@@ -128,6 +131,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="application\scene\GameOverScene.cpp" />
     <ClCompile Include="application\scene\GamePlayScene.cpp" />
     <ClCompile Include="application\scene\TitleScene.cpp" />
+    <ClCompile Include="engine\math\Collision\Collision.cpp" />
     <ClCompile Include="engine\math\Easing\Easing.cpp" />
     <ClCompile Include="engine\3d\Skybox.cpp" />
     <ClCompile Include="engine\3d\SkyboxCommon.cpp" />
@@ -145,6 +149,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="engine\audio\SoundLoader.cpp" />
     <ClCompile Include="engine\audio\SoundPlayer.cpp" />
     <ClCompile Include="engine\camera\Camera.cpp" />
+    <ClCompile Include="engine\math\MathUtil.cpp" />
     <ClCompile Include="engine\resource\D3DResourceLeakChecker.cpp" />
     <ClCompile Include="engine\base\DirectXCommon\DirectXCommon.cpp" />
     <ClCompile Include="engine\base\Framework.cpp" />
@@ -191,10 +196,13 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\character\BaseCharacter.h" />
     <ClInclude Include="application\character\CharacterManager.h" />
     <ClInclude Include="application\enemy\Enemy.h" />
+    <ClInclude Include="application\enemy\EnemySpawner.h" />
     <ClInclude Include="application\fade\FadeManager.h" />
     <ClInclude Include="application\loader\CharacterLoader.h" />
     <ClInclude Include="application\loader\CurveJsonLoader.h" />
+    <ClInclude Include="application\loader\EnemyLoader.h" />
     <ClInclude Include="application\particle\BaseEmitter.h" />
+    <ClInclude Include="application\particle\DefaultParticleEmitter.h" />
     <ClInclude Include="application\particle\FollowEmitter.h" />
     <ClInclude Include="application\particle\GameClearparticle.h" />
     <ClInclude Include="application\particle\GameOverparticle.h" />
@@ -202,6 +210,8 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\particle\Titleparticle.h" />
     <ClInclude Include="application\player\Player.h" />
     <ClInclude Include="application\scene\GameOverScene.h" />
+    <ClInclude Include="engine\math\Collision\Collision.h" />
+    <ClInclude Include="engine\math\Collision\OBB.h" />
     <ClInclude Include="engine\math\Easing\Easing.h" />
     <ClInclude Include="engine\camera\CameraTransform.h" />
     <ClInclude Include="engine\camera\CameraTypes.h" />
@@ -224,6 +234,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="engine\math\Light\DirectionalLight.h" />
     <ClInclude Include="engine\math\Light\PointLight.h" />
     <ClInclude Include="engine\math\Light\SpotLight.h" />
+    <ClInclude Include="engine\math\MathUtil.h" />
     <ClInclude Include="engine\math\Matrix\Matrix3x3.h" />
     <ClInclude Include="engine\math\Matrix\Matrix4x4.h" />
     <ClInclude Include="engine\math\Matrix\TransformationMatrix.h" />
@@ -231,7 +242,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="engine\math\Model\MaterialDate.h" />
     <ClInclude Include="engine\math\Model\ModelDate.h" />
     <ClInclude Include="engine\math\Model\Vertex.h" />
-    <ClInclude Include="engine\math\OBB.h" />
     <ClInclude Include="engine\math\ParticleData\InstanceData.h" />
     <ClInclude Include="engine\math\ParticleData\Particle.h" />
     <ClInclude Include="engine\math\ParticleData\ParticleGroup.h" />

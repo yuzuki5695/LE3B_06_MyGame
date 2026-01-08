@@ -5,6 +5,11 @@
 #include <Object3d.h>
 #include<SceneCameraBase.h>
 
+struct RailInfo {
+    float totalLength = 0.0f;
+    std::vector<float> segmentLengths;
+};
+
 ///====================================================
 /// GamePlayCameraクラス
 /// <summary>
@@ -22,10 +27,8 @@ public:
     /// 更新処理
     /// </summary>
     void Update();
-    Vector3 LookAtRotation(const Vector3& forward);
 
-    Quaternion ForwardToQuaternion(const Vector3& forward);
-    Vector3 Slerp(const Vector3& v0, const Vector3& v1, float t);
+    //Quaternion ForwardToQuaternion(const Vector3& forward);
 
     // 移動停止・再開の確認
     bool CheckAndResumeMovement();
@@ -51,6 +54,10 @@ public:
     // サブカメラの追加（複数登録に対応）
     void AddSubCameras(const std::vector<CameraTransform>& transforms) override;
 
+    //void StartCameraTransition(ViewCameraType targetType, const std::string& subName);
+
+    void UpdateSubCameraFollow();
+
 private: // メンバ変数
     CurveJsonLoader* Jsondata = nullptr;         // ベジェ制御点を読み込むローダー
 
@@ -63,8 +70,55 @@ private: // メンバ変数
     float t_ = 0.0f;
 
     Vector3 forward_ = { 0,0,1 };
-    Vector3 up_      = { 0,1,0 };
-    Vector3 right_   = { 1,0,0 };
+    Vector3 up_ = { 0,1,0 };
+    Vector3 right_ = { 1,0,0 };
+
+    bool followInitialized_;
+
+    float transitionTimer_ = 0.0f;
+    float transitionDuration_ = 0.25f;
+
+    Vector3 startPos_;
+    Vector3 startRot_;
+    Vector3 endPos_;
+    Vector3 endRot_;
+
+    std::string transitionSubCameraName_;
+
+
+
+    Object3d* followTarget_ = nullptr; // 追従対象 
+    Vector3 subOffset_ = { 0, 5, -10 }; // サブカメラのオフセット位置
+
+
+    bool isMovingToTarget_ = false;
+
+    Vector3 moveStartPos_;
+    Vector3 moveTargetPos_;
+
+    Vector3 rotStart_;
+    Vector3 rotTarget_;
+
+    float moveTimer_ = 0.0f;
+    float moveDuration_ = 1.0f;  // 何秒で移動するか
+
+    bool transitionStarted_ = false;
+
+    bool isTransitioning_ = false;
+
+    Vector3 mainStartPos_;
+    Vector3 mainTargetPos_;
+
+    Vector3 subStartPos_;
+    Vector3 subTargetPos_;
+
+    Vector3 mainStartRot_;
+    Vector3 mainTargetRot_;
+
+
+    RailInfo railInfo_;
+    float currentRailLength_ = 0.0f;
+    Vector3 prevPos_;
 public: // アクセッサ（Getter / Setter）
     // getter 
     bool Getmovefige() { return movefige; }
@@ -95,4 +149,15 @@ public: // アクセッサ（Getter / Setter）
     Vector3 GetRight() const {
         return right_;
     }
+
+    // 追従ターゲット設定
+    void SetFollowTarget(Object3d* target) {
+        followTarget_ = target;
+    }
+
+    float GetRailProgressRate() const;
+
+    float GetTotalRailLength() const { return railInfo_.totalLength; }
+    float GetCurrentRailLength() const { return currentRailLength_; }
+
 };

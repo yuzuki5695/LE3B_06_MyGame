@@ -15,25 +15,24 @@ class Player;
 enum class MoveType {
     None,       // 移動しない
     Vertical,   // 縦方向に移動
-    Horizontal  // 横方向に移動
+    Horizontal,  // 横方向に移動
+    Diagonal
 };
 
-/// <summary>
-/// 敵の出現条件（トリガー）を定義する構造体
-/// </summary>
-struct EnemySpawnTrigger {
-    Vector3 Position;   // 出現位置
-    int spawnCount;     // 同時に出現させる数
-    bool hasSpawned;    // すでに出現済みかどうか
-    MoveType moveType;  // 敵の移動タイプ
-};
 
 /// <summary>
 /// 敵キャラクタークラス
 /// </summary>
 class Enemy : public BaseCharacter {
 public: // メンバ関数
-	/// <summary>
+    enum class State {
+        Spawn,   // 出現演出中
+        Active,  // 通常行動
+        Dying,   // 死亡演出
+        Dead
+    };
+
+    /// <summary>
     /// デストラクタ
     /// </summary>
 	~Enemy() override;
@@ -41,12 +40,6 @@ public: // メンバ関数
     /// 初期化処理
     /// </summary>
 	void Initialize() override;	    
-    /// <summary>
-    /// 出現時の初期化処理
-    /// </summary>
-    /// <param name="baseZ">出現位置の基準となるZ座標</param>
-    /// <param name="moveType">移動タイプ（縦・横など）</param>
-    void SetInitialize(float baseZ, MoveType moveType);
 	/// <summary>
     /// 更新処理
     /// </summary>
@@ -68,10 +61,12 @@ public: // メンバ関数
     /// 敵が死んだ判定へ移行
     /// </summary>
 	void SetInactive() {
-		if (!isDying_) {
-			isDying_ = true; 
-			deathTimer_ = 0.0f;
-		}
+        if (!isDying_) {
+            isDying_ = true;
+            deathTimer_ = 0.0f;
+            iscollar_ = true;   // 点滅・アニメーション中も更新可能
+            isActive_ = true; // 死亡演出中も更新・描画可能にする
+        }
 	}
     /// <summary>
     /// 現在のアクティブ状態を取得
@@ -93,12 +88,13 @@ public: // メンバ関数
     /// 敵のOBB（当たり判定）を取得
     /// </summary>
     OBB GetOBB() const;
-    /// <summary>
-    /// 新しい座標と移動タイプを設定
-    /// </summary>
-    /// <param name="pos">新しい座標</param>
-    /// <param name="moveType">移動タイプ</param>
-    void SetnewTranslate(const Vector3& pos, MoveType moveType);
+
+    void Spawn(const Vector3& pos, MoveType moveType);
+    void UpdateSpawn();
+    void OnHit();   // ← これを追加
+    void UpdateActive();
+    void UpdateDying();
+
 private: // メンバ変数
 	// ポインタ
     Player* player_; // プレイヤー
@@ -126,9 +122,35 @@ private: // メンバ変数
     //====================================================
     bool isDying_ = false;                   // 死亡エフェクト中かどうか
     float deathTimer_ = 0.0f;                // 死亡経過時間
-    const float deathDuration_ = 1.0f;       // 死亡アニメーション時間（秒）
+    const float deathDuration_ = 0.4f;       // 死亡アニメーション時間（秒）
     bool isActive_ = false;                  // 有効かどうか
     bool isDead_ = false;                    // 完全に削除済みかどうか
+
+
+        
+    bool iscollar_ = false;                  // 有効かどうか
+    
+    float t;
+
+    // 状態遷移
+    State state_ = State::Dead;
+
+
+    // Spawn演出用
+    float spawnTimer_ = 0.0f;
+    float spawnDuration_ = 1.0f; // 1秒演出
+    Vector3 spawnStartPos_;
+    Vector3 spawnTargetPos_;
+    bool hasTriggeredParticle_ = false;
 public:   // アクセッサ（Getter / Setter）
-	float GetSpawnBaseZ() const { return spawnBaseZ_; }
+	   
+    std::function<void(const Vector3&)> onDeathCallback;
+
+    float GetSpawnBaseZ() const { return spawnBaseZ_; }
+     
+	// Transformのpositionを返すgetter
+	Vector3 GetPosition() const {
+		return transform_.translate;
+	}
+
 };

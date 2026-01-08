@@ -53,7 +53,7 @@ private: // メンバ変数
 	// ランダムエンジン
 	std::mt19937 randomEngine;
 	//最大インスタンス
-	uint32_t MaxInstanceCount = 200;
+	uint32_t MaxInstanceCount = 1500;
 	//ビルボード行列
 	Matrix4x4 backToFrontMatrix;
 	// パーティクルグループコンテナ

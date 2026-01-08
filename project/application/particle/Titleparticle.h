@@ -2,6 +2,7 @@
 #include <ParticleManager.h>
 #include <ParticleEmitter.h>
 #include<FollowEmitter.h>
+#include<DefaultParticleEmitter.h>
 
 // タイトル専用パーティクル
 class Titleparticle {
@@ -22,5 +23,4 @@ private: // メンバ変数
     RandomParameter random_;
     // エミッター生成
     std::unique_ptr <FollowEmitter> particles_02_;
-
 };
