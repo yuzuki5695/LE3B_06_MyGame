@@ -32,7 +32,7 @@ void TitleScene::Initialize() {
 
     // スカイボックス生成 
     skybox_ = Skybox::Create("CubemapBox.dds", Transform{ { 1000.0f, 1000.0f, 1000.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 100.0f } });
-    // プレイヤーモデル生成（タイトル演出用） 
+    // プレイヤーパラメータ 
     playertransform_ = { {1.0f, 1.0f, 1.0f}, {0.0f, 0.9f, 0.0f},  -20.0f,0.0f,40.0f };
     titleStartX_ = -20.0f;
     titleEndX_ = -10.0f;
@@ -97,36 +97,10 @@ void TitleScene::Update() {
     skyTrans.rotate.y += 0.001f; // Y軸回転（1フレームごとに少しずつ）
     skybox_->SetRotate(skyTrans.rotate);
     skybox_->Update();
-    // プレイヤーモデルの移動（
-    if (!moveFinished) {
-        // --- 位置のイージング ---
-        timer += 1.0f;
-        float t = std::clamp(timer / moveDuration, 0.0f, 1.0f);
- 
-        // EaseOutCubic
-        float easeT = 1.0f - powf(1.0f - t, 3.0f);
-
-        float startX = -20.0f;
-        float endX   = -10.0f;
-
-        playertransform_.translate.x = startX + (endX - startX) * easeT;
-
-        // 移動が完了したらフラグを立てる
-        if (t >= 1.0f) {
-            moveFinished = true;
-            timer = 0.0f;  // カラー用にリセット
-        }
-
-        player_->GetPlayerObject()->SetTranslate(playertransform_.translate);
-    }
-
-
-    time += kFloatSpeed;                     // 更新速度（0.05f は揺れの速さ） 
-    playertransform_.translate.y = 0.0f + sinf(time) * kFloatAmplitude;  // 中心Y=-10.0f、振幅3.0f 
-    player_->GetPlayerObject()->SetTranslate(playertransform_.translate);
+     
+    // プレイヤーの演出
+    UpdateTitlePlayerMotion();
     player_->Update();
-
-
 
     ParticleManager::GetInstance()->Update(); 
     particle_->Update();
@@ -155,14 +129,10 @@ void TitleScene::Draw() {
     // 箱オブジェクトの描画準備。3Dオブジェクトの描画に共通のグラフィックスコマンドを積む
     SkyboxCommon::GetInstance()->Commondrawing();
     skybox_->Draw();
-
     // 3Dオブジェクトの描画準備。3Dオブジェクトの描画に共通のグラフィックスコマンドを積む
     Object3dCommon::GetInstance()->Commondrawing();
-
-
+    // プレイヤーの描画処理
     player_->Draw();
-
-
     // パーティクルの描画準備。パーティクルの描画に共通のグラフィックスコマンドを積む 
     ParticleCommon::GetInstance()->Commondrawing();
     ParticleManager::GetInstance()->Draw();
@@ -171,11 +141,10 @@ void TitleScene::Draw() {
 #pragma region 全てのSprite個々の描画処理
     // Spriteの描画準備。Spriteの描画に共通のグラフィックスコマンドを積む
     SpriteCommon::GetInstance()->Commondrawing();
-	 
+    // 各UIの描画処理
     for (Sprite* sprite : uiSprites_) {
         sprite->Draw();
     }
-
 	// フェードの描画
     FadeManager::GetInstance()->Draw();
 #pragma endregion 全てのSprite個々の描画処理
@@ -209,4 +178,30 @@ void TitleScene::UpdateSceneTransition() {
         // ゲームプレイシーンへ移行
         SceneManager::GetInstance()->ChangeScene("GAMEPLAY");
     }
+}
+
+void TitleScene::UpdateTitlePlayerMotion() {
+    // ===== 横移動（イージング） =====
+    if (!moveFinished) {
+        timer += 1.0f;
+        float t = std::clamp(timer / moveDuration, 0.0f, 1.0f);
+
+        // EaseOutCubic
+        float easeT = 1.0f - powf(1.0f - t, 3.0f);
+
+        playertransform_.translate.x =
+            titleStartX_ + (titleEndX_ - titleStartX_) * easeT;
+
+        if (t >= 1.0f) {
+            moveFinished = true;
+            timer = 0.0f;
+        }
+    }
+
+    // ===== 上下の浮遊 =====
+    time += kFloatSpeed;
+    playertransform_.translate.y = sinf(time) * kFloatAmplitude;
+
+    // ===== Transform を Object に反映 =====
+    player_->GetPlayerObject()->SetTranslate(playertransform_.translate);
 }

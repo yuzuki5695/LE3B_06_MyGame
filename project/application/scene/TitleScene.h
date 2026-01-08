@@ -56,6 +56,12 @@ public: // メンバ関数
     /// フェード完了後のシーン遷移処理
     /// </summary>
     void UpdateSceneTransition();
+    /// <summary>
+    /// タイトル画面用プレイヤー演出更新
+    /// ・横方向イージング移動
+    /// ・上下の浮遊アニメーション
+    /// </summary>
+    void UpdateTitlePlayerMotion();
 private: // メンバ変数
     std::unique_ptr <Sprite> ui_title_;
     std::unique_ptr <Sprite> ui_start_;
