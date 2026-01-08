@@ -438,6 +438,12 @@
     <ClCompile Include="application\particle\DefaultParticleEmitter.cpp">
       <Filter>ソース ファイル\application\particle</Filter>
     </ClCompile>
+    <ClCompile Include="application\enemy\EnemySpawner.cpp">
+      <Filter>ソース ファイル\application\enemy</Filter>
+    </ClCompile>
+    <ClCompile Include="application\loader\EnemyLoader.cpp">
+      <Filter>ソース ファイル\application\loader</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="engine\2d\Sprite.h">
@@ -748,6 +754,12 @@
     </ClInclude>
     <ClInclude Include="application\particle\DefaultParticleEmitter.h">
       <Filter>ヘッダー ファイル\application\particle</Filter>
+    </ClInclude>
+    <ClInclude Include="application\enemy\EnemySpawner.h">
+      <Filter>ソース ファイル\application\enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="application\loader\EnemyLoader.h">
+      <Filter>ソース ファイル\application\loader</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

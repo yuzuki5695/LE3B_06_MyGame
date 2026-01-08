@@ -16,7 +16,7 @@ void GamePlayCamera::Initialize() {
     // カメラの初期設定
     //mode_ = ViewType::Main;
 
-    speed = 0.2f;        // 1フレームあたり移動距離
+    speed = 0.3f;        // 1フレームあたり移動距離
     movefige = true;
     currentSegment = 0;
 
@@ -33,8 +33,23 @@ void GamePlayCamera::Initialize() {
     // メインカメラは追従モードにする
     CameraManager::GetInstance()->SetMode(CameraMode::Follow);
 
-    followInitialized_ = false;  
-    subOffset_ = {5.5f,-1.0f,15.0f};
+    followInitialized_ = false;
+    subOffset_ = { 5.5f,-1.0f,15.0f };
+
+    railInfo_.totalLength = 0.0f;
+    railInfo_.segmentLengths.clear();
+
+    for (size_t i = 0; i + 1 < bezierPoints.size(); ++i) {
+        float len = Length(
+            bezierPoints[i + 1].controlPoint -
+            bezierPoints[i].controlPoint
+        );
+        railInfo_.segmentLengths.push_back(len);
+        railInfo_.totalLength += len;
+    }
+
+    currentRailLength_ = 0.0f;
+    prevPos_ = bezierPos_;
 }
 
 ///====================================================
@@ -85,12 +100,13 @@ void GamePlayCamera::UpdateBezierMovement() {
     // 現在のセグメント start / end
     const Vector3& start = bezierPoints[currentSegment].controlPoint;
     const Vector3& end = bezierPoints[currentSegment + 1].controlPoint;
-
+    Vector3 oldPos = bezierPos_;
 
     // --- 直線モード（start → point_01） ---
     if (currentSegment == 0) {
         Vector3 dir = end - bezierPos_;
         float dist = Length(dir);
+
 
         if (dist <= speed) {
             bezierPos_ = end;
@@ -98,13 +114,25 @@ void GamePlayCamera::UpdateBezierMovement() {
             currentSegment++;
         } else {
             bezierPos_ += Normalize(dir) * speed; // ベクトル直進
+            currentRailLength_ += Length(Normalize(dir) * speed); // ★追加
         }
         return;
     }
 
-
     // --- 補完モード（それ以降） ---
-    t_ += speed * 0.01f; // イージング進行速度（調整可能）
+    // 現在のセグメント長を取得（Catmull-Rom補間を距離基準で進めるため）
+    Vector3 p0 = (currentSegment > 0) ? bezierPoints[currentSegment - 1].controlPoint : start;
+    Vector3 p1 = start;
+    Vector3 p2 = end;
+    Vector3 p3 = (currentSegment + 2 < bezierPoints.size()) ? bezierPoints[currentSegment + 2].controlPoint : end;
+  
+    // 簡易的にセグメント長を「直線距離」で近似
+    float segmentLength = Length(p2 - p1);
+    if (segmentLength < 0.0001f) segmentLength = 0.0001f;
+
+    // t の増分を距離基準で計算
+    float deltaT = speed / segmentLength;
+    t_ += deltaT;
 
     if (t_ >= 1.0f) {
         t_ = 0.0f;
@@ -116,16 +144,12 @@ void GamePlayCamera::UpdateBezierMovement() {
             return;
         }
     } else {
-        // 次セグメントの制御点群（前後を参照して曲線化）
-        Vector3 p0 = (currentSegment > 0) ? bezierPoints[currentSegment - 1].controlPoint : start;
-        Vector3 p1 = start;
-        Vector3 p2 = end;
-        Vector3 p3 = (currentSegment + 2 < bezierPoints.size()) ?
-            bezierPoints[currentSegment + 2].controlPoint : end;
-
-        // Cubic Catmull-Rom スプライン補間（滑らかに繋がる）
+        // Catmull-Rom 補間
         bezierPos_ = CatmullRom(p0, p1, p2, p3, t_);
     }
+    // 移動距離を累積
+    currentRailLength_ += Length(bezierPos_ - oldPos);
+    prevPos_ = bezierPos_;
 }
 
 void GamePlayCamera::UpdateCameraRotation() {
@@ -284,4 +308,8 @@ void GamePlayCamera::UpdateSubCameraFollow() {
         float pitch = -asinf(dir.y);
         subCam->SetRotate({ pitch, yaw, 0.0f });
     }
+}
+float GamePlayCamera::GetRailProgressRate() const {
+    if (railInfo_.totalLength <= 0.0001f) return 0.0f;
+    return std::clamp(currentRailLength_ / railInfo_.totalLength, 0.0f, 1.0f);
 }

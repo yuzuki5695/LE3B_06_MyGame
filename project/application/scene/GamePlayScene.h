@@ -12,6 +12,7 @@
 #include<EventManager.h>
 #include<StageManager.h>
 #include<GamePlayparticle.h>
+#include <EnemySpawner.h>
 
 /// <summary>
 /// ゲームプレイシーン
@@ -35,10 +36,7 @@ public: // メンバ関数
     /// 描画処理
     /// </summary>
     void Draw() override;
-    /// <summary>
-    /// 敵出現処理（レベルデータに基づく）
-    /// </summary>
-    void EnemySpawn();
+
     /// <summary>
     /// プレイヤーの弾と敵との衝突判定処理
     /// </summary>
@@ -47,50 +45,51 @@ public: // メンバ関数
     /// 敵の弾とプレイヤーとの衝突判定処理
     /// </summary>
     void CheckEnemyBulletPlayerCollisionsOBB();
-    /// <summary>
-    /// V字フォーメーションでの敵出現処理
-    /// </summary>
-   void SpawnVFormation(const EnemySpawnTrigger& trigger);
-    /// <summary>
-    /// 逆ステップフォーメーションでの敵出現処理
-    /// </summary>
-    void SpawnReverseStepFormation(const EnemySpawnTrigger& trigger);
-    /// <summary>
-    /// ジグザグフォーメーションでの敵出現処理
-    /// </summary>
-    void SpawnZigZagFormation(const EnemySpawnTrigger& trigger);
+
     void CheckEnemyPlayerCollisionsOBB();
+
+    void StartStageProgressUI();
+    void UpdateStageProgressUI();
+    void UpdateRandomMove();
 
 private: // メンバ変数
     // オブジェクトデータ
     // プレイヤー
-	std::unique_ptr <Player> player_ = nullptr;
+    std::unique_ptr <Player> player_ = nullptr;
     bool playerhp_ = true;
-	// キャラクターローダー
+    // キャラクターローダー
     std::unique_ptr<CharacterLoader> levelLoader_ = nullptr;
     // レベルデータ格納用インスタンスを生成
     LevelData* levelData = nullptr;
     bool end;
     // 最大数
     int MAX_ENEMY;
-	// 敵リスト
+    // 敵リスト
     std::vector<std::unique_ptr<Enemy>> enemies_;
-	// 敵出現トリガーリスト
+    std::unique_ptr<EnemySpawner> enemySpawner_;
+    // 敵出現トリガーリスト
     std::vector<EnemySpawnTrigger> spawnTriggers_;
-	// クリアゲート(仮)
+    // クリアゲート(仮)
     std::unique_ptr <Object3d> wall = nullptr;
-    // ゴール判定用Z座標
-	float goalpos_ = 300.0f;
-	// ゴールフラグ
+    // ゴールフラグ
     bool goal_ = false;
-	// スカイボックス
+    // スカイボックス
     std::unique_ptr <Skybox> Box_ = nullptr;
-	// イベント処理
-    std::vector<EventManager> event_; 
+    // イベント処理
+    std::vector<EventManager> event_;
     /// UI(タイトルへ(仮))
     std::unique_ptr <Sprite> ui1_;
     std::vector<std::unique_ptr<Sprite>> uis_;
     uint32_t MAXui_;
-        
+
     std::unique_ptr <GamePlayparticle> particles_;
+
+    std::unique_ptr <Sprite> gage_;
+    std::unique_ptr <Sprite> player_ui_;
+    // ===== UI進行管理 =====
+    float uiStartRailLength_ = 0.0f;
+    bool uiProgressStarted_ = false;
+    bool uiProgressFinished_ = false;
+
+
 };
