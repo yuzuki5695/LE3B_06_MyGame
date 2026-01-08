@@ -7,6 +7,7 @@
 #include <Skybox.h>
 #include<FadeManager.h>
 #include<Titleparticle.h>
+#include<Player.h>
 
 /// <summary>
 /// タイトルシーン
@@ -60,10 +61,10 @@ private: // メンバ変数
     std::unique_ptr <Sprite> ui_start_;
     std::vector<Sprite*> uiSprites_;
 
+    std::unique_ptr <Player> player_;;
     // 背景オブジェクト 
     std::unique_ptr <Skybox> skybox_ = nullptr;
     // 演出用モデル
-    std::unique_ptr <Object3d> player_;
     Transform playertransform_{};
     // 移動制御
     float timer;

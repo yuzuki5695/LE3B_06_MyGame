@@ -17,13 +17,8 @@
 
 using namespace MatrixVector;
 
-///=====================================================================
-/// デストラクタ
-///=====================================================================
 Player::~Player() {}
-///=====================================================================
-/// 初期化処理
-///=====================================================================
+
 void Player::Initialize() {	 
     // モデル・テクスチャ読み込み
     ModelManager::GetInstance()->LoadModel("Gameplay/Model/Player/Player.obj");     
@@ -54,109 +49,110 @@ void Player::Initialize() {
     transform_.scale = { 0.5f, 0.5f, 0.5f };
     fallVelocity = { 0.0f,0.0f,0.0f };
 }
-///=====================================================================
-/// 更新処理
-///=====================================================================
+
 void Player::Update() {
     CameraManager* camMgr = CameraManager::GetInstance();
-    Camera* activeCam = camMgr->GetMainCamera();
-    GamePlayCamera* gameCam = camMgr->GetGameplayCamera();
+    
+    // GamePlayCamera じゃないならレール処理をしない
+    if (camMgr->GetActiveSceneCamera() == SceneCameraType::Gameplay) {
+        //        UpdateNonRail();   // 何もしない or 簡易更新
 
-    // カメラのベジェ位置（レール上の実座標）
-    Vector3 camPos = gameCam->GetBezierPos();
+        Camera* activeCam = camMgr->GetMainCamera();
+        GamePlayCamera* gameCam = camMgr->GetGameplayCamera();
 
-    // カメラの向き（すでに正規化されている前提）
-    Vector3 forward = gameCam->GetForward();
-    Vector3 right = gameCam->GetRight();
-    Vector3 up = gameCam->GetUp();
+        // カメラのベジェ位置（レール上の実座標）
+        Vector3 camPos = gameCam->GetBezierPos();
 
-    // ====== カメラ基準のプレイヤーオフセット ======
-    // プレイヤーの基準位置（カメラからの相対座標）
-    Vector3 cameraBaseOffset = { 0.0f, -3.0f, 30.0f };
+        // カメラの向き（すでに正規化されている前提）
+        Vector3 forward = gameCam->GetForward();
+        Vector3 right = gameCam->GetRight();
+        Vector3 up = gameCam->GetUp();
 
-    // カメラ座標系に変換
-    Vector3 cameraBaseWorld =
-        right * cameraBaseOffset.x +
-        up * cameraBaseOffset.y +
-        forward * cameraBaseOffset.z;
-    // メインカメラ中
-    if (CameraManager::GetInstance()->GetTypeview() == ViewCameraType::Main) {
-        // ===== プレイヤー回転（カメラ方向 + tilt） =====
-        transform_.rotate = activeCam->GetRotate();
-    }
+        // ====== カメラ基準のプレイヤーオフセット ======
+        // プレイヤーの基準位置（カメラからの相対座標）
+        Vector3 cameraBaseOffset = { 0.0f, -3.0f, 30.0f };
 
-    // 現在時刻を取得（秒）
-    float currentTime = static_cast<float>(std::chrono::duration<double>(std::chrono::high_resolution_clock::now().time_since_epoch()).count());
-
-    // deltaTime を計算
-    float deltaTime = currentTime - previousTime_;
-    previousTime_ = currentTime;
-
-    if (CameraManager::GetInstance()->GetTypeview() == ViewCameraType::Sub) {
-        // プレイヤ―死亡演出
-        StartDeathEffect();
-    }
-
-    if (iskeyActive_) {
-        float currentSpeed = isBoosting_ ? boostSpeed_ : normalSpeed_;
-        //UpdateBoostState();
-        MoveInput(currentSpeed); // ブースト中は速く移動 
-        // アクティブ中はキー操作を受け付ける
-        if (isDeadEffectActive_ && active_ == false) {
-            // プレイヤ―死亡演出
-//            StartDeathEffect();
-        } else {
-            // ターゲットを矢印キーで動かす
-            UpdateTargetPosition(targetpos_, 0.4f);   // ターゲットに使う
-            // 弾の発射
-            AttachBullet();
+        // カメラ座標系に変換
+        Vector3 cameraBaseWorld =
+            right * cameraBaseOffset.x +
+            up * cameraBaseOffset.y +
+            forward * cameraBaseOffset.z;
+        // メインカメラ中
+        if (CameraManager::GetInstance()->GetTypeview() == ViewCameraType::Main) {
+            // ===== プレイヤー回転（カメラ方向 + tilt） =====
+            transform_.rotate = activeCam->GetRotate();
         }
+
+        // 現在時刻を取得（秒）
+        float currentTime = static_cast<float>(std::chrono::duration<double>(std::chrono::high_resolution_clock::now().time_since_epoch()).count());
+
+        // deltaTime を計算
+        float deltaTime = currentTime - previousTime_;
+        previousTime_ = currentTime;
+
+        if (CameraManager::GetInstance()->GetTypeview() == ViewCameraType::Sub) {
+            // プレイヤ―死亡演出
+            StartDeathEffect();
+        }
+
+        if (iskeyActive_) {
+            float currentSpeed = isBoosting_ ? boostSpeed_ : normalSpeed_;
+            //UpdateBoostState();
+            MoveInput(currentSpeed); // ブースト中は速く移動 
+            // アクティブ中はキー操作を受け付ける
+            if (isDeadEffectActive_ && active_ == false) {
+                // プレイヤ―死亡演出
+    //            StartDeathEffect();
+            } else {
+                // ターゲットを矢印キーで動かす
+                UpdateTargetPosition(targetpos_, 0.4f);   // ターゲットに使う
+                // 弾の発射
+                AttachBullet();
+            }
+        }
+
+        Vector3 basePos = camPos + cameraBaseWorld + right * relativePos_.x + up * relativePos_.y;
+
+        // サブカメラ中は死亡オフセット加算
+        if (CameraManager::GetInstance()->GetTypeview() == ViewCameraType::Sub) {
+            transform_.translate = basePos + deathOffset_;
+        } else {
+            transform_.translate = basePos;
+        }
+
+
+
+        // デバッグ中のImGui表示
+        DebugImgui();
+        target_->SetTranslate(copypos);
+        target_->Update();
+        // 照準スプライトの位置更新（3D→2D変換)
+        UpdateReticlePosition();
+        targetreticle_->Update();
+
+        // 移動後の位置をObjectに反映
+        object->SetTranslate(transform_.translate);
+        object->SetRotate(transform_.rotate);
+        object->SetScale(transform_.scale);
     }
 
-    Vector3 basePos = camPos + cameraBaseWorld + right * relativePos_.x + up * relativePos_.y;
 
-    // サブカメラ中は死亡オフセット加算
-    if (CameraManager::GetInstance()->GetTypeview() == ViewCameraType::Sub) {
-        transform_.translate = basePos + deathOffset_;
-    } else {
-        transform_.translate = basePos;
-    }
-
-
-    // デバッグ中のImGui表示
-    DebugImgui();
-    target_->SetTranslate(copypos);
-    target_->Update();
-    // 照準スプライトの位置更新（3D→2D変換)
-    UpdateReticlePosition();
-    targetreticle_->Update();
-
-    // 移動後の位置をObjectに反映
-    object->SetTranslate(transform_.translate);
-    object->SetRotate(transform_.rotate);
-    object->SetScale(transform_.scale);
     // プレイヤー更新
     object->Update();
 }
 
-///=====================================================================
-/// 3D描画処理
-///=====================================================================
+
 void Player::Draw() {
     // プレイヤー描画
     object->Draw(); 
 }
-///=====================================================================
-/// スプライト描画処理
-///=====================================================================
+
 void Player::DrawSprite() { 
     if (isReticleVisible_) {
         targetreticle_->Draw();
     }
 }
-///=====================================================================
-/// デバッグ用ImGui
-///=====================================================================
+
 void Player::DebugImgui() {
 #ifdef USE_IMGUI
     ImGui::Begin("Player Control");

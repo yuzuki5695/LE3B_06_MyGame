@@ -23,6 +23,8 @@ void TitleScene::Initialize() {
 #pragma region シーンの初期化  
     // カメラの初期化
     InitializeCamera();
+    // フェードマネージャの初期化
+    FadeManager::GetInstance()->Initialize();
     // リソースの読み込み
     LoadResources();
     // UIの初期化
@@ -32,7 +34,6 @@ void TitleScene::Initialize() {
     skybox_ = Skybox::Create("CubemapBox.dds", Transform{ { 1000.0f, 1000.0f, 1000.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 100.0f } });
     // プレイヤーモデル生成（タイトル演出用） 
     playertransform_ = { {1.0f, 1.0f, 1.0f}, {0.0f, 0.9f, 0.0f},  -20.0f,0.0f,40.0f };
-    player_ = Object3d::Create("Title/Model/Player/Player.obj", playertransform_);
     titleStartX_ = -20.0f;
     titleEndX_ = -10.0f;
     // モデル移動のパラメータ
@@ -40,11 +41,14 @@ void TitleScene::Initialize() {
     moveDuration = kTitleMoveDuration;  // 移動にかけるフレーム数（約2秒）     
     moveFinished = false;
     time = 0.0f;          // 経過時間 
-    // フェードマネージャの初期化
-    FadeManager::GetInstance()->Initialize();
+
+    // プレイヤーの生成、初期化
+    player_ = std::make_unique<Player>();
+    player_->Initialize();
+    player_->SetTransform(playertransform_);
     // パーティクルのの生成、初期化
     particle_ = std::make_unique<Titleparticle>();
-    particle_->Initialize(player_.get());
+    particle_->Initialize(player_->GetPlayerObject());
 
 #pragma endregion シーンの初期化
 }
@@ -61,7 +65,6 @@ void TitleScene::LoadResources() {
     // モデルの読み込み
     ModelManager::GetInstance()->LoadModel("Title/Title.obj");
     ModelManager::GetInstance()->LoadModel("Tile.obj");
-    ModelManager::GetInstance()->LoadModel("Title/Model/Player/Player.obj");
 }
 
 void TitleScene::InitializeUI() {  
@@ -114,14 +117,15 @@ void TitleScene::Update() {
             timer = 0.0f;  // カラー用にリセット
         }
 
-        player_->SetTranslate(playertransform_.translate);
+        player_->GetPlayerObject()->SetTranslate(playertransform_.translate);
     }
 
 
     time += kFloatSpeed;                     // 更新速度（0.05f は揺れの速さ） 
     playertransform_.translate.y = 0.0f + sinf(time) * kFloatAmplitude;  // 中心Y=-10.0f、振幅3.0f 
-    player_->SetTranslate(playertransform_.translate);
+    player_->GetPlayerObject()->SetTranslate(playertransform_.translate);
     player_->Update();
+
 
 
     ParticleManager::GetInstance()->Update(); 
@@ -138,20 +142,6 @@ void TitleScene::Update() {
 
 #pragma region  ImGuiの更新処理開始
 #ifdef USE_IMGUI
-    //// ImGuiでTileの位置・回転・スケールを変更
-    //ImGui::Begin("Tile Controller");
-
-    //ImGui::Text("Position");
-    //ImGui::DragFloat3("Translation", &playertransform_.translate.x, 0.1f);
-
-    //ImGui::Text("Rotation");
-    //ImGui::DragFloat3("Rotation", &playertransform_.rotate.x, 0.1f);
-
-    //
-    //player_->SetTranslate(playertransform_.translate);
-    //player_->SetRotate(playertransform_.rotate);
-
-    //ImGui::End();
 
 	FadeManager::GetInstance()->DrawImGui(); // フェードマネージャのImGui制御    
     CameraManager::GetInstance()->DrawImGui();  // カメラマネージャのImGui制御
@@ -169,7 +159,9 @@ void TitleScene::Draw() {
     // 3Dオブジェクトの描画準備。3Dオブジェクトの描画に共通のグラフィックスコマンドを積む
     Object3dCommon::GetInstance()->Commondrawing();
 
+
     player_->Draw();
+
 
     // パーティクルの描画準備。パーティクルの描画に共通のグラフィックスコマンドを積む 
     ParticleCommon::GetInstance()->Commondrawing();
