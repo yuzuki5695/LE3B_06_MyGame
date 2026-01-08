@@ -13,12 +13,10 @@
 #include<SkyboxCommon.h>
 #include<FadeManager.h>
 
-namespace {
-    constexpr float kFadeDuration = 1.0f;
-}
+namespace { constexpr float kFadeDuration = 1.0f; }
 
 void TitleScene::Finalize() {
-    FadeManager::GetInstance()->Finalize();
+    FadeManager::GetInstance()->Finalize();  //  フェードマネージャの解放処理
 }
 
 void TitleScene::Initialize() {
@@ -140,23 +138,22 @@ void TitleScene::Update() {
 
 #pragma region  ImGuiの更新処理開始
 #ifdef USE_IMGUI
-    // ImGuiでTileの位置・回転・スケールを変更
-    ImGui::Begin("Tile Controller");
+    //// ImGuiでTileの位置・回転・スケールを変更
+    //ImGui::Begin("Tile Controller");
 
-    ImGui::Text("Position");
-    ImGui::DragFloat3("Translation", &playertransform_.translate.x, 0.1f);
+    //ImGui::Text("Position");
+    //ImGui::DragFloat3("Translation", &playertransform_.translate.x, 0.1f);
 
-    ImGui::Text("Rotation");
-    ImGui::DragFloat3("Rotation", &playertransform_.rotate.x, 0.1f);
+    //ImGui::Text("Rotation");
+    //ImGui::DragFloat3("Rotation", &playertransform_.rotate.x, 0.1f);
 
-    
-    player_->SetTranslate(playertransform_.translate);
-    player_->SetRotate(playertransform_.rotate);
+    //
+    //player_->SetTranslate(playertransform_.translate);
+    //player_->SetRotate(playertransform_.rotate);
 
-    ImGui::End();
+    //ImGui::End();
 
-	FadeManager::GetInstance()->DrawImGui(); // フェードマネージャのImGui制御
-        
+	FadeManager::GetInstance()->DrawImGui(); // フェードマネージャのImGui制御    
     CameraManager::GetInstance()->DrawImGui();  // カメラマネージャのImGui制御
 
 #endif // USE_IMGUI
