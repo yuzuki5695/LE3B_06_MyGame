@@ -32,7 +32,7 @@ void StageManager::Initialize() {
     levelData_ = loader_->LoadFile("stage");  // ←ここでロード
 
     // 敵モデルをあらかじめ読み込む
-    ModelManager::GetInstance()->LoadModel("Enemy.obj");
+   // ModelManager::GetInstance()->LoadModel("Enemy.obj");
     ModelManager::GetInstance()->LoadModel("Tile.obj");
     
     // オブジェクトの作成
