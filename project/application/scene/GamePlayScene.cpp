@@ -54,12 +54,12 @@ void GamePlayScene::Initialize() {
     
 
     MAXui_ = 1;
-    uis_.push_back(Sprite::Create("Gameplay/Texture/UI_01.png", Vector2{ 8.0f, 430.0f }, 0.0f, Vector2{ 100.0f,80.0f })); 
-    uis_.push_back(Sprite::Create("Gameplay/Texture/UI_02.png", Vector2{ 8.0f, 530.0f }, 0.0f, Vector2{ 100.0f,80.0f })); 
-    uis_.push_back(Sprite::Create("Gameplay/Texture/UI_03.png", Vector2{ 8.0f, 630.0f }, 0.0f, Vector2{ 100.0f,80.0f })); 
-    uis_[0]->SetTextureSize(Vector2{100.0f,80.0f});
-    uis_[1]->SetTextureSize(Vector2{100.0f,80.0f});
-    uis_[2]->SetTextureSize(Vector2{100.0f,80.0f});
+    uis_.push_back(Sprite::Create("Gameplay/Texture/UI_01.png", Vector2{ 8.0f, 430.0f }, 0.0f, Vector2{ 200.0f,80.0f })); 
+    uis_.push_back(Sprite::Create("Gameplay/Texture/UI_02.png", Vector2{ 8.0f, 530.0f }, 0.0f, Vector2{ 200.0f,80.0f })); 
+    uis_.push_back(Sprite::Create("Gameplay/Texture/UI_03.png", Vector2{ 8.0f, 630.0f }, 0.0f, Vector2{ 200.0f,80.0f })); 
+    uis_[0]->SetTextureSize(Vector2{200.0f,80.0f});
+    uis_[1]->SetTextureSize(Vector2{200.0f,80.0f});
+    uis_[2]->SetTextureSize(Vector2{200.0f,80.0f});
 
     // タイトルに戻るUIを生成
     ui1_ = Sprite::Create("titlereturn02.png", Vector2{ 1100.0f, 5.0f }, 0.0f, Vector2{ 150.0f,100.0f });
@@ -160,7 +160,7 @@ void GamePlayScene::Update() {
 
     // ゲームスタートイベントが終了したらプレイヤ―操作可能に
     if (EventManager::GetInstance()->IsFinished() && CameraManager::GetInstance()->GetTypeview() == ViewCameraType::Main) {
-        //   イベント終了 → プレイヤーを操作可能に
+        // イベント終了 → プレイヤーを操作可能に
         player_->SetKeyActive(true);
         player_->SetReticleVisible(true);
         // 進行度を設定
