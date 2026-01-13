@@ -29,27 +29,11 @@ void TitleScene::Initialize() {
     LoadResources();
     // UIの初期化
     InitializeUI();
-
-    // スカイボックス生成 
-    skybox_ = Skybox::Create("CubemapBox.dds", Transform{ { 1000.0f, 1000.0f, 1000.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 100.0f } });
-    // プレイヤーパラメータ 
-    playertransform_ = { {1.0f, 1.0f, 1.0f}, {0.0f, 0.9f, 0.0f},  -20.0f,0.0f,40.0f };
-    titleStartX_ = -20.0f;
-    titleEndX_ = -10.0f;
-    // モデル移動のパラメータ
-    timer = 0.0f;
-    moveDuration = kTitleMoveDuration;  // 移動にかけるフレーム数（約2秒）     
-    moveFinished = false;
-    time = 0.0f;          // 経過時間 
-
-    // プレイヤーの生成、初期化
-    player_ = std::make_unique<Player>();
-    player_->Initialize();
-    player_->SetTransform(playertransform_);
+    // モデルの初期化
+    InitializeModel();
     // パーティクルのの生成、初期化
     particle_ = std::make_unique<Titleparticle>();
     particle_->Initialize(player_->GetPlayerObject());
-
 #pragma endregion シーンの初期化
 }
 
@@ -79,6 +63,24 @@ void TitleScene::InitializeUI() {
     uiSprites_ = { ui_start_.get(),ui_title_.get() };
 }
 
+void TitleScene::InitializeModel() {
+    // スカイボックス生成 
+    skybox_ = Skybox::Create("CubemapBox.dds", Transform{ { 1000.0f, 1000.0f, 1000.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 100.0f } });
+    // プレイヤーパラメータ 
+    playertransform_ = { {1.0f, 1.0f, 1.0f}, {0.0f, 0.9f, 0.0f},  -20.0f,0.0f,40.0f };
+    titleStartX_ = -20.0f;
+    titleEndX_ = -10.0f;
+    // モデル移動のパラメータ
+    timer = 0.0f;
+    moveDuration = kTitleMoveDuration;  // 移動にかけるフレーム数（約2秒）     
+    moveFinished = false;
+    time = 0.0f;          // 経過時間 
+    // プレイヤーの生成、初期化
+    player_ = std::make_unique<Player>();
+    player_->Initialize();
+    player_->SetTransform(playertransform_);
+}
+
 void TitleScene::Update() {
     // シーン開始時にフェードインを開始
     UpdateFadeIn();
@@ -86,9 +88,8 @@ void TitleScene::Update() {
     UpdateFadeOut();
     // 次のシーンへ移行する
     UpdateSceneTransition();
-
-    /*-------------------------------------------*/
-    /*--------------Cameraの更新処理---------------*/
+    /*------------------------------------------*/
+    /*--------------Cameraの更新処理--------------*/
     /*------------------------------------------*/
     CameraManager::GetInstance()->Update();
 #pragma region 全てのObject3d個々の更新処理 
@@ -107,19 +108,15 @@ void TitleScene::Update() {
 #pragma endregion 全てのObject3d個々の更新処理
 
 #pragma region 全てのSprite個々の更新処理
-
     for (Sprite* sprite : uiSprites_) {
         sprite->Update();
     }
-
 #pragma endregion 全てのSprite個々の更新処理
 
 #pragma region  ImGuiの更新処理開始
 #ifdef USE_IMGUI
-
 	FadeManager::GetInstance()->DrawImGui(); // フェードマネージャのImGui制御    
     CameraManager::GetInstance()->DrawImGui();  // カメラマネージャのImGui制御
-
 #endif // USE_IMGUI
 #pragma endregion ImGuiの更新処理終了
 }

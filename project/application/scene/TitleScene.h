@@ -45,6 +45,10 @@ public: // メンバ関数
     /// </summary> 
     void InitializeUI();
     /// <summary>
+    /// モデルの生成と初期化を行う
+    /// </summary> 
+    void InitializeModel();
+    /// <summary>
     /// フェードイン開始および更新処理
     /// </summary>
     void UpdateFadeIn();
