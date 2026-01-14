@@ -33,7 +33,6 @@ void GameOverScene::Initialize() {
     ModelManager::GetInstance()->LoadModel("Gameover/Model/parts_04.obj");
 
     // テクスチャの読み込み
-    TextureManager::GetInstance()->LoadTexture("TitleEnter.png");
     TextureManager::GetInstance()->LoadTexture("CubemapBox.dds");
     TextureManager::GetInstance()->LoadTexture("Gameover/Texture/Gameover.png");
     TextureManager::GetInstance()->LoadTexture("Gameover/Texture/UI_01.png");

@@ -81,6 +81,9 @@ public: // メンバ関数
     GamePlayCamera* GetGameplayCamera() const { return gameplay_.get(); }
     GameClearCamera* GetGameClearCamera() { return gameclear_.get(); }
 
+
+    SceneCameraType GetActiveSceneCamera() const{ return activeSceneCameraType_; }
+
     CameraSwitchType GetSwitchType() const { return switchType_; }
     void SetSwitchType(CameraSwitchType type) { switchType_ = type; }
 
