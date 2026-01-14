@@ -20,7 +20,7 @@ Enemy::~Enemy() {}
 /// 初期化処理
 ///====================================================
 void Enemy::Initialize() {
-    ModelManager::GetInstance()->LoadModel("Enemy.obj");
+    ModelManager::GetInstance()->LoadModel("Gameplay/Model/Enemy/Enemy.obj");     
     // 乱数エンジンを初期化
     std::random_device rd;// 乱数生成器
     randomEngine = std::mt19937(rd());
@@ -32,7 +32,7 @@ void Enemy::Initialize() {
     Vector3 xyz = { distX(randomEngine), distY(randomEngine),distZ(randomEngine) };
     // 弾の発射間隔をランダム設定（2〜7秒）
     transform_ = { { 1.0f, 1.0f, 1.0f }, { 0.0f, 0.0f, 0.0f },xyz };
-    object = Object3d::Create("Enemy.obj", transform_);
+    object = Object3d::Create("Gameplay/Model/Enemy/Enemy.obj", transform_);
     object->SetScale({ 1.0f, 1.0f, 1.0f }); // 安定したサイズを明示
     bulletIntervalDist_ = std::uniform_real_distribution<float>(0.2f, 3.0f); // 発射間隔を決定する分布
     bulletInterval_ = bulletIntervalDist_(randomEngine); // 最初の間隔を決定

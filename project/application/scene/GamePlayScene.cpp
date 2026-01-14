@@ -38,12 +38,6 @@ void GamePlayScene::Initialize() {
     CameraManager::GetInstance()->SetTypeview(ViewCameraType::Main);
 
     // テクスチャを読み込む
-    TextureManager::GetInstance()->LoadTexture("Gameplay/Move.png");
-    TextureManager::GetInstance()->LoadTexture("Gameplay/Space.png");
-    TextureManager::GetInstance()->LoadTexture("Gameplay/Shift.png");
-    TextureManager::GetInstance()->LoadTexture("Gameplay/StandardChange.png");     
-    TextureManager::GetInstance()->LoadTexture("titlereturn.png");
-    TextureManager::GetInstance()->LoadTexture("titlereturn02.png");
         
     TextureManager::GetInstance()->LoadTexture("Gameplay/Texture/UI_01.png");
     TextureManager::GetInstance()->LoadTexture("Gameplay/Texture/UI_02.png");
@@ -54,16 +48,12 @@ void GamePlayScene::Initialize() {
     
 
     MAXui_ = 1;
-    uis_.push_back(Sprite::Create("Gameplay/Texture/UI_01.png", Vector2{ 8.0f, 430.0f }, 0.0f, Vector2{ 100.0f,80.0f })); 
-    uis_.push_back(Sprite::Create("Gameplay/Texture/UI_02.png", Vector2{ 8.0f, 530.0f }, 0.0f, Vector2{ 100.0f,80.0f })); 
-    uis_.push_back(Sprite::Create("Gameplay/Texture/UI_03.png", Vector2{ 8.0f, 630.0f }, 0.0f, Vector2{ 100.0f,80.0f })); 
-    uis_[0]->SetTextureSize(Vector2{100.0f,80.0f});
-    uis_[1]->SetTextureSize(Vector2{100.0f,80.0f});
-    uis_[2]->SetTextureSize(Vector2{100.0f,80.0f});
-
-    // タイトルに戻るUIを生成
-    ui1_ = Sprite::Create("titlereturn02.png", Vector2{ 1100.0f, 5.0f }, 0.0f, Vector2{ 150.0f,100.0f });
-    ui1_->SetTextureSize(Vector2{ 300.0f,200.0f });
+    uis_.push_back(Sprite::Create("Gameplay/Texture/UI_01.png", Vector2{ 8.0f, 430.0f }, 0.0f, Vector2{ 200.0f,80.0f })); 
+    uis_.push_back(Sprite::Create("Gameplay/Texture/UI_02.png", Vector2{ 8.0f, 530.0f }, 0.0f, Vector2{ 200.0f,80.0f })); 
+    uis_.push_back(Sprite::Create("Gameplay/Texture/UI_03.png", Vector2{ 8.0f, 630.0f }, 0.0f, Vector2{ 200.0f,80.0f })); 
+    uis_[0]->SetTextureSize(Vector2{200.0f,80.0f});
+    uis_[1]->SetTextureSize(Vector2{200.0f,80.0f});
+    uis_[2]->SetTextureSize(Vector2{200.0f,80.0f});
     
     gage_ = Sprite::Create("Gameplay/Texture/Gage.png", Vector2{ 380.0f, 10.0f }, 0.0f, Vector2{ 500.0f,30.0f });
     gage_->SetTextureSize(Vector2{ 500.0f,30.0f });     	 
@@ -71,8 +61,6 @@ void GamePlayScene::Initialize() {
     player_ui_->SetTextureSize(Vector2{ 25.0f,25.0f });     
 
     // .objファイルからモデルを読み込む
-    ModelManager::GetInstance()->LoadModel("terrain.obj");
-    ModelManager::GetInstance()->LoadModel("monsterBallUV.obj");
     ModelManager::GetInstance()->LoadModel("Bullet/PlayerBullet.obj");
     ModelManager::GetInstance()->LoadModel("Bullet/EnemyBullet.obj");
     ModelManager::GetInstance()->LoadModel("Gameplay/Model/Goal/Goal.obj");
@@ -160,7 +148,7 @@ void GamePlayScene::Update() {
 
     // ゲームスタートイベントが終了したらプレイヤ―操作可能に
     if (EventManager::GetInstance()->IsFinished() && CameraManager::GetInstance()->GetTypeview() == ViewCameraType::Main) {
-        //   イベント終了 → プレイヤーを操作可能に
+        // イベント終了 → プレイヤーを操作可能に
         player_->SetKeyActive(true);
         player_->SetReticleVisible(true);
         // 進行度を設定
@@ -249,8 +237,6 @@ void GamePlayScene::Update() {
 #pragma endregion 全てのObject3d個々の更新処理
 
 #pragma region 全てのSprite個々の更新処理
-    // スプライトの更新
-    ui1_->Update();
 
     for (std::unique_ptr<Sprite>& ui : uis_) {
         ui->Update();
@@ -319,11 +305,6 @@ void GamePlayScene::Draw() {
         player_->DrawSprite();
     }
 
-    // スタートイベント終了後にタイトルへ戻るボタンを描画   
-    if (EventManager::GetInstance()->IsFinished()) {
-        //ui1_->Draw();
-    }
-    
     for (std::unique_ptr<Sprite>& ui : uis_) {
         ui->Draw();
     }
