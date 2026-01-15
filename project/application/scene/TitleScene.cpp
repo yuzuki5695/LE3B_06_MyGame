@@ -48,7 +48,6 @@ void TitleScene::LoadResources() {
     TextureManager::GetInstance()->LoadTexture("CubemapBox.dds");
     // モデルの読み込み
     ModelManager::GetInstance()->LoadModel("Title/Title.obj");
-    ModelManager::GetInstance()->LoadModel("Tile.obj");
 }
 
 void TitleScene::InitializeUI() {  
