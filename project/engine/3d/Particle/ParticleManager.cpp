@@ -191,7 +191,7 @@ void ParticleManager::CreateParticleGroup(const std::string& name, const std::st
 
         // 新しいパーティクルグループにテクスチャパスとインデックスを設定
         newGroup.materialData.textureFilePath = textureFilepath;
-        newGroup.materialData.textureindex = TextureManager::GetInstance()->GetSrvIndex(textureFilepath);
+        newGroup.materialData.textureindex = TextureManager::GetInstance()->GetSrvIndex("Resources/" + textureFilepath);
         newGroup.kNumInstance = 0;
 
         // インスタンス用のリソースバッファを作成

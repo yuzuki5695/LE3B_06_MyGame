@@ -6,10 +6,10 @@
 
 void GamePlayparticle::Initialize(Object3d* target) {
     // パーティクルグループ生成
-    ParticleManager::GetInstance()->CreateParticleGroup("Particles", "Resources/Particle.png", "Particle.obj", VertexType::Model);
-    ParticleManager::GetInstance()->CreateParticleGroup("Particles_02", "Resources/Particle_02.png", "Particle_02.obj", VertexType::Model);
-    ParticleManager::GetInstance()->CreateParticleGroup("Firework", "Resources/Particle.png", "Particle/Particle.obj", VertexType::Model);    
-    ParticleManager::GetInstance()->CreateParticleGroup("Shockwave", "Resources/Shockwave.png", "Particle/Shockwave.obj", VertexType::Model);
+    ParticleManager::GetInstance()->CreateParticleGroup("Particles", "Particle/Particle.png", "Particle.obj", VertexType::Model);
+    ParticleManager::GetInstance()->CreateParticleGroup("Particles_02", "Particle/Particle_02.png", "Particle_02.obj", VertexType::Model);
+    ParticleManager::GetInstance()->CreateParticleGroup("Firework", "Particle/Particle.png", "Particle.obj", VertexType::Model);    
+    ParticleManager::GetInstance()->CreateParticleGroup("Shockwave", "Particle/Shockwave.png", "Shockwave.obj", VertexType::Model);
 
 
     // パーティクルにランダム変数を組み込む[デフォルトは全て0] 
