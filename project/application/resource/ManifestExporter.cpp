@@ -3,65 +3,77 @@
 #include <unordered_map>
 #include <json.hpp>
 
-void ManifestExporter::Export(const std::string& outputPath, const std::vector<std::string>& fileList) {
+///=====================================================
+/// Export
+///-----------------------------------------------------
+/// fileList を走査し、
+/// 同一 Group / Name の Asset を統合しながら JSON を構築する
+///
+/// 出力形式:
+/// {
+///   "Bullet": {
+///     "enemybullet": {
+///       "model": "...",
+///       "texture": "..."
+///     }
+///   }
+/// }
+///=====================================================
+
+void ManifestExporter::Export(const std::string& outputPath, const std::vector<std::string>& fileList) { 
+    // 出力用変数 
     nlohmann::json manifest;
 
-    for (const auto& file : fileList) {
+   for (const auto& file : fileList) {
+        // パス正規化
         std::string normalized = NormalizePath(file);
+
+        // 拡張子取得
         std::string ext = std::filesystem::path(normalized).extension().string();
 
+        // AssetType 判定
         AssetType type = GetAssetType(ext);
         if (type == AssetType::Unknown) continue;
 
-        std::string group = GetGroup(normalized);     // Bullet
-        std::string name  = CreateId(normalized, type); // enemybullet
+        // Group（最上位フォルダ）
+        std::string group = GetGroup(normalized);
 
-        // type → "model" / "texture"
+        // Asset 論理名（拡張子無し. 同名のmodel/texture/audio を1つに束ねるために使用
+        std::string name = CreateId(normalized, type);
+
+        // JSONキー名（model / texture / audio）
         std::string typeKey = ToString(type);
 
+        // 同一 Group/Name の中に model/texture/audioを統合して格納する
         manifest[group][name][typeKey] = normalized;
     }
-
+    // 差分がある場合のみ保存し無駄なファイル更新を防ぐ
     SaveIfChanged(outputPath, manifest.dump(4));
 }
 
 void ManifestExporter::SaveIfChanged(const std::string& path, const std::string& content) {
+    // 既存ファイルを読み込み
     std::ifstream ifs(path, std::ios::binary);
     if (ifs) {
-        std::string existing((std::istreambuf_iterator<char>(ifs)),
-                               std::istreambuf_iterator<char>());
+        std::string existing((std::istreambuf_iterator<char>(ifs)), std::istreambuf_iterator<char>());
+        // 内容が同一なら書き込みをスキップ
         if (existing == content) {
-            return; // 変更なし
+            return;
         }
     }
 
+    // 差分がある場合のみ上書き保存
     std::ofstream ofs(path, std::ios::binary | std::ios::trunc);
     ofs << content;
 }
 
 std::string ManifestExporter::CreateId(std::string path, AssetType type) {
     std::filesystem::path p(path);
+    // 拡張子を除いたファイル名を取得
     std::string id = p.stem().string();
+    // 小文字化（キーの揺れ防止） _model / _texture は付けない
     std::transform(id.begin(), id.end(), id.begin(), ::tolower);
-    return id; // ← _model / _texture を付けない
-}
-
-std::string ManifestExporter::GetCategory(std::string ext) {
-    // 小文字化
-    std::transform(ext.begin(), ext.end(), ext.begin(),
-        [](unsigned char c) { return static_cast<char>(std::tolower(c)); });
-
-    if (ext == ".png" || ext == ".jpg" || ext == ".jpeg" || ext == ".tga" || ext == ".dds") {
-        return "textures";
-    }
-    if (ext == ".fbx" || ext == ".obj" || ext == ".gltf" || ext == ".glb") {
-        return "models";
-    }
-    if (ext == ".wav" || ext == ".mp3" || ext == ".ogg") {
-        return "audio";
-    }
-
-    return ""; // ← 不明な拡張子は無視
+    return id;
 }
 
 
@@ -76,6 +88,7 @@ std::string ManifestExporter::GetGroup(const std::string& path) {
     if (p.has_parent_path()) {
         return p.begin()->string();
     }
+    // フォルダを持たない場合のフォールバック
     return "Common";
 }
 
@@ -83,18 +96,14 @@ std::string ManifestExporter::GetGroup(const std::string& path) {
 AssetType ManifestExporter::GetAssetType(const std::string& ext) {
     std::string lowerExt = ext;
 
+    // 拡張子を小文字化
     std::transform(lowerExt.begin(), lowerExt.end(), lowerExt.begin(), ::tolower);
-
-    if (lowerExt == ".png" || lowerExt == ".jpg" || lowerExt == ".jpeg"
-        || lowerExt == ".tga" || lowerExt == ".dds")
-        return AssetType::Texture;
-
-    if (lowerExt == ".fbx" || lowerExt == ".obj"
-        || lowerExt == ".gltf" || lowerExt == ".glb")
-        return AssetType::Model;
-
-    if (lowerExt == ".wav" || lowerExt == ".mp3" || lowerExt == ".ogg")
-        return AssetType::Audio;
+    // テクスチャ
+    if (lowerExt == ".png" || lowerExt == ".jpg" || lowerExt == ".jpeg" || lowerExt == ".tga" || lowerExt == ".dds") return AssetType::Texture;
+    // モデル
+    if (lowerExt == ".fbx" || lowerExt == ".obj" || lowerExt == ".gltf" || lowerExt == ".glb") return AssetType::Model;
+    // 音源
+    if (lowerExt == ".wav" || lowerExt == ".mp3" || lowerExt == ".ogg") return AssetType::Audio;
 
     return AssetType::Unknown;
 }
