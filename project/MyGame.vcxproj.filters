@@ -220,6 +220,12 @@
     <Filter Include="ソース ファイル\engine\math\collision">
       <UniqueIdentifier>{f4077ff3-9d86-403e-9ef0-1bebb837b1f8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ソース ファイル\application\resource">
+      <UniqueIdentifier>{07a86f35-75fe-4831-bfb6-13aa414b3d2f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\application\resource">
+      <UniqueIdentifier>{479ca9b3-2dfa-4bfe-a30d-0bc400cf9199}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -443,6 +449,12 @@
     </ClCompile>
     <ClCompile Include="application\loader\EnemyLoader.cpp">
       <Filter>ソース ファイル\application\loader</Filter>
+    </ClCompile>
+    <ClCompile Include="application\resource\FileSearcher.cpp">
+      <Filter>ソース ファイル\application\resource</Filter>
+    </ClCompile>
+    <ClCompile Include="application\resource\ManifestExporter.cpp">
+      <Filter>ソース ファイル\application\resource</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -758,8 +770,14 @@
     <ClInclude Include="application\enemy\EnemySpawner.h">
       <Filter>ソース ファイル\application\enemy</Filter>
     </ClInclude>
+    <ClInclude Include="application\resource\ManifestExporter.h">
+      <Filter>ヘッダー ファイル\application\resource</Filter>
+    </ClInclude>
+    <ClInclude Include="application\resource\FileSearcher.h">
+      <Filter>ヘッダー ファイル\application\resource</Filter>
+    </ClInclude>
     <ClInclude Include="application\loader\EnemyLoader.h">
-      <Filter>ソース ファイル\application\loader</Filter>
+      <Filter>ヘッダー ファイル\application\loader</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
