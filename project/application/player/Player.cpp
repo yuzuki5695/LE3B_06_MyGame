@@ -52,12 +52,12 @@ void Player::Initialize() {
 
 void Player::Update() {
     CameraManager* camMgr = CameraManager::GetInstance();
-    
+    Camera* activeCam = camMgr->GetMainCamera();
+
     // GamePlayCamera じゃないならレール処理をしない
     if (camMgr->GetActiveSceneCamera() == SceneCameraType::Gameplay) {
         //        UpdateNonRail();   // 何もしない or 簡易更新
 
-        Camera* activeCam = camMgr->GetMainCamera();
         GamePlayCamera* gameCam = camMgr->GetGameplayCamera();
 
         // カメラのベジェ位置（レール上の実座標）
@@ -135,6 +135,7 @@ void Player::Update() {
         object->SetRotate(transform_.rotate);
         object->SetScale(transform_.scale);
     }
+
 
 
     // プレイヤー更新

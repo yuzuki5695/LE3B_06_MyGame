@@ -66,7 +66,7 @@ void TitleScene::InitializeModel() {
     // スカイボックス生成 
     skybox_ = Skybox::Create("CubemapBox.dds", Transform{ { 1000.0f, 1000.0f, 1000.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 100.0f } });
     // プレイヤーパラメータ 
-    playertransform_ = { {1.0f, 1.0f, 1.0f}, {0.0f, 0.9f, 0.0f},  -20.0f,0.0f,40.0f };
+    playertransform_ = { {1.0f, 1.0f, 1.0f}, {0.0f, 0.3f, 0.0f},  -20.0f,0.0f,40.0f };
     titleStartX_ = -20.0f;
     titleEndX_ = -10.0f;
     // モデル移動のパラメータ
