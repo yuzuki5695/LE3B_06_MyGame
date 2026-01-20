@@ -338,7 +338,7 @@ void GameClearScene::Step3_MoveCameraOnInput() {
 
 
     // Step3時間更新
-    step3Timer_ += (1.0f / 60.0f);
+    step3Timer_ += (1.0f / 60.0f) * step3TimeScale ;
 
     Vector3 pos = player_->GetTranslate();
 
@@ -347,70 +347,80 @@ void GameClearScene::Step3_MoveCameraOnInput() {
     /*-----------------------------------------------*/
     if (!step3BackJumpDone_)
     {
-        float backDuration = 0.3f;        // 0.5秒かけて後ろへ
-        float backDistance = -15.0f;      // 大きく下がる距離
+        float backDuration = 0.3f;
+        float backDistance = -30.0f;   // 後ろ（-Z）
 
         float t = step3Timer_ / backDuration;
         if (t > 1.0f) {
             t = 1.0f;
             step3BackJumpDone_ = true;
+
+            // ★ この時点のZを基準にする
+            startStep3PosZ_ = pos.z;
         }
 
         float ease = EaseOutBack(t);
 
-        pos.x = startStep3PosX_ + backDistance * ease;
+        // Zのみ後退
+        pos.z = startStep3PosZ_ + backDistance * ease;
         pos.y = 0.0f;
-        // --- 回転：1.5 → 3.0 へ ---
+
+        // 回転のみ変更
         Vector3 rot = player_->GetRotate();
         float startRot = 1.5f;
         float endRot = 3.0f;
+        rot.y = startRot + (endRot - startRot) * ease;
 
-        rot.y = startRot + (endRot - startRot) * ease;  // ← イージング回転
-
-        // プレイヤーに設定
         player_->SetTranslate(pos);
         player_->SetRotate(rot);
-
         return;
     }
 
     /*-----------------------------------------------*/
     /* ② カメラへ向かって X/Y/Z 移動（加速付き）   */
     /*-----------------------------------------------*/
+    Vector3 camPos = cam->GetTranslate();
 
-    // Z の進捗 (30 → 0)
+    // ----------------------------
+    // 進行率
+    // ----------------------------
     float t = (30.0f - pos.z) / 30.0f;
     t = std::clamp(t, 0.0f, 1.0f);
 
-    // 加速する速度
-    float baseSpeed = 1.0f;
-    float accelPower = 6.0f;
-    float speed = baseSpeed + EaseOutCubic(t) * accelPower;
-
-    // Z を前へ
+    // ----------------------------
+    // スピード（前回作った減速付き）
+    // ----------------------------
+    float accel = EaseOutCubic(t);
+    float brake = EaseInCubic(1.0f - t);
+    float speed = 0.5f + accel * brake * 6.0f;
     pos.z -= speed;
 
-    /*-----------------------------------------------*/
-    // 追加：X に横方向のカーブを入れる
-    /*-----------------------------------------------*/
+    // ----------------------------
+    // カメラ横を通る X オフセット
+    // ----------------------------
+    float sideStart = -25.0f;   // カメラ左
+    float sideEnd = 25.0f;   // カメラ右（通過）
 
-    // X の最大曲がり幅
-    float maxCurve = 25.0f;     // ← 好きな値にする（大きいほど横移動が強い）
+    float sideX = Lerp(sideStart, sideEnd, EaseInOutSine(t));
 
-    // 進行に合わせてカーブが減る（最初大きく→最後0へ）
-    float curveX = EaseOutCubic(1.0f - t) * maxCurve;
-
-    /*-----------------------------------------------*/
-    // 斜め上へ（Yは上昇）＋ カーブX追加
-    /*-----------------------------------------------*/
+    // ----------------------------
+    // 上昇
+    // ----------------------------
     float rise = EaseOutCubic(t) * 15.0f;
 
-    Vector3 targetPos = { curveX,rise,pos.z };
+    // ----------------------------
+    // カメラ基準で目標位置を作る
+    // ----------------------------
+    Vector3 targetPos;
+    targetPos.x = camPos.x + sideX;
+    targetPos.y = camPos.y + rise;
+    targetPos.z = pos.z;
 
-    // X/Y をなめらかに寄せる
-    pos = Vector3::Lerp(pos, targetPos, 0.12f);
+    // なめらか追従
+    pos = Vector3::Lerp(pos, targetPos, 0.15f);
 
     player_->SetTranslate(pos);
+
 
 
 
@@ -418,7 +428,7 @@ void GameClearScene::Step3_MoveCameraOnInput() {
     /* ③ 1秒後に一瞬フェード処理                  */
     /*-----------------------------------------------*/
     if (!step3FadeTriggered_ && step3Timer_ >= 1.0f && !FadeManager::GetInstance()->IsFading() && FadeManager::GetInstance()->IsFadeEnd()) {
-        FadeManager::GetInstance()->StartFadeOut(1.3f, FadeStyle::SilhouetteSlide);
+        FadeManager::GetInstance()->StartFadeOut(1.8f, FadeStyle::SilhouetteSlide);
         step3FadeTriggered_ = true;
     }
 }
