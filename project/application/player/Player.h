@@ -146,6 +146,9 @@ public:// メンバ変数
 	Object3d* GetPlayerObject() { return object.get(); }
 	void SetTransform(const Transform& t) {
 		transform_ = t;
+		object->SetTranslate(transform_.translate);
+		object->SetRotate(transform_.rotate);
+		object->SetScale(transform_.scale);
 	}
 	bool IsDeadFinished() const { return end; }
 	// Transformのpositionを返すgetter

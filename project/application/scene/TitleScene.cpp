@@ -34,6 +34,9 @@ void TitleScene::Initialize() {
     // パーティクルのの生成、初期化
     particle_ = std::make_unique<Titleparticle>();
     particle_->Initialize(player_->GetPlayerObject());
+        
+    CameraManager::GetInstance()->SetCameraMode(CameraMode::Default);      
+
 #pragma endregion シーンの初期化
 }
 
@@ -48,7 +51,6 @@ void TitleScene::LoadResources() {
     TextureManager::GetInstance()->LoadTexture("CubemapBox.dds");
     // モデルの読み込み
     ModelManager::GetInstance()->LoadModel("Title/Title.obj");
-    ModelManager::GetInstance()->LoadModel("Tile.obj");
 }
 
 void TitleScene::InitializeUI() {  
@@ -67,7 +69,7 @@ void TitleScene::InitializeModel() {
     // スカイボックス生成 
     skybox_ = Skybox::Create("CubemapBox.dds", Transform{ { 1000.0f, 1000.0f, 1000.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 100.0f } });
     // プレイヤーパラメータ 
-    playertransform_ = { {1.0f, 1.0f, 1.0f}, {0.0f, 0.9f, 0.0f},  -20.0f,0.0f,40.0f };
+    playertransform_ = { {1.0f, 1.0f, 1.0f}, {0.0f, 0.3f, 0.0f},  -20.0f,0.0f,40.0f };
     titleStartX_ = -20.0f;
     titleEndX_ = -10.0f;
     // モデル移動のパラメータ
@@ -79,6 +81,8 @@ void TitleScene::InitializeModel() {
     player_ = std::make_unique<Player>();
     player_->Initialize();
     player_->SetTransform(playertransform_);
+    // 追従対象を設定
+    CameraManager::GetInstance()->GetTitleCamera()->SetTarget(player_->GetPlayerObject());
 }
 
 void TitleScene::Update() {
@@ -162,8 +166,13 @@ void TitleScene::UpdateFadeOut() {
     // タイトルシーンにおけるフェード制御を担当
     FadeManager* fade = FadeManager::GetInstance(); 
     // フェード中ではなくフェード完了状態の時にEnterキーを押すとフェードアウト開始
-    if (Input::GetInstance()->Triggrkey(DIK_RETURN) && !fade->IsFading() && fade->IsFadeEnd()) {
-        fade->StartFadeOut(kFadeDuration, FadeStyle::SilhouetteExplode);
+    if (Input::GetInstance()->Triggrkey(DIK_RETURN) && !fade->IsFading() && fade->IsFadeEnd() && !isPlayerBoost_) {
+        fade->StartFadeOut(2.5f, FadeStyle::SilhouetteExplode);
+        CameraManager::GetInstance()->SetCameraMode(CameraMode::Follow);
+
+        // ===== プレイヤー演出開始 =====
+        isPlayerBoost_ = true;
+        playerSpeedX_ = 0.0f;
     }
 }
 
@@ -178,6 +187,24 @@ void TitleScene::UpdateSceneTransition() {
 }
 
 void TitleScene::UpdateTitlePlayerMotion() {
+
+    FadeManager* fade = FadeManager::GetInstance();
+
+    // ==============================
+    // フェード中：加速して飛ぶ
+    // ==============================
+    if (isPlayerBoost_ && fade->IsFading() && fade->GetFadeType() == FadeType::FadeOut) {
+
+        playerSpeedX_ += playerAccelX_;
+        playerSpeedX_ = std::min(playerSpeedX_, playerMaxSpeedX_);
+
+        playertransform_.translate.z += playerSpeedX_;
+
+        // ちょっと上に浮かせると「飛び感」UP
+        playertransform_.translate.y += 0.05f;
+
+    }
+
     // ===== 横移動（イージング） =====
     if (!moveFinished) {
         timer += 1.0f;
@@ -194,10 +221,11 @@ void TitleScene::UpdateTitlePlayerMotion() {
             timer = 0.0f;
         }
     }
-
-    // ===== 上下の浮遊 =====
-    time += kFloatSpeed;
-    playertransform_.translate.y = sinf(time) * kFloatAmplitude;
+    if (fade->GetFadeType() != FadeType::FadeOut) {
+        // ===== 上下の浮遊 =====
+        time += kFloatSpeed;
+        playertransform_.translate.y = sinf(time) * kFloatAmplitude;
+    }
 
     // ===== Transform を Object に反映 =====
     player_->GetPlayerObject()->SetTranslate(playertransform_.translate);

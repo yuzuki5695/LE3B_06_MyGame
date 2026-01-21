@@ -23,7 +23,7 @@ void Player::Initialize() {
     // モデル・テクスチャ読み込み
     ModelManager::GetInstance()->LoadModel("Gameplay/Model/Player/Player.obj");     
     ModelManager::GetInstance()->LoadModel("Bullet/PlayerBullet.obj");
-    TextureManager::GetInstance()->LoadTexture("Target.png");
+    TextureManager::GetInstance()->LoadTexture("Gameplay/Texture/Target.png");
 
     // プレイヤーの初期位置と回転を設定
     transform_ = { {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f},  0.0f,0.0f,0.0f };
@@ -36,7 +36,7 @@ void Player::Initialize() {
 
     // レティクル初期化
     reticleScreenPos = { 640.0f, 360.0f }; // 画面中央 (仮に1280x720の場合)
-    targetreticle_ = Sprite::Create("Target.png", reticleScreenPos, 0.0f, Vector2{ 100.0f, 100.0f });
+    targetreticle_ = Sprite::Create("Gameplay/Texture/Target.png", reticleScreenPos, 0.0f, Vector2{ 100.0f, 100.0f });
     targetreticle_->SetTextureSize(Vector2{ 512.0f, 512.0f });
    	targetreticle_->SetAnchorPoint(Vector2{ 0.5f, 0.5f }); // 中心基準
     previousTime_ = 0.0f;
@@ -52,12 +52,12 @@ void Player::Initialize() {
 
 void Player::Update() {
     CameraManager* camMgr = CameraManager::GetInstance();
-    
+    Camera* activeCam = camMgr->GetMainCamera();
+
     // GamePlayCamera じゃないならレール処理をしない
     if (camMgr->GetActiveSceneCamera() == SceneCameraType::Gameplay) {
         //        UpdateNonRail();   // 何もしない or 簡易更新
 
-        Camera* activeCam = camMgr->GetMainCamera();
         GamePlayCamera* gameCam = camMgr->GetGameplayCamera();
 
         // カメラのベジェ位置（レール上の実座標）
@@ -135,6 +135,7 @@ void Player::Update() {
         object->SetRotate(transform_.rotate);
         object->SetScale(transform_.scale);
     }
+
 
 
     // プレイヤー更新

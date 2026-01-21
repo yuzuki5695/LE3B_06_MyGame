@@ -1,4 +1,10 @@
 #include "TitleCamera.h"
+#include <CameraManager.h>
+#include <MatrixVector.h>
+#include <Easing.h>
+
+using namespace Easing;
+using namespace MatrixVector;
 
 void TitleCamera::Initialize() {
     // カメラの値の初期化
@@ -11,7 +17,55 @@ void TitleCamera::Initialize() {
     AddSubCameras(subCams);
 }
 
-void TitleCamera::Update() {}
+void TitleCamera::Update() {
+    switch (state_) {
+    case TitleCameraState::IntroMove:
+        UpdateIntroMove();
+        break;
+
+    case TitleCameraState::Default:
+        if (CameraManager::GetInstance()->GetMode() == CameraMode::Follow) {
+            UpdateLookAt();
+        }
+        break;
+    }
+}
+
+void TitleCamera::UpdateIntroMove() {
+    moveTimer_ += 1.0f / 60.0f; // deltaTime があればそれを使う
+
+    float t = std::clamp(moveTimer_ / moveDuration_, 0.0f, 1.0f);
+    float easedT = EaseOutQuad(t);
+
+    transform_.translate = Lerp(startPos_, endPos_, easedT);
+
+    // Follow 中はターゲットを見る
+    UpdateLookAt();
+
+    if (t >= 1.0f) {
+        // 終了処理
+        transform_.translate = endPos_;
+        state_ = TitleCameraState::Default;
+
+        CameraManager::GetInstance()->SetCameraMode(CameraMode::Default);
+    }
+}
+
+void TitleCamera::UpdateLookAt() {
+    if (!target_) return;
+
+    Vector3 camPos = transform_.translate;
+    Vector3 targetPos = target_->GetWorldPosition();
+    Vector3 dir = targetPos - camPos;
+
+    if (Length(dir) > 0.0001f) {
+        dir = Normalize(dir);
+        float yaw = atan2f(dir.x, dir.z);
+        float pitch = -asinf(dir.y);
+        transform_.rotate = { pitch, yaw, 0.0f };
+    }
+}
+
 
 void TitleCamera::AddSubCamera(const CameraTransform& trans) {
     // 新しいサブカメラインスタンスを生成

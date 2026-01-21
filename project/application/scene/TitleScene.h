@@ -94,4 +94,9 @@ private: // メンバ変数
     static constexpr float kFloatSpeed = 0.03f;
     static constexpr float kFloatAmplitude = 2.3f;
 
+    // フェード演出用
+bool isPlayerBoost_ = false;
+float playerSpeedX_ = 0.0f;
+float playerAccelX_ = 0.15f;   // 加速量
+float playerMaxSpeedX_ = 5.0f; // 上限（任意）
 };

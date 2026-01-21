@@ -74,7 +74,7 @@ private: // メンバ変数
     float startStep3PosX_ = 0.0f;     // Step3開始時のX
 
 
-
+    float startStep3PosZ_;
 
     std::unique_ptr <Sprite> ui2_ = nullptr;     // スプライト      
     std::unique_ptr <Sprite> ui3_ = nullptr;     // スプライト 
@@ -89,6 +89,6 @@ private: // メンバ変数
     Vector2 ui2EndPos; // 最終位置（現在の値）
     Vector2 ui3StartPos; // 上にずらした初期位置
     Vector2 ui3EndPos; // 最終位置（現在の値）
-
+    float step3TimeScale = 0.7f; // 0.3～0.6 あたりがおすすめ
     std::unique_ptr <GameClearparticle> particle_;
 };

@@ -1,0 +1,155 @@
+{
+    "Audio": {
+        "alarm01": {
+            "audio": "Audio/Alarm01.wav"
+        }
+    },
+    "Bullet": {
+        "enemybullet": {
+            "model": "Bullet/EnemyBullet.obj",
+            "texture": "Bullet/EnemyBullet.png"
+        },
+        "playerbullet": {
+            "model": "Bullet/PlayerBullet.obj",
+            "texture": "Bullet/PlayerBullet.png"
+        }
+    },
+    "Common": {
+        "cubemapbox": {
+            "texture": "CubemapBox.dds"
+        },
+        "rostock_laage_airport_4k": {
+            "texture": "rostock_laage_airport_4k.dds"
+        }
+    },
+    "Event": {
+        "black": {
+            "texture": "Event/Black.png"
+        },
+        "mission": {
+            "texture": "Event/mission.png"
+        },
+        "start": {
+            "texture": "Event/start.png"
+        },
+        "startevent_01": {
+            "texture": "Event/Startevent_01.png"
+        },
+        "startevent_02": {
+            "texture": "Event/Startevent_02.png"
+        }
+    },
+    "Gameclear": {
+        "complete": {
+            "texture": "Gameclear/Texture/Complete.png"
+        },
+        "mission": {
+            "texture": "Gameclear/Texture/Mission.png"
+        },
+        "player": {
+            "model": "Gameclear/Model/Player/Player.obj",
+            "texture": "Gameclear/Model/Player/Player.png"
+        },
+        "ui_01": {
+            "texture": "Gameclear/Texture/UI_01.png"
+        }
+    },
+    "Gameover": {
+        "gameover": {
+            "texture": "Gameover/Texture/Gameover.png"
+        },
+        "parts_01": {
+            "model": "Gameover/Model/parts_01.obj",
+            "texture": "Gameover/Model/parts_01.png"
+        },
+        "parts_02": {
+            "model": "Gameover/Model/parts_02.obj",
+            "texture": "Gameover/Model/parts_02.png"
+        },
+        "parts_03": {
+            "model": "Gameover/Model/parts_03.obj",
+            "texture": "Gameover/Model/parts_03.png"
+        },
+        "parts_04": {
+            "model": "Gameover/Model/parts_04.obj",
+            "texture": "Gameover/Model/parts_04.png"
+        },
+        "ui_01": {
+            "texture": "Gameover/Texture/UI_01.png"
+        }
+    },
+    "Gameplay": {
+        "box": {
+            "model": "Gameplay/Box.obj",
+            "texture": "Gameplay/Box.png"
+        },
+        "enemy": {
+            "model": "Gameplay/Model/Enemy/Enemy.obj",
+            "texture": "Gameplay/Model/Enemy/Enemy.png"
+        },
+        "gage": {
+            "texture": "Gameplay/Texture/Gage.png"
+        },
+        "goal": {
+            "model": "Gameplay/Model/Goal/goal.obj",
+            "texture": "Gameplay/Model/Goal/goal.png"
+        },
+        "player": {
+            "model": "Gameplay/Model/Player/Player.obj",
+            "texture": "Gameplay/Model/Player/Player.png"
+        },
+        "player_ui": {
+            "texture": "Gameplay/Texture/Player_ui.png"
+        },
+        "target": {
+            "texture": "Gameplay/Texture/Target.png"
+        },
+        "tile": {
+            "model": "Gameplay/Model/Tile/Tile.obj",
+            "texture": "Gameplay/Model/Tile/Tile.png"
+        },
+        "ui_01": {
+            "texture": "Gameplay/Texture/UI_01.png"
+        },
+        "ui_02": {
+            "texture": "Gameplay/Texture/UI_02.png"
+        },
+        "ui_03": {
+            "texture": "Gameplay/Texture/UI_03.png"
+        }
+    },
+    "Particle": {
+        "particle": {
+            "model": "Particle/Particle.obj",
+            "texture": "Particle/Particle.png"
+        },
+        "particle_02": {
+            "model": "Particle/Particle_02.obj",
+            "texture": "Particle/Particle_02.png"
+        },
+        "shockwave": {
+            "model": "Particle/Shockwave.obj",
+            "texture": "Particle/Shockwave.png"
+        }
+    },
+    "Title": {
+        "start": {
+            "texture": "Title/start.png"
+        },
+        "title": {
+            "model": "Title/Title.obj",
+            "texture": "Title/Title.png"
+        },
+        "ui_02": {
+            "texture": "Title/UI_02.png"
+        }
+    },
+    "fade": {
+        "black": {
+            "texture": "fade/Black.png"
+        },
+        "white": {
+            "texture": "fade/white.png"
+        }
+    }
+}
