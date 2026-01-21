@@ -392,7 +392,7 @@ void GameClearScene::Step3_MoveCameraOnInput() {
     // ----------------------------
     float accel = EaseOutCubic(t);
     float brake = EaseInCubic(1.0f - t);
-    float speed = 0.5f + accel * brake * 6.0f;
+    float speed = 1.2f + accel * brake * 8.0f;
     pos.z -= speed;
 
     // ----------------------------

@@ -80,7 +80,7 @@ public: // メンバ関数
     // ゲーム用カメラ（GameCamera）を返す getter
     GamePlayCamera* GetGameplayCamera() const { return gameplay_.get(); }
     GameClearCamera* GetGameClearCamera() { return gameclear_.get(); }
-
+    TitleCamera* GetTitleCamera() { return title_.get(); }
 
     SceneCameraType GetActiveSceneCamera() const{ return activeSceneCameraType_; }
 

@@ -31,6 +31,9 @@ namespace Easing {
         return 1.0f + c3 * powf(t - 1.0f, 3) + c1 * powf(t - 1.0f, 2);
     }
 
+    float EaseOutQuad(float t) {
+        return 1.0f - (1.0f - t) * (1.0f - t);
+    }
 
     // -------------------------
     //  EaseIn 系（最初がゆっくり）
