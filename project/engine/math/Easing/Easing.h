@@ -16,6 +16,7 @@ namespace Easing {
     float EaseOutSine(float t);     // ゆっくり終わるサイン曲線
     float EaseOutCubic(float t);    // 非常に滑らかに終点で減速
     float EaseOutBack(float t);     // 終点を少し通り越して戻る（"Back" 効果）
+    float EaseOutQuad(float t);
 
     float EaseInSine(float t);      // 始点がゆっくり
     float EaseInCubic(float t);     // 始点が非常にゆっくり

@@ -6,8 +6,8 @@
 
 void GameOverparticle::Initialize(const std::vector<Object3d*>& targets) {
     // パーティクルグループ生成
-    ParticleManager::GetInstance()->CreateParticleGroup("Particles", "Resources/Particle.png", "Particle.obj", VertexType::Model);
-    ParticleManager::GetInstance()->CreateParticleGroup("Particles_02", "Resources/Particle_02.png", "Particle_02.obj", VertexType::Model);
+    ParticleManager::GetInstance()->CreateParticleGroup("Particles", "Particle/Particle.png", "Particle.obj", VertexType::Model);
+    ParticleManager::GetInstance()->CreateParticleGroup("Particles_02", "Particle/Particle_02.png", "Particle_02.obj", VertexType::Model);
     random_
         .SetOffset({ -0.3f,-0.01f,-0.3f }, { 0.3f,0.3f,0.3f })
         .SetColor(0.0f, 0.5f)

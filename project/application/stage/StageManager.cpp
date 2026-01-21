@@ -33,11 +33,11 @@ void StageManager::Initialize() {
 
     // 敵モデルをあらかじめ読み込む
    // ModelManager::GetInstance()->LoadModel("Enemy.obj");
-    ModelManager::GetInstance()->LoadModel("Tile.obj");
+    ModelManager::GetInstance()->LoadModel("Gameplay/Model/Tile/Tile.obj");
     
     // オブジェクトの作成
     // 地面の作成
-    grass = Object3d::Create("Tile.obj", Transform({ 1000.0f, 1.0f, 1000.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, -8.0f, 50.0f }));
+    grass = Object3d::Create("Gameplay/Model/Tile/Tile.obj", Transform({ 1000.0f, 1.0f, 1000.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, -8.0f, 50.0f }));
 
     //// レベルデータからオブジェクトを読み込む
     //for (auto& objData : levelData_->objects) {
@@ -61,20 +61,20 @@ void StageManager::Initialize() {
     showDebugObjects_ = false; // デフォルトは非表示
 #ifdef _DEBUG
     // === デバッグ可視化用オブジェクト ===
-    ModelManager::GetInstance()->LoadModel("Enemy.obj"); // 目印用モデル（SphereやCubeなど）
+    //ModelManager::GetInstance()->LoadModel("Enemy.obj"); // 目印用モデル（SphereやCubeなど）
 
-    for (auto& objData : levelData_->objects) {
-        // Point_ で始まるオブジェクトをデバッグ可視化対象にする
-        if (objData.fileName.rfind("Point_", 0) == 0) {
-            Transform tr;
-            tr.scale = { 0.5f, 0.5f, 0.5f }; // 小さく目印表示
-            tr.rotate = objData.rotation;
-            tr.translate = objData.translation;
+    //for (auto& objData : levelData_->objects) {
+    //    // Point_ で始まるオブジェクトをデバッグ可視化対象にする
+    //    if (objData.fileName.rfind("Point_", 0) == 0) {
+    //        Transform tr;
+    //        tr.scale = { 0.5f, 0.5f, 0.5f }; // 小さく目印表示
+    //        tr.rotate = objData.rotation;
+    //        tr.translate = objData.translation;
 
-            auto debugObj = Object3d::Create("Enemy.obj", tr);
-            debugObjects_.push_back(std::move(debugObj));
-        }
-    }
+    //        auto debugObj = Object3d::Create("Enemy.obj", tr);
+    //        debugObjects_.push_back(std::move(debugObj));
+    //    }
+    //}
 #endif
 }
 
