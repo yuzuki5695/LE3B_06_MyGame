@@ -64,7 +64,7 @@ public:// メンバ関数
 	OBB GetOBB() const;
 	// アクティブ状態の取得・設定
     bool IsActive() const { return active_; }
-	void SetActive(bool isactive) { active_ = isactive; }
+	void SetActive(bool inactive) { active_ = inactive; }
 	/// <summary>
     /// 被弾エフェクトを開始
     /// </summary>    
@@ -86,7 +86,7 @@ private:// メンバ変数
 	std::unique_ptr <Object3d> object = nullptr;  // プレイヤーの3Dオブジェクト
 	Transform transform_{};	
 	std::unique_ptr <Object3d> target_ = nullptr; // ターゲット用3Dオブジェクト
-	Transform targetpos_{};
+	Transform targettransform_{};
 	Vector3 copypos;
 	std::unique_ptr <Sprite> targetreticle_ = nullptr; // レティクル用スプライト	
 	Vector2 reticleScreenPos = { 640.0f, 360.0f }; // 画面中心 (例: 1280x720の解像度)
@@ -120,7 +120,7 @@ private:// メンバ変数
     const float maxChargeTime_ = 5.0f; // 最大チャージ時間（秒）
 	Vector3 bulletOffsetLeft  = { -0.5f, 0.0f, 0.0f }; // 左側の発射位置
 	Vector3 bulletOffsetRight = {  0.5f, 0.0f, 0.0f }; // 右側の発射位置	
-	bool iskeyActive_ = false;       // ← プレイヤーが操作可能か
+	bool ickyActive_ = false;       // ← プレイヤーが操作可能か
     bool isReticleVisible_ = false; // ← レティクル描画ON/OFF
     Vector3 relativePos_ = {0, 0, 0}; // カメラ内での相対位置（スクリーン座標的）
 
@@ -157,10 +157,10 @@ public:// メンバ変数
 	}
 
     // Getter
-    bool IsKeyActive() const { return iskeyActive_; }
+    bool IsKeyActive() const { return ickyActive_; }
     bool IsReticleVisible() const { return isReticleVisible_; }
 
     // Setter
-    void SetKeyActive(bool active) { iskeyActive_ = active; }
+    void SetKeyActive(bool active) { ickyActive_ = active; }
     void SetReticleVisible(bool visible) { isReticleVisible_ = visible; }
 };

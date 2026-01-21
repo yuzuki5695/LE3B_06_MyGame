@@ -30,8 +30,8 @@ void Player::Initialize() {
     // プレイヤー生成
     object = Object3d::Create("Gameplay/Model/Player/Player.obj", transform_);
 
-    targetpos_ = { {0.3f, 0.3f, 0.3f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 30.0f} };
-    target_= Object3d::Create("Bullet/PlayerBullet.obj", targetpos_);
+    targettransform_ = { {0.3f, 0.3f, 0.3f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 30.0f} };
+    target_= Object3d::Create("Bullet/PlayerBullet.obj", targettransform_);
     moveDelta = Vector3(0.0f, 0.0f, 0.0f);
 
     // レティクル初期化
@@ -95,7 +95,7 @@ void Player::Update() {
             StartDeathEffect();
         }
 
-        if (iskeyActive_) {
+        if (ickyActive_) {
             float currentSpeed = isBoosting_ ? boostSpeed_ : normalSpeed_;
             //UpdateBoostState();
             MoveInput(currentSpeed); // ブースト中は速く移動 
@@ -105,7 +105,7 @@ void Player::Update() {
     //            StartDeathEffect();
             } else {
                 // ターゲットを矢印キーで動かす
-                UpdateTargetPosition(targetpos_, 0.4f);   // ターゲットに使う
+                UpdateTargetPosition(targettransform_, 0.4f);   // ターゲットに使う
                 // 弾の発射
                 AttachBullet();
             }
