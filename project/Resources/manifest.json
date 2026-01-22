@@ -118,6 +118,12 @@
             "texture": "Gameplay/Texture/UI_03.png"
         }
     },
+    "Models": {
+        "player": {
+            "model": "Models/Character/Player/Player.obj",
+            "texture": "Models/Character/Player/Player.png"
+        }
+    },
     "Particle": {
         "particle": {
             "model": "Particle/Particle.obj",
@@ -130,6 +136,14 @@
         "shockwave": {
             "model": "Particle/Shockwave.obj",
             "texture": "Particle/Shockwave.png"
+        }
+    },
+    "Textures": {
+        "title": {
+            "texture": "Textures/Ui/Title.png"
+        },
+        "ui_02": {
+            "texture": "Textures/Ui/UI_02.png"
         }
     },
     "Title": {
