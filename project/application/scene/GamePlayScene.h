@@ -13,6 +13,7 @@
 #include<StageManager.h>
 #include<GamePlayparticle.h>
 #include <EnemySpawner.h>
+#include<Pausemenu.h>
 
 /// <summary>
 /// ゲームプレイシーン
@@ -91,5 +92,6 @@ private: // メンバ変数
     bool uiProgressStarted_ = false;
     bool uiProgressFinished_ = false;
 
-
+    std::unique_ptr <Pausemenu> pausemenu_;
+    bool isPaused_;
 };

@@ -139,6 +139,9 @@
         }
     },
     "Textures": {
+        "pausemenupanel": {
+            "texture": "Textures/Ui/PauseMenuPanel.png"
+        },
         "title": {
             "texture": "Textures/Ui/Title.png"
         },

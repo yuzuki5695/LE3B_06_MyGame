@@ -106,11 +106,37 @@ void GamePlayScene::Initialize() {
     StageManager::GetInstance()->Initialize();
 
     end = false;
+    // ポーズメニューの初期化
+    pausemenu_ = std::make_unique<Pausemenu>();
+    pausemenu_->Initialize();
+    isPaused_ = false;
 }
 ///====================================================
 /// 毎フレーム更新処理
 ///====================================================
 void GamePlayScene::Update() {
+    // 1. Enterキーでポーズの「開始」のみをチェック
+    if (!isPaused_ && Input::GetInstance()->Triggrkey(DIK_RETURN)) {
+        isPaused_ = true;
+    }
+
+    // 2. ポーズ中の処理
+    if (isPaused_) {
+        pausemenu_->Update();
+
+        PauseCommand cmd = pausemenu_->GetCommand();
+        if (cmd == PauseCommand::Resume) {
+            isPaused_ = false;
+            //pausemenu_.reset(); // メモリ解放
+        } else if (cmd == PauseCommand::GoToTitle) {
+            SceneManager::GetInstance()->ChangeScene("TITLE");
+            return;
+        }
+
+        // ポーズ中は以降の更新（ゲーム本編）をスキップ
+        //return;
+    }
+
     // フェードイン開始
     if (!FadeManager::GetInstance()->IsFadeStart() && !FadeManager::GetInstance()->IsFading()) {
         // フェード開始
@@ -244,6 +270,7 @@ void GamePlayScene::Update() {
 
     gage_->Update();
     player_ui_->Update();
+
 #pragma endregion 全てのSprite個々の更新処理
 
 #pragma region  ImGuiの更新処理開始
@@ -270,7 +297,7 @@ void GamePlayScene::Draw() {
     SkyboxCommon::GetInstance()->Commondrawing();
     Box_->Draw();
     // 3Dオブジェクトの描画準備。3Dオブジェクトの描画に共通のグラフィックスコマンドを積む
-    Object3dCommon::GetInstance()->Commondrawing(); 
+    Object3dCommon::GetInstance()->Commondrawing();
     StageManager::GetInstance()->Draw();
 
     // 描画処理
@@ -289,7 +316,7 @@ void GamePlayScene::Draw() {
         }
     }
     wall->Draw();
-	// イベントマネージャの描画処理
+    // イベントマネージャの描画処理
     EventManager::GetInstance()->Drawo3Dbject();
 
     // パーティクルの描画準備。パーティクルの描画に共通のグラフィックスコマンドを積む 
@@ -312,14 +339,14 @@ void GamePlayScene::Draw() {
     gage_->Draw();
     player_ui_->Draw();
 
-	// イベントマネージャの描画処理
+    // イベントマネージャの描画処理
     EventManager::GetInstance()->Draw2DSprite();
-	// フェードマネージャの描画
+    // フェードマネージャの描画
     FadeManager::GetInstance()->Draw();
+
+    pausemenu_->Draw();
 #pragma endregion 全てのSprite個々の描画処理
 }
-
-
 
 ///====================================================
 /// プレイヤー弾 vs 敵の当たり判定
