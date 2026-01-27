@@ -39,8 +39,11 @@ public: // メンバ関数
     void CalculateEaseSize(Sprite* sprite, const Vector2& baseSize, float frame, float maxFrame);
     void UpdateSelection();  // キー入力による選択項目の変更
     void UpdateArrowPositions();
+    void IconUpdate();
+    void IconDraw();
 private: // メンバ変数
-    std::unique_ptr <Sprite> ui_;
+    std::unique_ptr <Sprite> menupanel_;
+    std::unique_ptr <Sprite> icon_;
     // 選択肢の表示用（必要に応じて増やす）
    // std::vector<Sprite*> cursor_;
     PauseCommand command_ = PauseCommand::None;
@@ -59,7 +62,7 @@ private: // メンバ変数
     static const uint32_t kMaxCommand = static_cast<uint32_t>(PauseCommand::kCount);
     UIElement commands_[kMaxCommand];
     // 配置用定数
-    const float kMenuTopY = 200.0f;     // 最初の項目のY座標
+    const float kMenuTopY = 300.0f;     // 最初の項目のY座標
     const float kMenuIntervalY = 80.0f; // 項目間の間隔
     const float kArrowOffsetX = 120.0f; // 項目中心から見た矢印の右オフセット
 public: // メンバ関数 

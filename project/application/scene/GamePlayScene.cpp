@@ -110,13 +110,17 @@ void GamePlayScene::Initialize() {
     pausemenu_ = std::make_unique<Pausemenu>();
     pausemenu_->Initialize();
     isPaused_ = false;
+    isPausedevent_ = false;
 }
 ///====================================================
 /// 毎フレーム更新処理
 ///====================================================
 void GamePlayScene::Update() {
+    
+    pausemenu_->IconUpdate();
+
     // Enterキーでポーズの「開始」のみをチェック
-    if (!isPaused_ && Input::GetInstance()->Triggrkey(DIK_RETURN)) {
+    if (!isPaused_ && Input::GetInstance()->Triggrkey(DIK_TAB)) {
         isPaused_ = true;
         pausemenu_->SetActive(true); // 演出開始！
     }
@@ -192,6 +196,7 @@ void GamePlayScene::Update() {
         // イベント終了 → プレイヤーを操作可能に
         player_->SetKeyActive(true);
         player_->SetReticleVisible(true);
+        isPausedevent_ = true;
         // 進行度を設定
         StartStageProgressUI();
     }
@@ -353,11 +358,12 @@ void GamePlayScene::Draw() {
 
     gage_->Draw();
     player_ui_->Draw();
-    
-    if (isPaused_) {
-        pausemenu_->Draw();
-    }
-
+   // if (isPausedevent_) {
+        if (isPaused_) {
+            pausemenu_->Draw();
+        }
+        pausemenu_->IconDraw();
+   // }
     // イベントマネージャの描画処理
     EventManager::GetInstance()->Draw2DSprite();
     // フェードマネージャの描画

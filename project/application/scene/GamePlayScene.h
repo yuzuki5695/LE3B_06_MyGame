@@ -93,5 +93,6 @@ private: // メンバ変数
     bool uiProgressFinished_ = false;
 
     std::unique_ptr <Pausemenu> pausemenu_;
+    bool isPausedevent_;
     bool isPaused_;
 };

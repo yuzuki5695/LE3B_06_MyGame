@@ -151,6 +151,9 @@
         "pausemenupanel": {
             "texture": "Textures/Ui/PauseMenuPanel.png"
         },
+        "poseicon": {
+            "texture": "Textures/Ui/Poseicon.png"
+        },
         "title": {
             "texture": "Textures/Ui/Title.png"
         },
