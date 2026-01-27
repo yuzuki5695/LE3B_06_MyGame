@@ -36,15 +36,29 @@ void Pausemenu::Initialize() {
 }
 
 void Pausemenu::Update() {
-    // --- 1. フレームを進める
-    if (frame_ < kMaxFrame) {
-        frame_ += 1.0f;
+// --- 1. アニメーション（演出）の更新 ---
+    if (isActive_) {
+        // アクティブならフレームを進める（最大値まで）
+        if (frame_ < kMaxFrame) {
+            frame_ += 1.0f;
+        }
+    } else {
+        // 非アクティブならフレームを戻す（0まで）
+        if (frame_ > 0.0f) {
+            frame_ -= 1.0f;
+        } else {
+            // 0まで戻りきったら「演出終了」フラグを立てる
+            isFinished_ = true;
+        }
     }
-    CalculateEaseSize(ui_.get(), baseSize_, frame_, kMaxFrame);
-     
-    UpdateSelection(); // コマンド選択
-    UpdateArrowPositions(); // 矢印の処理
 
+    CalculateEaseSize(ui_.get(), baseSize_, frame_, kMaxFrame);
+    CalculateEaseSize(arrow_.sprite.get(), arrow_.size, frame_, kMaxFrame);
+    // 入力と位置の更新（完全に開ききっている時のみ操作可能）
+    if (isActive_ && frame_ >= kMaxFrame) {
+        UpdateSelection(); // コマンド選択
+        UpdateArrowPositions(); // 矢印の処理
+    }
     ui_->Update();
     arrow_.sprite->Update();
     for (UIElement& cmd : commands_) {
@@ -89,12 +103,11 @@ void Pausemenu::UpdateSelection() {
     // 決定
     if (Input::GetInstance()->Triggrkey(DIK_RETURN)) {
         if (selectedIndex_ == 0) {
-            command_ = PauseCommand::Resume;
-            isActive_ = false; // 閉じる演出へ
+            // Resumeを選択: isActiveをfalseにして逆再生演出を開始させる
+            isActive_ = false;
+            command_ = PauseCommand::None; // まだゲーム側には通知しない（演出を待つため）
         } else if (selectedIndex_ == 1) {
             command_ = PauseCommand::GoToTitle;
-            //FadeManager::GetInstance()->StartFadeOut(1.0f, FadeStyle::Normal);
-            SceneManager::GetInstance()->ChangeScene("TITLE");
         }
     }
 }

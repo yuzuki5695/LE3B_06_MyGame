@@ -115,22 +115,40 @@ void GamePlayScene::Initialize() {
 /// 毎フレーム更新処理
 ///====================================================
 void GamePlayScene::Update() {
-    // 1. Enterキーでポーズの「開始」のみをチェック
+    // Enterキーでポーズの「開始」のみをチェック
     if (!isPaused_ && Input::GetInstance()->Triggrkey(DIK_RETURN)) {
         isPaused_ = true;
         pausemenu_->SetActive(true); // 演出開始！
     }
 
-    // 2. ポーズ中の処理
+    //  ポーズ中の処理
     if (isPaused_) {
         pausemenu_->Update();
-        // 閉じ終わったかどうかをチェック
+        // ポーズメニュー内での演出（逆再生含む）がすべて終わったかチェック
         if (pausemenu_->IsFinished()) {
-            isPaused_ = false;
-            // 必要に応じてここでリセット処理
+            isPaused_ = false; // ゲーム再開
         }
 
-        // 演出中（開いている途中も閉じている途中も）はゲームを止める
+        // Resume（再開）の場合は、メニューが閉じ終わるのを待つ
+        if (pausemenu_->IsFinished() && pausemenu_->GetCommand() == PauseCommand::Resume) {
+            isPaused_ = false;
+        } else if (pausemenu_->GetCommand() == PauseCommand::GoToTitle) {
+            // フェードマネージャの更新   
+            FadeManager::GetInstance()->Update();
+            // メニューが表示されたまま、フェードアウトを開始
+            if (!goal_) {
+                FadeManager::GetInstance()->StartFadeOut(1.0f, FadeStyle::Normal);
+                goal_ = true; // フェード開始フラグとして利用
+            }
+
+            // フェードが終わったらシーン遷移
+            if (FadeManager::GetInstance()->IsFadeEnd()) {
+                SceneManager::GetInstance()->ChangeScene("TITLE");
+            }
+            // タイトル移行時はここでreturnし、背後のゲーム処理を止めたままにする
+            return;
+        }
+        // ポーズ演出中はゲームの他の更新を止める
         return;
     }
 
@@ -335,14 +353,15 @@ void GamePlayScene::Draw() {
 
     gage_->Draw();
     player_ui_->Draw();
+    
+    if (isPaused_) {
+        pausemenu_->Draw();
+    }
 
     // イベントマネージャの描画処理
     EventManager::GetInstance()->Draw2DSprite();
     // フェードマネージャの描画
     FadeManager::GetInstance()->Draw();
-    if (isPaused_) {
-        pausemenu_->Draw();
-    }
 #pragma endregion 全てのSprite個々の描画処理
 }
 
