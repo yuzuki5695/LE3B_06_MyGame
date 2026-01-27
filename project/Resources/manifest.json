@@ -139,6 +139,15 @@
         }
     },
     "Textures": {
+        "arrow": {
+            "texture": "Textures/Ui/Arrow.png"
+        },
+        "command_01": {
+            "texture": "Textures/Ui/command_01.png"
+        },
+        "command_02": {
+            "texture": "Textures/Ui/command_02.png"
+        },
         "pausemenupanel": {
             "texture": "Textures/Ui/PauseMenuPanel.png"
         },

@@ -118,23 +118,20 @@ void GamePlayScene::Update() {
     // 1. Enterキーでポーズの「開始」のみをチェック
     if (!isPaused_ && Input::GetInstance()->Triggrkey(DIK_RETURN)) {
         isPaused_ = true;
+        pausemenu_->SetActive(true); // 演出開始！
     }
 
     // 2. ポーズ中の処理
     if (isPaused_) {
         pausemenu_->Update();
-
-        PauseCommand cmd = pausemenu_->GetCommand();
-        if (cmd == PauseCommand::Resume) {
+        // 閉じ終わったかどうかをチェック
+        if (pausemenu_->IsFinished()) {
             isPaused_ = false;
-            //pausemenu_.reset(); // メモリ解放
-        } else if (cmd == PauseCommand::GoToTitle) {
-            SceneManager::GetInstance()->ChangeScene("TITLE");
-            return;
+            // 必要に応じてここでリセット処理
         }
 
-        // ポーズ中は以降の更新（ゲーム本編）をスキップ
-        //return;
+        // 演出中（開いている途中も閉じている途中も）はゲームを止める
+        return;
     }
 
     // フェードイン開始
@@ -343,8 +340,9 @@ void GamePlayScene::Draw() {
     EventManager::GetInstance()->Draw2DSprite();
     // フェードマネージャの描画
     FadeManager::GetInstance()->Draw();
-
-    pausemenu_->Draw();
+    if (isPaused_) {
+        pausemenu_->Draw();
+    }
 #pragma endregion 全てのSprite個々の描画処理
 }
 
