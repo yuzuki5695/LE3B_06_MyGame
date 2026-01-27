@@ -15,11 +15,15 @@ int main(int argc, char* argv[]) {
     // 引数がない場合は実行環境からの相対パスを使用
     fs::path projectRoot = (argc > 1) ? argv[1] : "../../";
 
+    // 念のため、引数が " で囲まれていても正しく処理するようにする
+    if (projectRoot.string().back() == '\\' || projectRoot.string().back() == '/') {
+        // 末尾にスラッシュがあれば除去する処理（必要に応じて）
+    }
     // 2. 入出力ディレクトリ・ファイルパスの定義
     fs::path resourceDir = projectRoot / "Resources";
     fs::path jsonPath = resourceDir / "Manifest.json";
 
-    fs::path headerDir = projectRoot / "Tools/AssetGenerator/engine/math";
+    fs::path headerDir = projectRoot / "project/Tools/AssetGenerator/engine/math";
     fs::path headerPath = headerDir / "LoadResourceID.h";
 
     // 出力先ディレクトリの自動作成

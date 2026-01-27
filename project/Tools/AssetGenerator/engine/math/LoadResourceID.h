@@ -3,8 +3,8 @@
 namespace LoadResourceID {
 
     namespace texture {
-        constexpr const char* Title = "Textures/Ui/Title.png";
-        constexpr const char* Ui02 = "Textures/Ui/UI_02.png";
+        constexpr const char* Title;
+        constexpr const char* Ui02;
     }
 
     namespace model {
