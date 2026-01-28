@@ -106,11 +106,54 @@ void GamePlayScene::Initialize() {
     StageManager::GetInstance()->Initialize();
 
     end = false;
+    // ポーズメニューの初期化
+    pausemenu_ = std::make_unique<Pausemenu>();
+    pausemenu_->Initialize();
+    isPaused_ = false;
+    isPausedevent_ = false;
 }
 ///====================================================
 /// 毎フレーム更新処理
 ///====================================================
-void GamePlayScene::Update() {
+void GamePlayScene::Update() { 
+    pausemenu_->IconUpdate();
+    // Enterキーでポーズの「開始」のみをチェック
+    if (isPausedevent_ && !isPaused_ && Input::GetInstance()->Triggrkey(DIK_TAB)) {
+        isPaused_ = true;
+        pausemenu_->SetActive(true); // 演出開始！
+    }
+
+    //  ポーズ中の処理
+    if (isPaused_) {
+        pausemenu_->Update();
+        // ポーズメニュー内での演出（逆再生含む）がすべて終わったかチェック
+        if (pausemenu_->IsFinished()) {
+            isPaused_ = false; // ゲーム再開
+        }
+
+        // Resume（再開）の場合は、メニューが閉じ終わるのを待つ
+        if (pausemenu_->IsFinished() && pausemenu_->GetCommand() == PauseCommand::Resume) {
+            isPaused_ = false;
+        } else if (pausemenu_->GetCommand() == PauseCommand::GoToTitle) {
+            // フェードマネージャの更新   
+            FadeManager::GetInstance()->Update();
+            // メニューが表示されたまま、フェードアウトを開始
+            if (!goal_) {
+                FadeManager::GetInstance()->StartFadeOut(1.0f, FadeStyle::Normal);
+                goal_ = true; // フェード開始フラグとして利用
+            }
+
+            // フェードが終わったらシーン遷移
+            if (FadeManager::GetInstance()->IsFadeEnd()) {
+                SceneManager::GetInstance()->ChangeScene("TITLE");
+            }
+            // タイトル移行時はここでreturnし、背後のゲーム処理を止めたままにする
+            return;
+        }
+        // ポーズ演出中はゲームの他の更新を止める
+        return;
+    }
+
     // フェードイン開始
     if (!FadeManager::GetInstance()->IsFadeStart() && !FadeManager::GetInstance()->IsFading()) {
         // フェード開始
@@ -151,6 +194,7 @@ void GamePlayScene::Update() {
         // イベント終了 → プレイヤーを操作可能に
         player_->SetKeyActive(true);
         player_->SetReticleVisible(true);
+        isPausedevent_ = true;
         // 進行度を設定
         StartStageProgressUI();
     }
@@ -244,6 +288,7 @@ void GamePlayScene::Update() {
 
     gage_->Update();
     player_ui_->Update();
+
 #pragma endregion 全てのSprite個々の更新処理
 
 #pragma region  ImGuiの更新処理開始
@@ -270,7 +315,7 @@ void GamePlayScene::Draw() {
     SkyboxCommon::GetInstance()->Commondrawing();
     Box_->Draw();
     // 3Dオブジェクトの描画準備。3Dオブジェクトの描画に共通のグラフィックスコマンドを積む
-    Object3dCommon::GetInstance()->Commondrawing(); 
+    Object3dCommon::GetInstance()->Commondrawing();
     StageManager::GetInstance()->Draw();
 
     // 描画処理
@@ -289,7 +334,7 @@ void GamePlayScene::Draw() {
         }
     }
     wall->Draw();
-	// イベントマネージャの描画処理
+    // イベントマネージャの描画処理
     EventManager::GetInstance()->Drawo3Dbject();
 
     // パーティクルの描画準備。パーティクルの描画に共通のグラフィックスコマンドを積む 
@@ -311,15 +356,18 @@ void GamePlayScene::Draw() {
 
     gage_->Draw();
     player_ui_->Draw();
-
-	// イベントマネージャの描画処理
+    if (isPausedevent_) {
+        if (isPaused_) {
+            pausemenu_->Draw();
+        }
+        pausemenu_->IconDraw();
+    }
+    // イベントマネージャの描画処理
     EventManager::GetInstance()->Draw2DSprite();
-	// フェードマネージャの描画
+    // フェードマネージャの描画
     FadeManager::GetInstance()->Draw();
 #pragma endregion 全てのSprite個々の描画処理
 }
-
-
 
 ///====================================================
 /// プレイヤー弾 vs 敵の当たり判定
