@@ -115,12 +115,10 @@ void GamePlayScene::Initialize() {
 ///====================================================
 /// 毎フレーム更新処理
 ///====================================================
-void GamePlayScene::Update() {
-    
+void GamePlayScene::Update() { 
     pausemenu_->IconUpdate();
-
     // Enterキーでポーズの「開始」のみをチェック
-    if (!isPaused_ && Input::GetInstance()->Triggrkey(DIK_TAB)) {
+    if (isPausedevent_ && !isPaused_ && Input::GetInstance()->Triggrkey(DIK_TAB)) {
         isPaused_ = true;
         pausemenu_->SetActive(true); // 演出開始！
     }
@@ -358,12 +356,12 @@ void GamePlayScene::Draw() {
 
     gage_->Draw();
     player_ui_->Draw();
-   // if (isPausedevent_) {
+    if (isPausedevent_) {
         if (isPaused_) {
             pausemenu_->Draw();
         }
         pausemenu_->IconDraw();
-   // }
+    }
     // イベントマネージャの描画処理
     EventManager::GetInstance()->Draw2DSprite();
     // フェードマネージャの描画

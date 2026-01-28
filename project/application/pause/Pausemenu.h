@@ -37,6 +37,7 @@ public: // メンバ関数
     void Draw();
 
     void CalculateEaseSize(Sprite* sprite, const Vector2& baseSize, float frame, float maxFrame);
+    void CalculateEasePos(Sprite* sprite, const Vector2& targetPos, float startY, float frame, float maxFrame);
     void UpdateSelection();  // キー入力による選択項目の変更
     void UpdateArrowPositions();
     void IconUpdate();
@@ -65,6 +66,10 @@ private: // メンバ変数
     const float kMenuTopY = 300.0f;     // 最初の項目のY座標
     const float kMenuIntervalY = 80.0f; // 項目間の間隔
     const float kArrowOffsetX = 120.0f; // 項目中心から見た矢印の右オフセット
+
+    float kStartOffestY;
+
+   Vector2 panelTargetPos;
 public: // メンバ関数 
     // シーン側から状況を確認するための関数
     PauseCommand GetCommand() const { return command_; }

@@ -166,7 +166,7 @@ void TitleScene::UpdateFadeOut() {
     // タイトルシーンにおけるフェード制御を担当
     FadeManager* fade = FadeManager::GetInstance(); 
     // フェード中ではなくフェード完了状態の時にEnterキーを押すとフェードアウト開始
-    if (Input::GetInstance()->Triggrkey(DIK_RETURN) && !fade->IsFading() && fade->IsFadeEnd() && !isPlayerBoost_) {
+    if (Input::GetInstance()->Triggrkey(DIK_RETURN) && !fade->IsFading() && fade->IsFadeEnd() && !isPlayerBoost_ && CameraManager::GetInstance()->GetActiveCamera()->GetTranslate().x >= 30.0f) {
         fade->StartFadeOut(2.5f, FadeStyle::SilhouetteExplode);
         CameraManager::GetInstance()->SetCameraMode(CameraMode::Follow);
 
