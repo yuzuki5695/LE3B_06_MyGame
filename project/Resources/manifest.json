@@ -139,6 +139,30 @@
         }
     },
     "Textures": {
+        "arrow": {
+            "texture": "Textures/Ui/Arrow.png"
+        },
+        "command_01": {
+            "texture": "Textures/Ui/command_01.png"
+        },
+        "command_02": {
+            "texture": "Textures/Ui/command_02.png"
+        },
+        "command_11": {
+            "texture": "Textures/Ui/command_11.png"
+        },
+        "command_12": {
+            "texture": "Textures/Ui/command_12.png"
+        },
+        "pausemenupanel": {
+            "texture": "Textures/Ui/PauseMenuPanel.png"
+        },
+        "poseicon": {
+            "texture": "Textures/Ui/Poseicon.png"
+        },
+        "poseicon_red": {
+            "texture": "Textures/Ui/Poseicon_red.png"
+        },
         "title": {
             "texture": "Textures/Ui/Title.png"
         },

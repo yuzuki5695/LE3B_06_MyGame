@@ -193,6 +193,7 @@ std::unique_ptr<Sprite> Sprite::Create(std::string textureFilePath, Vector2 posi
 	sprite->position_ = position;
 	sprite->rotation_ = rotation;
 	sprite->size_ = size;
+	sprite->SetTextureSize(size);
 	// Transformの初期化
 	sprite->transform.translate = { sprite->position_.x,sprite->position_.y,0.0f };
 	sprite->transform.rotate = { 0.0f,0.0f,sprite->rotation_ };

@@ -64,9 +64,6 @@
     <Filter Include="ソース ファイル\application">
       <UniqueIdentifier>{e2eeeae6-7bff-48ec-904c-1bb0da6123a8}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ヘッダー ファイル\application">
-      <UniqueIdentifier>{8879c179-8943-4fc5-a19e-f0b38a474781}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ソース ファイル\engine\3d\Particle">
       <UniqueIdentifier>{f11d837f-785c-46f4-8d38-d2db12fb12e4}</UniqueIdentifier>
     </Filter>
@@ -78,9 +75,6 @@
     </Filter>
     <Filter Include="ソース ファイル\application\scene">
       <UniqueIdentifier>{792431d0-54be-4105-831e-7121fc68efe6}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ヘッダー ファイル\application\scene">
-      <UniqueIdentifier>{274efcee-0964-497f-a839-b32ab88eb2cf}</UniqueIdentifier>
     </Filter>
     <Filter Include="ヘッダー ファイル\engine\camera">
       <UniqueIdentifier>{3b2bd65f-cf04-450a-8757-252635abbb16}</UniqueIdentifier>
@@ -139,12 +133,6 @@
     <Filter Include="ヘッダー ファイル\engine\math\Vector">
       <UniqueIdentifier>{e13f2e36-4292-41c9-b7c0-9808517079de}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ヘッダー ファイル\application\character">
-      <UniqueIdentifier>{88d1f61c-35e7-4b87-8d52-a0fe6ed451ec}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ヘッダー ファイル\application\player">
-      <UniqueIdentifier>{2a7546ab-cebe-44d3-a852-a35e4e04e782}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ソース ファイル\application\player">
       <UniqueIdentifier>{a7eab18e-630a-472c-afe5-35bace2ee948}</UniqueIdentifier>
     </Filter>
@@ -154,53 +142,29 @@
     <Filter Include="ソース ファイル\application\loader">
       <UniqueIdentifier>{737ec024-93f3-4b94-94b0-39ecb63a733d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ヘッダー ファイル\application\loader">
-      <UniqueIdentifier>{4fd94a91-62be-4991-98c1-9fe49ec67cec}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ソース ファイル\application\camera">
       <UniqueIdentifier>{2c45c29c-d0c3-4ba3-83cc-fde300d51295}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ヘッダー ファイル\application\camera">
-      <UniqueIdentifier>{225bec48-4135-4122-8a6e-3b5d8149494c}</UniqueIdentifier>
     </Filter>
     <Filter Include="ソース ファイル\application\bullet">
       <UniqueIdentifier>{43779993-e4ed-4cb3-86e8-2e2a8fc165da}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ヘッダー ファイル\application\bullet">
-      <UniqueIdentifier>{91330ba0-b2ca-4345-9fa7-f3775f10d4e6}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ソース ファイル\application\enemy">
       <UniqueIdentifier>{4b99df62-1041-4fee-a5fd-1decbabccbe3}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ヘッダー ファイル\application\enemy">
-      <UniqueIdentifier>{8ca6f24a-1c20-4541-8f80-30ba17e68e7f}</UniqueIdentifier>
     </Filter>
     <Filter Include="ソース ファイル\application\fade">
       <UniqueIdentifier>{6de3d2ff-57ef-4f70-81ac-7a699de0dd44}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ヘッダー ファイル\application\fade">
-      <UniqueIdentifier>{fca0a5c4-0cca-4f32-9665-08aef2b11991}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ヘッダー ファイル\engine\math\collision">
       <UniqueIdentifier>{5f01e14b-13b2-42aa-ae79-9affb9303730}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ヘッダー ファイル\application\collision">
-      <UniqueIdentifier>{2b551131-8003-4282-b5ca-995d168aec00}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ソース ファイル\application\event">
       <UniqueIdentifier>{560a6f91-295f-44f1-b0b7-b2aa1307c46e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ヘッダー ファイル\application\event">
-      <UniqueIdentifier>{2e44f535-1b69-4651-b91a-3c6c9d1fef4a}</UniqueIdentifier>
     </Filter>
     <Filter Include="ソース ファイル\application\collision">
       <UniqueIdentifier>{c7d8663d-47b8-4017-9149-5c426a1193a4}</UniqueIdentifier>
     </Filter>
     <Filter Include="ソース ファイル\application\stage">
       <UniqueIdentifier>{956b23a1-c000-4af9-816b-d60f4377254e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ヘッダー ファイル\application\stage">
-      <UniqueIdentifier>{1d514fa6-6226-4b6e-ad61-846cfd2e44bb}</UniqueIdentifier>
     </Filter>
     <Filter Include="ヘッダー ファイル\engine\math\Easing">
       <UniqueIdentifier>{dd67d91e-27df-46e4-b34a-c55c296e5fd1}</UniqueIdentifier>
@@ -214,17 +178,59 @@
     <Filter Include="ヘッダー ファイル\engine\math\ParticleData">
       <UniqueIdentifier>{ab309e3a-ec4e-44c9-8978-c114a46308b8}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ヘッダー ファイル\application\particle">
-      <UniqueIdentifier>{3264e2f4-9fdc-482b-ad88-dcef28660e8d}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ソース ファイル\engine\math\collision">
       <UniqueIdentifier>{f4077ff3-9d86-403e-9ef0-1bebb837b1f8}</UniqueIdentifier>
     </Filter>
     <Filter Include="ソース ファイル\application\resource">
       <UniqueIdentifier>{07a86f35-75fe-4831-bfb6-13aa414b3d2f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ソース ファイル\application\pause">
+      <UniqueIdentifier>{c5781d8c-054f-48a2-8959-008b1c5e936f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\application">
+      <UniqueIdentifier>{8879c179-8943-4fc5-a19e-f0b38a474781}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\application\scene">
+      <UniqueIdentifier>{274efcee-0964-497f-a839-b32ab88eb2cf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\application\character">
+      <UniqueIdentifier>{88d1f61c-35e7-4b87-8d52-a0fe6ed451ec}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\application\player">
+      <UniqueIdentifier>{2a7546ab-cebe-44d3-a852-a35e4e04e782}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\application\loader">
+      <UniqueIdentifier>{4fd94a91-62be-4991-98c1-9fe49ec67cec}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\application\camera">
+      <UniqueIdentifier>{225bec48-4135-4122-8a6e-3b5d8149494c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\application\bullet">
+      <UniqueIdentifier>{91330ba0-b2ca-4345-9fa7-f3775f10d4e6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\application\enemy">
+      <UniqueIdentifier>{8ca6f24a-1c20-4541-8f80-30ba17e68e7f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\application\fade">
+      <UniqueIdentifier>{fca0a5c4-0cca-4f32-9665-08aef2b11991}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\application\collision">
+      <UniqueIdentifier>{2b551131-8003-4282-b5ca-995d168aec00}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\application\event">
+      <UniqueIdentifier>{2e44f535-1b69-4651-b91a-3c6c9d1fef4a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\application\stage">
+      <UniqueIdentifier>{1d514fa6-6226-4b6e-ad61-846cfd2e44bb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\application\particle">
+      <UniqueIdentifier>{3264e2f4-9fdc-482b-ad88-dcef28660e8d}</UniqueIdentifier>
+    </Filter>
     <Filter Include="ヘッダー ファイル\application\resource">
       <UniqueIdentifier>{479ca9b3-2dfa-4bfe-a30d-0bc400cf9199}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\application\pause">
+      <UniqueIdentifier>{5f0ad7e7-d543-4f5d-9f5a-2e8ac0dc99ba}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -455,6 +461,9 @@
     </ClCompile>
     <ClCompile Include="application\resource\ManifestExporter.cpp">
       <Filter>ソース ファイル\application\resource</Filter>
+    </ClCompile>
+    <ClCompile Include="application\pause\Pausemenu.cpp">
+      <Filter>ソース ファイル\application\pause</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -778,6 +787,9 @@
     </ClInclude>
     <ClInclude Include="application\loader\EnemyLoader.h">
       <Filter>ヘッダー ファイル\application\loader</Filter>
+    </ClInclude>
+    <ClInclude Include="application\pause\Pausemenu.h">
+      <Filter>ヘッダー ファイル\application\pause</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
