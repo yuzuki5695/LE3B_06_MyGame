@@ -19,6 +19,38 @@ mono_crash.*
 # Build results
 generated/
 
+# --- 新規追加設定
+
+# --- 指摘されたビルド成果物の再帰的除外 ---
+# 階層を問わず、これらの中間ファイルや成果物を除外します
+**/*.pch
+**/*.pdb
+**/*.obj
+
+# --- 指摘された不要なディレクトリの再帰的除外 ---
+# project/externals/ 配下などにあるビルド用フォルダを全て除外します
+**/x64/
+**/x86/
+**/Win32/
+**/ARM64/
+**/Debug/
+**/Release/
+**/Profile/
+**/bin/
+**/out/
+**/build/
+
+# --- ビルドキャッシュやログの除外 ---
+# 指摘された .tlog や .lastbuildstate 等を網羅します
+**/*.tlog
+**/*.lastbuildstate
+**/*.log
+
+# --- 特定の外部ライブラリフォルダの明示的な除外 ---
+# 設定が不足していると指摘された箇所を直接指定します
+project/externals/DirectXTex/Bin/
+project/externals/assimp/lib/Debug/
+
 # Visual Studio 2015/2017 cache/options directory
 .vs/
 # Uncomment if you have tasks that create the project's static files in wwwroot
