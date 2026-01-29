@@ -79,8 +79,9 @@
 copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dxil.dll"</Command>
     </PostBuildEvent>
     <PreBuildEvent>
-      <Command>
-      </Command>
+      <Command>"$(SolutionDir)..\generated\outputs\$(Configuration)\AssetGenerator.exe" "$(ProjectDir)."
+
+</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -112,8 +113,8 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
 copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dxil.dll"</Command>
     </PostBuildEvent>
     <PreBuildEvent>
-      <Command>
-      </Command>
+      <Command>"$(SolutionDir)..\generated\outputs\$(Configuration)\AssetGenerator.exe" "$(ProjectDir)."
+</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -311,6 +312,9 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     </ProjectReference>
     <ProjectReference Include="externals\imgui\imgui.vcxproj">
       <Project>{12ce02d8-a771-4844-aacc-f20bf9af9aea}</Project>
+    </ProjectReference>
+    <ProjectReference Include="Tools\AssetGenerator\AssetGenerator.vcxproj">
+      <Project>{b309d80a-b650-41b2-a3a8-c6afc14bc2db}</Project>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

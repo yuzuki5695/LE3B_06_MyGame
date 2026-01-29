@@ -1,0 +1,72 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="ソース ファイル">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="ヘッダー ファイル">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="リソース ファイル">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="ソース ファイル\math">
+      <UniqueIdentifier>{096b1cc1-869c-4c29-a284-64f9c87fdab6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\math">
+      <UniqueIdentifier>{98ba7bee-f60b-4677-9458-1d163c0dce99}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\src">
+      <UniqueIdentifier>{57a01277-271b-4252-a698-7a17c7025440}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\src">
+      <UniqueIdentifier>{1abe0527-9375-43b4-9357-5a03cbbc1766}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="engine\src\ResourceIdGenerator.cpp">
+      <Filter>ソース ファイル\src</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\src\ResourceCodeGenerator.cpp">
+      <Filter>ソース ファイル\src</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\src\ManifestExporter.cpp">
+      <Filter>ソース ファイル\src</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\src\FileSearcher.cpp">
+      <Filter>ソース ファイル\src</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="engine\src\ResourceCodeGenerator.h">
+      <Filter>ヘッダー ファイル\src</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\src\ManifestExporter.h">
+      <Filter>ヘッダー ファイル\src</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\src\FileSearcher.h">
+      <Filter>ヘッダー ファイル\src</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\src\ResourceIdGenerator.h">
+      <Filter>ヘッダー ファイル\src</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\math\ResourceID.h">
+      <Filter>ヘッダー ファイル\math</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\math\LoadResourceID.h">
+      <Filter>ヘッダー ファイル\math</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\math\AssetType.h">
+      <Filter>ヘッダー ファイル\math</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\math\ResourceEntry.h">
+      <Filter>ヘッダー ファイル\math</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
