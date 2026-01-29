@@ -33,8 +33,6 @@ generated/
 **/x86/
 **/Win32/
 **/ARM64/
-**/Debug/
-**/Release/
 **/Profile/
 **/bin/
 **/out/
