@@ -49,7 +49,6 @@ generated/
 # --- 特定の外部ライブラリフォルダの明示的な除外 ---
 # 設定が不足していると指摘された箇所を直接指定します
 project/externals/DirectXTex/Bin/
-project/externals/assimp/lib/Debug/
 
 # Visual Studio 2015/2017 cache/options directory
 .vs/
