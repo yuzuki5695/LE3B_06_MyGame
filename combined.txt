@@ -1892,12 +1892,14 @@ namespace LoadResourceID {
         constexpr const char* Pausemenupanel = "Textures/Ui/PauseMenuPanel.png";
         constexpr const char* Poseicon = "Textures/Ui/Poseicon.png";
         constexpr const char* PoseiconRed = "Textures/Ui/Poseicon_red.png";
+        constexpr const char* Target = "Textures/Ui/Target.png";
         constexpr const char* Title = "Textures/Ui/Title.png";
         constexpr const char* Ui02 = "Textures/Ui/UI_02.png";
     }
 
     namespace model {
         constexpr const char* Player = "Models/Character/Player/Player.obj";
+        constexpr const char* Playerbullet = "Models/Bullet/PlayerBullet/PlayerBullet.obj";
     }
 
     namespace audio {
@@ -7380,41 +7382,43 @@ File Path: project/application/player/Player.cpp
 #include <ModelManager.h>
 #include <CameraManager.h>
 #ifdef USE_IMGUI
-#include<ImGuiManager.h>
+#include <ImGuiManager.h>
 #endif // USE_IMGUI
 #include <Input.h>
-#include<PlayerBullet.h>
+#include <PlayerBullet.h>
 #include <BulletManager.h>
 #include <MatrixVector.h>
-#include<TextureManager.h>
+#include <TextureManager.h>
 #include <algorithm>
 #include <chrono>
-#include <algorithm> // std::max を使用するために必要
+#include <algorithm>
 #include <Skybox.h>
-#include<ModelDate.h>
+#include <ModelDate.h>
+#include <Tools/AssetGenerator/engine/math/LoadResourceID.h>
 
+using namespace LoadResourceID;
 using namespace MatrixVector;
 
 Player::~Player() {}
 
 void Player::Initialize() {	 
     // モデル・テクスチャ読み込み
-    ModelManager::GetInstance()->LoadModel("Gameplay/Model/Player/Player.obj");     
-    ModelManager::GetInstance()->LoadModel("Bullet/PlayerBullet.obj");
-    TextureManager::GetInstance()->LoadTexture("Gameplay/Texture/Target.png");
+    ModelManager::GetInstance()->LoadModel(model::Player);     
+    ModelManager::GetInstance()->LoadModel(model::Playerbullet);
+    TextureManager::GetInstance()->LoadTexture(texture::Target);
 
     // プレイヤーの初期位置と回転を設定
     transform_ = { {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f},  0.0f,0.0f,0.0f };
     // プレイヤー生成
-    object = Object3d::Create("Gameplay/Model/Player/Player.obj", transform_);
+    object = Object3d::Create(model::Player, transform_);
 
     targettransform_ = { {0.3f, 0.3f, 0.3f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 30.0f} };
-    target_= Object3d::Create("Bullet/PlayerBullet.obj", targettransform_);
+    target_= Object3d::Create(model::Playerbullet, targettransform_);
     moveDelta = Vector3(0.0f, 0.0f, 0.0f);
 
     // レティクル初期化
     reticleScreenPos = { 640.0f, 360.0f }; // 画面中央 (仮に1280x720の場合)
-    targetreticle_ = Sprite::Create("Gameplay/Texture/Target.png", reticleScreenPos, 0.0f, Vector2{ 100.0f, 100.0f });
+    targetreticle_ = Sprite::Create(texture::Target, reticleScreenPos, 0.0f, Vector2{ 100.0f, 100.0f });
     targetreticle_->SetTextureSize(Vector2{ 512.0f, 512.0f });
    	targetreticle_->SetAnchorPoint(Vector2{ 0.5f, 0.5f }); // 中心基準
     previousTime_ = 0.0f;
