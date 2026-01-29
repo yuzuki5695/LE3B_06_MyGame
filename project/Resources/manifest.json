@@ -122,6 +122,10 @@
         "player": {
             "model": "Models/Character/Player/Player.obj",
             "texture": "Models/Character/Player/Player.png"
+        },
+        "playerbullet": {
+            "model": "Models/Bullet/PlayerBullet/PlayerBullet.obj",
+            "texture": "Models/Bullet/PlayerBullet/PlayerBullet.png"
         }
     },
     "Particle": {
@@ -162,6 +166,9 @@
         },
         "poseicon_red": {
             "texture": "Textures/Ui/Poseicon_red.png"
+        },
+        "target": {
+            "texture": "Textures/Ui/Target.png"
         },
         "title": {
             "texture": "Textures/Ui/Title.png"
