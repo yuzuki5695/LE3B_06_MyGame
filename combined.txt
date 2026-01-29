@@ -3,6 +3,26 @@
 └── project/
     ├── MyGame.vcxproj
     ├── MyGame.vcxproj.filters
+    ├── Tools/
+    └── └── AssetGenerator/
+    └──     ├── AssetGenerator.vcxproj
+    └──     ├── AssetGenerator.vcxproj.filters
+    └──     ├── engine/
+    └──     └── ├── math/
+    └──     └── └── ├── AssetType.h
+    └──     └── └── ├── LoadResourceID.h
+    └──     └── └── ├── ResourceEntry.h
+    └──     └── └── └── ResourceID.h
+    └──     └── └── src/
+    └──     └──     ├── FileSearcher.cpp
+    └──     └──     ├── FileSearcher.h
+    └──     └──     ├── ManifestExporter.cpp
+    └──     └──     ├── ManifestExporter.h
+    └──     └──     ├── ResourceCodeGenerator.cpp
+    └──     └──     ├── ResourceCodeGenerator.h
+    └──     └──     ├── ResourceIdGenerator.cpp
+    └──     └──     └── ResourceIdGenerator.h
+    └──     └── main.cpp
     ├── application/
     └── ├── bullet/
     └── └── ├── BaseBullet.h
@@ -57,9 +77,17 @@
     └── └── ├── GamePlayparticle.h
     └── └── ├── Titleparticle.cpp
     └── └── └── Titleparticle.h
+    └── ├── pause/
+    └── └── ├── Pausemenu.cpp
+    └── └── └── Pausemenu.h
     └── ├── player/
     └── └── ├── Player.cpp
     └── └── └── Player.h
+    └── ├── resource/
+    └── └── ├── FileSearcher.cpp
+    └── └── ├── FileSearcher.h
+    └── └── ├── ManifestExporter.cpp
+    └── └── └── ManifestExporter.h
     └── ├── scene/
     └── └── ├── GameClearScene.cpp
     └── └── ├── GameClearScene.h
@@ -380,7 +408,7 @@ File Path: project/MyGame.vcxproj
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)engine\2d;$(ProjectDir)engine\3d;$(ProjectDir)engine\audio;$(ProjectDir)engine\base;$(ProjectDir)engine\io;$(ProjectDir)engine\math;$(ProjectDir)engine\scene;$(ProjectDir)engine\3d\Particle;$(ProjectDir)engine\camera;$(ProjectDir)engine\base\DirectXCommon;$(ProjectDir)engine\base\Utility;$(ProjectDir)engine\base\ViewManager;$(ProjectDir)engine\math\Light;$(ProjectDir)engine\math\Matrix;$(ProjectDir)engine\math\Model;$(ProjectDir)engine\math\Vector;$(ProjectDir)engine\resource;$(ProjectDir)externals\nlohmann;$(ProjectDir)application\scene;$(ProjectDir)application\character;$(ProjectDir)application\player;$(ProjectDir)application\bullet;$(ProjectDir)application\loader;$(ProjectDir)application\camera;$(ProjectDir)application\enemy;$(ProjectDir)externals\assimp\include;$(ProjectDir)engine\math\collision;$(ProjectDir)application\collision;$(ProjectDir)application\fade;$(ProjectDir)application\event;$(ProjectDir)application\stage;$(ProjectDir)engine\math\Easing;$(ProjectDir)application\particle;$(ProjectDir)engine\math\ParticleData</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)engine\2d;$(ProjectDir)engine\3d;$(ProjectDir)engine\audio;$(ProjectDir)engine\base;$(ProjectDir)engine\io;$(ProjectDir)engine\math;$(ProjectDir)engine\scene;$(ProjectDir)engine\3d\Particle;$(ProjectDir)engine\camera;$(ProjectDir)engine\base\DirectXCommon;$(ProjectDir)engine\base\Utility;$(ProjectDir)engine\base\ViewManager;$(ProjectDir)engine\math\Light;$(ProjectDir)engine\math\Matrix;$(ProjectDir)engine\math\Model;$(ProjectDir)engine\math\Vector;$(ProjectDir)engine\resource;$(ProjectDir)externals\nlohmann;$(ProjectDir)application\scene;$(ProjectDir)application\character;$(ProjectDir)application\player;$(ProjectDir)application\bullet;$(ProjectDir)application\loader;$(ProjectDir)application\camera;$(ProjectDir)application\enemy;$(ProjectDir)externals\assimp\include;$(ProjectDir)engine\math\collision;$(ProjectDir)application\collision;$(ProjectDir)application\fade;$(ProjectDir)application\event;$(ProjectDir)application\stage;$(ProjectDir)engine\math\Easing;$(ProjectDir)application\particle;$(ProjectDir)engine\math\ParticleData;$(ProjectDir)application\resource;$(ProjectDir)application\pause</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
     </ClCompile>
     <Link>
@@ -395,6 +423,11 @@ File Path: project/MyGame.vcxproj
       <Command>copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxcompiler.dll" "$(TargetDir)dxcompiler.dll"
 copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dxil.dll"</Command>
     </PostBuildEvent>
+    <PreBuildEvent>
+      <Command>"$(SolutionDir)..\generated\outputs\$(Configuration)\AssetGenerator.exe" "$(ProjectDir)."
+
+</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -408,7 +441,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)engine\2d;$(ProjectDir)engine\3d;$(ProjectDir)engine\audio;$(ProjectDir)engine\base;$(ProjectDir)engine\io;$(ProjectDir)engine\math;$(ProjectDir)engine\scene;$(ProjectDir)engine\3d\Particle;$(ProjectDir)engine\camera;$(ProjectDir)engine\base\DirectXCommon;$(ProjectDir)engine\base\Utility;$(ProjectDir)engine\base\ViewManager;$(ProjectDir)engine\math\Light;$(ProjectDir)engine\math\Matrix;$(ProjectDir)engine\math\Model;$(ProjectDir)engine\math\Vector;$(ProjectDir)engine\resource;$(ProjectDir)externals\nlohmann;$(ProjectDir)application\scene;$(ProjectDir)application\character;$(ProjectDir)application\player;$(ProjectDir)application\bullet;$(ProjectDir)application\loader;$(ProjectDir)application\camera;$(ProjectDir)application\enemy;$(ProjectDir)externals\assimp\include;$(ProjectDir)engine\math\collision;$(ProjectDir)application\collision;$(ProjectDir)application\fade;$(ProjectDir)application\event;$(ProjectDir)application\stage;$(ProjectDir)engine\math\Easing;$(ProjectDir)application\particle;$(ProjectDir)engine\math\ParticleData</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)engine\2d;$(ProjectDir)engine\3d;$(ProjectDir)engine\audio;$(ProjectDir)engine\base;$(ProjectDir)engine\io;$(ProjectDir)engine\math;$(ProjectDir)engine\scene;$(ProjectDir)engine\3d\Particle;$(ProjectDir)engine\camera;$(ProjectDir)engine\base\DirectXCommon;$(ProjectDir)engine\base\Utility;$(ProjectDir)engine\base\ViewManager;$(ProjectDir)engine\math\Light;$(ProjectDir)engine\math\Matrix;$(ProjectDir)engine\math\Model;$(ProjectDir)engine\math\Vector;$(ProjectDir)engine\resource;$(ProjectDir)externals\nlohmann;$(ProjectDir)application\scene;$(ProjectDir)application\character;$(ProjectDir)application\player;$(ProjectDir)application\bullet;$(ProjectDir)application\loader;$(ProjectDir)application\camera;$(ProjectDir)application\enemy;$(ProjectDir)externals\assimp\include;$(ProjectDir)engine\math\collision;$(ProjectDir)application\collision;$(ProjectDir)application\fade;$(ProjectDir)application\event;$(ProjectDir)application\stage;$(ProjectDir)engine\math\Easing;$(ProjectDir)application\particle;$(ProjectDir)engine\math\ParticleData;$(ProjectDir)application\resource;$(ProjectDir)application\pause</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -424,6 +457,10 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
       <Command>copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxcompiler.dll" "$(TargetDir)dxcompiler.dll"
 copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dxil.dll"</Command>
     </PostBuildEvent>
+    <PreBuildEvent>
+      <Command>"$(SolutionDir)..\generated\outputs\$(Configuration)\AssetGenerator.exe" "$(ProjectDir)."
+</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="application\bullet\BulletManager.cpp" />
@@ -444,7 +481,10 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="application\particle\GameOverparticle.cpp" />
     <ClCompile Include="application\particle\GamePlayparticle.cpp" />
     <ClCompile Include="application\particle\Titleparticle.cpp" />
+    <ClCompile Include="application\pause\Pausemenu.cpp" />
     <ClCompile Include="application\player\Player.cpp" />
+    <ClCompile Include="application\resource\FileSearcher.cpp" />
+    <ClCompile Include="application\resource\ManifestExporter.cpp" />
     <ClCompile Include="application\scene\GameOverScene.cpp" />
     <ClCompile Include="application\scene\GamePlayScene.cpp" />
     <ClCompile Include="application\scene\TitleScene.cpp" />
@@ -525,7 +565,10 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\particle\GameOverparticle.h" />
     <ClInclude Include="application\particle\GamePlayparticle.h" />
     <ClInclude Include="application\particle\Titleparticle.h" />
+    <ClInclude Include="application\pause\Pausemenu.h" />
     <ClInclude Include="application\player\Player.h" />
+    <ClInclude Include="application\resource\FileSearcher.h" />
+    <ClInclude Include="application\resource\ManifestExporter.h" />
     <ClInclude Include="application\scene\GameOverScene.h" />
     <ClInclude Include="engine\math\Collision\Collision.h" />
     <ClInclude Include="engine\math\Collision\OBB.h" />
@@ -614,6 +657,9 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     </ProjectReference>
     <ProjectReference Include="externals\imgui\imgui.vcxproj">
       <Project>{12ce02d8-a771-4844-aacc-f20bf9af9aea}</Project>
+    </ProjectReference>
+    <ProjectReference Include="Tools\AssetGenerator\AssetGenerator.vcxproj">
+      <Project>{b309d80a-b650-41b2-a3a8-c6afc14bc2db}</Project>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
@@ -765,9 +811,6 @@ File Path: project/MyGame.vcxproj.filters
     <Filter Include="ソース ファイル\application">
       <UniqueIdentifier>{e2eeeae6-7bff-48ec-904c-1bb0da6123a8}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ヘッダー ファイル\application">
-      <UniqueIdentifier>{8879c179-8943-4fc5-a19e-f0b38a474781}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ソース ファイル\engine\3d\Particle">
       <UniqueIdentifier>{f11d837f-785c-46f4-8d38-d2db12fb12e4}</UniqueIdentifier>
     </Filter>
@@ -779,9 +822,6 @@ File Path: project/MyGame.vcxproj.filters
     </Filter>
     <Filter Include="ソース ファイル\application\scene">
       <UniqueIdentifier>{792431d0-54be-4105-831e-7121fc68efe6}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ヘッダー ファイル\application\scene">
-      <UniqueIdentifier>{274efcee-0964-497f-a839-b32ab88eb2cf}</UniqueIdentifier>
     </Filter>
     <Filter Include="ヘッダー ファイル\engine\camera">
       <UniqueIdentifier>{3b2bd65f-cf04-450a-8757-252635abbb16}</UniqueIdentifier>
@@ -840,12 +880,6 @@ File Path: project/MyGame.vcxproj.filters
     <Filter Include="ヘッダー ファイル\engine\math\Vector">
       <UniqueIdentifier>{e13f2e36-4292-41c9-b7c0-9808517079de}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ヘッダー ファイル\application\character">
-      <UniqueIdentifier>{88d1f61c-35e7-4b87-8d52-a0fe6ed451ec}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ヘッダー ファイル\application\player">
-      <UniqueIdentifier>{2a7546ab-cebe-44d3-a852-a35e4e04e782}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ソース ファイル\application\player">
       <UniqueIdentifier>{a7eab18e-630a-472c-afe5-35bace2ee948}</UniqueIdentifier>
     </Filter>
@@ -855,53 +889,29 @@ File Path: project/MyGame.vcxproj.filters
     <Filter Include="ソース ファイル\application\loader">
       <UniqueIdentifier>{737ec024-93f3-4b94-94b0-39ecb63a733d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ヘッダー ファイル\application\loader">
-      <UniqueIdentifier>{4fd94a91-62be-4991-98c1-9fe49ec67cec}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ソース ファイル\application\camera">
       <UniqueIdentifier>{2c45c29c-d0c3-4ba3-83cc-fde300d51295}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ヘッダー ファイル\application\camera">
-      <UniqueIdentifier>{225bec48-4135-4122-8a6e-3b5d8149494c}</UniqueIdentifier>
     </Filter>
     <Filter Include="ソース ファイル\application\bullet">
       <UniqueIdentifier>{43779993-e4ed-4cb3-86e8-2e2a8fc165da}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ヘッダー ファイル\application\bullet">
-      <UniqueIdentifier>{91330ba0-b2ca-4345-9fa7-f3775f10d4e6}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ソース ファイル\application\enemy">
       <UniqueIdentifier>{4b99df62-1041-4fee-a5fd-1decbabccbe3}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ヘッダー ファイル\application\enemy">
-      <UniqueIdentifier>{8ca6f24a-1c20-4541-8f80-30ba17e68e7f}</UniqueIdentifier>
     </Filter>
     <Filter Include="ソース ファイル\application\fade">
       <UniqueIdentifier>{6de3d2ff-57ef-4f70-81ac-7a699de0dd44}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ヘッダー ファイル\application\fade">
-      <UniqueIdentifier>{fca0a5c4-0cca-4f32-9665-08aef2b11991}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ヘッダー ファイル\engine\math\collision">
       <UniqueIdentifier>{5f01e14b-13b2-42aa-ae79-9affb9303730}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ヘッダー ファイル\application\collision">
-      <UniqueIdentifier>{2b551131-8003-4282-b5ca-995d168aec00}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ソース ファイル\application\event">
       <UniqueIdentifier>{560a6f91-295f-44f1-b0b7-b2aa1307c46e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ヘッダー ファイル\application\event">
-      <UniqueIdentifier>{2e44f535-1b69-4651-b91a-3c6c9d1fef4a}</UniqueIdentifier>
     </Filter>
     <Filter Include="ソース ファイル\application\collision">
       <UniqueIdentifier>{c7d8663d-47b8-4017-9149-5c426a1193a4}</UniqueIdentifier>
     </Filter>
     <Filter Include="ソース ファイル\application\stage">
       <UniqueIdentifier>{956b23a1-c000-4af9-816b-d60f4377254e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ヘッダー ファイル\application\stage">
-      <UniqueIdentifier>{1d514fa6-6226-4b6e-ad61-846cfd2e44bb}</UniqueIdentifier>
     </Filter>
     <Filter Include="ヘッダー ファイル\engine\math\Easing">
       <UniqueIdentifier>{dd67d91e-27df-46e4-b34a-c55c296e5fd1}</UniqueIdentifier>
@@ -915,11 +925,59 @@ File Path: project/MyGame.vcxproj.filters
     <Filter Include="ヘッダー ファイル\engine\math\ParticleData">
       <UniqueIdentifier>{ab309e3a-ec4e-44c9-8978-c114a46308b8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ソース ファイル\engine\math\collision">
+      <UniqueIdentifier>{f4077ff3-9d86-403e-9ef0-1bebb837b1f8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\application\resource">
+      <UniqueIdentifier>{07a86f35-75fe-4831-bfb6-13aa414b3d2f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\application\pause">
+      <UniqueIdentifier>{c5781d8c-054f-48a2-8959-008b1c5e936f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\application">
+      <UniqueIdentifier>{8879c179-8943-4fc5-a19e-f0b38a474781}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\application\scene">
+      <UniqueIdentifier>{274efcee-0964-497f-a839-b32ab88eb2cf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\application\character">
+      <UniqueIdentifier>{88d1f61c-35e7-4b87-8d52-a0fe6ed451ec}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\application\player">
+      <UniqueIdentifier>{2a7546ab-cebe-44d3-a852-a35e4e04e782}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\application\loader">
+      <UniqueIdentifier>{4fd94a91-62be-4991-98c1-9fe49ec67cec}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\application\camera">
+      <UniqueIdentifier>{225bec48-4135-4122-8a6e-3b5d8149494c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\application\bullet">
+      <UniqueIdentifier>{91330ba0-b2ca-4345-9fa7-f3775f10d4e6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\application\enemy">
+      <UniqueIdentifier>{8ca6f24a-1c20-4541-8f80-30ba17e68e7f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\application\fade">
+      <UniqueIdentifier>{fca0a5c4-0cca-4f32-9665-08aef2b11991}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\application\collision">
+      <UniqueIdentifier>{2b551131-8003-4282-b5ca-995d168aec00}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\application\event">
+      <UniqueIdentifier>{2e44f535-1b69-4651-b91a-3c6c9d1fef4a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\application\stage">
+      <UniqueIdentifier>{1d514fa6-6226-4b6e-ad61-846cfd2e44bb}</UniqueIdentifier>
+    </Filter>
     <Filter Include="ヘッダー ファイル\application\particle">
       <UniqueIdentifier>{3264e2f4-9fdc-482b-ad88-dcef28660e8d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ソース ファイル\engine\math\collision">
-      <UniqueIdentifier>{f4077ff3-9d86-403e-9ef0-1bebb837b1f8}</UniqueIdentifier>
+    <Filter Include="ヘッダー ファイル\application\resource">
+      <UniqueIdentifier>{479ca9b3-2dfa-4bfe-a30d-0bc400cf9199}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\application\pause">
+      <UniqueIdentifier>{5f0ad7e7-d543-4f5d-9f5a-2e8ac0dc99ba}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -1144,6 +1202,15 @@ File Path: project/MyGame.vcxproj.filters
     </ClCompile>
     <ClCompile Include="application\loader\EnemyLoader.cpp">
       <Filter>ソース ファイル\application\loader</Filter>
+    </ClCompile>
+    <ClCompile Include="application\resource\FileSearcher.cpp">
+      <Filter>ソース ファイル\application\resource</Filter>
+    </ClCompile>
+    <ClCompile Include="application\resource\ManifestExporter.cpp">
+      <Filter>ソース ファイル\application\resource</Filter>
+    </ClCompile>
+    <ClCompile Include="application\pause\Pausemenu.cpp">
+      <Filter>ソース ファイル\application\pause</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1459,8 +1526,17 @@ File Path: project/MyGame.vcxproj.filters
     <ClInclude Include="application\enemy\EnemySpawner.h">
       <Filter>ソース ファイル\application\enemy</Filter>
     </ClInclude>
+    <ClInclude Include="application\resource\ManifestExporter.h">
+      <Filter>ヘッダー ファイル\application\resource</Filter>
+    </ClInclude>
+    <ClInclude Include="application\resource\FileSearcher.h">
+      <Filter>ヘッダー ファイル\application\resource</Filter>
+    </ClInclude>
     <ClInclude Include="application\loader\EnemyLoader.h">
-      <Filter>ソース ファイル\application\loader</Filter>
+      <Filter>ヘッダー ファイル\application\loader</Filter>
+    </ClInclude>
+    <ClInclude Include="application\pause\Pausemenu.h">
+      <Filter>ヘッダー ファイル\application\pause</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1537,6 +1613,971 @@ File Path: project/MyGame.vcxproj.filters
     </None>
   </ItemGroup>
 </Project>
+
+============================================================
+File Path: project/Tools/AssetGenerator/AssetGenerator.vcxproj
+============================================================
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>17.0</VCProjectVersion>
+    <Keyword>Win32Proj</Keyword>
+    <ProjectGuid>{b309d80a-b650-41b2-a3a8-c6afc14bc2db}</ProjectGuid>
+    <RootNamespace>AssetGenerator</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <OutDir>$(SolutionDir)..\generated\outputs\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)..\generated\obj\$(ProjectName)\$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <OutDir>$(SolutionDir)..\generated\outputs\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)..\generated\obj\$(ProjectName)\$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <TreatWarningAsError>true</TreatWarningAsError>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <AdditionalIncludeDirectories>$(ProjectDir)engine\src;$(ProjectDir)engine\math;$(ProjectDir)..\..\externals\nlohmann;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalOptions>/ignore:4049,4048 %(AdditionalOptions)</AdditionalOptions>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <AdditionalIncludeDirectories>$(ProjectDir)engine\src;$(ProjectDir)engine\math;$(ProjectDir)..\..\externals\nlohmann;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="engine\src\FileSearcher.cpp" />
+    <ClCompile Include="engine\src\ManifestExporter.cpp" />
+    <ClCompile Include="engine\src\ResourceCodeGenerator.cpp" />
+    <ClCompile Include="engine\src\ResourceIdGenerator.cpp" />
+    <ClCompile Include="main.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="engine\math\AssetType.h" />
+    <ClInclude Include="engine\math\LoadResourceID.h" />
+    <ClInclude Include="engine\math\ResourceEntry.h" />
+    <ClInclude Include="engine\math\ResourceID.h" />
+    <ClInclude Include="engine\src\FileSearcher.h" />
+    <ClInclude Include="engine\src\ManifestExporter.h" />
+    <ClInclude Include="engine\src\ResourceCodeGenerator.h" />
+    <ClInclude Include="engine\src\ResourceIdGenerator.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
+
+============================================================
+File Path: project/Tools/AssetGenerator/AssetGenerator.vcxproj.filters
+============================================================
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="ソース ファイル">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="ヘッダー ファイル">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="リソース ファイル">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="ソース ファイル\math">
+      <UniqueIdentifier>{096b1cc1-869c-4c29-a284-64f9c87fdab6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\math">
+      <UniqueIdentifier>{98ba7bee-f60b-4677-9458-1d163c0dce99}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\src">
+      <UniqueIdentifier>{57a01277-271b-4252-a698-7a17c7025440}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\src">
+      <UniqueIdentifier>{1abe0527-9375-43b4-9357-5a03cbbc1766}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="engine\src\ResourceIdGenerator.cpp">
+      <Filter>ソース ファイル\src</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\src\ResourceCodeGenerator.cpp">
+      <Filter>ソース ファイル\src</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\src\ManifestExporter.cpp">
+      <Filter>ソース ファイル\src</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\src\FileSearcher.cpp">
+      <Filter>ソース ファイル\src</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="engine\src\ResourceCodeGenerator.h">
+      <Filter>ヘッダー ファイル\src</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\src\ManifestExporter.h">
+      <Filter>ヘッダー ファイル\src</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\src\FileSearcher.h">
+      <Filter>ヘッダー ファイル\src</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\src\ResourceIdGenerator.h">
+      <Filter>ヘッダー ファイル\src</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\math\ResourceID.h">
+      <Filter>ヘッダー ファイル\math</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\math\LoadResourceID.h">
+      <Filter>ヘッダー ファイル\math</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\math\AssetType.h">
+      <Filter>ヘッダー ファイル\math</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\math\ResourceEntry.h">
+      <Filter>ヘッダー ファイル\math</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
+
+============================================================
+File Path: project/Tools/AssetGenerator/engine/math/AssetType.h
+============================================================
+#pragma once
+
+/// <summary>
+/// リソースの種類を表す列挙体
+/// </summary>
+enum class AssetType {
+    Texture,   // テクスチャ
+    Model,     // 3Dモデル
+    Audio,     // 音源
+    Unknown    // 非対応拡張子
+};
+
+============================================================
+File Path: project/Tools/AssetGenerator/engine/math/LoadResourceID.h
+============================================================
+#pragma once
+
+namespace LoadResourceID {
+
+    namespace texture {
+        constexpr const char* Arrow = "Textures/Ui/Arrow.png";
+        constexpr const char* Command01 = "Textures/Ui/command_01.png";
+        constexpr const char* Command02 = "Textures/Ui/command_02.png";
+        constexpr const char* Command11 = "Textures/Ui/command_11.png";
+        constexpr const char* Command12 = "Textures/Ui/command_12.png";
+        constexpr const char* Pausemenupanel = "Textures/Ui/PauseMenuPanel.png";
+        constexpr const char* Poseicon = "Textures/Ui/Poseicon.png";
+        constexpr const char* PoseiconRed = "Textures/Ui/Poseicon_red.png";
+        constexpr const char* Title = "Textures/Ui/Title.png";
+        constexpr const char* Ui02 = "Textures/Ui/UI_02.png";
+    }
+
+    namespace model {
+        constexpr const char* Player = "Models/Character/Player/Player.obj";
+    }
+
+    namespace audio {
+    }
+
+} // namespace LoadResourceID
+
+
+============================================================
+File Path: project/Tools/AssetGenerator/engine/math/ResourceEntry.h
+============================================================
+#pragma once
+#include <string>
+
+/// <summary>
+/// 各アセットの情報を保持する構造体
+/// </summary>
+struct ResourceEntry {
+    std::string name;    //!< アセットの論理名（例: player_idle）
+    std::string model;   //!< モデルファイルのパス
+    std::string texture; //!< テクスチャファイルのパス
+    std::string audio;   //!< 音源ファイルのパス
+};
+
+============================================================
+File Path: project/Tools/AssetGenerator/engine/math/ResourceID.h
+============================================================
+#pragma once
+#include <string>
+
+enum class ResourceType {
+    Texture,
+    Model,
+    Audio
+};
+
+struct ResourceId {
+    ResourceType type;   // Texture / Model / Audio
+    std::string  name;   // enemybullet / alarm01
+    std::string  path;   // Bullet/EnemyBullet.obj
+};
+
+
+============================================================
+File Path: project/Tools/AssetGenerator/engine/src/FileSearcher.cpp
+============================================================
+#include"FileSearcher.h"
+#include <filesystem>
+
+std::vector<std::string> FileSearcher::GetAllFiles(const std::vector<std::string>& excludeDirs) {
+    std::vector<std::string> files;
+    // ルートディレクトリ以下を再帰的に走査
+    for (const auto& entry : std::filesystem::recursive_directory_iterator(root_)) {
+        // ファイル以外（ディレクトリ等）はスキップ
+        if (!entry.is_regular_file()) { continue; }
+
+        // フルパス文字列を取得
+        std::string pathStr = entry.path().string();
+        // 除外ディレクトリに該当するかチェック
+        bool skip = false;
+        for (const auto& ex : excludeDirs) {
+            // パス文字列に除外ディレクトリ名が含まれていればスキップ
+            if (pathStr.find(ex) != std::string::npos) {
+                skip = true;
+                break;
+            }
+        }
+        // 除外対象でなければ、root からの相対パスを追加
+        if (!skip) {
+            files.push_back(std::filesystem::relative(entry.path(), root_).string());
+        }
+    }
+    // 検索結果を返す
+    return files;
+}
+
+============================================================
+File Path: project/Tools/AssetGenerator/engine/src/FileSearcher.h
+============================================================
+#pragma once
+#include <string>
+#include <vector>
+
+/// <summary>
+/// 指定したルートフォルダ以下を再帰的に走査し、
+/// ファイルパス一覧を取得するためのユーティリティクラス
+/// </summary>
+class FileSearcher {
+public:
+    /// <summary>
+    /// コンストラクタ
+    /// </summary>
+    /// <param name="root">
+    /// 検索の起点となるフォルダパス（例: "Resources"）
+    /// </param>
+    explicit FileSearcher(const std::string& root) : root_(root) {}
+    /// <summary>
+    /// ルートフォルダ以下を再帰的にスキャンし、
+    /// 除外ディレクトリを考慮したファイル一覧を返す
+    /// </summary>
+    /// <param name="excludeDirs">
+    /// 除外したいディレクトリ名のリスト
+    /// （例: ".git", "Temp", "EditorTemp" など）
+    /// </param>
+    /// <returns>
+    /// root からの相対パスで構成されたファイルパス一覧
+    /// </returns>
+    std::vector<std::string> GetAllFiles(const std::vector<std::string>& excludeDirs);
+
+private:
+    // 検索の基準となるルートディレクトリ
+    std::string root_;
+};
+
+============================================================
+File Path: project/Tools/AssetGenerator/engine/src/ManifestExporter.cpp
+============================================================
+#include"ManifestExporter.h"
+#include <fstream>
+#include <unordered_map>
+#include <json.hpp>
+
+///=====================================================
+/// Export
+///-----------------------------------------------------
+/// fileList を走査し、
+/// 同一 Group / Name の Asset を統合しながら JSON を構築する
+///
+/// 出力形式:
+/// {
+///   "Bullet": {
+///     "enemybullet": {
+///       "model": "...",
+///       "texture": "..."
+///     }
+///   }
+/// }
+///=====================================================
+
+void ManifestExporter::Export(const std::string& outputPath, const std::vector<std::string>& fileList) { 
+    // 出力用変数 
+    nlohmann::json manifest;
+
+   for (const auto& file : fileList) {
+        // パス正規化
+        std::string normalized = NormalizePath(file);
+
+        // 拡張子取得
+        std::string ext = std::filesystem::path(normalized).extension().string();
+
+        // AssetType 判定
+        AssetType type = GetAssetType(ext);
+        if (type == AssetType::Unknown) continue;
+
+        // Group（最上位フォルダ）
+        std::string group = GetGroup(normalized);
+
+        // Asset 論理名（拡張子無し. 同名のmodel/texture/audio を1つに束ねるために使用
+        std::string name = CreateId(normalized, type);
+
+        // JSONキー名（model / texture / audio）
+        std::string typeKey = ToString(type);
+
+        // 同一 Group/Name の中に model/texture/audioを統合して格納する
+        manifest[group][name][typeKey] = normalized;
+    }
+    // 差分がある場合のみ保存し無駄なファイル更新を防ぐ
+    SaveIfChanged(outputPath, manifest.dump(4));
+}
+
+void ManifestExporter::SaveIfChanged(const std::string& path, const std::string& content) {
+    // 既存ファイルを読み込み
+    std::ifstream ifs(path, std::ios::binary);
+    if (ifs) {
+        std::string existing((std::istreambuf_iterator<char>(ifs)), std::istreambuf_iterator<char>());
+        // 内容が同一なら書き込みをスキップ
+        if (existing == content) {
+            return;
+        }
+    }
+
+    // 差分がある場合のみ上書き保存
+    std::ofstream ofs(path, std::ios::binary | std::ios::trunc);
+    ofs << content;
+}
+
+std::string ManifestExporter::CreateId(std::string path, AssetType type) {
+    std::filesystem::path p(path);
+    // 拡張子を除いたファイル名を取得
+    std::string id = p.stem().string();
+    // 小文字化（キーの揺れ防止） _model / _texture は付けない
+    std::transform(id.begin(), id.end(), id.begin(), ::tolower);
+    return id;
+}
+
+
+std::string ManifestExporter::NormalizePath(std::string path) {
+    std::replace(path.begin(), path.end(), '\\', '/');
+    return path;
+}
+
+std::string ManifestExporter::GetGroup(const std::string& path) {
+    std::filesystem::path p(path);
+
+    if (p.has_parent_path()) {
+        return p.begin()->string();
+    }
+    // フォルダを持たない場合のフォールバック
+    return "Common";
+}
+
+
+AssetType ManifestExporter::GetAssetType(const std::string& ext) {
+    std::string lowerExt = ext;
+
+    // 拡張子を小文字化
+    std::transform(lowerExt.begin(), lowerExt.end(), lowerExt.begin(), ::tolower);
+    // テクスチャ
+    if (lowerExt == ".png" || lowerExt == ".jpg" || lowerExt == ".jpeg" || lowerExt == ".tga" || lowerExt == ".dds") return AssetType::Texture;
+    // モデル
+    if (lowerExt == ".fbx" || lowerExt == ".obj" || lowerExt == ".gltf" || lowerExt == ".glb") return AssetType::Model;
+    // 音源
+    if (lowerExt == ".wav" || lowerExt == ".mp3" || lowerExt == ".ogg") return AssetType::Audio;
+
+    return AssetType::Unknown;
+}
+
+std::string ManifestExporter::ToString(AssetType type) {
+    switch (type) {
+    case AssetType::Texture: return "texture";
+    case AssetType::Model:   return "model";
+    case AssetType::Audio:   return "audio";
+    default: return "";
+    }
+}
+
+
+============================================================
+File Path: project/Tools/AssetGenerator/engine/src/ManifestExporter.h
+============================================================
+#pragma once
+#include <vector>
+#include <string>
+#include <AssetType.h>
+
+/// <summary>
+/// ManifestExporter
+/// ファイルパス一覧から Asset Manifest(JSON) を生成するクラス
+/// </summary>
+class ManifestExporter {
+private: // メンバ関数
+    /// <summary>
+    /// 拡張子から AssetType を判定する
+    /// 未対応の拡張子は Unknown を返す
+    /// </summary>
+    AssetType GetAssetType(const std::string& ext);
+    /// <summary>
+    /// ファイルパスから Asset の論理名を生成する
+    /// 拡張子を除いたファイル名を小文字化したものを使用
+    /// </summary>
+    std::string CreateId(std::string path, AssetType type);
+    /// <summary>
+    /// AssetType を JSON のキー文字列へ変換する
+    /// </summary>
+    std::string ToString(AssetType type); 
+    /// <summary>
+    /// パスの最上位ディレクトリを Group 名として取得する
+    /// 例: "Bullet/EnemyBullet.obj" → "Bullet"
+    /// </summary>
+    std::string GetGroup(const std::string& path);
+    /// <summary>
+    /// パス区切りを '/' に正規化する
+    /// Windows / Unix 混在対策用のユーティリティ
+    /// </summary>
+    static std::string NormalizePath(std::string path);
+    /// <summary>
+    /// 既存ファイルと内容を比較し,差分がある場合のみ上書き保存する
+    /// </summary>
+    void SaveIfChanged(const std::string& path, const std::string& content); 
+public: // メンバ関数
+    /// <summary>
+    /// ファイル出力処理
+    /// ファイルリストを受け取ってJSON化出力。内容に差分がある場合のみファイルへ書き出す 
+    /// </summary> 
+    void Export(const std::string& outputPath, const std::vector<std::string>& fileList);
+};
+
+============================================================
+File Path: project/Tools/AssetGenerator/engine/src/ResourceCodeGenerator.cpp
+============================================================
+#include "ResourceCodeGenerator.h"
+#include <fstream>
+#include <sstream>
+#include <regex>
+#include <iostream>
+#include <set>
+
+std::map<std::string, std::string> ResourceCodeGenerator::ParseExistingHeader(const std::string& filePath) {
+    std::map<std::string, std::string> existingData;
+    std::ifstream ifs(filePath);
+    if (!ifs) return existingData;
+
+    std::string line;
+    // 正規表現を修正: "= "path"" の部分を非キャプチャグループ (?:...)? にして、あってもなくてもマッチさせる
+    // 1: 変数名 (\w+), 2: パス ([^"]+)
+    std::regex re(R"(constexpr const char\*\s+(\w+)(?:\s*=\s*\"([^\"]+)\")?\s*;)");
+    std::smatch match;
+
+    while (std::getline(ifs, line)) {
+        if (std::regex_search(line, match, re)) {
+            std::string varName = match[1].str();
+            std::string path = match[2].matched ? match[2].str() : "__UNDEFINED__";
+
+            // パスをキーにして変数名を保存（パス不明の場合は __UNDEFINED__ をキーにする）
+            // ただし、同じパスが複数あると上書きされるため、手動定義が多い場合は注意
+            existingData[path] = varName;
+        }
+    }
+    return existingData;
+}
+
+void ResourceCodeGenerator::GenerateHeader(const std::string& outputPath, const std::vector<ResourceEntry>& entries) {
+    // 1. 既存の定義を読み込む
+    auto existingData = ParseExistingHeader(outputPath);
+
+    // 既存の {変数名 : 元のパス} の逆引きマップを作成
+    std::map<std::string, std::string> nameToPath;
+    for (auto const& [path, name] : existingData) {
+        nameToPath[name] = path;
+    }
+
+    std::stringstream ss;
+    ss << "#pragma once\n\n";
+    ss << "namespace LoadResourceID {\n\n";
+
+    // どのグループでも出力されなかった既存変数名を追跡
+    std::set<std::string> allUsedNames;
+
+    auto writeGroup = [&](const std::string& groupName, auto filterFunc) {
+        ss << "    namespace " << groupName << " {\n";
+        std::set<std::string> usedInThisGroup;
+
+        // A. 現存するファイルに基づく生成
+        for (const auto& e : entries) {
+            std::string currentPath = filterFunc(e);
+            if (currentPath.empty()) continue;
+
+            // 整理用フィルタ
+            if (currentPath.find("Textures") == std::string::npos &&
+                currentPath.find("Models") == std::string::npos) {
+                continue;
+            }
+
+            std::string varName;
+            if (existingData.count(currentPath)) {
+                varName = existingData[currentPath];
+            } else {
+                varName = ToUpperCamel(e.name);
+            }
+
+            ss << "        constexpr const char* " << varName << " = \"" << currentPath << "\";\n";
+            usedInThisGroup.insert(varName);
+            allUsedNames.insert(varName);
+        }
+
+        // B. 手動追加された変数や、ファイルが消えた変数の nullptr 出力
+        for (auto const& [name, path] : nameToPath) {
+            // すでにこのグループで出力済みなら飛ばす
+            if (usedInThisGroup.count(name)) continue;
+
+            // 1. パスが特定のフォルダを含む場合、そのグループで nullptr 出力
+            // 2. パスが "__UNDEFINED__" (手動で Title2; と書いた) の場合、
+            //    とりあえず texture namespace などで最初に見つけた時に出す、
+            //    または namespace 判定を簡易化して出力
+            bool isTargetGroup = false;
+            if (path == "__UNDEFINED__") {
+                // 手動定義の場合、変数名のヒント（"Title"が含まれるならtextureなど）
+                // または元の namespace の場所を特定するロジックが必要ですが、
+                // 今回は「最初にマッチしたグループ」で出す簡易仕様にします
+                if (groupName == "texture") isTargetGroup = true;
+            } else if (ContainsFolder(path, groupName)) {
+                isTargetGroup = true;
+            }
+
+            if (isTargetGroup && allUsedNames.find(name) == allUsedNames.end()) {
+                ss << "        constexpr const char* " << name << " = nullptr; // // [Error: File not found or name mismatch] \n";
+                allUsedNames.insert(name);
+            }
+        }
+        ss << "    }\n\n";
+        };
+
+    // 1. Textureグループ: パスに "Textures" が含まれる場合のみ反映
+    writeGroup("texture", [](const ResourceEntry& e) {
+        if (!e.texture.empty() && e.texture.find("Textures") != std::string::npos) {
+            return e.texture;
+        }
+        return std::string("");
+        });
+
+    // 2. Modelグループ: パスに "Models" が含まれる場合のみ反映
+    writeGroup("model", [](const ResourceEntry& e) {
+        if (!e.model.empty() && e.model.find("Models") != std::string::npos) {
+            return e.model;
+        }
+        return std::string("");
+        });
+
+    // 3. Audioグループ: 基本的にそのまま反映
+    writeGroup("audio", [](const ResourceEntry& e) {
+        return e.audio;
+        });
+
+    ss << "} // namespace LoadResourceID\n";
+
+    // --- 保存処理（変更なし） ---
+    std::string newContent = ss.str();
+    if (IsContentChanged(outputPath, newContent)) {
+        std::ofstream ofs(outputPath);
+        ofs << newContent;
+        // 差分があるなら、新しい内容でファイルを上書き保存
+        std::cout << "[Update] Header file updated." << std::endl;
+    } else {
+        // 内容が同じなら、書き込みをスキップ（既存ファイルを保持）
+        std::cout << "[Skip] No changes detected." << std::endl;
+    }
+}
+
+bool ResourceCodeGenerator::IsContentChanged(const std::string& filePath, const std::string& newContent) {
+    std::ifstream ifs(filePath);
+    // ファイルが開けない（存在しない）場合は、新規作成が必要なため「変更あり」とみなす
+    if (!ifs) return true;
+
+    std::stringstream oldContent;
+    oldContent << ifs.rdbuf();
+    return oldContent.str() != newContent;
+}
+
+std::string ResourceCodeGenerator::ToUpperCamel(const std::string& name) {
+    std::string res;
+    bool nextUpper = true; // 最初の文字や区切り後の文字を大文字にするフラグ
+    for (char c : name) {
+        // 区切り文字（アンダースコア、スペース、ハイフン）を検出
+        if (c == '_' || c == ' ' || c == '-') {
+            nextUpper = true;
+            continue;
+        }
+        if (nextUpper) {
+            // 大文字に変換して追加
+            res += (char)toupper(static_cast<unsigned char>(c));
+            nextUpper = false;
+        } else {
+            // 小文字に変換して追加
+            res += (char)tolower(static_cast<unsigned char>(c));
+        }
+    }
+    return res;
+}
+
+============================================================
+File Path: project/Tools/AssetGenerator/engine/src/ResourceCodeGenerator.h
+============================================================
+#pragma once
+#include <string>
+#include <vector>
+#include <map>
+#include <ResourceIdGenerator.h>
+
+/// <summary>
+/// リソース定義コード（C++ヘッダー）を自動生成するクラス。
+/// 既存の定義を解析し、定数名の一貫性を保ちつつ最新の状態に更新する。
+/// </summary>
+class ResourceCodeGenerator {
+public:
+    /// <summary>
+    /// リソースエントリのリストから C++ ヘッダーファイルを生成する
+    /// </summary>
+    /// <param name="outputPath">出力するヘッダーファイルのパス</param>
+    /// <param name="entries">ResourceIdGeneratorによって解析されたリソース情報リスト</param>
+    void GenerateHeader(
+        const std::string& outputPath,
+        const std::vector<ResourceEntry>& entries
+    );
+    /// <summary>
+    /// 文字列をアッパーキャメルケースに変換する（例: "enemy_bullet" -> "EnemyBullet"）
+    /// </summary>
+    /// <param name="name">変換元の文字列</param>
+    /// <returns>変換後の文字列</returns>
+    std::string ToUpperCamel(const std::string& name);
+    /// <summary>
+    /// 指定されたパスの中に特定のフォルダ名が含まれているか判定する
+    /// </summary>
+    /// <param name="path">対象のファイルパス</param>
+    /// <param name="folder">検索するフォルダ名</param>
+    /// <returns>含まれていれば true</returns>
+    static bool ContainsFolder(const std::string& path, const std::string& folder) {
+        return path.find(folder + "/") != std::string::npos;
+    };
+    /// <summary>
+    /// 指定されたパスが特定のフォルダ直下（または配下）にあるか判定する
+    /// </summary>
+    bool IsUnderFolder(const std::string& path, const std::string& folder) {
+        return path.find(folder + "/") != std::string::npos;
+    };
+private:
+    /// <summary>
+    /// 既存のヘッダーファイルを読み込み、定義済みの変数名とパスの対応表を作成する
+    /// </summary>
+    /// <param name="filePath">既存のヘッダーパス</param>
+    /// <returns>パスをキー、変数名を値としたマップ</returns>
+    std::map<std::string, std::string> ParseExistingHeader(const std::string& filePath);
+    /// <summary>
+    /// 新しく生成した内容が現在のファイル内容と異なるかチェックする
+    /// </summary>
+    /// <param name="filePath">比較対象のファイルパス</param>
+    /// <param name="newContent">新しく生成したコード文字列</param>
+    /// <returns>変更があれば true、同じであれば false</returns>
+    bool IsContentChanged(const std::string& filePath, const std::string& newContent);
+};
+
+============================================================
+File Path: project/Tools/AssetGenerator/engine/src/ResourceIdGenerator.cpp
+============================================================
+#include "ResourceIdGenerator.h"
+#include <fstream>
+
+using json = nlohmann::json;
+
+bool ResourceIdGenerator::LoadFromJson(const std::string& jsonPath) {
+    std::ifstream ifs(jsonPath);
+    if (!ifs) return false;
+
+    json manifest;
+    try {
+        ifs >> manifest;
+    } catch (const json::parse_error) {
+        // パース失敗時は false を返す
+        return false;
+    }
+
+    // JSON の構造を走査 (Group -> AssetName -> Data)
+    for (auto& [groupName, assets] : manifest.items()) {
+        for (auto& [assetName, assetData] : assets.items()) {
+
+            ResourceEntry entry;
+            entry.name = assetName;
+            // model キーが存在すればパスを格納
+            if (assetData.contains("model"))
+                entry.model = assetData["model"].get<std::string>();
+            // texture キーが存在すればパスを格納
+            if (assetData.contains("texture"))
+                entry.texture = assetData["texture"].get<std::string>();
+            // audio キーが存在すればパスを格納
+            if (assetData.contains("audio"))
+                entry.audio = assetData["audio"].get<std::string>();
+
+            resourceids_.push_back(entry);
+        }
+    }
+    return true;
+}
+
+ResourceType ResourceIdGenerator::ToResourceType(const std::string& key) {
+    // 文字列識別子から内部型の ResourceType へ変換を行う
+    if (key == "texture") return ResourceType::Texture;
+    if (key == "model")   return ResourceType::Model;
+    if (key == "audio")   return ResourceType::Audio;
+
+    // 想定外のキーが含まれている場合は例外を投げる
+    throw std::runtime_error("Unknown resource type encountered: " + key);
+}
+
+============================================================
+File Path: project/Tools/AssetGenerator/engine/src/ResourceIdGenerator.h
+============================================================
+#pragma once
+#include <vector>
+#include <json.hpp>
+#include <ResourceId.h>
+#include <ResourceEntry.h>
+
+/// <summary>
+/// Manifest.json を解析し、プログラム内で利用しやすい ResourceEntry のリストに変換するクラス
+/// </summary>
+class ResourceIdGenerator {
+public:
+    /// <summary>
+    /// Manifest.json を読み込んで ResourceEntry の一覧を構築する
+    /// </summary>
+    /// <param name="jsonPath">読み込む JSON ファイルのパス</param>
+    /// <returns>読み込みと解析に成功すれば true</returns>
+    bool LoadFromJson(const std::string& jsonPath);
+    /// <summary>
+    /// 解析済みのリソースエントリリストを取得する
+    /// </summary>
+    /// <returns>ResourceEntry のベクタへの定数参照</returns>
+    const std::vector<ResourceEntry>& GetResources() const { return resourceids_; }
+private:
+    /// <summary>
+    /// JSON 内のキー文字列を ResourceType 列挙型に変換する
+    /// </summary>
+    /// <param name="key">"texture", "model", "audio" などの文字列</param>
+    /// <returns>対応する ResourceType</returns>
+    ResourceType ToResourceType(const std::string& key);
+private:
+    // 解析されたリソース情報の格納用リスト
+    std::vector<ResourceEntry> resourceids_;
+};
+
+============================================================
+File Path: project/Tools/AssetGenerator/main.cpp
+============================================================
+#include <iostream>
+#include <filesystem>
+#include <FileSearcher.h>
+#include <ManifestExporter.h>
+#include <ResourceIdGenerator.h>
+#include <ResourceCodeGenerator.h>
+
+namespace fs = std::filesystem;
+
+int main(int argc, char* argv[]) {
+    // 日本語パス対応
+    std::locale::global(std::locale("japanese"));
+
+    // 1. プロジェクトルートパスの決定
+    // 引数がない場合は実行環境からの相対パスを使用
+    std::string pathStr = (argc > 1) ? argv[1] : "../../";
+
+    // Windowsの末尾引用符バグ対策 ---
+    if (!pathStr.empty() && pathStr.back() == '\"') {
+        pathStr.pop_back(); // 混入した " を削除
+    }
+    // 末尾が \. で終わるように指定された場合の対策
+    if (!pathStr.empty() && pathStr.back() == '.') {
+        pathStr.pop_back();
+    }
+    // ------------------------------------------
+    fs::path projectRoot = fs::absolute(pathStr); // 絶対パスに変換して安定させる
+    // 2. 入出力ディレクトリ・ファイルパスの定義
+    fs::path resourceDir = projectRoot / "Resources";
+    fs::path jsonPath = resourceDir / "Manifest.json";
+
+    fs::path headerDir = projectRoot / "Tools/AssetGenerator/engine/math";
+    fs::path headerPath = headerDir / "LoadResourceID.h";
+
+    // 出力先ディレクトリの自動作成
+    if (!fs::exists(headerDir)) {
+        fs::create_directories(headerDir);
+    }
+
+    try {
+        std::cout << "--- Asset Generator Start ---" << std::endl;
+
+        // ① リソースファイルの検索
+        // Manifest.json 自体は検索対象から除外する
+        FileSearcher searcher(resourceDir.string());
+        std::vector<std::string> exclude = { ".git", ".vs", "Manifest.json" };
+        auto files = searcher.GetAllFiles(exclude);
+
+        // ② アセット目録 (Manifest.json) の書き出し
+        // 変更がない場合はファイル更新（タイムスタンプ変更）を行わない
+        ManifestExporter exporter;
+        exporter.Export(jsonPath.string(), files);
+        std::cout << "[Success] JSON created at: " << jsonPath << std::endl;
+
+        // ③ JSONの解析とC++定数定義ヘッダーの自動生成
+        ResourceIdGenerator idGen;
+        if (idGen.LoadFromJson(jsonPath.string())) {
+            ResourceCodeGenerator codeGen;
+            codeGen.GenerateHeader(headerPath.string(), idGen.GetResources());
+            std::cout << "[Success] Header created at: " << headerPath << std::endl;
+        }
+    }
+    catch (const std::exception& e) {
+        std::cerr << "[Error] " << e.what() << std::endl;
+        return 1;
+    }
+    return 0;
+}
 
 ============================================================
 File Path: project/application/bullet/BaseBullet.h
@@ -2951,6 +3992,12 @@ protected:
 File Path: project/application/camera/TitleCamera.cpp
 ============================================================
 #include "TitleCamera.h"
+#include <CameraManager.h>
+#include <MatrixVector.h>
+#include <Easing.h>
+
+using namespace Easing;
+using namespace MatrixVector;
 
 void TitleCamera::Initialize() {
     // カメラの値の初期化
@@ -2963,7 +4010,55 @@ void TitleCamera::Initialize() {
     AddSubCameras(subCams);
 }
 
-void TitleCamera::Update() {}
+void TitleCamera::Update() {
+    switch (state_) {
+    case TitleCameraState::IntroMove:
+        UpdateIntroMove();
+        break;
+
+    case TitleCameraState::Default:
+        if (CameraManager::GetInstance()->GetMode() == CameraMode::Follow) {
+            UpdateLookAt();
+        }
+        break;
+    }
+}
+
+void TitleCamera::UpdateIntroMove() {
+    moveTimer_ += 1.0f / 60.0f; // deltaTime があればそれを使う
+
+    float t = std::clamp(moveTimer_ / moveDuration_, 0.0f, 1.0f);
+    float easedT = EaseOutQuad(t);
+
+    transform_.translate = Lerp(startPos_, endPos_, easedT);
+
+    // Follow 中はターゲットを見る
+    UpdateLookAt();
+
+    if (t >= 1.0f) {
+        // 終了処理
+        transform_.translate = endPos_;
+        state_ = TitleCameraState::Default;
+
+        CameraManager::GetInstance()->SetCameraMode(CameraMode::Default);
+    }
+}
+
+void TitleCamera::UpdateLookAt() {
+    if (!target_) return;
+
+    Vector3 camPos = transform_.translate;
+    Vector3 targetPos = target_->GetWorldPosition();
+    Vector3 dir = targetPos - camPos;
+
+    if (Length(dir) > 0.0001f) {
+        dir = Normalize(dir);
+        float yaw = atan2f(dir.x, dir.z);
+        float pitch = -asinf(dir.y);
+        transform_.rotate = { pitch, yaw, 0.0f };
+    }
+}
+
 
 void TitleCamera::AddSubCamera(const CameraTransform& trans) {
     // 新しいサブカメラインスタンスを生成
@@ -2989,6 +4084,12 @@ File Path: project/application/camera/TitleCamera.h
 ============================================================
 #pragma once
 #include<SceneCameraBase.h>
+#include <Object3d.h>
+
+enum class TitleCameraState {
+    IntroMove,
+    Default
+};
 
 // タイトル専用カメラ
 class TitleCamera : public SceneCameraBase {
@@ -3006,6 +4107,28 @@ public: // メンバ関数
     void AddSubCamera(const CameraTransform& trans) override;
     // サブカメラの追加（複数登録に対応）
     void AddSubCameras(const std::vector<CameraTransform>& transforms) override;
+
+    // --- 追従対象を設定 ---
+    void SetTarget(Object3d* target) { target_ = target; }
+
+
+    void UpdateIntroMove();
+    void UpdateLookAt();
+
+private: // メンバ変数 
+    // 追従対象
+    Object3d* target_ = nullptr;
+    float followDistance_ = -20.0f; // 後ろから見る距離（調整可）
+
+    TitleCameraState state_ = TitleCameraState::IntroMove;
+
+    Vector3 startPos_ = { -30.0f, 10.0f, 0.0f };
+    Vector3 endPos_ = { 30.0f, -3.0f,  20.0f };
+
+    float moveTimer_ = 0.0f;
+    float moveDuration_ = 2.0f; // 秒（60fpsなら120フレーム）
+    float lookAtEaseSpeed_ = 5.0f;   // 追従速度（大きいほど速い）
+    float targetPitch_ = 0.0f;       // 目標X回転
 };
 
 ============================================================
@@ -5470,8 +6593,8 @@ File Path: project/application/particle/GameClearparticle.cpp
 
 void GameClearparticle::Initialize(Object3d* target) {
     // パーティクルグループ生成
-    ParticleManager::GetInstance()->CreateParticleGroup("Particles", "Resources/Particle.png", "Particle.obj", VertexType::Model);
-    ParticleManager::GetInstance()->CreateParticleGroup("Particles_02", "Resources/Particle_02.png", "Particle_02.obj", VertexType::Model);
+    ParticleManager::GetInstance()->CreateParticleGroup("Particles", "Particle/Particle.png", "Particle.obj", VertexType::Model);
+    ParticleManager::GetInstance()->CreateParticleGroup("Particles_02", "Particle/Particle_02.png", "Particle_02.obj", VertexType::Model);
 
     // パーティクルにランダム変数を組み込む[デフォルトは全て0] 
     random_
@@ -5568,8 +6691,8 @@ File Path: project/application/particle/GameOverparticle.cpp
 
 void GameOverparticle::Initialize(const std::vector<Object3d*>& targets) {
     // パーティクルグループ生成
-    ParticleManager::GetInstance()->CreateParticleGroup("Particles", "Resources/Particle.png", "Particle.obj", VertexType::Model);
-    ParticleManager::GetInstance()->CreateParticleGroup("Particles_02", "Resources/Particle_02.png", "Particle_02.obj", VertexType::Model);
+    ParticleManager::GetInstance()->CreateParticleGroup("Particles", "Particle/Particle.png", "Particle.obj", VertexType::Model);
+    ParticleManager::GetInstance()->CreateParticleGroup("Particles_02", "Particle/Particle_02.png", "Particle_02.obj", VertexType::Model);
     random_
         .SetOffset({ -0.3f,-0.01f,-0.3f }, { 0.3f,0.3f,0.3f })
         .SetColor(0.0f, 0.5f)
@@ -5675,10 +6798,10 @@ File Path: project/application/particle/GamePlayparticle.cpp
 
 void GamePlayparticle::Initialize(Object3d* target) {
     // パーティクルグループ生成
-    ParticleManager::GetInstance()->CreateParticleGroup("Particles", "Resources/Particle.png", "Particle.obj", VertexType::Model);
-    ParticleManager::GetInstance()->CreateParticleGroup("Particles_02", "Resources/Particle_02.png", "Particle_02.obj", VertexType::Model);
-    ParticleManager::GetInstance()->CreateParticleGroup("Firework", "Resources/Particle.png", "Particle/Particle.obj", VertexType::Model);    
-    ParticleManager::GetInstance()->CreateParticleGroup("Shockwave", "Resources/Shockwave.png", "Particle/Shockwave.obj", VertexType::Model);
+    ParticleManager::GetInstance()->CreateParticleGroup("Particles", "Particle/Particle.png", "Particle.obj", VertexType::Model);
+    ParticleManager::GetInstance()->CreateParticleGroup("Particles_02", "Particle/Particle_02.png", "Particle_02.obj", VertexType::Model);
+    ParticleManager::GetInstance()->CreateParticleGroup("Firework", "Particle/Particle.png", "Particle.obj", VertexType::Model);    
+    ParticleManager::GetInstance()->CreateParticleGroup("Shockwave", "Particle/Shockwave.png", "Shockwave.obj", VertexType::Model);
 
 
     // パーティクルにランダム変数を組み込む[デフォルトは全て0] 
@@ -5870,8 +6993,8 @@ File Path: project/application/particle/Titleparticle.cpp
 
 void Titleparticle::Initialize(Object3d* target) {
     // パーティクルグループ生成
-    ParticleManager::GetInstance()->CreateParticleGroup("Particles", "Resources/Particle.png", "Particle/Particle.obj", VertexType::Model);
-    ParticleManager::GetInstance()->CreateParticleGroup("Particles_02", "Resources/Particle_02.png", "Particle/Particle_02.obj", VertexType::Model);
+    ParticleManager::GetInstance()->CreateParticleGroup("Particles", "Particle/Particle.png", "Particle.obj", VertexType::Model);
+    ParticleManager::GetInstance()->CreateParticleGroup("Particles_02", "Particle/Particle_02.png", "Particle_02.obj", VertexType::Model);
 
     // パーティクルにランダム変数を組み込む[デフォルトは全て0] 
     random_
@@ -5955,6 +7078,302 @@ private: // メンバ変数
 };
 
 ============================================================
+File Path: project/application/pause/Pausemenu.cpp
+============================================================
+#include "Pausemenu.h"
+#include <TextureManager.h>
+#include <Input.h>
+#include<Easing.h>
+#include <SceneManager.h>
+#include <FadeManager.h>
+#ifdef min
+#undef min
+#endif
+#ifdef max
+#undef max
+#endif
+
+using namespace Easing;
+
+void Pausemenu::Initialize() {
+    TextureManager::GetInstance()->LoadTexture("Textures/Ui/PauseMenuPanel.png");
+    TextureManager::GetInstance()->LoadTexture("Textures/Ui/Arrow.png");
+    TextureManager::GetInstance()->LoadTexture("Textures/Ui/command_01.png");
+    TextureManager::GetInstance()->LoadTexture("Textures/Ui/command_02.png");
+    TextureManager::GetInstance()->LoadTexture("Textures/Ui/Poseicon.png");
+    TextureManager::GetInstance()->LoadTexture("Textures/Ui/command_11.png");
+    TextureManager::GetInstance()->LoadTexture("Textures/Ui/command_12.png");
+    TextureManager::GetInstance()->LoadTexture("Textures/Ui/Poseicon_red.png");
+    command_ = PauseCommand::None;
+    isActive_ = false;
+    selectedIndex_ = 0;
+    MAXselectedIndex_ = 2;
+    frame_ = 0.0f;
+    baseSize_ = { 700.0f, 400.0f }; // 最終的なサイズ 
+    panelTargetPos = { 650.0f, 350.0f };
+    menupanel_ = Sprite::Create("Textures/Ui/PauseMenuPanel.png", panelTargetPos, 0.0f, baseSize_);
+    menupanel_->SetAnchorPoint(Vector2{ 0.5f,0.5f });
+    arrow_.size = { 50.0f,50.0f };
+    arrow_.sprite = Sprite::Create("Textures/Ui/Arrow.png", Vector2{ 770.0f, 350.0f }, 0.0f, arrow_.size);
+    arrow_.sprite->SetAnchorPoint(Vector2{ 0.5f,0.5f });
+
+    // テクスチャ読み込み
+    std::string textures[] = { "Textures/Ui/command_01.png", "Textures/Ui/command_02.png" };
+    for (uint32_t i = 0; i < kMaxCommand; ++i) {
+        commands_[i].size = { 150.0f, 50.0f };
+        // Y座標を間隔分ずらして配置
+        Vector2 pos = { 640.0f, kMenuTopY + (i * kMenuIntervalY) };
+        if (i == 0) {
+            arrow_.sprite->SetPosition({ 750.0f,pos.y });
+        }
+        commands_[i].sprite = Sprite::Create(textures[i], pos, 0.0f, commands_[i].size);
+        commands_[i].sprite->SetAnchorPoint({ 0.5f, 0.5f });
+    }
+    icon_ = Sprite::Create("Textures/Ui/Poseicon.png", Vector2{ 3.0f, 3.0f }, 0.0f, Vector2{ 100.0f,100.0f });
+    kStartOffestY = 800.0f;
+}
+
+void Pausemenu::Update() {
+    // --- 1. アニメーション（演出）の更新 ---
+    if (isActive_) {
+        if (frame_ < kMaxFrame + 20.0f) { // 全体の演出時間をディレイ分少し伸ばす
+            frame_ += 1.0f;
+        }
+    } else {
+        if (frame_ > 0.0f) {
+            frame_ -= 1.0f;
+        } else {
+            isFinished_ = true;
+        }
+    }
+
+    // --- 2. 各パーツのサイズ更新（時間差をつける） ---
+    // 背景パネル：即座に開始
+    CalculateEaseSize(menupanel_.get(), baseSize_, frame_, kMaxFrame);
+    CalculateEasePos(menupanel_.get(), panelTargetPos, kStartOffestY, frame_, kMaxFrame);
+
+    // コマンド：背景パネルより 10フレーム遅れて開始
+    float buttonFrame = std::max(0.0f, frame_ - 10.0f);
+    std::string textures_green[] = { "Textures/Ui/command_11.png", "Textures/Ui/command_12.png" };
+    std::string textures_red[] = { "Textures/Ui/command_01.png", "Textures/Ui/command_02.png" };
+    for (uint32_t i = 0; i < kMaxCommand; ++i) {
+        CalculateEaseSize(commands_[i].sprite.get(), commands_[i].size, buttonFrame, kMaxFrame);
+        // --- 選択中のテクスチャ差し替え処理 ---
+        if (isActive_ && i == selectedIndex_) {
+            // インデックス0（Resume）が選択されている時だけ command_11 に差し替える
+            commands_[i].sprite->SetTexture(textures_green[i]);      
+            commands_[i].sprite->SetColor({ 1.0f, 1.0f, 1.0f, 1.0f }); // 色による強調が不要なら白に戻す
+        } else {
+            // 非選択時は元のテクスチャに戻す
+            commands_[i].sprite->SetTexture(textures_red[i]);
+            commands_[i].sprite->SetColor({ 1.0f, 1.0f, 1.0f, 1.0f });
+        }
+    }
+
+    // 矢印：背景パネルより 15フレーム遅れて開始
+    float arrowFrame = std::max(0.0f, frame_ - 10.0f);
+    CalculateEaseSize(arrow_.sprite.get(), arrow_.size, arrowFrame, kMaxFrame);
+
+    // 入力と位置の更新（完全に開ききっている時のみ操作可能）
+    if (isActive_ && frame_ >= kMaxFrame) {
+        UpdateSelection(); // コマンド選択
+        UpdateArrowPositions(); // 矢印の処理
+    }
+    menupanel_->Update();
+    arrow_.sprite->Update();
+    for (UIElement& cmd : commands_) {
+        cmd.sprite->Update(); // 全ての選択肢
+    }
+}
+
+void Pausemenu::Draw() {
+
+    menupanel_->Draw();
+    for (UIElement& cmd : commands_) {
+        cmd.sprite->Draw(); // 全ての選択肢
+    }
+    if (isActive_ && frame_ >= kMaxFrame) {
+        arrow_.sprite->Draw();
+    }
+}
+
+void Pausemenu::CalculateEaseSize(Sprite* sprite, const Vector2& baseSize, float frame, float maxFrame) {
+    if (!sprite) return;
+
+    float t = std::clamp(frame / maxFrame, 0.0f, 1.0f);
+    float easeT = 0.0f;
+
+    if (t == 0.0f) {
+        easeT = 0.0f;
+    } else if (t == 1.0f) {
+        easeT = 1.0f;
+    } else {
+        // easeOutBack の計算式
+        const float c1 = 1.70158f;
+        const float c3 = c1 + 1.0f;
+        easeT = 1.0f + c3 * std::pow(t - 1.0f, 3.0f) + c1 * std::pow(t - 1.0f, 2.0f);
+    }
+
+    Vector2 currentSize = { baseSize.x * easeT, baseSize.y * easeT };
+    sprite->SetSize(currentSize);
+}
+
+void Pausemenu::UpdateSelection() {
+    // 入力による選択項目の切り替え
+    if (Input::GetInstance()->Triggrkey(DIK_UP) || Input::GetInstance()->Triggrkey(DIK_W)) {
+        selectedIndex_ = (selectedIndex_ - 1 + MAXselectedIndex_) % MAXselectedIndex_;
+    }
+    if (Input::GetInstance()->Triggrkey(DIK_DOWN) || Input::GetInstance()->Triggrkey(DIK_S)) {
+        selectedIndex_ = (selectedIndex_ + 1) % MAXselectedIndex_;
+    }
+    // 決定
+    if (Input::GetInstance()->Triggrkey(DIK_RETURN)) {
+        if (selectedIndex_ == 0) {
+            // Resumeを選択: isActiveをfalseにして逆再生演出を開始させる
+            isActive_ = false;
+            command_ = PauseCommand::None; // まだゲーム側には通知しない（演出を待つため）
+        } else if (selectedIndex_ == 1) {
+            command_ = PauseCommand::GoToTitle;
+        }
+    }
+}
+void Pausemenu::UpdateArrowPositions() {
+    // 現在選ばれている項目の位置を取得
+    Vector2 targetPos = commands_[selectedIndex_].sprite->GetPosition();
+
+    // 矢印を項目の左側（または右側）に配置するためのオフセット
+    // 例: 項目の中心から左に 120ピクセルずらす
+    float offset = 120.0f;
+    arrow_.sprite->SetPosition(Vector2{ targetPos.x + offset, targetPos.y });
+}
+
+void Pausemenu::IconUpdate() {
+    if (isActive_) {
+        icon_->SetTexture("Textures/Ui/Poseicon_red.png");
+    } else {
+        icon_->SetTexture("Textures/Ui/Poseicon.png");
+    }
+
+    icon_->Update();
+}
+ 
+void Pausemenu::IconDraw() {
+    icon_->Draw();
+}
+
+// Pausemenu.cpp に追加
+void Pausemenu::CalculateEasePos(Sprite* sprite, const Vector2& targetPos, float startY, float frame, float maxFrame) {
+    if (!sprite) return;
+
+    float t = std::clamp(frame / maxFrame, 0.0f, 1.0f);
+    float easeT = 0.0f;
+
+    if (t == 0.0f) {
+        easeT = 0.0f;
+    } else if (t == 1.0f) {
+        easeT = 1.0f;
+    } else {
+        // 現在使用している easeOutBack をそのまま利用
+        const float c1 = 1.70158f;
+        const float c3 = c1 + 1.0f;
+        easeT = 1.0f + c3 * std::pow(t - 1.0f, 3.0f) + c1 * std::pow(t - 1.0f, 2.0f);
+    }
+
+    // Y座標を補間 (startY から targetPos.y まで)
+    float currentY = startY + (targetPos.y - startY) * easeT;
+    sprite->SetPosition({ targetPos.x, currentY });
+}
+
+============================================================
+File Path: project/application/pause/Pausemenu.h
+============================================================
+#pragma once
+#include<Object3d.h>
+#include<Sprite.h>
+#include <vector>
+#include <memory>
+
+// ポーズメニューの選択肢
+enum class PauseCommand {
+    Resume,     // ゲーム再開
+    GoToTitle,  // タイトルへ
+    kCount,     // 要素数カウント用（常に最後に置く）
+    None        // 選択中
+};
+
+// UIパーツごとの演出データをまとめた構造体
+struct UIElement {
+    std::unique_ptr<Sprite> sprite;
+    Vector2 size;   // サイズ
+};
+
+/// <summary>
+/// 各演出を管理するクラス
+/// </summary>
+class Pausemenu {
+public: // メンバ関数 
+    /// <summary>
+    /// 初期化処理
+    /// </summary>
+    void Initialize();
+    /// <summary>
+    /// 更新処理
+    /// </summary>
+    void Update();
+    /// <summary>
+    /// 描画処理
+    /// </summary>
+    void Draw();
+
+    void CalculateEaseSize(Sprite* sprite, const Vector2& baseSize, float frame, float maxFrame);
+    void CalculateEasePos(Sprite* sprite, const Vector2& targetPos, float startY, float frame, float maxFrame);
+    void UpdateSelection();  // キー入力による選択項目の変更
+    void UpdateArrowPositions();
+    void IconUpdate();
+    void IconDraw();
+private: // メンバ変数
+    std::unique_ptr <Sprite> menupanel_;
+    std::unique_ptr <Sprite> icon_;
+    // 選択肢の表示用（必要に応じて増やす）
+   // std::vector<Sprite*> cursor_;
+    PauseCommand command_ = PauseCommand::None;
+    uint32_t selectedIndex_; // 現在選んでいる項目
+    uint32_t MAXselectedIndex_;
+    float frame_;           // 現在の経過フレーム
+    const float kMaxFrame = 30.0f; // アニメーションにかける時間（30フレーム = 約0.5秒）
+    Vector2 baseSize_; // 最終的なサイズ
+
+    bool isActive_;   // 今メニューを開こうとしているか
+    bool isFinished_ = false; // 閉じる演出が完全に終わった
+
+    UIElement arrow_;
+
+    // 列挙型から要素数を取得
+    static const uint32_t kMaxCommand = static_cast<uint32_t>(PauseCommand::kCount);
+    UIElement commands_[kMaxCommand];
+    // 配置用定数
+    const float kMenuTopY = 300.0f;     // 最初の項目のY座標
+    const float kMenuIntervalY = 80.0f; // 項目間の間隔
+    const float kArrowOffsetX = 120.0f; // 項目中心から見た矢印の右オフセット
+
+    float kStartOffestY;
+
+   Vector2 panelTargetPos;
+public: // メンバ関数 
+    // シーン側から状況を確認するための関数
+    PauseCommand GetCommand() const { return command_; }
+
+
+    bool IsActive() const { return isActive_; }
+    // ポーズメニューを起動する（または閉じる準備をする）
+    void SetActive(bool active) {
+        isActive_ = active;
+        isFinished_ = false; // 状態が変わるたびにリセット
+    }
+    bool IsFinished() const { return isFinished_; }
+};
+
+============================================================
 File Path: project/application/player/Player.cpp
 ============================================================
 #include "Player.h"
@@ -5982,20 +7401,20 @@ void Player::Initialize() {
     // モデル・テクスチャ読み込み
     ModelManager::GetInstance()->LoadModel("Gameplay/Model/Player/Player.obj");     
     ModelManager::GetInstance()->LoadModel("Bullet/PlayerBullet.obj");
-    TextureManager::GetInstance()->LoadTexture("Target.png");
+    TextureManager::GetInstance()->LoadTexture("Gameplay/Texture/Target.png");
 
     // プレイヤーの初期位置と回転を設定
     transform_ = { {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f},  0.0f,0.0f,0.0f };
     // プレイヤー生成
     object = Object3d::Create("Gameplay/Model/Player/Player.obj", transform_);
 
-    targetpos_ = { {0.3f, 0.3f, 0.3f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 30.0f} };
-    target_= Object3d::Create("Bullet/PlayerBullet.obj", targetpos_);
+    targettransform_ = { {0.3f, 0.3f, 0.3f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 30.0f} };
+    target_= Object3d::Create("Bullet/PlayerBullet.obj", targettransform_);
     moveDelta = Vector3(0.0f, 0.0f, 0.0f);
 
     // レティクル初期化
     reticleScreenPos = { 640.0f, 360.0f }; // 画面中央 (仮に1280x720の場合)
-    targetreticle_ = Sprite::Create("Target.png", reticleScreenPos, 0.0f, Vector2{ 100.0f, 100.0f });
+    targetreticle_ = Sprite::Create("Gameplay/Texture/Target.png", reticleScreenPos, 0.0f, Vector2{ 100.0f, 100.0f });
     targetreticle_->SetTextureSize(Vector2{ 512.0f, 512.0f });
    	targetreticle_->SetAnchorPoint(Vector2{ 0.5f, 0.5f }); // 中心基準
     previousTime_ = 0.0f;
@@ -6011,12 +7430,12 @@ void Player::Initialize() {
 
 void Player::Update() {
     CameraManager* camMgr = CameraManager::GetInstance();
-    
+    Camera* activeCam = camMgr->GetMainCamera();
+
     // GamePlayCamera じゃないならレール処理をしない
     if (camMgr->GetActiveSceneCamera() == SceneCameraType::Gameplay) {
         //        UpdateNonRail();   // 何もしない or 簡易更新
 
-        Camera* activeCam = camMgr->GetMainCamera();
         GamePlayCamera* gameCam = camMgr->GetGameplayCamera();
 
         // カメラのベジェ位置（レール上の実座標）
@@ -6054,7 +7473,7 @@ void Player::Update() {
             StartDeathEffect();
         }
 
-        if (iskeyActive_) {
+        if (ickyActive_) {
             float currentSpeed = isBoosting_ ? boostSpeed_ : normalSpeed_;
             //UpdateBoostState();
             MoveInput(currentSpeed); // ブースト中は速く移動 
@@ -6064,7 +7483,7 @@ void Player::Update() {
     //            StartDeathEffect();
             } else {
                 // ターゲットを矢印キーで動かす
-                UpdateTargetPosition(targetpos_, 0.4f);   // ターゲットに使う
+                UpdateTargetPosition(targettransform_, 0.4f);   // ターゲットに使う
                 // 弾の発射
                 AttachBullet();
             }
@@ -6094,6 +7513,7 @@ void Player::Update() {
         object->SetRotate(transform_.rotate);
         object->SetScale(transform_.scale);
     }
+
 
 
     // プレイヤー更新
@@ -6454,7 +7874,7 @@ public:// メンバ関数
 	OBB GetOBB() const;
 	// アクティブ状態の取得・設定
     bool IsActive() const { return active_; }
-	void SetActive(bool isactive) { active_ = isactive; }
+	void SetActive(bool inactive) { active_ = inactive; }
 	/// <summary>
     /// 被弾エフェクトを開始
     /// </summary>    
@@ -6476,7 +7896,7 @@ private:// メンバ変数
 	std::unique_ptr <Object3d> object = nullptr;  // プレイヤーの3Dオブジェクト
 	Transform transform_{};	
 	std::unique_ptr <Object3d> target_ = nullptr; // ターゲット用3Dオブジェクト
-	Transform targetpos_{};
+	Transform targettransform_{};
 	Vector3 copypos;
 	std::unique_ptr <Sprite> targetreticle_ = nullptr; // レティクル用スプライト	
 	Vector2 reticleScreenPos = { 640.0f, 360.0f }; // 画面中心 (例: 1280x720の解像度)
@@ -6510,7 +7930,7 @@ private:// メンバ変数
     const float maxChargeTime_ = 5.0f; // 最大チャージ時間（秒）
 	Vector3 bulletOffsetLeft  = { -0.5f, 0.0f, 0.0f }; // 左側の発射位置
 	Vector3 bulletOffsetRight = {  0.5f, 0.0f, 0.0f }; // 右側の発射位置	
-	bool iskeyActive_ = false;       // ← プレイヤーが操作可能か
+	bool ickyActive_ = false;       // ← プレイヤーが操作可能か
     bool isReticleVisible_ = false; // ← レティクル描画ON/OFF
     Vector3 relativePos_ = {0, 0, 0}; // カメラ内での相対位置（スクリーン座標的）
 
@@ -6536,6 +7956,9 @@ public:// メンバ変数
 	Object3d* GetPlayerObject() { return object.get(); }
 	void SetTransform(const Transform& t) {
 		transform_ = t;
+		object->SetTranslate(transform_.translate);
+		object->SetRotate(transform_.rotate);
+		object->SetScale(transform_.scale);
 	}
 	bool IsDeadFinished() const { return end; }
 	// Transformのpositionを返すgetter
@@ -6544,12 +7967,263 @@ public:// メンバ変数
 	}
 
     // Getter
-    bool IsKeyActive() const { return iskeyActive_; }
+    bool IsKeyActive() const { return ickyActive_; }
     bool IsReticleVisible() const { return isReticleVisible_; }
 
     // Setter
-    void SetKeyActive(bool active) { iskeyActive_ = active; }
+    void SetKeyActive(bool active) { ickyActive_ = active; }
     void SetReticleVisible(bool visible) { isReticleVisible_ = visible; }
+};
+
+============================================================
+File Path: project/application/resource/FileSearcher.cpp
+============================================================
+#include"FileSearcher.h"
+#include <filesystem>
+
+std::vector<std::string> FileSearcher::GetAllFiles(const std::vector<std::string>& excludeDirs) {
+    std::vector<std::string> files;
+    // ルートディレクトリ以下を再帰的に走査
+    for (const auto& entry : std::filesystem::recursive_directory_iterator(root_)) {
+        // ファイル以外（ディレクトリ等）はスキップ
+        if (!entry.is_regular_file()) { continue; }
+
+        // フルパス文字列を取得
+        std::string pathStr = entry.path().string();
+        // 除外ディレクトリに該当するかチェック
+        bool skip = false;
+        for (const auto& ex : excludeDirs) {
+            // パス文字列に除外ディレクトリ名が含まれていればスキップ
+            if (pathStr.find(ex) != std::string::npos) {
+                skip = true;
+                break;
+            }
+        }
+        // 除外対象でなければ、root からの相対パスを追加
+        if (!skip) {
+            files.push_back(std::filesystem::relative(entry.path(), root_).string());
+        }
+    }
+    // 検索結果を返す
+    return files;
+}
+
+============================================================
+File Path: project/application/resource/FileSearcher.h
+============================================================
+#pragma once
+#include <string>
+#include <vector>
+
+/// <summary>
+/// 指定したルートフォルダ以下を再帰的に走査し、
+/// ファイルパス一覧を取得するためのユーティリティクラス
+/// </summary>
+class FileSearcher {
+public:
+    /// <summary>
+    /// コンストラクタ
+    /// </summary>
+    /// <param name="root">
+    /// 検索の起点となるフォルダパス（例: "Resources"）
+    /// </param>
+    explicit FileSearcher(const std::string& root) : root_(root) {}
+    /// <summary>
+    /// ルートフォルダ以下を再帰的にスキャンし、
+    /// 除外ディレクトリを考慮したファイル一覧を返す
+    /// </summary>
+    /// <param name="excludeDirs">
+    /// 除外したいディレクトリ名のリスト
+    /// （例: ".git", "Temp", "EditorTemp" など）
+    /// </param>
+    /// <returns>
+    /// root からの相対パスで構成されたファイルパス一覧
+    /// </returns>
+    std::vector<std::string> GetAllFiles(const std::vector<std::string>& excludeDirs);
+
+private:
+    // 検索の基準となるルートディレクトリ
+    std::string root_;
+};
+
+============================================================
+File Path: project/application/resource/ManifestExporter.cpp
+============================================================
+#include"ManifestExporter.h"
+#include <fstream>
+#include <unordered_map>
+#include <json.hpp>
+
+///=====================================================
+/// Export
+///-----------------------------------------------------
+/// fileList を走査し、
+/// 同一 Group / Name の Asset を統合しながら JSON を構築する
+///
+/// 出力形式:
+/// {
+///   "Bullet": {
+///     "enemybullet": {
+///       "model": "...",
+///       "texture": "..."
+///     }
+///   }
+/// }
+///=====================================================
+
+void ManifestExporter::Export(const std::string& outputPath, const std::vector<std::string>& fileList) { 
+    // 出力用変数 
+    nlohmann::json manifest;
+
+   for (const auto& file : fileList) {
+        // パス正規化
+        std::string normalized = NormalizePath(file);
+
+        // 拡張子取得
+        std::string ext = std::filesystem::path(normalized).extension().string();
+
+        // AssetType 判定
+        AssetType type = GetAssetType(ext);
+        if (type == AssetType::Unknown) continue;
+
+        // Group（最上位フォルダ）
+        std::string group = GetGroup(normalized);
+
+        // Asset 論理名（拡張子無し. 同名のmodel/texture/audio を1つに束ねるために使用
+        std::string name = CreateId(normalized, type);
+
+        // JSONキー名（model / texture / audio）
+        std::string typeKey = ToString(type);
+
+        // 同一 Group/Name の中に model/texture/audioを統合して格納する
+        manifest[group][name][typeKey] = normalized;
+    }
+    // 差分がある場合のみ保存し無駄なファイル更新を防ぐ
+    SaveIfChanged(outputPath, manifest.dump(4));
+}
+
+void ManifestExporter::SaveIfChanged(const std::string& path, const std::string& content) {
+    // 既存ファイルを読み込み
+    std::ifstream ifs(path, std::ios::binary);
+    if (ifs) {
+        std::string existing((std::istreambuf_iterator<char>(ifs)), std::istreambuf_iterator<char>());
+        // 内容が同一なら書き込みをスキップ
+        if (existing == content) {
+            return;
+        }
+    }
+
+    // 差分がある場合のみ上書き保存
+    std::ofstream ofs(path, std::ios::binary | std::ios::trunc);
+    ofs << content;
+}
+
+std::string ManifestExporter::CreateId(std::string path, AssetType type) {
+    std::filesystem::path p(path);
+    // 拡張子を除いたファイル名を取得
+    std::string id = p.stem().string();
+    // 小文字化（キーの揺れ防止） _model / _texture は付けない
+    std::transform(id.begin(), id.end(), id.begin(), ::tolower);
+    return id;
+}
+
+
+std::string ManifestExporter::NormalizePath(std::string path) {
+    std::replace(path.begin(), path.end(), '\\', '/');
+    return path;
+}
+
+std::string ManifestExporter::GetGroup(const std::string& path) {
+    std::filesystem::path p(path);
+
+    if (p.has_parent_path()) {
+        return p.begin()->string();
+    }
+    // フォルダを持たない場合のフォールバック
+    return "Common";
+}
+
+
+AssetType ManifestExporter::GetAssetType(const std::string& ext) {
+    std::string lowerExt = ext;
+
+    // 拡張子を小文字化
+    std::transform(lowerExt.begin(), lowerExt.end(), lowerExt.begin(), ::tolower);
+    // テクスチャ
+    if (lowerExt == ".png" || lowerExt == ".jpg" || lowerExt == ".jpeg" || lowerExt == ".tga" || lowerExt == ".dds") return AssetType::Texture;
+    // モデル
+    if (lowerExt == ".fbx" || lowerExt == ".obj" || lowerExt == ".gltf" || lowerExt == ".glb") return AssetType::Model;
+    // 音源
+    if (lowerExt == ".wav" || lowerExt == ".mp3" || lowerExt == ".ogg") return AssetType::Audio;
+
+    return AssetType::Unknown;
+}
+
+std::string ManifestExporter::ToString(AssetType type) {
+    switch (type) {
+    case AssetType::Texture: return "texture";
+    case AssetType::Model:   return "model";
+    case AssetType::Audio:   return "audio";
+    default: return "";
+    }
+}
+
+
+============================================================
+File Path: project/application/resource/ManifestExporter.h
+============================================================
+#pragma once
+#include <vector>
+#include <string>
+
+/// リソースの種類を表す列挙体
+enum class AssetType {
+    Texture,   // テクスチャ
+    Model,     // 3Dモデル
+    Audio,     // 音源
+    Unknown    // 非対応拡張子
+};
+
+/// <summary>
+/// ManifestExporter
+/// ファイルパス一覧から Asset Manifest(JSON) を生成するクラス
+/// </summary>
+class ManifestExporter {
+private: // メンバ関数
+    /// <summary>
+    /// 拡張子から AssetType を判定する
+    /// 未対応の拡張子は Unknown を返す
+    /// </summary>
+    AssetType GetAssetType(const std::string& ext);
+    /// <summary>
+    /// ファイルパスから Asset の論理名を生成する
+    /// 拡張子を除いたファイル名を小文字化したものを使用
+    /// </summary>
+    std::string CreateId(std::string path, AssetType type);
+    /// <summary>
+    /// AssetType を JSON のキー文字列へ変換する
+    /// </summary>
+    std::string ToString(AssetType type); 
+    /// <summary>
+    /// パスの最上位ディレクトリを Group 名として取得する
+    /// 例: "Bullet/EnemyBullet.obj" → "Bullet"
+    /// </summary>
+    std::string GetGroup(const std::string& path);
+    /// <summary>
+    /// パス区切りを '/' に正規化する
+    /// Windows / Unix 混在対策用のユーティリティ
+    /// </summary>
+    static std::string NormalizePath(std::string path);
+    /// <summary>
+    /// 既存ファイルと内容を比較し,差分がある場合のみ上書き保存する
+    /// </summary>
+    void SaveIfChanged(const std::string& path, const std::string& content); 
+public: // メンバ関数
+    /// <summary>
+    /// ファイル出力処理
+    /// ファイルリストを受け取ってJSON化出力。内容に差分がある場合のみファイルへ書き出す 
+    /// </summary> 
+    void Export(const std::string& outputPath, const std::vector<std::string>& fileList);
 };
 
 ============================================================
@@ -6895,7 +8569,7 @@ void GameClearScene::Step3_MoveCameraOnInput() {
 
 
     // Step3時間更新
-    step3Timer_ += (1.0f / 60.0f);
+    step3Timer_ += (1.0f / 60.0f) * step3TimeScale ;
 
     Vector3 pos = player_->GetTranslate();
 
@@ -6904,70 +8578,80 @@ void GameClearScene::Step3_MoveCameraOnInput() {
     /*-----------------------------------------------*/
     if (!step3BackJumpDone_)
     {
-        float backDuration = 0.3f;        // 0.5秒かけて後ろへ
-        float backDistance = -15.0f;      // 大きく下がる距離
+        float backDuration = 0.3f;
+        float backDistance = -30.0f;   // 後ろ（-Z）
 
         float t = step3Timer_ / backDuration;
         if (t > 1.0f) {
             t = 1.0f;
             step3BackJumpDone_ = true;
+
+            // ★ この時点のZを基準にする
+            startStep3PosZ_ = pos.z;
         }
 
         float ease = EaseOutBack(t);
 
-        pos.x = startStep3PosX_ + backDistance * ease;
+        // Zのみ後退
+        pos.z = startStep3PosZ_ + backDistance * ease;
         pos.y = 0.0f;
-        // --- 回転：1.5 → 3.0 へ ---
+
+        // 回転のみ変更
         Vector3 rot = player_->GetRotate();
         float startRot = 1.5f;
         float endRot = 3.0f;
+        rot.y = startRot + (endRot - startRot) * ease;
 
-        rot.y = startRot + (endRot - startRot) * ease;  // ← イージング回転
-
-        // プレイヤーに設定
         player_->SetTranslate(pos);
         player_->SetRotate(rot);
-
         return;
     }
 
     /*-----------------------------------------------*/
     /* ② カメラへ向かって X/Y/Z 移動（加速付き）   */
     /*-----------------------------------------------*/
+    Vector3 camPos = cam->GetTranslate();
 
-    // Z の進捗 (30 → 0)
+    // ----------------------------
+    // 進行率
+    // ----------------------------
     float t = (30.0f - pos.z) / 30.0f;
     t = std::clamp(t, 0.0f, 1.0f);
 
-    // 加速する速度
-    float baseSpeed = 1.0f;
-    float accelPower = 6.0f;
-    float speed = baseSpeed + EaseOutCubic(t) * accelPower;
-
-    // Z を前へ
+    // ----------------------------
+    // スピード（前回作った減速付き）
+    // ----------------------------
+    float accel = EaseOutCubic(t);
+    float brake = EaseInCubic(1.0f - t);
+    float speed = 1.2f + accel * brake * 8.0f;
     pos.z -= speed;
 
-    /*-----------------------------------------------*/
-    // 追加：X に横方向のカーブを入れる
-    /*-----------------------------------------------*/
+    // ----------------------------
+    // カメラ横を通る X オフセット
+    // ----------------------------
+    float sideStart = -25.0f;   // カメラ左
+    float sideEnd = 25.0f;   // カメラ右（通過）
 
-    // X の最大曲がり幅
-    float maxCurve = 25.0f;     // ← 好きな値にする（大きいほど横移動が強い）
+    float sideX = Lerp(sideStart, sideEnd, EaseInOutSine(t));
 
-    // 進行に合わせてカーブが減る（最初大きく→最後0へ）
-    float curveX = EaseOutCubic(1.0f - t) * maxCurve;
-
-    /*-----------------------------------------------*/
-    // 斜め上へ（Yは上昇）＋ カーブX追加
-    /*-----------------------------------------------*/
+    // ----------------------------
+    // 上昇
+    // ----------------------------
     float rise = EaseOutCubic(t) * 15.0f;
 
-    Vector3 targetPos = { curveX,rise,pos.z };
+    // ----------------------------
+    // カメラ基準で目標位置を作る
+    // ----------------------------
+    Vector3 targetPos;
+    targetPos.x = camPos.x + sideX;
+    targetPos.y = camPos.y + rise;
+    targetPos.z = pos.z;
 
-    // X/Y をなめらかに寄せる
-    pos = Vector3::Lerp(pos, targetPos, 0.12f);
+    // なめらか追従
+    pos = Vector3::Lerp(pos, targetPos, 0.15f);
 
     player_->SetTranslate(pos);
+
 
 
 
@@ -6975,7 +8659,7 @@ void GameClearScene::Step3_MoveCameraOnInput() {
     /* ③ 1秒後に一瞬フェード処理                  */
     /*-----------------------------------------------*/
     if (!step3FadeTriggered_ && step3Timer_ >= 1.0f && !FadeManager::GetInstance()->IsFading() && FadeManager::GetInstance()->IsFadeEnd()) {
-        FadeManager::GetInstance()->StartFadeOut(1.3f, FadeStyle::SilhouetteSlide);
+        FadeManager::GetInstance()->StartFadeOut(1.8f, FadeStyle::SilhouetteSlide);
         step3FadeTriggered_ = true;
     }
 }
@@ -7066,7 +8750,7 @@ private: // メンバ変数
     float startStep3PosX_ = 0.0f;     // Step3開始時のX
 
 
-
+    float startStep3PosZ_;
 
     std::unique_ptr <Sprite> ui2_ = nullptr;     // スプライト      
     std::unique_ptr <Sprite> ui3_ = nullptr;     // スプライト 
@@ -7081,7 +8765,7 @@ private: // メンバ変数
     Vector2 ui2EndPos; // 最終位置（現在の値）
     Vector2 ui3StartPos; // 上にずらした初期位置
     Vector2 ui3EndPos; // 最終位置（現在の値）
-
+    float step3TimeScale = 0.7f; // 0.3～0.6 あたりがおすすめ
     std::unique_ptr <GameClearparticle> particle_;
 };
 
@@ -7548,11 +9232,54 @@ void GamePlayScene::Initialize() {
     StageManager::GetInstance()->Initialize();
 
     end = false;
+    // ポーズメニューの初期化
+    pausemenu_ = std::make_unique<Pausemenu>();
+    pausemenu_->Initialize();
+    isPaused_ = false;
+    isPausedevent_ = false;
 }
 ///====================================================
 /// 毎フレーム更新処理
 ///====================================================
-void GamePlayScene::Update() {
+void GamePlayScene::Update() { 
+    pausemenu_->IconUpdate();
+    // Enterキーでポーズの「開始」のみをチェック
+    if (isPausedevent_ && !isPaused_ && Input::GetInstance()->Triggrkey(DIK_TAB)) {
+        isPaused_ = true;
+        pausemenu_->SetActive(true); // 演出開始！
+    }
+
+    //  ポーズ中の処理
+    if (isPaused_) {
+        pausemenu_->Update();
+        // ポーズメニュー内での演出（逆再生含む）がすべて終わったかチェック
+        if (pausemenu_->IsFinished()) {
+            isPaused_ = false; // ゲーム再開
+        }
+
+        // Resume（再開）の場合は、メニューが閉じ終わるのを待つ
+        if (pausemenu_->IsFinished() && pausemenu_->GetCommand() == PauseCommand::Resume) {
+            isPaused_ = false;
+        } else if (pausemenu_->GetCommand() == PauseCommand::GoToTitle) {
+            // フェードマネージャの更新   
+            FadeManager::GetInstance()->Update();
+            // メニューが表示されたまま、フェードアウトを開始
+            if (!goal_) {
+                FadeManager::GetInstance()->StartFadeOut(1.0f, FadeStyle::Normal);
+                goal_ = true; // フェード開始フラグとして利用
+            }
+
+            // フェードが終わったらシーン遷移
+            if (FadeManager::GetInstance()->IsFadeEnd()) {
+                SceneManager::GetInstance()->ChangeScene("TITLE");
+            }
+            // タイトル移行時はここでreturnし、背後のゲーム処理を止めたままにする
+            return;
+        }
+        // ポーズ演出中はゲームの他の更新を止める
+        return;
+    }
+
     // フェードイン開始
     if (!FadeManager::GetInstance()->IsFadeStart() && !FadeManager::GetInstance()->IsFading()) {
         // フェード開始
@@ -7593,6 +9320,7 @@ void GamePlayScene::Update() {
         // イベント終了 → プレイヤーを操作可能に
         player_->SetKeyActive(true);
         player_->SetReticleVisible(true);
+        isPausedevent_ = true;
         // 進行度を設定
         StartStageProgressUI();
     }
@@ -7686,6 +9414,7 @@ void GamePlayScene::Update() {
 
     gage_->Update();
     player_ui_->Update();
+
 #pragma endregion 全てのSprite個々の更新処理
 
 #pragma region  ImGuiの更新処理開始
@@ -7712,7 +9441,7 @@ void GamePlayScene::Draw() {
     SkyboxCommon::GetInstance()->Commondrawing();
     Box_->Draw();
     // 3Dオブジェクトの描画準備。3Dオブジェクトの描画に共通のグラフィックスコマンドを積む
-    Object3dCommon::GetInstance()->Commondrawing(); 
+    Object3dCommon::GetInstance()->Commondrawing();
     StageManager::GetInstance()->Draw();
 
     // 描画処理
@@ -7731,7 +9460,7 @@ void GamePlayScene::Draw() {
         }
     }
     wall->Draw();
-	// イベントマネージャの描画処理
+    // イベントマネージャの描画処理
     EventManager::GetInstance()->Drawo3Dbject();
 
     // パーティクルの描画準備。パーティクルの描画に共通のグラフィックスコマンドを積む 
@@ -7753,15 +9482,18 @@ void GamePlayScene::Draw() {
 
     gage_->Draw();
     player_ui_->Draw();
-
-	// イベントマネージャの描画処理
+    if (isPausedevent_) {
+        if (isPaused_) {
+            pausemenu_->Draw();
+        }
+        pausemenu_->IconDraw();
+    }
+    // イベントマネージャの描画処理
     EventManager::GetInstance()->Draw2DSprite();
-	// フェードマネージャの描画
+    // フェードマネージャの描画
     FadeManager::GetInstance()->Draw();
 #pragma endregion 全てのSprite個々の描画処理
 }
-
-
 
 ///====================================================
 /// プレイヤー弾 vs 敵の当たり判定
@@ -7894,6 +9626,7 @@ File Path: project/application/scene/GamePlayScene.h
 #include<StageManager.h>
 #include<GamePlayparticle.h>
 #include <EnemySpawner.h>
+#include<Pausemenu.h>
 
 /// <summary>
 /// ゲームプレイシーン
@@ -7972,7 +9705,9 @@ private: // メンバ変数
     bool uiProgressStarted_ = false;
     bool uiProgressFinished_ = false;
 
-
+    std::unique_ptr <Pausemenu> pausemenu_;
+    bool isPausedevent_;
+    bool isPaused_;
 };
 
 ============================================================
@@ -7992,7 +9727,9 @@ File Path: project/application/scene/TitleScene.cpp
 #include <ParticleCommon.h>
 #include<SkyboxCommon.h>
 #include<FadeManager.h>
+#include<Tools/AssetGenerator/engine/math/LoadResourceID.h>
 
+using namespace LoadResourceID;
 namespace { constexpr float kFadeDuration = 1.0f; }
 
 void TitleScene::Finalize() {
@@ -8014,6 +9751,9 @@ void TitleScene::Initialize() {
     // パーティクルのの生成、初期化
     particle_ = std::make_unique<Titleparticle>();
     particle_->Initialize(player_->GetPlayerObject());
+        
+    CameraManager::GetInstance()->SetCameraMode(CameraMode::Default);      
+
 #pragma endregion シーンの初期化
 }
 
@@ -8024,19 +9764,17 @@ void TitleScene::InitializeCamera() {
 
 void TitleScene::LoadResources() {
     //  テクスチャの読み込み
-    TextureManager::GetInstance()->LoadTexture("Title/UI_02.png");
+    TextureManager::GetInstance()->LoadTexture(texture::Ui02);
+    TextureManager::GetInstance()->LoadTexture(texture::Title);
     TextureManager::GetInstance()->LoadTexture("CubemapBox.dds");
-    // モデルの読み込み
-    ModelManager::GetInstance()->LoadModel("Title/Title.obj");
-    ModelManager::GetInstance()->LoadModel("Tile.obj");
 }
 
 void TitleScene::InitializeUI() {  
     // タイトルロゴの生成
-    ui_title_ = Sprite::Create("Title/Title.png", Vector2{ 300.0f, 100.0f }, 0.0f, Vector2{ 600.0f,300.0f });
+    ui_title_ = Sprite::Create(texture::Title, Vector2{300.0f, 100.0f}, 0.0f, Vector2{600.0f,300.0f});
     ui_title_->SetTextureSize(Vector2{ 600.0f,300.0f });
     // スタートUIの生成
-    ui_start_ = Sprite::Create("Title/UI_02.png", Vector2{ 420.0f, 500.0f }, 0.0f, Vector2{ 360.0f,90.0f });
+    ui_start_ = Sprite::Create(texture::Ui02, Vector2{ 420.0f, 500.0f }, 0.0f, Vector2{ 360.0f,90.0f });
     ui_start_->SetTextureSize(Vector2{ 360.0f,90.0f });
     // 更新・描画対象としてまとめる
     uiSprites_.clear();
@@ -8047,7 +9785,7 @@ void TitleScene::InitializeModel() {
     // スカイボックス生成 
     skybox_ = Skybox::Create("CubemapBox.dds", Transform{ { 1000.0f, 1000.0f, 1000.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 100.0f } });
     // プレイヤーパラメータ 
-    playertransform_ = { {1.0f, 1.0f, 1.0f}, {0.0f, 0.9f, 0.0f},  -20.0f,0.0f,40.0f };
+    playertransform_ = { {1.0f, 1.0f, 1.0f}, {0.0f, 0.3f, 0.0f},  -20.0f,0.0f,40.0f };
     titleStartX_ = -20.0f;
     titleEndX_ = -10.0f;
     // モデル移動のパラメータ
@@ -8059,6 +9797,8 @@ void TitleScene::InitializeModel() {
     player_ = std::make_unique<Player>();
     player_->Initialize();
     player_->SetTransform(playertransform_);
+    // 追従対象を設定
+    CameraManager::GetInstance()->GetTitleCamera()->SetTarget(player_->GetPlayerObject());
 }
 
 void TitleScene::Update() {
@@ -8142,8 +9882,13 @@ void TitleScene::UpdateFadeOut() {
     // タイトルシーンにおけるフェード制御を担当
     FadeManager* fade = FadeManager::GetInstance(); 
     // フェード中ではなくフェード完了状態の時にEnterキーを押すとフェードアウト開始
-    if (Input::GetInstance()->Triggrkey(DIK_RETURN) && !fade->IsFading() && fade->IsFadeEnd()) {
-        fade->StartFadeOut(kFadeDuration, FadeStyle::SilhouetteExplode);
+    if (Input::GetInstance()->Triggrkey(DIK_RETURN) && !fade->IsFading() && fade->IsFadeEnd() && !isPlayerBoost_ && CameraManager::GetInstance()->GetActiveCamera()->GetTranslate().x >= 30.0f) {
+        fade->StartFadeOut(2.5f, FadeStyle::SilhouetteExplode);
+        CameraManager::GetInstance()->SetCameraMode(CameraMode::Follow);
+
+        // ===== プレイヤー演出開始 =====
+        isPlayerBoost_ = true;
+        playerSpeedX_ = 0.0f;
     }
 }
 
@@ -8158,6 +9903,24 @@ void TitleScene::UpdateSceneTransition() {
 }
 
 void TitleScene::UpdateTitlePlayerMotion() {
+
+    FadeManager* fade = FadeManager::GetInstance();
+
+    // ==============================
+    // フェード中：加速して飛ぶ
+    // ==============================
+    if (isPlayerBoost_ && fade->IsFading() && fade->GetFadeType() == FadeType::FadeOut) {
+
+        playerSpeedX_ += playerAccelX_;
+        playerSpeedX_ = std::min(playerSpeedX_, playerMaxSpeedX_);
+
+        playertransform_.translate.z += playerSpeedX_;
+
+        // ちょっと上に浮かせると「飛び感」UP
+        playertransform_.translate.y += 0.05f;
+
+    }
+
     // ===== 横移動（イージング） =====
     if (!moveFinished) {
         timer += 1.0f;
@@ -8174,10 +9937,11 @@ void TitleScene::UpdateTitlePlayerMotion() {
             timer = 0.0f;
         }
     }
-
-    // ===== 上下の浮遊 =====
-    time += kFloatSpeed;
-    playertransform_.translate.y = sinf(time) * kFloatAmplitude;
+    if (fade->GetFadeType() != FadeType::FadeOut) {
+        // ===== 上下の浮遊 =====
+        time += kFloatSpeed;
+        playertransform_.translate.y = sinf(time) * kFloatAmplitude;
+    }
 
     // ===== Transform を Object に反映 =====
     player_->GetPlayerObject()->SetTranslate(playertransform_.translate);
@@ -8282,6 +10046,11 @@ private: // メンバ変数
     static constexpr float kFloatSpeed = 0.03f;
     static constexpr float kFloatAmplitude = 2.3f;
 
+    // フェード演出用
+bool isPlayerBoost_ = false;
+float playerSpeedX_ = 0.0f;
+float playerAccelX_ = 0.15f;   // 加速量
+float playerMaxSpeedX_ = 5.0f; // 上限（任意）
 };
 
 ============================================================
@@ -8322,11 +10091,11 @@ void StageManager::Initialize() {
 
     // 敵モデルをあらかじめ読み込む
    // ModelManager::GetInstance()->LoadModel("Enemy.obj");
-    ModelManager::GetInstance()->LoadModel("Tile.obj");
+    ModelManager::GetInstance()->LoadModel("Gameplay/Model/Tile/Tile.obj");
     
     // オブジェクトの作成
     // 地面の作成
-    grass = Object3d::Create("Tile.obj", Transform({ 1000.0f, 1.0f, 1000.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, -8.0f, 50.0f }));
+    grass = Object3d::Create("Gameplay/Model/Tile/Tile.obj", Transform({ 1000.0f, 1.0f, 1000.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, -8.0f, 50.0f }));
 
     //// レベルデータからオブジェクトを読み込む
     //for (auto& objData : levelData_->objects) {
@@ -8350,20 +10119,20 @@ void StageManager::Initialize() {
     showDebugObjects_ = false; // デフォルトは非表示
 #ifdef _DEBUG
     // === デバッグ可視化用オブジェクト ===
-    ModelManager::GetInstance()->LoadModel("Enemy.obj"); // 目印用モデル（SphereやCubeなど）
+    //ModelManager::GetInstance()->LoadModel("Enemy.obj"); // 目印用モデル（SphereやCubeなど）
 
-    for (auto& objData : levelData_->objects) {
-        // Point_ で始まるオブジェクトをデバッグ可視化対象にする
-        if (objData.fileName.rfind("Point_", 0) == 0) {
-            Transform tr;
-            tr.scale = { 0.5f, 0.5f, 0.5f }; // 小さく目印表示
-            tr.rotate = objData.rotation;
-            tr.translate = objData.translation;
+    //for (auto& objData : levelData_->objects) {
+    //    // Point_ で始まるオブジェクトをデバッグ可視化対象にする
+    //    if (objData.fileName.rfind("Point_", 0) == 0) {
+    //        Transform tr;
+    //        tr.scale = { 0.5f, 0.5f, 0.5f }; // 小さく目印表示
+    //        tr.rotate = objData.rotation;
+    //        tr.translate = objData.translation;
 
-            auto debugObj = Object3d::Create("Enemy.obj", tr);
-            debugObjects_.push_back(std::move(debugObj));
-        }
-    }
+    //        auto debugObj = Object3d::Create("Enemy.obj", tr);
+    //        debugObjects_.push_back(std::move(debugObj));
+    //    }
+    //}
 #endif
 }
 
@@ -8651,6 +10420,7 @@ std::unique_ptr<Sprite> Sprite::Create(std::string textureFilePath, Vector2 posi
 	sprite->position_ = position;
 	sprite->rotation_ = rotation;
 	sprite->size_ = size;
+	sprite->SetTextureSize(size);
 	// Transformの初期化
 	sprite->transform.translate = { sprite->position_.x,sprite->position_.y,0.0f };
 	sprite->transform.rotate = { 0.0f,0.0f,sprite->rotation_ };
@@ -10715,7 +12485,7 @@ void ParticleManager::CreateParticleGroup(const std::string& name, const std::st
 
         // 新しいパーティクルグループにテクスチャパスとインデックスを設定
         newGroup.materialData.textureFilePath = textureFilepath;
-        newGroup.materialData.textureindex = TextureManager::GetInstance()->GetSrvIndex(textureFilepath);
+        newGroup.materialData.textureindex = TextureManager::GetInstance()->GetSrvIndex("Resources/" + textureFilepath);
         newGroup.kNumInstance = 0;
 
         // インスタンス用のリソースバッファを作成
@@ -10967,7 +12737,10 @@ File Path: project/engine/3d/Particle/ParticleModel.cpp
 #include <externals/DirectXTex/d3dx12.h>
 #include <Object3dCommon.h>
 #include <ResourceFactory.h>
-
+#include <assimp/material.h>
+#include <assimp/Importer.hpp>
+#include <assimp/postprocess.h>
+#include<assimp/scene.h>
 using namespace MatrixVector;
 using namespace Microsoft::WRL;
 using namespace PrimitiveGenerator;
@@ -10982,7 +12755,7 @@ void ParticleModel::Initialize(DirectXCommon* birectxcommon, const std::string& 
     MaterialGenerate();
 	// 頂点データの作成
 	if (vertexType_ == VertexType::Model) { // モデルの頂点データを作成
-        modelDate = LoadObjFile("Resources", filename);
+        modelDate = LoadObjFile("Resources/Particle", filename);
         VertexDataModel();  // 頂点データコピー
         //.objの参照しているテクスチャ読み込み
         TextureManager::GetInstance()->LoadTexture(modelDate.material.textureFilePath);
@@ -11177,72 +12950,51 @@ void ParticleModel::VertexDataBox() {
 ModelDate ParticleModel::LoadObjFile(const std::string& directoryPath, const std::string& filename) {
     // 1. 中で必要となる変数の宣言
     ModelDate modelDate; // 構築するModelDate
-    std::vector<Vector4> positions; // 位置
-    std::vector<Vector3> normals; // 法線
-    std::vector<Vector2> texcoords; // テクスチャ座標
-    std::string line; // ファイルから読んだ1桁を格納するもの
-    // 2.  ファイルを開く
-    std::ifstream file(directoryPath + "/" + filename); // ファイルを開く
-    assert(file.is_open()); // とりあえず開けなかったら止める
+    // 2. Assimpでの読み込み
+    Assimp::Importer importer;
+    std::string filePath(directoryPath + "/" + filename); // ファイルを開く
+    const aiScene* scene = importer.ReadFile(filePath.c_str(), aiProcess_Triangulate | aiProcess_FlipUVs);
+    assert(scene->HasMeshes()); // メッシュがないのは対応しない
 
-    // 3. 実際にファイルを読み、ModelDateを構築していく
-    while (std::getline(file, line)) {
-        std::string identifier;
-        std::istringstream s(line);
-        s >> identifier;// 先頭の識別子を読む
-
-        // identifierの応じた処理
-        if (identifier == "v") {
-            Vector4 position;
-            s >> position.x >> position.y >> position.z;
-            position.x *= -1.0f;// 位置のx成分を反転
-            position.w = 1.0f;
-            positions.push_back(position);
-        } else if (identifier == "vt") {
-            Vector2 texcoord;
-            s >> texcoord.x >> texcoord.y;
-            texcoord.y = 1.0f - texcoord.y;
-            texcoords.push_back(texcoord);
-        } else if (identifier == "vn") {
-            Vector3 normal;
-            s >> normal.x >> normal.y >> normal.z;
-            normal.x *= -1.0f;// 法線のx成分を反転
-            normals.push_back(normal);
-        } else if (identifier == "f") {
-            VertexData triangle[3];
-            // 面は三角形限定。その他は未対応
-            for (int32_t faceVertex = 0; faceVertex < 3; ++faceVertex) {
-                std::string vertexDefinition;
-                s >> vertexDefinition;
-                // 頂点の要素へのIndexは、[位置/UV/法線]で格納されているので、分解してIndexを取得する
-                std::istringstream v(vertexDefinition);
-                uint32_t elementIndices[3];
-                for (uint32_t element = 0; element < 3; ++element) {
-                    std::string index;
-                    std::getline(v, index, '/');// /区切りでインデックスを読んでいく
-                    elementIndices[element] = std::stoi(index);
-                }
-                // 要素のIndexから、実際の要素の値を取得して、頂点を構築する
-                Vector4 position = positions[elementIndices[0] - 1];
-                Vector2 texcoord = texcoords[elementIndices[1] - 1];
-                Vector3 normal = normals[elementIndices[2] - 1];
-                //VertexData vertex = { position,texcoord,normal };
-                //modelDate.vertices.push_back(vertex);
-                triangle[faceVertex] = { position,texcoord,normal };
+    // 3. Meshを解析する
+    for (size_t meshIndex = 0; meshIndex < scene->mNumMeshes; ++meshIndex) {
+        aiMesh* mesh = scene->mMeshes[meshIndex];
+        assert(mesh->HasNormals()); // 法線がないMeshは今回は非対応
+        assert(mesh->HasTextureCoords(0)); // TexcoordがないMeshは今回は非対応
+        // Meshの中身(Face)を解析していく
+        for (size_t faceIndex = 0; faceIndex < mesh->mNumFaces; ++faceIndex) {
+            aiFace& face = mesh->mFaces[faceIndex];
+            assert(face.mNumIndices == 3); // 三角形のみサポート
+            // Faceの中身(Vertex)を解析していく
+            for (size_t elememt = 0; elememt < face.mNumIndices; ++elememt) {
+                uint32_t vertexIndex = face.mIndices[elememt];
+                // 頂点の各要素を取得
+                aiVector3D& position = mesh->mVertices[vertexIndex];
+                aiVector3D& normal = mesh->mNormals[vertexIndex];
+                aiVector3D& texcoord = mesh->mTextureCoords[0][vertexIndex];
+                // 1頂点分のデータを構築してModelDateに追加していく
+                VertexData vertex;
+                vertex.position = { -position.x,position.y,position.z,1.0f };// 位置のx成分を反転
+                vertex.normal = { -normal.x,normal.y,normal.z };// 法線のx成分を反転
+                vertex.texcoord = { texcoord.x,texcoord.y };// テクスチャ座標のy成分を反転
+                // aiProcess_MakeLeftHandedはz*=-1で、右手->左手に変換するので手動で対処
+                vertex.position.x *= -1.0f;
+                vertex.normal.x *= -1.0f;
+                modelDate.vertices.push_back(vertex);
             }
-            // 頂点を逆順で登録することで、回り順を逆にする
-            modelDate.vertices.push_back(triangle[2]);
-            modelDate.vertices.push_back(triangle[1]);
-            modelDate.vertices.push_back(triangle[0]);
-        } else if (identifier == "mtllib") {
-            // materialTemplateLibrarvファイルの名前を取得する
-            std::string materialFilename;
-            s >> materialFilename;
-            // 基本的にobjファイルと同一階層にmtlは存在させるので、ディレクトリ名とファイル名を渡す
-            modelDate.material = LoadMaterialTemplateFile(directoryPath, materialFilename);
         }
     }
-    // 4. ModelDateを返す
+    // 4. Materialの解析
+    for (size_t materialIndex = 0; materialIndex < scene->mNumMaterials; ++materialIndex) {
+        aiMaterial* material = scene->mMaterials[materialIndex];
+        if (material->GetTextureCount(aiTextureType_DIFFUSE) != 0) {
+            aiString textureFilePath;
+            material->GetTexture(aiTextureType_DIFFUSE, 0, &textureFilePath);
+            modelDate.material.textureFilePath = directoryPath + "/" + textureFilePath.C_Str();
+        }
+    }
+
+    // 5. ModelDateを返す
     return modelDate;
 }
 
@@ -13227,6 +14979,8 @@ File Path: project/engine/base/Framework.cpp
 #include<Controller.h>
 #include<psapi.h>
 #include<SkyboxCommon.h>
+#include <FileSearcher.h>
+#include <ManifestExporter.h>
 
 void Framework::Run() {
     // ゲームの初期化
@@ -13317,6 +15071,18 @@ void Framework::Initialize() {
     ModelManager::GetInstance()->Initialize(dxCommon.get());
     // パーティクルマネージャの初期化
     ParticleManager::GetInstance()->Initialize(dxCommon.get(), srvManager.get()); 
+
+
+    // 1. 検索クラス
+    FileSearcher searcher("Resources");
+    
+    // 2. 出力クラス
+    ManifestExporter exporter;
+
+    // 3. 実行：検索した結果をそのまま出力に渡す
+    auto files = searcher.GetAllFiles({ "EditorTemp", ".git" });
+    exporter.Export("Resources/manifest.json", files);
+
 #pragma region 基盤システムの初期化
 
     // 入力の初期化
@@ -14736,7 +16502,7 @@ public: // メンバ関数
     // ゲーム用カメラ（GameCamera）を返す getter
     GamePlayCamera* GetGameplayCamera() const { return gameplay_.get(); }
     GameClearCamera* GetGameClearCamera() { return gameclear_.get(); }
-
+    TitleCamera* GetTitleCamera() { return title_.get(); }
 
     SceneCameraType GetActiveSceneCamera() const{ return activeSceneCameraType_; }
 
@@ -15310,6 +17076,9 @@ namespace Easing {
         return 1.0f + c3 * powf(t - 1.0f, 3) + c1 * powf(t - 1.0f, 2);
     }
 
+    float EaseOutQuad(float t) {
+        return 1.0f - (1.0f - t) * (1.0f - t);
+    }
 
     // -------------------------
     //  EaseIn 系（最初がゆっくり）
@@ -15408,6 +17177,7 @@ namespace Easing {
     float EaseOutSine(float t);     // ゆっくり終わるサイン曲線
     float EaseOutCubic(float t);    // 非常に滑らかに終点で減速
     float EaseOutBack(float t);     // 終点を少し通り越して戻る（"Back" 効果）
+    float EaseOutQuad(float t);
 
     float EaseInSine(float t);      // 始点がゆっくり
     float EaseInCubic(float t);     // 始点が非常にゆっくり
