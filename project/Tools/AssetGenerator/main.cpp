@@ -13,17 +13,23 @@ int main(int argc, char* argv[]) {
 
     // 1. プロジェクトルートパスの決定
     // 引数がない場合は実行環境からの相対パスを使用
-    fs::path projectRoot = (argc > 1) ? argv[1] : "../../";
+    std::string pathStr = (argc > 1) ? argv[1] : "../../";
 
-    // 念のため、引数が " で囲まれていても正しく処理するようにする
-    if (projectRoot.string().back() == '\\' || projectRoot.string().back() == '/') {
-        // 末尾にスラッシュがあれば除去する処理（必要に応じて）
+    // Windowsの末尾引用符バグ対策 ---
+    if (!pathStr.empty() && pathStr.back() == '\"') {
+        pathStr.pop_back(); // 混入した " を削除
     }
+    // 末尾が \. で終わるように指定された場合の対策
+    if (!pathStr.empty() && pathStr.back() == '.') {
+        pathStr.pop_back();
+    }
+    // ------------------------------------------
+    fs::path projectRoot = fs::absolute(pathStr); // 絶対パスに変換して安定させる
     // 2. 入出力ディレクトリ・ファイルパスの定義
     fs::path resourceDir = projectRoot / "Resources";
     fs::path jsonPath = resourceDir / "Manifest.json";
 
-    fs::path headerDir = projectRoot / "project/Tools/AssetGenerator/engine/math";
+    fs::path headerDir = projectRoot / "Tools/AssetGenerator/engine/math";
     fs::path headerPath = headerDir / "LoadResourceID.h";
 
     // 出力先ディレクトリの自動作成

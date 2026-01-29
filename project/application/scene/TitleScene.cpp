@@ -12,7 +12,9 @@
 #include <ParticleCommon.h>
 #include<SkyboxCommon.h>
 #include<FadeManager.h>
+#include<Tools/AssetGenerator/engine/math/LoadResourceID.h>
 
+using namespace LoadResourceID;
 namespace { constexpr float kFadeDuration = 1.0f; }
 
 void TitleScene::Finalize() {
@@ -47,18 +49,17 @@ void TitleScene::InitializeCamera() {
 
 void TitleScene::LoadResources() {
     //  テクスチャの読み込み
-    TextureManager::GetInstance()->LoadTexture("Title/UI_02.png");
+    TextureManager::GetInstance()->LoadTexture(texture::Ui02);
+    TextureManager::GetInstance()->LoadTexture(texture::Title);
     TextureManager::GetInstance()->LoadTexture("CubemapBox.dds");
-    // モデルの読み込み
-    ModelManager::GetInstance()->LoadModel("Title/Title.obj");
 }
 
 void TitleScene::InitializeUI() {  
     // タイトルロゴの生成
-    ui_title_ = Sprite::Create("Title/Title.png", Vector2{ 300.0f, 100.0f }, 0.0f, Vector2{ 600.0f,300.0f });
+    ui_title_ = Sprite::Create(texture::Title, Vector2{300.0f, 100.0f}, 0.0f, Vector2{600.0f,300.0f});
     ui_title_->SetTextureSize(Vector2{ 600.0f,300.0f });
     // スタートUIの生成
-    ui_start_ = Sprite::Create("Title/UI_02.png", Vector2{ 420.0f, 500.0f }, 0.0f, Vector2{ 360.0f,90.0f });
+    ui_start_ = Sprite::Create(texture::Ui02, Vector2{ 420.0f, 500.0f }, 0.0f, Vector2{ 360.0f,90.0f });
     ui_start_->SetTextureSize(Vector2{ 360.0f,90.0f });
     // 更新・描画対象としてまとめる
     uiSprites_.clear();

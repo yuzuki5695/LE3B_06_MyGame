@@ -25,6 +25,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "mainproject", "mainproject"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "subproject", "subproject", "{E3F6259C-E243-427C-B6B2-B85C25AB1DD3}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AssetGenerator", "Tools\AssetGenerator\AssetGenerator.vcxproj", "{B309D80A-B650-41B2-A3A8-C6AFC14BC2DB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -43,6 +45,10 @@ Global
 		{12CE02D8-A771-4844-AACC-F20BF9AF9AEA}.Debug|x64.Build.0 = Debug|x64
 		{12CE02D8-A771-4844-AACC-F20BF9AF9AEA}.Release|x64.ActiveCfg = Release|x64
 		{12CE02D8-A771-4844-AACC-F20BF9AF9AEA}.Release|x64.Build.0 = Release|x64
+		{B309D80A-B650-41B2-A3A8-C6AFC14BC2DB}.Debug|x64.ActiveCfg = Debug|x64
+		{B309D80A-B650-41B2-A3A8-C6AFC14BC2DB}.Debug|x64.Build.0 = Debug|x64
+		{B309D80A-B650-41B2-A3A8-C6AFC14BC2DB}.Release|x64.ActiveCfg = Release|x64
+		{B309D80A-B650-41B2-A3A8-C6AFC14BC2DB}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -55,6 +61,7 @@ Global
 		{8C65D930-4562-4893-8A17-EF5B1E8733EC} = {4A63E22E-7540-41F2-9CCE-A12C1045B36F}
 		{DDB4EF12-CC4E-5E88-E6FC-71A802F4DE97} = {2D81CB0D-CFB9-4F7C-B8D2-23D695132381}
 		{E3F6259C-E243-427C-B6B2-B85C25AB1DD3} = {2D81CB0D-CFB9-4F7C-B8D2-23D695132381}
+		{B309D80A-B650-41B2-A3A8-C6AFC14BC2DB} = {E3F6259C-E243-427C-B6B2-B85C25AB1DD3}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {8C5D745E-2C27-4496-86DB-7F78854F6A8A}

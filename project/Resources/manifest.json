@@ -170,18 +170,6 @@
             "texture": "Textures/Ui/UI_02.png"
         }
     },
-    "Title": {
-        "start": {
-            "texture": "Title/start.png"
-        },
-        "title": {
-            "model": "Title/Title.obj",
-            "texture": "Title/Title.png"
-        },
-        "ui_02": {
-            "texture": "Title/UI_02.png"
-        }
-    },
     "fade": {
         "black": {
             "texture": "fade/Black.png"
