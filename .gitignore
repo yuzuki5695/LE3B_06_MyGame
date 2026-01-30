@@ -21,7 +21,7 @@ generated/
 
 # --- 新規追加設定
 
-# --- 指摘されたビルド成果物の再帰的除外 ---
+# ビルド成果物と中間ファイルを再帰的に除外
 # 階層を問わず、これらの中間ファイルや成果物を除外します
 **/*.pch
 **/*.pdb
@@ -39,7 +39,7 @@ generated/
 **/build/
 
 # --- ビルドキャッシュやログの除外 ---
-# 指摘された .tlog や .lastbuildstate 等を網羅します
+# .tlog や .lastbuildstate 等を網羅します
 **/*.tlog
 **/*.lastbuildstate
 **/*.log
