@@ -39,21 +39,6 @@
             "texture": "Event/Startevent_02.png"
         }
     },
-    "Gameclear": {
-        "complete": {
-            "texture": "Gameclear/Texture/Complete.png"
-        },
-        "mission": {
-            "texture": "Gameclear/Texture/Mission.png"
-        },
-        "player": {
-            "model": "Gameclear/Model/Player/Player.obj",
-            "texture": "Gameclear/Model/Player/Player.png"
-        },
-        "ui_01": {
-            "texture": "Gameclear/Texture/UI_01.png"
-        }
-    },
     "Gameover": {
         "gameover": {
             "texture": "Gameover/Texture/Gameover.png"
@@ -158,6 +143,12 @@
         "command_12": {
             "texture": "Textures/Ui/command_12.png"
         },
+        "complete": {
+            "texture": "Textures/Ui/Complete.png"
+        },
+        "mission": {
+            "texture": "Textures/Ui/Mission.png"
+        },
         "pausemenupanel": {
             "texture": "Textures/Ui/PauseMenuPanel.png"
         },
@@ -172,6 +163,9 @@
         },
         "title": {
             "texture": "Textures/Ui/Title.png"
+        },
+        "ui_01": {
+            "texture": "Textures/Ui/UI_01.png"
         },
         "ui_02": {
             "texture": "Textures/Ui/UI_02.png"
