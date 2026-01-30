@@ -162,11 +162,11 @@ void GamePlayScene::Update() {
     // フェードマネージャの更新   
     FadeManager::GetInstance()->Update();
     // イベントマネージャの更新
-    EventManager::GetInstance()->Update(); 	
+    EventManager::GetInstance()->Update();
 
     // 死亡演出
     if (end && CameraManager::GetInstance()->GetTypeview() == ViewCameraType::Main) {
-        CameraManager::GetInstance()->SetMode(CameraMode::Default);   
+        CameraManager::GetInstance()->SetMode(CameraMode::Default);
         CameraManager::GetInstance()->SetTypeview(ViewCameraType::Sub);
         player_->SetKeyActive(false);
         player_->SetReticleVisible(false);
@@ -220,7 +220,7 @@ void GamePlayScene::Update() {
         }
         // 各衝突判定
         CheckBulletEnemyCollisionsOBB();
-        CheckEnemyBulletPlayerCollisionsOBB(); 
+        CheckEnemyBulletPlayerCollisionsOBB();
         CheckEnemyPlayerCollisionsOBB();
         // 更新処理
         player_->Update();
@@ -293,16 +293,16 @@ void GamePlayScene::Update() {
 
 #pragma region  ImGuiの更新処理開始
 #ifdef USE_IMGUI 
-    ImGui::Begin("=== GamePlayScene Debug ===");
-    // 「end」フラグを切り返すチェックボックス
-    ImGui::Checkbox("End Flag", &end);
-    ImGui::End();
+    // ImGui::Begin("=== GamePlayScene Debug ===");
+     // 「end」フラグを切り返すチェックボックス
+    // ImGui::Checkbox("End Flag", &end);
+    // ImGui::End();
 
-  //  Object3dCommon::GetInstance()->DrawImGui(); // object3dのlightのImGui制御
+   //  Object3dCommon::GetInstance()->DrawImGui(); // object3dのlightのImGui制御
     CameraManager::GetInstance()->DrawImGui();  // カメラマネージャのImGui制御
-//	FadeManager::GetInstance()->DrawImGui();    // フェードマネージャのImGui制御 
-///	EventManager::GetInstance()->DrawImGui();   // イベントマネージャのImGui制御
-	//stageManager_->DebugImGui(); 			  // ステージマネージャのImGui制御
+    //	FadeManager::GetInstance()->DrawImGui();    // フェードマネージャのImGui制御 
+    ///	EventManager::GetInstance()->DrawImGui();   // イベントマネージャのImGui制御
+        //stageManager_->DebugImGui(); 			  // ステージマネージャのImGui制御
 #endif // USE_IMGUI
 #pragma endregion ImGuiの更新処理終了 
 }
@@ -353,6 +353,9 @@ void GamePlayScene::Draw() {
     for (std::unique_ptr<Sprite>& ui : uis_) {
         ui->Draw();
     }
+    
+    gage_->Draw();
+    player_ui_->Draw();
 
     gage_->Draw();
     player_ui_->Draw();

@@ -161,6 +161,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="engine\audio\SoundPlayer.cpp" />
     <ClCompile Include="engine\camera\Camera.cpp" />
     <ClCompile Include="engine\math\MathUtil.cpp" />
+    <ClCompile Include="engine\resource\AssetManifestGenerator.cpp" />
     <ClCompile Include="engine\resource\D3DResourceLeakChecker.cpp" />
     <ClCompile Include="engine\base\DirectXCommon\DirectXCommon.cpp" />
     <ClCompile Include="engine\base\Framework.cpp" />
@@ -267,6 +268,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="engine\math\Vector\Vector2.h" />
     <ClInclude Include="engine\math\Vector\Vector3.h" />
     <ClInclude Include="engine\math\Vector\Vector4.h" />
+    <ClInclude Include="engine\resource\AssetManifestGenerator.h" />
     <ClInclude Include="engine\resource\D3DResourceLeakChecker.h" />
     <ClInclude Include="engine\base\DirectXCommon\DirectXCommon.h" />
     <ClInclude Include="engine\base\Framework.h" />
