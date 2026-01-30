@@ -424,8 +424,7 @@ File Path: project/MyGame.vcxproj
 copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dxil.dll"</Command>
     </PostBuildEvent>
     <PreBuildEvent>
-      <Command>"$(SolutionDir)..\generated\outputs\$(Configuration)\AssetGenerator.exe" "$(ProjectDir)."
-
+      <Command>"$(ProjectDir)..\generated\outputs\$(Configuration)\AssetGenerator.exe" "$(ProjectDir)."
 </Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
@@ -2522,9 +2521,15 @@ File Path: project/Tools/AssetGenerator/main.cpp
 namespace fs = std::filesystem;
 
 int main(int argc, char* argv[]) {
-    // 日本語パス対応
-    std::locale::global(std::locale("japanese"));
-
+    try {
+        // 日本語環境がある場合のみ設定（CI対策）
+        std::locale::global(std::locale("japanese"));
+    }
+    catch (...) {
+        // 失敗しても何もしない（CI環境など）
+        std::cout << "Locale setting failed. Proceeding with default locale." << std::endl;
+    }
+    // ...
     // 1. プロジェクトルートパスの決定
     // 引数がない場合は実行環境からの相対パスを使用
     std::string pathStr = (argc > 1) ? argv[1] : "../../";
