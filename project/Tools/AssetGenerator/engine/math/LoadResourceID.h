@@ -8,15 +8,23 @@ namespace LoadResourceID {
         constexpr const char* Command02 = "Textures/Ui/command_02.png";
         constexpr const char* Command11 = "Textures/Ui/command_11.png";
         constexpr const char* Command12 = "Textures/Ui/command_12.png";
+        constexpr const char* Complete = "Textures/Ui/Complete.png";
+        constexpr const char* Gameover = "Textures/Ui/Gameover.png";
+        constexpr const char* Mission = "Textures/Ui/Mission.png";
         constexpr const char* Pausemenupanel = "Textures/Ui/PauseMenuPanel.png";
         constexpr const char* Poseicon = "Textures/Ui/Poseicon.png";
         constexpr const char* PoseiconRed = "Textures/Ui/Poseicon_red.png";
         constexpr const char* Target = "Textures/Ui/Target.png";
         constexpr const char* Title = "Textures/Ui/Title.png";
+        constexpr const char* Ui01 = "Textures/Ui/UI_01.png";
         constexpr const char* Ui02 = "Textures/Ui/UI_02.png";
     }
 
     namespace model {
+        constexpr const char* Parts01 = "Models/Character/parts_01/parts_01.obj";
+        constexpr const char* Parts02 = "Models/Character/parts_02/parts_02.obj";
+        constexpr const char* Parts03 = "Models/Character/parts_03/parts_03.obj";
+        constexpr const char* Parts04 = "Models/Character/parts_04/parts_04.obj";
         constexpr const char* Player = "Models/Character/Player/Player.obj";
         constexpr const char* Playerbullet = "Models/Bullet/PlayerBullet/PlayerBullet.obj";
     }

@@ -39,45 +39,6 @@
             "texture": "Event/Startevent_02.png"
         }
     },
-    "Gameclear": {
-        "complete": {
-            "texture": "Gameclear/Texture/Complete.png"
-        },
-        "mission": {
-            "texture": "Gameclear/Texture/Mission.png"
-        },
-        "player": {
-            "model": "Gameclear/Model/Player/Player.obj",
-            "texture": "Gameclear/Model/Player/Player.png"
-        },
-        "ui_01": {
-            "texture": "Gameclear/Texture/UI_01.png"
-        }
-    },
-    "Gameover": {
-        "gameover": {
-            "texture": "Gameover/Texture/Gameover.png"
-        },
-        "parts_01": {
-            "model": "Gameover/Model/parts_01.obj",
-            "texture": "Gameover/Model/parts_01.png"
-        },
-        "parts_02": {
-            "model": "Gameover/Model/parts_02.obj",
-            "texture": "Gameover/Model/parts_02.png"
-        },
-        "parts_03": {
-            "model": "Gameover/Model/parts_03.obj",
-            "texture": "Gameover/Model/parts_03.png"
-        },
-        "parts_04": {
-            "model": "Gameover/Model/parts_04.obj",
-            "texture": "Gameover/Model/parts_04.png"
-        },
-        "ui_01": {
-            "texture": "Gameover/Texture/UI_01.png"
-        }
-    },
     "Gameplay": {
         "box": {
             "model": "Gameplay/Box.obj",
@@ -119,6 +80,22 @@
         }
     },
     "Models": {
+        "parts_01": {
+            "model": "Models/Character/parts_01/parts_01.obj",
+            "texture": "Models/Character/parts_01/parts_01.png"
+        },
+        "parts_02": {
+            "model": "Models/Character/parts_02/parts_02.obj",
+            "texture": "Models/Character/parts_02/parts_02.png"
+        },
+        "parts_03": {
+            "model": "Models/Character/parts_03/parts_03.obj",
+            "texture": "Models/Character/parts_03/parts_03.png"
+        },
+        "parts_04": {
+            "model": "Models/Character/parts_04/parts_04.obj",
+            "texture": "Models/Character/parts_04/parts_04.png"
+        },
         "player": {
             "model": "Models/Character/Player/Player.obj",
             "texture": "Models/Character/Player/Player.png"
@@ -158,6 +135,15 @@
         "command_12": {
             "texture": "Textures/Ui/command_12.png"
         },
+        "complete": {
+            "texture": "Textures/Ui/Complete.png"
+        },
+        "gameover": {
+            "texture": "Textures/Ui/Gameover.png"
+        },
+        "mission": {
+            "texture": "Textures/Ui/Mission.png"
+        },
         "pausemenupanel": {
             "texture": "Textures/Ui/PauseMenuPanel.png"
         },
@@ -172,6 +158,9 @@
         },
         "title": {
             "texture": "Textures/Ui/Title.png"
+        },
+        "ui_01": {
+            "texture": "Textures/Ui/UI_01.png"
         },
         "ui_02": {
             "texture": "Textures/Ui/UI_02.png"

@@ -71,7 +71,7 @@ private: // メンバ変数
     std::unique_ptr <Sprite> ui_start_;
     std::vector<Sprite*> uiSprites_;
 
-    std::unique_ptr <Player> player_;;
+    std::unique_ptr <Player> player_;
     // 背景オブジェクト 
     std::unique_ptr <Skybox> skybox_ = nullptr;
     // 演出用モデル
@@ -95,8 +95,8 @@ private: // メンバ変数
     static constexpr float kFloatAmplitude = 2.3f;
 
     // フェード演出用
-bool isPlayerBoost_ = false;
-float playerSpeedX_ = 0.0f;
-float playerAccelX_ = 0.15f;   // 加速量
-float playerMaxSpeedX_ = 5.0f; // 上限（任意）
+    bool isPlayerBoost_ = false;
+    float playerSpeedX_ = 0.0f;
+    float playerAccelX_ = 0.15f;   // 加速量
+    float playerMaxSpeedX_ = 5.0f; // 上限（任意）
 };
