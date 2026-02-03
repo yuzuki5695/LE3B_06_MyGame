@@ -37,8 +37,6 @@ namespace LoadResourceID {
         constexpr const char* Enemy = "Models/Character/Enemy/Enemy.obj";
         constexpr const char* Enemybullet = "Models/Bullet/EnemyBullet/EnemyBullet.obj";
         constexpr const char* Goal = "Models/Object/Goal/goal.obj";
-        constexpr const char* Particle = "Models/Particles/Particle/Particle.obj";
-        constexpr const char* Particle02 = "Models/Particles/Particle_02/Particle_02.obj";
         constexpr const char* Parts01 = "Models/Character/parts_01/parts_01.obj";
         constexpr const char* Parts02 = "Models/Character/parts_02/parts_02.obj";
         constexpr const char* Parts03 = "Models/Character/parts_03/parts_03.obj";

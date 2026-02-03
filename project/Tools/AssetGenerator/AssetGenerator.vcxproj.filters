@@ -69,9 +69,4 @@
       <Filter>ヘッダー ファイル\math</Filter>
     </ClInclude>
   </ItemGroup>
-  <ItemGroup>
-    <None Include="..\..\Resources\levels\Manifest.json">
-      <Filter>リソース ファイル</Filter>
-    </None>
-  </ItemGroup>
 </Project>

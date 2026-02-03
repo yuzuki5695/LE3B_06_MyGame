@@ -80,7 +80,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     </PostBuildEvent>
     <PreBuildEvent>
       <Command>"$(ProjectDir)..\generated\outputs\$(Configuration)\AssetGenerator.exe"
-
 </Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>

@@ -103,7 +103,7 @@ AssetType ManifestExporter::GetAssetType(const std::string& ext, const std::stri
 
     // --- モデル判定 ---
     // モデル拡張子、または「Modelsフォルダ内のDDS」をモデルとして扱う
-    if (lowerExt == ".fbx" || lowerExt == ".obj" || lowerExt == ".gltf" ||
+    if (lowerExt == ".fbx" || lowerExt == ".obj" || lowerExt == ".gltf" || lowerExt == ".jpg" ||
         (lowerExt == ".dds" && lowerPath.find("models/") != std::string::npos)) { // ← ここがポイント
         return AssetType::Model;
     }
