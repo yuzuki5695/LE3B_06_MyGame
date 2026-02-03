@@ -12,31 +12,10 @@
             "texture": "rostock_laage_airport_4k.dds"
         }
     },
-    "Gameplay": {
-        "box": {
-            "model": "Gameplay/Box.obj",
-            "texture": "Gameplay/Box.png"
-        },
-        "gage": {
-            "texture": "Gameplay/Texture/Gage.png"
-        },
-        "player_ui": {
-            "texture": "Gameplay/Texture/Player_ui.png"
-        },
-        "target": {
-            "texture": "Gameplay/Texture/Target.png"
-        },
-        "ui_01": {
-            "texture": "Gameplay/Texture/UI_01.png"
-        },
-        "ui_02": {
-            "texture": "Gameplay/Texture/UI_02.png"
-        },
-        "ui_03": {
-            "texture": "Gameplay/Texture/UI_03.png"
-        }
-    },
     "Models": {
+        "cubemapbox": {
+            "texture": "Models/CubemapBox.dds"
+        },
         "enemy": {
             "model": "Models/Character/Enemy/Enemy.obj",
             "texture": "Models/Character/Enemy/Enemy.png"
@@ -72,6 +51,9 @@
         "playerbullet": {
             "model": "Models/Bullet/PlayerBullet/PlayerBullet.obj",
             "texture": "Models/Bullet/PlayerBullet/PlayerBullet.png"
+        },
+        "rostock_laage_airport_4k": {
+            "texture": "Models/rostock_laage_airport_4k.dds"
         },
         "tile": {
             "model": "Models/Object/Tile/Tile.obj",
@@ -123,6 +105,9 @@
         "mission": {
             "texture": "Textures/Ui/Mission.png"
         },
+        "move": {
+            "texture": "Textures/Operationui/move.png"
+        },
         "pausemenupanel": {
             "texture": "Textures/Ui/PauseMenuPanel.png"
         },
@@ -134,6 +119,12 @@
         },
         "poseicon_red": {
             "texture": "Textures/Ui/Poseicon_red.png"
+        },
+        "reticlemove": {
+            "texture": "Textures/Operationui/reticlemove.png"
+        },
+        "space": {
+            "texture": "Textures/Operationui/space.png"
         },
         "start": {
             "texture": "Textures/Event/start.png"

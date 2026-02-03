@@ -39,26 +39,25 @@ void GamePlayScene::Initialize() {
     CameraManager::GetInstance()->Initialize(CameraTransform({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }));     
     CameraManager::GetInstance()->SetTypeview(ViewCameraType::Main);
 
-    // テクスチャを読み込む
-        
-    TextureManager::GetInstance()->LoadTexture("Gameplay/Texture/UI_01.png");
-    TextureManager::GetInstance()->LoadTexture("Gameplay/Texture/UI_02.png");
-    TextureManager::GetInstance()->LoadTexture("Gameplay/Texture/UI_03.png");        
-    TextureManager::GetInstance()->LoadTexture("Gameplay/Texture/Gage.png");
-    TextureManager::GetInstance()->LoadTexture("Gameplay/Texture/Player_ui.png");
+    // テクスチャを読み込む 
+    TextureManager::GetInstance()->LoadTexture(texture::Move);
+    TextureManager::GetInstance()->LoadTexture(texture::Reticlemove);
+    TextureManager::GetInstance()->LoadTexture(texture::Space);        
+    TextureManager::GetInstance()->LoadTexture(texture::Gage);
+    TextureManager::GetInstance()->LoadTexture(texture::PlayerUi);
     
 
     MAXui_ = 1;
-    uis_.push_back(Sprite::Create("Gameplay/Texture/UI_01.png", Vector2{ 8.0f, 430.0f }, 0.0f, Vector2{ 200.0f,80.0f })); 
-    uis_.push_back(Sprite::Create("Gameplay/Texture/UI_02.png", Vector2{ 8.0f, 530.0f }, 0.0f, Vector2{ 200.0f,80.0f })); 
-    uis_.push_back(Sprite::Create("Gameplay/Texture/UI_03.png", Vector2{ 8.0f, 630.0f }, 0.0f, Vector2{ 200.0f,80.0f })); 
+    uis_.push_back(Sprite::Create(texture::Move, Vector2{ 8.0f, 430.0f }, 0.0f, Vector2{ 200.0f,80.0f })); 
+    uis_.push_back(Sprite::Create(texture::Reticlemove, Vector2{ 8.0f, 530.0f }, 0.0f, Vector2{ 200.0f,80.0f })); 
+    uis_.push_back(Sprite::Create(texture::Space, Vector2{ 8.0f, 630.0f }, 0.0f, Vector2{ 200.0f,80.0f })); 
     uis_[0]->SetTextureSize(Vector2{200.0f,80.0f});
     uis_[1]->SetTextureSize(Vector2{200.0f,80.0f});
     uis_[2]->SetTextureSize(Vector2{200.0f,80.0f});
     
-    gage_ = Sprite::Create("Gameplay/Texture/Gage.png", Vector2{ 380.0f, 10.0f }, 0.0f, Vector2{ 500.0f,30.0f });
+    gage_ = Sprite::Create(texture::Gage, Vector2{ 380.0f, 10.0f }, 0.0f, Vector2{ 500.0f,30.0f });
     gage_->SetTextureSize(Vector2{ 500.0f,30.0f });     	 
-    player_ui_ = Sprite::Create("Gameplay/Texture/Player_ui.png", Vector2{ 380.0f, 12.3f }, 0.0f, Vector2{ 25.0f,25.0f });
+    player_ui_ = Sprite::Create(texture::PlayerUi, Vector2{ 380.0f, 12.3f }, 0.0f, Vector2{ 25.0f,25.0f });
     player_ui_->SetTextureSize(Vector2{ 25.0f,25.0f });     
 
     // .objファイルからモデルを読み込む
