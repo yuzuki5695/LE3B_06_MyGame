@@ -13,7 +13,7 @@ private: // メンバ関数
     /// 拡張子から AssetType を判定する
     /// 未対応の拡張子は Unknown を返す
     /// </summary>
-    AssetType GetAssetType(const std::string& ext);
+    AssetType GetAssetType(const std::string& ext,const std::string& fullPath);
     /// <summary>
     /// ファイルパスから Asset の論理名を生成する
     /// 拡張子を除いたファイル名を小文字化したものを使用

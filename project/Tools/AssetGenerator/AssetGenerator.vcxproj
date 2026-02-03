@@ -163,6 +163,9 @@
     <ClInclude Include="engine\src\ResourceCodeGenerator.h" />
     <ClInclude Include="engine\src\ResourceIdGenerator.h" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\Resources\levels\Manifest.json" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

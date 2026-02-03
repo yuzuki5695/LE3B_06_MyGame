@@ -36,7 +36,7 @@ void GameOverScene::Initialize() {
     ModelManager::GetInstance()->LoadModel(model::Parts04);
 
     // テクスチャの読み込み
-    TextureManager::GetInstance()->LoadTexture("CubemapBox.dds");
+    TextureManager::GetInstance()->LoadTexture(texture::Cubemapbox);
     TextureManager::GetInstance()->LoadTexture(texture::Gameover);
     TextureManager::GetInstance()->LoadTexture(texture::Ui01);
 
@@ -57,7 +57,7 @@ void GameOverScene::Initialize() {
     ui2_->SetAnchorPoint(Vector2{ 0.5f, 0.5f }); // 中心基準
     ui2_->SetTextureSize(Vector2{ 360.0f,100.0f });
 
-    Box_ = Skybox::Create("CubemapBox.dds", Transform{ { 1000.0f, 1000.0f, 1000.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 100.0f } });
+    Box_ = Skybox::Create(texture::Cubemapbox, Transform{ { 1000.0f, 1000.0f, 1000.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 100.0f } });
 
     // ランダムXを生成（-0.5～0.5の範囲）
     std::random_device rd;

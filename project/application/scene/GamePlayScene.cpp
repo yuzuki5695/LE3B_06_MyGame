@@ -90,8 +90,8 @@ void GamePlayScene::Initialize() {
     // クリアゲート(仮)
     wall = Object3d::Create(model::Goal, Transform{ { 2.0f, 2.0f, 2.0f }, { 0.0f, 0.0f, 0.0f }, { 8.0f, 39.0f, 800.0f } });
     // スカイボックスの作成
-    TextureManager::GetInstance()->LoadTexture("CubemapBox.dds");
-    Box_ = Skybox::Create("CubemapBox.dds", Transform{ { 1000.0f, 1000.0f, 1000.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 100.0f } });
+    TextureManager::GetInstance()->LoadTexture(texture::Cubemapbox);
+    Box_ = Skybox::Create(texture::Cubemapbox, Transform{ { 1000.0f, 1000.0f, 1000.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 100.0f } });
     // ゴールフラグ初期化
     goal_ = false;
     // フェードマネージャの初期化

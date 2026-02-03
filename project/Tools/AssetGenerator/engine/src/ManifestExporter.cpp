@@ -32,7 +32,7 @@ void ManifestExporter::Export(const std::string& outputPath, const std::vector<s
         std::string ext = std::filesystem::path(normalized).extension().string();
 
         // AssetType 判定
-        AssetType type = GetAssetType(ext);
+        AssetType type = GetAssetType(ext,normalized);
         if (type == AssetType::Unknown) continue;
 
         // Group（最上位フォルダ）
@@ -93,17 +93,32 @@ std::string ManifestExporter::GetGroup(const std::string& path) {
 }
 
 
-AssetType ManifestExporter::GetAssetType(const std::string& ext) {
+AssetType ManifestExporter::GetAssetType(const std::string& ext, const std::string& fullPath) {
     std::string lowerExt = ext;
-
-    // 拡張子を小文字化
     std::transform(lowerExt.begin(), lowerExt.end(), lowerExt.begin(), ::tolower);
-    // テクスチャ
-    if (lowerExt == ".png" || lowerExt == ".jpg" || lowerExt == ".jpeg" || lowerExt == ".tga" || lowerExt == ".dds") return AssetType::Texture;
-    // モデル
-    if (lowerExt == ".fbx" || lowerExt == ".obj" || lowerExt == ".gltf" || lowerExt == ".glb") return AssetType::Model;
-    // 音源
-    if (lowerExt == ".wav" || lowerExt == ".mp3" || lowerExt == ".ogg") return AssetType::Audio;
+
+    // 正規化したパスで判定するため、一時的に小文字化
+    std::string lowerPath = fullPath;
+    std::transform(lowerPath.begin(), lowerPath.end(), lowerPath.begin(), ::tolower);
+
+    // --- モデル判定 ---
+    // モデル拡張子、または「Modelsフォルダ内のDDS」をモデルとして扱う
+    if (lowerExt == ".fbx" || lowerExt == ".obj" || lowerExt == ".gltf" ||
+        (lowerExt == ".dds" && lowerPath.find("models/") != std::string::npos)) { // ← ここがポイント
+        return AssetType::Model;
+    }
+
+    // --- テクスチャ判定 ---
+    // Modelsフォルダ外にあるDDS、またはその他の画像形式
+    if (lowerExt == ".png" || lowerExt == ".jpg" || lowerExt == ".jpeg" ||
+        lowerExt == ".tga" || lowerExt == ".dds") {
+        return AssetType::Texture;
+    }
+
+    // --- 音声判定 ---
+    if (lowerExt == ".wav" || lowerExt == ".mp3") {
+        return AssetType::Audio;
+    }
 
     return AssetType::Unknown;
 }

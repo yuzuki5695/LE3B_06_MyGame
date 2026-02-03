@@ -39,7 +39,7 @@ void GameClearScene::Initialize() {
     // メインカメラは固定モード
     CameraManager::GetInstance()->SetCameraMode(CameraMode::Default);
     // テクスチャの読み込み
-    TextureManager::GetInstance()->LoadTexture("CubemapBox.dds");
+    TextureManager::GetInstance()->LoadTexture(texture::Cubemapbox);
     TextureManager::GetInstance()->LoadTexture(texture::Ui01);
     TextureManager::GetInstance()->LoadTexture(texture::Mission);
     TextureManager::GetInstance()->LoadTexture(texture::Complete);
@@ -78,7 +78,7 @@ void GameClearScene::Initialize() {
     // 追従対象を設定
     CameraManager::GetInstance()->GetGameClearCamera()->SetTarget(player_->GetPlayerObject());
 
-    Box_ = Skybox::Create("CubemapBox.dds", Transform{ { 1000.0f, 1000.0f, 1000.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 100.0f } });
+    Box_ = Skybox::Create(texture::Cubemapbox, Transform{ { 1000.0f, 1000.0f, 1000.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 100.0f } });
 
     // フェードマネージャの初期化
     FadeManager::GetInstance()->Initialize();

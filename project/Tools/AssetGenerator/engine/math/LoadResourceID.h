@@ -10,6 +10,7 @@ namespace LoadResourceID {
         constexpr const char* Command11 = "Textures/Ui/command_11.png";
         constexpr const char* Command12 = "Textures/Ui/command_12.png";
         constexpr const char* Complete = "Textures/Ui/Complete.png";
+        constexpr const char* Cubemapbox = "Textures/stage/CubemapBox.dds";
         constexpr const char* Gage = "Textures/Ui/Gage.png";
         constexpr const char* Gameover = "Textures/Ui/Gameover.png";
         constexpr const char* Mission = "Textures/Ui/Mission.png";
@@ -19,6 +20,7 @@ namespace LoadResourceID {
         constexpr const char* Poseicon = "Textures/Ui/Poseicon.png";
         constexpr const char* PoseiconRed = "Textures/Ui/Poseicon_red.png";
         constexpr const char* Reticlemove = "Textures/Operationui/reticlemove.png";
+        constexpr const char* RostockLaageAirport4k = "Textures/stage/rostock_laage_airport_4k.dds";
         constexpr const char* Space = "Textures/Operationui/space.png";
         constexpr const char* Start = "Textures/Event/start.png";
         constexpr const char* StartMission = "Textures/Event/start_mission.png";
