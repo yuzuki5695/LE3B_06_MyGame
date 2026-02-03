@@ -17,30 +17,14 @@
             "model": "Gameplay/Box.obj",
             "texture": "Gameplay/Box.png"
         },
-        "enemy": {
-            "model": "Gameplay/Model/Enemy/Enemy.obj",
-            "texture": "Gameplay/Model/Enemy/Enemy.png"
-        },
         "gage": {
             "texture": "Gameplay/Texture/Gage.png"
-        },
-        "goal": {
-            "model": "Gameplay/Model/Goal/goal.obj",
-            "texture": "Gameplay/Model/Goal/goal.png"
-        },
-        "player": {
-            "model": "Gameplay/Model/Player/Player.obj",
-            "texture": "Gameplay/Model/Player/Player.png"
         },
         "player_ui": {
             "texture": "Gameplay/Texture/Player_ui.png"
         },
         "target": {
             "texture": "Gameplay/Texture/Target.png"
-        },
-        "tile": {
-            "model": "Gameplay/Model/Tile/Tile.obj",
-            "texture": "Gameplay/Model/Tile/Tile.png"
         },
         "ui_01": {
             "texture": "Gameplay/Texture/UI_01.png"
@@ -53,9 +37,17 @@
         }
     },
     "Models": {
+        "enemy": {
+            "model": "Models/Character/Enemy/Enemy.obj",
+            "texture": "Models/Character/Enemy/Enemy.png"
+        },
         "enemybullet": {
             "model": "Models/Bullet/EnemyBullet/EnemyBullet.obj",
             "texture": "Models/Bullet/EnemyBullet/EnemyBullet.png"
+        },
+        "goal": {
+            "model": "Models/Object/Goal/goal.obj",
+            "texture": "Models/Object/Goal/goal.png"
         },
         "parts_01": {
             "model": "Models/Character/parts_01/parts_01.obj",
@@ -80,6 +72,10 @@
         "playerbullet": {
             "model": "Models/Bullet/PlayerBullet/PlayerBullet.obj",
             "texture": "Models/Bullet/PlayerBullet/PlayerBullet.png"
+        },
+        "tile": {
+            "model": "Models/Object/Tile/Tile.obj",
+            "texture": "Models/Object/Tile/Tile.png"
         }
     },
     "Particle": {
@@ -118,6 +114,9 @@
         "complete": {
             "texture": "Textures/Ui/Complete.png"
         },
+        "gage": {
+            "texture": "Textures/Ui/Gage.png"
+        },
         "gameover": {
             "texture": "Textures/Ui/Gameover.png"
         },
@@ -126,6 +125,9 @@
         },
         "pausemenupanel": {
             "texture": "Textures/Ui/PauseMenuPanel.png"
+        },
+        "player_ui": {
+            "texture": "Textures/Ui/Player_ui.png"
         },
         "poseicon": {
             "texture": "Textures/Ui/Poseicon.png"
