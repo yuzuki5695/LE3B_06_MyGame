@@ -2,7 +2,9 @@
 #include <Object3d.h>
 #include <ModelManager.h>
 #include <MatrixVector.h>
+#include<Tools/AssetGenerator/engine/math/LoadResourceID.h>
 
+using namespace LoadResourceID;
 using namespace MatrixVector;
 
 ///====================================================
@@ -39,10 +41,10 @@ void PlayerBullet::Initialize(const Vector3& startPos, const Vector3& targetPos,
     // モデルがまだ読み込まれていなければロード＆生成
     if (!object_) {
         // モデルを読み込む
-        ModelManager::GetInstance()->LoadModel("Bullet/PlayerBullet.obj");
+        ModelManager::GetInstance()->LoadModel(model::Playerbullet);
         // 弾用の3Dオブジェクトを生成（Transform情報を渡す）
         object_ = Object3d::Create(
-            "Bullet/PlayerBullet.obj",
+            model::Playerbullet,
             transform_
         );
         // スケール設定
@@ -73,9 +75,9 @@ void PlayerBullet::Initialize(const Vector3& startPos, const Vector3& targetPos,
     // モデルがまだ読み込まれていなければロード＆生成
     if (!object_) {
         // モデルを読み込む
-        ModelManager::GetInstance()->LoadModel("Bullet/PlayerBullet.obj");
+        ModelManager::GetInstance()->LoadModel(model::Playerbullet);
         // 弾用の3Dオブジェクトを生成（Transform情報を渡す）
-        object_ = Object3d::Create("Bullet/PlayerBullet.obj", transform_);
+        object_ = Object3d::Create(model::Playerbullet, transform_);
         // スケール設定
         object_->SetScale({ 0.5f, 0.5f, 0.5f });
     }

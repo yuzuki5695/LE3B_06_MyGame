@@ -13,6 +13,10 @@
 #include<SkyboxCommon.h>
 #include<FadeManager.h>
 #include <random>
+#include<Tools/AssetGenerator/engine/math/LoadResourceID.h>
+
+using namespace LoadResourceID;
+
 ///====================================================
 /// 終了処理
 ///====================================================
@@ -25,17 +29,16 @@ void GameOverScene::Finalize() {
 void GameOverScene::Initialize() {
     // カメラマネージャの初期化
     CameraManager::GetInstance()->Initialize(CameraTransform({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }));
-   // CameraManager::GetInstance()->SetCameraMode(CameraMode::Default);
     // モデルの読み込み    
-    ModelManager::GetInstance()->LoadModel("Gameover/Model/parts_01.obj");
-    ModelManager::GetInstance()->LoadModel("Gameover/Model/parts_02.obj");
-    ModelManager::GetInstance()->LoadModel("Gameover/Model/parts_03.obj");
-    ModelManager::GetInstance()->LoadModel("Gameover/Model/parts_04.obj");
+    ModelManager::GetInstance()->LoadModel(model::Parts01);
+    ModelManager::GetInstance()->LoadModel(model::Parts02);
+    ModelManager::GetInstance()->LoadModel(model::Parts03); 
+    ModelManager::GetInstance()->LoadModel(model::Parts04);
 
     // テクスチャの読み込み
-    TextureManager::GetInstance()->LoadTexture("CubemapBox.dds");
-    TextureManager::GetInstance()->LoadTexture("Gameover/Texture/Gameover.png");
-    TextureManager::GetInstance()->LoadTexture("Gameover/Texture/UI_01.png");
+    TextureManager::GetInstance()->LoadTexture(texture::Cubemapbox);
+    TextureManager::GetInstance()->LoadTexture(texture::Gameover);
+    TextureManager::GetInstance()->LoadTexture(texture::Ui01);
 
     ui1Timer_ = 0.0f;
     ui1Duration_ = 60.0f; // 約1秒
@@ -47,14 +50,14 @@ void GameOverScene::Initialize() {
     ui2EndPos = { 1000.0f, 350.0f };
     phase_ = 0;
 
-    ui1_ = Sprite::Create("Gameover/Texture/Gameover.png", ui1StartPos, 0.0f, Vector2{ 300.0f,120.0f });
+    ui1_ = Sprite::Create(texture::Gameover, ui1StartPos, 0.0f, Vector2{ 300.0f,120.0f });
     ui1_->SetAnchorPoint(Vector2{ 0.5f, 0.5f }); // 中心基準
     ui1_->SetTextureSize(Vector2{ 300.0f,120.0f });
-    ui2_ = Sprite::Create("Gameover/Texture/UI_01.png", ui2StartPos, 0.0f, Vector2{ 360.0f,100.0f });
+    ui2_ = Sprite::Create(texture::Ui01, ui2StartPos, 0.0f, Vector2{ 360.0f,100.0f });
     ui2_->SetAnchorPoint(Vector2{ 0.5f, 0.5f }); // 中心基準
     ui2_->SetTextureSize(Vector2{ 360.0f,100.0f });
 
-    Box_ = Skybox::Create("CubemapBox.dds", Transform{ { 1000.0f, 1000.0f, 1000.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 100.0f } });
+    Box_ = Skybox::Create(texture::Cubemapbox, Transform{ { 1000.0f, 1000.0f, 1000.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 100.0f } });
 
     // ランダムXを生成（-0.5～0.5の範囲）
     std::random_device rd;
@@ -66,12 +69,7 @@ void GameOverScene::Initialize() {
     std::uniform_real_distribution<float> rotateY(-0.01f, 0.01f);
     std::uniform_real_distribution<float> rotateZ(-0.01f, 0.01f);
 
-    std::vector<std::string> textureNames = {
-    "Gameover/Model/parts_01.obj",
-    "Gameover/Model/parts_02.obj",
-    "Gameover/Model/parts_03.obj",
-    "Gameover/Model/parts_04.obj",
-    };
+    std::vector<std::string> textureNames = { model::Parts01,model::Parts02,model::Parts03,model::Parts04, };
 
     partCount_ = 7;
     for (size_t  i = 0; i < partCount_; ++i) {
@@ -85,7 +83,7 @@ void GameOverScene::Initialize() {
             if (textureIndex >= textureNames.size()) textureIndex = textureNames.size() - 1; // 配列オーバー防止
         }
 
-        part.obj = Object3d::Create("Gameover/Model/parts_01.obj", part.transform);
+        part.obj = Object3d::Create(model::Parts01, part.transform);
         part.obj->SetModel(textureNames[textureIndex]); // 後からテクスチャを設定
 
         part.fallSpeed = { 0.0f, distY(randomEngine), 0.0f }; // Y軸落下

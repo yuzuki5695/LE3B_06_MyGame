@@ -16,7 +16,9 @@
 #include <BulletManager.h>
 #include<MatrixVector.h>
 #include<Collision.h>
+#include<Tools/AssetGenerator/engine/math/LoadResourceID.h>
 
+using namespace LoadResourceID;
 using namespace Collision;
 using namespace MatrixVector;
 
@@ -37,33 +39,29 @@ void GamePlayScene::Initialize() {
     CameraManager::GetInstance()->Initialize(CameraTransform({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }));     
     CameraManager::GetInstance()->SetTypeview(ViewCameraType::Main);
 
-    // テクスチャを読み込む
-        
-    TextureManager::GetInstance()->LoadTexture("Gameplay/Texture/UI_01.png");
-    TextureManager::GetInstance()->LoadTexture("Gameplay/Texture/UI_02.png");
-    TextureManager::GetInstance()->LoadTexture("Gameplay/Texture/UI_03.png");
-        
-    TextureManager::GetInstance()->LoadTexture("Gameplay/Texture/Gage.png");
-    TextureManager::GetInstance()->LoadTexture("Gameplay/Texture/Player_ui.png");
+    // テクスチャを読み込む 
+    TextureManager::GetInstance()->LoadTexture(texture::Move);
+    TextureManager::GetInstance()->LoadTexture(texture::Reticlemove);
+    TextureManager::GetInstance()->LoadTexture(texture::Space);        
+    TextureManager::GetInstance()->LoadTexture(texture::Gage);
+    TextureManager::GetInstance()->LoadTexture(texture::PlayerUi);
     
 
     MAXui_ = 1;
-    uis_.push_back(Sprite::Create("Gameplay/Texture/UI_01.png", Vector2{ 8.0f, 430.0f }, 0.0f, Vector2{ 200.0f,80.0f })); 
-    uis_.push_back(Sprite::Create("Gameplay/Texture/UI_02.png", Vector2{ 8.0f, 530.0f }, 0.0f, Vector2{ 200.0f,80.0f })); 
-    uis_.push_back(Sprite::Create("Gameplay/Texture/UI_03.png", Vector2{ 8.0f, 630.0f }, 0.0f, Vector2{ 200.0f,80.0f })); 
+    uis_.push_back(Sprite::Create(texture::Move, Vector2{ 8.0f, 430.0f }, 0.0f, Vector2{ 200.0f,80.0f })); 
+    uis_.push_back(Sprite::Create(texture::Reticlemove, Vector2{ 8.0f, 530.0f }, 0.0f, Vector2{ 200.0f,80.0f })); 
+    uis_.push_back(Sprite::Create(texture::Space, Vector2{ 8.0f, 630.0f }, 0.0f, Vector2{ 200.0f,80.0f })); 
     uis_[0]->SetTextureSize(Vector2{200.0f,80.0f});
     uis_[1]->SetTextureSize(Vector2{200.0f,80.0f});
     uis_[2]->SetTextureSize(Vector2{200.0f,80.0f});
     
-    gage_ = Sprite::Create("Gameplay/Texture/Gage.png", Vector2{ 380.0f, 10.0f }, 0.0f, Vector2{ 500.0f,30.0f });
+    gage_ = Sprite::Create(texture::Gage, Vector2{ 380.0f, 10.0f }, 0.0f, Vector2{ 500.0f,30.0f });
     gage_->SetTextureSize(Vector2{ 500.0f,30.0f });     	 
-    player_ui_ = Sprite::Create("Gameplay/Texture/Player_ui.png", Vector2{ 380.0f, 12.3f }, 0.0f, Vector2{ 25.0f,25.0f });
+    player_ui_ = Sprite::Create(texture::PlayerUi, Vector2{ 380.0f, 12.3f }, 0.0f, Vector2{ 25.0f,25.0f });
     player_ui_->SetTextureSize(Vector2{ 25.0f,25.0f });     
 
     // .objファイルからモデルを読み込む
-    ModelManager::GetInstance()->LoadModel("Bullet/PlayerBullet.obj");
-    ModelManager::GetInstance()->LoadModel("Bullet/EnemyBullet.obj");
-    ModelManager::GetInstance()->LoadModel("Gameplay/Model/Goal/Goal.obj");
+    ModelManager::GetInstance()->LoadModel(model::Goal);
 
     // プレイヤーの作成と初期化
     player_ = std::make_unique<Player>();
@@ -90,10 +88,10 @@ void GamePlayScene::Initialize() {
     enemySpawner_ = std::make_unique<EnemySpawner>(); enemySpawner_->Initialize(player_.get(), CameraManager::GetInstance(), &enemies_);
 
     // クリアゲート(仮)
-    wall = Object3d::Create("Gameplay/Model/Goal/Goal.obj", Transform{ { 2.0f, 2.0f, 2.0f }, { 0.0f, 0.0f, 0.0f }, { 8.0f, 39.0f, 800.0f } });
+    wall = Object3d::Create(model::Goal, Transform{ { 2.0f, 2.0f, 2.0f }, { 0.0f, 0.0f, 0.0f }, { 8.0f, 39.0f, 800.0f } });
     // スカイボックスの作成
-    TextureManager::GetInstance()->LoadTexture("CubemapBox.dds");
-    Box_ = Skybox::Create("CubemapBox.dds", Transform{ { 1000.0f, 1000.0f, 1000.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 100.0f } });
+    TextureManager::GetInstance()->LoadTexture(texture::Cubemapbox);
+    Box_ = Skybox::Create(texture::Cubemapbox, Transform{ { 1000.0f, 1000.0f, 1000.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 100.0f } });
     // ゴールフラグ初期化
     goal_ = false;
     // フェードマネージャの初期化

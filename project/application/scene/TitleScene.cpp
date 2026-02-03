@@ -51,7 +51,7 @@ void TitleScene::LoadResources() {
     //  テクスチャの読み込み
     TextureManager::GetInstance()->LoadTexture(texture::Ui02);
     TextureManager::GetInstance()->LoadTexture(texture::Title);
-    TextureManager::GetInstance()->LoadTexture("CubemapBox.dds");
+    TextureManager::GetInstance()->LoadTexture(texture::Cubemapbox);
 }
 
 void TitleScene::InitializeUI() {  
@@ -68,7 +68,7 @@ void TitleScene::InitializeUI() {
 
 void TitleScene::InitializeModel() {
     // スカイボックス生成 
-    skybox_ = Skybox::Create("CubemapBox.dds", Transform{ { 1000.0f, 1000.0f, 1000.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 100.0f } });
+    skybox_ = Skybox::Create(texture::Cubemapbox, Transform{ { 1000.0f, 1000.0f, 1000.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 100.0f } });
     // プレイヤーパラメータ 
     playertransform_ = { {1.0f, 1.0f, 1.0f}, {0.0f, 0.3f, 0.0f},  -20.0f,0.0f,40.0f };
     titleStartX_ = -20.0f;

@@ -4,121 +4,43 @@
             "audio": "Audio/Alarm01.wav"
         }
     },
-    "Bullet": {
-        "enemybullet": {
-            "model": "Bullet/EnemyBullet.obj",
-            "texture": "Bullet/EnemyBullet.png"
-        },
-        "playerbullet": {
-            "model": "Bullet/PlayerBullet.obj",
-            "texture": "Bullet/PlayerBullet.png"
-        }
-    },
-    "Common": {
-        "cubemapbox": {
-            "texture": "CubemapBox.dds"
-        },
-        "rostock_laage_airport_4k": {
-            "texture": "rostock_laage_airport_4k.dds"
-        }
-    },
-    "Event": {
-        "black": {
-            "texture": "Event/Black.png"
-        },
-        "mission": {
-            "texture": "Event/mission.png"
-        },
-        "start": {
-            "texture": "Event/start.png"
-        },
-        "startevent_01": {
-            "texture": "Event/Startevent_01.png"
-        },
-        "startevent_02": {
-            "texture": "Event/Startevent_02.png"
-        }
-    },
-    "Gameclear": {
-        "complete": {
-            "texture": "Gameclear/Texture/Complete.png"
-        },
-        "mission": {
-            "texture": "Gameclear/Texture/Mission.png"
-        },
-        "player": {
-            "model": "Gameclear/Model/Player/Player.obj",
-            "texture": "Gameclear/Model/Player/Player.png"
-        },
-        "ui_01": {
-            "texture": "Gameclear/Texture/UI_01.png"
-        }
-    },
-    "Gameover": {
-        "gameover": {
-            "texture": "Gameover/Texture/Gameover.png"
-        },
-        "parts_01": {
-            "model": "Gameover/Model/parts_01.obj",
-            "texture": "Gameover/Model/parts_01.png"
-        },
-        "parts_02": {
-            "model": "Gameover/Model/parts_02.obj",
-            "texture": "Gameover/Model/parts_02.png"
-        },
-        "parts_03": {
-            "model": "Gameover/Model/parts_03.obj",
-            "texture": "Gameover/Model/parts_03.png"
-        },
-        "parts_04": {
-            "model": "Gameover/Model/parts_04.obj",
-            "texture": "Gameover/Model/parts_04.png"
-        },
-        "ui_01": {
-            "texture": "Gameover/Texture/UI_01.png"
-        }
-    },
-    "Gameplay": {
-        "box": {
-            "model": "Gameplay/Box.obj",
-            "texture": "Gameplay/Box.png"
-        },
+    "Models": {
         "enemy": {
-            "model": "Gameplay/Model/Enemy/Enemy.obj",
-            "texture": "Gameplay/Model/Enemy/Enemy.png"
+            "model": "Models/Character/Enemy/Enemy.obj",
+            "texture": "Models/Character/Enemy/Enemy.png"
         },
-        "gage": {
-            "texture": "Gameplay/Texture/Gage.png"
+        "enemybullet": {
+            "model": "Models/Bullet/EnemyBullet/EnemyBullet.obj",
+            "texture": "Models/Bullet/EnemyBullet/EnemyBullet.png"
         },
         "goal": {
-            "model": "Gameplay/Model/Goal/goal.obj",
-            "texture": "Gameplay/Model/Goal/goal.png"
+            "model": "Models/Object/Goal/goal.obj",
+            "texture": "Models/Object/Goal/goal.png"
         },
-        "player": {
-            "model": "Gameplay/Model/Player/Player.obj",
-            "texture": "Gameplay/Model/Player/Player.png"
+        "particle": {
+            "model": "Models/Particles/Particle/Particle.obj",
+            "texture": "Models/Particles/Particle/Particle.png"
         },
-        "player_ui": {
-            "texture": "Gameplay/Texture/Player_ui.png"
+        "particle_02": {
+            "model": "Models/Particles/Particle_02/Particle_02.obj",
+            "texture": "Models/Particles/Particle_02/Particle_02.png"
         },
-        "target": {
-            "texture": "Gameplay/Texture/Target.png"
+        "parts_01": {
+            "model": "Models/Character/parts_01/parts_01.obj",
+            "texture": "Models/Character/parts_01/parts_01.png"
         },
-        "tile": {
-            "model": "Gameplay/Model/Tile/Tile.obj",
-            "texture": "Gameplay/Model/Tile/Tile.png"
+        "parts_02": {
+            "model": "Models/Character/parts_02/parts_02.obj",
+            "texture": "Models/Character/parts_02/parts_02.png"
         },
-        "ui_01": {
-            "texture": "Gameplay/Texture/UI_01.png"
+        "parts_03": {
+            "model": "Models/Character/parts_03/parts_03.obj",
+            "texture": "Models/Character/parts_03/parts_03.png"
         },
-        "ui_02": {
-            "texture": "Gameplay/Texture/UI_02.png"
+        "parts_04": {
+            "model": "Models/Character/parts_04/parts_04.obj",
+            "texture": "Models/Character/parts_04/parts_04.png"
         },
-        "ui_03": {
-            "texture": "Gameplay/Texture/UI_03.png"
-        }
-    },
-    "Models": {
         "player": {
             "model": "Models/Character/Player/Player.obj",
             "texture": "Models/Character/Player/Player.png"
@@ -126,6 +48,14 @@
         "playerbullet": {
             "model": "Models/Bullet/PlayerBullet/PlayerBullet.obj",
             "texture": "Models/Bullet/PlayerBullet/PlayerBullet.png"
+        },
+        "shockwave": {
+            "model": "Models/Particles/Shockwave/Shockwave.obj",
+            "texture": "Models/Particles/Shockwave/Shockwave.png"
+        },
+        "tile": {
+            "model": "Models/Object/Tile/Tile.obj",
+            "texture": "Models/Object/Tile/Tile.png"
         }
     },
     "Particle": {
@@ -146,6 +76,9 @@
         "arrow": {
             "texture": "Textures/Ui/Arrow.png"
         },
+        "black": {
+            "texture": "Textures/fade/Black.png"
+        },
         "command_01": {
             "texture": "Textures/Ui/command_01.png"
         },
@@ -158,8 +91,29 @@
         "command_12": {
             "texture": "Textures/Ui/command_12.png"
         },
+        "complete": {
+            "texture": "Textures/Ui/Complete.png"
+        },
+        "cubemapbox": {
+            "texture": "Textures/stage/CubemapBox.dds"
+        },
+        "gage": {
+            "texture": "Textures/Ui/Gage.png"
+        },
+        "gameover": {
+            "texture": "Textures/Ui/Gameover.png"
+        },
+        "mission": {
+            "texture": "Textures/Ui/Mission.png"
+        },
+        "move": {
+            "texture": "Textures/Operationui/move.png"
+        },
         "pausemenupanel": {
             "texture": "Textures/Ui/PauseMenuPanel.png"
+        },
+        "player_ui": {
+            "texture": "Textures/Ui/Player_ui.png"
         },
         "poseicon": {
             "texture": "Textures/Ui/Poseicon.png"
@@ -167,22 +121,41 @@
         "poseicon_red": {
             "texture": "Textures/Ui/Poseicon_red.png"
         },
+        "reticlemove": {
+            "texture": "Textures/Operationui/reticlemove.png"
+        },
+        "rostock_laage_airport_4k": {
+            "texture": "Textures/stage/rostock_laage_airport_4k.dds"
+        },
+        "space": {
+            "texture": "Textures/Operationui/space.png"
+        },
+        "start": {
+            "texture": "Textures/Event/start.png"
+        },
+        "start_mission": {
+            "texture": "Textures/Event/start_mission.png"
+        },
+        "startevent_01": {
+            "texture": "Textures/Event/Startevent_01.png"
+        },
+        "startevent_02": {
+            "texture": "Textures/Event/Startevent_02.png"
+        },
         "target": {
             "texture": "Textures/Ui/Target.png"
         },
         "title": {
             "texture": "Textures/Ui/Title.png"
         },
+        "ui_01": {
+            "texture": "Textures/Ui/UI_01.png"
+        },
         "ui_02": {
             "texture": "Textures/Ui/UI_02.png"
-        }
-    },
-    "fade": {
-        "black": {
-            "texture": "fade/Black.png"
         },
         "white": {
-            "texture": "fade/white.png"
+            "texture": "Textures/fade/white.png"
         }
     }
 }

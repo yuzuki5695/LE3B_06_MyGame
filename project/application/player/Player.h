@@ -150,6 +150,7 @@ public:// メンバ変数
 		object->SetRotate(transform_.rotate);
 		object->SetScale(transform_.scale);
 	}
+
 	bool IsDeadFinished() const { return end; }
 	// Transformのpositionを返すgetter
 	Vector3 GetPosition() const {

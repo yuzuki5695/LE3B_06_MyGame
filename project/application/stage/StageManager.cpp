@@ -3,7 +3,9 @@
 #ifdef USE_IMGUI
 #include<ImGuiManager.h>
 #endif // USE_IMGUI
+#include<Tools/AssetGenerator/engine/math/LoadResourceID.h>
 
+using namespace LoadResourceID;
 // 静的メンバ変数の定義
 std::unique_ptr<StageManager> StageManager::instance = nullptr;
 
@@ -33,11 +35,11 @@ void StageManager::Initialize() {
 
     // 敵モデルをあらかじめ読み込む
    // ModelManager::GetInstance()->LoadModel("Enemy.obj");
-    ModelManager::GetInstance()->LoadModel("Gameplay/Model/Tile/Tile.obj");
+    ModelManager::GetInstance()->LoadModel(model::Tile);
     
     // オブジェクトの作成
     // 地面の作成
-    grass = Object3d::Create("Gameplay/Model/Tile/Tile.obj", Transform({ 1000.0f, 1.0f, 1000.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, -8.0f, 50.0f }));
+    grass = Object3d::Create(model::Tile, Transform({ 1000.0f, 1.0f, 1000.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, -8.0f, 50.0f }));
 
     //// レベルデータからオブジェクトを読み込む
     //for (auto& objData : levelData_->objects) {
