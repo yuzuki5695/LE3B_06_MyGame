@@ -57,8 +57,7 @@ void ResourceCodeGenerator::GenerateHeader(const std::string& outputPath, const 
 
             // 整理用フィルタ
             if (currentPath.find("Textures") == std::string::npos &&
-                currentPath.find("Models") == std::string::npos &&
-                currentPath.find("Particles") == std::string::npos) {
+                currentPath.find("Models") == std::string::npos) {
                 continue;
             }
 
@@ -66,15 +65,7 @@ void ResourceCodeGenerator::GenerateHeader(const std::string& outputPath, const 
             if (existingData.count(currentPath)) {
                 varName = existingData[currentPath];
             } else {
-                // Particles の場合は拡張子を付けて区別する (例: ParticleObj, ParticlePng)
-                if (currentPath.find("Particles") != std::string::npos) {
-                    std::string ext = std::filesystem::path(currentPath).extension().string();
-                    if (ext == ".obj") varName = ToUpperCamel(e.name) + "Obj";
-                    else if (ext == ".png") varName = ToUpperCamel(e.name) + "Png";
-                    else varName = ToUpperCamel(e.name);
-                } else {
-                    varName = ToUpperCamel(e.name);
-                }
+                varName = ToUpperCamel(e.name);
             }
 
             ss << "        constexpr const char* " << varName << " = \"" << currentPath << "\";\n";
@@ -97,9 +88,7 @@ void ResourceCodeGenerator::GenerateHeader(const std::string& outputPath, const 
                 // または元の namespace の場所を特定するロジックが必要ですが、
                 // 今回は「最初にマッチしたグループ」で出す簡易仕様にします
                 if (groupName == "texture") isTargetGroup = true;
-            } else if (ContainsFolder(path, groupName) ||
-                (groupName == "texture" && path.find("Particles") != std::string::npos && path.find(".png") != std::string::npos) ||
-                (groupName == "model" && path.find("Particles") != std::string::npos && path.find(".obj") != std::string::npos)) {
+            } else if (ContainsFolder(path, groupName)) {
                 isTargetGroup = true;
             }
 
