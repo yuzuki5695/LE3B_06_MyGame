@@ -4,39 +4,12 @@
             "audio": "Audio/Alarm01.wav"
         }
     },
-    "Bullet": {
-        "enemybullet": {
-            "model": "Bullet/EnemyBullet.obj",
-            "texture": "Bullet/EnemyBullet.png"
-        },
-        "playerbullet": {
-            "model": "Bullet/PlayerBullet.obj",
-            "texture": "Bullet/PlayerBullet.png"
-        }
-    },
     "Common": {
         "cubemapbox": {
             "texture": "CubemapBox.dds"
         },
         "rostock_laage_airport_4k": {
             "texture": "rostock_laage_airport_4k.dds"
-        }
-    },
-    "Event": {
-        "black": {
-            "texture": "Event/Black.png"
-        },
-        "mission": {
-            "texture": "Event/mission.png"
-        },
-        "start": {
-            "texture": "Event/start.png"
-        },
-        "startevent_01": {
-            "texture": "Event/Startevent_01.png"
-        },
-        "startevent_02": {
-            "texture": "Event/Startevent_02.png"
         }
     },
     "Gameplay": {
@@ -80,6 +53,10 @@
         }
     },
     "Models": {
+        "enemybullet": {
+            "model": "Models/Bullet/EnemyBullet/EnemyBullet.obj",
+            "texture": "Models/Bullet/EnemyBullet/EnemyBullet.png"
+        },
         "parts_01": {
             "model": "Models/Character/parts_01/parts_01.obj",
             "texture": "Models/Character/parts_01/parts_01.png"
@@ -123,6 +100,9 @@
         "arrow": {
             "texture": "Textures/Ui/Arrow.png"
         },
+        "black": {
+            "texture": "Textures/fade/Black.png"
+        },
         "command_01": {
             "texture": "Textures/Ui/command_01.png"
         },
@@ -153,6 +133,18 @@
         "poseicon_red": {
             "texture": "Textures/Ui/Poseicon_red.png"
         },
+        "start": {
+            "texture": "Textures/Event/start.png"
+        },
+        "start_mission": {
+            "texture": "Textures/Event/start_mission.png"
+        },
+        "startevent_01": {
+            "texture": "Textures/Event/Startevent_01.png"
+        },
+        "startevent_02": {
+            "texture": "Textures/Event/Startevent_02.png"
+        },
         "target": {
             "texture": "Textures/Ui/Target.png"
         },
@@ -164,14 +156,9 @@
         },
         "ui_02": {
             "texture": "Textures/Ui/UI_02.png"
-        }
-    },
-    "fade": {
-        "black": {
-            "texture": "fade/Black.png"
         },
         "white": {
-            "texture": "fade/white.png"
+            "texture": "Textures/fade/white.png"
         }
     }
 }

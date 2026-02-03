@@ -61,8 +61,6 @@ void GamePlayScene::Initialize() {
     player_ui_->SetTextureSize(Vector2{ 25.0f,25.0f });     
 
     // .objファイルからモデルを読み込む
-    ModelManager::GetInstance()->LoadModel("Bullet/PlayerBullet.obj");
-    ModelManager::GetInstance()->LoadModel("Bullet/EnemyBullet.obj");
     ModelManager::GetInstance()->LoadModel("Gameplay/Model/Goal/Goal.obj");
 
     // プレイヤーの作成と初期化
