@@ -1890,15 +1890,23 @@ namespace LoadResourceID {
         constexpr const char* Command02 = "Textures/Ui/command_02.png";
         constexpr const char* Command11 = "Textures/Ui/command_11.png";
         constexpr const char* Command12 = "Textures/Ui/command_12.png";
+        constexpr const char* Complete = "Textures/Ui/Complete.png";
+        constexpr const char* Gameover = "Textures/Ui/Gameover.png";
+        constexpr const char* Mission = "Textures/Ui/Mission.png";
         constexpr const char* Pausemenupanel = "Textures/Ui/PauseMenuPanel.png";
         constexpr const char* Poseicon = "Textures/Ui/Poseicon.png";
         constexpr const char* PoseiconRed = "Textures/Ui/Poseicon_red.png";
         constexpr const char* Target = "Textures/Ui/Target.png";
         constexpr const char* Title = "Textures/Ui/Title.png";
+        constexpr const char* Ui01 = "Textures/Ui/UI_01.png";
         constexpr const char* Ui02 = "Textures/Ui/UI_02.png";
     }
 
     namespace model {
+        constexpr const char* Parts01 = "Models/Character/parts_01/parts_01.obj";
+        constexpr const char* Parts02 = "Models/Character/parts_02/parts_02.obj";
+        constexpr const char* Parts03 = "Models/Character/parts_03/parts_03.obj";
+        constexpr const char* Parts04 = "Models/Character/parts_04/parts_04.obj";
         constexpr const char* Player = "Models/Character/Player/Player.obj";
         constexpr const char* Playerbullet = "Models/Bullet/PlayerBullet/PlayerBullet.obj";
     }
@@ -7971,6 +7979,7 @@ public:// メンバ変数
 		object->SetRotate(transform_.rotate);
 		object->SetScale(transform_.scale);
 	}
+
 	bool IsDeadFinished() const { return end; }
 	// Transformのpositionを返すgetter
 	Vector3 GetPosition() const {
@@ -8261,7 +8270,9 @@ File Path: project/application/scene/GameClearScene.cpp
 #ifdef max
 #undef max
 #endif
+#include<Tools/AssetGenerator/engine/math/LoadResourceID.h>
 
+using namespace LoadResourceID;
 using namespace Easing;
 
 ///====================================================
@@ -8278,15 +8289,11 @@ void GameClearScene::Initialize() {
     CameraManager::GetInstance()->Initialize(CameraTransform({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }));
     // メインカメラは固定モード
     CameraManager::GetInstance()->SetCameraMode(CameraMode::Default);
-    // モデルの読み込み  
-    ModelManager::GetInstance()->LoadModel("Gameplay/Model/Player/Player.obj");
-
-
     // テクスチャの読み込み
-    TextureManager::GetInstance()->LoadTexture("CubemapBox.dds");    
-    TextureManager::GetInstance()->LoadTexture("Gameclear/Texture/UI_01.png");
-    TextureManager::GetInstance()->LoadTexture("Gameclear/Texture/Mission.png");
-    TextureManager::GetInstance()->LoadTexture("Gameclear/Texture/Complete.png");
+    TextureManager::GetInstance()->LoadTexture("CubemapBox.dds");
+    TextureManager::GetInstance()->LoadTexture(texture::Ui01);
+    TextureManager::GetInstance()->LoadTexture(texture::Mission);
+    TextureManager::GetInstance()->LoadTexture(texture::Complete);
 
     
     ui2Timer_ = 0.0f;
@@ -8299,26 +8306,28 @@ void GameClearScene::Initialize() {
     ui3EndPos = { 800.0f, 130.0f };
     
        
-    ui1_ = Sprite::Create("Gameclear/Texture/UI_01.png", Vector2{ 950.0f, 450.0f }, 0.0f, Vector2{ 360.0f,100.0f });
+    ui1_ = Sprite::Create(texture::Ui01, Vector2{ 950.0f, 450.0f }, 0.0f, Vector2{ 360.0f,100.0f });
     ui1_->SetAnchorPoint(Vector2{ 0.5f, 0.5f }); // 中心基準
     ui1_->SetTextureSize(Vector2{ 360.0f,100.0f });
         
-    ui2_ = Sprite::Create("Gameclear/Texture/Mission.png", ui2StartPos, 0.0f, Vector2{ 400.0f,150.0f });
+    ui2_ = Sprite::Create(texture::Mission, ui2StartPos, 0.0f, Vector2{ 400.0f,150.0f });
     ui2_->SetTextureSize(Vector2{ 400.0f,150.0f });
 
-    ui3_ = Sprite::Create("Gameclear/Texture/Complete.png", ui3StartPos, 0.0f, Vector2{ 400.0f,150.0f });
+    ui3_ = Sprite::Create(texture::Complete, ui3StartPos, 0.0f, Vector2{ 400.0f,150.0f });
     ui3_->SetTextureSize(Vector2{ 400.0f,150.0f });
 
    
     offset_ = { { 1.0f, 1.0f, 1.0f }, { 0.0f, 1.5f, 0.0f }, { -70.0f, 0.0f, 30.0f } };
-    player_ = Object3d::Create("Gameplay/Model/Player/Player.obj", offset_);  
     startOffset_ = { -170.0f, 50.0f, 30.0f };
     endOffset_ = { 0.0f, 0.0f, 30.0f };    
+    // プレイヤーの生成、初期化
+    player_ = std::make_unique<Player>();
+    player_->Initialize();
+    player_->SetTransform(offset_);
     particle_ = std::make_unique<GameClearparticle>();
-    particle_->Initialize(player_.get());
-
+    particle_->Initialize(player_->GetPlayerObject());
     // 追従対象を設定
-    CameraManager::GetInstance()->GetGameClearCamera()->SetTarget(player_.get());
+    CameraManager::GetInstance()->GetGameClearCamera()->SetTarget(player_->GetPlayerObject());
 
     Box_ = Skybox::Create("CubemapBox.dds", Transform{ { 1000.0f, 1000.0f, 1000.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 100.0f } });
 
@@ -8466,7 +8475,7 @@ void GameClearScene::Step1_MovePlayerAndSwitchCamera() {
     // イージング処理
     bool finished = EaseMove(offset_.translate, startOffset_, endOffset_, easeT_, easeSpeed_);
 
-    player_->SetTranslate(offset_.translate);
+    player_->GetPlayerObject()->SetTranslate(offset_.translate);
 
     if (finished){
         // 次のステップへ
@@ -8517,16 +8526,16 @@ void GameClearScene::Step2_WaitOrDoSomething() {
         ui3_->SetPosition(newPos1);
     }
 
-    Vector3 pos = player_->GetTranslate();
+    Vector3 pos = player_->GetPlayerObject()->GetTranslate();
 
     // プレイヤー揺れ or Y補完
     if (!step2FinishPlayerEase_) {
         step2Time_ += 0.03f;
         pos.y = sinf(step2Time_) * 1.3f;
-        player_->SetTranslate(pos);
+        player_->GetPlayerObject()->SetTranslate(pos);
     } else {
         pos.y = Vector3::Lerp(pos, Vector3{ pos.x, 0.0f, pos.z }, 0.1f).y;
-        player_->SetTranslate(pos);
+        player_->GetPlayerObject()->SetTranslate(pos);
 
         // 完全に0になったらStep3へ
         if (fabs(pos.y) < 0.01f) {
@@ -8582,7 +8591,7 @@ void GameClearScene::Step3_MoveCameraOnInput() {
     // Step3時間更新
     step3Timer_ += (1.0f / 60.0f) * step3TimeScale ;
 
-    Vector3 pos = player_->GetTranslate();
+    Vector3 pos = player_->GetPlayerObject()->GetTranslate();
 
     /*-----------------------------------------------*/
     /* ① Step3開始時の「一度だけ後ろに下がる動き」 */
@@ -8608,13 +8617,13 @@ void GameClearScene::Step3_MoveCameraOnInput() {
         pos.y = 0.0f;
 
         // 回転のみ変更
-        Vector3 rot = player_->GetRotate();
+        Vector3 rot = player_->GetPlayerObject()->GetRotate();
         float startRot = 1.5f;
         float endRot = 3.0f;
         rot.y = startRot + (endRot - startRot) * ease;
 
-        player_->SetTranslate(pos);
-        player_->SetRotate(rot);
+        player_->GetPlayerObject()->SetTranslate(pos);
+        player_->GetPlayerObject()->SetRotate(rot);
         return;
     }
 
@@ -8661,7 +8670,7 @@ void GameClearScene::Step3_MoveCameraOnInput() {
     // なめらか追従
     pos = Vector3::Lerp(pos, targetPos, 0.15f);
 
-    player_->SetTranslate(pos);
+    player_->GetPlayerObject()->SetTranslate(pos);
 
 
 
@@ -8693,6 +8702,7 @@ File Path: project/application/scene/GameClearScene.h
 #include<SoundPlayer.h>
 #include <Skybox.h>
 #include<GameClearparticle.h>
+#include<Player.h>
 
 /// <summary>
 /// ゲームクリアシーン
@@ -8729,9 +8739,8 @@ public: // メンバ関数
 private: // メンバ変数
     std::unique_ptr <Sprite> ui1_ = nullptr;     // スプライト 
     std::unique_ptr <Skybox> Box_ = nullptr;     //　背景
-
-
-    std::unique_ptr <Object3d> player_ = nullptr;  // オブジェクト        
+    
+    std::unique_ptr <Player> player_; 
     Transform offset_;
 
 
@@ -8798,6 +8807,10 @@ File Path: project/application/scene/GameOverScene.cpp
 #include<SkyboxCommon.h>
 #include<FadeManager.h>
 #include <random>
+#include<Tools/AssetGenerator/engine/math/LoadResourceID.h>
+
+using namespace LoadResourceID;
+
 ///====================================================
 /// 終了処理
 ///====================================================
@@ -8810,17 +8823,16 @@ void GameOverScene::Finalize() {
 void GameOverScene::Initialize() {
     // カメラマネージャの初期化
     CameraManager::GetInstance()->Initialize(CameraTransform({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }));
-   // CameraManager::GetInstance()->SetCameraMode(CameraMode::Default);
     // モデルの読み込み    
-    ModelManager::GetInstance()->LoadModel("Gameover/Model/parts_01.obj");
-    ModelManager::GetInstance()->LoadModel("Gameover/Model/parts_02.obj");
-    ModelManager::GetInstance()->LoadModel("Gameover/Model/parts_03.obj");
-    ModelManager::GetInstance()->LoadModel("Gameover/Model/parts_04.obj");
+    ModelManager::GetInstance()->LoadModel(model::Parts01);
+    ModelManager::GetInstance()->LoadModel(model::Parts02);
+    ModelManager::GetInstance()->LoadModel(model::Parts03); 
+    ModelManager::GetInstance()->LoadModel(model::Parts04);
 
     // テクスチャの読み込み
     TextureManager::GetInstance()->LoadTexture("CubemapBox.dds");
-    TextureManager::GetInstance()->LoadTexture("Gameover/Texture/Gameover.png");
-    TextureManager::GetInstance()->LoadTexture("Gameover/Texture/UI_01.png");
+    TextureManager::GetInstance()->LoadTexture(texture::Gameover);
+    TextureManager::GetInstance()->LoadTexture(texture::Ui01);
 
     ui1Timer_ = 0.0f;
     ui1Duration_ = 60.0f; // 約1秒
@@ -8832,10 +8844,10 @@ void GameOverScene::Initialize() {
     ui2EndPos = { 1000.0f, 350.0f };
     phase_ = 0;
 
-    ui1_ = Sprite::Create("Gameover/Texture/Gameover.png", ui1StartPos, 0.0f, Vector2{ 300.0f,120.0f });
+    ui1_ = Sprite::Create(texture::Gameover, ui1StartPos, 0.0f, Vector2{ 300.0f,120.0f });
     ui1_->SetAnchorPoint(Vector2{ 0.5f, 0.5f }); // 中心基準
     ui1_->SetTextureSize(Vector2{ 300.0f,120.0f });
-    ui2_ = Sprite::Create("Gameover/Texture/UI_01.png", ui2StartPos, 0.0f, Vector2{ 360.0f,100.0f });
+    ui2_ = Sprite::Create(texture::Ui01, ui2StartPos, 0.0f, Vector2{ 360.0f,100.0f });
     ui2_->SetAnchorPoint(Vector2{ 0.5f, 0.5f }); // 中心基準
     ui2_->SetTextureSize(Vector2{ 360.0f,100.0f });
 
@@ -8851,12 +8863,7 @@ void GameOverScene::Initialize() {
     std::uniform_real_distribution<float> rotateY(-0.01f, 0.01f);
     std::uniform_real_distribution<float> rotateZ(-0.01f, 0.01f);
 
-    std::vector<std::string> textureNames = {
-    "Gameover/Model/parts_01.obj",
-    "Gameover/Model/parts_02.obj",
-    "Gameover/Model/parts_03.obj",
-    "Gameover/Model/parts_04.obj",
-    };
+    std::vector<std::string> textureNames = { model::Parts01,model::Parts02,model::Parts03,model::Parts04, };
 
     partCount_ = 7;
     for (size_t  i = 0; i < partCount_; ++i) {
@@ -8870,7 +8877,7 @@ void GameOverScene::Initialize() {
             if (textureIndex >= textureNames.size()) textureIndex = textureNames.size() - 1; // 配列オーバー防止
         }
 
-        part.obj = Object3d::Create("Gameover/Model/parts_01.obj", part.transform);
+        part.obj = Object3d::Create(model::Parts01, part.transform);
         part.obj->SetModel(textureNames[textureIndex]); // 後からテクスチャを設定
 
         part.fallSpeed = { 0.0f, distY(randomEngine), 0.0f }; // Y軸落下
@@ -10034,7 +10041,7 @@ private: // メンバ変数
     std::unique_ptr <Sprite> ui_start_;
     std::vector<Sprite*> uiSprites_;
 
-    std::unique_ptr <Player> player_;;
+    std::unique_ptr <Player> player_;
     // 背景オブジェクト 
     std::unique_ptr <Skybox> skybox_ = nullptr;
     // 演出用モデル
@@ -10058,10 +10065,10 @@ private: // メンバ変数
     static constexpr float kFloatAmplitude = 2.3f;
 
     // フェード演出用
-bool isPlayerBoost_ = false;
-float playerSpeedX_ = 0.0f;
-float playerAccelX_ = 0.15f;   // 加速量
-float playerMaxSpeedX_ = 5.0f; // 上限（任意）
+    bool isPlayerBoost_ = false;
+    float playerSpeedX_ = 0.0f;
+    float playerAccelX_ = 0.15f;   // 加速量
+    float playerMaxSpeedX_ = 5.0f; // 上限（任意）
 };
 
 ============================================================
