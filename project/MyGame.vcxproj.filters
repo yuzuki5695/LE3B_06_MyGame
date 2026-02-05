@@ -776,9 +776,6 @@
     <ClInclude Include="application\particle\DefaultParticleEmitter.h">
       <Filter>ヘッダー ファイル\application\particle</Filter>
     </ClInclude>
-    <ClInclude Include="application\enemy\EnemySpawner.h">
-      <Filter>ソース ファイル\application\enemy</Filter>
-    </ClInclude>
     <ClInclude Include="application\resource\ManifestExporter.h">
       <Filter>ヘッダー ファイル\application\resource</Filter>
     </ClInclude>
@@ -790,6 +787,9 @@
     </ClInclude>
     <ClInclude Include="application\pause\Pausemenu.h">
       <Filter>ヘッダー ファイル\application\pause</Filter>
+    </ClInclude>
+    <ClInclude Include="application\enemy\EnemySpawner.h">
+      <Filter>ヘッダー ファイル\application\enemy</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
