@@ -33,7 +33,6 @@ void Player::Initialize() {
 
     targettransform_ = { {0.3f, 0.3f, 0.3f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 30.0f} };
     target_ = Object3d::Create(model::Playerbullet, targettransform_);
-    moveDelta = Vector3(0.0f, 0.0f, 0.0f);
 
     // レティクル初期化
     reticleScreenPos = { 640.0f, 360.0f }; // 画面中央 (仮に1280x720の場合)
@@ -48,11 +47,12 @@ void Player::Initialize() {
     deathRotateSpeed_ = { 0.05f, 0.07f, 0.02f };
     // 軽くスケールを上げる演出など
     transform_.scale = { 0.5f, 0.5f, 0.5f };
-    fallVelocity = { 0.0f,0.0f,0.0f };
 
     // インスタンスの生成
     move_ = std::make_unique<PlayerMove>();
     reticle_ = std::make_unique<PlayerReticle>();
+    weapon_ = std::make_unique<PlayerWeapon>();
+    weapon_->Initialize();
 }
 
 void Player::Update() {
@@ -82,7 +82,9 @@ void Player::Update() {
                 // ターゲットを矢印キーで動かす
                 reticle_->Update(targettransform_, transform_.translate, target_.get());
                 // 弾の発射
-                AttachBullet();
+                // 自機のトランスフォームと、レティクルの位置（target_の座標）を渡す
+                GamePlayCamera* gameCam = CameraManager::GetInstance()->GetGameplayCamera();
+                weapon_->Update(transform_.translate, target_->GetTranslate(), gameCam);
             }
         }
         // デバッグ中のImGui表示
@@ -168,40 +170,6 @@ void Player::UpdateState() {
 
     if (CameraManager::GetInstance()->GetTypeview() == ViewCameraType::Sub) {
         StartDeathEffect();
-    }
-}
-
-///=====================================================================
-/// 弾の発射処理
-///=====================================================================
-void Player::AttachBullet() {
-    bulletTimer_ += 1.0f / 60.0f;
-    if (bulletTimer_ >= bulletInterval_) {
-        canShoot_ = true;
-        bulletTimer_ = 0.0f;
-    }
-
-    if (!canShoot_) return;
-    if (Input::GetInstance()->Pushkey(DIK_SPACE)) {
-        GamePlayCamera* gameCam = CameraManager::GetInstance()->GetGameCamera();
-        if (!gameCam) return;
-        // カメラ情報
-        Vector3 cameraForward = gameCam->GetForward();
-
-        // 弾の初期位置（プレイヤーの少し前）
-        Vector3 bulletStartPos = transform_.translate + gameCam->GetForward() * 2.0f;
-
-        // --- ターゲット（レティクル3D）方向へ発射 ---
-        Vector3 targetPos = target_->GetTranslate();
-        Vector3 shootDir = Normalize(targetPos - bulletStartPos);
-
-        std::unique_ptr<PlayerBullet> bullet = std::make_unique<PlayerBullet>();
-        bullet->Initialize(bulletStartPos, bulletStartPos + shootDir * 10.0f,cameraForward, 5.0f);
-
-
-        BulletManager::GetInstance()->AddPlayerBullet(std::move(bullet));
-
-        canShoot_ = false;
     }
 }
 

@@ -20,10 +20,6 @@ public:
     /// <param name="activeCamera">現在使用中のカメラ</param>
     void Update(Transform& reticleTransform, const Vector3& playerWorldPos, Object3d* targetObj);
 
-    /// <summary>
-        /// 1. ターゲットの移動処理（入力・クランプ・3D配置）
-        /// </summary>
-    void UpdatePosition(Transform& targetTransform, const Vector3& playerWorldPos, Object3d* targetObj);
 
     /// <summary>
     /// 2. 座標変換処理（3Dワールド座標から2Dスプライトへ同期）

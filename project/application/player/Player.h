@@ -5,6 +5,7 @@
 #include<OBB.h>
 #include<PlayerMove.h>
 #include<PlayerReticle.h>
+#include<PlayerWeapon.h>
 
 /// <summary>
 /// プレイヤーキャラクタークラス
@@ -33,10 +34,6 @@ public:// メンバ関数
 	/// デバッグ用のImGui描画
 	/// </summary>
 	void DebugImgui();
-	/// <summary>
-	/// 弾の発射処理
-	/// </summary>
-	void AttachBullet();
 	/// <summary>
 	/// プレイヤーを非アクティブ状態にする（無効化）
 	/// </summary>
@@ -70,7 +67,12 @@ public:// メンバ関数
 	// アクティブ状態の取得・設定
 	bool IsDead() const { return isDeadEffectActive_; }
 	void SetDead_(bool isactive) { isDeadEffectActive_ = isactive; }
-private:// メンバ変数
+private:// メンバ変数	
+	// 各機能をクラスのインスタンス
+	std::unique_ptr<PlayerMove> move_;          // プレイヤ―の移動制御クラス
+	std::unique_ptr<PlayerReticle> reticle_;    // プレイヤ―の照準制御クラス
+	std::unique_ptr<PlayerWeapon> weapon_;      // プレイヤ―の武器制御クラス
+
 	bool active_ = true;
 	std::unique_ptr <Object3d> object = nullptr;  // プレイヤーの3Dオブジェクト
 	Transform transform_{};
@@ -78,41 +80,11 @@ private:// メンバ変数
 	Transform targettransform_{};
 	std::unique_ptr <Sprite> targetreticle_ = nullptr; // レティクル用スプライト	
 	Vector2 reticleScreenPos = { 640.0f, 360.0f }; // 画面中心 (例: 1280x720の解像度)
-	// 球関連
-	float bulletTimer_ = 0.0f;                   // 経過時間
-	const float bulletInterval_ = 0.2f;         // 30秒ごとに弾を撃てる
-	bool canShoot_ = true;                       // 弾を撃てるかどうか
-	Vector3 moveOffset;
-	Vector3 moveDelta{};
-	// ブースト関連
-	float normalSpeed_ = 0.2f;
-	float boostSpeed_ = 0.5f;
 
-
-
-
-
-	Vector3 reticleWorldPos_;    // 3D空間のレティクル位置（ワールド座標）
-
-
-
-	bool isHit_ = false;           // 弾に当たったことを示すフラグ
-	float hitEffectTimer_ = 0.0f;  // 演出経過時間
-	const float hitEffectDuration_ = 1.0f; // 演出にかける時間（秒）
 	float previousTime_ = 0.0f;
-	Vector4 originalColor_{};   // RGB + Alpha
-	bool end = false;
-	std::unique_ptr <ParticleEmitter> circle_;
-	RandomParameter random_;
-	bool isCharging_ = false;        // チャージ中か
-	float chargeTime_ = 0.0f;        // 押し続けた時間
-	const float maxChargeTime_ = 5.0f; // 最大チャージ時間（秒）
-	Vector3 bulletOffsetLeft = { -0.5f, 0.0f, 0.0f }; // 左側の発射位置
-	Vector3 bulletOffsetRight = { 0.5f, 0.0f, 0.0f }; // 右側の発射位置	
+
 	bool ickyActive_ = false;       // ← プレイヤーが操作可能か
 	bool isReticleVisible_ = false; // ← レティクル描画ON/OFF
-	Vector3 relativePos_ = { 0, 0, 0 }; // カメラ内での相対位置（スクリーン座標的）
-
 
 	// 死亡関連
 	bool isDeadEffectActive_ = false;  // 死亡演出中フラグ
@@ -121,15 +93,9 @@ private:// メンバ変数
 	Vector3 deathVelocity_ = {};      // 落下用の速度ベクトル
 	Vector3 deathRotateSpeed_ = {};   // 回転スピード
 	Vector3 deathStartPos_;
-
 	float deathFallSpeed_ = 0.5f; // 下方向に落ちるスピード
-
-	Vector3 fallVelocity;
 	Vector3 deathOffset_;
 
-	// 各機能をクラスとして分離
-	std::unique_ptr<PlayerMove> move_;
-	std::unique_ptr<PlayerReticle> reticle_;
 
 public:// メンバ変数
 	// getter

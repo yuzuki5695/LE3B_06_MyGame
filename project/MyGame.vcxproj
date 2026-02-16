@@ -139,6 +139,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="application\player\Player.cpp" />
     <ClCompile Include="application\player\PlayerMove.cpp" />
     <ClCompile Include="application\player\PlayerReticle.cpp" />
+    <ClCompile Include="application\player\PlayerWeapon.cpp" />
     <ClCompile Include="application\resource\FileSearcher.cpp" />
     <ClCompile Include="application\resource\ManifestExporter.cpp" />
     <ClCompile Include="application\scene\GameOverScene.cpp" />
@@ -225,6 +226,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\player\Player.h" />
     <ClInclude Include="application\player\PlayerMove.h" />
     <ClInclude Include="application\player\PlayerReticle.h" />
+    <ClInclude Include="application\player\PlayerWeapon.h" />
     <ClInclude Include="application\resource\FileSearcher.h" />
     <ClInclude Include="application\resource\ManifestExporter.h" />
     <ClInclude Include="application\scene\GameOverScene.h" />
