@@ -424,7 +424,7 @@ File Path: project/MyGame.vcxproj
 copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dxil.dll"</Command>
     </PostBuildEvent>
     <PreBuildEvent>
-      <Command>"$(ProjectDir)..\generated\outputs\$(Configuration)\AssetGenerator.exe" "$(ProjectDir)."
+      <Command>"$(ProjectDir)..\generated\outputs\$(Configuration)\AssetGenerator.exe"
 </Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
@@ -1522,9 +1522,6 @@ File Path: project/MyGame.vcxproj.filters
     <ClInclude Include="application\particle\DefaultParticleEmitter.h">
       <Filter>ヘッダー ファイル\application\particle</Filter>
     </ClInclude>
-    <ClInclude Include="application\enemy\EnemySpawner.h">
-      <Filter>ソース ファイル\application\enemy</Filter>
-    </ClInclude>
     <ClInclude Include="application\resource\ManifestExporter.h">
       <Filter>ヘッダー ファイル\application\resource</Filter>
     </ClInclude>
@@ -1536,6 +1533,9 @@ File Path: project/MyGame.vcxproj.filters
     </ClInclude>
     <ClInclude Include="application\pause\Pausemenu.h">
       <Filter>ヘッダー ファイル\application\pause</Filter>
+    </ClInclude>
+    <ClInclude Include="application\enemy\EnemySpawner.h">
+      <Filter>ヘッダー ファイル\application\enemy</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1885,30 +1885,47 @@ File Path: project/Tools/AssetGenerator/engine/math/LoadResourceID.h
 namespace LoadResourceID {
 
     namespace texture {
-        constexpr const char* Arrow = "Textures/Ui/Arrow.png";
+        constexpr const char* Black = "Textures/fade/Black.png";
         constexpr const char* Command01 = "Textures/Ui/command_01.png";
         constexpr const char* Command02 = "Textures/Ui/command_02.png";
         constexpr const char* Command11 = "Textures/Ui/command_11.png";
         constexpr const char* Command12 = "Textures/Ui/command_12.png";
         constexpr const char* Complete = "Textures/Ui/Complete.png";
+        constexpr const char* Cubemapbox = "Textures/stage/CubemapBox.dds";
+        constexpr const char* Gage = "Textures/Ui/Gage.png";
         constexpr const char* Gameover = "Textures/Ui/Gameover.png";
         constexpr const char* Mission = "Textures/Ui/Mission.png";
+        constexpr const char* Move = "Textures/Operationui/move.png";
         constexpr const char* Pausemenupanel = "Textures/Ui/PauseMenuPanel.png";
+        constexpr const char* PlayerUi = "Textures/Ui/Player_ui.png";
         constexpr const char* Poseicon = "Textures/Ui/Poseicon.png";
         constexpr const char* PoseiconRed = "Textures/Ui/Poseicon_red.png";
+        constexpr const char* Reticlemove = "Textures/Operationui/reticlemove.png";
+        constexpr const char* RostockLaageAirport4k = "Textures/stage/rostock_laage_airport_4k.dds";
+        constexpr const char* Space = "Textures/Operationui/space.png";
+        constexpr const char* Start = "Textures/Event/start.png";
+        constexpr const char* StartMission = "Textures/Event/start_mission.png";
+        constexpr const char* Startevent01 = "Textures/Event/Startevent_01.png";
+        constexpr const char* Startevent02 = "Textures/Event/Startevent_02.png";
         constexpr const char* Target = "Textures/Ui/Target.png";
         constexpr const char* Title = "Textures/Ui/Title.png";
         constexpr const char* Ui01 = "Textures/Ui/UI_01.png";
         constexpr const char* Ui02 = "Textures/Ui/UI_02.png";
+        constexpr const char* White = "Textures/fade/white.png";
     }
 
     namespace model {
+        constexpr const char* Enemy = "Models/Character/Enemy/Enemy.obj";
+        constexpr const char* Enemybullet = "Models/Bullet/EnemyBullet/EnemyBullet.obj";
+        constexpr const char* Goal = "Models/Object/Goal/goal.obj";
         constexpr const char* Parts01 = "Models/Character/parts_01/parts_01.obj";
         constexpr const char* Parts02 = "Models/Character/parts_02/parts_02.obj";
         constexpr const char* Parts03 = "Models/Character/parts_03/parts_03.obj";
         constexpr const char* Parts04 = "Models/Character/parts_04/parts_04.obj";
         constexpr const char* Player = "Models/Character/Player/Player.obj";
         constexpr const char* Playerbullet = "Models/Bullet/PlayerBullet/PlayerBullet.obj";
+        constexpr const char* Shockwave = "Models/Particles/Shockwave/Shockwave.obj";
+        constexpr const char* Tile = "Models/Object/Tile/Tile.obj";
     }
 
     namespace audio {
@@ -2060,7 +2077,7 @@ void ManifestExporter::Export(const std::string& outputPath, const std::vector<s
         std::string ext = std::filesystem::path(normalized).extension().string();
 
         // AssetType 判定
-        AssetType type = GetAssetType(ext);
+        AssetType type = GetAssetType(ext,normalized);
         if (type == AssetType::Unknown) continue;
 
         // Group（最上位フォルダ）
@@ -2121,17 +2138,32 @@ std::string ManifestExporter::GetGroup(const std::string& path) {
 }
 
 
-AssetType ManifestExporter::GetAssetType(const std::string& ext) {
+AssetType ManifestExporter::GetAssetType(const std::string& ext, const std::string& fullPath) {
     std::string lowerExt = ext;
-
-    // 拡張子を小文字化
     std::transform(lowerExt.begin(), lowerExt.end(), lowerExt.begin(), ::tolower);
-    // テクスチャ
-    if (lowerExt == ".png" || lowerExt == ".jpg" || lowerExt == ".jpeg" || lowerExt == ".tga" || lowerExt == ".dds") return AssetType::Texture;
-    // モデル
-    if (lowerExt == ".fbx" || lowerExt == ".obj" || lowerExt == ".gltf" || lowerExt == ".glb") return AssetType::Model;
-    // 音源
-    if (lowerExt == ".wav" || lowerExt == ".mp3" || lowerExt == ".ogg") return AssetType::Audio;
+
+    // 正規化したパスで判定するため、一時的に小文字化
+    std::string lowerPath = fullPath;
+    std::transform(lowerPath.begin(), lowerPath.end(), lowerPath.begin(), ::tolower);
+
+    // --- モデル判定 ---
+    // モデル拡張子、または「Modelsフォルダ内のDDS」をモデルとして扱う
+    if (lowerExt == ".fbx" || lowerExt == ".obj" || lowerExt == ".gltf" || lowerExt == ".jpg" ||
+        (lowerExt == ".dds" && lowerPath.find("models/") != std::string::npos)) { // ← ここがポイント
+        return AssetType::Model;
+    }
+
+    // --- テクスチャ判定 ---
+    // Modelsフォルダ外にあるDDS、またはその他の画像形式
+    if (lowerExt == ".png" || lowerExt == ".jpg" || lowerExt == ".jpeg" ||
+        lowerExt == ".tga" || lowerExt == ".dds") {
+        return AssetType::Texture;
+    }
+
+    // --- 音声判定 ---
+    if (lowerExt == ".wav" || lowerExt == ".mp3") {
+        return AssetType::Audio;
+    }
 
     return AssetType::Unknown;
 }
@@ -2164,7 +2196,7 @@ private: // メンバ関数
     /// 拡張子から AssetType を判定する
     /// 未対応の拡張子は Unknown を返す
     /// </summary>
-    AssetType GetAssetType(const std::string& ext);
+    AssetType GetAssetType(const std::string& ext,const std::string& fullPath);
     /// <summary>
     /// ファイルパスから Asset の論理名を生成する
     /// 拡張子を除いたファイル名を小文字化したものを使用
@@ -2531,63 +2563,69 @@ File Path: project/Tools/AssetGenerator/main.cpp
 namespace fs = std::filesystem;
 
 int main(int argc, char* argv[]) {
-    try {
-        // 日本語環境がある場合のみ設定（CI対策）
-        std::locale::global(std::locale("japanese"));
-    }
-    catch (...) {
-        // 失敗しても何もしない（CI環境など）
-        std::cout << "Locale setting failed. Proceeding with default locale." << std::endl;
-    }
-    // ...
-    // 1. プロジェクトルートパスの決定
-    // 引数がない場合は実行環境からの相対パスを使用
-    std::string pathStr = (argc > 1) ? argv[1] : "../../";
+    try { std::locale::global(std::locale("japanese")); } catch (...) {}
 
-    // Windowsの末尾引用符バグ対策 ---
-    if (!pathStr.empty() && pathStr.back() == '\"') {
-        pathStr.pop_back(); // 混入した " を削除
+    // --- 1. 絶対パスの確定 ---
+    fs::path projectRoot;
+    
+    // 実行ファイルの場所を取得
+    fs::path exePath = fs::absolute(argv[0]);
+    fs::path current = exePath.parent_path();
+    bool found = false;
+
+    // 「Resources」フォルダが見つかるまで、最大15階層親へ遡る
+    for (int i = 0; i < 15; ++i) {
+        if (fs::exists(current / "Resources")) {
+            projectRoot = current;
+            found = true;
+            break;
+        }
+        if (!current.has_parent_path()) break;
+        current = current.parent_path();
     }
-    // 末尾が \. で終わるように指定された場合の対策
-    if (!pathStr.empty() && pathStr.back() == '.') {
-        pathStr.pop_back();
+
+    // 万が一見つからなかった場合は引数やデフォルトに頼る
+    if (!found) {
+        projectRoot = fs::absolute((argc > 1) ? argv[1] : "../../");
     }
-    // ------------------------------------------
-    fs::path projectRoot = fs::absolute(pathStr); // 絶対パスに変換して安定させる
-    // 2. 入出力ディレクトリ・ファイルパスの定義
+
+    // 2. パスを強制固定
     fs::path resourceDir = projectRoot / "Resources";
-    fs::path jsonPath = resourceDir / "Manifest.json";
+    fs::path jsonOutputDir = resourceDir / "levels"; 
+    fs::path jsonPath = jsonOutputDir / "Manifest.json"; 
 
-    fs::path headerDir = projectRoot / "Tools/AssetGenerator/engine/math";
-    fs::path headerPath = headerDir / "LoadResourceID.h";
+    // 重要：今どこをルートにしているか、ビルドログに出力して確認できるようにする
+    std::cout << "[AssetGenerator] Exe Path: " << exePath << std::endl;
+    std::cout << "[AssetGenerator] Project Root: " << projectRoot << std::endl;
+    std::cout << "[AssetGenerator] Target Path: " << jsonPath << std::endl;
 
-    // 出力先ディレクトリの自動作成
-    if (!fs::exists(headerDir)) {
-        fs::create_directories(headerDir);
+    // 3. フォルダの強制作成
+    if (!fs::exists(jsonOutputDir)) {
+        fs::create_directories(jsonOutputDir);
     }
 
     try {
-        std::cout << "--- Asset Generator Start ---" << std::endl;
-
-        // ① リソースファイルの検索
-        // Manifest.json 自体は検索対象から除外する
+        // ① 検索
         FileSearcher searcher(resourceDir.string());
-        std::vector<std::string> exclude = { ".git", ".vs", "Manifest.json" };
+        // levelsフォルダ内を除外
+        std::vector<std::string> exclude = { ".git", ".vs", "levels", "Manifest.json", "manifest.json" };
         auto files = searcher.GetAllFiles(exclude);
 
-        // ② アセット目録 (Manifest.json) の書き出し
-        // 変更がない場合はファイル更新（タイムスタンプ変更）を行わない
+        // ② 書き出し
         ManifestExporter exporter;
+        // 絶対パス jsonPath を使うことで、exeと同じ場所にできる不具合を物理的に防ぐ
         exporter.Export(jsonPath.string(), files);
-        std::cout << "[Success] JSON created at: " << jsonPath << std::endl;
 
-        // ③ JSONの解析とC++定数定義ヘッダーの自動生成
+        // ③ ヘッダー生成
         ResourceIdGenerator idGen;
         if (idGen.LoadFromJson(jsonPath.string())) {
+            fs::path headerPath = projectRoot / "Tools/AssetGenerator/engine/math/LoadResourceID.h";
+            if(!fs::exists(headerPath.parent_path())) fs::create_directories(headerPath.parent_path());
+            
             ResourceCodeGenerator codeGen;
             codeGen.GenerateHeader(headerPath.string(), idGen.GetResources());
-            std::cout << "[Success] Header created at: " << headerPath << std::endl;
         }
+        std::cout << "[Success] Generation complete." << std::endl;
     }
     catch (const std::exception& e) {
         std::cerr << "[Error] " << e.what() << std::endl;
@@ -2834,7 +2872,9 @@ File Path: project/application/bullet/EnemyBullet.cpp
 #include "ModelManager.h"
 #include <MatrixVector.h>
 #include <Object3d.h>
+#include<Tools/AssetGenerator/engine/math/LoadResourceID.h>
 
+using namespace LoadResourceID;
 using namespace MatrixVector;
 
 ///====================================================
@@ -2876,10 +2916,10 @@ void EnemyBullet::Initialize(const Vector3& startPos, const Vector3& targetPos, 
     // モデル未生成の場合はロード・生成する
     if (!object_) {
         // モデルを読み込む
-        ModelManager::GetInstance()->LoadModel("EnemyBullet.obj");
+        ModelManager::GetInstance()->LoadModel(model::Enemybullet);
         // 弾用の3Dオブジェクトを生成
         object_ = Object3d::Create(
-            "EnemyBullet.obj",
+            model::Enemybullet,
             transform_
         );
         // スケール設定
@@ -2909,9 +2949,9 @@ void EnemyBullet::Initialize(const Vector3& startPos, const Vector3& targetPos, 
     // モデルがまだ読み込まれていなければロード＆生成
     if (!object_) {
         // モデルを読み込む
-        ModelManager::GetInstance()->LoadModel("Bullet/EnemyBullet.obj");
+        ModelManager::GetInstance()->LoadModel(model::Enemybullet);
         // 弾用の3Dオブジェクトを生成（Transform情報を渡す）
-        object_ = Object3d::Create("Bullet/EnemyBullet.obj", transform_);
+        object_ = Object3d::Create(model::Enemybullet, transform_);
         // スケール設定
         object_->SetScale({ 0.5f, 0.5f, 0.5f });
     }
@@ -3085,7 +3125,9 @@ File Path: project/application/bullet/PlayerBullet.cpp
 #include <Object3d.h>
 #include <ModelManager.h>
 #include <MatrixVector.h>
+#include<Tools/AssetGenerator/engine/math/LoadResourceID.h>
 
+using namespace LoadResourceID;
 using namespace MatrixVector;
 
 ///====================================================
@@ -3122,10 +3164,10 @@ void PlayerBullet::Initialize(const Vector3& startPos, const Vector3& targetPos,
     // モデルがまだ読み込まれていなければロード＆生成
     if (!object_) {
         // モデルを読み込む
-        ModelManager::GetInstance()->LoadModel("Bullet/PlayerBullet.obj");
+        ModelManager::GetInstance()->LoadModel(model::Playerbullet);
         // 弾用の3Dオブジェクトを生成（Transform情報を渡す）
         object_ = Object3d::Create(
-            "Bullet/PlayerBullet.obj",
+            model::Playerbullet,
             transform_
         );
         // スケール設定
@@ -3156,9 +3198,9 @@ void PlayerBullet::Initialize(const Vector3& startPos, const Vector3& targetPos,
     // モデルがまだ読み込まれていなければロード＆生成
     if (!object_) {
         // モデルを読み込む
-        ModelManager::GetInstance()->LoadModel("Bullet/PlayerBullet.obj");
+        ModelManager::GetInstance()->LoadModel(model::Playerbullet);
         // 弾用の3Dオブジェクトを生成（Transform情報を渡す）
-        object_ = Object3d::Create("Bullet/PlayerBullet.obj", transform_);
+        object_ = Object3d::Create(model::Playerbullet, transform_);
         // スケール設定
         object_->SetScale({ 0.5f, 0.5f, 0.5f });
     }
@@ -4308,7 +4350,9 @@ File Path: project/application/enemy/Enemy.cpp
 #include <ModelManager.h>
 #include <CameraManager.h>
 #include <Easing.h>
+#include<Tools/AssetGenerator/engine/math/LoadResourceID.h>
 
+using namespace LoadResourceID;
 using namespace Easing;
 using namespace MatrixVector;
 
@@ -4321,7 +4365,7 @@ Enemy::~Enemy() {}
 /// 初期化処理
 ///====================================================
 void Enemy::Initialize() {
-    ModelManager::GetInstance()->LoadModel("Gameplay/Model/Enemy/Enemy.obj");     
+    ModelManager::GetInstance()->LoadModel(model::Enemy);     
     // 乱数エンジンを初期化
     std::random_device rd;// 乱数生成器
     randomEngine = std::mt19937(rd());
@@ -4333,7 +4377,7 @@ void Enemy::Initialize() {
     Vector3 xyz = { distX(randomEngine), distY(randomEngine),distZ(randomEngine) };
     // 弾の発射間隔をランダム設定（2〜7秒）
     transform_ = { { 1.0f, 1.0f, 1.0f }, { 0.0f, 0.0f, 0.0f },xyz };
-    object = Object3d::Create("Gameplay/Model/Enemy/Enemy.obj", transform_);
+    object = Object3d::Create(model::Enemy, transform_);
     object->SetScale({ 1.0f, 1.0f, 1.0f }); // 安定したサイズを明示
     bulletIntervalDist_ = std::uniform_real_distribution<float>(0.2f, 3.0f); // 発射間隔を決定する分布
     bulletInterval_ = bulletIntervalDist_(randomEngine); // 最初の間隔を決定
@@ -5093,7 +5137,9 @@ File Path: project/application/event/EventManager.cpp
 #ifdef USE_IMGUI
 #include<ImGuiManager.h>
 #endif // USE_IMGUI
+#include<Tools/AssetGenerator/engine/math/LoadResourceID.h>
 
+using namespace LoadResourceID;
 using namespace MatrixVector;
 
 // シングルトン用インスタンス
@@ -5124,11 +5170,11 @@ void EventManager::Finalize() {
 ///====================================================
 void EventManager::Initialize(const std::string& stateName) {
     // テクスチャのロード
-    TextureManager::GetInstance()->LoadTexture("Event/Black.png");
-    TextureManager::GetInstance()->LoadTexture("Event/Startevent_01.png");
-    TextureManager::GetInstance()->LoadTexture("Event/Startevent_02.png");
-    TextureManager::GetInstance()->LoadTexture("Event/mission.png");
-    TextureManager::GetInstance()->LoadTexture("Event/start.png");
+    TextureManager::GetInstance()->LoadTexture(texture::Black);
+    TextureManager::GetInstance()->LoadTexture(texture::Startevent01);
+    TextureManager::GetInstance()->LoadTexture(texture::Startevent02);
+    TextureManager::GetInstance()->LoadTexture(texture::StartMission);
+    TextureManager::GetInstance()->LoadTexture(texture::Start);
     // 受け取った文字列を小文字に変換して比較（大文字小文字を区別しないため）
     std::string lower = stateName;
     std::transform(lower.begin(), lower.end(), lower.begin(), ::tolower);
@@ -5141,21 +5187,21 @@ void EventManager::Initialize(const std::string& stateName) {
         // ゲーム開始イベントの初期化
         state_ = EventState::GameStart;
         // 初期化
-        sprite_ = Sprite::Create("Event/Black.png", Vector2{ 0.0f, 300.0f }, 0.0f, Vector2{ 1280.0f,150.0f });
+        sprite_ = Sprite::Create(texture::Black, Vector2{ 0.0f, 300.0f }, 0.0f, Vector2{ 1280.0f,150.0f });
         sprite_->SetColor(Vector4{ 1.0f, 1.0f, 1.0f, 0.0f });
         alpha_ = 0.0f;
         // スプライトサイズ
         size_ = { 1280.0f, 75.0f }; // 画面幅1280、高さ半分ずつくらいを想定
         // 左から右に動くスプライト（上側）
-        topSprite_ = Sprite::Create("Event/Startevent_02.png", Vector2{ -1280.0f, 300.0f }, 0.0f, size_);
+        topSprite_ = Sprite::Create(texture::Startevent02, Vector2{ -1280.0f, 300.0f }, 0.0f, size_);
         topSprite_->SetTextureSize(Vector2{ 1280.0f,75.0f });
         // 右から左に閉じるスプライト（下側）
-        bottomSprite_ = Sprite::Create("Event/Startevent_01.png", Vector2{ 1280.0f, 375.0f }, 0.0f, size_);
+        bottomSprite_ = Sprite::Create(texture::Startevent01, Vector2{ 1280.0f, 375.0f }, 0.0f, size_);
         bottomSprite_->SetTextureSize(Vector2{ 1280.0f,75.0f });
         closeSpeed_ = 17.0f; 
         // UIスプライト
         missionsize_ = { 300.0f,200.0f };
-        mission_ = Sprite::Create("Event/mission.png", Vector2{ 500.0f, 265.0f }, 0.0f, missionsize_);
+        mission_ = Sprite::Create(texture::StartMission, Vector2{ 500.0f, 265.0f }, 0.0f, missionsize_);
         missionalpha_ = 0.0f;
         mission_->SetColor(Vector4{ 1.0f, 1.0f, 1.0f, missionalpha_ });
         mission_->SetTextureSize(Vector2{ 300.0f,200.0f });
@@ -5253,7 +5299,7 @@ void EventManager::Update() {
             if (missionalpha_ <= 0.0f) {
                 missionalpha_ = 1.0f;
                 timefige_ = false;
-                mission_->SetTexture("Event/start.png");
+                mission_->SetTexture(texture::Start);
                 phase_ = EventPhase::End;
             }
             mission_->SetColor({ 1.0f, 1.0f, 1.0f, missionalpha_ }); // 色（RGBA）を更新
@@ -5477,6 +5523,9 @@ File Path: project/application/fade/FadeManager.cpp
 #ifdef USE_IMGUI
 #include<ImGuiManager.h>
 #endif // USE_IMGUI
+#include<Tools/AssetGenerator/engine/math/LoadResourceID.h>
+
+using namespace LoadResourceID;
 
 // シングルトン用インスタンス
 std::unique_ptr<FadeManager> FadeManager::instance = nullptr;
@@ -5501,10 +5550,10 @@ void FadeManager::Finalize() {
 ///====================================================
 void FadeManager::Initialize() {
     // テクスチャの読み込み
-    TextureManager::GetInstance()->LoadTexture("fade/Black.png");
-    TextureManager::GetInstance()->LoadTexture("fade/white.png");
+    TextureManager::GetInstance()->LoadTexture(texture::Black);
+    TextureManager::GetInstance()->LoadTexture(texture::White);
     // フェード用スプライトの初期化
-    sprite_ = Sprite::Create("fade/Black.png", Vector2{ 0.0f, 0.0f }, 0.0f, Vector2{ 1280.0f,720.0f });
+    sprite_ = Sprite::Create(texture::Black, Vector2{ 0.0f, 0.0f }, 0.0f, Vector2{ 1280.0f,720.0f });
     sprite_->SetColor({ 1.0f, 1.0f, 1.0f, 0.0f }); // 透明スタート         
 
     // 各種初期値
@@ -5530,7 +5579,7 @@ void FadeManager::Initialize() {
             shape.size = { spacingX, spacingY };
             shape.scale = 0.0f;
 
-            shape.sprite = Sprite::Create("fade/white.png", shape.position, 0.0f, shape.size);
+            shape.sprite = Sprite::Create(texture::White, shape.position, 0.0f, shape.size);
             shape.sprite->SetAnchorPoint({ 0.5f, 0.5f });
             shape.sprite->SetColor({ 0, 0, 0, 0 });
 
@@ -8290,7 +8339,7 @@ void GameClearScene::Initialize() {
     // メインカメラは固定モード
     CameraManager::GetInstance()->SetCameraMode(CameraMode::Default);
     // テクスチャの読み込み
-    TextureManager::GetInstance()->LoadTexture("CubemapBox.dds");
+    TextureManager::GetInstance()->LoadTexture(texture::Cubemapbox);
     TextureManager::GetInstance()->LoadTexture(texture::Ui01);
     TextureManager::GetInstance()->LoadTexture(texture::Mission);
     TextureManager::GetInstance()->LoadTexture(texture::Complete);
@@ -8329,7 +8378,7 @@ void GameClearScene::Initialize() {
     // 追従対象を設定
     CameraManager::GetInstance()->GetGameClearCamera()->SetTarget(player_->GetPlayerObject());
 
-    Box_ = Skybox::Create("CubemapBox.dds", Transform{ { 1000.0f, 1000.0f, 1000.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 100.0f } });
+    Box_ = Skybox::Create(texture::Cubemapbox, Transform{ { 1000.0f, 1000.0f, 1000.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 100.0f } });
 
     // フェードマネージャの初期化
     FadeManager::GetInstance()->Initialize();
@@ -8830,7 +8879,7 @@ void GameOverScene::Initialize() {
     ModelManager::GetInstance()->LoadModel(model::Parts04);
 
     // テクスチャの読み込み
-    TextureManager::GetInstance()->LoadTexture("CubemapBox.dds");
+    TextureManager::GetInstance()->LoadTexture(texture::Cubemapbox);
     TextureManager::GetInstance()->LoadTexture(texture::Gameover);
     TextureManager::GetInstance()->LoadTexture(texture::Ui01);
 
@@ -8851,7 +8900,7 @@ void GameOverScene::Initialize() {
     ui2_->SetAnchorPoint(Vector2{ 0.5f, 0.5f }); // 中心基準
     ui2_->SetTextureSize(Vector2{ 360.0f,100.0f });
 
-    Box_ = Skybox::Create("CubemapBox.dds", Transform{ { 1000.0f, 1000.0f, 1000.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 100.0f } });
+    Box_ = Skybox::Create(texture::Cubemapbox, Transform{ { 1000.0f, 1000.0f, 1000.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 100.0f } });
 
     // ランダムXを生成（-0.5～0.5の範囲）
     std::random_device rd;
@@ -9160,7 +9209,9 @@ File Path: project/application/scene/GamePlayScene.cpp
 #include <BulletManager.h>
 #include<MatrixVector.h>
 #include<Collision.h>
+#include<Tools/AssetGenerator/engine/math/LoadResourceID.h>
 
+using namespace LoadResourceID;
 using namespace Collision;
 using namespace MatrixVector;
 
@@ -9181,33 +9232,29 @@ void GamePlayScene::Initialize() {
     CameraManager::GetInstance()->Initialize(CameraTransform({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }));     
     CameraManager::GetInstance()->SetTypeview(ViewCameraType::Main);
 
-    // テクスチャを読み込む
-        
-    TextureManager::GetInstance()->LoadTexture("Gameplay/Texture/UI_01.png");
-    TextureManager::GetInstance()->LoadTexture("Gameplay/Texture/UI_02.png");
-    TextureManager::GetInstance()->LoadTexture("Gameplay/Texture/UI_03.png");
-        
-    TextureManager::GetInstance()->LoadTexture("Gameplay/Texture/Gage.png");
-    TextureManager::GetInstance()->LoadTexture("Gameplay/Texture/Player_ui.png");
+    // テクスチャを読み込む 
+    TextureManager::GetInstance()->LoadTexture(texture::Move);
+    TextureManager::GetInstance()->LoadTexture(texture::Reticlemove);
+    TextureManager::GetInstance()->LoadTexture(texture::Space);        
+    TextureManager::GetInstance()->LoadTexture(texture::Gage);
+    TextureManager::GetInstance()->LoadTexture(texture::PlayerUi);
     
 
     MAXui_ = 1;
-    uis_.push_back(Sprite::Create("Gameplay/Texture/UI_01.png", Vector2{ 8.0f, 430.0f }, 0.0f, Vector2{ 200.0f,80.0f })); 
-    uis_.push_back(Sprite::Create("Gameplay/Texture/UI_02.png", Vector2{ 8.0f, 530.0f }, 0.0f, Vector2{ 200.0f,80.0f })); 
-    uis_.push_back(Sprite::Create("Gameplay/Texture/UI_03.png", Vector2{ 8.0f, 630.0f }, 0.0f, Vector2{ 200.0f,80.0f })); 
+    uis_.push_back(Sprite::Create(texture::Move, Vector2{ 8.0f, 430.0f }, 0.0f, Vector2{ 200.0f,80.0f })); 
+    uis_.push_back(Sprite::Create(texture::Reticlemove, Vector2{ 8.0f, 530.0f }, 0.0f, Vector2{ 200.0f,80.0f })); 
+    uis_.push_back(Sprite::Create(texture::Space, Vector2{ 8.0f, 630.0f }, 0.0f, Vector2{ 200.0f,80.0f })); 
     uis_[0]->SetTextureSize(Vector2{200.0f,80.0f});
     uis_[1]->SetTextureSize(Vector2{200.0f,80.0f});
     uis_[2]->SetTextureSize(Vector2{200.0f,80.0f});
     
-    gage_ = Sprite::Create("Gameplay/Texture/Gage.png", Vector2{ 380.0f, 10.0f }, 0.0f, Vector2{ 500.0f,30.0f });
+    gage_ = Sprite::Create(texture::Gage, Vector2{ 380.0f, 10.0f }, 0.0f, Vector2{ 500.0f,30.0f });
     gage_->SetTextureSize(Vector2{ 500.0f,30.0f });     	 
-    player_ui_ = Sprite::Create("Gameplay/Texture/Player_ui.png", Vector2{ 380.0f, 12.3f }, 0.0f, Vector2{ 25.0f,25.0f });
+    player_ui_ = Sprite::Create(texture::PlayerUi, Vector2{ 380.0f, 12.3f }, 0.0f, Vector2{ 25.0f,25.0f });
     player_ui_->SetTextureSize(Vector2{ 25.0f,25.0f });     
 
     // .objファイルからモデルを読み込む
-    ModelManager::GetInstance()->LoadModel("Bullet/PlayerBullet.obj");
-    ModelManager::GetInstance()->LoadModel("Bullet/EnemyBullet.obj");
-    ModelManager::GetInstance()->LoadModel("Gameplay/Model/Goal/Goal.obj");
+    ModelManager::GetInstance()->LoadModel(model::Goal);
 
     // プレイヤーの作成と初期化
     player_ = std::make_unique<Player>();
@@ -9234,10 +9281,10 @@ void GamePlayScene::Initialize() {
     enemySpawner_ = std::make_unique<EnemySpawner>(); enemySpawner_->Initialize(player_.get(), CameraManager::GetInstance(), &enemies_);
 
     // クリアゲート(仮)
-    wall = Object3d::Create("Gameplay/Model/Goal/Goal.obj", Transform{ { 2.0f, 2.0f, 2.0f }, { 0.0f, 0.0f, 0.0f }, { 8.0f, 39.0f, 800.0f } });
+    wall = Object3d::Create(model::Goal, Transform{ { 2.0f, 2.0f, 2.0f }, { 0.0f, 0.0f, 0.0f }, { 8.0f, 39.0f, 800.0f } });
     // スカイボックスの作成
-    TextureManager::GetInstance()->LoadTexture("CubemapBox.dds");
-    Box_ = Skybox::Create("CubemapBox.dds", Transform{ { 1000.0f, 1000.0f, 1000.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 100.0f } });
+    TextureManager::GetInstance()->LoadTexture(texture::Cubemapbox);
+    Box_ = Skybox::Create(texture::Cubemapbox, Transform{ { 1000.0f, 1000.0f, 1000.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 100.0f } });
     // ゴールフラグ初期化
     goal_ = false;
     // フェードマネージャの初期化
@@ -9784,7 +9831,7 @@ void TitleScene::LoadResources() {
     //  テクスチャの読み込み
     TextureManager::GetInstance()->LoadTexture(texture::Ui02);
     TextureManager::GetInstance()->LoadTexture(texture::Title);
-    TextureManager::GetInstance()->LoadTexture("CubemapBox.dds");
+    TextureManager::GetInstance()->LoadTexture(texture::Cubemapbox);
 }
 
 void TitleScene::InitializeUI() {  
@@ -9801,7 +9848,7 @@ void TitleScene::InitializeUI() {
 
 void TitleScene::InitializeModel() {
     // スカイボックス生成 
-    skybox_ = Skybox::Create("CubemapBox.dds", Transform{ { 1000.0f, 1000.0f, 1000.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 100.0f } });
+    skybox_ = Skybox::Create(texture::Cubemapbox, Transform{ { 1000.0f, 1000.0f, 1000.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 100.0f } });
     // プレイヤーパラメータ 
     playertransform_ = { {1.0f, 1.0f, 1.0f}, {0.0f, 0.3f, 0.0f},  -20.0f,0.0f,40.0f };
     titleStartX_ = -20.0f;
@@ -10079,7 +10126,9 @@ File Path: project/application/stage/StageManager.cpp
 #ifdef USE_IMGUI
 #include<ImGuiManager.h>
 #endif // USE_IMGUI
+#include<Tools/AssetGenerator/engine/math/LoadResourceID.h>
 
+using namespace LoadResourceID;
 // 静的メンバ変数の定義
 std::unique_ptr<StageManager> StageManager::instance = nullptr;
 
@@ -10109,11 +10158,11 @@ void StageManager::Initialize() {
 
     // 敵モデルをあらかじめ読み込む
    // ModelManager::GetInstance()->LoadModel("Enemy.obj");
-    ModelManager::GetInstance()->LoadModel("Gameplay/Model/Tile/Tile.obj");
+    ModelManager::GetInstance()->LoadModel(model::Tile);
     
     // オブジェクトの作成
     // 地面の作成
-    grass = Object3d::Create("Gameplay/Model/Tile/Tile.obj", Transform({ 1000.0f, 1.0f, 1000.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, -8.0f, 50.0f }));
+    grass = Object3d::Create(model::Tile, Transform({ 1000.0f, 1.0f, 1000.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, -8.0f, 50.0f }));
 
     //// レベルデータからオブジェクトを読み込む
     //for (auto& objData : levelData_->objects) {
