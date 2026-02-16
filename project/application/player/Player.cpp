@@ -80,7 +80,6 @@ void Player::Update() {
                 // tartDeathEffect();
             } else {
                 // ターゲットを矢印キーで動かす
-//                UpdateTargetPosition(targettransform_, 0.4f);   // ターゲットに使う
                 reticle_->Update(targettransform_, transform_.translate, target_.get());
                 // 弾の発射
                 AttachBullet();
@@ -89,7 +88,7 @@ void Player::Update() {
         // デバッグ中のImGui表示
         DebugImgui();
         // 照準スプライトの位置更新（3D→2D変換)
-        UpdateReticlePosition();
+        reticle_->UpdateSprite(target_->GetTranslate(), targetreticle_.get(), activeCam);
         targetreticle_->Update();
 
         // 移動後の位置をObjectに反映
@@ -204,41 +203,6 @@ void Player::AttachBullet() {
 
         canShoot_ = false;
     }
-}
-
-
-///=====================================================================
-/// レティクル用3D座標 → 2Dスクリーン座標変換
-///=====================================================================
-void Player::UpdateReticlePosition() {
-    if (!target_ || !targetreticle_) return;
-
-    // 3Dターゲット位置
-    Vector3 targetWorldPos = target_->GetTranslate();
-
-    // --- カメラから2Dスクリーン座標に変換 ---
-    Camera* camera = CameraManager::GetInstance()->GetActiveCamera();
-    const Matrix4x4& viewProj = camera->GetViewProjectionMatrix();
-
-    Vector4 clipPos = {
-        targetWorldPos.x * viewProj.m[0][0] + targetWorldPos.y * viewProj.m[1][0] + targetWorldPos.z * viewProj.m[2][0] + viewProj.m[3][0],
-        targetWorldPos.x * viewProj.m[0][1] + targetWorldPos.y * viewProj.m[1][1] + targetWorldPos.z * viewProj.m[2][1] + viewProj.m[3][1],
-        targetWorldPos.x * viewProj.m[0][2] + targetWorldPos.y * viewProj.m[1][2] + targetWorldPos.z * viewProj.m[2][2] + viewProj.m[3][2],
-        targetWorldPos.x * viewProj.m[0][3] + targetWorldPos.y * viewProj.m[1][3] + targetWorldPos.z * viewProj.m[2][3] + viewProj.m[3][3]
-    };
-
-    if (clipPos.w != 0.0f) {
-        clipPos.x /= clipPos.w;
-        clipPos.y /= clipPos.w;
-    }
-
-    const float screenWidth = 1280.0f;
-    const float screenHeight = 720.0f;
-
-    reticleScreenPos_.x = (clipPos.x * 0.5f + 0.5f) * screenWidth;
-    reticleScreenPos_.y = (-clipPos.y * 0.5f + 0.5f) * screenHeight;
-
-    targetreticle_->SetPosition(reticleScreenPos_);
 }
 
 ///=====================================================================

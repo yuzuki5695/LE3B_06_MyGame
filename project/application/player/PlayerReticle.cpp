@@ -45,3 +45,28 @@ if (!targetObj) return;
     targetObj->SetTranslate(finalPos);
     targetObj->Update();
 }
+
+void PlayerReticle::UpdateSprite(const Vector3& worldPos, Sprite* targetSprite, Camera* activeCamera) {
+    if (!targetSprite || !activeCamera) return;
+
+    // --- D. 3D→2D変換 (Player.cpp の UpdateReticlePosition を移植) ---
+    const Matrix4x4& viewProj = activeCamera->GetViewProjectionMatrix();
+
+    Vector4 clipPos = {
+        worldPos.x * viewProj.m[0][0] + worldPos.y * viewProj.m[1][0] + worldPos.z * viewProj.m[2][0] + viewProj.m[3][0],
+        worldPos.x * viewProj.m[0][1] + worldPos.y * viewProj.m[1][1] + worldPos.z * viewProj.m[2][1] + viewProj.m[3][1],
+        worldPos.x * worldPos.y * viewProj.m[0][2] + worldPos.y * viewProj.m[1][2] + worldPos.z * viewProj.m[2][2] + viewProj.m[3][2],
+        worldPos.x * viewProj.m[0][3] + worldPos.y * viewProj.m[1][3] + worldPos.z * viewProj.m[2][3] + viewProj.m[3][3]
+    };
+
+    if (clipPos.w != 0.0f) {
+        clipPos.x /= clipPos.w;
+        clipPos.y /= clipPos.w;
+    }
+
+    Vector2 screenPos;
+    screenPos.x = (clipPos.x * 0.5f + 0.5f) * 1280.0f;
+    screenPos.y = (-clipPos.y * 0.5f + 0.5f) * 720.0f;
+
+    targetSprite->SetPosition(screenPos);
+}

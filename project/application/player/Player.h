@@ -38,10 +38,6 @@ public:// メンバ関数
 	/// </summary>
 	void AttachBullet();
 	/// <summary>
-	/// レティクルの位置を更新
-	/// </summary>
-	void UpdateReticlePosition();
-	/// <summary>
 	/// プレイヤーを非アクティブ状態にする（無効化）
 	/// </summary>
 	void SetInactive() {
@@ -97,7 +93,9 @@ private:// メンバ変数
 
 
 	Vector3 reticleWorldPos_;    // 3D空間のレティクル位置（ワールド座標）
-	Vector2 reticleScreenPos_;   // 画面上のスプライト描画位置（スクリーン座標） 
+
+
+
 	bool isHit_ = false;           // 弾に当たったことを示すフラグ
 	float hitEffectTimer_ = 0.0f;  // 演出経過時間
 	const float hitEffectDuration_ = 1.0f; // 演出にかける時間（秒）
