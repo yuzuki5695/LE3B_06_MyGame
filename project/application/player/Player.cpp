@@ -11,7 +11,6 @@
 #include <TextureManager.h>
 #include <algorithm>
 #include <chrono>
-#include <algorithm>
 #include <Skybox.h>
 #include <ModelDate.h>
 #include <Tools/AssetGenerator/engine/math/LoadResourceID.h>
@@ -51,53 +50,72 @@ void Player::Initialize() {
     transform_.scale = { 0.5f, 0.5f, 0.5f };
     fallVelocity = { 0.0f,0.0f,0.0f };
 
-    // --- 追加：インスタンスの生成 ---
+    // インスタンスの生成
     move_ = std::make_unique<PlayerMove>();
+    reticle_ = std::make_unique<PlayerReticle>();
 }
 
+void Player::SyncWorldTransformByRail() {
+    CameraManager* camMgr = CameraManager::GetInstance();
+    GamePlayCamera* gameCam = camMgr->GetGameplayCamera();
+    Camera* activeCam = camMgr->GetMainCamera();
+
+    // カメラのレール情報
+    Vector3 camPos = gameCam->GetBezierPos();
+    Vector3 forward = gameCam->GetForward();
+    Vector3 right = gameCam->GetRight();
+    Vector3 up = gameCam->GetUp();
+    // 1. 基本となるオフセット位置（カメラの30m前方、3m下）
+    Vector3 cameraBaseOffset = { 0.0f, -3.0f, 30.0f };
+    Vector3 cameraBaseWorld = (right * cameraBaseOffset.x) + (up * cameraBaseOffset.y) + (forward * cameraBaseOffset.z);
+
+    // 2. 自機の移動分（move_から取得）をワールド方向に変換して加算
+    Vector3 playerMoveOffset = (right * move_->GetLocalPosition().x) + (up * move_->GetLocalPosition().y);
+    Vector3 basePos = camPos + cameraBaseWorld + playerMoveOffset;
+    // 3. 回転の同期（メインカメラ時）
+    if (camMgr->GetTypeview() == ViewCameraType::Main) {
+        transform_.rotate = activeCam->GetRotate();
+    }
+
+    // 4. 座標の最終決定（死亡演出中のSubカメラならオフセットを加算）
+    if (camMgr->GetTypeview() == ViewCameraType::Sub) {
+        transform_.translate = basePos + deathOffset_;
+    } else {
+        transform_.translate = basePos;
+    }
+    // 5. オブジェクトに反映
+    object->SetTranslate(transform_.translate);
+    object->SetRotate(transform_.rotate);
+    object->SetScale(transform_.scale);
+
+    // ターゲット（3D照準）も同様に反映
+    target_->SetTranslate(targettransform_.translate); // copyposがtargettransform_.translateを指している前提
+    target_->Update();
+}
+void Player::UpdateState() {
+    // デルタタイム計算
+    float currentTime = static_cast<float>(std::chrono::duration<double>(std::chrono::high_resolution_clock::now().time_since_epoch()).count());
+    float deltaTime = currentTime - previousTime_;
+    previousTime_ = currentTime;
+
+    if (CameraManager::GetInstance()->GetTypeview() == ViewCameraType::Sub) {
+        StartDeathEffect();
+    }
+}
 void Player::Update() {
     CameraManager* camMgr = CameraManager::GetInstance();
     Camera* activeCam = camMgr->GetMainCamera();
 
     // GamePlayCamera じゃないならレール処理をしない
     if (camMgr->GetActiveSceneCamera() == SceneCameraType::Gameplay) {
-        //        UpdateNonRail();   // 何もしない or 簡易更新
 
-        GamePlayCamera* gameCam = camMgr->GetGameplayCamera();
-
-        // カメラのベジェ位置（レール上の実座標）
-        Vector3 camPos = gameCam->GetBezierPos();
-
-        // カメラの向き（すでに正規化されている前提）
-        Vector3 forward = gameCam->GetForward();
-        Vector3 right = gameCam->GetRight();
-        Vector3 up = gameCam->GetUp();
-
-        // ====== カメラ基準のプレイヤーオフセット ======
-        // プレイヤーの基準位置（カメラからの相対座標）
-        Vector3 cameraBaseOffset = { 0.0f, -3.0f, 30.0f };
-
-        // カメラ座標系に変換
-        Vector3 cameraBaseWorld =
-            right * cameraBaseOffset.x +
-            up * cameraBaseOffset.y +
-            forward * cameraBaseOffset.z;
+        SyncWorldTransformByRail(); // ワールド座標同期処理
         // メインカメラ中
         if (CameraManager::GetInstance()->GetTypeview() == ViewCameraType::Main) {
             // ===== プレイヤー回転（カメラ方向 + tilt） =====
             transform_.rotate = activeCam->GetRotate();
         }
-        // 現在時刻を取得（秒）
-        float currentTime = static_cast<float>(std::chrono::duration<double>(std::chrono::high_resolution_clock::now().time_since_epoch()).count());
-
-        // deltaTime を計算
-        float deltaTime = currentTime - previousTime_;
-        previousTime_ = currentTime;
-
-        if (CameraManager::GetInstance()->GetTypeview() == ViewCameraType::Sub) {
-            // プレイヤ―死亡演出
-            StartDeathEffect();
-        }
+        UpdateState();  // 状態更新処理
 
         if (ickyActive_) {
 
@@ -105,43 +123,26 @@ void Player::Update() {
 
             // アクティブ中はキー操作を受け付ける
             if (isDeadEffectActive_ && active_ == false) {
-                // プレイヤ―死亡演出
-    //            StartDeathEffect();
+                // プレイヤ―死亡演出 
+                // tartDeathEffect();
             } else {
                 // ターゲットを矢印キーで動かす
                 UpdateTargetPosition(targettransform_, 0.4f);   // ターゲットに使う
+
                 // 弾の発射
                 AttachBullet();
             }
         }
-
-        Vector3 basePos = camPos + cameraBaseWorld + right * move_->GetLocalPosition().x + up *  move_->GetLocalPosition().y;
-
-        // サブカメラ中は死亡オフセット加算
-        if (CameraManager::GetInstance()->GetTypeview() == ViewCameraType::Sub) {
-            transform_.translate = basePos + deathOffset_;
-        } else {
-            transform_.translate = basePos;
-        }
-
-
-
         // デバッグ中のImGui表示
         DebugImgui();
-        target_->SetTranslate(copypos);
-        target_->Update();
         // 照準スプライトの位置更新（3D→2D変換)
         UpdateReticlePosition();
         targetreticle_->Update();
 
         // 移動後の位置をObjectに反映
-        object->SetTranslate(transform_.translate);
         object->SetRotate(transform_.rotate);
         object->SetScale(transform_.scale);
     }
-
-
-
     // プレイヤー更新
     object->Update();
 }
