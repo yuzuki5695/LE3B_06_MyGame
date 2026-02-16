@@ -67,7 +67,6 @@ void GamePlayScene::Initialize() {
     player_ = std::make_unique<Player>();
     player_->Initialize(); // プレイヤーの初期化
     CameraManager::GetInstance()->SetGamecameraTarget(player_->GetPlayerObject());
-    playerhp_ = player_->IsActive();
     // カメラにプレイヤーを追わせる
 
     // パーティクル
@@ -166,8 +165,6 @@ void GamePlayScene::Update() {
     if (end && CameraManager::GetInstance()->GetTypeview() == ViewCameraType::Main) {
         CameraManager::GetInstance()->SetMode(CameraMode::Default);   
         CameraManager::GetInstance()->SetTypeview(ViewCameraType::Sub);
-        player_->SetKeyActive(false);
-        player_->SetReticleVisible(false);
         // フェード開始             
         end = false;
     }
@@ -180,8 +177,7 @@ void GamePlayScene::Update() {
     // ゴール演出
     if (!goal_ && player_->GetPosition().z >= CameraManager::GetInstance()->GetGameplayCamera()->GetBezierPoints().back().controlPoint.z && CameraManager::GetInstance()->GetTypeview() == ViewCameraType::Main) {
         FadeManager::GetInstance()->StartFadeOut(1.0f, FadeStyle::Normal);
-        player_->SetKeyActive(false);
-        player_->SetReticleVisible(false);
+        player_->SetState(State::Goal);
         // フェード開始             
         goal_ = true;
         end = false;
@@ -190,8 +186,7 @@ void GamePlayScene::Update() {
     // ゲームスタートイベントが終了したらプレイヤ―操作可能に
     if (EventManager::GetInstance()->IsFinished() && CameraManager::GetInstance()->GetTypeview() == ViewCameraType::Main) {
         // イベント終了 → プレイヤーを操作可能に
-        player_->SetKeyActive(true);
-        player_->SetReticleVisible(true);
+        player_->SetState(State::Alive);
         isPausedevent_ = true;
         // 進行度を設定
         StartStageProgressUI();
@@ -209,7 +204,6 @@ void GamePlayScene::Update() {
     CameraManager::GetInstance()->SetGamecameraTarget(player_->GetPlayerObject());
     CameraManager::GetInstance()->Update();
 #pragma region 全てのObject3d個々の更新処理
-    playerhp_ = player_->IsActive();
     // 終了しない限り更新処理
     if (!end) {
         if (EventManager::GetInstance()->IsFinished() ){
@@ -249,10 +243,10 @@ void GamePlayScene::Update() {
 
     // フェードアウトが完了したら次のシーンへ
     if (FadeManager::GetInstance()->IsFadeEnd() && FadeManager::GetInstance()->GetFadeType() == FadeType::FadeOut) {
-        if (!playerhp_) {
+        if (player_->GetState() == State::Dead) {
             // シーン切り替え
             SceneManager::GetInstance()->ChangeScene("GAMEOVER");
-        } else {
+        } else if (player_->GetState() == State::Goal) {
             // シーン切り替え
             SceneManager::GetInstance()->ChangeScene("GAMECLEAR");
         }
@@ -399,8 +393,6 @@ void GamePlayScene::CheckBulletEnemyCollisionsOBB() {
 void GamePlayScene::CheckEnemyBulletPlayerCollisionsOBB() {
     const auto& bullets = BulletManager::GetInstance()->GetEnemyBullets();
 
-    if (!player_ || !player_->IsActive()) return;
-
     OBB playerOBB = player_->GetOBB(); // プレイヤーがOBBを返すようにしておく必要あり
 
     for (const std::unique_ptr<EnemyBullet>& bullet : bullets) {
@@ -410,7 +402,7 @@ void GamePlayScene::CheckEnemyBulletPlayerCollisionsOBB() {
 
         if (IsOBBIntersect(bulletOBB, playerOBB)) {
             bullet->SetInactive();
-            player_->SetInactive();  // プレイヤーを無効にする
+            player_->SetState(State::Dead);  // プレイヤーを無効にする
 
             end = true;
             // ヒットエフェクトなど追加
@@ -422,8 +414,6 @@ void GamePlayScene::CheckEnemyBulletPlayerCollisionsOBB() {
 /// 敵 vs プレイヤー の当たり判定
 ///====================================================
 void GamePlayScene::CheckEnemyPlayerCollisionsOBB() {
-    if (!player_ || !player_->IsActive()) return;
-
     // プレイヤーのOBBを取得
     OBB playerOBB = player_->GetOBB();
 
@@ -435,7 +425,7 @@ void GamePlayScene::CheckEnemyPlayerCollisionsOBB() {
 
         // 衝突判定
         if (IsOBBIntersect(playerOBB, enemyOBB)) {
-            player_->SetInactive();
+            player_->SetState(State::Dead);
             end = true; // ゲームオーバーへ遷移など
 
             break;

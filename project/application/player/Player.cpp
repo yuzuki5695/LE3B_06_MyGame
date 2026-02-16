@@ -39,7 +39,7 @@ void Player::Initialize() {
     targetreticle_ = Sprite::Create(texture::Target, reticleScreenPos, 0.0f, Vector2{ 100.0f, 100.0f });
     targetreticle_->SetTextureSize(Vector2{ 512.0f, 512.0f });
     targetreticle_->SetAnchorPoint(Vector2{ 0.5f, 0.5f }); // 中心基準
-    previousTime_ = 0.0f;
+
 
     // 死亡関連
     deathTimer_ = 0.0f;
@@ -59,48 +59,61 @@ void Player::Update() {
     CameraManager* camMgr = CameraManager::GetInstance();
     Camera* activeCam = camMgr->GetMainCamera();
 
-    // GamePlayCamera じゃないならレール処理をしない
+    // GamePlayCameraのみ更新処理を行う
     if (camMgr->GetActiveSceneCamera() == SceneCameraType::Gameplay) {
-
         SyncWorldTransformByRail(); // ワールド座標同期処理
         // メインカメラ中
         if (CameraManager::GetInstance()->GetTypeview() == ViewCameraType::Main) {
-            // ===== プレイヤー回転（カメラ方向 + tilt） =====
+            // プレイヤー回転もカメラに合わせる
             transform_.rotate = activeCam->GetRotate();
         }
-        UpdateState();  // 状態更新処理
 
-        if (ickyActive_) {
-
-            move_->Update(transform_, CameraManager::GetInstance()->GetActiveCamera()->GetRotate());
-
-            // アクティブ中はキー操作を受け付ける
-            if (isDeadEffectActive_ && active_ == false) {
-                // プレイヤ―死亡演出 
-                // tartDeathEffect();
-            } else {
-                // ターゲットを矢印キーで動かす
-                reticle_->Update(targettransform_, transform_.translate, target_.get());
-                // 弾の発射
-                // 自機のトランスフォームと、レティクルの位置（target_の座標）を渡す
-                GamePlayCamera* gameCam = CameraManager::GetInstance()->GetGameplayCamera();
-                weapon_->Update(transform_.translate, target_->GetTranslate(), gameCam);
-            }
+        // 現在の状態に応じて関数を呼び分け
+        switch (state_) {
+        case State::Alive:   UpdateAlive();   break;
+        case State::Dead:    UpdateDead();    break;
+        case State::Goal:    UpdateGoal();    break;
+        case State::Event:   UpdateEvent();   break;
         }
+
         // デバッグ中のImGui表示
         DebugImgui();
-        // 照準スプライトの位置更新（3D→2D変換)
-        reticle_->UpdateSprite(target_->GetTranslate(), targetreticle_.get(), activeCam);
         targetreticle_->Update();
 
         // 移動後の位置をObjectに反映
         object->SetRotate(transform_.rotate);
         object->SetScale(transform_.scale);
     }
-    // プレイヤー更新
+    // プレイヤー更新(GamePlayCamera以外ではただのobjectとして扱う)
     object->Update();
 }
 
+void Player::UpdateAlive() {
+    CameraManager* camMgr = CameraManager::GetInstance();
+    Camera* activeCam = camMgr->GetMainCamera();
+    GamePlayCamera* gameCam = camMgr->GetGameplayCamera();
+    // 移動
+    move_->Update(transform_, activeCam->GetRotate());
+    // レティクル(3D)
+    reticle_->Update(targettransform_, transform_.translate, target_.get());
+    // 攻撃
+    weapon_->Update(transform_.translate, target_->GetTranslate(), gameCam);
+    // レティクル(2Dスプライト)の同期
+    reticle_->UpdateSprite(target_->GetTranslate(), targetreticle_.get(), activeCam);
+}
+
+void Player::UpdateDead() {
+    // 死亡演出：ここに落下や回転のロジックを書く（後にクラス化も可能）
+    StartDeathEffect();
+}
+
+void Player::UpdateGoal() {
+
+}
+
+void Player::UpdateEvent() {
+    // イベント：自動移動のロジックなど
+}
 
 void Player::Draw() {
     // プレイヤー描画
@@ -108,7 +121,7 @@ void Player::Draw() {
 }
 
 void Player::DrawSprite() { 
-    if (isReticleVisible_) {
+    if (state_ == State::Alive) {
         targetreticle_->Draw();
     }
 }
@@ -160,17 +173,6 @@ void Player::SyncWorldTransformByRail() {
     // ターゲット（3D照準）も同様に反映
     target_->SetTranslate(targettransform_.translate);
     target_->Update();
-}
-
-void Player::UpdateState() {
-    // デルタタイム計算
-    float currentTime = static_cast<float>(std::chrono::duration<double>(std::chrono::high_resolution_clock::now().time_since_epoch()).count());
-    float deltaTime = currentTime - previousTime_;
-    previousTime_ = currentTime;
-
-    if (CameraManager::GetInstance()->GetTypeview() == ViewCameraType::Sub) {
-        StartDeathEffect();
-    }
 }
 
 ///=====================================================================
