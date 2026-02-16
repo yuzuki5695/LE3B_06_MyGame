@@ -35,16 +35,10 @@ void Player::Initialize() {
     target_ = Object3d::Create(model::Playerbullet, targettransform_);
 
     // レティクル初期化
-    reticleScreenPos = { 640.0f, 360.0f }; // 画面中央 (仮に1280x720の場合)
-    targetreticle_ = Sprite::Create(texture::Target, reticleScreenPos, 0.0f, Vector2{ 100.0f, 100.0f });
+    targetreticle_ = Sprite::Create(texture::Target, Vector2{ 640.0f, 360.0f }, 0.0f, Vector2{ 100.0f, 100.0f });
     targetreticle_->SetTextureSize(Vector2{ 512.0f, 512.0f });
     targetreticle_->SetAnchorPoint(Vector2{ 0.5f, 0.5f }); // 中心基準
 
-
-    // 死亡関連
-    deathTimer_ = 0.0f;
-    // 回転速度（バラバラに回る感じ）
-    deathRotateSpeed_ = { 0.05f, 0.07f, 0.02f };
     // 軽くスケールを上げる演出など
     transform_.scale = { 0.5f, 0.5f, 0.5f };
 
@@ -53,6 +47,8 @@ void Player::Initialize() {
     reticle_ = std::make_unique<PlayerReticle>();
     weapon_ = std::make_unique<PlayerWeapon>();
     weapon_->Initialize();
+    death_ = std::make_unique<PlayerDeath>();
+    death_->Initialize();
 }
 
 void Player::Update() {
@@ -88,33 +84,6 @@ void Player::Update() {
     object->Update();
 }
 
-void Player::UpdateAlive() {
-    CameraManager* camMgr = CameraManager::GetInstance();
-    Camera* activeCam = camMgr->GetMainCamera();
-    GamePlayCamera* gameCam = camMgr->GetGameplayCamera();
-    // 移動
-    move_->Update(transform_, activeCam->GetRotate());
-    // レティクル(3D)
-    reticle_->Update(targettransform_, transform_.translate, target_.get());
-    // 攻撃
-    weapon_->Update(transform_.translate, target_->GetTranslate(), gameCam);
-    // レティクル(2Dスプライト)の同期
-    reticle_->UpdateSprite(target_->GetTranslate(), targetreticle_.get(), activeCam);
-}
-
-void Player::UpdateDead() {
-    // 死亡演出：ここに落下や回転のロジックを書く（後にクラス化も可能）
-    StartDeathEffect();
-}
-
-void Player::UpdateGoal() {
-
-}
-
-void Player::UpdateEvent() {
-    // イベント：自動移動のロジックなど
-}
-
 void Player::Draw() {
     // プレイヤー描画
     object->Draw(); 
@@ -136,6 +105,32 @@ void Player::DebugImgui() {
 #endif // USE_IMGUI
 }
 
+void Player::UpdateAlive() {
+    CameraManager* camMgr = CameraManager::GetInstance();
+    Camera* activeCam = camMgr->GetMainCamera();
+    GamePlayCamera* gameCam = camMgr->GetGameplayCamera();
+    // 移動
+    move_->Update(transform_, activeCam->GetRotate());
+    // レティクル(3D)
+    reticle_->Update(targettransform_, transform_.translate, target_.get());
+    // 攻撃
+    weapon_->Update(transform_.translate, target_->GetTranslate(), gameCam);
+    // レティクル(2Dスプライト)の同期
+    reticle_->UpdateSprite(target_->GetTranslate(), targetreticle_.get(), activeCam);
+}
+
+void Player::UpdateDead() {
+    // 死亡演出：ここに落下や回転のロジックを書く（後にクラス化も可能）
+    death_->Update(transform_.rotate, deathOffset_, object.get());
+}
+
+void Player::UpdateGoal() {
+
+}
+
+void Player::UpdateEvent() {
+    // イベント：自動移動のロジックなど
+}
 
 void Player::SyncWorldTransformByRail() {
     CameraManager* camMgr = CameraManager::GetInstance();
@@ -203,39 +198,6 @@ OBB Player::GetOBB() const {
     obb.axis[0] = Normalize(Multiply4x4x3(rotMat, Vector3{ 1, 0, 0 })); // X軸
     obb.axis[1] = Normalize(Multiply4x4x3(rotMat, Vector3{ 0, 1, 0 })); // Y軸
     obb.axis[2] = Normalize(Multiply4x4x3(rotMat, Vector3{ 0, 0, 1 })); // Z軸
-
+    
     return obb;
-}
-
-void Player::StartDeathEffect() {
-    static float t = 0.0f;        // 時間経過
-    const float fallSpeedY = 0.02f;   // 下に落ちる速さ
-    const float fallSpeedZ = 0.2f;   // 手前に流れる速さ
-
-
-    t += 1.0f / 60.0f;            // 60FPS換算
-
-    // 加速しない。一定量だけ動かす
-    deathOffset_.y -= fallSpeedY;
-    deathOffset_.z += fallSpeedZ;
-
-
-    // --- 回転も時間で増加（イージング的）---
-    transform_.rotate.x += 0.004f + 0.002f * sinf(t * 0.5f);
-    transform_.rotate.z += 0.003f + 0.0015f * cosf(t * 0.4f);
-
-    // ---- ここから点滅処理 ----
-
-    // 点滅周期（値を小さくすると高速点滅）
-    float blinkSpeed = 50.0f;
-
-    // 0〜1 を高速で往復する値
-    float s = (sinf(t * blinkSpeed) + 1.0f) * 0.5f;
-
-    // ある程度の閾値を超えた時だけ赤くする（パッシング感UP）
-    if (s > 0.85f) {
-        object->SetMaterialColor({ 1.0f, 0.0f, 0.0f, 1.0f }); // 赤
-    } else {
-        object->SetMaterialColor({ 1.0f, 1.0f, 1.0f, 1.0f }); // 通常色
-    }
 }

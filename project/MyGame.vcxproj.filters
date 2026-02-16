@@ -474,6 +474,9 @@
     <ClCompile Include="application\player\PlayerWeapon.cpp">
       <Filter>ソース ファイル\application\player</Filter>
     </ClCompile>
+    <ClCompile Include="application\player\PlayerDeath.cpp">
+      <Filter>ソース ファイル\application\player</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="engine\2d\Sprite.h">
@@ -807,6 +810,9 @@
       <Filter>ソース ファイル\application\player</Filter>
     </ClInclude>
     <ClInclude Include="application\player\PlayerWeapon.h">
+      <Filter>ソース ファイル\application\player</Filter>
+    </ClInclude>
+    <ClInclude Include="application\player\PlayerDeath.h">
       <Filter>ソース ファイル\application\player</Filter>
     </ClInclude>
   </ItemGroup>

@@ -137,6 +137,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="application\particle\Titleparticle.cpp" />
     <ClCompile Include="application\pause\Pausemenu.cpp" />
     <ClCompile Include="application\player\Player.cpp" />
+    <ClCompile Include="application\player\PlayerDeath.cpp" />
     <ClCompile Include="application\player\PlayerMove.cpp" />
     <ClCompile Include="application\player\PlayerReticle.cpp" />
     <ClCompile Include="application\player\PlayerWeapon.cpp" />
@@ -224,6 +225,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\particle\Titleparticle.h" />
     <ClInclude Include="application\pause\Pausemenu.h" />
     <ClInclude Include="application\player\Player.h" />
+    <ClInclude Include="application\player\PlayerDeath.h" />
     <ClInclude Include="application\player\PlayerMove.h" />
     <ClInclude Include="application\player\PlayerReticle.h" />
     <ClInclude Include="application\player\PlayerWeapon.h" />

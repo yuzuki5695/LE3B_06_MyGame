@@ -1,11 +1,12 @@
 #pragma once
-#include<BaseCharacter.h>
-#include<Sprite.h>
+#include <BaseCharacter.h>
+#include <Sprite.h>
 #include <ParticleEmitter.h>
-#include<OBB.h>
-#include<PlayerMove.h>
-#include<PlayerReticle.h>
-#include<PlayerWeapon.h>
+#include <OBB.h>
+#include <PlayerMove.h>
+#include <PlayerReticle.h>
+#include <PlayerWeapon.h>
+#include <PlayerDeath.h>
 
 // プレイヤーの状態を定義
 enum class State {
@@ -51,14 +52,6 @@ public:// メンバ関数
     /// カメラのレール移動に合わせてプレイヤーのワールド座標を更新する
     /// </summary>
     void SyncWorldTransformByRail();
-	/// <summary>
-	/// プレイヤー死亡演出の開始
-	/// </summary>
-	void StartDeathEffect();
-	void SetDeadInactive() { isDeadEffectActive_ = true; }
-	// アクティブ状態の取得・設定
-	bool IsDead() const { return isDeadEffectActive_; }
-	void SetDead_(bool isactive) { isDeadEffectActive_ = isactive; }
 
     // ... 省略 ...
     void SetState(State state) { state_ = state; }
@@ -75,23 +68,15 @@ private:// メンバ変数
 	std::unique_ptr<PlayerMove> move_;          // プレイヤ―の移動制御クラス
 	std::unique_ptr<PlayerReticle> reticle_;    // プレイヤ―の照準制御クラス
 	std::unique_ptr<PlayerWeapon> weapon_;      // プレイヤ―の武器制御クラス
+	std::unique_ptr<PlayerDeath> death_;        // プレイヤ―の死亡演出クラス
 	State state_ = State::None; // 初期状態は生存
 
-	std::unique_ptr <Object3d> object = nullptr;  // プレイヤーの3Dオブジェクト
+	std::unique_ptr <Object3d> object;  // プレイヤーの3Dオブジェクト
 	Transform transform_{};
-	std::unique_ptr <Object3d> target_ = nullptr; // ターゲット用3Dオブジェクト
+	std::unique_ptr <Object3d> target_; // ターゲット用3Dオブジェクト
 	Transform targettransform_{};
-	std::unique_ptr <Sprite> targetreticle_ = nullptr; // レティクル用スプライト	
-	Vector2 reticleScreenPos = { 640.0f, 360.0f }; // 画面中心 (例: 1280x720の解像度)
-
-	// 死亡関連
-	bool isDeadEffectActive_ = false;  // 死亡演出中フラグ
-	float deathTimer_ = 0.0f;         // 死亡演出の経過時間
-	float deathDuration_ = 2.0f;      // 演出全体の長さ（秒）
-	Vector3 deathVelocity_ = {};      // 落下用の速度ベクトル
-	Vector3 deathRotateSpeed_ = {};   // 回転スピード
-	Vector3 deathStartPos_;
-	float deathFallSpeed_ = 0.5f; // 下方向に落ちるスピード
+	std::unique_ptr <Sprite> targetreticle_; // レティクル用スプライト	
+	// 死亡演出用のオフセット（落下や回転のため）
 	Vector3 deathOffset_;
 
 public:// メンバ変数
