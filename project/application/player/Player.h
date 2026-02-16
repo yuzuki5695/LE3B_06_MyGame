@@ -38,10 +38,6 @@ public:// メンバ関数
 	/// </summary>
 	void AttachBullet();
 	/// <summary>
-	/// ターゲットの更新
-	/// </summary>
-	void UpdateTargetPosition(Transform& targetTransform, float speed);
-	/// <summary>
 	/// レティクルの位置を更新
 	/// </summary>
 	void UpdateReticlePosition();
@@ -84,7 +80,6 @@ private:// メンバ変数
 	Transform transform_{};
 	std::unique_ptr <Object3d> target_ = nullptr; // ターゲット用3Dオブジェクト
 	Transform targettransform_{};
-	Vector3 copypos;
 	std::unique_ptr <Sprite> targetreticle_ = nullptr; // レティクル用スプライト	
 	Vector2 reticleScreenPos = { 640.0f, 360.0f }; // 画面中心 (例: 1280x720の解像度)
 	// 球関連

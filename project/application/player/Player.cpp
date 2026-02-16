@@ -55,53 +55,6 @@ void Player::Initialize() {
     reticle_ = std::make_unique<PlayerReticle>();
 }
 
-void Player::SyncWorldTransformByRail() {
-    CameraManager* camMgr = CameraManager::GetInstance();
-    GamePlayCamera* gameCam = camMgr->GetGameplayCamera();
-    Camera* activeCam = camMgr->GetMainCamera();
-
-    // カメラのレール情報
-    Vector3 camPos = gameCam->GetBezierPos();
-    Vector3 forward = gameCam->GetForward();
-    Vector3 right = gameCam->GetRight();
-    Vector3 up = gameCam->GetUp();
-    // 1. 基本となるオフセット位置（カメラの30m前方、3m下）
-    Vector3 cameraBaseOffset = { 0.0f, -3.0f, 30.0f };
-    Vector3 cameraBaseWorld = (right * cameraBaseOffset.x) + (up * cameraBaseOffset.y) + (forward * cameraBaseOffset.z);
-
-    // 2. 自機の移動分（move_から取得）をワールド方向に変換して加算
-    Vector3 playerMoveOffset = (right * move_->GetLocalPosition().x) + (up * move_->GetLocalPosition().y);
-    Vector3 basePos = camPos + cameraBaseWorld + playerMoveOffset;
-    // 3. 回転の同期（メインカメラ時）
-    if (camMgr->GetTypeview() == ViewCameraType::Main) {
-        transform_.rotate = activeCam->GetRotate();
-    }
-
-    // 4. 座標の最終決定（死亡演出中のSubカメラならオフセットを加算）
-    if (camMgr->GetTypeview() == ViewCameraType::Sub) {
-        transform_.translate = basePos + deathOffset_;
-    } else {
-        transform_.translate = basePos;
-    }
-    // 5. オブジェクトに反映
-    object->SetTranslate(transform_.translate);
-    object->SetRotate(transform_.rotate);
-    object->SetScale(transform_.scale);
-
-    // ターゲット（3D照準）も同様に反映
-    target_->SetTranslate(targettransform_.translate); // copyposがtargettransform_.translateを指している前提
-    target_->Update();
-}
-void Player::UpdateState() {
-    // デルタタイム計算
-    float currentTime = static_cast<float>(std::chrono::duration<double>(std::chrono::high_resolution_clock::now().time_since_epoch()).count());
-    float deltaTime = currentTime - previousTime_;
-    previousTime_ = currentTime;
-
-    if (CameraManager::GetInstance()->GetTypeview() == ViewCameraType::Sub) {
-        StartDeathEffect();
-    }
-}
 void Player::Update() {
     CameraManager* camMgr = CameraManager::GetInstance();
     Camera* activeCam = camMgr->GetMainCamera();
@@ -127,8 +80,8 @@ void Player::Update() {
                 // tartDeathEffect();
             } else {
                 // ターゲットを矢印キーで動かす
-                UpdateTargetPosition(targettransform_, 0.4f);   // ターゲットに使う
-
+//                UpdateTargetPosition(targettransform_, 0.4f);   // ターゲットに使う
+                reticle_->Update(targettransform_, transform_.translate, target_.get());
                 // 弾の発射
                 AttachBullet();
             }
@@ -170,47 +123,53 @@ void Player::DebugImgui() {
 }
 
 
-///=====================================================================
-/// ターゲットの移動処理
-///=====================================================================
-void Player::UpdateTargetPosition(Transform& targetTransform, float speed) {
-    // --- 入力でターゲットを動かす ---
-    if (Input::GetInstance()->Pushkey(DIK_LEFT))  targetTransform.translate.x -= speed;
-    if (Input::GetInstance()->Pushkey(DIK_RIGHT)) targetTransform.translate.x += speed;
-    if (Input::GetInstance()->Pushkey(DIK_UP))    targetTransform.translate.y += speed;
-    if (Input::GetInstance()->Pushkey(DIK_DOWN))  targetTransform.translate.y -= speed;
+void Player::SyncWorldTransformByRail() {
+    CameraManager* camMgr = CameraManager::GetInstance();
+    GamePlayCamera* gameCam = camMgr->GetGameplayCamera();
+    Camera* activeCam = camMgr->GetMainCamera();
 
-    // --- カメラ基準でターゲットを配置する ---
-    GamePlayCamera* gameCam = CameraManager::GetInstance()->GetGameCamera();
-    if (!gameCam) return;
-
-    Vector3 cameraPos = gameCam->GetbezierPos();
+    // カメラのレール情報
+    Vector3 camPos = gameCam->GetBezierPos();
     Vector3 forward = gameCam->GetForward();
-    Vector3 right   = Normalize(Cross({0, 1, 0}, forward));
-    Vector3 up      = Normalize(Cross(forward, right));
+    Vector3 right = gameCam->GetRight();
+    Vector3 up = gameCam->GetUp();
+    // 1. 基本となるオフセット位置（カメラの30m前方、3m下）
+    Vector3 cameraBaseOffset = { 0.0f, -3.0f, 30.0f };
+    Vector3 cameraBaseWorld = (right * cameraBaseOffset.x) + (up * cameraBaseOffset.y) + (forward * cameraBaseOffset.z);
 
-    // === プレイヤーとの相対位置に応じたターゲット制限 ===
-    // 画面内に相当する仮想座標範囲（例：X=-10～10, Y=-5～5 に対応させる）
-    const float maxX = 12.0f;
-    const float minX = -12.0f;
-    const float maxY = 7.0f;
-    const float minY = -7.0f;
+    // 2. 自機の移動分（move_から取得）をワールド方向に変換して加算
+    Vector3 playerMoveOffset = (right * move_->GetLocalPosition().x) + (up * move_->GetLocalPosition().y);
+    Vector3 basePos = camPos + cameraBaseWorld + playerMoveOffset;
+    // 3. 回転の同期（メインカメラ時）
+    if (camMgr->GetTypeview() == ViewCameraType::Main) {
+        transform_.rotate = activeCam->GetRotate();
+    }
 
-    // --- 範囲内にクランプ（これで「画面外に出たら動かない」）---
-    targetTransform.translate.x = std::clamp(targetTransform.translate.x, minX, maxX);
-    targetTransform.translate.y = std::clamp(targetTransform.translate.y, minY, maxY);
+    // 4. 座標の最終決定（死亡演出中のSubカメラならオフセットを加算）
+    if (camMgr->GetTypeview() == ViewCameraType::Sub) {
+        transform_.translate = basePos + deathOffset_;
+    } else {
+        transform_.translate = basePos;
+    }
+    // 5. オブジェクトに反映
+    object->SetTranslate(transform_.translate);
+    object->SetRotate(transform_.rotate);
+    object->SetScale(transform_.scale);
 
-
-    // 画面中央からの相対オフセット
-    Vector3 offset =
-        right * targetTransform.translate.x +
-        up    * targetTransform.translate.y +
-        forward * 30.0f; // カメラの前方方向に固定距離
-
-    // プレイヤーの位置に加算
-    copypos = transform_.translate + offset;
-    target_->SetTranslate(copypos);
+    // ターゲット（3D照準）も同様に反映
+    target_->SetTranslate(targettransform_.translate);
     target_->Update();
+}
+
+void Player::UpdateState() {
+    // デルタタイム計算
+    float currentTime = static_cast<float>(std::chrono::duration<double>(std::chrono::high_resolution_clock::now().time_since_epoch()).count());
+    float deltaTime = currentTime - previousTime_;
+    previousTime_ = currentTime;
+
+    if (CameraManager::GetInstance()->GetTypeview() == ViewCameraType::Sub) {
+        StartDeathEffect();
+    }
 }
 
 ///=====================================================================
