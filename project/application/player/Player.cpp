@@ -21,9 +21,9 @@ using namespace MatrixVector;
 
 Player::~Player() {}
 
-void Player::Initialize() {	 
+void Player::Initialize() {
     // モデル・テクスチャ読み込み
-    ModelManager::GetInstance()->LoadModel(model::Player);     
+    ModelManager::GetInstance()->LoadModel(model::Player);
     ModelManager::GetInstance()->LoadModel(model::Playerbullet);
     TextureManager::GetInstance()->LoadTexture(texture::Target);
 
@@ -33,14 +33,14 @@ void Player::Initialize() {
     object = Object3d::Create(model::Player, transform_);
 
     targettransform_ = { {0.3f, 0.3f, 0.3f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 30.0f} };
-    target_= Object3d::Create(model::Playerbullet, targettransform_);
+    target_ = Object3d::Create(model::Playerbullet, targettransform_);
     moveDelta = Vector3(0.0f, 0.0f, 0.0f);
 
     // レティクル初期化
     reticleScreenPos = { 640.0f, 360.0f }; // 画面中央 (仮に1280x720の場合)
     targetreticle_ = Sprite::Create(texture::Target, reticleScreenPos, 0.0f, Vector2{ 100.0f, 100.0f });
     targetreticle_->SetTextureSize(Vector2{ 512.0f, 512.0f });
-   	targetreticle_->SetAnchorPoint(Vector2{ 0.5f, 0.5f }); // 中心基準
+    targetreticle_->SetAnchorPoint(Vector2{ 0.5f, 0.5f }); // 中心基準
     previousTime_ = 0.0f;
 
     // 死亡関連
@@ -50,6 +50,9 @@ void Player::Initialize() {
     // 軽くスケールを上げる演出など
     transform_.scale = { 0.5f, 0.5f, 0.5f };
     fallVelocity = { 0.0f,0.0f,0.0f };
+
+    // --- 追加：インスタンスの生成 ---
+    move_ = std::make_unique<PlayerMove>();
 }
 
 void Player::Update() {
@@ -84,7 +87,6 @@ void Player::Update() {
             // ===== プレイヤー回転（カメラ方向 + tilt） =====
             transform_.rotate = activeCam->GetRotate();
         }
-
         // 現在時刻を取得（秒）
         float currentTime = static_cast<float>(std::chrono::duration<double>(std::chrono::high_resolution_clock::now().time_since_epoch()).count());
 
@@ -98,9 +100,9 @@ void Player::Update() {
         }
 
         if (ickyActive_) {
-            float currentSpeed = isBoosting_ ? boostSpeed_ : normalSpeed_;
-            //UpdateBoostState();
-            MoveInput(currentSpeed); // ブースト中は速く移動 
+
+            move_->Update(transform_, CameraManager::GetInstance()->GetActiveCamera()->GetRotate());
+
             // アクティブ中はキー操作を受け付ける
             if (isDeadEffectActive_ && active_ == false) {
                 // プレイヤ―死亡演出
@@ -113,7 +115,7 @@ void Player::Update() {
             }
         }
 
-        Vector3 basePos = camPos + cameraBaseWorld + right * relativePos_.x + up * relativePos_.y;
+        Vector3 basePos = camPos + cameraBaseWorld + right * move_->GetLocalPosition().x + up *  move_->GetLocalPosition().y;
 
         // サブカメラ中は死亡オフセット加算
         if (CameraManager::GetInstance()->GetTypeview() == ViewCameraType::Sub) {
@@ -165,93 +167,8 @@ void Player::DebugImgui() {
     ImGui::End();
 #endif // USE_IMGUI
 }
-void Player::MoveInput(float speed) {
-    // === 入力処理 ===
-    Vector3 moveDelta = { 0, 0, 0 };
-    Input* input = Input::GetInstance();
-    //    if (CameraManager::GetInstance()->GetTypeview() == ViewCameraType::Main && !isDeadEffectActive_) {
-    if (input->Pushkey(DIK_A)) moveDelta.x -= speed;
-    if (input->Pushkey(DIK_D)) moveDelta.x += speed;
-    if (input->Pushkey(DIK_W)) moveDelta.y += speed;
-    if (input->Pushkey(DIK_S)) moveDelta.y -= speed;
-    //  }
 
-      // === 相対移動を制限（画面内の範囲）===
-    float oldX = relativePos_.x;
-    float oldY = relativePos_.y;
 
-    // === 相対移動を制限（画面内の範囲）===
-    // ここは「カメラから見たローカル座標」上での制限
-    relativePos_.x = std::clamp(relativePos_.x + moveDelta.x, -10.0f, 10.0f);
-    relativePos_.y = std::clamp(relativePos_.y + moveDelta.y, -2.5f, 9.0f);
-
-    // === ★ スムーズ傾き制御 ===
-    static float tiltX = 0.0f;
-    static float tiltZ = 0.0f;
-    const float tiltSpeed = 0.1f;
-    const float maxTiltX = 0.4f;
-    const float maxTiltZ = 0.4f;
-    const float returnSpeed = 0.08f;
-
-    // 横傾き
-    if (relativePos_.x != oldX) {
-        float dir = (relativePos_.x - oldX) > 0 ? 1.0f : -1.0f;
-        tiltZ += -dir * tiltSpeed;
-    } else tiltZ *= (1.0f - returnSpeed);
-
-    // 縦傾き
-    if (relativePos_.y != oldY) {
-        float dir = (relativePos_.y - oldY) > 0 ? -1.0f : 1.0f;
-        tiltX += dir * tiltSpeed;
-    } else tiltX *= (1.0f - returnSpeed);
-
-    tiltZ = std::clamp(tiltZ, -maxTiltZ, maxTiltZ);
-    tiltX = std::clamp(tiltX, -maxTiltX, maxTiltX);
-
-    Camera* activeCam = CameraManager::GetInstance()->GetActiveCamera();
-    if (activeCam && CameraManager::GetInstance()->GetTypeview() == ViewCameraType::Main) {
-        Vector3 baseRot = activeCam->GetRotate();
-        transform_.rotate = {
-            baseRot.x + tiltX,
-            baseRot.y,
-            baseRot.z + tiltZ
-        };
-    }
-    object->SetRotate(transform_.rotate);
-}
-
-///=====================================================================
-/// ブースト状態更新処理
-///=====================================================================
-void Player::UpdateBoostState() {
-    Input* input = Input::GetInstance();
-
-    // ブースト発動判定（Shiftキー押し && ブースト中でなく && クールタイム中でない）
-    if (input->Pushkey(DIK_LSHIFT) && !isBoosting_ && !isCoolingDown_) {
-        isBoosting_ = true;
-        boostTime_ = 0.0f;
-    }
-
-    // ブースト中の処理
-    if (isBoosting_) {
-        boostTime_ += 1.0f / 60.0f; // 60FPS前提
-
-        if (boostTime_ >= boostDuration_) {
-            isBoosting_ = false;
-            isCoolingDown_ = true;
-            cooldownTime_ = 0.0f;
-        }
-    }
-
-    // クールダウン中の処理
-    if (isCoolingDown_) {
-        cooldownTime_ += 1.0f / 60.0f;
-
-        if (cooldownTime_ >= cooldownDuration_) {
-            isCoolingDown_ = false;
-        }
-    }
-}
 ///=====================================================================
 /// ターゲットの移動処理
 ///=====================================================================

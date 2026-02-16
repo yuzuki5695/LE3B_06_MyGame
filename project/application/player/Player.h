@@ -3,6 +3,7 @@
 #include<Sprite.h>
 #include <ParticleEmitter.h>
 #include<OBB.h>
+#include<PlayerMove.h>
 
 /// <summary>
 /// プレイヤーキャラクタークラス
@@ -27,15 +28,6 @@ public:// メンバ関数
     /// 2Dスプライトの描画処理
     /// </summary>	
 	void DrawSprite();	
-    /// <summary>
-    /// キーボード入力での移動処理
-    /// </summary>
-    /// <param name="speed">移動速度</param>
-	void MoveInput(float speed);	
-    /// <summary>
-    /// ブースト状態の更新
-    /// </summary>
-	void UpdateBoostState();
     /// <summary>
     /// デバッグ用のImGui描画
     /// </summary>
@@ -99,12 +91,11 @@ private:// メンバ変数
 	// ブースト関連
 	float normalSpeed_ = 0.2f;
 	float boostSpeed_ = 0.5f;
-	bool isBoosting_ = false;
-	float boostTime_ = 0.0f;
-	const float boostDuration_ = 0.3f; // ブースト持続時間
-	bool isCoolingDown_ = false;
-	float cooldownTime_ = 0.0f;
-	const float cooldownDuration_ = 3.0f; // クールダウン時間	
+
+
+
+
+
     Vector3 reticleWorldPos_;    // 3D空間のレティクル位置（ワールド座標）
     Vector2 reticleScreenPos_;   // 画面上のスプライト描画位置（スクリーン座標） 
 	bool isHit_ = false;           // 弾に当たったことを示すフラグ
@@ -139,6 +130,10 @@ private:// メンバ変数
 		Vector3 fallVelocity;
 		
 		Vector3 deathOffset_;
+
+
+		// 各機能をクラスとして分離
+    std::unique_ptr<PlayerMove> move_;
 
 public:// メンバ変数
 	// getter

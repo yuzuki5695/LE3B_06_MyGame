@@ -465,6 +465,9 @@
     <ClCompile Include="application\pause\Pausemenu.cpp">
       <Filter>ソース ファイル\application\pause</Filter>
     </ClCompile>
+    <ClCompile Include="application\player\PlayerMove.cpp">
+      <Filter>ソース ファイル\application\player</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="engine\2d\Sprite.h">
@@ -790,6 +793,9 @@
     </ClInclude>
     <ClInclude Include="application\enemy\EnemySpawner.h">
       <Filter>ヘッダー ファイル\application\enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="application\player\PlayerMove.h">
+      <Filter>ソース ファイル\application\player</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
