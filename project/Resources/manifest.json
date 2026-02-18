@@ -76,6 +76,9 @@
         "arrow": {
             "texture": "Textures/Ui/Arrow.png"
         },
+        "avoidance": {
+            "texture": "Textures/Operationui/avoidance.png"
+        },
         "black": {
             "texture": "Textures/fade/Black.png"
         },

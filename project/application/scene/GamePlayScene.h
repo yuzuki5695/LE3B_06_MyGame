@@ -57,7 +57,6 @@ private: // メンバ変数
     // オブジェクトデータ
     // プレイヤー
     std::unique_ptr <Player> player_ = nullptr;
-    bool playerhp_ = true;
     // キャラクターローダー
     std::unique_ptr<CharacterLoader> levelLoader_ = nullptr;
     // レベルデータ格納用インスタンスを生成

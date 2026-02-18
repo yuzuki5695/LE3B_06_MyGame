@@ -2,7 +2,8 @@
 
 namespace LoadResourceID {
 
-    namespace texture {
+    namespace texture {  
+        constexpr const char* Avoidance = "Textures/Operationui/avoidance.png";
         constexpr const char* Black = "Textures/fade/Black.png";
         constexpr const char* Command01 = "Textures/Ui/command_01.png";
         constexpr const char* Command02 = "Textures/Ui/command_02.png";
