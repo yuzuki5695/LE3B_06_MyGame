@@ -477,6 +477,9 @@
     <ClCompile Include="application\player\PlayerDeath.cpp">
       <Filter>ソース ファイル\application\player</Filter>
     </ClCompile>
+    <ClCompile Include="application\player\PlayerDash.cpp">
+      <Filter>ソース ファイル\application\player</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="engine\2d\Sprite.h">
@@ -803,17 +806,20 @@
     <ClInclude Include="application\enemy\EnemySpawner.h">
       <Filter>ヘッダー ファイル\application\enemy</Filter>
     </ClInclude>
+    <ClInclude Include="application\player\PlayerDeath.h">
+      <Filter>ヘッダー ファイル\application\player</Filter>
+    </ClInclude>
     <ClInclude Include="application\player\PlayerMove.h">
-      <Filter>ソース ファイル\application\player</Filter>
+      <Filter>ヘッダー ファイル\application\player</Filter>
     </ClInclude>
     <ClInclude Include="application\player\PlayerReticle.h">
-      <Filter>ソース ファイル\application\player</Filter>
+      <Filter>ヘッダー ファイル\application\player</Filter>
     </ClInclude>
     <ClInclude Include="application\player\PlayerWeapon.h">
-      <Filter>ソース ファイル\application\player</Filter>
+      <Filter>ヘッダー ファイル\application\player</Filter>
     </ClInclude>
-    <ClInclude Include="application\player\PlayerDeath.h">
-      <Filter>ソース ファイル\application\player</Filter>
+    <ClInclude Include="application\player\PlayerDash.h">
+      <Filter>ヘッダー ファイル\application\player</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

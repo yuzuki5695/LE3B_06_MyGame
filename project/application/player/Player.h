@@ -7,6 +7,7 @@
 #include <PlayerReticle.h>
 #include <PlayerWeapon.h>
 #include <PlayerDeath.h>
+#include <PlayerDash.h>
 
 // プレイヤーの状態を定義
 enum class State {
@@ -69,7 +70,8 @@ private:// メンバ変数
 	std::unique_ptr<PlayerReticle> reticle_;    // プレイヤ―の照準制御クラス
 	std::unique_ptr<PlayerWeapon> weapon_;      // プレイヤ―の武器制御クラス
 	std::unique_ptr<PlayerDeath> death_;        // プレイヤ―の死亡演出クラス
-	State state_ = State::None; // 初期状態は生存
+	std::unique_ptr<PlayerDash> dash_;          // プレイヤ―の回避制御クラス
+	State state_ = State::None; // 初期状態
 
 	std::unique_ptr <Object3d> object;  // プレイヤーの3Dオブジェクト
 	Transform transform_{};

@@ -16,7 +16,7 @@ public:// メンバ関数
     /// </summary>
     /// <param name="transform">プレイヤーのトランスフォーム（参照）</param>
     /// <param name="cameraRotate">現在のカメラ回転角</param>
-    void Update(Transform& transform, const Vector3& cameraRotate);
+    void Update(Transform& transform, const Vector3& cameraRotate, float speedMultiplier);
 private:
     /// <summary>
     /// 移動範囲の制限を適用する

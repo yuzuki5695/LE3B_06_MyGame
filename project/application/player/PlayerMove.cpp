@@ -5,10 +5,10 @@
 #include <Object3d.h>
 #include <Transform.h>
 
-void PlayerMove::Update(Transform& transform, const Vector3& cameraRotate) {
+void PlayerMove::Update(Transform& transform, const Vector3& cameraRotate, float speedMultiplier) {
     // GetInstanceの省略
     Input* input = Input::GetInstance();
-    const float speed = 0.3f;
+    const float speed = 0.17f * speedMultiplier;
 
     // --- 1. 入力値の取得 ---
     Vector3 moveInput = { 0, 0, 0 };

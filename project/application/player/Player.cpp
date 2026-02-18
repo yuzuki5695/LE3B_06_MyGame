@@ -49,6 +49,8 @@ void Player::Initialize() {
     weapon_->Initialize();
     death_ = std::make_unique<PlayerDeath>();
     death_->Initialize();
+    dash_ = std::make_unique<PlayerDash>();
+    dash_->Initialize();
 }
 
 void Player::Update() {
@@ -75,8 +77,12 @@ void Player::Update() {
         // デバッグ中のImGui表示
         DebugImgui();
         targetreticle_->Update();
-
-        // 移動後の位置をObjectに反映
+     
+        // ターゲット（3D照準）に反映
+        target_->SetTranslate(targettransform_.translate);
+        target_->Update();
+        // Objectに反映
+        object->SetTranslate(transform_.translate);
         object->SetRotate(transform_.rotate);
         object->SetScale(transform_.scale);
     }
@@ -107,21 +113,45 @@ void Player::DebugImgui() {
 
 void Player::UpdateAlive() {
     CameraManager* camMgr = CameraManager::GetInstance();
-    Camera* activeCam = camMgr->GetMainCamera();
-    GamePlayCamera* gameCam = camMgr->GetGameplayCamera();
-    // 移動
-    move_->Update(transform_, activeCam->GetRotate());
-    // レティクル(3D)
+    Input* input = Input::GetInstance();
+
+    // --- 1. 回避入力 ---
+    if (input->Pushkey(DIK_LSHIFT) && dash_->CanDash()) {
+        // 現在の移動入力から方向を決定
+        float moveDirX = 0.0f;
+        if (input->Pushkey(DIK_A)) moveDirX = -1.0f;
+        if (input->Pushkey(DIK_D)) moveDirX = 1.0f;
+        dash_->Start(moveDirX);
+    }
+
+    // --- 2. 回避状態の更新 ---
+    dash_->Update();
+
+    // --- 3. 移動の更新 ---
+    // PlayerMoveに現在の速度倍率を渡す（PlayerMove側のUpdateに引数を追加するか、内部で計算）
+    // ここでは、一時的に移動速度を上げるためにダッシュ倍率を適用
+    float currentSpeedMult = dash_->GetSpeedMultiplier();
+
+    // move_->Updateの中で speed * currentSpeedMult されるように調整
+    move_->Update(transform_, CameraManager::GetInstance()->GetMainCamera()->GetRotate(), currentSpeedMult);
+
+    // --- 4. 回転の合成 ---
+    transform_.rotate.z += dash_->GetRotationZ();
+    // レティクル
     reticle_->Update(targettransform_, transform_.translate, target_.get());
     // 攻撃
-    weapon_->Update(transform_.translate, target_->GetTranslate(), gameCam);
+    weapon_->Update(transform_.translate, target_->GetTranslate(), camMgr->GetGameplayCamera());
     // レティクル(2Dスプライト)の同期
-    reticle_->UpdateSprite(target_->GetTranslate(), targetreticle_.get(), activeCam);
+    reticle_->UpdateSprite(target_->GetTranslate(), targetreticle_.get(), camMgr->GetActiveCamera());
 }
 
 void Player::UpdateDead() {
+
+
     // 死亡演出：ここに落下や回転のロジックを書く（後にクラス化も可能）
     death_->Update(transform_.rotate, deathOffset_, object.get());
+    // 座標の同期（これが重要）
+    SyncWorldTransformByRail();
 }
 
 void Player::UpdateGoal() {
@@ -160,14 +190,6 @@ void Player::SyncWorldTransformByRail() {
     } else {
         transform_.translate = basePos;
     }
-    // 5. オブジェクトに反映
-    object->SetTranslate(transform_.translate);
-    object->SetRotate(transform_.rotate);
-    object->SetScale(transform_.scale);
-
-    // ターゲット（3D照準）も同様に反映
-    target_->SetTranslate(targettransform_.translate);
-    target_->Update();
 }
 
 ///=====================================================================
