@@ -72,8 +72,6 @@ private: // メンバ変数
     std::vector<Sprite*> uiSprites_;
 
     std::unique_ptr <Player> player_;
-    // 背景オブジェクト 
-    std::unique_ptr <Skybox> skybox_ = nullptr;
     // 演出用モデル
     Transform playertransform_{};
     // 移動制御

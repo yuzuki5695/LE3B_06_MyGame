@@ -4,6 +4,8 @@
 #include<ImGuiManager.h>
 #endif // USE_IMGUI
 #include<Tools/AssetGenerator/engine/math/LoadResourceID.h>
+#include <TextureManager.h>
+#include <SceneManager.h>
 
 using namespace LoadResourceID;
 // 静的メンバ変数の定義
@@ -33,13 +35,20 @@ void StageManager::Initialize() {
     loader_ = new CharacterLoader();
     levelData_ = loader_->LoadFile("stage");  // ←ここでロード
 
+    TextureManager::GetInstance()->LoadTexture(texture::Cubemapbox);
+
     // 敵モデルをあらかじめ読み込む
-   // ModelManager::GetInstance()->LoadModel("Enemy.obj");
+    // ModelManager::GetInstance()->LoadModel("Enemy.obj");
     ModelManager::GetInstance()->LoadModel(model::Tile);
-    
+    ModelManager::GetInstance()->LoadModel(model::Tile);
+
+    // スカイボックス生成 
+    skybox_ = Skybox::Create(texture::Cubemapbox, Transform{ { 1000.0f, 1000.0f, 1000.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 100.0f } });
+
     // オブジェクトの作成
     // 地面の作成
     grass = Object3d::Create(model::Tile, Transform({ 1000.0f, 1.0f, 1000.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, -8.0f, 50.0f }));
+
 
     //// レベルデータからオブジェクトを読み込む
     //for (auto& objData : levelData_->objects) {
@@ -90,9 +99,17 @@ void StageManager::Update() {
     }
 #endif
 
-    // 地面    
-    grass->Update();
-
+    if (SceneManager::GetInstance()->IsCurrentScene("TITLE")) {
+        // Skyboxの回転
+        Transform skyTrans = skybox_->GetTransform();
+        skyTrans.rotate.y += 0.001f; // Y軸回転（1フレームごとに少しずつ）
+        skybox_->SetRotate(skyTrans.rotate);
+        skybox_->Update();
+    }
+    if (SceneManager::GetInstance()->IsCurrentScene("GAMEPLAY")) {
+        // 地面    
+        grass->Update();
+    }
 }
 
 void StageManager::Draw() {
@@ -104,11 +121,17 @@ void StageManager::Draw() {
         }
     }
 #endif
-
-
-    grass->Draw();
+    if (SceneManager::GetInstance()->IsCurrentScene("GAMEPLAY")) {
+        grass->Draw();
+    }
 }
-    
+
+void StageManager::DDSDraw() { 
+    if (SceneManager::GetInstance()->IsCurrentScene("TITLE")) {
+        skybox_->Draw();
+    }
+}
+
 void StageManager::DebugImGui() {
 #ifdef USE_IMGUI
     ImGui::Begin("Stage Debug");

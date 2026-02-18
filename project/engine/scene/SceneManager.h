@@ -56,7 +56,18 @@ public:
     BaseScene* GetCurrentScene() const {
         return scene_.get();
     }
-	
+	/// <summary>
+    /// 現在のシーン名が指定した名前と一致するか判定する
+    /// </summary>
+    /// <param name="sceneName">比較したいシーン名</param>
+    /// <returns>一致していればtrue</returns>
+    bool IsCurrentScene(const std::string& sceneName) const {
+        // 現在のシーンが存在し、かつ名前が一致しているか
+        if (scene_) {
+            return scene_->GetSceneName() == sceneName;
+        }
+        return false;
+    }
 	// 現在のシーンが「到達済み」フラグを持っているか？
 	bool IsCurrentSceneReached() const {
 		if (!scene_) { return false; }

@@ -1,18 +1,19 @@
 #include "TitleScene.h"
-#include<SceneManager.h>
-#include<TextureManager.h>
-#include<ModelManager.h>
-#include<SpriteCommon.h>
-#include<Object3dCommon.h>
-#include<CameraManager.h>
-#include<Input.h>
+#include <SceneManager.h>
+#include <TextureManager.h>
+#include <ModelManager.h>
+#include <SpriteCommon.h>
+#include <Object3dCommon.h>
+#include <CameraManager.h>
+#include <Input.h>
 #ifdef USE_IMGUI
-#include<ImGuiManager.h>
+#include <ImGuiManager.h>
 #endif // USE_IMGUI
-#include<ParticleCommon.h>
-#include<SkyboxCommon.h>
-#include<FadeManager.h>
-#include<Tools/AssetGenerator/engine/math/LoadResourceID.h>
+#include <ParticleCommon.h>
+#include <SkyboxCommon.h>
+#include <FadeManager.h>
+#include <Tools/AssetGenerator/engine/math/LoadResourceID.h>
+#include <StageManager.h>
 
 using namespace LoadResourceID;
 namespace { constexpr float kFadeDuration = 1.0f; }
@@ -36,7 +37,8 @@ void TitleScene::Initialize() {
     // パーティクルのの生成、初期化
     particle_ = std::make_unique<Titleparticle>();
     particle_->Initialize(player_->GetPlayerObject());
-        
+    
+    StageManager::GetInstance()->Initialize();
     CameraManager::GetInstance()->SetCameraMode(CameraMode::Default);      
 
 #pragma endregion シーンの初期化
@@ -51,7 +53,6 @@ void TitleScene::LoadResources() {
     //  テクスチャの読み込み
     TextureManager::GetInstance()->LoadTexture(texture::Ui02);
     TextureManager::GetInstance()->LoadTexture(texture::Title);
-    TextureManager::GetInstance()->LoadTexture(texture::Cubemapbox);
 }
 
 void TitleScene::InitializeUI() {  
@@ -67,8 +68,6 @@ void TitleScene::InitializeUI() {
 }
 
 void TitleScene::InitializeModel() {
-    // スカイボックス生成 
-    skybox_ = Skybox::Create(texture::Cubemapbox, Transform{ { 1000.0f, 1000.0f, 1000.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 100.0f } });
     // プレイヤーパラメータ 
     playertransform_ = { {1.0f, 1.0f, 1.0f}, {0.0f, 0.3f, 0.0f},  -20.0f,0.0f,40.0f };
     titleStartX_ = -20.0f;
@@ -98,11 +97,7 @@ void TitleScene::Update() {
     /*------------------------------------------*/
     CameraManager::GetInstance()->Update();
 #pragma region 全てのObject3d個々の更新処理 
-    // Skyboxの回転
-    Transform skyTrans = skybox_->GetTransform();
-    skyTrans.rotate.y += 0.001f; // Y軸回転（1フレームごとに少しずつ）
-    skybox_->SetRotate(skyTrans.rotate);
-    skybox_->Update();
+    StageManager::GetInstance()->Update();
      
     // プレイヤーの演出
     UpdateTitlePlayerMotion();
@@ -130,7 +125,7 @@ void TitleScene::Draw() {
 #pragma region 全てのObject3d個々の描画処理 
     // 箱オブジェクトの描画準備。3Dオブジェクトの描画に共通のグラフィックスコマンドを積む
     SkyboxCommon::GetInstance()->Commondrawing();
-    skybox_->Draw();
+    StageManager::GetInstance()->DDSDraw();
     // 3Dオブジェクトの描画準備。3Dオブジェクトの描画に共通のグラフィックスコマンドを積む
     Object3dCommon::GetInstance()->Commondrawing();
     // プレイヤーの描画処理
