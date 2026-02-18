@@ -13,6 +13,7 @@
 #include<StageManager.h>
 #include<GamePlayparticle.h>
 #include <EnemySpawner.h>
+#include<Pausemenu.h>
 
 /// <summary>
 /// ゲームプレイシーン
@@ -56,7 +57,6 @@ private: // メンバ変数
     // オブジェクトデータ
     // プレイヤー
     std::unique_ptr <Player> player_ = nullptr;
-    bool playerhp_ = true;
     // キャラクターローダー
     std::unique_ptr<CharacterLoader> levelLoader_ = nullptr;
     // レベルデータ格納用インスタンスを生成
@@ -91,5 +91,7 @@ private: // メンバ変数
     bool uiProgressStarted_ = false;
     bool uiProgressFinished_ = false;
 
-
+    std::unique_ptr <Pausemenu> pausemenu_;
+    bool isPausedevent_;
+    bool isPaused_;
 };

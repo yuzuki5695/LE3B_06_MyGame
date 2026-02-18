@@ -12,6 +12,9 @@
 #ifdef USE_IMGUI
 #include<ImGuiManager.h>
 #endif // USE_IMGUI
+#include<Tools/AssetGenerator/engine/math/LoadResourceID.h>
+
+using namespace LoadResourceID;
 
 // シングルトン用インスタンス
 std::unique_ptr<FadeManager> FadeManager::instance = nullptr;
@@ -36,10 +39,10 @@ void FadeManager::Finalize() {
 ///====================================================
 void FadeManager::Initialize() {
     // テクスチャの読み込み
-    TextureManager::GetInstance()->LoadTexture("fade/Black.png");
-    TextureManager::GetInstance()->LoadTexture("fade/white.png");
+    TextureManager::GetInstance()->LoadTexture(texture::Black);
+    TextureManager::GetInstance()->LoadTexture(texture::White);
     // フェード用スプライトの初期化
-    sprite_ = Sprite::Create("fade/Black.png", Vector2{ 0.0f, 0.0f }, 0.0f, Vector2{ 1280.0f,720.0f });
+    sprite_ = Sprite::Create(texture::Black, Vector2{ 0.0f, 0.0f }, 0.0f, Vector2{ 1280.0f,720.0f });
     sprite_->SetColor({ 1.0f, 1.0f, 1.0f, 0.0f }); // 透明スタート         
 
     // 各種初期値
@@ -65,7 +68,7 @@ void FadeManager::Initialize() {
             shape.size = { spacingX, spacingY };
             shape.scale = 0.0f;
 
-            shape.sprite = Sprite::Create("fade/white.png", shape.position, 0.0f, shape.size);
+            shape.sprite = Sprite::Create(texture::White, shape.position, 0.0f, shape.size);
             shape.sprite->SetAnchorPoint({ 0.5f, 0.5f });
             shape.sprite->SetColor({ 0, 0, 0, 0 });
 

@@ -19,7 +19,9 @@
 #ifdef max
 #undef max
 #endif
+#include<Tools/AssetGenerator/engine/math/LoadResourceID.h>
 
+using namespace LoadResourceID;
 using namespace Easing;
 
 ///====================================================
@@ -36,15 +38,11 @@ void GameClearScene::Initialize() {
     CameraManager::GetInstance()->Initialize(CameraTransform({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }));
     // メインカメラは固定モード
     CameraManager::GetInstance()->SetCameraMode(CameraMode::Default);
-    // モデルの読み込み  
-    ModelManager::GetInstance()->LoadModel("Gameplay/Model/Player/Player.obj");
-
-
     // テクスチャの読み込み
-    TextureManager::GetInstance()->LoadTexture("CubemapBox.dds");    
-    TextureManager::GetInstance()->LoadTexture("Gameclear/Texture/UI_01.png");
-    TextureManager::GetInstance()->LoadTexture("Gameclear/Texture/Mission.png");
-    TextureManager::GetInstance()->LoadTexture("Gameclear/Texture/Complete.png");
+    TextureManager::GetInstance()->LoadTexture(texture::Cubemapbox);
+    TextureManager::GetInstance()->LoadTexture(texture::Ui01);
+    TextureManager::GetInstance()->LoadTexture(texture::Mission);
+    TextureManager::GetInstance()->LoadTexture(texture::Complete);
 
     
     ui2Timer_ = 0.0f;
@@ -57,28 +55,30 @@ void GameClearScene::Initialize() {
     ui3EndPos = { 800.0f, 130.0f };
     
        
-    ui1_ = Sprite::Create("Gameclear/Texture/UI_01.png", Vector2{ 950.0f, 450.0f }, 0.0f, Vector2{ 360.0f,100.0f });
+    ui1_ = Sprite::Create(texture::Ui01, Vector2{ 950.0f, 450.0f }, 0.0f, Vector2{ 360.0f,100.0f });
     ui1_->SetAnchorPoint(Vector2{ 0.5f, 0.5f }); // 中心基準
     ui1_->SetTextureSize(Vector2{ 360.0f,100.0f });
         
-    ui2_ = Sprite::Create("Gameclear/Texture/Mission.png", ui2StartPos, 0.0f, Vector2{ 400.0f,150.0f });
+    ui2_ = Sprite::Create(texture::Mission, ui2StartPos, 0.0f, Vector2{ 400.0f,150.0f });
     ui2_->SetTextureSize(Vector2{ 400.0f,150.0f });
 
-    ui3_ = Sprite::Create("Gameclear/Texture/Complete.png", ui3StartPos, 0.0f, Vector2{ 400.0f,150.0f });
+    ui3_ = Sprite::Create(texture::Complete, ui3StartPos, 0.0f, Vector2{ 400.0f,150.0f });
     ui3_->SetTextureSize(Vector2{ 400.0f,150.0f });
 
    
     offset_ = { { 1.0f, 1.0f, 1.0f }, { 0.0f, 1.5f, 0.0f }, { -70.0f, 0.0f, 30.0f } };
-    player_ = Object3d::Create("Gameplay/Model/Player/Player.obj", offset_);  
     startOffset_ = { -170.0f, 50.0f, 30.0f };
     endOffset_ = { 0.0f, 0.0f, 30.0f };    
+    // プレイヤーの生成、初期化
+    player_ = std::make_unique<Player>();
+    player_->Initialize();
+    player_->SetTransform(offset_);
     particle_ = std::make_unique<GameClearparticle>();
-    particle_->Initialize(player_.get());
-
+    particle_->Initialize(player_->GetPlayerObject());
     // 追従対象を設定
-    CameraManager::GetInstance()->GetGameClearCamera()->SetTarget(player_.get());
+    CameraManager::GetInstance()->GetGameClearCamera()->SetTarget(player_->GetPlayerObject());
 
-    Box_ = Skybox::Create("CubemapBox.dds", Transform{ { 1000.0f, 1000.0f, 1000.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 100.0f } });
+    Box_ = Skybox::Create(texture::Cubemapbox, Transform{ { 1000.0f, 1000.0f, 1000.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 100.0f } });
 
     // フェードマネージャの初期化
     FadeManager::GetInstance()->Initialize();
@@ -224,7 +224,7 @@ void GameClearScene::Step1_MovePlayerAndSwitchCamera() {
     // イージング処理
     bool finished = EaseMove(offset_.translate, startOffset_, endOffset_, easeT_, easeSpeed_);
 
-    player_->SetTranslate(offset_.translate);
+    player_->GetPlayerObject()->SetTranslate(offset_.translate);
 
     if (finished){
         // 次のステップへ
@@ -275,16 +275,16 @@ void GameClearScene::Step2_WaitOrDoSomething() {
         ui3_->SetPosition(newPos1);
     }
 
-    Vector3 pos = player_->GetTranslate();
+    Vector3 pos = player_->GetPlayerObject()->GetTranslate();
 
     // プレイヤー揺れ or Y補完
     if (!step2FinishPlayerEase_) {
         step2Time_ += 0.03f;
         pos.y = sinf(step2Time_) * 1.3f;
-        player_->SetTranslate(pos);
+        player_->GetPlayerObject()->SetTranslate(pos);
     } else {
         pos.y = Vector3::Lerp(pos, Vector3{ pos.x, 0.0f, pos.z }, 0.1f).y;
-        player_->SetTranslate(pos);
+        player_->GetPlayerObject()->SetTranslate(pos);
 
         // 完全に0になったらStep3へ
         if (fabs(pos.y) < 0.01f) {
@@ -340,7 +340,7 @@ void GameClearScene::Step3_MoveCameraOnInput() {
     // Step3時間更新
     step3Timer_ += (1.0f / 60.0f) * step3TimeScale ;
 
-    Vector3 pos = player_->GetTranslate();
+    Vector3 pos = player_->GetPlayerObject()->GetTranslate();
 
     /*-----------------------------------------------*/
     /* ① Step3開始時の「一度だけ後ろに下がる動き」 */
@@ -366,13 +366,13 @@ void GameClearScene::Step3_MoveCameraOnInput() {
         pos.y = 0.0f;
 
         // 回転のみ変更
-        Vector3 rot = player_->GetRotate();
+        Vector3 rot = player_->GetPlayerObject()->GetRotate();
         float startRot = 1.5f;
         float endRot = 3.0f;
         rot.y = startRot + (endRot - startRot) * ease;
 
-        player_->SetTranslate(pos);
-        player_->SetRotate(rot);
+        player_->GetPlayerObject()->SetTranslate(pos);
+        player_->GetPlayerObject()->SetRotate(rot);
         return;
     }
 
@@ -419,7 +419,7 @@ void GameClearScene::Step3_MoveCameraOnInput() {
     // なめらか追従
     pos = Vector3::Lerp(pos, targetPos, 0.15f);
 
-    player_->SetTranslate(pos);
+    player_->GetPlayerObject()->SetTranslate(pos);
 
 
 

@@ -2,7 +2,9 @@
 #include "ModelManager.h"
 #include <MatrixVector.h>
 #include <Object3d.h>
+#include<Tools/AssetGenerator/engine/math/LoadResourceID.h>
 
+using namespace LoadResourceID;
 using namespace MatrixVector;
 
 ///====================================================
@@ -44,10 +46,10 @@ void EnemyBullet::Initialize(const Vector3& startPos, const Vector3& targetPos, 
     // モデル未生成の場合はロード・生成する
     if (!object_) {
         // モデルを読み込む
-        ModelManager::GetInstance()->LoadModel("EnemyBullet.obj");
+        ModelManager::GetInstance()->LoadModel(model::Enemybullet);
         // 弾用の3Dオブジェクトを生成
         object_ = Object3d::Create(
-            "EnemyBullet.obj",
+            model::Enemybullet,
             transform_
         );
         // スケール設定
@@ -77,9 +79,9 @@ void EnemyBullet::Initialize(const Vector3& startPos, const Vector3& targetPos, 
     // モデルがまだ読み込まれていなければロード＆生成
     if (!object_) {
         // モデルを読み込む
-        ModelManager::GetInstance()->LoadModel("Bullet/EnemyBullet.obj");
+        ModelManager::GetInstance()->LoadModel(model::Enemybullet);
         // 弾用の3Dオブジェクトを生成（Transform情報を渡す）
-        object_ = Object3d::Create("Bullet/EnemyBullet.obj", transform_);
+        object_ = Object3d::Create(model::Enemybullet, transform_);
         // スケール設定
         object_->SetScale({ 0.5f, 0.5f, 0.5f });
     }

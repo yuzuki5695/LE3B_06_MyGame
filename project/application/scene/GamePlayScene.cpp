@@ -16,7 +16,9 @@
 #include <BulletManager.h>
 #include<MatrixVector.h>
 #include<Collision.h>
+#include<Tools/AssetGenerator/engine/math/LoadResourceID.h>
 
+using namespace LoadResourceID;
 using namespace Collision;
 using namespace MatrixVector;
 
@@ -37,39 +39,38 @@ void GamePlayScene::Initialize() {
     CameraManager::GetInstance()->Initialize(CameraTransform({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }));     
     CameraManager::GetInstance()->SetTypeview(ViewCameraType::Main);
 
-    // テクスチャを読み込む
-        
-    TextureManager::GetInstance()->LoadTexture("Gameplay/Texture/UI_01.png");
-    TextureManager::GetInstance()->LoadTexture("Gameplay/Texture/UI_02.png");
-    TextureManager::GetInstance()->LoadTexture("Gameplay/Texture/UI_03.png");
-        
-    TextureManager::GetInstance()->LoadTexture("Gameplay/Texture/Gage.png");
-    TextureManager::GetInstance()->LoadTexture("Gameplay/Texture/Player_ui.png");
+    // テクスチャを読み込む 
+    TextureManager::GetInstance()->LoadTexture(texture::Move);
+    TextureManager::GetInstance()->LoadTexture(texture::Reticlemove);
+    TextureManager::GetInstance()->LoadTexture(texture::Space);        
+    TextureManager::GetInstance()->LoadTexture(texture::Avoidance);
+    TextureManager::GetInstance()->LoadTexture(texture::Gage);
+    TextureManager::GetInstance()->LoadTexture(texture::PlayerUi);
     
-
+	Vector2 size = Vector2{ 120.0f,80.0f };
     MAXui_ = 1;
-    uis_.push_back(Sprite::Create("Gameplay/Texture/UI_01.png", Vector2{ 8.0f, 430.0f }, 0.0f, Vector2{ 200.0f,80.0f })); 
-    uis_.push_back(Sprite::Create("Gameplay/Texture/UI_02.png", Vector2{ 8.0f, 530.0f }, 0.0f, Vector2{ 200.0f,80.0f })); 
-    uis_.push_back(Sprite::Create("Gameplay/Texture/UI_03.png", Vector2{ 8.0f, 630.0f }, 0.0f, Vector2{ 200.0f,80.0f })); 
-    uis_[0]->SetTextureSize(Vector2{200.0f,80.0f});
-    uis_[1]->SetTextureSize(Vector2{200.0f,80.0f});
-    uis_[2]->SetTextureSize(Vector2{200.0f,80.0f});
-    
-    gage_ = Sprite::Create("Gameplay/Texture/Gage.png", Vector2{ 380.0f, 10.0f }, 0.0f, Vector2{ 500.0f,30.0f });
+    uis_.push_back(Sprite::Create(texture::Move, Vector2{ 5.0f, 550.0f }, 0.0f, size)); 
+    uis_.push_back(Sprite::Create(texture::Reticlemove, Vector2{ 125.0f, 550.0f }, 0.0f, size)); 
+    uis_.push_back(Sprite::Create(texture::Space, Vector2{ 5.0f, 630.0f }, 0.0f, size)); 
+    uis_.push_back(Sprite::Create(texture::Avoidance, Vector2{ 125.0f, 630.0f }, 0.0f, size)); 
+    // 2. vector の要素数を MAXui_ に同期（もし他で使うなら）
+    MAXui_ = static_cast<uint32_t>(uis_.size());
+    for (auto& ui : uis_) {
+        ui->SetTextureSize(size);
+    }
+
+    gage_ = Sprite::Create(texture::Gage, Vector2{ 380.0f, 10.0f }, 0.0f, Vector2{ 500.0f,30.0f });
     gage_->SetTextureSize(Vector2{ 500.0f,30.0f });     	 
-    player_ui_ = Sprite::Create("Gameplay/Texture/Player_ui.png", Vector2{ 380.0f, 12.3f }, 0.0f, Vector2{ 25.0f,25.0f });
+    player_ui_ = Sprite::Create(texture::PlayerUi, Vector2{ 380.0f, 12.3f }, 0.0f, Vector2{ 25.0f,25.0f });
     player_ui_->SetTextureSize(Vector2{ 25.0f,25.0f });     
 
     // .objファイルからモデルを読み込む
-    ModelManager::GetInstance()->LoadModel("Bullet/PlayerBullet.obj");
-    ModelManager::GetInstance()->LoadModel("Bullet/EnemyBullet.obj");
-    ModelManager::GetInstance()->LoadModel("Gameplay/Model/Goal/Goal.obj");
+    ModelManager::GetInstance()->LoadModel(model::Goal);
 
     // プレイヤーの作成と初期化
     player_ = std::make_unique<Player>();
     player_->Initialize(); // プレイヤーの初期化
     CameraManager::GetInstance()->SetGamecameraTarget(player_->GetPlayerObject());
-    playerhp_ = player_->IsActive();
     // カメラにプレイヤーを追わせる
 
     // パーティクル
@@ -90,10 +91,10 @@ void GamePlayScene::Initialize() {
     enemySpawner_ = std::make_unique<EnemySpawner>(); enemySpawner_->Initialize(player_.get(), CameraManager::GetInstance(), &enemies_);
 
     // クリアゲート(仮)
-    wall = Object3d::Create("Gameplay/Model/Goal/Goal.obj", Transform{ { 2.0f, 2.0f, 2.0f }, { 0.0f, 0.0f, 0.0f }, { 8.0f, 39.0f, 800.0f } });
+    wall = Object3d::Create(model::Goal, Transform{ { 2.0f, 2.0f, 2.0f }, { 0.0f, 0.0f, 0.0f }, { 8.0f, 39.0f, 800.0f } });
     // スカイボックスの作成
-    TextureManager::GetInstance()->LoadTexture("CubemapBox.dds");
-    Box_ = Skybox::Create("CubemapBox.dds", Transform{ { 1000.0f, 1000.0f, 1000.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 100.0f } });
+    TextureManager::GetInstance()->LoadTexture(texture::Cubemapbox);
+    Box_ = Skybox::Create(texture::Cubemapbox, Transform{ { 1000.0f, 1000.0f, 1000.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 100.0f } });
     // ゴールフラグ初期化
     goal_ = false;
     // フェードマネージャの初期化
@@ -106,11 +107,54 @@ void GamePlayScene::Initialize() {
     StageManager::GetInstance()->Initialize();
 
     end = false;
+    // ポーズメニューの初期化
+    pausemenu_ = std::make_unique<Pausemenu>();
+    pausemenu_->Initialize();
+    isPaused_ = false;
+    isPausedevent_ = false;
 }
 ///====================================================
 /// 毎フレーム更新処理
 ///====================================================
-void GamePlayScene::Update() {
+void GamePlayScene::Update() { 
+    pausemenu_->IconUpdate();
+    // Enterキーでポーズの「開始」のみをチェック
+    if (isPausedevent_ && !isPaused_ && Input::GetInstance()->Triggrkey(DIK_TAB)) {
+        isPaused_ = true;
+        pausemenu_->SetActive(true); // 演出開始！
+    }
+
+    //  ポーズ中の処理
+    if (isPaused_) {
+        pausemenu_->Update();
+        // ポーズメニュー内での演出（逆再生含む）がすべて終わったかチェック
+        if (pausemenu_->IsFinished()) {
+            isPaused_ = false; // ゲーム再開
+        }
+
+        // Resume（再開）の場合は、メニューが閉じ終わるのを待つ
+        if (pausemenu_->IsFinished() && pausemenu_->GetCommand() == PauseCommand::Resume) {
+            isPaused_ = false;
+        } else if (pausemenu_->GetCommand() == PauseCommand::GoToTitle) {
+            // フェードマネージャの更新   
+            FadeManager::GetInstance()->Update();
+            // メニューが表示されたまま、フェードアウトを開始
+            if (!goal_) {
+                FadeManager::GetInstance()->StartFadeOut(1.0f, FadeStyle::Normal);
+                goal_ = true; // フェード開始フラグとして利用
+            }
+
+            // フェードが終わったらシーン遷移
+            if (FadeManager::GetInstance()->IsFadeEnd()) {
+                SceneManager::GetInstance()->ChangeScene("TITLE");
+            }
+            // タイトル移行時はここでreturnし、背後のゲーム処理を止めたままにする
+            return;
+        }
+        // ポーズ演出中はゲームの他の更新を止める
+        return;
+    }
+
     // フェードイン開始
     if (!FadeManager::GetInstance()->IsFadeStart() && !FadeManager::GetInstance()->IsFading()) {
         // フェード開始
@@ -122,11 +166,9 @@ void GamePlayScene::Update() {
     EventManager::GetInstance()->Update(); 	
 
     // 死亡演出
-    if (end && CameraManager::GetInstance()->GetTypeview() == ViewCameraType::Main) {
-        CameraManager::GetInstance()->SetMode(CameraMode::Default);   
+    if (player_->GetState() == State::Dead && CameraManager::GetInstance()->GetTypeview() == ViewCameraType::Main) {
+        CameraManager::GetInstance()->SetMode(CameraMode::Default);
         CameraManager::GetInstance()->SetTypeview(ViewCameraType::Sub);
-        player_->SetKeyActive(false);
-        player_->SetReticleVisible(false);
         // フェード開始             
         end = false;
     }
@@ -137,20 +179,19 @@ void GamePlayScene::Update() {
     }
 
     // ゴール演出
-    if (!goal_ && player_->GetPosition().z >= CameraManager::GetInstance()->GetGameplayCamera()->GetBezierPoints().back().controlPoint.z && CameraManager::GetInstance()->GetTypeview() == ViewCameraType::Main) {
+    if (!goal_ && player_->GetState() == State::Alive && player_->GetPosition().z >= CameraManager::GetInstance()->GetGameplayCamera()->GetBezierPoints().back().controlPoint.z && CameraManager::GetInstance()->GetTypeview() == ViewCameraType::Main) {
         FadeManager::GetInstance()->StartFadeOut(1.0f, FadeStyle::Normal);
-        player_->SetKeyActive(false);
-        player_->SetReticleVisible(false);
+        player_->SetState(State::Goal);
         // フェード開始             
         goal_ = true;
         end = false;
     }
 
     // ゲームスタートイベントが終了したらプレイヤ―操作可能に
-    if (EventManager::GetInstance()->IsFinished() && CameraManager::GetInstance()->GetTypeview() == ViewCameraType::Main) {
+    if (player_->GetState() == State::None && EventManager::GetInstance()->IsFinished() && CameraManager::GetInstance()->GetTypeview() == ViewCameraType::Main) {
         // イベント終了 → プレイヤーを操作可能に
-        player_->SetKeyActive(true);
-        player_->SetReticleVisible(true);
+        player_->SetState(State::Alive);
+        isPausedevent_ = true;
         // 進行度を設定
         StartStageProgressUI();
     }
@@ -167,7 +208,6 @@ void GamePlayScene::Update() {
     CameraManager::GetInstance()->SetGamecameraTarget(player_->GetPlayerObject());
     CameraManager::GetInstance()->Update();
 #pragma region 全てのObject3d個々の更新処理
-    playerhp_ = player_->IsActive();
     // 終了しない限り更新処理
     if (!end) {
         if (EventManager::GetInstance()->IsFinished() ){
@@ -207,10 +247,10 @@ void GamePlayScene::Update() {
 
     // フェードアウトが完了したら次のシーンへ
     if (FadeManager::GetInstance()->IsFadeEnd() && FadeManager::GetInstance()->GetFadeType() == FadeType::FadeOut) {
-        if (!playerhp_) {
+        if (player_->GetState() == State::Dead) {
             // シーン切り替え
             SceneManager::GetInstance()->ChangeScene("GAMEOVER");
-        } else {
+        } else if (player_->GetState() == State::Goal) {
             // シーン切り替え
             SceneManager::GetInstance()->ChangeScene("GAMECLEAR");
         }
@@ -244,6 +284,7 @@ void GamePlayScene::Update() {
 
     gage_->Update();
     player_ui_->Update();
+
 #pragma endregion 全てのSprite個々の更新処理
 
 #pragma region  ImGuiの更新処理開始
@@ -270,7 +311,7 @@ void GamePlayScene::Draw() {
     SkyboxCommon::GetInstance()->Commondrawing();
     Box_->Draw();
     // 3Dオブジェクトの描画準備。3Dオブジェクトの描画に共通のグラフィックスコマンドを積む
-    Object3dCommon::GetInstance()->Commondrawing(); 
+    Object3dCommon::GetInstance()->Commondrawing();
     StageManager::GetInstance()->Draw();
 
     // 描画処理
@@ -289,7 +330,7 @@ void GamePlayScene::Draw() {
         }
     }
     wall->Draw();
-	// イベントマネージャの描画処理
+    // イベントマネージャの描画処理
     EventManager::GetInstance()->Drawo3Dbject();
 
     // パーティクルの描画準備。パーティクルの描画に共通のグラフィックスコマンドを積む 
@@ -311,15 +352,18 @@ void GamePlayScene::Draw() {
 
     gage_->Draw();
     player_ui_->Draw();
-
-	// イベントマネージャの描画処理
+    if (isPausedevent_) {
+        if (isPaused_) {
+            pausemenu_->Draw();
+        }
+        pausemenu_->IconDraw();
+    }
+    // イベントマネージャの描画処理
     EventManager::GetInstance()->Draw2DSprite();
-	// フェードマネージャの描画
+    // フェードマネージャの描画
     FadeManager::GetInstance()->Draw();
 #pragma endregion 全てのSprite個々の描画処理
 }
-
-
 
 ///====================================================
 /// プレイヤー弾 vs 敵の当たり判定
@@ -353,8 +397,6 @@ void GamePlayScene::CheckBulletEnemyCollisionsOBB() {
 void GamePlayScene::CheckEnemyBulletPlayerCollisionsOBB() {
     const auto& bullets = BulletManager::GetInstance()->GetEnemyBullets();
 
-    if (!player_ || !player_->IsActive()) return;
-
     OBB playerOBB = player_->GetOBB(); // プレイヤーがOBBを返すようにしておく必要あり
 
     for (const std::unique_ptr<EnemyBullet>& bullet : bullets) {
@@ -364,7 +406,7 @@ void GamePlayScene::CheckEnemyBulletPlayerCollisionsOBB() {
 
         if (IsOBBIntersect(bulletOBB, playerOBB)) {
             bullet->SetInactive();
-            player_->SetInactive();  // プレイヤーを無効にする
+            player_->SetState(State::Dead);
 
             end = true;
             // ヒットエフェクトなど追加
@@ -376,8 +418,6 @@ void GamePlayScene::CheckEnemyBulletPlayerCollisionsOBB() {
 /// 敵 vs プレイヤー の当たり判定
 ///====================================================
 void GamePlayScene::CheckEnemyPlayerCollisionsOBB() {
-    if (!player_ || !player_->IsActive()) return;
-
     // プレイヤーのOBBを取得
     OBB playerOBB = player_->GetOBB();
 
@@ -389,7 +429,7 @@ void GamePlayScene::CheckEnemyPlayerCollisionsOBB() {
 
         // 衝突判定
         if (IsOBBIntersect(playerOBB, enemyOBB)) {
-            player_->SetInactive();
+            player_->SetState(State::Dead);
             end = true; // ゲームオーバーへ遷移など
 
             break;

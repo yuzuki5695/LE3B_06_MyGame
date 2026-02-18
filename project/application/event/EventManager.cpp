@@ -7,7 +7,9 @@
 #ifdef USE_IMGUI
 #include<ImGuiManager.h>
 #endif // USE_IMGUI
+#include<Tools/AssetGenerator/engine/math/LoadResourceID.h>
 
+using namespace LoadResourceID;
 using namespace MatrixVector;
 
 // シングルトン用インスタンス
@@ -38,11 +40,11 @@ void EventManager::Finalize() {
 ///====================================================
 void EventManager::Initialize(const std::string& stateName) {
     // テクスチャのロード
-    TextureManager::GetInstance()->LoadTexture("Event/Black.png");
-    TextureManager::GetInstance()->LoadTexture("Event/Startevent_01.png");
-    TextureManager::GetInstance()->LoadTexture("Event/Startevent_02.png");
-    TextureManager::GetInstance()->LoadTexture("Event/mission.png");
-    TextureManager::GetInstance()->LoadTexture("Event/start.png");
+    TextureManager::GetInstance()->LoadTexture(texture::Black);
+    TextureManager::GetInstance()->LoadTexture(texture::Startevent01);
+    TextureManager::GetInstance()->LoadTexture(texture::Startevent02);
+    TextureManager::GetInstance()->LoadTexture(texture::StartMission);
+    TextureManager::GetInstance()->LoadTexture(texture::Start);
     // 受け取った文字列を小文字に変換して比較（大文字小文字を区別しないため）
     std::string lower = stateName;
     std::transform(lower.begin(), lower.end(), lower.begin(), ::tolower);
@@ -55,21 +57,21 @@ void EventManager::Initialize(const std::string& stateName) {
         // ゲーム開始イベントの初期化
         state_ = EventState::GameStart;
         // 初期化
-        sprite_ = Sprite::Create("Event/Black.png", Vector2{ 0.0f, 300.0f }, 0.0f, Vector2{ 1280.0f,150.0f });
+        sprite_ = Sprite::Create(texture::Black, Vector2{ 0.0f, 300.0f }, 0.0f, Vector2{ 1280.0f,150.0f });
         sprite_->SetColor(Vector4{ 1.0f, 1.0f, 1.0f, 0.0f });
         alpha_ = 0.0f;
         // スプライトサイズ
         size_ = { 1280.0f, 75.0f }; // 画面幅1280、高さ半分ずつくらいを想定
         // 左から右に動くスプライト（上側）
-        topSprite_ = Sprite::Create("Event/Startevent_02.png", Vector2{ -1280.0f, 300.0f }, 0.0f, size_);
+        topSprite_ = Sprite::Create(texture::Startevent02, Vector2{ -1280.0f, 300.0f }, 0.0f, size_);
         topSprite_->SetTextureSize(Vector2{ 1280.0f,75.0f });
         // 右から左に閉じるスプライト（下側）
-        bottomSprite_ = Sprite::Create("Event/Startevent_01.png", Vector2{ 1280.0f, 375.0f }, 0.0f, size_);
+        bottomSprite_ = Sprite::Create(texture::Startevent01, Vector2{ 1280.0f, 375.0f }, 0.0f, size_);
         bottomSprite_->SetTextureSize(Vector2{ 1280.0f,75.0f });
         closeSpeed_ = 17.0f; 
         // UIスプライト
         missionsize_ = { 300.0f,200.0f };
-        mission_ = Sprite::Create("Event/mission.png", Vector2{ 500.0f, 265.0f }, 0.0f, missionsize_);
+        mission_ = Sprite::Create(texture::StartMission, Vector2{ 500.0f, 265.0f }, 0.0f, missionsize_);
         missionalpha_ = 0.0f;
         mission_->SetColor(Vector4{ 1.0f, 1.0f, 1.0f, missionalpha_ });
         mission_->SetTextureSize(Vector2{ 300.0f,200.0f });
@@ -167,7 +169,7 @@ void EventManager::Update() {
             if (missionalpha_ <= 0.0f) {
                 missionalpha_ = 1.0f;
                 timefige_ = false;
-                mission_->SetTexture("Event/start.png");
+                mission_->SetTexture(texture::Start);
                 phase_ = EventPhase::End;
             }
             mission_->SetColor({ 1.0f, 1.0f, 1.0f, missionalpha_ }); // 色（RGBA）を更新
