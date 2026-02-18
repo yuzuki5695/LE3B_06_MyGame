@@ -7,33 +7,36 @@ struct Transform;
 
 /// <summary>
 /// プレイヤーの移動・傾き制御クラス
-/// 入力に基づいた座標計算、移動範囲の制限、および移動に伴う機体の傾き演出を行う。
+/// レールカメラの移動に追従しながら、画面内での相対的な移動と、その入力に応じた機体の傾きを制御する。
 /// </summary>
 class PlayerMove {
 public:// メンバ関数
     /// <summary>
     /// 毎フレームの更新処理
     /// </summary>
-    /// <param name="transform">プレイヤーのトランスフォーム（参照）</param>
-    /// <param name="cameraRotate">現在のカメラ回転角</param>
+    /// <param name="transform">プレイヤーのトランスフォーム</param>
+    /// <param name="cameraRotate">現在のカメラの回転角</param>
+    /// <param name="speedMultiplier">移動速度の倍率</param>
     void Update(Transform& transform, const Vector3& cameraRotate, float speedMultiplier);
 private:
     /// <summary>
-    /// 移動範囲の制限を適用する
+    /// プレイヤーが画面外に出ないよう座標を制限する
     /// </summary>
     void ApplyConstraint();
     /// <summary>
     /// 移動入力に基づいた傾き演出の計算
     /// </summary>
-    /// <param name="moveInput">現在の移動入力ベクトル</param>
+    /// <param name="moveInput">現在のフレームの移動量ベクトル</param>
     void UpdateTilt(const Vector3& moveInput);
 private:// メンバ変数
     // カメラ座標系における自機の相対座標
     Vector3 relativePos_{};
-    // 現在の傾き角（X軸：ピッチ、Z軸：ロール）
-    float tiltX_{};
-    float tiltZ_{};
-public:// メンバ関数
+    // 演出用傾き角
+    float tiltX_{}; // 上下移動によるピッチ（機首の上げ下げ）
+    float tiltZ_{}; // 左右移動によるロール（翼の傾き）
+public: // アクセッサ
+    // Getter
     const Vector3& GetLocalPosition() const { return relativePos_; }
-	void SetLocalPosition(const Vector3& pos) { relativePos_ = pos; }
+	// Setter
+    void SetLocalPosition(const Vector3& pos) { relativePos_ = pos; }
 };
