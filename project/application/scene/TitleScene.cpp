@@ -20,6 +20,7 @@ namespace { constexpr float kFadeDuration = 1.0f; }
 
 void TitleScene::Finalize() {
     FadeManager::GetInstance()->Finalize();  //  フェードマネージャの解放処理
+	StageManager::GetInstance()->Finalize(); // ステージマネージャの解放処理
 }
 
 void TitleScene::Initialize() {
