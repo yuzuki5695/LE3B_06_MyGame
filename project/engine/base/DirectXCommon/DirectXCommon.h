@@ -26,7 +26,7 @@ public: // メンバ関数
 	// 描画前処理
 	void PreDraw(D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle,Microsoft::WRL::ComPtr <ID3D12DescriptorHeap> DsvDescriptorHeap);
 	// 描画後処理
-	void PostDrow();
+	void PostDraw();
 
 	/// <summary>
 	/// レンダーテクスチャのテクスチャリソースの生成
