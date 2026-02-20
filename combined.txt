@@ -15544,82 +15544,87 @@ void Framework::Draw() {
 void Framework::DrawDebug() {
 #ifdef USE_IMGUI
     // --- A. 基本設定 ---
-    const float kGameViewW = 640.0f; // 理想のサイズ
+    const float kGameViewW = 640.0f;
     const float kGameViewH = 360.0f;
 
-    // --- B. 全画面 DockSpace (透明な土台) ---
+    // --- B. 全画面 DockSpace (エディタの土台) ---
     ImGuiViewport* viewport = ImGui::GetMainViewport();
     ImGui::SetNextWindowPos(viewport->WorkPos);
     ImGui::SetNextWindowSize(viewport->WorkSize);
-    ImGui::SetNextWindowViewport(viewport->ID);
+    ImGui::SetNextWindowViewport(viewport->ID); 
 
-    // 土台自体の装飾を消す
+    // ルートウィンドウの設定 (メニューバーあり、移動・リサイズ不可、背景あり)
     ImGuiWindowFlags root_flags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking |
                                   ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse |
                                   ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove |
-                                  ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus |
-                                  ImGuiWindowFlags_NoBackground;
+                                  ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
 
     ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
     ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+
     ImGui::Begin("EditorRoot", nullptr, root_flags);
     ImGui::PopStyleVar(3);
 
-    // DockSpace作成（中央を透過させるフラグが重要）
+    // DockSpaceの設置
     ImGuiID dockspace_id = ImGui::GetID("MainDockSpace");
-    ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), ImGuiDockNodeFlags_PassthruCentralNode);
+    
+    // 【重要】Passthruを外すことで、後ろに透けていた本来のゲーム画面を隠し、
+    // グレーの背景（またはImGuiウィンドウ）で塗りつぶします。
+    ImGuiDockNodeFlags dock_flags = ImGuiDockNodeFlags_None; 
+    ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dock_flags);
 
+    // メニューバー
     if (ImGui::BeginMenuBar()) {
         if (ImGui::BeginMenu("File")) {
-            if (ImGui::MenuItem("Exit")) { endRequst_ = true; }
+            if (ImGui::MenuItem("Exit", "Alt+F4")) { endRequst_ = true; }
             ImGui::EndMenu();
         }
         ImGui::EndMenuBar();
     }
-    ImGui::End(); // EditorRoot 終了
+    ImGui::End(); // EditorRoot終了
 
     // --- C. 固定ゲームビュー (左上に配置) ---
-    // Dockingに属させない(NoDocking)ことで、勝手に移動するのを防ぎます
+    // メニューバーの高さを考慮して配置 (必要に応じて y + 20px 調整)
     ImGui::SetNextWindowPos(ImVec2(viewport->WorkPos.x, viewport->WorkPos.y), ImGuiCond_Always);
     ImGui::SetNextWindowSize(ImVec2(kGameViewW, kGameViewH), ImGuiCond_Always);
     
+    // NoDockingを入れて、勝手に中央に吸い込まれないようにする
     ImGuiWindowFlags game_flags = ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | 
                                   ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoTitleBar | 
-                                  ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoScrollbar;
+                                  ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoScrollbar |
+                                  ImGuiWindowFlags_NoSavedSettings;
 
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
+    // ゲーム画面を際立たせるために背景を黒にする
+    ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0, 0, 0, 1)); 
+
     ImGui::Begin("GameView_Fixed", nullptr, game_flags);
     {
         uint32_t srvIdx = CopylmageCommon::GetInstance()->GetSrvIndex();
         D3D12_GPU_DESCRIPTOR_HANDLE srvHandle = srvManager->GetGPUDescriptorHandle(srvIdx);
-        // ここで画像を描画
-        ImGui::Image((ImTextureID)srvHandle.ptr, ImVec2(kGameViewW, kGameViewH));
+
+        // 型変換の安全な形 (uintptr_t 経由)
+        ImTextureID textureID = (ImTextureID)(void*)(uintptr_t)srvHandle.ptr;
+
+        // レンダーテクスチャを描画
+        ImGui::Image(textureID, ImVec2(kGameViewW, kGameViewH));
     }
     ImGui::End();
+    ImGui::PopStyleColor();
     ImGui::PopStyleVar();
 
-    // --- D. 各種エディタパネル (これらは自由にドッキング可能) ---
-    // 右側のパラメータ調整用
+    // --- D. 各種パネル ---
+    // これらは DockSpace 内で自由に移動・ドッキング可能です
     ImGui::Begin("Inspector");
     ImGui::Text("Transform");
-    static float pos[3] = { 0, 0, 0 };
-    ImGui::DragFloat3("Position", pos, 0.1f);
+    // ここに SceneManager 等から持ってきた数値を表示
     ImGui::End();
 
-    // 下側のログ出力用
-    ImGui::Begin("Console");
-    ImGui::Text("System: Application started.");
+    ImGui::Begin("Asset");
+    ImGui::Text("File list...");
     ImGui::End();
 
-    // 左下などの階層構造用
-    ImGui::Begin("Hierarchy");
-    if (ImGui::TreeNode("Main Scene")) {
-        ImGui::Selectable("Player");
-        ImGui::Selectable("Ground");
-        ImGui::TreePop();
-    }
-    ImGui::End();
 #endif
 }
 
@@ -15737,6 +15742,11 @@ void ImGuiManager::Initialize([[maybe_unused]] WinApp* winApp, [[maybe_unused]] 
 
 	// ImGuiのスタイルを設定
 	ImGui::StyleColorsDark();
+	
+	io.Fonts->AddFontDefault();
+    unsigned char* pixels;
+    int width, height;
+    io.Fonts->GetTexDataAsRGBA32(&pixels, &width, &height);
 
 	// インデックスを確保
 	imguiindex = srvManager_->Allocate();
@@ -15754,6 +15764,8 @@ void ImGuiManager::Initialize([[maybe_unused]] WinApp* winApp, [[maybe_unused]] 
 		ImGuiHandleCPU,
 		ImGuiHandleGPU
 	);
+	// 【追加】フォントテクスチャなどのデバイスオブジェクトを即座に作成する
+    ImGui_ImplDX12_CreateDeviceObjects();
 #endif // USE_IMGUI
 }
 
