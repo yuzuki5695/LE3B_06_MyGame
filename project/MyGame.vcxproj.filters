@@ -232,6 +232,9 @@
     <Filter Include="ヘッダー ファイル\application\pause">
       <UniqueIdentifier>{5f0ad7e7-d543-4f5d-9f5a-2e8ac0dc99ba}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ソース ファイル\engine\editor">
+      <UniqueIdentifier>{8c81b882-315d-49b9-b80a-322138110a27}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -479,6 +482,9 @@
     </ClCompile>
     <ClCompile Include="application\player\PlayerDash.cpp">
       <Filter>ソース ファイル\application\player</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\editor\EditorManager.cpp">
+      <Filter>ソース ファイル\engine\editor</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -820,6 +826,15 @@
     </ClInclude>
     <ClInclude Include="application\player\PlayerDash.h">
       <Filter>ヘッダー ファイル\application\player</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\editor\IEditorWindow.h">
+      <Filter>ソース ファイル\engine\editor</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\editor\EditorManager.h">
+      <Filter>ソース ファイル\engine\editor</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\editor\InspectorWindow.h">
+      <Filter>ソース ファイル\engine\editor</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

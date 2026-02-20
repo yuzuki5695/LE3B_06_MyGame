@@ -32,5 +32,5 @@ void MyGame::Draw() {
     // デバックテキスト描画
     ImGuiManager::GetInstance()->Draw();
     // 描画後処理
-    Framework::GetDirectXCommon()->PostDrow();
+    Framework::GetDirectXCommon()->PostDraw();
 }

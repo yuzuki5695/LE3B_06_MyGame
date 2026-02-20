@@ -11,6 +11,8 @@
 #include<SkyboxCommon.h>
 #include <FileSearcher.h>
 #include <ManifestExporter.h>
+#include<EditorManager.h>
+#include <InspectorWindow.h>
 
 void Framework::Run() {
     // ゲームの初期化
@@ -113,6 +115,11 @@ void Framework::Initialize() {
     auto files = searcher.GetAllFiles({ "EditorTemp", ".git" });
     exporter.Export("Resources/manifest.json", files);
 
+    // エディタにウィンドウを登録していく
+    auto editor = EditorManager::GetInstance();
+    editor->AddWindow(std::make_unique<InspectorWindow>());
+
+
 #pragma region 基盤システムの初期化
 
     // 入力の初期化
@@ -149,8 +156,10 @@ void Framework::Update() {
     // ImGuiの受付開始
     ImGuiManager::GetInstance()->Begin();
     // シーンマネージャの更新処理
-    SceneManager::GetInstance()->Update(); 
-    DrawDebug();
+    SceneManager::GetInstance()->Update();
+#ifdef USE_IMGUI
+    EditorManager::GetInstance()->Draw(srvManager.get());
+#endif
     // ImGuiの描画前準備
     ImGuiManager::GetInstance()->End();
 }
@@ -160,7 +169,7 @@ void Framework::Draw() {
     srvManager->PreDraw();
     // レンダーテクスチャをレンダーターゲットにして描画開始準備
     rtvManager->PreDrawRenderTexture();
-    dxCommon->PreDrawRenderTexture(rtvManager->GetRtvHandle(2),dsvManager->GetDsvDescriptorHeap(), rtvManager->GetkRenderTargetClearValue());
+    dxCommon->PreDrawRenderTexture(rtvManager->GetRtvHandle(2), dsvManager->GetDsvDescriptorHeap(), rtvManager->GetkRenderTargetClearValue());
     // シーンマネージャの描画処理
     SceneManager::GetInstance()->Draw();
     // レンダーテクスチャをSRVとして使うための状態に遷移
@@ -168,94 +177,20 @@ void Framework::Draw() {
     //  DirectXの描画準備。全ての描画に共通のグラフィックスコマンドを積む
     // ここから書き込むバックバッファのインデックスを取得
     UINT backBufferIndex = dxCommon->GetSwapChain()->GetSwapChain()->GetCurrentBackBufferIndex();
-    dxCommon->PreDraw(rtvManager->GetRtvHandle(backBufferIndex),dsvManager->GetDsvDescriptorHeap());
+    dxCommon->PreDraw(rtvManager->GetRtvHandle(backBufferIndex), dsvManager->GetDsvDescriptorHeap());
+#ifndef USE_IMGUI
     // ポストエフェクト描画（レンダーテクスチャ → 画面） 
     CopylmageCommon::GetInstance()->Commondrawing(srvManager.get());
+#else
+    // エディタモード：Updateで作ったUIデータをここでGPUに転送するだけ
+    // すでにデータは完成しているので、引数は不要です
+    ImGuiManager::GetInstance()->Draw();
+#endif
 }
 
 void Framework::DrawDebug() {
 #ifdef USE_IMGUI
-    // --- A. 基本設定 ---
-    const float kGameViewW = 640.0f;
-    const float kGameViewH = 360.0f;
-
-    // --- B. 全画面 DockSpace (エディタの土台) ---
-    ImGuiViewport* viewport = ImGui::GetMainViewport();
-    ImGui::SetNextWindowPos(viewport->WorkPos);
-    ImGui::SetNextWindowSize(viewport->WorkSize);
-    ImGui::SetNextWindowViewport(viewport->ID); 
-
-    // ルートウィンドウの設定 (メニューバーあり、移動・リサイズ不可、背景あり)
-    ImGuiWindowFlags root_flags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking |
-                                  ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse |
-                                  ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove |
-                                  ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
-
-    ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
-    ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
-    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
-
-    ImGui::Begin("EditorRoot", nullptr, root_flags);
-    ImGui::PopStyleVar(3);
-
-    // DockSpaceの設置
-    ImGuiID dockspace_id = ImGui::GetID("MainDockSpace");
-    
-    // 【重要】Passthruを外すことで、後ろに透けていた本来のゲーム画面を隠し、
-    // グレーの背景（またはImGuiウィンドウ）で塗りつぶします。
-    ImGuiDockNodeFlags dock_flags = ImGuiDockNodeFlags_None; 
-    ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dock_flags);
-
-    // メニューバー
-    if (ImGui::BeginMenuBar()) {
-        if (ImGui::BeginMenu("File")) {
-            if (ImGui::MenuItem("Exit", "Alt+F4")) { endRequst_ = true; }
-            ImGui::EndMenu();
-        }
-        ImGui::EndMenuBar();
-    }
-    ImGui::End(); // EditorRoot終了
-
-    // --- C. 固定ゲームビュー (左上に配置) ---
-    // メニューバーの高さを考慮して配置 (必要に応じて y + 20px 調整)
-    ImGui::SetNextWindowPos(ImVec2(viewport->WorkPos.x, viewport->WorkPos.y), ImGuiCond_Always);
-    ImGui::SetNextWindowSize(ImVec2(kGameViewW, kGameViewH), ImGuiCond_Always);
-    
-    // NoDockingを入れて、勝手に中央に吸い込まれないようにする
-    ImGuiWindowFlags game_flags = ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | 
-                                  ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoTitleBar | 
-                                  ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoScrollbar |
-                                  ImGuiWindowFlags_NoSavedSettings;
-
-    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
-    // ゲーム画面を際立たせるために背景を黒にする
-    ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0, 0, 0, 1)); 
-
-    ImGui::Begin("GameView_Fixed", nullptr, game_flags);
-    {
-        uint32_t srvIdx = CopylmageCommon::GetInstance()->GetSrvIndex();
-        D3D12_GPU_DESCRIPTOR_HANDLE srvHandle = srvManager->GetGPUDescriptorHandle(srvIdx);
-
-        // 型変換の安全な形 (uintptr_t 経由)
-        ImTextureID textureID = (ImTextureID)(void*)(uintptr_t)srvHandle.ptr;
-
-        // レンダーテクスチャを描画
-        ImGui::Image(textureID, ImVec2(kGameViewW, kGameViewH));
-    }
-    ImGui::End();
-    ImGui::PopStyleColor();
-    ImGui::PopStyleVar();
-
-    // --- D. 各種パネル ---
-    // これらは DockSpace 内で自由に移動・ドッキング可能です
-    ImGui::Begin("Inspector");
-    ImGui::Text("Transform");
-    // ここに SceneManager 等から持ってきた数値を表示
-    ImGui::End();
-
-    ImGui::Begin("Asset");
-    ImGui::Text("File list...");
-    ImGui::End();
-
+    // これだけで、全ウィンドウの管理と描画が終わる！
+    EditorManager::GetInstance()->Draw(srvManager.get()); // UIの定義
 #endif
 }
