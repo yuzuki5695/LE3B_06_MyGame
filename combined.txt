@@ -10088,26 +10088,28 @@ private: // メンバ変数
 File Path: project/application/scene/TitleScene.cpp
 ============================================================
 #include "TitleScene.h"
-#include<SceneManager.h>
-#include<TextureManager.h>
-#include<ModelManager.h>
-#include<SpriteCommon.h>
-#include<Object3dCommon.h>
-#include<CameraManager.h>
-#include<Input.h>
+#include <SceneManager.h>
+#include <TextureManager.h>
+#include <ModelManager.h>
+#include <SpriteCommon.h>
+#include <Object3dCommon.h>
+#include <CameraManager.h>
+#include <Input.h>
 #ifdef USE_IMGUI
-#include<ImGuiManager.h>
+#include <ImGuiManager.h>
 #endif // USE_IMGUI
-#include<ParticleCommon.h>
-#include<SkyboxCommon.h>
-#include<FadeManager.h>
-#include<Tools/AssetGenerator/engine/math/LoadResourceID.h>
+#include <ParticleCommon.h>
+#include <SkyboxCommon.h>
+#include <FadeManager.h>
+#include <Tools/AssetGenerator/engine/math/LoadResourceID.h>
+#include <StageManager.h>
 
 using namespace LoadResourceID;
 namespace { constexpr float kFadeDuration = 1.0f; }
 
 void TitleScene::Finalize() {
     FadeManager::GetInstance()->Finalize();  //  フェードマネージャの解放処理
+	StageManager::GetInstance()->Finalize(); // ステージマネージャの解放処理
 }
 
 void TitleScene::Initialize() {
@@ -10125,7 +10127,8 @@ void TitleScene::Initialize() {
     // パーティクルのの生成、初期化
     particle_ = std::make_unique<Titleparticle>();
     particle_->Initialize(player_->GetPlayerObject());
-        
+    
+    StageManager::GetInstance()->Initialize();
     CameraManager::GetInstance()->SetCameraMode(CameraMode::Default);      
 
 #pragma endregion シーンの初期化
@@ -10140,7 +10143,6 @@ void TitleScene::LoadResources() {
     //  テクスチャの読み込み
     TextureManager::GetInstance()->LoadTexture(texture::Ui02);
     TextureManager::GetInstance()->LoadTexture(texture::Title);
-    TextureManager::GetInstance()->LoadTexture(texture::Cubemapbox);
 }
 
 void TitleScene::InitializeUI() {  
@@ -10156,8 +10158,6 @@ void TitleScene::InitializeUI() {
 }
 
 void TitleScene::InitializeModel() {
-    // スカイボックス生成 
-    skybox_ = Skybox::Create(texture::Cubemapbox, Transform{ { 1000.0f, 1000.0f, 1000.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 100.0f } });
     // プレイヤーパラメータ 
     playertransform_ = { {1.0f, 1.0f, 1.0f}, {0.0f, 0.3f, 0.0f},  -20.0f,0.0f,40.0f };
     titleStartX_ = -20.0f;
@@ -10187,11 +10187,7 @@ void TitleScene::Update() {
     /*------------------------------------------*/
     CameraManager::GetInstance()->Update();
 #pragma region 全てのObject3d個々の更新処理 
-    // Skyboxの回転
-    Transform skyTrans = skybox_->GetTransform();
-    skyTrans.rotate.y += 0.001f; // Y軸回転（1フレームごとに少しずつ）
-    skybox_->SetRotate(skyTrans.rotate);
-    skybox_->Update();
+    StageManager::GetInstance()->Update();
      
     // プレイヤーの演出
     UpdateTitlePlayerMotion();
@@ -10219,7 +10215,7 @@ void TitleScene::Draw() {
 #pragma region 全てのObject3d個々の描画処理 
     // 箱オブジェクトの描画準備。3Dオブジェクトの描画に共通のグラフィックスコマンドを積む
     SkyboxCommon::GetInstance()->Commondrawing();
-    skybox_->Draw();
+    StageManager::GetInstance()->DDSDraw();
     // 3Dオブジェクトの描画準備。3Dオブジェクトの描画に共通のグラフィックスコマンドを積む
     Object3dCommon::GetInstance()->Commondrawing();
     // プレイヤーの描画処理
@@ -10398,8 +10394,6 @@ private: // メンバ変数
     std::vector<Sprite*> uiSprites_;
 
     std::unique_ptr <Player> player_;
-    // 背景オブジェクト 
-    std::unique_ptr <Skybox> skybox_ = nullptr;
     // 演出用モデル
     Transform playertransform_{};
     // 移動制御
@@ -10436,6 +10430,8 @@ File Path: project/application/stage/StageManager.cpp
 #include<ImGuiManager.h>
 #endif // USE_IMGUI
 #include<Tools/AssetGenerator/engine/math/LoadResourceID.h>
+#include <TextureManager.h>
+#include <SceneManager.h>
 
 using namespace LoadResourceID;
 // 静的メンバ変数の定義
@@ -10465,13 +10461,20 @@ void StageManager::Initialize() {
     loader_ = new CharacterLoader();
     levelData_ = loader_->LoadFile("stage");  // ←ここでロード
 
+    TextureManager::GetInstance()->LoadTexture(texture::Cubemapbox);
+
     // 敵モデルをあらかじめ読み込む
-   // ModelManager::GetInstance()->LoadModel("Enemy.obj");
+    // ModelManager::GetInstance()->LoadModel("Enemy.obj");
     ModelManager::GetInstance()->LoadModel(model::Tile);
-    
+    ModelManager::GetInstance()->LoadModel(model::Tile);
+
+    // スカイボックス生成 
+    skybox_ = Skybox::Create(texture::Cubemapbox, Transform{ { 1000.0f, 1000.0f, 1000.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 100.0f } });
+
     // オブジェクトの作成
     // 地面の作成
     grass = Object3d::Create(model::Tile, Transform({ 1000.0f, 1.0f, 1000.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, -8.0f, 50.0f }));
+
 
     //// レベルデータからオブジェクトを読み込む
     //for (auto& objData : levelData_->objects) {
@@ -10522,9 +10525,17 @@ void StageManager::Update() {
     }
 #endif
 
-    // 地面    
-    grass->Update();
-
+    if (SceneManager::GetInstance()->IsCurrentScene("TITLE")) {
+        // Skyboxの回転
+        Transform skyTrans = skybox_->GetTransform();
+        skyTrans.rotate.y += 0.001f; // Y軸回転（1フレームごとに少しずつ）
+        skybox_->SetRotate(skyTrans.rotate);
+        skybox_->Update();
+    }
+    if (SceneManager::GetInstance()->IsCurrentScene("GAMEPLAY")) {
+        // 地面    
+        grass->Update();
+    }
 }
 
 void StageManager::Draw() {
@@ -10536,11 +10547,17 @@ void StageManager::Draw() {
         }
     }
 #endif
-
-
-    grass->Draw();
+    if (SceneManager::GetInstance()->IsCurrentScene("GAMEPLAY")) {
+        grass->Draw();
+    }
 }
-    
+
+void StageManager::DDSDraw() { 
+    if (SceneManager::GetInstance()->IsCurrentScene("TITLE")) {
+        skybox_->Draw();
+    }
+}
+
 void StageManager::DebugImGui() {
 #ifdef USE_IMGUI
     ImGui::Begin("Stage Debug");
@@ -10558,6 +10575,7 @@ File Path: project/application/stage/StageManager.h
 #include <vector>
 #include<BaseCharacter.h>
 #include <CharacterLoader.h>
+#include <Skybox.h>
 
 /// <summary>
 /// ステージマネージャ
@@ -10579,7 +10597,8 @@ public: // メンバ関数
     void Initialize();
     void Update();
     void Draw();
-    
+    void DDSDraw();
+
     void DebugImGui();
 
 private:
@@ -10596,6 +10615,8 @@ private:
 
     // 地面
     std::unique_ptr <Object3d> grass = nullptr; 
+
+    std::unique_ptr<Skybox> skybox_;
 };
 
 ============================================================
@@ -14546,6 +14567,7 @@ private:
 public:
 	// gettre
 	DirectXCommon* GetDxCommon() const { return  dxCommon_; }
+	uint32_t GetSrvIndex() const { return srvIndex; }
 };
 
 ============================================================
@@ -15496,7 +15518,6 @@ void Framework::Update() {
     ImGuiManager::GetInstance()->Begin();
     // シーンマネージャの更新処理
     SceneManager::GetInstance()->Update(); 
-    // デバッグ系ImGui表示
     DrawDebug();
     // ImGuiの描画前準備
     ImGuiManager::GetInstance()->End();
@@ -15516,27 +15537,87 @@ void Framework::Draw() {
     // ここから書き込むバックバッファのインデックスを取得
     UINT backBufferIndex = dxCommon->GetSwapChain()->GetSwapChain()->GetCurrentBackBufferIndex();
     dxCommon->PreDraw(rtvManager->GetRtvHandle(backBufferIndex),dsvManager->GetDsvDescriptorHeap());
-	// ポストエフェクト描画（レンダーテクスチャ → 画面）
+    // ポストエフェクト描画（レンダーテクスチャ → 画面） 
     CopylmageCommon::GetInstance()->Commondrawing(srvManager.get());
 }
 
 void Framework::DrawDebug() {
 #ifdef USE_IMGUI
-    ImGui::Begin("System Monitor");
-    
-    // FPSと1フレームの処理時間を表示（平均処理時間 = 1000 / FPS）
-    ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
-    // FPSの推移を記録するためのバッファ（100フレーム分）
-    static float values[100] = {};
-    static int frame = 0;
-    values[frame++ % 100] = ImGui::GetIO().Framerate;
-    // FPSの履歴を折れ線グラフで表示
-    ImGui::PlotLines("FPS History", values, 100, 0, nullptr, 0.0f, 100.0f);
+    // --- A. 基本設定 ---
+    const float kGameViewW = 640.0f; // 理想のサイズ
+    const float kGameViewH = 360.0f;
 
-    PROCESS_MEMORY_COUNTERS pmc;  
-    // 現在のプロセス（このプロジェクト）のメモリ使用情報を取得
-    if (GetProcessMemoryInfo(GetCurrentProcess(), &pmc, sizeof(pmc))) {
-        ImGui::Text("Memory Used: %.2f MB", pmc.WorkingSetSize / (1024.0f * 1024.0f));    // 使用中のメモリ（物理メモリ）をMB単位で表示
+    // --- B. 全画面 DockSpace (透明な土台) ---
+    ImGuiViewport* viewport = ImGui::GetMainViewport();
+    ImGui::SetNextWindowPos(viewport->WorkPos);
+    ImGui::SetNextWindowSize(viewport->WorkSize);
+    ImGui::SetNextWindowViewport(viewport->ID);
+
+    // 土台自体の装飾を消す
+    ImGuiWindowFlags root_flags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking |
+                                  ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse |
+                                  ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove |
+                                  ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus |
+                                  ImGuiWindowFlags_NoBackground;
+
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+    ImGui::Begin("EditorRoot", nullptr, root_flags);
+    ImGui::PopStyleVar(3);
+
+    // DockSpace作成（中央を透過させるフラグが重要）
+    ImGuiID dockspace_id = ImGui::GetID("MainDockSpace");
+    ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), ImGuiDockNodeFlags_PassthruCentralNode);
+
+    if (ImGui::BeginMenuBar()) {
+        if (ImGui::BeginMenu("File")) {
+            if (ImGui::MenuItem("Exit")) { endRequst_ = true; }
+            ImGui::EndMenu();
+        }
+        ImGui::EndMenuBar();
+    }
+    ImGui::End(); // EditorRoot 終了
+
+    // --- C. 固定ゲームビュー (左上に配置) ---
+    // Dockingに属させない(NoDocking)ことで、勝手に移動するのを防ぎます
+    ImGui::SetNextWindowPos(ImVec2(viewport->WorkPos.x, viewport->WorkPos.y), ImGuiCond_Always);
+    ImGui::SetNextWindowSize(ImVec2(kGameViewW, kGameViewH), ImGuiCond_Always);
+    
+    ImGuiWindowFlags game_flags = ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | 
+                                  ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoTitleBar | 
+                                  ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoScrollbar;
+
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
+    ImGui::Begin("GameView_Fixed", nullptr, game_flags);
+    {
+        uint32_t srvIdx = CopylmageCommon::GetInstance()->GetSrvIndex();
+        D3D12_GPU_DESCRIPTOR_HANDLE srvHandle = srvManager->GetGPUDescriptorHandle(srvIdx);
+        // ここで画像を描画
+        ImGui::Image((ImTextureID)srvHandle.ptr, ImVec2(kGameViewW, kGameViewH));
+    }
+    ImGui::End();
+    ImGui::PopStyleVar();
+
+    // --- D. 各種エディタパネル (これらは自由にドッキング可能) ---
+    // 右側のパラメータ調整用
+    ImGui::Begin("Inspector");
+    ImGui::Text("Transform");
+    static float pos[3] = { 0, 0, 0 };
+    ImGui::DragFloat3("Position", pos, 0.1f);
+    ImGui::End();
+
+    // 下側のログ出力用
+    ImGui::Begin("Console");
+    ImGui::Text("System: Application started.");
+    ImGui::End();
+
+    // 左下などの階層構造用
+    ImGui::Begin("Hierarchy");
+    if (ImGui::TreeNode("Main Scene")) {
+        ImGui::Selectable("Player");
+        ImGui::Selectable("Ground");
+        ImGui::TreePop();
     }
     ImGui::End();
 #endif
@@ -15652,6 +15733,7 @@ void ImGuiManager::Initialize([[maybe_unused]] WinApp* winApp, [[maybe_unused]] 
 	// iniファイルを作らないように設定
 	ImGuiIO& io = ImGui::GetIO();
 	io.IniFilename = nullptr;
+	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;           // ドッキング有効化
 
 	// ImGuiのスタイルを設定
 	ImGui::StyleColorsDark();
@@ -19869,7 +19951,7 @@ void MyGame::Initialize() {
 	// GAMEPLAY           ゲームプレイ
 	// GAMECLEAR          ゲームクリア
     // GAMEOVER           ゲームオーバー
-    SceneManager::GetInstance()->ChangeScene("GAMEPLAY");
+    SceneManager::GetInstance()->ChangeScene("TITLE");
 }
 
 void MyGame::Update() {
@@ -20083,7 +20165,18 @@ public:
     BaseScene* GetCurrentScene() const {
         return scene_.get();
     }
-	
+	/// <summary>
+    /// 現在のシーン名が指定した名前と一致するか判定する
+    /// </summary>
+    /// <param name="sceneName">比較したいシーン名</param>
+    /// <returns>一致していればtrue</returns>
+    bool IsCurrentScene(const std::string& sceneName) const {
+        // 現在のシーンが存在し、かつ名前が一致しているか
+        if (scene_) {
+            return scene_->GetSceneName() == sceneName;
+        }
+        return false;
+    }
 	// 現在のシーンが「到達済み」フラグを持っているか？
 	bool IsCurrentSceneReached() const {
 		if (!scene_) { return false; }
