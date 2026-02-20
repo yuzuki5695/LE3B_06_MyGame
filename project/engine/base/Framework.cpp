@@ -150,7 +150,6 @@ void Framework::Update() {
     ImGuiManager::GetInstance()->Begin();
     // シーンマネージャの更新処理
     SceneManager::GetInstance()->Update(); 
-    // デバッグ系ImGui表示
     DrawDebug();
     // ImGuiの描画前準備
     ImGuiManager::GetInstance()->End();
@@ -170,27 +169,87 @@ void Framework::Draw() {
     // ここから書き込むバックバッファのインデックスを取得
     UINT backBufferIndex = dxCommon->GetSwapChain()->GetSwapChain()->GetCurrentBackBufferIndex();
     dxCommon->PreDraw(rtvManager->GetRtvHandle(backBufferIndex),dsvManager->GetDsvDescriptorHeap());
-	// ポストエフェクト描画（レンダーテクスチャ → 画面）
+    // ポストエフェクト描画（レンダーテクスチャ → 画面） 
     CopylmageCommon::GetInstance()->Commondrawing(srvManager.get());
 }
 
 void Framework::DrawDebug() {
 #ifdef USE_IMGUI
-    ImGui::Begin("System Monitor");
-    
-    // FPSと1フレームの処理時間を表示（平均処理時間 = 1000 / FPS）
-    ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
-    // FPSの推移を記録するためのバッファ（100フレーム分）
-    static float values[100] = {};
-    static int frame = 0;
-    values[frame++ % 100] = ImGui::GetIO().Framerate;
-    // FPSの履歴を折れ線グラフで表示
-    ImGui::PlotLines("FPS History", values, 100, 0, nullptr, 0.0f, 100.0f);
+    // --- A. 基本設定 ---
+    const float kGameViewW = 640.0f; // 理想のサイズ
+    const float kGameViewH = 360.0f;
 
-    PROCESS_MEMORY_COUNTERS pmc;  
-    // 現在のプロセス（このプロジェクト）のメモリ使用情報を取得
-    if (GetProcessMemoryInfo(GetCurrentProcess(), &pmc, sizeof(pmc))) {
-        ImGui::Text("Memory Used: %.2f MB", pmc.WorkingSetSize / (1024.0f * 1024.0f));    // 使用中のメモリ（物理メモリ）をMB単位で表示
+    // --- B. 全画面 DockSpace (透明な土台) ---
+    ImGuiViewport* viewport = ImGui::GetMainViewport();
+    ImGui::SetNextWindowPos(viewport->WorkPos);
+    ImGui::SetNextWindowSize(viewport->WorkSize);
+    ImGui::SetNextWindowViewport(viewport->ID);
+
+    // 土台自体の装飾を消す
+    ImGuiWindowFlags root_flags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking |
+                                  ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse |
+                                  ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove |
+                                  ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus |
+                                  ImGuiWindowFlags_NoBackground;
+
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+    ImGui::Begin("EditorRoot", nullptr, root_flags);
+    ImGui::PopStyleVar(3);
+
+    // DockSpace作成（中央を透過させるフラグが重要）
+    ImGuiID dockspace_id = ImGui::GetID("MainDockSpace");
+    ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), ImGuiDockNodeFlags_PassthruCentralNode);
+
+    if (ImGui::BeginMenuBar()) {
+        if (ImGui::BeginMenu("File")) {
+            if (ImGui::MenuItem("Exit")) { endRequst_ = true; }
+            ImGui::EndMenu();
+        }
+        ImGui::EndMenuBar();
+    }
+    ImGui::End(); // EditorRoot 終了
+
+    // --- C. 固定ゲームビュー (左上に配置) ---
+    // Dockingに属させない(NoDocking)ことで、勝手に移動するのを防ぎます
+    ImGui::SetNextWindowPos(ImVec2(viewport->WorkPos.x, viewport->WorkPos.y), ImGuiCond_Always);
+    ImGui::SetNextWindowSize(ImVec2(kGameViewW, kGameViewH), ImGuiCond_Always);
+    
+    ImGuiWindowFlags game_flags = ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | 
+                                  ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoTitleBar | 
+                                  ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoScrollbar;
+
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
+    ImGui::Begin("GameView_Fixed", nullptr, game_flags);
+    {
+        uint32_t srvIdx = CopylmageCommon::GetInstance()->GetSrvIndex();
+        D3D12_GPU_DESCRIPTOR_HANDLE srvHandle = srvManager->GetGPUDescriptorHandle(srvIdx);
+        // ここで画像を描画
+        ImGui::Image((ImTextureID)srvHandle.ptr, ImVec2(kGameViewW, kGameViewH));
+    }
+    ImGui::End();
+    ImGui::PopStyleVar();
+
+    // --- D. 各種エディタパネル (これらは自由にドッキング可能) ---
+    // 右側のパラメータ調整用
+    ImGui::Begin("Inspector");
+    ImGui::Text("Transform");
+    static float pos[3] = { 0, 0, 0 };
+    ImGui::DragFloat3("Position", pos, 0.1f);
+    ImGui::End();
+
+    // 下側のログ出力用
+    ImGui::Begin("Console");
+    ImGui::Text("System: Application started.");
+    ImGui::End();
+
+    // 左下などの階層構造用
+    ImGui::Begin("Hierarchy");
+    if (ImGui::TreeNode("Main Scene")) {
+        ImGui::Selectable("Player");
+        ImGui::Selectable("Ground");
+        ImGui::TreePop();
     }
     ImGui::End();
 #endif

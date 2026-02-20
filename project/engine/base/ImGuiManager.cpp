@@ -37,6 +37,7 @@ void ImGuiManager::Initialize([[maybe_unused]] WinApp* winApp, [[maybe_unused]] 
 	// iniファイルを作らないように設定
 	ImGuiIO& io = ImGui::GetIO();
 	io.IniFilename = nullptr;
+	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;           // ドッキング有効化
 
 	// ImGuiのスタイルを設定
 	ImGui::StyleColorsDark();
