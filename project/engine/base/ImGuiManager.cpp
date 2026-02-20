@@ -41,6 +41,11 @@ void ImGuiManager::Initialize([[maybe_unused]] WinApp* winApp, [[maybe_unused]] 
 
 	// ImGuiのスタイルを設定
 	ImGui::StyleColorsDark();
+	
+	io.Fonts->AddFontDefault();
+    unsigned char* pixels;
+    int width, height;
+    io.Fonts->GetTexDataAsRGBA32(&pixels, &width, &height);
 
 	// インデックスを確保
 	imguiindex = srvManager_->Allocate();
@@ -58,6 +63,8 @@ void ImGuiManager::Initialize([[maybe_unused]] WinApp* winApp, [[maybe_unused]] 
 		ImGuiHandleCPU,
 		ImGuiHandleGPU
 	);
+	// 【追加】フォントテクスチャなどのデバイスオブジェクトを即座に作成する
+    ImGui_ImplDX12_CreateDeviceObjects();
 #endif // USE_IMGUI
 }
 
