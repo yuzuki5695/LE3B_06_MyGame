@@ -10,6 +10,9 @@ public:
 
     // ウィンドウの名前（メニュー表示や識別に使用）
     virtual const char* GetName() const = 0;
+    
+    // 追加：メニュー項目を持ちたいウィンドウはこの関数をオーバーライドする
+    virtual void OnMenuBar() {}
 
     // ウィンドウが開いているかどうかのフラグ
     bool isOpen = true;

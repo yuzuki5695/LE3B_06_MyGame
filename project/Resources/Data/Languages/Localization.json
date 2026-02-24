@@ -1,0 +1,54 @@
+﻿{
+  "Editor": {
+    "System": {
+      "EngineInit": {
+        "jp": "[システム] エンジンの初期化が完了しました。",
+        "en": "[System] Engine initialization complete."
+      },
+      "SaveComplete": {
+        "jp": "[システム] 保存が完了しました。",
+        "en": "[System] Save completed."
+      },
+      "LangChanged": {
+        "jp": "言語を変更しました。",
+        "en": "Language changed."
+      }
+    },
+    "Menu": {
+      "View": {
+        "jp": "表示",
+        "en": "View"
+      },
+      "Options": {
+        "jp": "オプション",
+        "en": "Options"
+      },
+      "Settings": {
+        "jp": "設定",
+        "en": "Settings"
+      }
+    },
+    "Settings": {
+      "Title": {
+        "jp": "環境設定",
+        "en": "Settings"
+      },
+      "Language": {
+        "jp": "言語設定",
+        "en": "Language"
+      },
+      "Japanese": {
+        "jp": "日本語",
+        "en": "Japanese"
+      },
+      "English": {
+        "jp": "英語",
+        "en": "English"
+      },
+      "Close": {
+        "jp": "閉じる",
+        "en": "Close"
+      }
+    }
+  }
+}

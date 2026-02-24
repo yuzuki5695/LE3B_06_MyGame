@@ -235,6 +235,33 @@
     <Filter Include="ソース ファイル\engine\editor">
       <UniqueIdentifier>{8c81b882-315d-49b9-b80a-322138110a27}</UniqueIdentifier>
     </Filter>
+    <Filter Include="リソース ファイル\Data">
+      <UniqueIdentifier>{4ab3cb26-d19a-47e7-aa02-64c1012a62aa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="リソース ファイル\Data\Languages">
+      <UniqueIdentifier>{c70b3cf2-c485-484a-abf9-175046ba0757}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\engine\editor">
+      <UniqueIdentifier>{7b780177-cda0-4ffe-ab2d-01f2b2904858}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\engine\editor\core">
+      <UniqueIdentifier>{8046f2fa-9102-4500-be43-a5f317059193}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\engine\editor\system">
+      <UniqueIdentifier>{f9b249f1-2175-4d61-9753-e7a407801bfa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\engine\editor\system">
+      <UniqueIdentifier>{3db77467-1f5d-4f32-b17f-b83aa9ba6ee6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\engine\editor\core">
+      <UniqueIdentifier>{3bd64be9-0561-4f6b-9a8d-8f47975ea266}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\engine\editor\layout">
+      <UniqueIdentifier>{791b0e9d-f18d-426f-9e14-217e5ca84d0f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\engine\editor\windows">
+      <UniqueIdentifier>{d7e59b22-6cc1-4e29-8253-f3ceb6fd1473}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -483,7 +510,22 @@
     <ClCompile Include="application\player\PlayerDash.cpp">
       <Filter>ソース ファイル\application\player</Filter>
     </ClCompile>
-    <ClCompile Include="engine\editor\EditorManager.cpp">
+    <ClCompile Include="engine\editor\core\EditorManager.cpp">
+      <Filter>ソース ファイル\engine\editor\core</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\editor\system\MessageService.cpp">
+      <Filter>ソース ファイル\engine\editor\system</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\editor\system\LogManager.cpp">
+      <Filter>ソース ファイル\engine\editor\system</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\editor\layout\EditorLayout.cpp">
+      <Filter>ソース ファイル\engine\editor\layout</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\editor\windows\LogWindow.cpp">
+      <Filter>ソース ファイル\engine\editor\windows</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\editor\SettingWindow.cpp">
       <Filter>ソース ファイル\engine\editor</Filter>
     </ClCompile>
   </ItemGroup>
@@ -827,13 +869,31 @@
     <ClInclude Include="application\player\PlayerDash.h">
       <Filter>ヘッダー ファイル\application\player</Filter>
     </ClInclude>
-    <ClInclude Include="engine\editor\IEditorWindow.h">
-      <Filter>ソース ファイル\engine\editor</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\editor\EditorManager.h">
-      <Filter>ソース ファイル\engine\editor</Filter>
-    </ClInclude>
     <ClInclude Include="engine\editor\InspectorWindow.h">
+      <Filter>ヘッダー ファイル\engine\editor</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\editor\core\EditorTypes.h">
+      <Filter>ヘッダー ファイル\engine\editor\core</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\editor\core\EditorManager.h">
+      <Filter>ヘッダー ファイル\engine\editor\core</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\editor\core\IEditorWindow.h">
+      <Filter>ヘッダー ファイル\engine\editor\core</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\editor\system\LogManager.h">
+      <Filter>ヘッダー ファイル\engine\editor\system</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\editor\system\MessageService.h">
+      <Filter>ヘッダー ファイル\engine\editor\system</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\editor\layout\EditorLayout.h">
+      <Filter>ソース ファイル\engine\editor\layout</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\editor\windows\LogWindow.h">
+      <Filter>ソース ファイル\engine\editor\windows</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\editor\SettingWindow.h">
       <Filter>ソース ファイル\engine\editor</Filter>
     </ClInclude>
   </ItemGroup>
@@ -908,6 +968,9 @@
     </None>
     <None Include="Resources\levels\untitled.json">
       <Filter>リソース ファイル</Filter>
+    </None>
+    <None Include="Resources\Data\Languages\Localization.json">
+      <Filter>リソース ファイル\Data\Languages</Filter>
     </None>
   </ItemGroup>
 </Project>

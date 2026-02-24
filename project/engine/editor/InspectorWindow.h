@@ -1,6 +1,6 @@
 #pragma once
 #include <IEditorWindow.h>
-#include<ImGuiManager.h>
+#include <ImGuiManager.h>
 
 class InspectorWindow : public IEditorWindow {
 public:
