@@ -525,9 +525,6 @@
     <ClCompile Include="engine\editor\windows\LogWindow.cpp">
       <Filter>ソース ファイル\engine\editor\windows</Filter>
     </ClCompile>
-    <ClCompile Include="engine\editor\SettingWindow.cpp">
-      <Filter>ソース ファイル\engine\editor</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="engine\2d\Sprite.h">
@@ -892,9 +889,6 @@
     </ClInclude>
     <ClInclude Include="engine\editor\windows\LogWindow.h">
       <Filter>ソース ファイル\engine\editor\windows</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\editor\SettingWindow.h">
-      <Filter>ソース ファイル\engine\editor</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

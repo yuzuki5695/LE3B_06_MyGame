@@ -31,13 +31,13 @@ void LogManager::AddLog(const std::string& message) {
     logs_.push_back(formattedLog);
 }
 
-void LogManager::AddLog(Editor::MessageId id) {
-    // MessageServiceクラスを利用して、現在の言語設定に応じた文字列を取得
-    std::string message = MessageService::FetchMessage(id);
-
-    // 文字列版の AddLog を呼び出して、実際のログ記録を行う
-    AddLog(message);
-}
+//void LogManager::AddLog(Editor::MessageId id) {
+//    // MessageServiceクラスを利用して、現在の言語設定に応じた文字列を取得
+//    std::string message = MessageService::FetchMessage(id);
+//
+//    // 文字列版の AddLog を呼び出して、実際のログ記録を行う
+//    AddLog(message);
+//}
 
 void LogManager::Clear() {
     // ログ履歴の全消去

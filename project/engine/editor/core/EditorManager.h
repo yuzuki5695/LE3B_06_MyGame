@@ -55,7 +55,7 @@ public: // メンバ関数
 
 
 	   
-    void Log(Editor::MessageId id);
+//    void Log(Editor::MessageId id);
 
     void SetLanguage(Editor::Language lang);
 

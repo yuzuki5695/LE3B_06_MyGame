@@ -65,7 +65,7 @@ void ImGuiManager::Initialize([[maybe_unused]] WinApp* winApp, [[maybe_unused]] 
 		ImGuiHandleCPU,
 		ImGuiHandleGPU
 	);
-	// 【追加】フォントテクスチャなどのデバイスオブジェクトを即座に作成する
+	// フォントテクスチャなどのデバイスオブジェクトを作成
 	ImGui_ImplDX12_CreateDeviceObjects();
 #endif // USE_IMGUI
 }

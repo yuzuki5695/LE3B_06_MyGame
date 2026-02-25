@@ -5,37 +5,25 @@
         "jp": "[システム] エンジンの初期化が完了しました。",
         "en": "[System] Engine initialization complete."
       },
-      "SaveComplete": {
-        "jp": "[システム] 保存が完了しました。",
-        "en": "[System] Save completed."
-      },
       "LangChanged": {
-        "jp": "言語を変更しました。",
-        "en": "Language changed."
+        "jp": "言語を日本語に変更しました。",
+        "en": "Language changed to English."
       }
     },
     "Menu": {
-      "View": {
-        "jp": "表示",
-        "en": "View"
+      "Settings": {
+        "jp": "設定",
+        "en": "Settings"
       },
       "Options": {
         "jp": "オプション",
         "en": "Options"
-      },
-      "Settings": {
-        "jp": "設定",
-        "en": "Settings"
       }
     },
-    "Settings": {
+    "Language": {
       "Title": {
-        "jp": "環境設定",
-        "en": "Settings"
-      },
-      "Language": {
         "jp": "言語設定",
-        "en": "Language"
+        "en": "Language Settings"
       },
       "Japanese": {
         "jp": "日本語",
@@ -44,10 +32,6 @@
       "English": {
         "jp": "英語",
         "en": "English"
-      },
-      "Close": {
-        "jp": "閉じる",
-        "en": "Close"
       }
     }
   }

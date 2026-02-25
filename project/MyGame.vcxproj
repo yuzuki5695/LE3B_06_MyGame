@@ -149,7 +149,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="application\scene\TitleScene.cpp" />
     <ClCompile Include="engine\editor\core\EditorManager.cpp" />
     <ClCompile Include="engine\editor\layout\EditorLayout.cpp" />
-    <ClCompile Include="engine\editor\SettingWindow.cpp" />
     <ClCompile Include="engine\editor\system\LogManager.cpp" />
     <ClCompile Include="engine\editor\system\MessageService.cpp" />
     <ClCompile Include="engine\editor\windows\LogWindow.cpp" />
@@ -245,7 +244,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="engine\editor\core\IEditorWindow.h" />
     <ClInclude Include="engine\editor\InspectorWindow.h" />
     <ClInclude Include="engine\editor\layout\EditorLayout.h" />
-    <ClInclude Include="engine\editor\SettingWindow.h" />
     <ClInclude Include="engine\editor\system\LogManager.h" />
     <ClInclude Include="engine\editor\system\MessageService.h" />
     <ClInclude Include="engine\editor\windows\LogWindow.h" />

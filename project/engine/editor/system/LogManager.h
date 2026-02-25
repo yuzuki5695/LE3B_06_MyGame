@@ -25,7 +25,7 @@ public: // メンバ関数
     /// </summary>
     /// <param name="message">表示したい文字列</param>
     void AddLog(const std::string& message);
-    void AddLog(Editor::MessageId id);       // オーバーロード
+    //void AddLog(Editor::MessageId id);       // オーバーロード
     /// <summary>
     /// 全てのログ履歴を消去する
     /// </summary>

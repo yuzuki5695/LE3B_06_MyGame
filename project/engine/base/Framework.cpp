@@ -138,7 +138,6 @@ void Framework::Initialize() {
 #pragma endregion 基盤システムの初期化
     // エディタにウィンドウを登録していく
     auto editor = EditorManager::GetInstance();
-    //editor->AddWindow(std::make_unique<InspectorWindow>());
 	EditorManager::GetInstance()->Initialize();
 }
 
@@ -156,9 +155,8 @@ void Framework::Update() {
     ImGuiManager::GetInstance()->Begin();
     // シーンマネージャの更新処理
     SceneManager::GetInstance()->Update();
-#ifdef USE_IMGUI
+	// ImGuiエディタの描画処理
     EditorManager::GetInstance()->Draw(srvManager.get());
-#endif
     // ImGuiの描画前準備
     ImGuiManager::GetInstance()->End();
 }
@@ -184,12 +182,5 @@ void Framework::Draw() {
     // エディタモード：Updateで作ったUIデータをここでGPUに転送するだけ
     // すでにデータは完成しているので、引数は不要です
     ImGuiManager::GetInstance()->Draw();
-#endif
-}
-
-void Framework::DrawDebug() {
-#ifdef USE_IMGUI
-    // これだけで、全ウィンドウの管理と描画が終わる！
-    EditorManager::GetInstance()->Draw(srvManager.get()); // UIの定義
 #endif
 }

@@ -36,11 +36,8 @@ public:// メンバ関数
 	virtual void Update();
 	// 描画
 	virtual void Draw() = 0;
-
 	// 実行
 	void Run();
-	// imgui
-	void DrawDebug();
 protected:
 	// シーンファクトリー
 	std::unique_ptr <AbstractSceneFactory> sceneFactory_ = nullptr;
