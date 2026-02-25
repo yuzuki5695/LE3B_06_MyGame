@@ -186,6 +186,26 @@
     └── └── ├── CameraManager.h
     └── └── ├── CameraTransform.h
     └── └── └── CameraTypes.h
+    └── ├── editor/
+    └── └── ├── InspectorWindow.h
+    └── └── ├── SettingWindow.cpp
+    └── └── ├── SettingWindow.h
+    └── └── ├── core/
+    └── └── └── ├── EditorManager.cpp
+    └── └── └── ├── EditorManager.h
+    └── └── └── ├── EditorTypes.h
+    └── └── └── └── IEditorWindow.h
+    └── └── ├── layout/
+    └── └── └── ├── EditorLayout.cpp
+    └── └── └── └── EditorLayout.h
+    └── └── ├── system/
+    └── └── └── ├── LogManager.cpp
+    └── └── └── ├── LogManager.h
+    └── └── └── ├── MessageService.cpp
+    └── └── └── └── MessageService.h
+    └── └── └── windows/
+    └── └──     ├── LogWindow.cpp
+    └── └──     └── LogWindow.h
     └── ├── io/
     └── └── ├── Controller.cpp
     └── └── ├── Controller.h
@@ -418,7 +438,7 @@ File Path: project/MyGame.vcxproj
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)engine\2d;$(ProjectDir)engine\3d;$(ProjectDir)engine\audio;$(ProjectDir)engine\base;$(ProjectDir)engine\io;$(ProjectDir)engine\math;$(ProjectDir)engine\scene;$(ProjectDir)engine\3d\Particle;$(ProjectDir)engine\camera;$(ProjectDir)engine\base\DirectXCommon;$(ProjectDir)engine\base\Utility;$(ProjectDir)engine\base\ViewManager;$(ProjectDir)engine\math\Light;$(ProjectDir)engine\math\Matrix;$(ProjectDir)engine\math\Model;$(ProjectDir)engine\math\Vector;$(ProjectDir)engine\resource;$(ProjectDir)externals\nlohmann;$(ProjectDir)application\scene;$(ProjectDir)application\character;$(ProjectDir)application\player;$(ProjectDir)application\bullet;$(ProjectDir)application\loader;$(ProjectDir)application\camera;$(ProjectDir)application\enemy;$(ProjectDir)externals\assimp\include;$(ProjectDir)engine\math\collision;$(ProjectDir)application\collision;$(ProjectDir)application\fade;$(ProjectDir)application\event;$(ProjectDir)application\stage;$(ProjectDir)engine\math\Easing;$(ProjectDir)application\particle;$(ProjectDir)engine\math\ParticleData;$(ProjectDir)application\resource;$(ProjectDir)application\pause</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)engine\2d;$(ProjectDir)engine\3d;$(ProjectDir)engine\audio;$(ProjectDir)engine\base;$(ProjectDir)engine\io;$(ProjectDir)engine\math;$(ProjectDir)engine\scene;$(ProjectDir)engine\3d\Particle;$(ProjectDir)engine\camera;$(ProjectDir)engine\base\DirectXCommon;$(ProjectDir)engine\base\Utility;$(ProjectDir)engine\base\ViewManager;$(ProjectDir)engine\math\Light;$(ProjectDir)engine\math\Matrix;$(ProjectDir)engine\math\Model;$(ProjectDir)engine\math\Vector;$(ProjectDir)engine\resource;$(ProjectDir)externals\nlohmann;$(ProjectDir)application\scene;$(ProjectDir)application\character;$(ProjectDir)application\player;$(ProjectDir)application\bullet;$(ProjectDir)application\loader;$(ProjectDir)application\camera;$(ProjectDir)application\enemy;$(ProjectDir)externals\assimp\include;$(ProjectDir)engine\math\collision;$(ProjectDir)application\collision;$(ProjectDir)application\fade;$(ProjectDir)application\event;$(ProjectDir)application\stage;$(ProjectDir)engine\math\Easing;$(ProjectDir)application\particle;$(ProjectDir)engine\math\ParticleData;$(ProjectDir)application\resource;$(ProjectDir)application\pause;$(ProjectDir)engine\editor;$(ProjectDir)engine\editor\core;$(ProjectDir)engine\editor\system;$(ProjectDir)engine\editor\layout;$(ProjectDir)engine\editor\windows</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
     </ClCompile>
     <Link>
@@ -450,7 +470,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)engine\2d;$(ProjectDir)engine\3d;$(ProjectDir)engine\audio;$(ProjectDir)engine\base;$(ProjectDir)engine\io;$(ProjectDir)engine\math;$(ProjectDir)engine\scene;$(ProjectDir)engine\3d\Particle;$(ProjectDir)engine\camera;$(ProjectDir)engine\base\DirectXCommon;$(ProjectDir)engine\base\Utility;$(ProjectDir)engine\base\ViewManager;$(ProjectDir)engine\math\Light;$(ProjectDir)engine\math\Matrix;$(ProjectDir)engine\math\Model;$(ProjectDir)engine\math\Vector;$(ProjectDir)engine\resource;$(ProjectDir)externals\nlohmann;$(ProjectDir)application\scene;$(ProjectDir)application\character;$(ProjectDir)application\player;$(ProjectDir)application\bullet;$(ProjectDir)application\loader;$(ProjectDir)application\camera;$(ProjectDir)application\enemy;$(ProjectDir)externals\assimp\include;$(ProjectDir)engine\math\collision;$(ProjectDir)application\collision;$(ProjectDir)application\fade;$(ProjectDir)application\event;$(ProjectDir)application\stage;$(ProjectDir)engine\math\Easing;$(ProjectDir)application\particle;$(ProjectDir)engine\math\ParticleData;$(ProjectDir)application\resource;$(ProjectDir)application\pause</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)engine\2d;$(ProjectDir)engine\3d;$(ProjectDir)engine\audio;$(ProjectDir)engine\base;$(ProjectDir)engine\io;$(ProjectDir)engine\math;$(ProjectDir)engine\scene;$(ProjectDir)engine\3d\Particle;$(ProjectDir)engine\camera;$(ProjectDir)engine\base\DirectXCommon;$(ProjectDir)engine\base\Utility;$(ProjectDir)engine\base\ViewManager;$(ProjectDir)engine\math\Light;$(ProjectDir)engine\math\Matrix;$(ProjectDir)engine\math\Model;$(ProjectDir)engine\math\Vector;$(ProjectDir)engine\resource;$(ProjectDir)externals\nlohmann;$(ProjectDir)application\scene;$(ProjectDir)application\character;$(ProjectDir)application\player;$(ProjectDir)application\bullet;$(ProjectDir)application\loader;$(ProjectDir)application\camera;$(ProjectDir)application\enemy;$(ProjectDir)externals\assimp\include;$(ProjectDir)engine\math\collision;$(ProjectDir)application\collision;$(ProjectDir)application\fade;$(ProjectDir)application\event;$(ProjectDir)application\stage;$(ProjectDir)engine\math\Easing;$(ProjectDir)application\particle;$(ProjectDir)engine\math\ParticleData;$(ProjectDir)application\resource;$(ProjectDir)application\pause;$(ProjectDir)engine\editor;$(ProjectDir)engine\editor\core;$(ProjectDir)engine\editor\system;$(ProjectDir)engine\editor\layout;$(ProjectDir)engine\editor\windows</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -502,6 +522,12 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="application\scene\GameOverScene.cpp" />
     <ClCompile Include="application\scene\GamePlayScene.cpp" />
     <ClCompile Include="application\scene\TitleScene.cpp" />
+    <ClCompile Include="engine\editor\core\EditorManager.cpp" />
+    <ClCompile Include="engine\editor\layout\EditorLayout.cpp" />
+    <ClCompile Include="engine\editor\SettingWindow.cpp" />
+    <ClCompile Include="engine\editor\system\LogManager.cpp" />
+    <ClCompile Include="engine\editor\system\MessageService.cpp" />
+    <ClCompile Include="engine\editor\windows\LogWindow.cpp" />
     <ClCompile Include="engine\math\Collision\Collision.cpp" />
     <ClCompile Include="engine\math\Easing\Easing.cpp" />
     <ClCompile Include="engine\3d\Skybox.cpp" />
@@ -589,6 +615,15 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\resource\FileSearcher.h" />
     <ClInclude Include="application\resource\ManifestExporter.h" />
     <ClInclude Include="application\scene\GameOverScene.h" />
+    <ClInclude Include="engine\editor\core\EditorManager.h" />
+    <ClInclude Include="engine\editor\core\EditorTypes.h" />
+    <ClInclude Include="engine\editor\core\IEditorWindow.h" />
+    <ClInclude Include="engine\editor\InspectorWindow.h" />
+    <ClInclude Include="engine\editor\layout\EditorLayout.h" />
+    <ClInclude Include="engine\editor\SettingWindow.h" />
+    <ClInclude Include="engine\editor\system\LogManager.h" />
+    <ClInclude Include="engine\editor\system\MessageService.h" />
+    <ClInclude Include="engine\editor\windows\LogWindow.h" />
     <ClInclude Include="engine\math\Collision\Collision.h" />
     <ClInclude Include="engine\math\Collision\OBB.h" />
     <ClInclude Include="engine\math\Easing\Easing.h" />
@@ -682,6 +717,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\Data\Languages\Localization.json" />
     <None Include="Resources\levels\bezier.json" />
     <None Include="Resources\levels\untitled.json" />
     <None Include="Resources\shaders\Fullscreen\Fullscreen.hlsli" />
@@ -998,6 +1034,36 @@ File Path: project/MyGame.vcxproj.filters
     <Filter Include="ヘッダー ファイル\application\pause">
       <UniqueIdentifier>{5f0ad7e7-d543-4f5d-9f5a-2e8ac0dc99ba}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ソース ファイル\engine\editor">
+      <UniqueIdentifier>{8c81b882-315d-49b9-b80a-322138110a27}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="リソース ファイル\Data">
+      <UniqueIdentifier>{4ab3cb26-d19a-47e7-aa02-64c1012a62aa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="リソース ファイル\Data\Languages">
+      <UniqueIdentifier>{c70b3cf2-c485-484a-abf9-175046ba0757}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\engine\editor">
+      <UniqueIdentifier>{7b780177-cda0-4ffe-ab2d-01f2b2904858}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\engine\editor\core">
+      <UniqueIdentifier>{8046f2fa-9102-4500-be43-a5f317059193}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\engine\editor\system">
+      <UniqueIdentifier>{f9b249f1-2175-4d61-9753-e7a407801bfa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\engine\editor\system">
+      <UniqueIdentifier>{3db77467-1f5d-4f32-b17f-b83aa9ba6ee6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\engine\editor\core">
+      <UniqueIdentifier>{3bd64be9-0561-4f6b-9a8d-8f47975ea266}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\engine\editor\layout">
+      <UniqueIdentifier>{791b0e9d-f18d-426f-9e14-217e5ca84d0f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\engine\editor\windows">
+      <UniqueIdentifier>{d7e59b22-6cc1-4e29-8253-f3ceb6fd1473}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -1245,6 +1311,24 @@ File Path: project/MyGame.vcxproj.filters
     </ClCompile>
     <ClCompile Include="application\player\PlayerDash.cpp">
       <Filter>ソース ファイル\application\player</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\editor\core\EditorManager.cpp">
+      <Filter>ソース ファイル\engine\editor\core</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\editor\system\MessageService.cpp">
+      <Filter>ソース ファイル\engine\editor\system</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\editor\system\LogManager.cpp">
+      <Filter>ソース ファイル\engine\editor\system</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\editor\layout\EditorLayout.cpp">
+      <Filter>ソース ファイル\engine\editor\layout</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\editor\windows\LogWindow.cpp">
+      <Filter>ソース ファイル\engine\editor\windows</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\editor\SettingWindow.cpp">
+      <Filter>ソース ファイル\engine\editor</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1587,6 +1671,33 @@ File Path: project/MyGame.vcxproj.filters
     <ClInclude Include="application\player\PlayerDash.h">
       <Filter>ヘッダー ファイル\application\player</Filter>
     </ClInclude>
+    <ClInclude Include="engine\editor\InspectorWindow.h">
+      <Filter>ヘッダー ファイル\engine\editor</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\editor\core\EditorTypes.h">
+      <Filter>ヘッダー ファイル\engine\editor\core</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\editor\core\EditorManager.h">
+      <Filter>ヘッダー ファイル\engine\editor\core</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\editor\core\IEditorWindow.h">
+      <Filter>ヘッダー ファイル\engine\editor\core</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\editor\system\LogManager.h">
+      <Filter>ヘッダー ファイル\engine\editor\system</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\editor\system\MessageService.h">
+      <Filter>ヘッダー ファイル\engine\editor\system</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\editor\layout\EditorLayout.h">
+      <Filter>ソース ファイル\engine\editor\layout</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\editor\windows\LogWindow.h">
+      <Filter>ソース ファイル\engine\editor\windows</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\editor\SettingWindow.h">
+      <Filter>ソース ファイル\engine\editor</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Resources\shaders\Sprite\Sprite.PS.hlsl">
@@ -1659,6 +1770,9 @@ File Path: project/MyGame.vcxproj.filters
     </None>
     <None Include="Resources\levels\untitled.json">
       <Filter>リソース ファイル</Filter>
+    </None>
+    <None Include="Resources\Data\Languages\Localization.json">
+      <Filter>リソース ファイル\Data\Languages</Filter>
     </None>
   </ItemGroup>
 </Project>
@@ -7159,7 +7273,7 @@ void Titleparticle::Update() {
     particles_->Update();
     particles_02_->Update();
 #ifdef USE_IMGUI
-    particles_->DrawImGuiUI();
+    //particles_->DrawImGuiUI();
 #endif // USE_IMGUI
 
 }
@@ -10205,8 +10319,8 @@ void TitleScene::Update() {
 
 #pragma region  ImGuiの更新処理開始
 #ifdef USE_IMGUI
-	FadeManager::GetInstance()->DrawImGui(); // フェードマネージャのImGui制御    
-    CameraManager::GetInstance()->DrawImGui();  // カメラマネージャのImGui制御
+	//FadeManager::GetInstance()->DrawImGui(); // フェードマネージャのImGui制御    
+//    CameraManager::GetInstance()->DrawImGui();  // カメラマネージャのImGui制御
 #endif // USE_IMGUI
 #pragma endregion ImGuiの更新処理終了
 }
@@ -14273,9 +14387,9 @@ File Path: project/engine/base/CopylmageCommon.cpp
 #include <ShaderCompiler.h>
 #include "Logger.h"
 #include "StringUtility.h"
-#include<SrvManager.h>
-#include<RtvManager.h>
-#include<DsvManager.h>
+#include <SrvManager.h>
+#include <RtvManager.h>
+#include <DsvManager.h>
 
 using namespace Microsoft::WRL;
 
@@ -14864,13 +14978,13 @@ void DirectXCommon::PreDraw(D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle,Microsoft::WRL
     commandList->ClearDepthStencilView(dsvHandle, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
 }
 
-void DirectXCommon::PostDrow() {
+void DirectXCommon::PostDraw() {
     HRESULT hr;
     // バックバッファの番号を取得
     UINT bbIndex = swapchain_->GetSwapChain()->GetCurrentBackBufferIndex();
     // 画面に描く処理はすべて終わり、画面に移すので、状態を遷移
     // 今回はRenderTargetからPresentにする
-    // PostDrow 内で再設定が必要（PreDrawとは別フレームなので）：
+    // PostDraw 内で再設定が必要（PreDrawとは別フレームなので）：
     barrier.Transition.pResource = swapchain_->GetBuffer(bbIndex).Get();
     barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_RENDER_TARGET;
     barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_PRESENT;
@@ -14946,7 +15060,7 @@ public: // メンバ関数
 	// 描画前処理
 	void PreDraw(D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle,Microsoft::WRL::ComPtr <ID3D12DescriptorHeap> DsvDescriptorHeap);
 	// 描画後処理
-	void PostDrow();
+	void PostDraw();
 
 	/// <summary>
 	/// レンダーテクスチャのテクスチャリソースの生成
@@ -15379,6 +15493,8 @@ File Path: project/engine/base/Framework.cpp
 #include<SkyboxCommon.h>
 #include <FileSearcher.h>
 #include <ManifestExporter.h>
+#include<EditorManager.h>
+#include <InspectorWindow.h>
 
 void Framework::Run() {
     // ゲームの初期化
@@ -15439,13 +15555,13 @@ void Framework::Initialize() {
     OutputDebugStringA("Hello,Directx!\n");
     // ウィンドウ作成
     // WindowsAPIの初期化
-    winApp = std::make_unique <WinApp>();    
+    winApp = std::make_unique <WinApp>();
     // ウィンドウのタイトルを変更
-	winApp->SetWindowTitle(L"LE3B_07_オノデラ_ユヅキ_Skyraider");
+    winApp->SetWindowTitle(L"LE3B_07_オノデラ_ユヅキ_Skyraider");
     winApp->Initialize();
     // DirectXの初期化
     dxCommon = std::make_unique <DirectXCommon>();
-    dxCommon->Initialize(winApp.get()); 
+    dxCommon->Initialize(winApp.get());
     // シェーダーコンパイルの初期化
     ShaderCompiler::GetInstance()->Initialize();
     // 音声読み込み
@@ -15454,10 +15570,10 @@ void Framework::Initialize() {
     SoundPlayer::GetInstance()->Initialize(SoundLoader::GetInstance());
     // SRVマネージャーの初期化
     srvManager = std::make_unique <SrvManager>();
-    srvManager->Initialize(dxCommon.get());   
+    srvManager->Initialize(dxCommon.get());
     // RTVマネージャーの初期化
     rtvManager = std::make_unique <RtvManager>();
-    rtvManager->Initialize(dxCommon.get());      
+    rtvManager->Initialize(dxCommon.get());
     // DSVマネージャーの初期化
     dsvManager = std::make_unique <DsvManager>();
     dsvManager->Initialize(dxCommon.get());
@@ -15468,12 +15584,12 @@ void Framework::Initialize() {
     // 3Dモデルマネージャの初期化
     ModelManager::GetInstance()->Initialize(dxCommon.get());
     // パーティクルマネージャの初期化
-    ParticleManager::GetInstance()->Initialize(dxCommon.get(), srvManager.get()); 
+    ParticleManager::GetInstance()->Initialize(dxCommon.get(), srvManager.get());
 
 
     // 1. 検索クラス
     FileSearcher searcher("Resources");
-    
+
     // 2. 出力クラス
     ManifestExporter exporter;
 
@@ -15487,21 +15603,25 @@ void Framework::Initialize() {
     Input::GetInstance()->Initialize(winApp.get());
 
     // スプライト共通部の初期化
-    SpriteCommon::GetInstance()->Initialize(dxCommon.get(),dsvManager.get());
+    SpriteCommon::GetInstance()->Initialize(dxCommon.get(), dsvManager.get());
 
     // 3Dオブジェクト共通部の初期化
-    Object3dCommon::GetInstance()->Initialize(dxCommon.get(),dsvManager.get());
+    Object3dCommon::GetInstance()->Initialize(dxCommon.get(), dsvManager.get());
 
     // パーティクル共通部の初期化
-    ParticleCommon::GetInstance()->Initialize(dxCommon.get(),dsvManager.get());
- 
-	// レンダーテクスチャ共通部の初期化
-    CopylmageCommon::GetInstance()->Initialize(dxCommon.get(), srvManager.get(),rtvManager.get(),dsvManager.get());
-    
+    ParticleCommon::GetInstance()->Initialize(dxCommon.get(), dsvManager.get());
+
+    // レンダーテクスチャ共通部の初期化
+    CopylmageCommon::GetInstance()->Initialize(dxCommon.get(), srvManager.get(), rtvManager.get(), dsvManager.get());
+
     // 箱の共通部の初期化
-    SkyboxCommon::GetInstance()->Initialize(dxCommon.get(),dsvManager.get());
+    SkyboxCommon::GetInstance()->Initialize(dxCommon.get(), dsvManager.get());
 
 #pragma endregion 基盤システムの初期化
+    // エディタにウィンドウを登録していく
+    auto editor = EditorManager::GetInstance();
+    //editor->AddWindow(std::make_unique<InspectorWindow>());
+	EditorManager::GetInstance()->Initialize();
 }
 
 void Framework::Update() {
@@ -15517,8 +15637,10 @@ void Framework::Update() {
     // ImGuiの受付開始
     ImGuiManager::GetInstance()->Begin();
     // シーンマネージャの更新処理
-    SceneManager::GetInstance()->Update(); 
-    DrawDebug();
+    SceneManager::GetInstance()->Update();
+#ifdef USE_IMGUI
+    EditorManager::GetInstance()->Draw(srvManager.get());
+#endif
     // ImGuiの描画前準備
     ImGuiManager::GetInstance()->End();
 }
@@ -15528,7 +15650,7 @@ void Framework::Draw() {
     srvManager->PreDraw();
     // レンダーテクスチャをレンダーターゲットにして描画開始準備
     rtvManager->PreDrawRenderTexture();
-    dxCommon->PreDrawRenderTexture(rtvManager->GetRtvHandle(2),dsvManager->GetDsvDescriptorHeap(), rtvManager->GetkRenderTargetClearValue());
+    dxCommon->PreDrawRenderTexture(rtvManager->GetRtvHandle(2), dsvManager->GetDsvDescriptorHeap(), rtvManager->GetkRenderTargetClearValue());
     // シーンマネージャの描画処理
     SceneManager::GetInstance()->Draw();
     // レンダーテクスチャをSRVとして使うための状態に遷移
@@ -15536,95 +15658,21 @@ void Framework::Draw() {
     //  DirectXの描画準備。全ての描画に共通のグラフィックスコマンドを積む
     // ここから書き込むバックバッファのインデックスを取得
     UINT backBufferIndex = dxCommon->GetSwapChain()->GetSwapChain()->GetCurrentBackBufferIndex();
-    dxCommon->PreDraw(rtvManager->GetRtvHandle(backBufferIndex),dsvManager->GetDsvDescriptorHeap());
+    dxCommon->PreDraw(rtvManager->GetRtvHandle(backBufferIndex), dsvManager->GetDsvDescriptorHeap());
+#ifndef USE_IMGUI
     // ポストエフェクト描画（レンダーテクスチャ → 画面） 
     CopylmageCommon::GetInstance()->Commondrawing(srvManager.get());
+#else
+    // エディタモード：Updateで作ったUIデータをここでGPUに転送するだけ
+    // すでにデータは完成しているので、引数は不要です
+    ImGuiManager::GetInstance()->Draw();
+#endif
 }
 
 void Framework::DrawDebug() {
 #ifdef USE_IMGUI
-    // --- A. 基本設定 ---
-    const float kGameViewW = 640.0f;
-    const float kGameViewH = 360.0f;
-
-    // --- B. 全画面 DockSpace (エディタの土台) ---
-    ImGuiViewport* viewport = ImGui::GetMainViewport();
-    ImGui::SetNextWindowPos(viewport->WorkPos);
-    ImGui::SetNextWindowSize(viewport->WorkSize);
-    ImGui::SetNextWindowViewport(viewport->ID); 
-
-    // ルートウィンドウの設定 (メニューバーあり、移動・リサイズ不可、背景あり)
-    ImGuiWindowFlags root_flags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking |
-                                  ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse |
-                                  ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove |
-                                  ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
-
-    ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
-    ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
-    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
-
-    ImGui::Begin("EditorRoot", nullptr, root_flags);
-    ImGui::PopStyleVar(3);
-
-    // DockSpaceの設置
-    ImGuiID dockspace_id = ImGui::GetID("MainDockSpace");
-    
-    // 【重要】Passthruを外すことで、後ろに透けていた本来のゲーム画面を隠し、
-    // グレーの背景（またはImGuiウィンドウ）で塗りつぶします。
-    ImGuiDockNodeFlags dock_flags = ImGuiDockNodeFlags_None; 
-    ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dock_flags);
-
-    // メニューバー
-    if (ImGui::BeginMenuBar()) {
-        if (ImGui::BeginMenu("File")) {
-            if (ImGui::MenuItem("Exit", "Alt+F4")) { endRequst_ = true; }
-            ImGui::EndMenu();
-        }
-        ImGui::EndMenuBar();
-    }
-    ImGui::End(); // EditorRoot終了
-
-    // --- C. 固定ゲームビュー (左上に配置) ---
-    // メニューバーの高さを考慮して配置 (必要に応じて y + 20px 調整)
-    ImGui::SetNextWindowPos(ImVec2(viewport->WorkPos.x, viewport->WorkPos.y), ImGuiCond_Always);
-    ImGui::SetNextWindowSize(ImVec2(kGameViewW, kGameViewH), ImGuiCond_Always);
-    
-    // NoDockingを入れて、勝手に中央に吸い込まれないようにする
-    ImGuiWindowFlags game_flags = ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | 
-                                  ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoTitleBar | 
-                                  ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoScrollbar |
-                                  ImGuiWindowFlags_NoSavedSettings;
-
-    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
-    // ゲーム画面を際立たせるために背景を黒にする
-    ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0, 0, 0, 1)); 
-
-    ImGui::Begin("GameView_Fixed", nullptr, game_flags);
-    {
-        uint32_t srvIdx = CopylmageCommon::GetInstance()->GetSrvIndex();
-        D3D12_GPU_DESCRIPTOR_HANDLE srvHandle = srvManager->GetGPUDescriptorHandle(srvIdx);
-
-        // 型変換の安全な形 (uintptr_t 経由)
-        ImTextureID textureID = (ImTextureID)(void*)(uintptr_t)srvHandle.ptr;
-
-        // レンダーテクスチャを描画
-        ImGui::Image(textureID, ImVec2(kGameViewW, kGameViewH));
-    }
-    ImGui::End();
-    ImGui::PopStyleColor();
-    ImGui::PopStyleVar();
-
-    // --- D. 各種パネル ---
-    // これらは DockSpace 内で自由に移動・ドッキング可能です
-    ImGui::Begin("Inspector");
-    ImGui::Text("Transform");
-    // ここに SceneManager 等から持ってきた数値を表示
-    ImGui::End();
-
-    ImGui::Begin("Asset");
-    ImGui::Text("File list...");
-    ImGui::End();
-
+    // これだけで、全ウィンドウの管理と描画が終わる！
+    EditorManager::GetInstance()->Draw(srvManager.get()); // UIの定義
 #endif
 }
 
@@ -15703,7 +15751,12 @@ File Path: project/engine/base/ImGuiManager.cpp
 #include<WinApp.h>
 #include<DirectXCommon.h>
 
+// 名前空間
 using namespace Microsoft::WRL;
+
+// 定数の定義
+const std::string ImGuiManager::kFontPath = "Resources/Fonts/Debug/NotoSansJP-VF.ttf";
+const float ImGuiManager::kDefaultFontSize = 15.0f;
 
 ImGuiManager* ImGuiManager::instance = nullptr;
 
@@ -15734,19 +15787,16 @@ void ImGuiManager::Initialize([[maybe_unused]] WinApp* winApp, [[maybe_unused]] 
 
 	// ImGuiのコンテキストを生成
 	ImGui::CreateContext();
-	
+
 	// iniファイルを作らないように設定
 	ImGuiIO& io = ImGui::GetIO();
-	io.IniFilename = nullptr;
-	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;           // ドッキング有効化
+	io.IniFilename = nullptr; // 設定ファイルの自動保存を無効化
+    io.ConfigFlags |= ImGuiConfigFlags_DockingEnable; // ドッキング機能を有効化
 
 	// ImGuiのスタイルを設定
 	ImGui::StyleColorsDark();
-	
-	io.Fonts->AddFontDefault();
-    unsigned char* pixels;
-    int width, height;
-    io.Fonts->GetTexDataAsRGBA32(&pixels, &width, &height);
+	// フォントのセットアップ
+    SetupFonts();
 
 	// インデックスを確保
 	imguiindex = srvManager_->Allocate();
@@ -15765,7 +15815,7 @@ void ImGuiManager::Initialize([[maybe_unused]] WinApp* winApp, [[maybe_unused]] 
 		ImGuiHandleGPU
 	);
 	// 【追加】フォントテクスチャなどのデバイスオブジェクトを即座に作成する
-    ImGui_ImplDX12_CreateDeviceObjects();
+	ImGui_ImplDX12_CreateDeviceObjects();
 #endif // USE_IMGUI
 }
 
@@ -15796,6 +15846,19 @@ void ImGuiManager::Draw() {
 #endif // USE_IMGUI
 }
 
+void ImGuiManager::SetupFonts() {
+	ImGuiIO& io = ImGui::GetIO();
+	// フォントの読み込み(今回は日本語フォントを使用)
+	ImFont* font = io.Fonts->AddFontFromFileTTF(
+		kFontPath.c_str(),
+		kDefaultFontSize,
+		nullptr,
+		io.Fonts->GetGlyphRangesJapanese()
+	);
+	// フォントのビルド
+	io.Fonts->Build();
+}
+
 ============================================================
 File Path: project/engine/base/ImGuiManager.h
 ============================================================
@@ -15806,10 +15869,14 @@ File Path: project/engine/base/ImGuiManager.h
 #include<externals/imgui/imgui_impl_win32.h>
 #endif // USE_IMGUI
 
+// 前方宣言
 class WinApp;
 class DirectXCommon;
 
-// ImGUIの管理
+///<summary>
+/// ImGUIの管理
+/// ImGuiの初期化、受付、描画を管理するマネージャクラス（シングルトン）
+///</summary>
 class ImGuiManager
 {
 private:
@@ -15847,6 +15914,13 @@ public: // メンバ関数
 	/// 画面への描画
 	/// </summary>
 	void Draw();
+	/// <summary>
+	/// 日本語フォントのセットアップ
+	/// </summary>
+	void SetupFonts();
+	// 日本語フォント関連の定数
+	static const std::string kFontPath;  // フォントファイルのパス
+	static const float kDefaultFontSize; // デフォルトのフォントサイズ	
 
 private: // メンバ変数
 	// ポインタ
@@ -17052,6 +17126,828 @@ namespace CameraTypes {
         Ease       // イージングでの移動
     };
 }
+
+============================================================
+File Path: project/engine/editor/InspectorWindow.h
+============================================================
+#pragma once
+#include <IEditorWindow.h>
+#include <ImGuiManager.h>
+
+class InspectorWindow : public IEditorWindow {
+public:
+    const char* GetName() const override { return "Inspector"; }
+    void Draw() override {
+        // ここに具体的なUIを書く
+        ImGui::Text("Object Parameters");
+        static float val = 0.0f;
+        ImGui::SliderFloat("Scale", &val, 0.0f, 1.0f);
+    }
+};
+
+============================================================
+File Path: project/engine/editor/SettingWindow.cpp
+============================================================
+#include "SettingWindow.h"
+#include "LogManager.h"
+#include <externals/imgui/imgui.h>
+
+SettingWindow::SettingWindow() {
+    isOpen = false; // 設定画面は最初閉じているのが一般的
+}
+
+void SettingWindow::OnMenuBar() {
+    // "Options" メニューの中に項目を追加
+    if (ImGui::BeginMenu(MessageService::GetText("Editor.Menu.Options").c_str())) {
+        if (ImGui::MenuItem(MessageService::GetText("Editor.Menu.Settings").c_str())) {
+            isOpen = true; // 設定ウィンドウを開く
+        }
+        ImGui::EndMenu();
+    }
+}
+
+void SettingWindow::Draw() {
+    if (!isOpen) return;
+
+    ImGui::Begin(MessageService::GetText("Editor.Settings.Title").c_str(), &isOpen, ImGuiWindowFlags_AlwaysAutoResize);
+    {
+        ImGui::Text("%s", MessageService::GetText("Editor.Settings.Language").c_str());
+
+        //// 現在の言語設定を取得
+        //Editor::Language current = MessageService::GetLanguage();
+
+        //// 日本語
+        //if (ImGui::RadioButton(MessageService::GetText("Editor.Settings.Japanese").c_str(), current == Editor::Language::Japanese)) {
+        //    SetLanguage(Editor::Language::Japanese);
+        //}
+
+        //ImGui::SameLine();
+
+        //// 英語
+        //if (ImGui::RadioButton(MessageService::GetText("Editor.Settings.English").c_str(), current == Editor::Language::English)) {
+        //    SetLanguage(Editor::Language::English);
+        //}
+
+        //ImGui::Separator();
+
+        //if (ImGui::Button(MessageService::GetText("Editor.Settings.Close").c_str())) {
+        //    isOpen = false;
+        //}
+    }
+    ImGui::End();
+}
+
+void SettingWindow::SetLanguage(Editor::Language lang) {
+    MessageService::SetLanguage(lang);
+    // ログに通知
+    LogManager::GetInstance()->AddLog(Editor::MessageId::LangChanged);
+}
+
+============================================================
+File Path: project/engine/editor/SettingWindow.h
+============================================================
+#pragma once
+#include "IEditorWindow.h"
+#include <MessageService.h>
+
+class SettingWindow : public IEditorWindow {
+public:
+    SettingWindow();
+    ~SettingWindow() override = default;
+
+    void Draw() override;
+    void OnMenuBar() override;
+    const char* GetName() const override { return "Settings"; }
+
+private:
+    // 言語を切り替える内部処理
+    void SetLanguage(Editor::Language lang);
+};
+
+============================================================
+File Path: project/engine/editor/core/EditorManager.cpp
+============================================================
+#include "EditorManager.h"
+#include <ImGuiManager.h>
+#include <CopylmageCommon.h>
+#include <LogManager.h>
+#include <LogWindow.h>
+#include <externals/imgui/imgui_internal.h>
+#include <SettingWindow.h>
+
+// 静的メンバ変数の定義
+std::unique_ptr<EditorManager> EditorManager::instance = nullptr;
+
+// シングルトンインスタンスの取得
+EditorManager* EditorManager::GetInstance() {
+    if (!instance) {
+        instance = std::make_unique<EditorManager>();
+    }
+    return instance.get();
+}
+
+// 終了
+void EditorManager::Finalize() {
+    instance.reset();  // `delete` 不要
+}
+
+void EditorManager::Initialize() {
+    MessageService::Load("Localization");
+    // 1. レイアウト管理のインスタンス化
+    layout_ = std::make_unique<EditorLayout>();
+    // 2. 各ウィンドウの登録
+    // 今後 InspectorWindow などが増えてもここに追加するだけ
+   // AddWindow(std::make_unique<LogWindow>());
+    // 設定ウィンドウの登録（これだけでメニューも機能も追加される）
+    AddWindow(std::make_unique<SettingWindow>());
+    LogManager::GetInstance()->AddLog(Editor::MessageId::EngineInitialized);
+}
+
+
+void EditorManager::Draw(SrvManager* srvmanager) {
+#ifdef USE_IMGUI
+    // 1. レイアウト（外枠とドッキング）の描画を委譲 
+    // windows_ を渡すことでメニューバーからの表示切り替えも連動します
+    layout_->Render(srvmanager, windows_);
+
+    // 2. 個別のウィンドウ（中身）の描画
+    // LogWindow::Draw() などがここで呼ばれる
+    for (auto& window : windows_) {
+        if (window->isOpen) {
+            window->Draw();
+        }
+    }
+#endif
+}
+
+void EditorManager::ShowMenuBar() {
+    if (ImGui::BeginMainMenuBar()) {
+        // オプション (Options)
+        if (ImGui::BeginMenu(MessageService::GetText("Editor.Menu.Options").c_str())) {
+            if (ImGui::MenuItem(MessageService::GetText("Editor.Menu.Settings").c_str())) {
+                showSettings_ = true; // 設定モーダルを開く
+            }
+            ImGui::EndMenu();
+        }
+        ImGui::EndMainMenuBar();
+    }
+}
+
+void EditorManager::ShowSettingsModal() {
+    if (!showSettings_) return;
+
+    // タイトルを取得
+    ImGui::Begin(
+        MessageService::GetText("Editor.Settings.Title").c_str(),
+        &showSettings_,
+        ImGuiWindowFlags_AlwaysAutoResize);
+
+    {
+        // "言語設定" ラベル
+        ImGui::Text("%s", MessageService::GetText("Editor.Settings.Language").c_str());
+
+        // 現在の言語設定を取得
+        Editor::Language current = language_;
+
+        // ---- 日本語 (Japanese) ----
+        if (ImGui::RadioButton(
+            MessageService::GetText("Editor.Settings.Japanese").c_str(),
+            current == Editor::Language::Japanese))
+        {
+            SetLanguage(Editor::Language::Japanese);
+        }
+
+        ImGui::SameLine();
+
+        // ---- 英語 (English) ----
+        if (ImGui::RadioButton(
+            MessageService::GetText("Editor.Settings.English").c_str(),
+            current == Editor::Language::English))
+        {
+            SetLanguage(Editor::Language::English);
+        }
+
+        ImGui::Separator();
+
+        // 閉じるボタン
+        if (ImGui::Button(MessageService::GetText("Editor.Settings.Close").c_str()))
+        {
+            showSettings_ = false;
+        }
+    }
+
+    ImGui::End();
+}
+
+void EditorManager::SetLanguage(Editor::Language lang) {
+    // マネージャ内の変数を更新
+    language_ = lang;
+    // MessageService側の静的変数を更新（これで以降の GetText の結果が変わる）
+    MessageService::SetLanguage(lang);
+    // ログに出力
+    Log(Editor::MessageId::LangChanged);
+}
+
+// 登録関数
+void EditorManager::AddWindow(std::unique_ptr<IEditorWindow> window) {
+    windows_.push_back(std::move(window));
+}
+
+// ログ中継
+void EditorManager::Log(const std::string& message) {
+    LogManager::GetInstance()->AddLog(message);
+}
+
+void EditorManager::Log(Editor::MessageId id) {
+    LogManager::GetInstance()->AddLog(id);
+}
+
+============================================================
+File Path: project/engine/editor/core/EditorManager.h
+============================================================
+#pragma once
+#include <vector>
+#include <memory>
+#include <IEditorWindow.h>
+#include <SrvManager.h>
+#include <MessageService.h>
+#include <EditorLayout.h>
+
+// 前方宣言
+//class EditorTypes;
+
+/// <summary>
+/// IMGUIエディタ全体の管理
+/// </summary>
+class EditorManager {
+private: // シングルトン
+	static std::unique_ptr<EditorManager> instance; // インスタンス
+
+	EditorManager(EditorManager&) = delete;
+	EditorManager& operator=(EditorManager&) = delete;
+public: // メンバ関数
+	EditorManager() = default;
+	~EditorManager() = default;
+    /// <summary>
+	/// シングルトンインスタンスの取得
+	/// </summary>
+	static EditorManager* GetInstance();	
+	/// <summary>
+	/// 終了処理
+	/// </summary>
+	void Finalize();
+	
+	/// <summary>
+	/// 初期化処理
+	/// </summary>
+	void Initialize();	
+	/// <summary>
+	/// 全体の更新と描画
+	/// </summary>
+	void Draw(SrvManager* srvmanager);
+
+    /// <summary>
+    /// 任意の文字列をログに出力する
+    /// </summary>
+    void Log(const std::string& message);
+
+	/// <summary>
+	/// ウィンドウの登録
+	/// </summary>
+	void AddWindow(std::unique_ptr<IEditorWindow> window);
+
+
+	// MessageId を受け取り、現在の言語設定でログ出力
+  //  void Log(Editor::MessageId id);
+
+
+	   
+    void Log(Editor::MessageId id);
+
+    void SetLanguage(Editor::Language lang);
+
+
+private: // 内部描画関数
+	void ShowMenuBar();
+    void ShowSettingsModal();
+private: 
+	// 言語設定を列挙型で管理
+	Editor::Language language_ = Editor::Language::Japanese;
+	std::vector<std::unique_ptr<IEditorWindow>> windows_;
+	bool showSettings_ = false; // 設定ウィンドウの表示フラグ
+	// --- 追加：自動配置用 ---
+    bool requestResetLayout_ = false; // レイアウトを強制的に組み直すフラグ
+
+
+	std::unique_ptr<EditorLayout> layout_; // レイアウト担当を追加
+
+public: // アクセッサ	
+	// Setter
+	// 言語設定の取得と変更
+  //  void SetLanguage(Editor::Language lang);
+//    Editor::Language GetLanguage() const { return language_; }
+
+};
+
+============================================================
+File Path: project/engine/editor/core/EditorTypes.h
+============================================================
+#pragma once
+
+namespace Editor {
+    // 言語設定の列挙体
+    enum class Language {
+        Japanese, // 日本語
+        English   // 英語
+        // 将来的に French, Chinese 等を追加可能
+    };
+
+    // メッセージIDの列挙体
+    enum class MessageId {
+		EngineInitialized,   // エンジンの初期化が完了したときのメッセージ
+		SaveCompleted,       // システムの重要なイベントを表すメッセージ
+		LangChanged,         //  言語設定が変更されたときのメッセージ
+    };
+}
+
+============================================================
+File Path: project/engine/editor/core/IEditorWindow.h
+============================================================
+#pragma once
+
+// ウィンドウの基底クラス
+class IEditorWindow {
+public:
+    virtual ~IEditorWindow() = default;
+
+    // 毎フレームの描画処理（派生クラスで実装する）
+    virtual void Draw() = 0;
+
+    // ウィンドウの名前（メニュー表示や識別に使用）
+    virtual const char* GetName() const = 0;
+    
+    // 追加：メニュー項目を持ちたいウィンドウはこの関数をオーバーライドする
+    virtual void OnMenuBar() {}
+
+    // ウィンドウが開いているかどうかのフラグ
+    bool isOpen = true;
+};
+
+============================================================
+File Path: project/engine/editor/layout/EditorLayout.cpp
+============================================================
+#include "EditorLayout.h"
+#include <MessageService.h>
+#include <CopylmageCommon.h>
+#include <ImGuiManager.h>
+#include <LogManager.h>
+#include <externals/imgui/imgui_internal.h>
+#include <EditorManager.h>
+
+void EditorLayout::Render(SrvManager* srvmanager, std::vector<std::unique_ptr<IEditorWindow>>& windows) {
+    // 1. メインメニューバー
+    ShowMenuBar(windows);
+
+    //// 2. 左側：ゲームビューなど（固定領域）
+    //DrawLeftPanel(srvmanager);
+
+    //// 3. 右側：ドッキングスペース（可変領域）
+    //DrawRightPanel(windows);
+}
+
+void EditorLayout::ShowMenuBar(std::vector<std::unique_ptr<IEditorWindow>>& windows) {
+    if (ImGui::BeginMainMenuBar()) {
+        // 表示メニュー
+        if (ImGui::BeginMenu(MessageService::GetText("Editor.Menu.View").c_str())) {
+            for (auto& window : windows) {
+                if (ImGui::MenuItem(window->GetName(), nullptr, window->isOpen)) {
+                    window->isOpen = !window->isOpen;
+                }
+            }
+            ImGui::EndMenu();
+        }
+        // ... 他のメニュー項目（Optionsなど） ...
+        ImGui::EndMainMenuBar();
+    }
+}
+
+void EditorLayout::DrawLeftPanel(SrvManager* srvmanager) {
+    const float kGameViewW = 640.0f;
+    const float kGameViewH = 360.0f;
+    ImGuiViewport* viewport = ImGui::GetMainViewport();
+
+    ImGui::SetNextWindowPos(viewport->WorkPos);
+    ImGui::SetNextWindowSize(ImVec2(kGameViewW, viewport->WorkSize.y));
+
+    ImGuiWindowFlags flags = ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize |
+        ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse |
+        ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoDocking;
+
+    ImGui::Begin("LeftPanel", nullptr, flags);
+    {
+        // --- 上段：ゲームビュー ---
+        ImGui::BeginChild("GameView", ImVec2(kGameViewW, kGameViewH), true, ImGuiWindowFlags_NoDocking);
+        uint32_t srvIdx = CopylmageCommon::GetInstance()->GetSrvIndex();
+        ImTextureID texID = (ImTextureID)(void*)(uintptr_t)srvmanager->GetGPUDescriptorHandle(srvIdx).ptr;
+        ImGui::Image(texID, ImVec2(kGameViewW, kGameViewH));
+        ImGui::EndChild();
+
+        // --- 下段：ログ表示（LogManagerから取得） ---
+        ImGui::Text("--- System Console ---");
+        if (ImGui::Button("Clear")) { LogManager::GetInstance()->Clear(); }
+
+        ImGui::BeginChild("LogWindow", ImVec2(0, 0), true, ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_HorizontalScrollbar);
+        for (const auto& log : LogManager::GetInstance()->GetLogs()) {
+            // 特定のキーワードが含まれていたら色を変える
+            if (log.find("ERROR") != std::string::npos) {
+                ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), log.c_str()); // 赤
+            } else if (log.find("Warning") != std::string::npos) {
+                ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), log.c_str()); // 黄
+            } else if (log.find("[System]") != std::string::npos) {
+                ImGui::TextColored(ImVec4(0.0f, 1.0f, 1.0f, 1.0f), log.c_str()); // 水色
+            } else {
+                ImGui::TextUnformatted(log.c_str()); // 通常
+            }
+        }
+        // 新しいログが来たら自動スクロール
+        if (ImGui::GetScrollY() >= ImGui::GetScrollMaxY()) {
+            ImGui::SetScrollHereY(1.0f);
+        }
+        ImGui::EndChild();
+    }
+    ImGui::End();
+}
+
+void EditorLayout::DrawRightPanel(std::vector<std::unique_ptr<IEditorWindow>>& windows) {
+   const float kGameViewW = 640.0f;
+    ImGuiViewport* viewport = ImGui::GetMainViewport();
+
+    float dockPosX = viewport->WorkPos.x + kGameViewW;
+    float dockWidth = viewport->WorkSize.x - kGameViewW;
+
+    ImGui::SetNextWindowPos(ImVec2(dockPosX, viewport->WorkPos.y));
+    ImGui::SetNextWindowSize(ImVec2(dockWidth, viewport->WorkSize.y));
+
+    ImGuiWindowFlags root_flags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoTitleBar |
+        ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize;
+
+    ImGui::Begin("RightRoot", nullptr, root_flags);
+    ShowMenuBar(windows);
+
+    ImGuiID dockspace_id = ImGui::GetID("RightDockSpace");
+
+    // 初回起動時やリセット要求時にレイアウトを構築
+    if (requestResetLayout_ || !ImGui::DockBuilderGetNode(dockspace_id)) {
+        requestResetLayout_ = false;
+
+        // 既存のレイアウトを破棄して作り直し
+        ImGui::DockBuilderRemoveNode(dockspace_id);
+        ImGui::DockBuilderAddNode(dockspace_id, ImGuiDockNodeFlags_DockSpace);
+        ImGui::DockBuilderSetNodeSize(dockspace_id, viewport->WorkSize);
+
+        ImGuiID dock_main_id = dockspace_id;
+
+        // 登録されているすべてのウィンドウをメインのドッキングスペースに流し込む
+        for (auto& window : windows) {
+            ImGui::DockBuilderDockWindow(window->GetName(), dock_main_id);
+        }
+
+        ImGui::DockBuilderFinish(dockspace_id);
+    }
+
+    ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), ImGuiDockNodeFlags_None);
+    ImGui::End();
+}
+
+============================================================
+File Path: project/engine/editor/layout/EditorLayout.h
+============================================================
+#pragma once
+#include <vector>
+#include <memory>
+#include <IEditorWindow.h>
+#include <SrvManager.h>
+
+class EditorLayout {
+public:
+    EditorLayout() = default;
+    ~EditorLayout() = default;
+
+    // エディタ全体のレイアウトを描画するメイン関数
+    void Render(SrvManager* srvmanager, std::vector<std::unique_ptr<IEditorWindow>>& windows);
+
+    // レイアウトのリセット要求
+    void RequestReset() { requestResetLayout_ = true; }
+
+private:
+    // 枠組みを構成する内部関数（旧Managerから移動）
+    void ShowMenuBar(std::vector<std::unique_ptr<IEditorWindow>>& windows);
+    void DrawLeftPanel(SrvManager* srvmanager);
+    void DrawRightPanel(std::vector<std::unique_ptr<IEditorWindow>>& windows);
+
+private:
+    bool requestResetLayout_ = false;
+};
+
+============================================================
+File Path: project/engine/editor/system/LogManager.cpp
+============================================================
+#include "LogManager.h"
+#include <__msvc_chrono.hpp>
+#include <format>
+#include <MessageService.h>
+
+// 静的メンバ変数の定義
+std::unique_ptr<LogManager> LogManager::instance = nullptr;
+
+// シングルトンインスタンスの取得
+LogManager* LogManager::GetInstance() {
+    if (!instance) {
+        instance = std::make_unique<LogManager>();
+    }
+    return instance.get();
+}
+
+// 終了
+void LogManager::Finalize() {
+    instance.reset();  // `delete` 不要
+}
+
+void LogManager::AddLog(const std::string& message) {
+    // 静的変数で開始時間を記録
+    static auto start = std::chrono::steady_clock::now();
+    auto now = std::chrono::steady_clock::now();
+    // 経過時間を秒単位で計算
+    float elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(now - start).count() / 1000.0f;
+    // [0.123] メッセージ の形式で整形
+    std::string formattedLog = std::format("[{:.3f}] {}", elapsed, message);
+    // ログ履歴に追加
+    logs_.push_back(formattedLog);
+}
+
+void LogManager::AddLog(Editor::MessageId id) {
+    // MessageServiceクラスを利用して、現在の言語設定に応じた文字列を取得
+    std::string message = MessageService::FetchMessage(id);
+
+    // 文字列版の AddLog を呼び出して、実際のログ記録を行う
+    AddLog(message);
+}
+
+void LogManager::Clear() {
+    // ログ履歴の全消去
+    logs_.clear();
+}
+
+============================================================
+File Path: project/engine/editor/system/LogManager.h
+============================================================
+#pragma once
+#include <vector>
+#include <string>
+#include <memory>
+#include <EditorTypes.h>
+
+/// <summary>
+/// エディタ内のコンソールに表示するログを管理するマネージャ
+/// </summary>
+class LogManager {
+private: // シングルトン
+	static std::unique_ptr<LogManager> instance; // インスタンス
+
+	LogManager(LogManager&) = delete;
+	LogManager& operator=(LogManager&) = delete;
+public: // メンバ関数
+	LogManager() = default;
+	~LogManager() = default;
+	// シングルトンインスタンスの取得
+	static LogManager* GetInstance();
+	// 終了
+	void Finalize();
+    /// <summary>
+    /// ログメッセージの追加
+    /// </summary>
+    /// <param name="message">表示したい文字列</param>
+    void AddLog(const std::string& message);
+    void AddLog(Editor::MessageId id);       // オーバーロード
+    /// <summary>
+    /// 全てのログ履歴を消去する
+    /// </summary>
+    void Clear();
+private: // メンバ変数
+    std::vector<std::string> logs_; // ログ文字列の履歴
+public: // アクセッサ
+	/// Getter
+    const std::vector<std::string>& GetLogs() const { return logs_; }   /// ログ配列の参照を取得
+};
+
+============================================================
+File Path: project/engine/editor/system/MessageService.cpp
+============================================================
+#include "MessageService.h"
+#include <fstream>
+#include <cassert>
+#include <regex>
+
+using namespace Editor;
+
+// ファルルから読み込んだデータを格納する変数
+const std::string MessageService::kDefaultBaseDirectory = "Resources/Data/Languages/";
+const std::string MessageService::kExtension = ".json";
+
+bool MessageService::isLoaded_ = false; // 読み込まれたかどうか
+nlohmann::json MessageService::data_;
+Editor::Language MessageService::currentLanguage_ = Editor::Language::Japanese; // 静的変数の初期化（デフォルトは日本語など）
+const std::unordered_map<MessageId, std::string>
+MessageService::messageKeyTable_ = { // MessageId と JSON内のキーの対応テーブル
+    { MessageId::EngineInitialized, "Editor.System.EngineInit" },
+    { MessageId::SaveCompleted,     "Editor.System.SaveComplete" },
+    { MessageId::LangChanged,       "Editor.System.LangChanged" }
+};
+
+void MessageService::Load(const std::string& filePath) {
+    // フルパス生成
+    const std::string fullpath = kDefaultBaseDirectory + filePath + kExtension;
+
+    // ファイルを開く
+    std::ifstream file(fullpath);
+    if (file.fail()) {
+        // 開けなかった場合はアサート
+        assert(false && "Localization.json open failed");
+        return;
+    }
+    // JSONとして読み込む
+    file >> data_;
+    // JSONルートがオブジェクトであることを確認
+    assert(data_.is_object());
+    // 読み込み完了フラグを立てる
+    isLoaded_ = true;
+}
+
+std::string MessageService::GetText(const std::string& key) {
+    // まだロードされていない場合
+    if (!isLoaded_)
+        return "Language Data Not Loaded";
+
+    try {
+        // ドット区切りをJSONポインタ形式に変換
+        // "Editor.System.EngineInit"
+        // → "/Editor/System/EngineInit"
+        std::string path = "/" + std::regex_replace(key, std::regex("\\."), "/");
+
+        // JSONポインタ作成
+        nlohmann::json::json_pointer ptr(path);
+
+        // 該当ノードから言語キー("jp"/"en")を取得
+        return data_.at(ptr)
+            .at(LangToKey())
+            .get<std::string>();
+
+    }
+    catch (...) {
+        // キーが存在しない場合
+        return "Key Not Found";
+    }
+}
+
+std::string MessageService::FetchMessage(MessageId id) {
+    // 対応テーブルを検索
+    auto it = messageKeyTable_.find(id);
+    if (it == messageKeyTable_.end()) return "Unknown MessageID";
+
+    return GetText(it->second);
+}
+
+std::string MessageService::LangToKey() {
+    // enumごとにをキー文字列に変換
+    switch (currentLanguage_) {
+    case Language::Japanese: return "jp";
+    case Language::English:  return "en";
+    default:
+        assert(false && "Unsupported Language");
+        return "en";
+    }
+}
+
+
+============================================================
+File Path: project/engine/editor/system/MessageService.h
+============================================================
+#pragma once
+#include <string>
+#include <EditorTypes.h>
+#include <unordered_map>
+#include <json.hpp>
+
+/// <summary>
+/// 多言語メッセージ管理クラス
+/// </summary>
+class MessageService {
+public: // メンバ関数
+    static const std::string kDefaultBaseDirectory;    /// ファイルのデフォルトディレクトリ
+    static const std::string kExtension;               /// 拡張子
+    /// <summary>
+    /// JSONファイルを読み込む
+    /// </summary>
+    /// <param name="fileName">拡張子なしのファイル名</param>
+    static void Load(const std::string& filePath);
+    /// <summary>
+    /// 文字列キーでメッセージを取得
+    /// 例: GetText("Editor.System.EngineInit", Language::Japanese);
+    /// </summary>
+    /// <param name="key">JSON内のキー（ドット区切り）</param>
+    /// <returns>該当する文字列</returns>
+    static std::string GetText(const std::string& key);
+    /// <summary>
+    /// MessageId を使ってメッセージ取得
+    /// 例: FetchMessage(MessageId::EngineInitialized, Language::Japanese);
+    /// </summary>
+    /// <param name="id">メッセージID</param>
+    /// <returns>該当する文字列</returns>
+    static std::string FetchMessage(Editor::MessageId id);
+private: // 内部関数
+    /// <summary>
+    /// Language enum を JSONキーに変換
+    /// Japanese → "jp"
+    /// English  → "en"
+    /// </summary>
+    static std::string LangToKey();
+private: // メンバ変数
+    static nlohmann::json data_; // 読み込んだデータ本体
+    static bool isLoaded_; // 読み込まれたかどうか
+    static const std::unordered_map<Editor::MessageId, std::string> messageKeyTable_; //     /// MessageId と キーの対応テーブル
+    static Editor::Language currentLanguage_;
+public: // アクセッサ
+    // Setter
+    static void SetLanguage(Editor::Language lang) { currentLanguage_ = lang; }
+};
+
+============================================================
+File Path: project/engine/editor/windows/LogWindow.cpp
+============================================================
+#include "LogWindow.h"
+#include <ImGuiManager.h>
+#include <LogManager.h>
+
+LogWindow::LogWindow() {
+    isOpen = true; // デフォルトで表示
+}
+
+void LogWindow::Draw() {
+    // ウィンドウの開始
+    if (!ImGui::Begin(GetName(), &isOpen)) {
+        ImGui::End();
+        return;
+    }
+
+    // ログを消去するボタン
+    if (ImGui::Button("Clear")) {
+        LogManager::GetInstance()->Clear();
+    }
+    ImGui::SameLine();
+    ImGui::Checkbox("Auto-scroll", &autoScroll_);
+
+    ImGui::Separator();
+
+    // ログ表示領域（子ウィンドウでスクロール可能にする）
+    const float footer_height_to_reserve = ImGui::GetStyle().ItemSpacing.y + ImGui::GetFrameHeightWithSpacing();
+    ImGui::BeginChild("ScrollingRegion", ImVec2(0, -footer_height_to_reserve), false, ImGuiWindowFlags_HorizontalScrollbar);
+
+    // LogManagerからログを取得して描画
+    const auto& logs = LogManager::GetInstance()->GetLogs();
+    for (const auto& log : logs) {
+        ImGui::TextUnformatted(log.c_str());
+    }
+
+    // 自動スクロール処理
+    if (autoScroll_ && ImGui::GetScrollY() >= ImGui::GetScrollMaxY()) {
+        ImGui::SetScrollHereY(1.0f);
+    }
+
+    ImGui::EndChild();
+    ImGui::End();
+}
+
+============================================================
+File Path: project/engine/editor/windows/LogWindow.h
+============================================================
+#pragma once
+#include "IEditorWindow.h"
+#include <string>
+#include <vector>
+
+class LogWindow : public IEditorWindow {
+public:
+    LogWindow();
+    ~LogWindow() override = default;
+
+    // IEditorWindow のインターフェース実装
+    void Draw() override;
+    const char* GetName() const override { return "System Console"; }
+
+private:
+    // ログの自動スクロール制御用フラグ
+    bool autoScroll_ = true;
+};
 
 ============================================================
 File Path: project/engine/io/Controller.cpp
@@ -19977,7 +20873,7 @@ void MyGame::Draw() {
     // デバックテキスト描画
     ImGuiManager::GetInstance()->Draw();
     // 描画後処理
-    Framework::GetDirectXCommon()->PostDrow();
+    Framework::GetDirectXCommon()->PostDraw();
 }
 
 ============================================================
