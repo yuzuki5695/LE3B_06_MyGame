@@ -232,6 +232,9 @@
     <Filter Include="ヘッダー ファイル\application\pause">
       <UniqueIdentifier>{5f0ad7e7-d543-4f5d-9f5a-2e8ac0dc99ba}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ソース ファイル\application\effect">
+      <UniqueIdentifier>{92551ae9-dbbe-4b81-baa2-88b05c42ded7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -479,6 +482,9 @@
     </ClCompile>
     <ClCompile Include="application\player\PlayerDash.cpp">
       <Filter>ソース ファイル\application\player</Filter>
+    </ClCompile>
+    <ClCompile Include="application\effect\TitleEffect.cpp">
+      <Filter>ソース ファイル\application\effect</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -820,6 +826,9 @@
     </ClInclude>
     <ClInclude Include="application\player\PlayerDash.h">
       <Filter>ヘッダー ファイル\application\player</Filter>
+    </ClInclude>
+    <ClInclude Include="application\effect\TitleEffect.h">
+      <Filter>ソース ファイル\application\effect</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
