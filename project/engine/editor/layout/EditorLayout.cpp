@@ -11,7 +11,7 @@ using namespace Editor;
 /// <summary>
 /// 多言語テキスト取得用の短縮ラムダ
 /// </summary>
-auto LT = [](const std::string& key) { return MessageService::GetText(key); };
+std::function<std::string(const std::string&)> LT = [](const std::string& key) { return MessageService::GetText(key); };
 
 void EditorLayout::Render(SrvManager* srvmanager, std::vector<std::unique_ptr<IEditorWindow>>& windows) {
     // 1. メインメニューバー
