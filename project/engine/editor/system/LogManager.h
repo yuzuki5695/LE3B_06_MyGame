@@ -3,23 +3,8 @@
 #include <string>
 #include <memory>
 #include <EditorTypes.h>
+#include <LogTypes.h>
 
-/// ログの重要度レベル
-/// </summary>
-enum class LogLevel {
-    Info,       /// <summary> 情報 </summary>
-    Warning,    /// <summary> 警告 </summary>
-    Error       /// <summary> エラー </summary>
-};
-
-/// <summary>
-/// 1件分のログデータ構造体
-/// </summary>
-struct LogEntry {
-    std::string message;    /// <summary> ログ本文 </summary>
-    LogLevel level;         /// <summary> ログレベル </summary>
-    float timestamp;        /// <summary> 発生時間(秒) </summary>
-};
 /// <summary>
 /// ImGuiエディタ内のコンソールに表示するログを管理するマネージャ
 /// </summary>
