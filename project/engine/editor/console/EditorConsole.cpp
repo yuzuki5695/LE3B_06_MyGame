@@ -4,7 +4,9 @@
 #include <MessageService.h>
 #include <TimeSystem.h>
 
-// 静的メンバ変数の定義
+using namespace Editor::console;
+
+    // 静的メンバ変数の定義
 std::unique_ptr<EditorConsole> EditorConsole::instance = nullptr;
 
 // シングルトンインスタンスの取得
@@ -26,7 +28,7 @@ void EditorConsole::Clear() {
 }
 
 void EditorConsole::AddLog(const std::string& message, LogLevel level) {
-    float elapsed = static_cast<float>(TimeSystem::GetElapsedSeconds());
+	float elapsed = static_cast<float>(TimeSystem::GetElapsedSeconds()); // エンジン起動からの経過時間を取得
     logs_.push_back({ message, level, elapsed });
 }
 

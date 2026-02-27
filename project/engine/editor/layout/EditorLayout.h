@@ -27,7 +27,7 @@ private:  // 内部関数
     /// </summary>
     /// <param name="srvmanager">GPUテクスチャハンドル取得用</param>
     void DrawLeftPanel(SrvManager* srvmanager,std::vector<std::unique_ptr<IEditorWindow>>& windows);
-    //void DrawRightPanel(std::vector<std::unique_ptr<IEditorWindow>>& windows);
+    void DrawRightPanel(std::vector<std::unique_ptr<IEditorWindow>>& windows);
 
 private: // メンバ変数
     std::function<std::string(const std::string&)> LT; /// 多言語テキスト取得用の短縮ラムダ

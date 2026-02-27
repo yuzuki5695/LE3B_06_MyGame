@@ -49,14 +49,6 @@ public: // メンバ関数
 	/// </summary>
 	void AddWindow(std::unique_ptr<IEditorWindow> window);
 
-
-	// MessageId を受け取り、現在の言語設定でログ出力
-  //  void Log(Editor::MessageId id);
-
-
-	   
-//    void Log(Editor::MessageId id);
-
     void SetLanguage(Editor::Language lang);
 
 

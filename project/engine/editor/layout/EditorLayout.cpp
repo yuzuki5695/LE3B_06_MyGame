@@ -92,44 +92,44 @@ void EditorLayout::DrawLeftPanel(SrvManager* srvmanager, std::vector<std::unique
 }
 
 
-//
-//void EditorLayout::DrawRightPanel(std::vector<std::unique_ptr<IEditorWindow>>& windows) {
-//   const float kGameViewW = 640.0f;
-//    ImGuiViewport* viewport = ImGui::GetMainViewport();
-//
-//    float dockPosX = viewport->WorkPos.x + kGameViewW;
-//    float dockWidth = viewport->WorkSize.x - kGameViewW;
-//
-//    ImGui::SetNextWindowPos(ImVec2(dockPosX, viewport->WorkPos.y));
-//    ImGui::SetNextWindowSize(ImVec2(dockWidth, viewport->WorkSize.y));
-//
-//    ImGuiWindowFlags root_flags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoTitleBar |
-//        ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize;
-//
-//    ImGui::Begin("RightRoot", nullptr, root_flags);
-//    ShowMenuBar(windows);
-//
-//    ImGuiID dockspace_id = ImGui::GetID("RightDockSpace");
-//
-//    // 初回起動時やリセット要求時にレイアウトを構築
-//    if (requestResetLayout_ || !ImGui::DockBuilderGetNode(dockspace_id)) {
-//        requestResetLayout_ = false;
-//
-//        // 既存のレイアウトを破棄して作り直し
-//        ImGui::DockBuilderRemoveNode(dockspace_id);
-//        ImGui::DockBuilderAddNode(dockspace_id, ImGuiDockNodeFlags_DockSpace);
-//        ImGui::DockBuilderSetNodeSize(dockspace_id, viewport->WorkSize);
-//
-//        ImGuiID dock_main_id = dockspace_id;
-//
-//        // 登録されているすべてのウィンドウをメインのドッキングスペースに流し込む
-//        for (auto& window : windows) {
-//            ImGui::DockBuilderDockWindow(window->GetName(), dock_main_id);
-//        }
-//
-//        ImGui::DockBuilderFinish(dockspace_id);
-//    }
-//
-//    ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), ImGuiDockNodeFlags_None);
-//    ImGui::End();
-//}
+
+void EditorLayout::DrawRightPanel(std::vector<std::unique_ptr<IEditorWindow>>& windows) {
+   const float kGameViewW = 640.0f;
+    ImGuiViewport* viewport = ImGui::GetMainViewport();
+
+    float dockPosX = viewport->WorkPos.x + kGameViewW;
+    float dockWidth = viewport->WorkSize.x - kGameViewW;
+
+    ImGui::SetNextWindowPos(ImVec2(dockPosX, viewport->WorkPos.y));
+    ImGui::SetNextWindowSize(ImVec2(dockWidth, viewport->WorkSize.y));
+
+    ImGuiWindowFlags root_flags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoTitleBar |
+        ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize;
+
+    ImGui::Begin("RightRoot", nullptr, root_flags);
+    ShowMenuBar(windows);
+
+    ImGuiID dockspace_id = ImGui::GetID("RightDockSpace");
+
+    // 初回起動時やリセット要求時にレイアウトを構築
+    if (requestResetLayout_ || !ImGui::DockBuilderGetNode(dockspace_id)) {
+        requestResetLayout_ = false;
+
+        // 既存のレイアウトを破棄して作り直し
+        ImGui::DockBuilderRemoveNode(dockspace_id);
+        ImGui::DockBuilderAddNode(dockspace_id, ImGuiDockNodeFlags_DockSpace);
+        ImGui::DockBuilderSetNodeSize(dockspace_id, viewport->WorkSize);
+
+        ImGuiID dock_main_id = dockspace_id;
+
+        // 登録されているすべてのウィンドウをメインのドッキングスペースに流し込む
+        for (auto& window : windows) {
+            ImGui::DockBuilderDockWindow(window->GetName(), dock_main_id);
+        }
+
+        ImGui::DockBuilderFinish(dockspace_id);
+    }
+
+    ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), ImGuiDockNodeFlags_None);
+    ImGui::End();
+}
