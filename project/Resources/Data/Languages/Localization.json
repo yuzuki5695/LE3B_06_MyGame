@@ -25,9 +25,19 @@
         "jp": "設定",
         "en": "Settings"
       },
-      "Options": {
-        "jp": "オプション",
-        "en": "Options"
+      "Object": {
+        "jp": "オブジェクト",
+        "en": "Object"
+      }
+    },
+    "Object": {
+      "Category3D": {
+        "jp": "3D",
+        "en": "3D"
+      },
+      "Category2D": {
+        "jp": "2D",
+        "en": "2D"
       }
     },
     "Language": {

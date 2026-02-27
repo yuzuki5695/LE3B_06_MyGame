@@ -134,7 +134,6 @@ std::unique_ptr<Object3d> Object3d::Create(std::string filePath, Transform trans
 
 void Object3d::DrawImGui(const std::string& name) {
 #ifdef USE_IMGUI
-    ImGui::Begin(name.c_str());
     // 座標セクション
     if (ImGui::CollapsingHeader("Transform")) {
         ImGui::DragFloat3("Translate", &transform_.translate.x, 0.01f);
@@ -146,6 +145,5 @@ void Object3d::DrawImGui(const std::string& name) {
         ImGui::ColorEdit4("Color", reinterpret_cast<float*>(&model->GetMaterialData()->color));
         ImGui::DragFloat("Shininess", &model->GetMaterialData()->shinimess, 0.01f);
     }
-    ImGui::End();
 #endif // USE_IMGUI
 }

@@ -271,6 +271,15 @@
     <Filter Include="ヘッダー ファイル\engine\editor\windows">
       <UniqueIdentifier>{c6f553b9-aa07-48ea-8c73-0512d6a2ac71}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ソース ファイル\engine\editor\layout\editormenubar">
+      <UniqueIdentifier>{7cdd802c-0295-456d-b4da-e097fbcfbb7c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\engine\editor\layout">
+      <UniqueIdentifier>{b63e398b-9a54-435e-83b7-ab35e7661ab6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\engine\editor\layout\editormenubar">
+      <UniqueIdentifier>{3f31f402-fcc2-4a1e-9205-9872c0cf30dc}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -536,6 +545,15 @@
     </ClCompile>
     <ClCompile Include="engine\editor\windows\ConsoleWindow.cpp">
       <Filter>ソース ファイル\engine\editor\windows</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\editor\layout\editormenubar\EditorMenuBar.cpp">
+      <Filter>ソース ファイル\engine\editor\layout\editormenubar</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\editor\layout\editormenubar\SettingsMenu.cpp">
+      <Filter>ソース ファイル\engine\editor\layout\editormenubar</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\editor\layout\editormenubar\ObjectMenu.cpp">
+      <Filter>ソース ファイル\engine\editor\layout\editormenubar</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -881,18 +899,6 @@
     <ClInclude Include="engine\editor\InspectorWindow.h">
       <Filter>ヘッダー ファイル\engine\editor</Filter>
     </ClInclude>
-    <ClInclude Include="engine\editor\core\EditorTypes.h">
-      <Filter>ヘッダー ファイル\engine\editor\core</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\editor\core\EditorManager.h">
-      <Filter>ヘッダー ファイル\engine\editor\core</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\editor\core\IEditorWindow.h">
-      <Filter>ヘッダー ファイル\engine\editor\core</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\editor\layout\EditorLayout.h">
-      <Filter>ソース ファイル\engine\editor\layout</Filter>
-    </ClInclude>
     <ClInclude Include="engine\time\TimeSystem.h">
       <Filter>ヘッダー ファイル\engine\time</Filter>
     </ClInclude>
@@ -907,6 +913,33 @@
     </ClInclude>
     <ClInclude Include="engine\editor\windows\ConsoleWindow.h">
       <Filter>ヘッダー ファイル\engine\editor\windows</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\editor\layout\EditorLayout.h">
+      <Filter>ヘッダー ファイル\engine\editor\layout</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\editor\layout\editormenubar\EditorMenuBar.h">
+      <Filter>ヘッダー ファイル\engine\editor\layout\editormenubar</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\editor\layout\editormenubar\IMenuComponent.h">
+      <Filter>ヘッダー ファイル\engine\editor\layout\editormenubar</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\editor\layout\editormenubar\SettingsMenu.h">
+      <Filter>ヘッダー ファイル\engine\editor\layout\editormenubar</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\editor\layout\editormenubar\ObjectMenu.h">
+      <Filter>ヘッダー ファイル\engine\editor\layout\editormenubar</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\editor\core\EditorObjectRegistry.h">
+      <Filter>ヘッダー ファイル\engine\editor\core</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\editor\core\EditorManager.h">
+      <Filter>ヘッダー ファイル\engine\editor\core</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\editor\core\IEditorWindow.h">
+      <Filter>ヘッダー ファイル\engine\editor\core</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\editor\core\EditorTypes.h">
+      <Filter>ヘッダー ファイル\engine\editor\core</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

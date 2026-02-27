@@ -14,6 +14,7 @@
 #include <FadeManager.h>
 #include <Tools/AssetGenerator/engine/math/LoadResourceID.h>
 #include <StageManager.h>
+#include<EditorObjectRegistry.h>
 
 using namespace LoadResourceID;
 namespace { constexpr float kFadeDuration = 1.0f; }
@@ -41,7 +42,6 @@ void TitleScene::Initialize() {
     
     StageManager::GetInstance()->Initialize();
     CameraManager::GetInstance()->SetCameraMode(CameraMode::Default);      
-
 #pragma endregion シーンの初期化
 }
 
@@ -70,7 +70,7 @@ void TitleScene::InitializeUI() {
 
 void TitleScene::InitializeModel() {
     // プレイヤーパラメータ 
-    playertransform_ = { {1.0f, 1.0f, 1.0f}, {0.0f, 0.3f, 0.0f},  -20.0f,0.0f,40.0f };
+    playertransform_ = { {1.0f, 1.0f, 1.0f}, {0.0f, 0.3f, 0.0f},  {-20.0f,0.0f,40.0f } };
     titleStartX_ = -20.0f;
     titleEndX_ = -10.0f;
     // モデル移動のパラメータ
@@ -84,6 +84,9 @@ void TitleScene::InitializeModel() {
     player_->SetTransform(playertransform_);
     // 追従対象を設定
     CameraManager::GetInstance()->GetTitleCamera()->SetTarget(player_->GetPlayerObject());
+    transf_ = { {1.0f, 1.0f, 1.0f}, {0.0f, 0.3f, 0.0f},  { -20.0f,3.0f,40.0f} };
+    object3d_ = Object3d::Create(model::Player, transf_);
+    RegisterEditorObject(object3d_.get(), "object3d");
 }
 
 void TitleScene::Update() {
@@ -103,7 +106,7 @@ void TitleScene::Update() {
     // プレイヤーの演出
     UpdateTitlePlayerMotion();
     player_->Update();
-
+	object3d_->Update();
     ParticleManager::GetInstance()->Update(); 
     particle_->Update();
 #pragma endregion 全てのObject3d個々の更新処理
@@ -116,7 +119,8 @@ void TitleScene::Update() {
 
 #pragma region  ImGuiの更新処理開始
 #ifdef USE_IMGUI
-	//FadeManager::GetInstance()->DrawImGui(); // フェードマネージャのImGui制御    
+
+    //FadeManager::GetInstance()->DrawImGui(); // フェードマネージャのImGui制御    
 //    CameraManager::GetInstance()->DrawImGui();  // カメラマネージャのImGui制御
 #endif // USE_IMGUI
 #pragma endregion ImGuiの更新処理終了
@@ -131,6 +135,7 @@ void TitleScene::Draw() {
     Object3dCommon::GetInstance()->Commondrawing();
     // プレイヤーの描画処理
     player_->Draw();
+    object3d_->Draw();
     // パーティクルの描画準備。パーティクルの描画に共通のグラフィックスコマンドを積む 
     ParticleCommon::GetInstance()->Commondrawing();
     ParticleManager::GetInstance()->Draw();

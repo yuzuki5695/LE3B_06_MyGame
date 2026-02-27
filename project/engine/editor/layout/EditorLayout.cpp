@@ -14,36 +14,13 @@ void EditorLayout::Render(SrvManager* srvmanager, std::vector<std::unique_ptr<IE
     ShowMenuBar(windows);
     // 2. 左側パネル
     DrawLeftPanel(srvmanager,windows);
+    // 2. 右側パネル
+	DrawRightPanel(windows);
 }
 
 void EditorLayout::ShowMenuBar(std::vector<std::unique_ptr<IEditorWindow>>& windows) {
-    if (ImGui::BeginMainMenuBar()) {
-        // 表示メニュー
-        if (ImGui::BeginMenu(LT("Menu.Settings").c_str())) {
-            // 「言語設定」サブメニュー
-            if (ImGui::BeginMenu(LT("Language.Title").c_str())) {
-                // 日本語への切り替え
-                bool isJp = (MessageService::GetCurrentLanguage() == Language::Japanese);
-                if (ImGui::MenuItem(LT("Language.Japanese").c_str(), nullptr, isJp)) {
-                    MessageService::SetLanguage(Language::Japanese);
-                    // 言語切り替えのログを出力
-                    EditorConsole::GetInstance()->AddLocalizedLog("System.LangChanged");
-                }
-                // 英語への切り替え
-                bool isEn = (MessageService::GetCurrentLanguage() == Language::English);
-                if (ImGui::MenuItem(LT("Language.English").c_str(), nullptr, isEn)) {
-                    MessageService::SetLanguage(Language::English);
-                    // 言語切り替えのログを出力
-                    EditorConsole::GetInstance()->AddLocalizedLog("System.LangChanged");
-                }
-                ImGui::EndMenu();
-            }
-            ImGui::EndMenu();
-        }
-
-        // ... 他のメニュー項目（Optionsなど） ...
-        ImGui::EndMainMenuBar();
-    }
+    // UI描画はMenuBarへ委譲
+    menuBar_.Render(LT);
 }
 
 void EditorLayout::DrawLeftPanel(SrvManager* srvmanager, std::vector<std::unique_ptr<IEditorWindow>>& windows) {
@@ -91,10 +68,8 @@ void EditorLayout::DrawLeftPanel(SrvManager* srvmanager, std::vector<std::unique
     ImGui::End();
 }
 
-
-
 void EditorLayout::DrawRightPanel(std::vector<std::unique_ptr<IEditorWindow>>& windows) {
-   const float kGameViewW = 640.0f;
+    const float kGameViewW = 640.0f;
     ImGuiViewport* viewport = ImGui::GetMainViewport();
 
     float dockPosX = viewport->WorkPos.x + kGameViewW;
@@ -103,33 +78,41 @@ void EditorLayout::DrawRightPanel(std::vector<std::unique_ptr<IEditorWindow>>& w
     ImGui::SetNextWindowPos(ImVec2(dockPosX, viewport->WorkPos.y));
     ImGui::SetNextWindowSize(ImVec2(dockWidth, viewport->WorkSize.y));
 
-    ImGuiWindowFlags root_flags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoTitleBar |
-        ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize;
+    ImGuiWindowFlags root_flags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize;
 
-    ImGui::Begin("RightRoot", nullptr, root_flags);
-    ShowMenuBar(windows);
-
-    ImGuiID dockspace_id = ImGui::GetID("RightDockSpace");
-
-    // 初回起動時やリセット要求時にレイアウトを構築
-    if (requestResetLayout_ || !ImGui::DockBuilderGetNode(dockspace_id)) {
-        requestResetLayout_ = false;
-
-        // 既存のレイアウトを破棄して作り直し
+    // ドッキングスペース
+    static bool dock_initialized = false;
+    if (!dock_initialized) {
+        ImGuiID dockspace_id = ImGui::GetID("RightDockSpace");
         ImGui::DockBuilderRemoveNode(dockspace_id);
         ImGui::DockBuilderAddNode(dockspace_id, ImGuiDockNodeFlags_DockSpace);
         ImGui::DockBuilderSetNodeSize(dockspace_id, viewport->WorkSize);
 
-        ImGuiID dock_main_id = dockspace_id;
-
-        // 登録されているすべてのウィンドウをメインのドッキングスペースに流し込む
-        for (auto& window : windows) {
-            ImGui::DockBuilderDockWindow(window->GetName(), dock_main_id);
-        }
+        ImGui::DockBuilderDockWindow("Inspector", dockspace_id);
 
         ImGui::DockBuilderFinish(dockspace_id);
+        dock_initialized = true;
+        ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), ImGuiDockNodeFlags_None);
     }
 
-    ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), ImGuiDockNodeFlags_None);
+    // DrawRightPanel 内での描画
+    ImGui::Begin("Inspector", nullptr, ImGuiWindowFlags_NoCollapse);
+    auto [obj, category] = menuBar_.GetActiveObject(); // ObjectMenu 経由で取得
+    if (obj) {
+        switch (category) {
+        case EditorObjectCategory::Object3D:
+            static_cast<Object3d*>(obj)->DrawImGui("Inspector");
+            break;
+        case EditorObjectCategory::Object2D:
+           // static_cast<Sprite*>(obj)->DrawImGui("Inspector");
+            break;
+        default:
+            ImGui::Text("Unknown object type");
+            break;
+        }
+    } else {
+        ImGui::Text("No Selection");
+    }
+
     ImGui::End();
 }
