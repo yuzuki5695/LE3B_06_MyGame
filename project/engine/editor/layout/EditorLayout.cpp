@@ -2,7 +2,7 @@
 #include <MessageService.h>
 #include <CopylmageCommon.h>
 #include <ImGuiManager.h>
-#include <LogManager.h>
+#include <EditorConsole.h>
 #include <externals/imgui/imgui_internal.h>
 #include <EditorManager.h>
 
@@ -27,14 +27,14 @@ void EditorLayout::ShowMenuBar(std::vector<std::unique_ptr<IEditorWindow>>& wind
                 if (ImGui::MenuItem(LT("Language.Japanese").c_str(), nullptr, isJp)) {
                     MessageService::SetLanguage(Language::Japanese);
                     // 言語切り替えのログを出力
-                    LogManager::GetInstance()->AddLocalizedLog("System.LangChanged");
+                    EditorConsole::GetInstance()->AddLocalizedLog("System.LangChanged");
                 }
                 // 英語への切り替え
                 bool isEn = (MessageService::GetCurrentLanguage() == Language::English);
                 if (ImGui::MenuItem(LT("Language.English").c_str(), nullptr, isEn)) {
                     MessageService::SetLanguage(Language::English);
                     // 言語切り替えのログを出力
-                    LogManager::GetInstance()->AddLocalizedLog("System.LangChanged");
+                    EditorConsole::GetInstance()->AddLocalizedLog("System.LangChanged");
                 }
                 ImGui::EndMenu();
             }
@@ -75,7 +75,7 @@ void EditorLayout::DrawLeftPanel(SrvManager* srvmanager, std::vector<std::unique
         // 下段：ログ表示
         ImGui::BeginChild("SystemConsoleChild", ImVec2(0, 0), false);
         {
-            // windowsリストの中から LogWindow (System Console) を探して描画する
+            // windowsリストの中から ConsoleWindow (System Console) を探して描画する
             for (auto& window : windows) {
                 if (std::string(window->GetName()) == "System Console") {
                     ImGui::Text(LT("Console.Title").c_str());

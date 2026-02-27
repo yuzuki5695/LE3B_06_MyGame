@@ -3,10 +3,10 @@
 #include <string>
 #include <vector>
 
-class LogWindow : public IEditorWindow {
+class ConsoleWindow : public IEditorWindow {
 public:
-    LogWindow();
-    ~LogWindow() override = default;
+    ConsoleWindow();
+    ~ConsoleWindow() override = default;
 
     // IEditorWindow のインターフェース実装
     void Draw() override;

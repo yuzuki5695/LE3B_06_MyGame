@@ -247,12 +247,6 @@
     <Filter Include="ソース ファイル\engine\editor\core">
       <UniqueIdentifier>{8046f2fa-9102-4500-be43-a5f317059193}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ソース ファイル\engine\editor\system">
-      <UniqueIdentifier>{f9b249f1-2175-4d61-9753-e7a407801bfa}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ヘッダー ファイル\engine\editor\system">
-      <UniqueIdentifier>{3db77467-1f5d-4f32-b17f-b83aa9ba6ee6}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ヘッダー ファイル\engine\editor\core">
       <UniqueIdentifier>{3bd64be9-0561-4f6b-9a8d-8f47975ea266}</UniqueIdentifier>
     </Filter>
@@ -267,6 +261,15 @@
     </Filter>
     <Filter Include="ヘッダー ファイル\engine\time">
       <UniqueIdentifier>{fc0743ff-a4ad-4d54-9458-21e483966cc5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\engine\editor\console">
+      <UniqueIdentifier>{f9b249f1-2175-4d61-9753-e7a407801bfa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\engine\editor\console">
+      <UniqueIdentifier>{3db77467-1f5d-4f32-b17f-b83aa9ba6ee6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\engine\editor\windows">
+      <UniqueIdentifier>{c6f553b9-aa07-48ea-8c73-0512d6a2ac71}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -519,20 +522,20 @@
     <ClCompile Include="engine\editor\core\EditorManager.cpp">
       <Filter>ソース ファイル\engine\editor\core</Filter>
     </ClCompile>
-    <ClCompile Include="engine\editor\system\MessageService.cpp">
-      <Filter>ソース ファイル\engine\editor\system</Filter>
-    </ClCompile>
-    <ClCompile Include="engine\editor\system\LogManager.cpp">
-      <Filter>ソース ファイル\engine\editor\system</Filter>
-    </ClCompile>
     <ClCompile Include="engine\editor\layout\EditorLayout.cpp">
       <Filter>ソース ファイル\engine\editor\layout</Filter>
     </ClCompile>
-    <ClCompile Include="engine\editor\windows\LogWindow.cpp">
-      <Filter>ソース ファイル\engine\editor\windows</Filter>
-    </ClCompile>
     <ClCompile Include="engine\time\TimeSystem.cpp">
       <Filter>ソース ファイル\engine\time</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\editor\console\EditorConsole.cpp">
+      <Filter>ソース ファイル\engine\editor\console</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\editor\console\MessageService.cpp">
+      <Filter>ソース ファイル\engine\editor\console</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\editor\windows\ConsoleWindow.cpp">
+      <Filter>ソース ファイル\engine\editor\windows</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -887,23 +890,23 @@
     <ClInclude Include="engine\editor\core\IEditorWindow.h">
       <Filter>ヘッダー ファイル\engine\editor\core</Filter>
     </ClInclude>
-    <ClInclude Include="engine\editor\system\LogManager.h">
-      <Filter>ヘッダー ファイル\engine\editor\system</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\editor\system\MessageService.h">
-      <Filter>ヘッダー ファイル\engine\editor\system</Filter>
-    </ClInclude>
     <ClInclude Include="engine\editor\layout\EditorLayout.h">
       <Filter>ソース ファイル\engine\editor\layout</Filter>
     </ClInclude>
-    <ClInclude Include="engine\editor\windows\LogWindow.h">
-      <Filter>ソース ファイル\engine\editor\windows</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\editor\system\LogTypes.h">
-      <Filter>ヘッダー ファイル\engine\editor\system</Filter>
-    </ClInclude>
     <ClInclude Include="engine\time\TimeSystem.h">
       <Filter>ヘッダー ファイル\engine\time</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\editor\console\EditorConsole.h">
+      <Filter>ヘッダー ファイル\engine\editor\console</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\editor\console\MessageService.h">
+      <Filter>ヘッダー ファイル\engine\editor\console</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\editor\console\EditorConsoleTypes.h">
+      <Filter>ヘッダー ファイル\engine\editor\console</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\editor\windows\ConsoleWindow.h">
+      <Filter>ヘッダー ファイル\engine\editor\windows</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -1,8 +1,8 @@
 #include "EditorManager.h"
 #include <ImGuiManager.h>
 #include <CopylmageCommon.h>
-#include <LogManager.h>
-#include <LogWindow.h>
+#include <EditorConsole.h>
+#include <ConsoleWindow.h>
 #include <externals/imgui/imgui_internal.h>
 
 // 静的メンバ変数の定義
@@ -26,7 +26,7 @@ void EditorManager::Initialize() {
     // 1. レイアウト管理のインスタンス化
     layout_ = std::make_unique<EditorLayout>();
     // 重要：LogWindowを管理リストに追加する
-    windows_.push_back(std::make_unique<LogWindow>());
+    windows_.push_back(std::make_unique<ConsoleWindow>());
 }
 
 
@@ -61,5 +61,5 @@ void EditorManager::AddWindow(std::unique_ptr<IEditorWindow> window) {
 
 // ログ中継
 void EditorManager::Log(const std::string& message) {
-    LogManager::GetInstance()->AddLog(message);
+    EditorConsole::GetInstance()->AddLog(message);
 }

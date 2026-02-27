@@ -13,7 +13,7 @@
 #include <ManifestExporter.h>
 #include <EditorManager.h>
 #include <InspectorWindow.h>
-#include <LogManager.h>
+#include <EditorConsole.h>
 #include <TimeSystem.h>
 
 void Framework::Run() {
@@ -153,7 +153,7 @@ void Framework::Initialize() {
     float startupTime = static_cast<float>(TimeSystem::GetStartupSeconds());                      // 起動完了までの経過秒を取得
     std::string formatString = MessageService::GetText("System.EngineInit");                      // ローカライズされたメッセージ取得
     std::string finalMessage = std::vformat(formatString, std::make_format_args(startupTime));    // 秒数をフォーマット埋め込み
-    LogManager::GetInstance()->AddLog(finalMessage);                                              // コンソールへ出力
+    EditorConsole::GetInstance()->AddLog(finalMessage);                                           // コンソールへ出力
 }
 
 void Framework::Update() {

@@ -3,22 +3,22 @@
 #include <string>
 #include <memory>
 #include <EditorTypes.h>
-#include <LogTypes.h>
+#include <EditorConsoleTypes.h>
 
 /// <summary>
 /// ImGuiエディタ内のコンソールに表示するログを管理するマネージャ
 /// </summary>
-class LogManager {
+class EditorConsole {
 private: // シングルトン
-	static std::unique_ptr<LogManager> instance; // インスタンス
+	static std::unique_ptr<EditorConsole> instance; // インスタンス
 
-	LogManager(LogManager&) = delete;
-	LogManager& operator=(LogManager&) = delete;
+	EditorConsole(EditorConsole&) = delete;
+	EditorConsole& operator=(EditorConsole&) = delete;
 public: // メンバ関数
-	LogManager() = default;
-	~LogManager() = default;
+	EditorConsole() = default;
+	~EditorConsole() = default;
 	// シングルトンインスタンスの取得
-	static LogManager* GetInstance();
+	static EditorConsole* GetInstance();
 	// 終了
 	void Finalize();
     /// <summary>

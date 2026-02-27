@@ -63,7 +63,7 @@
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)engine\2d;$(ProjectDir)engine\3d;$(ProjectDir)engine\audio;$(ProjectDir)engine\base;$(ProjectDir)engine\io;$(ProjectDir)engine\math;$(ProjectDir)engine\scene;$(ProjectDir)engine\3d\Particle;$(ProjectDir)engine\camera;$(ProjectDir)engine\base\DirectXCommon;$(ProjectDir)engine\base\Utility;$(ProjectDir)engine\base\ViewManager;$(ProjectDir)engine\math\Light;$(ProjectDir)engine\math\Matrix;$(ProjectDir)engine\math\Model;$(ProjectDir)engine\math\Vector;$(ProjectDir)engine\resource;$(ProjectDir)externals\nlohmann;$(ProjectDir)application\scene;$(ProjectDir)application\character;$(ProjectDir)application\player;$(ProjectDir)application\bullet;$(ProjectDir)application\loader;$(ProjectDir)application\camera;$(ProjectDir)application\enemy;$(ProjectDir)externals\assimp\include;$(ProjectDir)engine\math\collision;$(ProjectDir)application\collision;$(ProjectDir)application\fade;$(ProjectDir)application\event;$(ProjectDir)application\stage;$(ProjectDir)engine\math\Easing;$(ProjectDir)application\particle;$(ProjectDir)engine\math\ParticleData;$(ProjectDir)application\resource;$(ProjectDir)application\pause;$(ProjectDir)engine\editor;$(ProjectDir)engine\editor\core;$(ProjectDir)engine\editor\system;$(ProjectDir)engine\editor\layout;$(ProjectDir)engine\editor\windows;$(ProjectDir)engine\time</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)engine\2d;$(ProjectDir)engine\3d;$(ProjectDir)engine\audio;$(ProjectDir)engine\base;$(ProjectDir)engine\io;$(ProjectDir)engine\math;$(ProjectDir)engine\scene;$(ProjectDir)engine\3d\Particle;$(ProjectDir)engine\camera;$(ProjectDir)engine\base\DirectXCommon;$(ProjectDir)engine\base\Utility;$(ProjectDir)engine\base\ViewManager;$(ProjectDir)engine\math\Light;$(ProjectDir)engine\math\Matrix;$(ProjectDir)engine\math\Model;$(ProjectDir)engine\math\Vector;$(ProjectDir)engine\resource;$(ProjectDir)externals\nlohmann;$(ProjectDir)application\scene;$(ProjectDir)application\character;$(ProjectDir)application\player;$(ProjectDir)application\bullet;$(ProjectDir)application\loader;$(ProjectDir)application\camera;$(ProjectDir)application\enemy;$(ProjectDir)externals\assimp\include;$(ProjectDir)engine\math\collision;$(ProjectDir)application\collision;$(ProjectDir)application\fade;$(ProjectDir)application\event;$(ProjectDir)application\stage;$(ProjectDir)engine\math\Easing;$(ProjectDir)application\particle;$(ProjectDir)engine\math\ParticleData;$(ProjectDir)application\resource;$(ProjectDir)application\pause;$(ProjectDir)engine\editor;$(ProjectDir)engine\editor\core;$(ProjectDir)engine\editor\console;$(ProjectDir)engine\editor\layout;$(ProjectDir)engine\editor\windows;$(ProjectDir)engine\time</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
     </ClCompile>
     <Link>
@@ -95,7 +95,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)engine\2d;$(ProjectDir)engine\3d;$(ProjectDir)engine\audio;$(ProjectDir)engine\base;$(ProjectDir)engine\io;$(ProjectDir)engine\math;$(ProjectDir)engine\scene;$(ProjectDir)engine\3d\Particle;$(ProjectDir)engine\camera;$(ProjectDir)engine\base\DirectXCommon;$(ProjectDir)engine\base\Utility;$(ProjectDir)engine\base\ViewManager;$(ProjectDir)engine\math\Light;$(ProjectDir)engine\math\Matrix;$(ProjectDir)engine\math\Model;$(ProjectDir)engine\math\Vector;$(ProjectDir)engine\resource;$(ProjectDir)externals\nlohmann;$(ProjectDir)application\scene;$(ProjectDir)application\character;$(ProjectDir)application\player;$(ProjectDir)application\bullet;$(ProjectDir)application\loader;$(ProjectDir)application\camera;$(ProjectDir)application\enemy;$(ProjectDir)externals\assimp\include;$(ProjectDir)engine\math\collision;$(ProjectDir)application\collision;$(ProjectDir)application\fade;$(ProjectDir)application\event;$(ProjectDir)application\stage;$(ProjectDir)engine\math\Easing;$(ProjectDir)application\particle;$(ProjectDir)engine\math\ParticleData;$(ProjectDir)application\resource;$(ProjectDir)application\pause;$(ProjectDir)engine\editor;$(ProjectDir)engine\editor\core;$(ProjectDir)engine\editor\system;$(ProjectDir)engine\editor\layout;$(ProjectDir)engine\editor\windows;$(ProjectDir)engine\time</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)engine\2d;$(ProjectDir)engine\3d;$(ProjectDir)engine\audio;$(ProjectDir)engine\base;$(ProjectDir)engine\io;$(ProjectDir)engine\math;$(ProjectDir)engine\scene;$(ProjectDir)engine\3d\Particle;$(ProjectDir)engine\camera;$(ProjectDir)engine\base\DirectXCommon;$(ProjectDir)engine\base\Utility;$(ProjectDir)engine\base\ViewManager;$(ProjectDir)engine\math\Light;$(ProjectDir)engine\math\Matrix;$(ProjectDir)engine\math\Model;$(ProjectDir)engine\math\Vector;$(ProjectDir)engine\resource;$(ProjectDir)externals\nlohmann;$(ProjectDir)application\scene;$(ProjectDir)application\character;$(ProjectDir)application\player;$(ProjectDir)application\bullet;$(ProjectDir)application\loader;$(ProjectDir)application\camera;$(ProjectDir)application\enemy;$(ProjectDir)externals\assimp\include;$(ProjectDir)engine\math\collision;$(ProjectDir)application\collision;$(ProjectDir)application\fade;$(ProjectDir)application\event;$(ProjectDir)application\stage;$(ProjectDir)engine\math\Easing;$(ProjectDir)application\particle;$(ProjectDir)engine\math\ParticleData;$(ProjectDir)application\resource;$(ProjectDir)application\pause;$(ProjectDir)engine\editor;$(ProjectDir)engine\editor\core;$(ProjectDir)engine\editor\console;$(ProjectDir)engine\editor\layout;$(ProjectDir)engine\editor\windows;$(ProjectDir)engine\time</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -147,11 +147,11 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="application\scene\GameOverScene.cpp" />
     <ClCompile Include="application\scene\GamePlayScene.cpp" />
     <ClCompile Include="application\scene\TitleScene.cpp" />
+    <ClCompile Include="engine\editor\console\EditorConsole.cpp" />
+    <ClCompile Include="engine\editor\console\MessageService.cpp" />
     <ClCompile Include="engine\editor\core\EditorManager.cpp" />
     <ClCompile Include="engine\editor\layout\EditorLayout.cpp" />
-    <ClCompile Include="engine\editor\system\LogManager.cpp" />
-    <ClCompile Include="engine\editor\system\MessageService.cpp" />
-    <ClCompile Include="engine\editor\windows\LogWindow.cpp" />
+    <ClCompile Include="engine\editor\windows\ConsoleWindow.cpp" />
     <ClCompile Include="engine\math\Collision\Collision.cpp" />
     <ClCompile Include="engine\math\Easing\Easing.cpp" />
     <ClCompile Include="engine\3d\Skybox.cpp" />
@@ -240,15 +240,15 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\resource\FileSearcher.h" />
     <ClInclude Include="application\resource\ManifestExporter.h" />
     <ClInclude Include="application\scene\GameOverScene.h" />
+    <ClInclude Include="engine\editor\console\EditorConsole.h" />
+    <ClInclude Include="engine\editor\console\EditorConsoleTypes.h" />
+    <ClInclude Include="engine\editor\console\MessageService.h" />
     <ClInclude Include="engine\editor\core\EditorManager.h" />
     <ClInclude Include="engine\editor\core\EditorTypes.h" />
     <ClInclude Include="engine\editor\core\IEditorWindow.h" />
     <ClInclude Include="engine\editor\InspectorWindow.h" />
     <ClInclude Include="engine\editor\layout\EditorLayout.h" />
-    <ClInclude Include="engine\editor\system\LogManager.h" />
-    <ClInclude Include="engine\editor\system\LogTypes.h" />
-    <ClInclude Include="engine\editor\system\MessageService.h" />
-    <ClInclude Include="engine\editor\windows\LogWindow.h" />
+    <ClInclude Include="engine\editor\windows\ConsoleWindow.h" />
     <ClInclude Include="engine\math\Collision\Collision.h" />
     <ClInclude Include="engine\math\Collision\OBB.h" />
     <ClInclude Include="engine\math\Easing\Easing.h" />
