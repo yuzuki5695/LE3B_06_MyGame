@@ -13,6 +13,4 @@ public:
     const char* GetName() const override { return "System Console"; }
 
 private:
-    // ログの自動スクロール制御用フラグ
-    bool autoScroll_ = true;
 };

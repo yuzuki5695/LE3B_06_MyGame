@@ -34,7 +34,7 @@ private: // 内部関数
     static std::string LangToKey();
 private: // メンバ変数
     static nlohmann::json data_;                           /// データ本体
-	static std::string fullpath;                     /// ファイルのフルパス
+	static std::string fullpath;                           /// ファイルのフルパス
     static bool isLoaded_;                                 /// 読み込まれたかどうかの判定フラグ
 	static Editor::Language currentLanguage_;              /// 現在の言語設定
 public: // アクセッサ

@@ -1,18 +1,20 @@
 #include "Framework.h"
-#include<D3DResourceLeakChecker.h>
-#include<DirectXCommon.h>
-#include<ModelCommon.h>
-#include<SrvManager.h>
-#include<SceneFactory.h>
-#include<ShaderCompiler.h>
-#include<CopylmageCommon.h>
-#include<Controller.h>
-#include<psapi.h>
-#include<SkyboxCommon.h>
+#include <D3DResourceLeakChecker.h>
+#include <DirectXCommon.h>
+#include <ModelCommon.h>
+#include <SrvManager.h>
+#include <SceneFactory.h>
+#include <ShaderCompiler.h>
+#include <CopylmageCommon.h>
+#include <Controller.h>
+#include <psapi.h>
+#include <SkyboxCommon.h>
 #include <FileSearcher.h>
 #include <ManifestExporter.h>
-#include<EditorManager.h>
+#include <EditorManager.h>
 #include <InspectorWindow.h>
+#include <LogManager.h>
+#include <TimeSystem.h>
 
 void Framework::Run() {
     // ゲームの初期化
@@ -70,7 +72,9 @@ void Framework::Finalize() {
 }
 
 void Framework::Initialize() {
-    OutputDebugStringA("Hello,Directx!\n");
+    // ------------------------------------------------------------
+    // ウィンドウ・DirectX 基盤初期化
+    // ------------------------------------------------------------
     // ウィンドウ作成
     // WindowsAPIの初期化
     winApp = std::make_unique <WinApp>();
@@ -80,6 +84,11 @@ void Framework::Initialize() {
     // DirectXの初期化
     dxCommon = std::make_unique <DirectXCommon>();
     dxCommon->Initialize(winApp.get());
+
+    // ------------------------------------------------------------
+    // 各種サブシステム初期化
+    // ------------------------------------------------------------
+
     // シェーダーコンパイルの初期化
     ShaderCompiler::GetInstance()->Initialize();
     // 音声読み込み
@@ -103,42 +112,48 @@ void Framework::Initialize() {
     ModelManager::GetInstance()->Initialize(dxCommon.get());
     // パーティクルマネージャの初期化
     ParticleManager::GetInstance()->Initialize(dxCommon.get(), srvManager.get());
-
-
+ 
+    // ------------------------------------------------------------
+    // リソース走査・マニフェスト生成
+    // ------------------------------------------------------------
     // 1. 検索クラス
     FileSearcher searcher("Resources");
-
     // 2. 出力クラス
     ManifestExporter exporter;
-
     // 3. 実行：検索した結果をそのまま出力に渡す
     auto files = searcher.GetAllFiles({ "EditorTemp", ".git" });
     exporter.Export("Resources/manifest.json", files);
-
 #pragma region 基盤システムの初期化
-
+    // ------------------------------------------------------------
+    // 描画共通部・入力などの基盤システム初期化
+    // ------------------------------------------------------------
     // 入力の初期化
     Input::GetInstance()->Initialize(winApp.get());
-
     // スプライト共通部の初期化
     SpriteCommon::GetInstance()->Initialize(dxCommon.get(), dsvManager.get());
-
     // 3Dオブジェクト共通部の初期化
     Object3dCommon::GetInstance()->Initialize(dxCommon.get(), dsvManager.get());
-
     // パーティクル共通部の初期化
     ParticleCommon::GetInstance()->Initialize(dxCommon.get(), dsvManager.get());
-
     // レンダーテクスチャ共通部の初期化
     CopylmageCommon::GetInstance()->Initialize(dxCommon.get(), srvManager.get(), rtvManager.get(), dsvManager.get());
-
     // 箱の共通部の初期化
     SkyboxCommon::GetInstance()->Initialize(dxCommon.get(), dsvManager.get());
-
 #pragma endregion 基盤システムの初期化
+    // ------------------------------------------------------------
+    // Debugエディタ初期化
+    // ------------------------------------------------------------
     // エディタにウィンドウを登録していく
     auto editor = EditorManager::GetInstance();
-	EditorManager::GetInstance()->Initialize();
+    EditorManager::GetInstance()->Initialize();
+    // ------------------------------------------------------------
+    // 起動完了時間の確定
+    // ------------------------------------------------------------
+    TimeSystem::MarkWindowInitialized();                                                          // 起動からここまでの時間を確定
+    float startupTime = static_cast<float>(TimeSystem::GetStartupSeconds());                      // 起動完了までの経過秒を取得
+    std::string formatString = MessageService::GetText("System.EngineInit");                      // ローカライズされたメッセージ取得
+    std::string finalMessage = std::vformat(formatString, std::make_format_args(startupTime));    // 秒数をフォーマット埋め込み
+    LogManager::GetInstance()->AddLog(finalMessage);                                              // コンソールへ出力
 }
 
 void Framework::Update() {
@@ -176,11 +191,10 @@ void Framework::Draw() {
     UINT backBufferIndex = dxCommon->GetSwapChain()->GetSwapChain()->GetCurrentBackBufferIndex();
     dxCommon->PreDraw(rtvManager->GetRtvHandle(backBufferIndex), dsvManager->GetDsvDescriptorHeap());
 #ifndef USE_IMGUI
-    // ポストエフェクト描画（レンダーテクスチャ → 画面） 
+    // Releaseビルド時ポストエフェクト描画（レンダーテクスチャ → 画面） 
     CopylmageCommon::GetInstance()->Commondrawing(srvManager.get());
 #else
-    // エディタモード：Updateで作ったUIデータをここでGPUに転送するだけ
-    // すでにデータは完成しているので、引数は不要です
+    // エディタモード：Updateで作ったUIデータをここでGPUに転送
     ImGuiManager::GetInstance()->Draw();
 #endif
 }

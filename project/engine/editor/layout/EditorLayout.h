@@ -10,8 +10,6 @@
 /// </summary>
 class EditorLayout {
 public: // メンバ関数
-    EditorLayout() = default;
-    ~EditorLayout() = default;
     /// <summary>
     /// エディタ全体のレイアウトを描画するメイン関数
     /// </summary>
@@ -24,6 +22,13 @@ private:  // 内部関数
     /// </summary>
     /// <param name="windows">ウィンドウリスト（表示切り替え用）</param>
     void ShowMenuBar(std::vector<std::unique_ptr<IEditorWindow>>& windows);
-private: // メンバ変数
+    /// <summary>
+    /// 左側パネルを描画する（ゲームビューおよびシステムコンソール）
+    /// </summary>
+    /// <param name="srvmanager">GPUテクスチャハンドル取得用</param>
+    void DrawLeftPanel(SrvManager* srvmanager,std::vector<std::unique_ptr<IEditorWindow>>& windows);
+    //void DrawRightPanel(std::vector<std::unique_ptr<IEditorWindow>>& windows);
 
+private: // メンバ変数
+    std::function<std::string(const std::string&)> LT; /// 多言語テキスト取得用の短縮ラムダ
 };

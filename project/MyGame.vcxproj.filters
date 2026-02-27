@@ -262,6 +262,12 @@
     <Filter Include="ソース ファイル\engine\editor\windows">
       <UniqueIdentifier>{d7e59b22-6cc1-4e29-8253-f3ceb6fd1473}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ソース ファイル\engine\time">
+      <UniqueIdentifier>{d5472e75-a2c3-41ff-870f-3160f9e3eae8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\engine\time">
+      <UniqueIdentifier>{fc0743ff-a4ad-4d54-9458-21e483966cc5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -524,6 +530,9 @@
     </ClCompile>
     <ClCompile Include="engine\editor\windows\LogWindow.cpp">
       <Filter>ソース ファイル\engine\editor\windows</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\time\TimeSystem.cpp">
+      <Filter>ソース ファイル\engine\time</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -889,6 +898,12 @@
     </ClInclude>
     <ClInclude Include="engine\editor\windows\LogWindow.h">
       <Filter>ソース ファイル\engine\editor\windows</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\editor\system\LogTypes.h">
+      <Filter>ヘッダー ファイル\engine\editor\system</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\time\TimeSystem.h">
+      <Filter>ヘッダー ファイル\engine\time</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
