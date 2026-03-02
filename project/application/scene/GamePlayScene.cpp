@@ -1,22 +1,22 @@
 #include "GamePlayScene.h"
-#include<SceneManager.h>
-#include<TextureManager.h>
-#include<ModelManager.h>
-#include<SpriteCommon.h>
-#include<Object3dCommon.h>
+#include <SceneManager.h>
+#include <TextureManager.h>
+#include <ModelManager.h>
+#include <SpriteCommon.h>
+#include <Object3dCommon.h>
 #include <CameraManager.h>
 #include <ParticleCommon.h>
-#include<Input.h>
-#include<Controller.h>
+#include <Input.h>
+#include <Controller.h>
 #ifdef USE_IMGUI
-#include<ImGuiManager.h>
+#include <ImGuiManager.h>
 #endif // USE_IMGUI
-#include<SkyboxCommon.h>
-#include<Player.h>
+#include <SkyboxCommon.h>
+#include <Player.h>
 #include <BulletManager.h>
-#include<MatrixVector.h>
-#include<Collision.h>
-#include<Tools/AssetGenerator/engine/math/LoadResourceID.h>
+#include <MatrixVector.h>
+#include <Collision.h>
+#include <Tools/AssetGenerator/engine/math/LoadResourceID.h>
 
 using namespace LoadResourceID;
 using namespace Collision;
@@ -36,33 +36,35 @@ void GamePlayScene::Finalize() {
 ///====================================================
 void GamePlayScene::Initialize() {
     // カメラマネージャの初期化
-    CameraManager::GetInstance()->Initialize(CameraTransform({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }));     
+    CameraManager::GetInstance()->Initialize(CameraTransform({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }));
     CameraManager::GetInstance()->SetTypeview(ViewCameraType::Main);
 
     // テクスチャを読み込む 
     TextureManager::GetInstance()->LoadTexture(texture::Move);
     TextureManager::GetInstance()->LoadTexture(texture::Reticlemove);
-    TextureManager::GetInstance()->LoadTexture(texture::Space);        
+    TextureManager::GetInstance()->LoadTexture(texture::Space);
     TextureManager::GetInstance()->LoadTexture(texture::Avoidance);
     TextureManager::GetInstance()->LoadTexture(texture::Gage);
     TextureManager::GetInstance()->LoadTexture(texture::PlayerUi);
-    
-	Vector2 size = Vector2{ 120.0f,80.0f };
+    TextureManager::GetInstance()->LoadTexture(texture::W);
+    TextureManager::GetInstance()->LoadTexture(texture::A);
+
+    Vector2 size = Vector2{ 40.0f,40.0f };
     MAXui_ = 1;
-    uis_.push_back(Sprite::Create(texture::Move, Vector2{ 5.0f, 550.0f }, 0.0f, size)); 
-    uis_.push_back(Sprite::Create(texture::Reticlemove, Vector2{ 125.0f, 550.0f }, 0.0f, size)); 
-    uis_.push_back(Sprite::Create(texture::Space, Vector2{ 5.0f, 630.0f }, 0.0f, size)); 
-    uis_.push_back(Sprite::Create(texture::Avoidance, Vector2{ 125.0f, 630.0f }, 0.0f, size)); 
+    uis_.push_back(Sprite::Create(texture::W, Vector2{ 5.0f, 550.0f }, 0.0f, size));
+    //uis_.push_back(Sprite::Create(texture::Reticlemove, Vector2{ 125.0f, 550.0f }, 0.0f, size)); 
+    //uis_.push_back(Sprite::Create(texture::Space, Vector2{ 5.0f, 630.0f }, 0.0f, size)); 
+    //uis_.push_back(Sprite::Create(texture::Avoidance, Vector2{ 125.0f, 630.0f }, 0.0f, size)); 
     // 2. vector の要素数を MAXui_ に同期（もし他で使うなら）
-    MAXui_ = static_cast<uint32_t>(uis_.size());
-    for (auto& ui : uis_) {
-        ui->SetTextureSize(size);
-    }
+    //MAXui_ = static_cast<uint32_t>(uis_.size());
+    //for (auto& ui : uis_) {
+    //    ui->SetTextureSize(size);
+    //}
 
     gage_ = Sprite::Create(texture::Gage, Vector2{ 380.0f, 10.0f }, 0.0f, Vector2{ 500.0f,30.0f });
-    gage_->SetTextureSize(Vector2{ 500.0f,30.0f });     	 
+    gage_->SetTextureSize(Vector2{ 500.0f,30.0f });
     player_ui_ = Sprite::Create(texture::PlayerUi, Vector2{ 380.0f, 12.3f }, 0.0f, Vector2{ 25.0f,25.0f });
-    player_ui_->SetTextureSize(Vector2{ 25.0f,25.0f });     
+    player_ui_->SetTextureSize(Vector2{ 25.0f,25.0f });
 
     // .objファイルからモデルを読み込む
     ModelManager::GetInstance()->LoadModel(model::Goal);
@@ -78,7 +80,7 @@ void GamePlayScene::Initialize() {
     particles_->Initialize(player_->GetPlayerObject());
 
     // 敵関連の初期化
-	MAX_ENEMY = 300; // 敵の最大数
+    MAX_ENEMY = 300; // 敵の最大数
     // 敵をリストに追加して初期化
     for (int i = 0; i < MAX_ENEMY; ++i) {
         std::unique_ptr<Enemy> enemy = std::make_unique<Enemy>();
@@ -101,7 +103,7 @@ void GamePlayScene::Initialize() {
     FadeManager::GetInstance()->Initialize();
     // イベントマネージャの初期化
     EventManager::GetInstance()->Initialize("gamestart");
-	// ゲームカメラの移動許可
+    // ゲームカメラの移動許可
    // CameraManager::GetInstance()->GetGameCamera()->Setmovefige(true);
     // ステージマネージャの初期化
     StageManager::GetInstance()->Initialize();

@@ -1,19 +1,19 @@
 #pragma once
-#include<BaseScene.h>
-#include<Sprite.h>
-#include<Object3d.h>
-#include<ParticleEmitter.h>
-#include<SoundPlayer.h>
-#include<Skybox.h>
-#include<CharacterLoader.h>
-#include<Player.h>
-#include<Enemy.h>
-#include<FadeManager.h>
-#include<EventManager.h>
-#include<StageManager.h>
-#include<GamePlayparticle.h>
+#include <BaseScene.h>
+#include <Sprite.h>
+#include <Object3d.h>
+#include <ParticleEmitter.h>
+#include <SoundPlayer.h>
+#include <Skybox.h>
+#include <CharacterLoader.h>
+#include <Player.h>
+#include <Enemy.h>
+#include <FadeManager.h>
+#include <EventManager.h>
+#include <StageManager.h>
+#include <GamePlayparticle.h>
 #include <EnemySpawner.h>
-#include<Pausemenu.h>
+#include <Pausemenu.h>
 
 /// <summary>
 /// ゲームプレイシーン
