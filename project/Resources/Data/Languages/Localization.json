@@ -1,0 +1,58 @@
+﻿{
+  "Editor": {
+    "System": {
+      "EngineInit": {
+        "jp": "[システム] エンジンの初期化が完了しました。（{:.3f} 秒）",
+        "en": "[System] Engine initialization complete. ({:.3f} sec)"
+      },
+      "LangChanged": {
+        "jp": "言語を日本語に変更しました。",
+        "en": "Language changed to English."
+      }
+    },
+    "Console": {
+      "Title": {
+        "jp": "システムコンソール",
+        "en": "System Console"
+      },
+      "Clear": {
+        "jp": "ログを削除",
+        "en": "Log Clear"
+      }
+    },
+    "Menu": {
+      "Settings": {
+        "jp": "設定",
+        "en": "Settings"
+      },
+      "Object": {
+        "jp": "オブジェクト",
+        "en": "Object"
+      }
+    },
+    "Object": {
+      "Category3D": {
+        "jp": "3D",
+        "en": "3D"
+      },
+      "Category2D": {
+        "jp": "2D",
+        "en": "2D"
+      }
+    },
+    "Language": {
+      "Title": {
+        "jp": "言語設定",
+        "en": "Language Settings"
+      },
+      "Japanese": {
+        "jp": "日本語",
+        "en": "Japanese"
+      },
+      "English": {
+        "jp": "英語",
+        "en": "English"
+      }
+    }
+  }
+}

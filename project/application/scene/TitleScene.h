@@ -66,14 +66,15 @@ public: // メンバ関数
     /// ・上下の浮遊アニメーション
     /// </summary>
     void UpdateTitlePlayerMotion();
+
+    void EditorEntities();
+
 private: // メンバ変数
     std::unique_ptr <Sprite> ui_title_;
     std::unique_ptr <Sprite> ui_start_;
     std::vector<Sprite*> uiSprites_;
 
     std::unique_ptr <Player> player_;
-    // 背景オブジェクト 
-    std::unique_ptr <Skybox> skybox_ = nullptr;
     // 演出用モデル
     Transform playertransform_{};
     // 移動制御

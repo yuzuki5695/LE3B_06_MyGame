@@ -2,6 +2,7 @@
 #include <vector>
 #include<BaseCharacter.h>
 #include <CharacterLoader.h>
+#include <Skybox.h>
 
 /// <summary>
 /// ステージマネージャ
@@ -23,7 +24,8 @@ public: // メンバ関数
     void Initialize();
     void Update();
     void Draw();
-    
+    void DDSDraw();
+
     void DebugImGui();
 
 private:
@@ -40,4 +42,6 @@ private:
 
     // 地面
     std::unique_ptr <Object3d> grass = nullptr; 
+
+    std::unique_ptr<Skybox> skybox_;
 };

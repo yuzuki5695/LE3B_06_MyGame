@@ -248,13 +248,13 @@ void DirectXCommon::PreDraw(D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle,Microsoft::WRL
     commandList->ClearDepthStencilView(dsvHandle, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
 }
 
-void DirectXCommon::PostDrow() {
+void DirectXCommon::PostDraw() {
     HRESULT hr;
     // バックバッファの番号を取得
     UINT bbIndex = swapchain_->GetSwapChain()->GetCurrentBackBufferIndex();
     // 画面に描く処理はすべて終わり、画面に移すので、状態を遷移
     // 今回はRenderTargetからPresentにする
-    // PostDrow 内で再設定が必要（PreDrawとは別フレームなので）：
+    // PostDraw 内で再設定が必要（PreDrawとは別フレームなので）：
     barrier.Transition.pResource = swapchain_->GetBuffer(bbIndex).Get();
     barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_RENDER_TARGET;
     barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_PRESENT;

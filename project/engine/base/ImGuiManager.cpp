@@ -2,7 +2,12 @@
 #include<WinApp.h>
 #include<DirectXCommon.h>
 
+// 名前空間
 using namespace Microsoft::WRL;
+
+// 定数の定義
+const std::string ImGuiManager::kFontPath = "Resources/Fonts/Debug/NotoSansJP-VF.ttf";
+const float ImGuiManager::kDefaultFontSize = 15.0f;
 
 ImGuiManager* ImGuiManager::instance = nullptr;
 
@@ -33,13 +38,16 @@ void ImGuiManager::Initialize([[maybe_unused]] WinApp* winApp, [[maybe_unused]] 
 
 	// ImGuiのコンテキストを生成
 	ImGui::CreateContext();
-	
+
 	// iniファイルを作らないように設定
 	ImGuiIO& io = ImGui::GetIO();
-	io.IniFilename = nullptr;
+	io.IniFilename = nullptr; // 設定ファイルの自動保存を無効化
+    io.ConfigFlags |= ImGuiConfigFlags_DockingEnable; // ドッキング機能を有効化
 
 	// ImGuiのスタイルを設定
 	ImGui::StyleColorsDark();
+	// フォントのセットアップ
+    SetupFonts();
 
 	// インデックスを確保
 	imguiindex = srvManager_->Allocate();
@@ -57,6 +65,8 @@ void ImGuiManager::Initialize([[maybe_unused]] WinApp* winApp, [[maybe_unused]] 
 		ImGuiHandleCPU,
 		ImGuiHandleGPU
 	);
+	// フォントテクスチャなどのデバイスオブジェクトを作成
+	ImGui_ImplDX12_CreateDeviceObjects();
 #endif // USE_IMGUI
 }
 
@@ -85,4 +95,17 @@ void ImGuiManager::Draw() {
 	// 描画コマンドを発行
 	ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), commandList.Get());
 #endif // USE_IMGUI
+}
+
+void ImGuiManager::SetupFonts() {
+	ImGuiIO& io = ImGui::GetIO();
+	// フォントの読み込み(今回は日本語フォントを使用)
+	ImFont* font = io.Fonts->AddFontFromFileTTF(
+		kFontPath.c_str(),
+		kDefaultFontSize,
+		nullptr,
+		io.Fonts->GetGlyphRangesJapanese()
+	);
+	// フォントのビルド
+	io.Fonts->Build();
 }

@@ -1,24 +1,27 @@
 #include "TitleScene.h"
-#include<SceneManager.h>
-#include<TextureManager.h>
-#include<ModelManager.h>
-#include<SpriteCommon.h>
-#include<Object3dCommon.h>
-#include<CameraManager.h>
-#include<Input.h>
+#include <SceneManager.h>
+#include <TextureManager.h>
+#include <ModelManager.h>
+#include <SpriteCommon.h>
+#include <Object3dCommon.h>
+#include <CameraManager.h>
+#include <Input.h>
 #ifdef USE_IMGUI
-#include<ImGuiManager.h>
+#include <ImGuiManager.h>
 #endif // USE_IMGUI
-#include<ParticleCommon.h>
-#include<SkyboxCommon.h>
-#include<FadeManager.h>
-#include<Tools/AssetGenerator/engine/math/LoadResourceID.h>
+#include <ParticleCommon.h>
+#include <SkyboxCommon.h>
+#include <FadeManager.h>
+#include <Tools/AssetGenerator/engine/math/LoadResourceID.h>
+#include <StageManager.h>
+#include<EditorEntityRegistry.h>
 
 using namespace LoadResourceID;
 namespace { constexpr float kFadeDuration = 1.0f; }
 
 void TitleScene::Finalize() {
     FadeManager::GetInstance()->Finalize();  //  フェードマネージャの解放処理
+	StageManager::GetInstance()->Finalize(); // ステージマネージャの解放処理
 }
 
 void TitleScene::Initialize() {
@@ -36,9 +39,10 @@ void TitleScene::Initialize() {
     // パーティクルのの生成、初期化
     particle_ = std::make_unique<Titleparticle>();
     particle_->Initialize(player_->GetPlayerObject());
-        
+    StageManager::GetInstance()->Initialize();
     CameraManager::GetInstance()->SetCameraMode(CameraMode::Default);      
-
+    // ImGuiエディタに情報を登録する
+    EditorEntities();
 #pragma endregion シーンの初期化
 }
 
@@ -51,7 +55,6 @@ void TitleScene::LoadResources() {
     //  テクスチャの読み込み
     TextureManager::GetInstance()->LoadTexture(texture::Ui02);
     TextureManager::GetInstance()->LoadTexture(texture::Title);
-    TextureManager::GetInstance()->LoadTexture(texture::Cubemapbox);
 }
 
 void TitleScene::InitializeUI() {  
@@ -67,10 +70,8 @@ void TitleScene::InitializeUI() {
 }
 
 void TitleScene::InitializeModel() {
-    // スカイボックス生成 
-    skybox_ = Skybox::Create(texture::Cubemapbox, Transform{ { 1000.0f, 1000.0f, 1000.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 100.0f } });
     // プレイヤーパラメータ 
-    playertransform_ = { {1.0f, 1.0f, 1.0f}, {0.0f, 0.3f, 0.0f},  -20.0f,0.0f,40.0f };
+    playertransform_ = { {1.0f, 1.0f, 1.0f}, {0.0f, 0.3f, 0.0f},  {-20.0f,0.0f,40.0f } };
     titleStartX_ = -20.0f;
     titleEndX_ = -10.0f;
     // モデル移動のパラメータ
@@ -98,16 +99,11 @@ void TitleScene::Update() {
     /*------------------------------------------*/
     CameraManager::GetInstance()->Update();
 #pragma region 全てのObject3d個々の更新処理 
-    // Skyboxの回転
-    Transform skyTrans = skybox_->GetTransform();
-    skyTrans.rotate.y += 0.001f; // Y軸回転（1フレームごとに少しずつ）
-    skybox_->SetRotate(skyTrans.rotate);
-    skybox_->Update();
+    StageManager::GetInstance()->Update();
      
     // プレイヤーの演出
     UpdateTitlePlayerMotion();
     player_->Update();
-
     ParticleManager::GetInstance()->Update(); 
     particle_->Update();
 #pragma endregion 全てのObject3d個々の更新処理
@@ -120,8 +116,9 @@ void TitleScene::Update() {
 
 #pragma region  ImGuiの更新処理開始
 #ifdef USE_IMGUI
-	FadeManager::GetInstance()->DrawImGui(); // フェードマネージャのImGui制御    
-    CameraManager::GetInstance()->DrawImGui();  // カメラマネージャのImGui制御
+
+    //FadeManager::GetInstance()->DrawImGui(); // フェードマネージャのImGui制御    
+//    CameraManager::GetInstance()->DrawImGui();  // カメラマネージャのImGui制御
 #endif // USE_IMGUI
 #pragma endregion ImGuiの更新処理終了
 }
@@ -130,7 +127,7 @@ void TitleScene::Draw() {
 #pragma region 全てのObject3d個々の描画処理 
     // 箱オブジェクトの描画準備。3Dオブジェクトの描画に共通のグラフィックスコマンドを積む
     SkyboxCommon::GetInstance()->Commondrawing();
-    skybox_->Draw();
+    StageManager::GetInstance()->DDSDraw();
     // 3Dオブジェクトの描画準備。3Dオブジェクトの描画に共通のグラフィックスコマンドを積む
     Object3dCommon::GetInstance()->Commondrawing();
     // プレイヤーの描画処理
@@ -150,6 +147,13 @@ void TitleScene::Draw() {
 	// フェードの描画
     FadeManager::GetInstance()->Draw();
 #pragma endregion 全てのSprite個々の描画処理
+}
+
+void TitleScene::EditorEntities() {
+    // 2D    
+    RegisterEditorEntity(ui_title_.get(), "Title");
+    // 3D
+    RegisterEditorEntity(player_->GetPlayerObject(), "Player");
 }
 
 void TitleScene::UpdateFadeIn() {

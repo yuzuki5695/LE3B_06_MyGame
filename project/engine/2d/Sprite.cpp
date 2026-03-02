@@ -1,11 +1,11 @@
 #include "Sprite.h"
-#include"SpriteCommon.h"
+#include <SpriteCommon.h>
 #include <cassert>
-#include "MatrixVector.h"
-#include "TextureManager.h"
-#include "SrvManager.h"
+#include <MatrixVector.h>
+#include <TextureManager.h>
+#include <SrvManager.h>
 #ifdef USE_IMGUI
-#include<ImGuiManager.h>
+#include <ImGuiManager.h>
 #endif // USE_IMGUI
 #include <ResourceFactory.h>
 
@@ -201,24 +201,65 @@ std::unique_ptr<Sprite> Sprite::Create(std::string textureFilePath, Vector2 posi
 	return sprite;
 }
 
-void Sprite::DrawImGui() {
+void Sprite::DrawImGui(const std::string& name) {
 #ifdef USE_IMGUI
-	// ウィンドウサイズを指定
-	ImGui::Begin("Sprite");
-	// 座標
-	ImGui::SliderFloat2("position", &position_.x, 0.0f, 1280.0f, "%.01f");
-	// 回転
-	ImGui::SliderFloat("rotation", &rotation_, -6.2f, 6.2f, "%.01f");
-	// サイズ
-	ImGui::SliderFloat2("size", &size_.x, 0.0f, 1000.0f, "%.01f");
-	// カラー
-	ImGui::ColorEdit4("color", reinterpret_cast<float*>(&materialData->color));
-	// UV座標の変更
-	ImGui::DragFloat2("UVTranslate", &uvTransform.translate.x, 0.01f, -10.0f, 10.0f);
-	// UVの大きさの変更
-	ImGui::DragFloat2("UVScale", &uvTransform.scale.x, 0.01f, -10.0f, 10.0f);
-	// UVの回転の変更
-	ImGui::SliderAngle("UVRotate", &uvTransform.rotate.z);
-	ImGui::End();
-#endif // USE_IMGUI
+
+    ImGui::PushID(this);
+
+    //====================================================
+    // Sprite Info
+    //====================================================
+    ImGui::Text("Sprite Info");
+    ImGui::Separator();
+
+    ImGui::Text("Name : %s", name.c_str());
+    ImGui::Separator();
+
+    //====================================================
+    // Transform
+    //====================================================
+    if (ImGui::TreeNode("Transform")) {
+
+        ImGui::DragFloat2("Position", &position_.x, 1.0f, 0.0f, 1280.0f);
+        ImGui::SliderFloat("Rotation", &rotation_, -6.28f, 6.28f);
+        ImGui::DragFloat2("Size", &size_.x, 1.0f, 0.0f, 2000.0f);
+
+        ImGui::TreePop();
+    }
+
+    ImGui::Separator();
+
+    //====================================================
+    // Material
+    //====================================================
+    if (ImGui::TreeNode("Material")) {
+
+        ImGui::ColorEdit4("Color",
+            reinterpret_cast<float*>(&materialData->color));
+
+        ImGui::TreePop();
+    }
+
+    ImGui::Separator();
+
+    //====================================================
+    // UV
+    //====================================================
+    if (ImGui::TreeNode("UV")) {
+
+        ImGui::DragFloat2("UV Translate",
+            &uvTransform.translate.x, 0.01f, -10.0f, 10.0f);
+
+        ImGui::DragFloat2("UV Scale",
+            &uvTransform.scale.x, 0.01f, -10.0f, 10.0f);
+
+        ImGui::SliderAngle("UV Rotate",
+            &uvTransform.rotate.z);
+
+        ImGui::TreePop();
+    }
+
+    ImGui::PopID();
+
+#endif
 }

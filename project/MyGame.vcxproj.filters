@@ -232,6 +232,54 @@
     <Filter Include="ヘッダー ファイル\application\pause">
       <UniqueIdentifier>{5f0ad7e7-d543-4f5d-9f5a-2e8ac0dc99ba}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ソース ファイル\engine\editor">
+      <UniqueIdentifier>{8c81b882-315d-49b9-b80a-322138110a27}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="リソース ファイル\Data">
+      <UniqueIdentifier>{4ab3cb26-d19a-47e7-aa02-64c1012a62aa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="リソース ファイル\Data\Languages">
+      <UniqueIdentifier>{c70b3cf2-c485-484a-abf9-175046ba0757}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\engine\editor">
+      <UniqueIdentifier>{7b780177-cda0-4ffe-ab2d-01f2b2904858}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\engine\editor\core">
+      <UniqueIdentifier>{8046f2fa-9102-4500-be43-a5f317059193}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\engine\editor\core">
+      <UniqueIdentifier>{3bd64be9-0561-4f6b-9a8d-8f47975ea266}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\engine\editor\layout">
+      <UniqueIdentifier>{791b0e9d-f18d-426f-9e14-217e5ca84d0f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\engine\editor\windows">
+      <UniqueIdentifier>{d7e59b22-6cc1-4e29-8253-f3ceb6fd1473}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\engine\time">
+      <UniqueIdentifier>{d5472e75-a2c3-41ff-870f-3160f9e3eae8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\engine\time">
+      <UniqueIdentifier>{fc0743ff-a4ad-4d54-9458-21e483966cc5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\engine\editor\console">
+      <UniqueIdentifier>{f9b249f1-2175-4d61-9753-e7a407801bfa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\engine\editor\console">
+      <UniqueIdentifier>{3db77467-1f5d-4f32-b17f-b83aa9ba6ee6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\engine\editor\windows">
+      <UniqueIdentifier>{c6f553b9-aa07-48ea-8c73-0512d6a2ac71}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\engine\editor\layout\editormenubar">
+      <UniqueIdentifier>{7cdd802c-0295-456d-b4da-e097fbcfbb7c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\engine\editor\layout">
+      <UniqueIdentifier>{b63e398b-9a54-435e-83b7-ab35e7661ab6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\engine\editor\layout\editormenubar">
+      <UniqueIdentifier>{3f31f402-fcc2-4a1e-9205-9872c0cf30dc}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -479,6 +527,33 @@
     </ClCompile>
     <ClCompile Include="application\player\PlayerDash.cpp">
       <Filter>ソース ファイル\application\player</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\editor\core\EditorManager.cpp">
+      <Filter>ソース ファイル\engine\editor\core</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\editor\layout\EditorLayout.cpp">
+      <Filter>ソース ファイル\engine\editor\layout</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\time\TimeSystem.cpp">
+      <Filter>ソース ファイル\engine\time</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\editor\console\EditorConsole.cpp">
+      <Filter>ソース ファイル\engine\editor\console</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\editor\console\MessageService.cpp">
+      <Filter>ソース ファイル\engine\editor\console</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\editor\windows\ConsoleWindow.cpp">
+      <Filter>ソース ファイル\engine\editor\windows</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\editor\layout\editormenubar\EditorMenuBar.cpp">
+      <Filter>ソース ファイル\engine\editor\layout\editormenubar</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\editor\layout\editormenubar\SettingsMenu.cpp">
+      <Filter>ソース ファイル\engine\editor\layout\editormenubar</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\editor\layout\editormenubar\ObjectMenu.cpp">
+      <Filter>ソース ファイル\engine\editor\layout\editormenubar</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -821,6 +896,51 @@
     <ClInclude Include="application\player\PlayerDash.h">
       <Filter>ヘッダー ファイル\application\player</Filter>
     </ClInclude>
+    <ClInclude Include="engine\editor\InspectorWindow.h">
+      <Filter>ヘッダー ファイル\engine\editor</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\time\TimeSystem.h">
+      <Filter>ヘッダー ファイル\engine\time</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\editor\console\EditorConsole.h">
+      <Filter>ヘッダー ファイル\engine\editor\console</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\editor\console\MessageService.h">
+      <Filter>ヘッダー ファイル\engine\editor\console</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\editor\console\EditorConsoleTypes.h">
+      <Filter>ヘッダー ファイル\engine\editor\console</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\editor\windows\ConsoleWindow.h">
+      <Filter>ヘッダー ファイル\engine\editor\windows</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\editor\layout\EditorLayout.h">
+      <Filter>ヘッダー ファイル\engine\editor\layout</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\editor\layout\editormenubar\EditorMenuBar.h">
+      <Filter>ヘッダー ファイル\engine\editor\layout\editormenubar</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\editor\layout\editormenubar\IMenuComponent.h">
+      <Filter>ヘッダー ファイル\engine\editor\layout\editormenubar</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\editor\layout\editormenubar\SettingsMenu.h">
+      <Filter>ヘッダー ファイル\engine\editor\layout\editormenubar</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\editor\layout\editormenubar\ObjectMenu.h">
+      <Filter>ヘッダー ファイル\engine\editor\layout\editormenubar</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\editor\core\EditorEntityRegistry.h">
+      <Filter>ヘッダー ファイル\engine\editor\core</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\editor\core\EditorManager.h">
+      <Filter>ヘッダー ファイル\engine\editor\core</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\editor\core\IEditorWindow.h">
+      <Filter>ヘッダー ファイル\engine\editor\core</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\editor\core\EditorTypes.h">
+      <Filter>ヘッダー ファイル\engine\editor\core</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Resources\shaders\Sprite\Sprite.PS.hlsl">
@@ -893,6 +1013,9 @@
     </None>
     <None Include="Resources\levels\untitled.json">
       <Filter>リソース ファイル</Filter>
+    </None>
+    <None Include="Resources\Data\Languages\Localization.json">
+      <Filter>リソース ファイル\Data\Languages</Filter>
     </None>
   </ItemGroup>
 </Project>

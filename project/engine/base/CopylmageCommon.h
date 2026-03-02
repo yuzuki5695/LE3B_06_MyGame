@@ -62,4 +62,5 @@ private:
 public:
 	// gettre
 	DirectXCommon* GetDxCommon() const { return  dxCommon_; }
+	uint32_t GetSrvIndex() const { return srvIndex; }
 };

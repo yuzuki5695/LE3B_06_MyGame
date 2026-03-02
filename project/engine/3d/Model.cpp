@@ -38,14 +38,8 @@ void Model::Initialize(ModelCommon* modelCommon, const std::string& directorypat
     else {
         assert(false && "Unsupported model format (only .obj, .gltf, .glb are supported)");
     }
-
-    // モデル読み込み
-  //  modelDate = LoadObjFile(directorypath, filename);
-
     // 頂点データの作成
     VertexDatacreation();
-    // マテリアルの生成、初期化
-    MaterialGenerate();
 
     // .objの参照しているテクスチャ読み込み
     TextureManager::GetInstance()->LoadTexture(modelDate.material.textureFilePath);
@@ -56,8 +50,6 @@ void Model::Initialize(ModelCommon* modelCommon, const std::string& directorypat
 void Model::Draw() {
     // VertexBufferViewの設定
     modelCommon->GetDxCommon()->GetCommandList()->IASetVertexBuffers(0, 1, &vertexBufferView);
-    // マテリアルCBufferの場所を設定
-    modelCommon->GetDxCommon()->GetCommandList()->SetGraphicsRootConstantBufferView(0, materialResource->GetGPUVirtualAddress());
     //SRVのDescriptortableの先頭を設定。２はrootParameter[2]である。
     //SRVを切り替えて画像を変えるS
     modelCommon->GetDxCommon()->GetCommandList()->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->GetSrvHandleGPU(modelDate.material.textureFilePath));
@@ -84,22 +76,6 @@ void Model::VertexDatacreation() {
     // 頂点データをリソースにコピー
     std::memcpy(vertexData, modelDate.vertices.data(), sizeof(VertexData) * modelDate.vertices.size());
 }
-
-void Model::MaterialGenerate() {
-    // マテリアル用のリソース
-    materialResource = CreateBufferResource(modelCommon->GetDxCommon()->GetDevice(), sizeof(Material));
-    // マテリアル用にデータを書き込むためのアドレスを取得
-    materialResource->Map(0, nullptr, reinterpret_cast<void**>(&materialData));
-    // マテリアルデータの初期値を書き込む
-    materialData->color = { 1.0f, 1.0f, 1.0f, 1.0f };
-    // SpriteはLightingしないでfalseを設定する
-    materialData->endbleLighting = true;
-    // 単位行列を書き込んでおく
-    materialData->uvTransform = MakeIdentity4x4();
-    // 光沢度を書き込む
-    materialData->shinimess = 70;
-}
-
 
 MaterialDate Model::LoadMaterialTemplateFile(const std::string& directoryPath, const std::string& filename) {
     // 1. 中で必要となる変数の宣言
