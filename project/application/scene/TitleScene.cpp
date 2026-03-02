@@ -85,8 +85,6 @@ void TitleScene::InitializeModel() {
     player_->SetTransform(playertransform_);
     // 追従対象を設定
     CameraManager::GetInstance()->GetTitleCamera()->SetTarget(player_->GetPlayerObject());
-    transf_ = { {1.0f, 1.0f, 1.0f}, {0.0f, 0.3f, 0.0f},  { -20.0f,3.0f,40.0f} };
-    object3d_ = Object3d::Create(model::Player, transf_);
 }
 
 void TitleScene::Update() {
@@ -106,7 +104,6 @@ void TitleScene::Update() {
     // プレイヤーの演出
     UpdateTitlePlayerMotion();
     player_->Update();
-	object3d_->Update();
     ParticleManager::GetInstance()->Update(); 
     particle_->Update();
 #pragma endregion 全てのObject3d個々の更新処理
@@ -135,7 +132,6 @@ void TitleScene::Draw() {
     Object3dCommon::GetInstance()->Commondrawing();
     // プレイヤーの描画処理
     player_->Draw();
-    object3d_->Draw();
     // パーティクルの描画準備。パーティクルの描画に共通のグラフィックスコマンドを積む 
     ParticleCommon::GetInstance()->Commondrawing();
     ParticleManager::GetInstance()->Draw();

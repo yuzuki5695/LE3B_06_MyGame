@@ -100,7 +100,4 @@ private: // メンバ変数
     float playerSpeedX_ = 0.0f;
     float playerAccelX_ = 0.15f;   // 加速量
     float playerMaxSpeedX_ = 5.0f; // 上限（任意）
-
-    std::unique_ptr <Object3d> object3d_;
-    Transform transf_{};
 };
