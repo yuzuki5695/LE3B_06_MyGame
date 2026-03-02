@@ -1,12 +1,12 @@
 #pragma once
 #include <Sprite.h>
-    
-struct TitleSpriteData
-    {
-        std::unique_ptr<Sprite> sprite;
-        float startTime;   // 出現開始時間
-        Vector2 Offset;     // Zずらし
-    };
+#include <vector>
+
+struct TitleSpriteData {
+    std::unique_ptr<Sprite> sprite;
+    float startTime;   // 出現開始時間
+    Vector2 Offset;     // Zずらし
+};
 
 
 /// <summary>

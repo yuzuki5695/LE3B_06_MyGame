@@ -148,6 +148,27 @@
         "target": {
             "texture": "Textures/Ui/Target.png"
         },
+        "titile_01": {
+            "texture": "Textures/Ui/titile_01.png"
+        },
+        "titile_02": {
+            "texture": "Textures/Ui/titile_02.png"
+        },
+        "titile_03": {
+            "texture": "Textures/Ui/titile_03.png"
+        },
+        "titile_04": {
+            "texture": "Textures/Ui/titile_04.png"
+        },
+        "titile_05": {
+            "texture": "Textures/Ui/titile_05.png"
+        },
+        "titile_06": {
+            "texture": "Textures/Ui/titile_06.png"
+        },
+        "titile_07": {
+            "texture": "Textures/Ui/titile_07.png"
+        },
         "title": {
             "texture": "Textures/Ui/Title.png"
         },

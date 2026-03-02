@@ -5,6 +5,7 @@
 
 namespace Editor {
     void MenuBar::Render(const std::function<std::string(const std::string&)>& LT) {
+#ifdef USE_IMGUI
         // メインメニューバー開始 
         if (!ImGui::BeginMainMenuBar())
             return;
@@ -14,9 +15,10 @@ namespace Editor {
         // ------------------------------------
 
         settingsMenu_.Render(LT);  // 「設定」メニューの描画
-		objectMenu_.Render(LT);    // 「オブジェクト」メニューの描画
+        objectMenu_.Render(LT);    // 「オブジェクト」メニューの描画
 
         // メインメニューバー終了
         ImGui::EndMainMenuBar();
+#endif // USE_IMGUI
     }
 }
