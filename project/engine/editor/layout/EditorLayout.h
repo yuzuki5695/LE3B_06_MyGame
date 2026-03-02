@@ -40,5 +40,4 @@ private: // メンバ変数
     void* activeObject_ = nullptr;           // 選択中オブジェクトのポインタ
     std::string activeObjectName_;           // 選択中オブジェクトの名前
     Editor::EditorObjectCategory activeCategory_; // 型情報を保持して判定用
-
 };

@@ -78,41 +78,70 @@ void EditorLayout::DrawRightPanel(std::vector<std::unique_ptr<IEditorWindow>>& w
     ImGui::SetNextWindowPos(ImVec2(dockPosX, viewport->WorkPos.y));
     ImGui::SetNextWindowSize(ImVec2(dockWidth, viewport->WorkSize.y));
 
-    ImGuiWindowFlags root_flags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize;
+    ImGuiWindowFlags root_flags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoMove |
+        ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse |
+        ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
 
-    // ドッキングスペース
+    // 右側ルートウィンドウ
+    ImGui::Begin("RightPanelRoot", nullptr, root_flags);
+    ImGuiID dockspace_id = ImGui::GetID("RightDockSpace");
+
+    // 初回のみドッキングスペースを初期化
     static bool dock_initialized = false;
     if (!dock_initialized) {
-        ImGuiID dockspace_id = ImGui::GetID("RightDockSpace");
         ImGui::DockBuilderRemoveNode(dockspace_id);
         ImGui::DockBuilderAddNode(dockspace_id, ImGuiDockNodeFlags_DockSpace);
-        ImGui::DockBuilderSetNodeSize(dockspace_id, viewport->WorkSize);
-
-        ImGui::DockBuilderDockWindow("Inspector", dockspace_id);
-
         ImGui::DockBuilderFinish(dockspace_id);
         dock_initialized = true;
-        ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), ImGuiDockNodeFlags_None);
     }
 
-    // DrawRightPanel 内での描画
-    ImGui::Begin("Inspector", nullptr, ImGuiWindowFlags_NoCollapse);
-    auto [obj, category] = menuBar_.GetActiveObject(); // ObjectMenu 経由で取得
-    if (obj) {
-        switch (category) {
-        case EditorObjectCategory::Object3D:
-            static_cast<Object3d*>(obj)->DrawImGui("Inspector");
-            break;
-        case EditorObjectCategory::Object2D:
-           // static_cast<Sprite*>(obj)->DrawImGui("Inspector");
-            break;
-        default:
-            ImGui::Text("Unknown object type");
-            break;
-        }
-    } else {
-        ImGui::Text("No Selection");
-    }
-
+    ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), ImGuiDockNodeFlags_None);
     ImGui::End();
+
+    // 🔷 ObjectMenuから「開いているウィンドウ」のリストを取得
+    auto* objectMenu = menuBar_.GetObjectMenu();
+    const auto& openWindows = objectMenu->GetOpenWindows(); // リストを取得
+    // 登録リスト(Registry)を取得（生存確認用）
+    const auto& registeredObjects = EditorObjectRegistry::Instance().GetObjects(); //
+
+    for (auto it = openWindows.begin(); it != openWindows.end(); ) {
+        // 💡 オブジェクトがまだ Registry に存在するかチェック
+        auto isAlive = std::any_of(registeredObjects.begin(), registeredObjects.end(),
+            [&](const auto& reg) { return reg.objectPtr == it->objectPtr; });
+
+        if (!isAlive) {
+            it = objectMenu->CloseWindow(it->name); // 消えていたら閉じる
+            continue;
+        }
+
+        // 次のウィンドウをドッキングスペースへ誘導
+        ImGui::SetNextWindowDockID(dockspace_id, ImGuiCond_FirstUseEver);
+
+        // 「×」ボタンを表示するためのフラグ
+        bool is_open = true;
+
+        // 💡 オブジェクト名をタイトルにして Begin することで、個別のタブになる
+        if (ImGui::Begin(it->name.c_str(), &is_open, ImGuiWindowFlags_NoCollapse)) {
+            if (it->objectPtr) {
+                // カテゴリに応じて DrawImGui を呼び出す
+                switch (it->category) {
+                case Editor::EditorObjectCategory::Object3D:
+                    // 💡 ここで Object3d::DrawImGui が呼ばれる
+                    static_cast<Object3d*>(it->objectPtr)->DrawImGui(it->name.c_str());
+                    break;
+                case Editor::EditorObjectCategory::Object2D:
+                    // static_cast<Sprite*>(it->objectPtr)->DrawImGui(it->name.c_str());
+                    break;
+                }
+            }
+        }
+        ImGui::End();
+
+        // 「×」が押されたらリストから削除
+        if (!is_open) {
+            it = objectMenu->CloseWindow(it->name); //
+        } else {
+            ++it;
+        }
+    }
 }

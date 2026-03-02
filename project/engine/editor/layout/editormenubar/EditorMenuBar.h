@@ -21,8 +21,6 @@ namespace Editor {
         SettingsMenu settingsMenu_; /// 「設定」メニューコンポーネント
         ObjectMenu objectMenu_;     /// 「オブジェクト」メニューコンポーネント
     public: // アクセッサ   
-        std::pair<void*, EditorObjectCategory> GetActiveObject() const {
-            return { objectMenu_.GetActiveObject(), objectMenu_.GetActiveCategory() };
-        }
+        ObjectMenu* GetObjectMenu() { return &objectMenu_; }
     };
 }
