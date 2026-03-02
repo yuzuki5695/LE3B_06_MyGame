@@ -18,7 +18,7 @@ void MyGame::Initialize() {
 	// GAMEPLAY           ゲームプレイ
 	// GAMECLEAR          ゲームクリア
     // GAMEOVER           ゲームオーバー
-    SceneManager::GetInstance()->ChangeScene("TITLE");
+    SceneManager::GetInstance()->ChangeScene("GAMEPLAY");
 }
 
 void MyGame::Update() {
@@ -32,5 +32,5 @@ void MyGame::Draw() {
     // デバックテキスト描画
     ImGuiManager::GetInstance()->Draw();
     // 描画後処理
-    Framework::GetDirectXCommon()->PostDrow();
+    Framework::GetDirectXCommon()->PostDraw();
 }

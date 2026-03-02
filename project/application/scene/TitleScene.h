@@ -1,13 +1,14 @@
 #pragma once
-#include<BaseScene.h>
-#include<Sprite.h>
-#include<Object3d.h>
-#include<ParticleEmitter.h>
-#include<SoundPlayer.h>
+#include <BaseScene.h>
+#include <Sprite.h>
+#include <Object3d.h>
+#include <ParticleEmitter.h>
+#include <SoundPlayer.h>
 #include <Skybox.h>
-#include<FadeManager.h>
-#include<Titleparticle.h>
-#include<Player.h>
+#include <FadeManager.h>
+#include <Titleparticle.h>
+#include <Player.h>
+#include <TitleSpriteMotion.h>
 
 /// <summary>
 /// タイトルシーン
@@ -66,10 +67,11 @@ public: // メンバ関数
     /// ・上下の浮遊アニメーション
     /// </summary>
     void UpdateTitlePlayerMotion();
+
+    void EditorEntities();
+
 private: // メンバ変数
-    std::unique_ptr <Sprite> ui_title_;
-    std::unique_ptr <Sprite> ui_start_;
-    std::vector<Sprite*> uiSprites_;
+    std::unique_ptr <TitleSpriteMotion> effect_;
 
     std::unique_ptr <Player> player_;
     // 背景オブジェクト 
@@ -99,4 +101,18 @@ private: // メンバ変数
     float playerSpeedX_ = 0.0f;
     float playerAccelX_ = 0.15f;   // 加速量
     float playerMaxSpeedX_ = 5.0f; // 上限（任意）
+
+
+
+    // ===== イージング用 =====
+    float playerMoveTimer_;
+    float playerMoveDuration_;   // 2秒
+    float playerStartZ_;
+    float playerTargetZ_;
+    bool  isPlayerZMoving_;
+
+    // ===== フェード前演出 =====
+    bool isPreFadeFollow_ = false;
+    float preFadeTimer_ = 0.0f;
+    float preFadeDuration_ = 1.0f;
 };

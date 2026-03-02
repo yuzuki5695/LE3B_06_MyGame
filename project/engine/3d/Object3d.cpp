@@ -1,12 +1,12 @@
 #include "Object3d.h"
-#include "Object3dCommon.h"
-#include<fstream>
-#include<sstream>
+#include <Object3dCommon.h>
+#include <fstream>
+#include <sstream>
 #include <cassert>
-#include "MatrixVector.h"
-#include "ModelManager.h"
+#include <MatrixVector.h>
+#include <ModelManager.h>
 #ifdef USE_IMGUI
-#include<ImGuiManager.h>
+#include <ImGuiManager.h>
 #endif // USE_IMGUI
 #include <numbers>
 #include <CameraManager.h>
@@ -35,6 +35,8 @@ void Object3d::Initialize(Object3dCommon* object3dCommon) {
     // 引数で受け取ってメンバ変数に記録する
     this->object3dCommon = object3dCommon;
     this->camera = object3dCommon->GetDefaultCamera();
+	// マテリアル用のリソースの生成、初期化
+    MaterialGenerate();
     // WVP,World用のリソースの生成、初期化
     TransformationMatrixGenerate();
     // カメラリソースの生成、初期化
@@ -75,8 +77,25 @@ void Object3d::Draw() {
 
     // 3Dモデルが割り当てられていれば描画する
     if (model) {
+        // マテリアルCBufferの場所を設定
+        object3dCommon->GetDxCommon()->GetCommandList()->SetGraphicsRootConstantBufferView(0, materialResource->GetGPUVirtualAddress());
         model->Draw();
     }
+}
+
+void Object3d::MaterialGenerate() {
+    // マテリアル用のリソース
+    materialResource = CreateBufferResource(object3dCommon->GetDxCommon()->GetDevice(), sizeof(Material));
+    // マテリアル用にデータを書き込むためのアドレスを取得
+    materialResource->Map(0, nullptr, reinterpret_cast<void**>(&materialData));
+    // マテリアルデータの初期値を書き込む
+    materialData->color = { 1.0f, 1.0f, 1.0f, 1.0f };
+    // SpriteはLightingしないでfalseを設定する
+    materialData->endbleLighting = true;
+    // 単位行列を書き込んでおく
+    materialData->uvTransform = MakeIdentity4x4();
+    // 光沢度を書き込む
+    materialData->shinimess = 70;
 }
 
 void Object3d::TransformationMatrixGenerate() {
@@ -111,12 +130,7 @@ void Object3d::SetModel(const std::string& filePath) {
 }
 
 void Object3d::SetMaterialColor(const Vector4& color) {
-    if (!model) return;   // モデルが無いなら何もしない
 
-    Material* mat = model->GetMaterialData();
-    if (!mat) return;     // マテリアルが無いなら何もしない
-
-    mat->color = color;   // GPUにマップ済みのCBufferを書き換える
 }
 
 std::unique_ptr<Object3d> Object3d::Create(std::string filePath, Transform transform) {
@@ -134,18 +148,72 @@ std::unique_ptr<Object3d> Object3d::Create(std::string filePath, Transform trans
 
 void Object3d::DrawImGui(const std::string& name) {
 #ifdef USE_IMGUI
-    ImGui::Begin(name.c_str());
-    // 座標セクション
-    if (ImGui::CollapsingHeader("Transform")) {
-        ImGui::DragFloat3("Translate", &transform_.translate.x, 0.01f);
-        ImGui::DragFloat3("Rotate", &transform_.rotate.x, 0.01f);
-        ImGui::DragFloat3("Scale", &transform_.scale.x, 0.01f);
+
+    ImGui::PushID(this);
+
+    //====================================================
+    // Object Info
+    //====================================================
+    ImGui::Text("Object Info");
+    ImGui::Separator(); {
+        ImGui::Text("Name : %s", name.c_str());
+        ImGui::Separator();
+
+        //====================================================
+        // Resource Section
+        //====================================================
+        if (ImGui::TreeNode("Resource")) {
+
+            // 開発中エリア
+            ImGui::BeginDisabled();
+            ImGui::Text("Model : (Under Development)");
+            ImGui::Text("Texture : (Under Development)");
+            ImGui::EndDisabled();
+
+            ImGui::Spacing();
+
+            ImGui::BeginDisabled();
+            ImGui::Button("Change Model");
+            ImGui::SameLine();
+            ImGui::Text(" (Under Development)");
+            ImGui::EndDisabled();
+
+            ImGui::TreePop();
+        }
+
+        ImGui::Separator();
+
+        //====================================================
+        // Transform
+        //====================================================
+        if (ImGui::TreeNode("Transform")) {
+
+            ImGui::DragFloat3("Translate", &transform_.translate.x, 0.01f);
+            ImGui::DragFloat3("Rotate", &transform_.rotate.x, 0.01f);
+            ImGui::DragFloat3("Scale", &transform_.scale.x, 0.01f);
+
+            ImGui::TreePop();
+        }
+
+        ImGui::Separator();
+
+        //====================================================
+        // Material
+        //====================================================
+        if (ImGui::TreeNode("Material")) {
+
+            ImGui::ColorEdit4("Color",
+                reinterpret_cast<float*>(&materialData->color));
+
+            ImGui::DragFloat("Shininess",
+                &materialData->shinimess,
+                0.1f, 0.0f, 256.0f);
+
+            ImGui::TreePop();
+        }
     }
-    // カラーセクション
-    if (ImGui::CollapsingHeader("Material Color")) {
-        ImGui::ColorEdit4("Color", reinterpret_cast<float*>(&model->GetMaterialData()->color));
-        ImGui::DragFloat("Shininess", &model->GetMaterialData()->shinimess, 0.01f);
-    }
-    ImGui::End();
-#endif // USE_IMGUI
+
+    ImGui::PopID();
+
+#endif
 }

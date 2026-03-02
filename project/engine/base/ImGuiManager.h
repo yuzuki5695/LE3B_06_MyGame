@@ -5,10 +5,14 @@
 #include<externals/imgui/imgui_impl_win32.h>
 #endif // USE_IMGUI
 
+// 前方宣言
 class WinApp;
 class DirectXCommon;
 
-// ImGUIの管理
+///<summary>
+/// ImGUIの管理
+/// ImGuiの初期化、受付、描画を管理するマネージャクラス（シングルトン）
+///</summary>
 class ImGuiManager
 {
 private:
@@ -46,6 +50,13 @@ public: // メンバ関数
 	/// 画面への描画
 	/// </summary>
 	void Draw();
+	/// <summary>
+	/// 日本語フォントのセットアップ
+	/// </summary>
+	void SetupFonts();
+	// 日本語フォント関連の定数
+	static const std::string kFontPath;  // フォントファイルのパス
+	static const float kDefaultFontSize; // デフォルトのフォントサイズ	
 
 private: // メンバ変数
 	// ポインタ

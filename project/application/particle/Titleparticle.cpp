@@ -55,7 +55,7 @@ void Titleparticle::Update() {
     particles_->Update();
     particles_02_->Update();
 #ifdef USE_IMGUI
-    particles_->DrawImGuiUI();
+    //particles_->DrawImGuiUI();
 #endif // USE_IMGUI
 
 }

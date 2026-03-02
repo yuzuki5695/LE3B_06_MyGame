@@ -1,22 +1,22 @@
 #include "GamePlayScene.h"
-#include<SceneManager.h>
-#include<TextureManager.h>
-#include<ModelManager.h>
-#include<SpriteCommon.h>
-#include<Object3dCommon.h>
+#include <SceneManager.h>
+#include <TextureManager.h>
+#include <ModelManager.h>
+#include <SpriteCommon.h>
+#include <Object3dCommon.h>
 #include <CameraManager.h>
 #include <ParticleCommon.h>
-#include<Input.h>
-#include<Controller.h>
+#include <Input.h>
+#include <Controller.h>
 #ifdef USE_IMGUI
-#include<ImGuiManager.h>
+#include <ImGuiManager.h>
 #endif // USE_IMGUI
-#include<SkyboxCommon.h>
-#include<Player.h>
+#include <SkyboxCommon.h>
+#include <Player.h>
 #include <BulletManager.h>
-#include<MatrixVector.h>
-#include<Collision.h>
-#include<Tools/AssetGenerator/engine/math/LoadResourceID.h>
+#include <MatrixVector.h>
+#include <Collision.h>
+#include <Tools/AssetGenerator/engine/math/LoadResourceID.h>
 
 using namespace LoadResourceID;
 using namespace Collision;
@@ -36,29 +36,35 @@ void GamePlayScene::Finalize() {
 ///====================================================
 void GamePlayScene::Initialize() {
     // カメラマネージャの初期化
-    CameraManager::GetInstance()->Initialize(CameraTransform({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }));     
+    CameraManager::GetInstance()->Initialize(CameraTransform({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }));
     CameraManager::GetInstance()->SetTypeview(ViewCameraType::Main);
 
     // テクスチャを読み込む 
     TextureManager::GetInstance()->LoadTexture(texture::Move);
     TextureManager::GetInstance()->LoadTexture(texture::Reticlemove);
-    TextureManager::GetInstance()->LoadTexture(texture::Space);        
+    TextureManager::GetInstance()->LoadTexture(texture::Space);
+    TextureManager::GetInstance()->LoadTexture(texture::Avoidance);
     TextureManager::GetInstance()->LoadTexture(texture::Gage);
     TextureManager::GetInstance()->LoadTexture(texture::PlayerUi);
-    
+    TextureManager::GetInstance()->LoadTexture(texture::W);
+    TextureManager::GetInstance()->LoadTexture(texture::A);
 
+    Vector2 size = Vector2{ 40.0f,40.0f };
     MAXui_ = 1;
-    uis_.push_back(Sprite::Create(texture::Move, Vector2{ 8.0f, 430.0f }, 0.0f, Vector2{ 200.0f,80.0f })); 
-    uis_.push_back(Sprite::Create(texture::Reticlemove, Vector2{ 8.0f, 530.0f }, 0.0f, Vector2{ 200.0f,80.0f })); 
-    uis_.push_back(Sprite::Create(texture::Space, Vector2{ 8.0f, 630.0f }, 0.0f, Vector2{ 200.0f,80.0f })); 
-    uis_[0]->SetTextureSize(Vector2{200.0f,80.0f});
-    uis_[1]->SetTextureSize(Vector2{200.0f,80.0f});
-    uis_[2]->SetTextureSize(Vector2{200.0f,80.0f});
-    
+    uis_.push_back(Sprite::Create(texture::W, Vector2{ 5.0f, 550.0f }, 0.0f, size));
+    //uis_.push_back(Sprite::Create(texture::Reticlemove, Vector2{ 125.0f, 550.0f }, 0.0f, size)); 
+    //uis_.push_back(Sprite::Create(texture::Space, Vector2{ 5.0f, 630.0f }, 0.0f, size)); 
+    //uis_.push_back(Sprite::Create(texture::Avoidance, Vector2{ 125.0f, 630.0f }, 0.0f, size)); 
+    // 2. vector の要素数を MAXui_ に同期（もし他で使うなら）
+    //MAXui_ = static_cast<uint32_t>(uis_.size());
+    //for (auto& ui : uis_) {
+    //    ui->SetTextureSize(size);
+    //}
+
     gage_ = Sprite::Create(texture::Gage, Vector2{ 380.0f, 10.0f }, 0.0f, Vector2{ 500.0f,30.0f });
-    gage_->SetTextureSize(Vector2{ 500.0f,30.0f });     	 
+    gage_->SetTextureSize(Vector2{ 500.0f,30.0f });
     player_ui_ = Sprite::Create(texture::PlayerUi, Vector2{ 380.0f, 12.3f }, 0.0f, Vector2{ 25.0f,25.0f });
-    player_ui_->SetTextureSize(Vector2{ 25.0f,25.0f });     
+    player_ui_->SetTextureSize(Vector2{ 25.0f,25.0f });
 
     // .objファイルからモデルを読み込む
     ModelManager::GetInstance()->LoadModel(model::Goal);
@@ -67,7 +73,6 @@ void GamePlayScene::Initialize() {
     player_ = std::make_unique<Player>();
     player_->Initialize(); // プレイヤーの初期化
     CameraManager::GetInstance()->SetGamecameraTarget(player_->GetPlayerObject());
-    playerhp_ = player_->IsActive();
     // カメラにプレイヤーを追わせる
 
     // パーティクル
@@ -75,7 +80,7 @@ void GamePlayScene::Initialize() {
     particles_->Initialize(player_->GetPlayerObject());
 
     // 敵関連の初期化
-	MAX_ENEMY = 300; // 敵の最大数
+    MAX_ENEMY = 300; // 敵の最大数
     // 敵をリストに追加して初期化
     for (int i = 0; i < MAX_ENEMY; ++i) {
         std::unique_ptr<Enemy> enemy = std::make_unique<Enemy>();
@@ -98,7 +103,7 @@ void GamePlayScene::Initialize() {
     FadeManager::GetInstance()->Initialize();
     // イベントマネージャの初期化
     EventManager::GetInstance()->Initialize("gamestart");
-	// ゲームカメラの移動許可
+    // ゲームカメラの移動許可
    // CameraManager::GetInstance()->GetGameCamera()->Setmovefige(true);
     // ステージマネージャの初期化
     StageManager::GetInstance()->Initialize();
@@ -163,11 +168,9 @@ void GamePlayScene::Update() {
     EventManager::GetInstance()->Update(); 	
 
     // 死亡演出
-    if (end && CameraManager::GetInstance()->GetTypeview() == ViewCameraType::Main) {
-        CameraManager::GetInstance()->SetMode(CameraMode::Default);   
+    if (player_->GetState() == State::Dead && CameraManager::GetInstance()->GetTypeview() == ViewCameraType::Main) {
+        CameraManager::GetInstance()->SetMode(CameraMode::Default);
         CameraManager::GetInstance()->SetTypeview(ViewCameraType::Sub);
-        player_->SetKeyActive(false);
-        player_->SetReticleVisible(false);
         // フェード開始             
         end = false;
     }
@@ -178,20 +181,18 @@ void GamePlayScene::Update() {
     }
 
     // ゴール演出
-    if (!goal_ && player_->GetPosition().z >= CameraManager::GetInstance()->GetGameplayCamera()->GetBezierPoints().back().controlPoint.z && CameraManager::GetInstance()->GetTypeview() == ViewCameraType::Main) {
+    if (!goal_ && player_->GetState() == State::Alive && player_->GetPosition().z >= CameraManager::GetInstance()->GetGameplayCamera()->GetBezierPoints().back().controlPoint.z && CameraManager::GetInstance()->GetTypeview() == ViewCameraType::Main) {
         FadeManager::GetInstance()->StartFadeOut(1.0f, FadeStyle::Normal);
-        player_->SetKeyActive(false);
-        player_->SetReticleVisible(false);
+        player_->SetState(State::Goal);
         // フェード開始             
         goal_ = true;
         end = false;
     }
 
     // ゲームスタートイベントが終了したらプレイヤ―操作可能に
-    if (EventManager::GetInstance()->IsFinished() && CameraManager::GetInstance()->GetTypeview() == ViewCameraType::Main) {
+    if (player_->GetState() == State::None && EventManager::GetInstance()->IsFinished() && CameraManager::GetInstance()->GetTypeview() == ViewCameraType::Main) {
         // イベント終了 → プレイヤーを操作可能に
-        player_->SetKeyActive(true);
-        player_->SetReticleVisible(true);
+        player_->SetState(State::Alive);
         isPausedevent_ = true;
         // 進行度を設定
         StartStageProgressUI();
@@ -209,7 +210,6 @@ void GamePlayScene::Update() {
     CameraManager::GetInstance()->SetGamecameraTarget(player_->GetPlayerObject());
     CameraManager::GetInstance()->Update();
 #pragma region 全てのObject3d個々の更新処理
-    playerhp_ = player_->IsActive();
     // 終了しない限り更新処理
     if (!end) {
         if (EventManager::GetInstance()->IsFinished() ){
@@ -249,10 +249,10 @@ void GamePlayScene::Update() {
 
     // フェードアウトが完了したら次のシーンへ
     if (FadeManager::GetInstance()->IsFadeEnd() && FadeManager::GetInstance()->GetFadeType() == FadeType::FadeOut) {
-        if (!playerhp_) {
+        if (player_->GetState() == State::Dead) {
             // シーン切り替え
             SceneManager::GetInstance()->ChangeScene("GAMEOVER");
-        } else {
+        } else if (player_->GetState() == State::Goal) {
             // シーン切り替え
             SceneManager::GetInstance()->ChangeScene("GAMECLEAR");
         }
@@ -399,8 +399,6 @@ void GamePlayScene::CheckBulletEnemyCollisionsOBB() {
 void GamePlayScene::CheckEnemyBulletPlayerCollisionsOBB() {
     const auto& bullets = BulletManager::GetInstance()->GetEnemyBullets();
 
-    if (!player_ || !player_->IsActive()) return;
-
     OBB playerOBB = player_->GetOBB(); // プレイヤーがOBBを返すようにしておく必要あり
 
     for (const std::unique_ptr<EnemyBullet>& bullet : bullets) {
@@ -410,7 +408,7 @@ void GamePlayScene::CheckEnemyBulletPlayerCollisionsOBB() {
 
         if (IsOBBIntersect(bulletOBB, playerOBB)) {
             bullet->SetInactive();
-            player_->SetInactive();  // プレイヤーを無効にする
+            player_->SetState(State::Dead);
 
             end = true;
             // ヒットエフェクトなど追加
@@ -422,8 +420,6 @@ void GamePlayScene::CheckEnemyBulletPlayerCollisionsOBB() {
 /// 敵 vs プレイヤー の当たり判定
 ///====================================================
 void GamePlayScene::CheckEnemyPlayerCollisionsOBB() {
-    if (!player_ || !player_->IsActive()) return;
-
     // プレイヤーのOBBを取得
     OBB playerOBB = player_->GetOBB();
 
@@ -435,7 +431,7 @@ void GamePlayScene::CheckEnemyPlayerCollisionsOBB() {
 
         // 衝突判定
         if (IsOBBIntersect(playerOBB, enemyOBB)) {
-            player_->SetInactive();
+            player_->SetState(State::Dead);
             end = true; // ゲームオーバーへ遷移など
 
             break;

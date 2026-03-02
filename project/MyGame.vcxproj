@@ -63,7 +63,7 @@
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)engine\2d;$(ProjectDir)engine\3d;$(ProjectDir)engine\audio;$(ProjectDir)engine\base;$(ProjectDir)engine\io;$(ProjectDir)engine\math;$(ProjectDir)engine\scene;$(ProjectDir)engine\3d\Particle;$(ProjectDir)engine\camera;$(ProjectDir)engine\base\DirectXCommon;$(ProjectDir)engine\base\Utility;$(ProjectDir)engine\base\ViewManager;$(ProjectDir)engine\math\Light;$(ProjectDir)engine\math\Matrix;$(ProjectDir)engine\math\Model;$(ProjectDir)engine\math\Vector;$(ProjectDir)engine\resource;$(ProjectDir)externals\nlohmann;$(ProjectDir)application\scene;$(ProjectDir)application\character;$(ProjectDir)application\player;$(ProjectDir)application\bullet;$(ProjectDir)application\loader;$(ProjectDir)application\camera;$(ProjectDir)application\enemy;$(ProjectDir)externals\assimp\include;$(ProjectDir)engine\math\collision;$(ProjectDir)application\collision;$(ProjectDir)application\fade;$(ProjectDir)application\event;$(ProjectDir)application\stage;$(ProjectDir)engine\math\Easing;$(ProjectDir)application\particle;$(ProjectDir)engine\math\ParticleData;$(ProjectDir)application\resource;$(ProjectDir)application\pause</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)engine\2d;$(ProjectDir)engine\3d;$(ProjectDir)engine\audio;$(ProjectDir)engine\base;$(ProjectDir)engine\io;$(ProjectDir)engine\math;$(ProjectDir)engine\scene;$(ProjectDir)engine\3d\Particle;$(ProjectDir)engine\camera;$(ProjectDir)engine\base\DirectXCommon;$(ProjectDir)engine\base\Utility;$(ProjectDir)engine\base\ViewManager;$(ProjectDir)engine\math\Light;$(ProjectDir)engine\math\Matrix;$(ProjectDir)engine\math\Model;$(ProjectDir)engine\math\Vector;$(ProjectDir)engine\resource;$(ProjectDir)externals\nlohmann;$(ProjectDir)application\scene;$(ProjectDir)application\character;$(ProjectDir)application\player;$(ProjectDir)application\bullet;$(ProjectDir)application\loader;$(ProjectDir)application\camera;$(ProjectDir)application\enemy;$(ProjectDir)externals\assimp\include;$(ProjectDir)engine\math\collision;$(ProjectDir)application\collision;$(ProjectDir)application\fade;$(ProjectDir)application\event;$(ProjectDir)application\stage;$(ProjectDir)engine\math\Easing;$(ProjectDir)application\particle;$(ProjectDir)engine\math\ParticleData;$(ProjectDir)application\resource;$(ProjectDir)application\pause;$(ProjectDir)engine\editor;$(ProjectDir)engine\editor\core;$(ProjectDir)engine\editor\console;$(ProjectDir)engine\editor\layout;$(ProjectDir)engine\editor\windows;$(ProjectDir)engine\time;$(ProjectDir)engine\editor\layout\editormenubar;$(ProjectDir)application\motion\2d;$(ProjectDir)application\ui</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
     </ClCompile>
     <Link>
@@ -95,7 +95,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)engine\2d;$(ProjectDir)engine\3d;$(ProjectDir)engine\audio;$(ProjectDir)engine\base;$(ProjectDir)engine\io;$(ProjectDir)engine\math;$(ProjectDir)engine\scene;$(ProjectDir)engine\3d\Particle;$(ProjectDir)engine\camera;$(ProjectDir)engine\base\DirectXCommon;$(ProjectDir)engine\base\Utility;$(ProjectDir)engine\base\ViewManager;$(ProjectDir)engine\math\Light;$(ProjectDir)engine\math\Matrix;$(ProjectDir)engine\math\Model;$(ProjectDir)engine\math\Vector;$(ProjectDir)engine\resource;$(ProjectDir)externals\nlohmann;$(ProjectDir)application\scene;$(ProjectDir)application\character;$(ProjectDir)application\player;$(ProjectDir)application\bullet;$(ProjectDir)application\loader;$(ProjectDir)application\camera;$(ProjectDir)application\enemy;$(ProjectDir)externals\assimp\include;$(ProjectDir)engine\math\collision;$(ProjectDir)application\collision;$(ProjectDir)application\fade;$(ProjectDir)application\event;$(ProjectDir)application\stage;$(ProjectDir)engine\math\Easing;$(ProjectDir)application\particle;$(ProjectDir)engine\math\ParticleData;$(ProjectDir)application\resource;$(ProjectDir)application\pause</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)engine\2d;$(ProjectDir)engine\3d;$(ProjectDir)engine\audio;$(ProjectDir)engine\base;$(ProjectDir)engine\io;$(ProjectDir)engine\math;$(ProjectDir)engine\scene;$(ProjectDir)engine\3d\Particle;$(ProjectDir)engine\camera;$(ProjectDir)engine\base\DirectXCommon;$(ProjectDir)engine\base\Utility;$(ProjectDir)engine\base\ViewManager;$(ProjectDir)engine\math\Light;$(ProjectDir)engine\math\Matrix;$(ProjectDir)engine\math\Model;$(ProjectDir)engine\math\Vector;$(ProjectDir)engine\resource;$(ProjectDir)externals\nlohmann;$(ProjectDir)application\scene;$(ProjectDir)application\character;$(ProjectDir)application\player;$(ProjectDir)application\bullet;$(ProjectDir)application\loader;$(ProjectDir)application\camera;$(ProjectDir)application\enemy;$(ProjectDir)externals\assimp\include;$(ProjectDir)engine\math\collision;$(ProjectDir)application\collision;$(ProjectDir)application\fade;$(ProjectDir)application\event;$(ProjectDir)application\stage;$(ProjectDir)engine\math\Easing;$(ProjectDir)application\particle;$(ProjectDir)engine\math\ParticleData;$(ProjectDir)application\resource;$(ProjectDir)application\pause;$(ProjectDir)engine\editor;$(ProjectDir)engine\editor\core;$(ProjectDir)engine\editor\console;$(ProjectDir)engine\editor\layout;$(ProjectDir)engine\editor\windows;$(ProjectDir)engine\time;$(ProjectDir)engine\editor\layout\editormenubar;$(ProjectDir)application\motion\2d;$(ProjectDir)application\ui</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -130,6 +130,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="application\loader\CharacterLoader.cpp" />
     <ClCompile Include="application\loader\CurveJsonLoader.cpp" />
     <ClCompile Include="application\loader\EnemyLoader.cpp" />
+    <ClCompile Include="application\motion\2d\TitleSpriteMotion.cpp" />
     <ClCompile Include="application\particle\DefaultParticleEmitter.cpp" />
     <ClCompile Include="application\particle\GameClearparticle.cpp" />
     <ClCompile Include="application\particle\GameOverparticle.cpp" />
@@ -137,11 +138,26 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="application\particle\Titleparticle.cpp" />
     <ClCompile Include="application\pause\Pausemenu.cpp" />
     <ClCompile Include="application\player\Player.cpp" />
+    <ClCompile Include="application\player\PlayerDash.cpp" />
+    <ClCompile Include="application\player\PlayerDeath.cpp" />
+    <ClCompile Include="application\player\PlayerMove.cpp" />
+    <ClCompile Include="application\player\PlayerReticle.cpp" />
+    <ClCompile Include="application\player\PlayerWeapon.cpp" />
     <ClCompile Include="application\resource\FileSearcher.cpp" />
     <ClCompile Include="application\resource\ManifestExporter.cpp" />
     <ClCompile Include="application\scene\GameOverScene.cpp" />
     <ClCompile Include="application\scene\GamePlayScene.cpp" />
     <ClCompile Include="application\scene\TitleScene.cpp" />
+    <ClCompile Include="application\ui\GamePlayUI.cpp" />
+    <ClCompile Include="application\ui\UIManager.cpp" />
+    <ClCompile Include="engine\editor\console\EditorConsole.cpp" />
+    <ClCompile Include="engine\editor\console\MessageService.cpp" />
+    <ClCompile Include="engine\editor\core\EditorManager.cpp" />
+    <ClCompile Include="engine\editor\layout\EditorLayout.cpp" />
+    <ClCompile Include="engine\editor\layout\editormenubar\EditorMenuBar.cpp" />
+    <ClCompile Include="engine\editor\layout\editormenubar\ObjectMenu.cpp" />
+    <ClCompile Include="engine\editor\layout\editormenubar\SettingsMenu.cpp" />
+    <ClCompile Include="engine\editor\windows\ConsoleWindow.cpp" />
     <ClCompile Include="engine\math\Collision\Collision.cpp" />
     <ClCompile Include="engine\math\Easing\Easing.cpp" />
     <ClCompile Include="engine\3d\Skybox.cpp" />
@@ -174,6 +190,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="engine\base\DirectXCommon\FenceManager.cpp" />
     <ClCompile Include="engine\base\DirectXCommon\FPSController.cpp" />
     <ClCompile Include="application\event\EventManager.cpp" />
+    <ClCompile Include="engine\time\TimeSystem.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="engine\math\MatrixVector.cpp" />
     <ClCompile Include="engine\3d\Model.cpp" />
@@ -212,6 +229,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\loader\CharacterLoader.h" />
     <ClInclude Include="application\loader\CurveJsonLoader.h" />
     <ClInclude Include="application\loader\EnemyLoader.h" />
+    <ClInclude Include="application\motion\2d\TitleSpriteMotion.h" />
     <ClInclude Include="application\particle\BaseEmitter.h" />
     <ClInclude Include="application\particle\DefaultParticleEmitter.h" />
     <ClInclude Include="application\particle\FollowEmitter.h" />
@@ -221,9 +239,31 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\particle\Titleparticle.h" />
     <ClInclude Include="application\pause\Pausemenu.h" />
     <ClInclude Include="application\player\Player.h" />
+    <ClInclude Include="application\player\PlayerDash.h" />
+    <ClInclude Include="application\player\PlayerDeath.h" />
+    <ClInclude Include="application\player\PlayerMove.h" />
+    <ClInclude Include="application\player\PlayerReticle.h" />
+    <ClInclude Include="application\player\PlayerWeapon.h" />
     <ClInclude Include="application\resource\FileSearcher.h" />
     <ClInclude Include="application\resource\ManifestExporter.h" />
     <ClInclude Include="application\scene\GameOverScene.h" />
+    <ClInclude Include="application\ui\BaseUI.h" />
+    <ClInclude Include="application\ui\GamePlayUI.h" />
+    <ClInclude Include="application\ui\UIManager.h" />
+    <ClInclude Include="engine\editor\console\EditorConsole.h" />
+    <ClInclude Include="engine\editor\console\EditorConsoleTypes.h" />
+    <ClInclude Include="engine\editor\console\MessageService.h" />
+    <ClInclude Include="engine\editor\core\EditorManager.h" />
+    <ClInclude Include="engine\editor\core\EditorEntityRegistry.h" />
+    <ClInclude Include="engine\editor\core\EditorTypes.h" />
+    <ClInclude Include="engine\editor\core\IEditorWindow.h" />
+    <ClInclude Include="engine\editor\InspectorWindow.h" />
+    <ClInclude Include="engine\editor\layout\EditorLayout.h" />
+    <ClInclude Include="engine\editor\layout\editormenubar\EditorMenuBar.h" />
+    <ClInclude Include="engine\editor\layout\editormenubar\IMenuComponent.h" />
+    <ClInclude Include="engine\editor\layout\editormenubar\ObjectMenu.h" />
+    <ClInclude Include="engine\editor\layout\editormenubar\SettingsMenu.h" />
+    <ClInclude Include="engine\editor\windows\ConsoleWindow.h" />
     <ClInclude Include="engine\math\Collision\Collision.h" />
     <ClInclude Include="engine\math\Collision\OBB.h" />
     <ClInclude Include="engine\math\Easing\Easing.h" />
@@ -304,6 +344,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\event\EventManager.h" />
     <ClInclude Include="application\stage\StageManager.h" />
     <ClInclude Include="application\camera\TitleCamera.h" />
+    <ClInclude Include="engine\time\TimeSystem.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="externals\DirectXTex\DirectXTex_Desktop_2022_Win10.vcxproj">
@@ -317,6 +358,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\Data\Languages\Localization.json" />
     <None Include="Resources\levels\bezier.json" />
     <None Include="Resources\levels\untitled.json" />
     <None Include="Resources\shaders\Fullscreen\Fullscreen.hlsli" />

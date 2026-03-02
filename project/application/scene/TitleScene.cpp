@@ -1,24 +1,29 @@
 #include "TitleScene.h"
-#include<SceneManager.h>
-#include<TextureManager.h>
-#include<ModelManager.h>
-#include<SpriteCommon.h>
-#include<Object3dCommon.h>
+#include <SceneManager.h>
+#include <TextureManager.h>
+#include <ModelManager.h>
+#include <SpriteCommon.h>
+#include <Object3dCommon.h>
 #include <CameraManager.h>
-#include<Input.h>
+#include <Input.h>
 #ifdef USE_IMGUI
-#include<ImGuiManager.h>
+#include <ImGuiManager.h>
 #endif // USE_IMGUI
 #include <ParticleCommon.h>
-#include<SkyboxCommon.h>
-#include<FadeManager.h>
-#include<Tools/AssetGenerator/engine/math/LoadResourceID.h>
+#include <SkyboxCommon.h>
+#include <FadeManager.h>
+#include <Tools/AssetGenerator/engine/math/LoadResourceID.h>
+#include <StageManager.h>
+#include <EditorEntityRegistry.h>
+#include <Easing.h>
 
+using namespace Easing;
 using namespace LoadResourceID;
 namespace { constexpr float kFadeDuration = 1.0f; }
 
 void TitleScene::Finalize() {
-    FadeManager::GetInstance()->Finalize();  //  フェードマネージャの解放処理
+    FadeManager::GetInstance()->Finalize();  // フェードマネージャの解放処理
+	StageManager::GetInstance()->Finalize(); // ステージマネージャの解放処理
 }
 
 void TitleScene::Initialize() {
@@ -36,9 +41,12 @@ void TitleScene::Initialize() {
     // パーティクルのの生成、初期化
     particle_ = std::make_unique<Titleparticle>();
     particle_->Initialize(player_->GetPlayerObject());
-        
+    StageManager::GetInstance()->Initialize();
     CameraManager::GetInstance()->SetCameraMode(CameraMode::Default);      
-
+	effect_ = std::make_unique<TitleSpriteMotion>();
+    effect_->Initialize();
+    // ImGuiエディタに情報を登録する
+    EditorEntities();
 #pragma endregion シーンの初期化
 }
 
@@ -51,26 +59,13 @@ void TitleScene::LoadResources() {
     //  テクスチャの読み込み
     TextureManager::GetInstance()->LoadTexture(texture::Ui02);
     TextureManager::GetInstance()->LoadTexture(texture::Title);
-    TextureManager::GetInstance()->LoadTexture(texture::Cubemapbox);
 }
 
-void TitleScene::InitializeUI() {  
-    // タイトルロゴの生成
-    ui_title_ = Sprite::Create(texture::Title, Vector2{300.0f, 100.0f}, 0.0f, Vector2{600.0f,300.0f});
-    ui_title_->SetTextureSize(Vector2{ 600.0f,300.0f });
-    // スタートUIの生成
-    ui_start_ = Sprite::Create(texture::Ui02, Vector2{ 420.0f, 500.0f }, 0.0f, Vector2{ 360.0f,90.0f });
-    ui_start_->SetTextureSize(Vector2{ 360.0f,90.0f });
-    // 更新・描画対象としてまとめる
-    uiSprites_.clear();
-    uiSprites_ = { ui_start_.get(),ui_title_.get() };
-}
+void TitleScene::InitializeUI() {}
 
 void TitleScene::InitializeModel() {
-    // スカイボックス生成 
-    skybox_ = Skybox::Create(texture::Cubemapbox, Transform{ { 1000.0f, 1000.0f, 1000.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 100.0f } });
     // プレイヤーパラメータ 
-    playertransform_ = { {1.0f, 1.0f, 1.0f}, {0.0f, 0.3f, 0.0f},  -20.0f,0.0f,40.0f };
+    playertransform_ = { {1.0f, 1.0f, 1.0f}, {0.0f, 0.3f, 0.0f},  {-20.0f,0.0f,40.0f } };
     titleStartX_ = -20.0f;
     titleEndX_ = -10.0f;
     // モデル移動のパラメータ
@@ -84,6 +79,12 @@ void TitleScene::InitializeModel() {
     player_->SetTransform(playertransform_);
     // 追従対象を設定
     CameraManager::GetInstance()->GetTitleCamera()->SetTarget(player_->GetPlayerObject());
+   
+    isPlayerZMoving_ = true;
+	playerMoveDuration_ = 3.0f; // 2秒（60fpsなら120フレーム）
+    playerMoveTimer_ = 0.0f;
+	playerTargetZ_ = 700.0f; // 目標Z座標
+    playerStartZ_ = playertransform_.translate.z;
 }
 
 void TitleScene::Update() {
@@ -98,30 +99,26 @@ void TitleScene::Update() {
     /*------------------------------------------*/
     CameraManager::GetInstance()->Update();
 #pragma region 全てのObject3d個々の更新処理 
-    // Skyboxの回転
-    Transform skyTrans = skybox_->GetTransform();
-    skyTrans.rotate.y += 0.001f; // Y軸回転（1フレームごとに少しずつ）
-    skybox_->SetRotate(skyTrans.rotate);
-    skybox_->Update();
-     
+    StageManager::GetInstance()->Update();
+
     // プレイヤーの演出
     UpdateTitlePlayerMotion();
     player_->Update();
-
     ParticleManager::GetInstance()->Update(); 
     particle_->Update();
 #pragma endregion 全てのObject3d個々の更新処理
-
+    	
 #pragma region 全てのSprite個々の更新処理
-    for (Sprite* sprite : uiSprites_) {
-        sprite->Update();
-    }
+
+    effect_->Update(); // タイトルエフェクトの更新
+
 #pragma endregion 全てのSprite個々の更新処理
 
 #pragma region  ImGuiの更新処理開始
 #ifdef USE_IMGUI
-	FadeManager::GetInstance()->DrawImGui(); // フェードマネージャのImGui制御    
-    CameraManager::GetInstance()->DrawImGui();  // カメラマネージャのImGui制御
+
+    //FadeManager::GetInstance()->DrawImGui(); // フェードマネージャのImGui制御    
+//    CameraManager::GetInstance()->DrawImGui();  // カメラマネージャのImGui制御
 #endif // USE_IMGUI
 #pragma endregion ImGuiの更新処理終了
 }
@@ -130,7 +127,7 @@ void TitleScene::Draw() {
 #pragma region 全てのObject3d個々の描画処理 
     // 箱オブジェクトの描画準備。3Dオブジェクトの描画に共通のグラフィックスコマンドを積む
     SkyboxCommon::GetInstance()->Commondrawing();
-    skybox_->Draw();
+    StageManager::GetInstance()->DDSDraw();
     // 3Dオブジェクトの描画準備。3Dオブジェクトの描画に共通のグラフィックスコマンドを積む
     Object3dCommon::GetInstance()->Commondrawing();
     // プレイヤーの描画処理
@@ -144,12 +141,17 @@ void TitleScene::Draw() {
     // Spriteの描画準備。Spriteの描画に共通のグラフィックスコマンドを積む
     SpriteCommon::GetInstance()->Commondrawing();
     // 各UIの描画処理
-    for (Sprite* sprite : uiSprites_) {
-        sprite->Draw();
-    }
+    effect_->Draw2D();
 	// フェードの描画
     FadeManager::GetInstance()->Draw();
 #pragma endregion 全てのSprite個々の描画処理
+}
+
+void TitleScene::EditorEntities() {
+    // 2D    
+   // RegisterEditorEntity(ui_title_.get(), "Title");
+    // 3D
+    RegisterEditorEntity(player_->GetPlayerObject(), "Player");
 }
 
 void TitleScene::UpdateFadeIn() {
@@ -165,15 +167,33 @@ void TitleScene::UpdateFadeIn() {
 
 void TitleScene::UpdateFadeOut() {
     // タイトルシーンにおけるフェード制御を担当
-    FadeManager* fade = FadeManager::GetInstance(); 
-    // フェード中ではなくフェード完了状態の時にEnterキーを押すとフェードアウト開始
-    if (Input::GetInstance()->Triggrkey(DIK_RETURN) && !fade->IsFading() && fade->IsFadeEnd() && !isPlayerBoost_ && CameraManager::GetInstance()->GetActiveCamera()->GetTranslate().x >= 30.0f) {
-        fade->StartFadeOut(2.5f, FadeStyle::SilhouetteExplode);
+    FadeManager* fade = FadeManager::GetInstance();
+    if (Input::GetInstance()->Triggrkey(DIK_RETURN) && !fade->IsFading() && fade->IsFadeEnd() && !isPlayerBoost_ && !isPreFadeFollow_ && effect_->GetisStartUIFinished_()) {
+        isPreFadeFollow_ = true;
+        preFadeTimer_ = 0.0f;
+        // 🔥 カメラをFollowに切り替え
+        CameraManager::GetInstance()->GetTitleCamera()->SetTarget(player_->GetPlayerObject());
+        CameraManager::GetInstance()->GetTitleCamera()->SetTitleCameraState(TitleCameraState::Follow);
         CameraManager::GetInstance()->SetCameraMode(CameraMode::Follow);
+    }
 
-        // ===== プレイヤー演出開始 =====
-        isPlayerBoost_ = true;
-        playerSpeedX_ = 0.0f;
+    // ============================================
+    // 1秒経過後にフェード開始
+    // ============================================
+    if (isPreFadeFollow_) {
+
+        preFadeTimer_ += 1.0f / 60.0f; // deltaTime推奨
+
+        if (preFadeTimer_ >= preFadeDuration_) {
+
+            isPreFadeFollow_ = false;
+
+            fade->StartFadeOut(2.5f, FadeStyle::SilhouetteExplode);
+
+            // プレイヤーブースト開始
+            isPlayerBoost_ = true;
+            playerSpeedX_ = 0.0f;
+        }
     }
 }
 
@@ -188,7 +208,6 @@ void TitleScene::UpdateSceneTransition() {
 }
 
 void TitleScene::UpdateTitlePlayerMotion() {
-
     FadeManager* fade = FadeManager::GetInstance();
 
     // ==============================
@@ -202,32 +221,38 @@ void TitleScene::UpdateTitlePlayerMotion() {
         playertransform_.translate.z += playerSpeedX_;
 
         // ちょっと上に浮かせると「飛び感」UP
-        playertransform_.translate.y += 0.05f;
+        playertransform_.translate.y += 0.1f;
 
     }
 
-    // ===== 横移動（イージング） =====
-    if (!moveFinished) {
-        timer += 1.0f;
-        float t = std::clamp(timer / moveDuration, 0.0f, 1.0f);
-
-        // EaseOutCubic
-        float easeT = 1.0f - powf(1.0f - t, 3.0f);
-
-        playertransform_.translate.x =
-            titleStartX_ + (titleEndX_ - titleStartX_) * easeT;
-
-        if (t >= 1.0f) {
-            moveFinished = true;
-            timer = 0.0f;
-        }
-    }
-    if (fade->GetFadeType() != FadeType::FadeOut) {
+    if (!isPlayerZMoving_ && fade->GetFadeType() != FadeType::FadeOut) {
         // ===== 上下の浮遊 =====
         time += kFloatSpeed;
         playertransform_.translate.y = sinf(time) * kFloatAmplitude;
     }
+       
+    if (isPlayerZMoving_) {
 
-    // ===== Transform を Object に反映 =====
+        playerMoveTimer_ += 1.0f / 60.0f; // deltaTimeがあるならそれ推奨
+
+        float t = playerMoveTimer_ / playerMoveDuration_;
+        t = std::clamp(t, 0.0f, 1.0f);
+
+        // 🔥 好きなイージング
+        float easeT = EaseOutCubic(t);
+
+        float newZ = Lerp(playerStartZ_, playerTargetZ_, easeT);
+        playertransform_.translate.z = newZ;
+
+        if (t >= 1.0f) {
+            isPlayerZMoving_ = false;
+            playertransform_.translate.z = playerTargetZ_;
+        }
+    }
+    
+    if (!isPlayerZMoving_ && CameraManager::GetInstance()->GetMode() == CameraMode::Default) {
+        CameraManager::GetInstance()->GetTitleCamera()->SetTitleCameraState(TitleCameraState::IntroMove);
+    }
+
     player_->GetPlayerObject()->SetTranslate(playertransform_.translate);
 }
