@@ -7,7 +7,7 @@ void ObjectMenu::Render(const std::function<std::string(const std::string&)>& LT
         return;
 
     // すべての登録オブジェクトを取得
-    const auto& objects = EditorObjectRegistry::Instance().GetObjects();
+    const auto& objects = EditorEntityRegistry::Instance().GetObjects();
 
     // -------------------------
     // 3D カテゴリ
@@ -34,16 +34,17 @@ void ObjectMenu::Render(const std::function<std::string(const std::string&)>& LT
         for (const auto& obj : objects) {
             if (obj.category == Editor::EditorObjectCategory::Object2D) {
                 if (ImGui::MenuItem(obj.name.c_str())) {
-                    //// 選択中オブジェクト名を保存
-                    //activeObjectName_ = obj.name;
-                    //activeObject_ = obj.objectPtr;       // Sprite* を保存
-                    //activeCategory_ = obj.category;
+                    // リストに重複がなければ追加
+                    auto it = std::find_if(openWindows_.begin(), openWindows_.end(),
+                        [&](const auto& item) { return item.objectPtr == obj.objectPtr; });
+                    if (it == openWindows_.end()) {
+                        openWindows_.push_back(obj);
+                    }
                 }
             }
         }
         ImGui::EndMenu();
     }
-
     ImGui::EndMenu();
 }
 

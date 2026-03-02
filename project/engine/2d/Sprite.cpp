@@ -201,10 +201,8 @@ std::unique_ptr<Sprite> Sprite::Create(std::string textureFilePath, Vector2 posi
 	return sprite;
 }
 
-void Sprite::DrawImGui() {
+void Sprite::DrawImGui(const std::string& name) {
 #ifdef USE_IMGUI
-	// ウィンドウサイズを指定
-	ImGui::Begin("Sprite");
 	// 座標
 	ImGui::SliderFloat2("position", &position_.x, 0.0f, 1280.0f, "%.01f");
 	// 回転
@@ -219,6 +217,5 @@ void Sprite::DrawImGui() {
 	ImGui::DragFloat2("UVScale", &uvTransform.scale.x, 0.01f, -10.0f, 10.0f);
 	// UVの回転の変更
 	ImGui::SliderAngle("UVRotate", &uvTransform.rotate.z);
-	ImGui::End();
 #endif // USE_IMGUI
 }

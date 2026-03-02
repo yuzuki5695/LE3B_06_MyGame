@@ -15,14 +15,14 @@ inline constexpr bool always_false = false;
 /// エディタ用オブジェクト登録管理クラス
 /// ・アプリケーション層から登録されたオブジェクト情報を保持
 /// </summary>
-class EditorObjectRegistry {
+class EditorEntityRegistry {
 public: // メンバ関数
     /// <summary>
     /// シングルトン取得
     /// エディタ全体で共通の登録管理を行うため
     /// </summary>
-    static EditorObjectRegistry& Instance() {
-        static EditorObjectRegistry instance;
+    static EditorEntityRegistry& Instance() {
+        static EditorEntityRegistry instance;
         return instance;
     }
 
@@ -42,7 +42,7 @@ private: // メンバ変数
     // 登録されたオブジェクト情報の配列
     std::vector<Editor::EditorObjectInfo> objects_;
     // 外部から直接生成されないようにする（シングルトン）
-    EditorObjectRegistry() = default;
+    EditorEntityRegistry() = default;
 };
 
 /// <summary>
@@ -51,7 +51,7 @@ private: // メンバ変数
 /// ・型によって自動でカテゴリを判定し、EditorObjectRegistry に登録
 /// </summary>
 template <typename T>
-void RegisterEditorObject(T* object, const std::string& name) {
+void RegisterEditorEntity(T* object, const std::string& name) {
     // 登録カテゴリを型に応じて自動判定
     Editor::EditorObjectCategory category;
 
@@ -60,7 +60,7 @@ void RegisterEditorObject(T* object, const std::string& name) {
     } else if constexpr (std::is_same_v<T, Sprite>) {
         category = Editor::EditorObjectCategory::Object2D;
     } else {
-        static_assert(always_false<T>, "Unsupported type for EditorObjectRegistry");
+        static_assert(always_false<T>, "Unsupported type for EditorEntityRegistry");
     }
 
     // EditorObjectInfo を作る
@@ -69,5 +69,5 @@ void RegisterEditorObject(T* object, const std::string& name) {
     info.category = category;
     info.objectPtr = object;
 
-    EditorObjectRegistry::Instance().Register(info);
+    EditorEntityRegistry::Instance().Register(info);
 }

@@ -14,7 +14,7 @@
 #include <FadeManager.h>
 #include <Tools/AssetGenerator/engine/math/LoadResourceID.h>
 #include <StageManager.h>
-#include<EditorObjectRegistry.h>
+#include<EditorEntityRegistry.h>
 
 using namespace LoadResourceID;
 namespace { constexpr float kFadeDuration = 1.0f; }
@@ -39,9 +39,10 @@ void TitleScene::Initialize() {
     // パーティクルのの生成、初期化
     particle_ = std::make_unique<Titleparticle>();
     particle_->Initialize(player_->GetPlayerObject());
-    
     StageManager::GetInstance()->Initialize();
     CameraManager::GetInstance()->SetCameraMode(CameraMode::Default);      
+    // ImGuiエディタに情報を登録する
+    EditorEntities();
 #pragma endregion シーンの初期化
 }
 
@@ -86,7 +87,6 @@ void TitleScene::InitializeModel() {
     CameraManager::GetInstance()->GetTitleCamera()->SetTarget(player_->GetPlayerObject());
     transf_ = { {1.0f, 1.0f, 1.0f}, {0.0f, 0.3f, 0.0f},  { -20.0f,3.0f,40.0f} };
     object3d_ = Object3d::Create(model::Player, transf_);
-    RegisterEditorObject(object3d_.get(), "object3d");
 }
 
 void TitleScene::Update() {
@@ -151,6 +151,13 @@ void TitleScene::Draw() {
 	// フェードの描画
     FadeManager::GetInstance()->Draw();
 #pragma endregion 全てのSprite個々の描画処理
+}
+
+void TitleScene::EditorEntities() {
+    // 2D    
+    RegisterEditorEntity(ui_title_.get(), "Title");
+    // 3D
+    RegisterEditorEntity(object3d_.get(), "object3d");
 }
 
 void TitleScene::UpdateFadeIn() {

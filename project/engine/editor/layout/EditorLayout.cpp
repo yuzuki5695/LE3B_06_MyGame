@@ -102,7 +102,7 @@ void EditorLayout::DrawRightPanel(std::vector<std::unique_ptr<IEditorWindow>>& w
     auto* objectMenu = menuBar_.GetObjectMenu();
     const auto& openWindows = objectMenu->GetOpenWindows(); // リストを取得
     // 登録リスト(Registry)を取得（生存確認用）
-    const auto& registeredObjects = EditorObjectRegistry::Instance().GetObjects(); //
+    const auto& registeredObjects = EditorEntityRegistry::Instance().GetObjects(); //
 
     for (auto it = openWindows.begin(); it != openWindows.end(); ) {
         // 💡 オブジェクトがまだ Registry に存在するかチェック
@@ -129,8 +129,8 @@ void EditorLayout::DrawRightPanel(std::vector<std::unique_ptr<IEditorWindow>>& w
                     // 💡 ここで Object3d::DrawImGui が呼ばれる
                     static_cast<Object3d*>(it->objectPtr)->DrawImGui(it->name.c_str());
                     break;
-                case Editor::EditorObjectCategory::Object2D:
-                    // static_cast<Sprite*>(it->objectPtr)->DrawImGui(it->name.c_str());
+                case Editor::EditorObjectCategory::Object2D: 
+                    static_cast<Sprite*>(it->objectPtr)->DrawImGui(it->name.c_str());
                     break;
                 }
             }

@@ -1,6 +1,6 @@
 #pragma once
 #include <IMenuComponent.h>
-#include <EditorObjectRegistry.h>
+#include <EditorEntityRegistry.h>
 
 /// <summary>
 /// 「オブジェクト」メニューを担当するクラス。

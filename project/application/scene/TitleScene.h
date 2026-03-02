@@ -66,6 +66,9 @@ public: // メンバ関数
     /// ・上下の浮遊アニメーション
     /// </summary>
     void UpdateTitlePlayerMotion();
+
+    void EditorEntities();
+
 private: // メンバ変数
     std::unique_ptr <Sprite> ui_title_;
     std::unique_ptr <Sprite> ui_start_;

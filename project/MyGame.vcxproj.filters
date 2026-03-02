@@ -929,7 +929,7 @@
     <ClInclude Include="engine\editor\layout\editormenubar\ObjectMenu.h">
       <Filter>ヘッダー ファイル\engine\editor\layout\editormenubar</Filter>
     </ClInclude>
-    <ClInclude Include="engine\editor\core\EditorObjectRegistry.h">
+    <ClInclude Include="engine\editor\core\EditorEntityRegistry.h">
       <Filter>ヘッダー ファイル\engine\editor\core</Filter>
     </ClInclude>
     <ClInclude Include="engine\editor\core\EditorManager.h">

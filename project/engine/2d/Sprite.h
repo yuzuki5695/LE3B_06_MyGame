@@ -34,7 +34,7 @@ public: // メンバ関数
 	static std::unique_ptr<Sprite> Create(std::string textureFilePath, Vector2 position, float rotation, Vector2 size);
 
 	// ImGuiの更新
-	void DrawImGui();
+	void DrawImGui(const std::string& name);
 
 private:
 	// 頂点データ作成	

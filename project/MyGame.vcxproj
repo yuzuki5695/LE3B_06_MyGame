@@ -247,7 +247,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="engine\editor\console\EditorConsoleTypes.h" />
     <ClInclude Include="engine\editor\console\MessageService.h" />
     <ClInclude Include="engine\editor\core\EditorManager.h" />
-    <ClInclude Include="engine\editor\core\EditorObjectRegistry.h" />
+    <ClInclude Include="engine\editor\core\EditorEntityRegistry.h" />
     <ClInclude Include="engine\editor\core\EditorTypes.h" />
     <ClInclude Include="engine\editor\core\IEditorWindow.h" />
     <ClInclude Include="engine\editor\InspectorWindow.h" />
