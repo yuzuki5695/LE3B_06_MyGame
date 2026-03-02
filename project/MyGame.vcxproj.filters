@@ -280,6 +280,18 @@
     <Filter Include="ヘッダー ファイル\engine\editor\layout\editormenubar">
       <UniqueIdentifier>{3f31f402-fcc2-4a1e-9205-9872c0cf30dc}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ソース ファイル\application\motion">
+      <UniqueIdentifier>{7f4de914-2049-4db2-b6a0-fe2e6a4a53ff}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\application\motion\2d">
+      <UniqueIdentifier>{07aa49a8-a6b4-4799-b742-258aa04f7949}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\application\motion">
+      <UniqueIdentifier>{c373fd79-4b1f-4857-ac97-2b15a11cc9b4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\application\motion\2d">
+      <UniqueIdentifier>{024abc2c-c56b-4195-b948-a995a285e99c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -554,6 +566,9 @@
     </ClCompile>
     <ClCompile Include="engine\editor\layout\editormenubar\ObjectMenu.cpp">
       <Filter>ソース ファイル\engine\editor\layout\editormenubar</Filter>
+    </ClCompile>
+    <ClCompile Include="application\motion\2d\TitleSpriteMotion.cpp">
+      <Filter>ソース ファイル\application\motion\2d</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -940,6 +955,9 @@
     </ClInclude>
     <ClInclude Include="engine\editor\core\EditorTypes.h">
       <Filter>ヘッダー ファイル\engine\editor\core</Filter>
+    </ClInclude>
+    <ClInclude Include="application\motion\2d\TitleSpriteMotion.h">
+      <Filter>ヘッダー ファイル\application\motion\2d</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
