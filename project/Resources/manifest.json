@@ -178,9 +178,6 @@
         "ui_02": {
             "texture": "Textures/Ui/UI_02.png"
         },
-        "w": {
-            "texture": "Textures/Operationui/W.png"
-        },
         "white": {
             "texture": "Textures/fade/white.png"
         }

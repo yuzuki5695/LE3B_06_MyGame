@@ -14,7 +14,7 @@ namespace LoadResourceID {
         constexpr const char* Gage = "Textures/Ui/Gage.png";
         constexpr const char* Gameover = "Textures/Ui/Gameover.png";
         constexpr const char* Mission = "Textures/Ui/Mission.png";
-        constexpr const char* Move = "Textures/Operationui/W.png";
+        constexpr const char* Move = "Textures/Operationui/move.png";
         constexpr const char* Pausemenupanel = "Textures/Ui/PauseMenuPanel.png";
         constexpr const char* PlayerUi = "Textures/Ui/Player_ui.png";
         constexpr const char* Poseicon = "Textures/Ui/Poseicon.png";

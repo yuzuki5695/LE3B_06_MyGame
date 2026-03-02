@@ -148,8 +148,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="application\scene\GameOverScene.cpp" />
     <ClCompile Include="application\scene\GamePlayScene.cpp" />
     <ClCompile Include="application\scene\TitleScene.cpp" />
-    <ClCompile Include="application\ui\GamePlayUI.cpp" />
-    <ClCompile Include="application\ui\UIManager.cpp" />
     <ClCompile Include="engine\editor\console\EditorConsole.cpp" />
     <ClCompile Include="engine\editor\console\MessageService.cpp" />
     <ClCompile Include="engine\editor\core\EditorManager.cpp" />
@@ -247,9 +245,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\resource\FileSearcher.h" />
     <ClInclude Include="application\resource\ManifestExporter.h" />
     <ClInclude Include="application\scene\GameOverScene.h" />
-    <ClInclude Include="application\ui\BaseUI.h" />
-    <ClInclude Include="application\ui\GamePlayUI.h" />
-    <ClInclude Include="application\ui\UIManager.h" />
     <ClInclude Include="engine\editor\console\EditorConsole.h" />
     <ClInclude Include="engine\editor\console\EditorConsoleTypes.h" />
     <ClInclude Include="engine\editor\console\MessageService.h" />

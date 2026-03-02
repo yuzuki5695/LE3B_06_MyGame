@@ -46,20 +46,18 @@ void GamePlayScene::Initialize() {
     TextureManager::GetInstance()->LoadTexture(texture::Avoidance);
     TextureManager::GetInstance()->LoadTexture(texture::Gage);
     TextureManager::GetInstance()->LoadTexture(texture::PlayerUi);
-    TextureManager::GetInstance()->LoadTexture(texture::W);
-    TextureManager::GetInstance()->LoadTexture(texture::A);
 
-    Vector2 size = Vector2{ 40.0f,40.0f };
+    Vector2 size = Vector2{ 120.0f,80.0f };
     MAXui_ = 1;
-    uis_.push_back(Sprite::Create(texture::W, Vector2{ 5.0f, 550.0f }, 0.0f, size));
-    //uis_.push_back(Sprite::Create(texture::Reticlemove, Vector2{ 125.0f, 550.0f }, 0.0f, size)); 
-    //uis_.push_back(Sprite::Create(texture::Space, Vector2{ 5.0f, 630.0f }, 0.0f, size)); 
-    //uis_.push_back(Sprite::Create(texture::Avoidance, Vector2{ 125.0f, 630.0f }, 0.0f, size)); 
-    // 2. vector の要素数を MAXui_ に同期（もし他で使うなら）
-    //MAXui_ = static_cast<uint32_t>(uis_.size());
-    //for (auto& ui : uis_) {
-    //    ui->SetTextureSize(size);
-    //}
+    uis_.push_back(Sprite::Create(texture::Move, Vector2{ 5.0f, 550.0f }, 0.0f, size));
+    uis_.push_back(Sprite::Create(texture::Reticlemove, Vector2{ 125.0f, 550.0f }, 0.0f, size)); 
+    uis_.push_back(Sprite::Create(texture::Space, Vector2{ 5.0f, 630.0f }, 0.0f, size)); 
+    uis_.push_back(Sprite::Create(texture::Avoidance, Vector2{ 125.0f, 630.0f }, 0.0f, size));  
+    //  2. vector の要素数を MAXui_ に同期（もし他で使うなら）
+    MAXui_ = static_cast<uint32_t>(uis_.size());
+    for (auto& ui : uis_) {
+        ui->SetTextureSize(size);
+    }
 
     gage_ = Sprite::Create(texture::Gage, Vector2{ 380.0f, 10.0f }, 0.0f, Vector2{ 500.0f,30.0f });
     gage_->SetTextureSize(Vector2{ 500.0f,30.0f });
