@@ -1,20 +1,18 @@
 #pragma once
-#include"Transform.h"
-#include"Vector2.h"
-#include"Vector3.h"
-#include"Vector4.h"
-#include "Matrix4x4.h"
-#include<wrl.h>
-#include<d3d12.h>
-#include<cstdint>
-#include<fstream>
-#include<Vertex.h>
-#include<Material.h>
+#include <Transform.h>
+#include <Vector2.h>
+#include <Vector4.h>
+#include <Matrix4x4.h>
+#include <wrl.h>
+#include <d3d12.h>
+#include <cstdint>
+#include <fstream>
+#include <Vertex.h>
+#include <Material.h>
 
 class SpriteCommon;
 
-class Sprite
-{
+class Sprite {
 public: // メンバ関数	
 	// 座標変換行列データ
 	struct TransformationMatrix {

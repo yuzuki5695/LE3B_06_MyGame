@@ -9,17 +9,21 @@
 using namespace Editor;
 
 void EditorLayout::Render(SrvManager* srvmanager, std::vector<std::unique_ptr<IEditorWindow>>& windows) {
+    // 多言語テキスト取得ラムダを初期化
     LT = [](const std::string& key) { return MessageService::GetText(key); };
-    // 1. メインメニュ-パネル
+
+    // 1. メインメニューバー描画
     ShowMenuBar(windows);
-    // 2. 左側パネル
-    DrawLeftPanel(srvmanager,windows);
-    // 2. 右側パネル
-	DrawRightPanel(windows);
+
+    // 2. 左側パネル描画（ゲームビュー + コンソール）
+    DrawLeftPanel(srvmanager, windows);
+
+    // 3. 右側パネル描画（ドッキング領域）
+    DrawRightPanel(windows);
 }
 
 void EditorLayout::ShowMenuBar(std::vector<std::unique_ptr<IEditorWindow>>& windows) {
-    // UI描画はMenuBarへ委譲
+    // UI描画はMenuBarクラスへ委譲
     menuBar_.Render(LT);
 }
 
@@ -53,7 +57,7 @@ void EditorLayout::DrawLeftPanel(SrvManager* srvmanager, std::vector<std::unique
         ImGui::BeginChild("SystemConsoleChild", ImVec2(0, 0), false);
         {
             // windowsリストの中から ConsoleWindow (System Console) を探して描画する
-            for (auto& window : windows) {
+            for (std::unique_ptr<IEditorWindow>& window : windows) {
                 if (std::string(window->GetName()) == "System Console") {
                     ImGui::Text(LT("Console.Title").c_str());
                     ImGui::Separator();
@@ -70,23 +74,21 @@ void EditorLayout::DrawLeftPanel(SrvManager* srvmanager, std::vector<std::unique
 
 void EditorLayout::DrawRightPanel(std::vector<std::unique_ptr<IEditorWindow>>& windows) {
     const float kGameViewW = 640.0f;
-    ImGuiViewport* viewport = ImGui::GetMainViewport();
-
+    ImGuiViewport* viewport = ImGui::GetMainViewport(); 
+    // 右側領域計算
     float dockPosX = viewport->WorkPos.x + kGameViewW;
     float dockWidth = viewport->WorkSize.x - kGameViewW;
 
     ImGui::SetNextWindowPos(ImVec2(dockPosX, viewport->WorkPos.y));
     ImGui::SetNextWindowSize(ImVec2(dockWidth, viewport->WorkSize.y));
-
+    // ルートウィンドウフラグ
     ImGuiWindowFlags root_flags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoMove |
         ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse |
         ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
-
     // 右側ルートウィンドウ
     ImGui::Begin("RightPanelRoot", nullptr, root_flags);
     ImGuiID dockspace_id = ImGui::GetID("RightDockSpace");
-
-    // 初回のみドッキングスペースを初期化
+    // 初回のみDock初期化
     static bool dock_initialized = false;
     if (!dock_initialized) {
         ImGui::DockBuilderRemoveNode(dockspace_id);
@@ -98,14 +100,15 @@ void EditorLayout::DrawRightPanel(std::vector<std::unique_ptr<IEditorWindow>>& w
     ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), ImGuiDockNodeFlags_None);
     ImGui::End();
 
-    // 🔷 ObjectMenuから「開いているウィンドウ」のリストを取得
-    auto* objectMenu = menuBar_.GetObjectMenu();
-    const auto& openWindows = objectMenu->GetOpenWindows(); // リストを取得
-    // 登録リスト(Registry)を取得（生存確認用）
-    const auto& registeredObjects = EditorEntityRegistry::Instance().GetObjects(); //
-
+    // =============================
+    // 開いているオブジェクトウィンドウ描画
+    // =============================
+    ObjectMenu* objectMenu = menuBar_.GetObjectMenu();
+    const std::vector<Editor::EditorObjectInfo>& openWindows = objectMenu->GetOpenWindows();
+    const auto& registeredObjects = EditorEntityRegistry::Instance().GetObjects();
     for (auto it = openWindows.begin(); it != openWindows.end(); ) {
-        // 💡 オブジェクトがまだ Registry に存在するかチェック
+      
+        // オブジェクト生存チェック
         auto isAlive = std::any_of(registeredObjects.begin(), registeredObjects.end(),
             [&](const auto& reg) { return reg.objectPtr == it->objectPtr; });
 
@@ -119,14 +122,14 @@ void EditorLayout::DrawRightPanel(std::vector<std::unique_ptr<IEditorWindow>>& w
 
         // 「×」ボタンを表示するためのフラグ
         bool is_open = true;
-
-        // 💡 オブジェクト名をタイトルにして Begin することで、個別のタブになる
+        
+        // タブとして描画
         if (ImGui::Begin(it->name.c_str(), &is_open, ImGuiWindowFlags_NoCollapse)) {
             if (it->objectPtr) {
                 // カテゴリに応じて DrawImGui を呼び出す
                 switch (it->category) {
+                    // カテゴリごとに描画処理を分岐
                 case Editor::EditorObjectCategory::Object3D:
-                    // 💡 ここで Object3d::DrawImGui が呼ばれる
                     static_cast<Object3d*>(it->objectPtr)->DrawImGui(it->name.c_str());
                     break;
                 case Editor::EditorObjectCategory::Object2D: 
@@ -136,10 +139,9 @@ void EditorLayout::DrawRightPanel(std::vector<std::unique_ptr<IEditorWindow>>& w
             }
         }
         ImGui::End();
-
-        // 「×」が押されたらリストから削除
+        // ×ボタンが押された場合は閉じる
         if (!is_open) {
-            it = objectMenu->CloseWindow(it->name); //
+            it = objectMenu->CloseWindow(it->name); 
         } else {
             ++it;
         }

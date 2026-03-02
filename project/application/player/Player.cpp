@@ -103,11 +103,13 @@ void Player::DrawSprite() {
 
 void Player::DebugImgui() {
 #ifdef USE_IMGUI
-    ImGui::Begin("Player Control");
-    ImGui::DragFloat3("Translate", &transform_.translate.x, 0.01f);
-    ImGui::DragFloat3("Rotate", &transform_.rotate.x, 0.01f);
-    ImGui::DragFloat3("Scale", &transform_.scale.x, 0.01f);
-    ImGui::End();
+
+    //object->DrawImGui("Player");
+    //ImGui::Begin("Player Control");
+    //ImGui::DragFloat3("Translate", &transform_.translate.x, 0.01f);
+    //ImGui::DragFloat3("Rotate", &transform_.rotate.x, 0.01f);
+    //ImGui::DragFloat3("Scale", &transform_.scale.x, 0.01f);
+    //ImGui::End();
 #endif // USE_IMGUI
 }
 

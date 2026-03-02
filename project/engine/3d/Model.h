@@ -12,7 +12,6 @@
 #include<vector>
 #include<Vertex.h>
 #include<Material.h>
-#include<MaterialDate.h>
 #include<ModelDate.h>
 #include <assimp/mesh.h>
 
@@ -28,8 +27,7 @@ struct glTFModelData {
     Node rootNode;
 };
 
-class Model
-{
+class Model {
 public: // メンバ関数
 	// 初期化
 	void Initialize(ModelCommon* modelCommon, const std::string& directorypath, const std::string& filename);
@@ -48,9 +46,6 @@ public: // メンバ関数
 private:
 	// 頂点データ作成
 	void VertexDatacreation();
-	// リソース
-	// マテリアル
-	void MaterialGenerate();
 private:
 	// ポインタ
 	ModelCommon* modelCommon = nullptr;
@@ -58,28 +53,8 @@ private:
 	ModelDate modelDate;
 	// バッファリソース
 	Microsoft::WRL::ComPtr <ID3D12Resource> vertexResoruce;
-	Microsoft::WRL::ComPtr <ID3D12Resource> materialResource;
 	// バッファリソースの使い道を補足するバッファビュー
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferView;
 	// バッファリソース内のデータを指すポインタ
 	VertexData* vertexData = nullptr;
-	Material* materialData = nullptr;
-public:
-	// getter
-
-	Material* GetMaterialData() { return materialData; }
-	
-	void SetMaterialData(Vector4 color) { materialData->color = color; }
-void SetMaterial(Material* material) {
-    if (materialData) delete materialData; // 既存の解放
-    materialData = material;
-}
-
-	// materialDataをコピーして独立させる
-	std::unique_ptr<Material> CloneMaterial() const {
-		if (materialData) {
-			return std::make_unique<Material>(*materialData);
-		}
-		return nullptr;
-	}
 };

@@ -1,7 +1,8 @@
 #pragma once
 #include"Model.h"
-#include "Camera.h"
-#include<TransformationMatrix.h>
+#include <Camera.h>
+#include <TransformationMatrix.h>
+#include <MaterialDate.h>
 
 class Object3dCommon;
 
@@ -31,20 +32,23 @@ public: // メンバ関数
 
 private:
 	// リソース
+	// マテリアル
+	void MaterialGenerate();
 	// トランスフォームマトリックス
 	void TransformationMatrixGenerate();
 	// カメラリソース
 	void CameraForGPUGenerate();
-
 private:
 	// ポインタ
 	Object3dCommon* object3dCommon = nullptr;
 	Model* model = nullptr;
 	Camera* camera = nullptr;
 	// バッファリソース
+	Microsoft::WRL::ComPtr <ID3D12Resource> materialResource;
 	Microsoft::WRL::ComPtr <ID3D12Resource> transformationMatrixResource;
 	Microsoft::WRL::ComPtr<ID3D12Resource> cameraResource;
-	// バッファリソース内のデータを指すポインタ
+	// バッファリソース内のデータを指すポインタ		
+	Material* materialData = nullptr;
 	TransformationMatrix* transformationMatrixData = nullptr;
 	CameraForGPU* cameraForGPUData = nullptr;
 
@@ -64,7 +68,6 @@ public:
 	void SetTranslate(const Vector3& translate) { this->transform_.translate = translate; }
 	void SetCamera(Camera* camera) { this->camera = camera; }
 
-	const Vector4 GetMaterialColor() const { return model->GetMaterialData()->color; }
 
 	void SetMaterialColor(const Vector4& color);
 };

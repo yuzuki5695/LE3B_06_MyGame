@@ -157,7 +157,7 @@ void TitleScene::EditorEntities() {
     // 2D    
     RegisterEditorEntity(ui_title_.get(), "Title");
     // 3D
-    RegisterEditorEntity(object3d_.get(), "object3d");
+    RegisterEditorEntity(player_->GetPlayerObject(), "Player");
 }
 
 void TitleScene::UpdateFadeIn() {
