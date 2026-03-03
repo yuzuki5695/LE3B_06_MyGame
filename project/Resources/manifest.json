@@ -73,8 +73,38 @@
         }
     },
     "Textures": {
+        "a": {
+            "texture": "Textures/Operationui/A.png"
+        },
+        "a_red": {
+            "texture": "Textures/Operationui/A_RED.png"
+        },
         "arrow": {
             "texture": "Textures/Ui/Arrow.png"
+        },
+        "arrowdown": {
+            "texture": "Textures/Operationui/ArrowDown.png"
+        },
+        "arrowdown_red": {
+            "texture": "Textures/Operationui/ArrowDown_RED.png"
+        },
+        "arrowleft": {
+            "texture": "Textures/Operationui/ArrowLeft.png"
+        },
+        "arrowleft_red": {
+            "texture": "Textures/Operationui/ArrowLeft_RED.png"
+        },
+        "arrowright": {
+            "texture": "Textures/Operationui/ArrowRight.png"
+        },
+        "arrowright_red": {
+            "texture": "Textures/Operationui/ArrowRight_RED.png"
+        },
+        "arrowup": {
+            "texture": "Textures/Operationui/ArrowUp.png"
+        },
+        "arrowup_red": {
+            "texture": "Textures/Operationui/ArrowUp_RED.png"
         },
         "avoidance": {
             "texture": "Textures/Operationui/avoidance.png"
@@ -99,6 +129,12 @@
         },
         "cubemapbox": {
             "texture": "Textures/stage/CubemapBox.dds"
+        },
+        "d": {
+            "texture": "Textures/Operationui/D.png"
+        },
+        "d_red": {
+            "texture": "Textures/Operationui/D_RED.png"
         },
         "gage": {
             "texture": "Textures/Ui/Gage.png"
@@ -130,8 +166,20 @@
         "rostock_laage_airport_4k": {
             "texture": "Textures/stage/rostock_laage_airport_4k.dds"
         },
+        "s": {
+            "texture": "Textures/Operationui/S.png"
+        },
+        "s_red": {
+            "texture": "Textures/Operationui/S_RED.png"
+        },
         "space": {
             "texture": "Textures/Operationui/space.png"
+        },
+        "spacekey": {
+            "texture": "Textures/Operationui/SPACEKey.png"
+        },
+        "spacekey_red": {
+            "texture": "Textures/Operationui/SPACEKey_RED.png"
         },
         "start": {
             "texture": "Textures/Event/start.png"
@@ -180,6 +228,9 @@
         },
         "w": {
             "texture": "Textures/Operationui/W.png"
+        },
+        "w_red": {
+            "texture": "Textures/Operationui/W_RED.png"
         },
         "white": {
             "texture": "Textures/fade/white.png"
