@@ -15,6 +15,13 @@
 #include <EnemySpawner.h>
 #include <Pausemenu.h>
 
+enum class ControlUIType
+{
+    WASD,
+    Arrow,
+    Space
+};
+
 /// <summary>
 /// ゲームプレイシーン
 /// </summary>
@@ -52,6 +59,15 @@ public: // メンバ関数
     void StartStageProgressUI();
     void UpdateStageProgressUI();
     void UpdateRandomMove();
+
+    void CreateWASDUI(
+        const Vector2& baseCenter,     // WASD中心
+        const Vector2& size,
+        float keySpacing,           // キー同士の隙間
+        float groupSpacing);    // グループ間の縦間隔
+
+    void UpdateControlUI();
+    void UpdateControlUIAnimation();
 
 private: // メンバ変数
     // オブジェクトデータ
@@ -94,4 +110,10 @@ private: // メンバ変数
     std::unique_ptr <Pausemenu> pausemenu_;
     bool isPausedevent_;
     bool isPaused_;
+
+    bool isControlUIAnimating_;
+    float controlUITimer_;
+    float controlUIDuration_;
+    Vector2 controlUIOriginalSize_;
+    std::vector<Vector2> uiOriginalSizes_;
 };

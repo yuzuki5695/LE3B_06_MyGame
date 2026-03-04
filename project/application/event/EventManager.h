@@ -90,7 +90,12 @@ private:    // メンバ変数
     bool timefige_ = false;                   // 時間制御フラグ？
     bool isActive_ = false;                   // イベント実行中フラグ
     bool isFinished_ = false;                 // イベント完了フラグ
+
+
+    float progress_ = 0.0f;       // 0.0 ~ 1.0 の進行率
+    float phaseDuration_ = 1.0f;  // 現在のフェーズの目標時間（秒）
 public:
     bool IsActive() const { return isActive_; }
     bool IsFinished() const { return isFinished_; }
+    float GetProgress() const { return progress_; }
 };
