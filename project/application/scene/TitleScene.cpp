@@ -16,6 +16,7 @@
 #include <StageManager.h>
 #include <EditorEntityRegistry.h>
 #include <Easing.h>
+#include <UIManager.h>
 
 using namespace Easing;
 using namespace LoadResourceID;
@@ -24,6 +25,7 @@ namespace { constexpr float kFadeDuration = 1.0f; }
 void TitleScene::Finalize() {
     FadeManager::GetInstance()->Finalize();  // フェードマネージャの解放処理
 	StageManager::GetInstance()->Finalize(); // ステージマネージャの解放処理
+	UIManager::GetInstance()->Finalize(); // UIマネージャの解放処理
 }
 
 void TitleScene::Initialize() {
@@ -47,6 +49,8 @@ void TitleScene::Initialize() {
     effect_->Initialize();
     // ImGuiエディタに情報を登録する
     EditorEntities();
+    // UIマネージャの初期化
+	UIManager::GetInstance()->Initialize();
 #pragma endregion シーンの初期化
 }
 
@@ -111,7 +115,8 @@ void TitleScene::Update() {
 #pragma region 全てのSprite個々の更新処理
 
     effect_->Update(); // タイトルエフェクトの更新
-
+	// UIマネージャの更新
+    UIManager::GetInstance()->Update();
 #pragma endregion 全てのSprite個々の更新処理
 
 #pragma region  ImGuiの更新処理開始
@@ -142,7 +147,8 @@ void TitleScene::Draw() {
     SpriteCommon::GetInstance()->Commondrawing();
     // 各UIの描画処理
     effect_->Draw2D();
-	// フェードの描画
+    UIManager::GetInstance()->Draw();
+    // フェードの描画
     FadeManager::GetInstance()->Draw();
 #pragma endregion 全てのSprite個々の描画処理
 }

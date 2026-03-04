@@ -295,6 +295,9 @@
     <Filter Include="ソース ファイル\application\ui">
       <UniqueIdentifier>{4540355a-ca3a-4eb8-8c0b-a5fa2d7beb93}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ヘッダー ファイル\application\ui">
+      <UniqueIdentifier>{bc06df0e-7372-442f-b366-5195a6b18484}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -577,6 +580,9 @@
       <Filter>ソース ファイル\application\ui</Filter>
     </ClCompile>
     <ClCompile Include="application\ui\UIManager.cpp">
+      <Filter>ソース ファイル\application\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="application\ui\TitleUI.cpp">
       <Filter>ソース ファイル\application\ui</Filter>
     </ClCompile>
   </ItemGroup>
@@ -968,14 +974,17 @@
     <ClInclude Include="application\motion\2d\TitleSpriteMotion.h">
       <Filter>ヘッダー ファイル\application\motion\2d</Filter>
     </ClInclude>
+    <ClInclude Include="application\ui\UIManager.h">
+      <Filter>ヘッダー ファイル\application\ui</Filter>
+    </ClInclude>
     <ClInclude Include="application\ui\GamePlayUI.h">
-      <Filter>ソース ファイル\application\ui</Filter>
+      <Filter>ヘッダー ファイル\application\ui</Filter>
     </ClInclude>
     <ClInclude Include="application\ui\BaseUI.h">
-      <Filter>ソース ファイル\application\ui</Filter>
+      <Filter>ヘッダー ファイル\application\ui</Filter>
     </ClInclude>
-    <ClInclude Include="application\ui\UIManager.h">
-      <Filter>ソース ファイル\application\ui</Filter>
+    <ClInclude Include="application\ui\TitleUI.h">
+      <Filter>ヘッダー ファイル\application\ui</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
