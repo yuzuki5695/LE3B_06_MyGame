@@ -17,10 +17,12 @@
 #include <MatrixVector.h>
 #include <Collision.h>
 #include <Tools/AssetGenerator/engine/math/LoadResourceID.h>
+#include <Easing.h>
 
 using namespace LoadResourceID;
 using namespace Collision;
 using namespace MatrixVector;
+using namespace Easing;
 
 ///====================================================
 /// 終了処理（リソース解放）
@@ -47,17 +49,46 @@ void GamePlayScene::Initialize() {
     TextureManager::GetInstance()->LoadTexture(texture::Gage);
     TextureManager::GetInstance()->LoadTexture(texture::PlayerUi);
 
-    Vector2 size = Vector2{ 120.0f,80.0f };
-    MAXui_ = 1;
-    uis_.push_back(Sprite::Create(texture::Move, Vector2{ 5.0f, 550.0f }, 0.0f, size));
-    uis_.push_back(Sprite::Create(texture::Reticlemove, Vector2{ 125.0f, 550.0f }, 0.0f, size)); 
-    uis_.push_back(Sprite::Create(texture::Space, Vector2{ 5.0f, 630.0f }, 0.0f, size)); 
-    uis_.push_back(Sprite::Create(texture::Avoidance, Vector2{ 125.0f, 630.0f }, 0.0f, size));  
-    //  2. vector の要素数を MAXui_ に同期（もし他で使うなら）
-    MAXui_ = static_cast<uint32_t>(uis_.size());
+    TextureManager::GetInstance()->LoadTexture(texture::W);
+    TextureManager::GetInstance()->LoadTexture(texture::A);
+    TextureManager::GetInstance()->LoadTexture(texture::S);
+    TextureManager::GetInstance()->LoadTexture(texture::D);
+    TextureManager::GetInstance()->LoadTexture(texture::W_RED);    
+    TextureManager::GetInstance()->LoadTexture(texture::A_RED);    
+    TextureManager::GetInstance()->LoadTexture(texture::S_RED);    
+    TextureManager::GetInstance()->LoadTexture(texture::D_RED);    
+    
+    TextureManager::GetInstance()->LoadTexture(texture::ArrowUp);
+    TextureManager::GetInstance()->LoadTexture(texture::ArrowLeft);
+    TextureManager::GetInstance()->LoadTexture(texture::ArrowDown);
+    TextureManager::GetInstance()->LoadTexture(texture::ArrowRight); 
+    TextureManager::GetInstance()->LoadTexture(texture::ArrowUp_RED);
+    TextureManager::GetInstance()->LoadTexture(texture::ArrowLeft_RED);
+    TextureManager::GetInstance()->LoadTexture(texture::ArrowDown_RED);
+    TextureManager::GetInstance()->LoadTexture(texture::ArrowRight_RED);
+    TextureManager::GetInstance()->LoadTexture(texture::SPACEKey);    
+    TextureManager::GetInstance()->LoadTexture(texture::SPACEKey_RED);
+    TextureManager::GetInstance()->LoadTexture(texture::SHIFT);    
+    TextureManager::GetInstance()->LoadTexture(texture::SHIFT_RED);
+
+    Vector2 size = Vector2{ 40.0f,40.0f };
+    Vector2 center = { 85.0f, 470.0f };
+    CreateWASDUI(
+        center, // WASD基準中心
+        size,
+        4.0f,   // キー間隔
+        25.0f   // グループ間隔
+    );
+    isControlUIAnimating_ = false;
+    controlUITimer_ = 0.0f;
+	controlUIDuration_ = 0.5f; // アニメーションの総時間
+	controlUIOriginalSize_ = size;
+    uiOriginalSizes_.clear();
     for (auto& ui : uis_) {
-        ui->SetTextureSize(size);
-    }
+        uiOriginalSizes_.push_back(ui->GetSize()); 
+        ui->SetAnchorPoint({ 0.5f, 0.5f });
+        ui->SetSize({ 0.0f, 0.0f }); // 全部0スタート
+    };
 
     gage_ = Sprite::Create(texture::Gage, Vector2{ 380.0f, 10.0f }, 0.0f, Vector2{ 500.0f,30.0f });
     gage_->SetTextureSize(Vector2{ 500.0f,30.0f });
@@ -196,6 +227,11 @@ void GamePlayScene::Update() {
         StartStageProgressUI();
     }
     
+    if (EventManager::GetInstance()->GetProgress() >= 2.5f) {
+        // 操作UIのアニメーション開始
+        isControlUIAnimating_ = true;
+    }
+
     // ===== UI進行更新 =====
     UpdateStageProgressUI();
 
@@ -277,7 +313,9 @@ void GamePlayScene::Update() {
 #pragma endregion 全てのObject3d個々の更新処理
 
 #pragma region 全てのSprite個々の更新処理
-
+    
+    UpdateControlUIAnimation();
+    UpdateControlUI();
     for (std::unique_ptr<Sprite>& ui : uis_) {
         ui->Update();
     }
@@ -346,10 +384,12 @@ void GamePlayScene::Draw() {
         player_->DrawSprite();
     }
 
-    for (std::unique_ptr<Sprite>& ui : uis_) {
-        ui->Draw();
+    if (CameraManager::GetInstance()->GetTypeview() == ViewCameraType::Main) {
+        for (std::unique_ptr<Sprite>& ui : uis_) {
+            ui->Draw();
+        }
     }
-
+    
     gage_->Draw();
     player_ui_->Draw();
     if (isPausedevent_) {
@@ -472,4 +512,107 @@ void GamePlayScene::UpdateStageProgressUI() {
     float uiX = gageX + progress * movableWidth;
 
     player_ui_->SetPosition(Vector2{ uiX, 12.3f });
+}
+
+void GamePlayScene::CreateWASDUI(
+    const Vector2& baseCenter,     // WASD中心
+    const Vector2& size,
+    float keySpacing,           // キー同士の隙間
+    float groupSpacing)         // グループ間の縦間隔
+{
+    uis_.clear();
+
+    float groupHeight = size.y * 2 + keySpacing;
+    // W段 + ASD段の高さ
+
+    // =====================
+    // 1. WASD グループ
+    // =====================
+    Vector2 wasdCenter = baseCenter;
+
+    Vector2 wPos = { wasdCenter.x, wasdCenter.y };
+    Vector2 sRowY = { 0.0f,wasdCenter.y + size.y + keySpacing };
+
+    Vector2 aPos = { wasdCenter.x - size.x - keySpacing, sRowY.y };
+    Vector2 sPos = { wasdCenter.x, sRowY.y };
+    Vector2 dPos = { wasdCenter.x + size.x + keySpacing, sRowY.y };
+
+    uis_.push_back(Sprite::Create(texture::W, wPos, 0.0f, size)); //0
+    uis_.push_back(Sprite::Create(texture::A, aPos, 0.0f, size)); //1
+    uis_.push_back(Sprite::Create(texture::S, sPos, 0.0f, size)); //2
+    uis_.push_back(Sprite::Create(texture::D, dPos, 0.0f, size)); //3
+
+
+    // =====================
+    // 2. Arrow グループ
+    // =====================
+    float arrowTopY = wasdCenter.y + groupHeight + groupSpacing;
+
+    Vector2 arrowTop = { baseCenter.x, arrowTopY };
+    float arrowRowY = arrowTopY + size.y + keySpacing;
+
+    Vector2 upPos = { arrowTop.x, arrowTop.y };
+    Vector2 leftPos = { arrowTop.x - size.x - keySpacing, arrowRowY };
+    Vector2 downPos = { arrowTop.x, arrowRowY };
+    Vector2 rightPos = { arrowTop.x + size.x + keySpacing, arrowRowY };
+
+    uis_.push_back(Sprite::Create(texture::ArrowUp, upPos, 0.0f, size));     //4
+    uis_.push_back(Sprite::Create(texture::ArrowRight, leftPos, 0.0f, size)); //5
+    uis_.push_back(Sprite::Create(texture::ArrowDown, downPos, 0.0f, size)); //6
+    uis_.push_back(Sprite::Create(texture::ArrowLeft, rightPos, 0.0f, size));//7
+
+
+    // =====================
+    // 3. SPACE
+    // =====================
+    Vector2 spaceSize = {80.0f, 40.0f};
+    float spaceY = arrowTopY + groupHeight + groupSpacing;
+    // 1つ目（中央）
+    Vector2 spacePos = { baseCenter.x - (spaceSize.x + keySpacing) * 0.5f, spaceY };
+
+    // 2つ目（右側）
+    Vector2 spacePos2 = { baseCenter.x + (spaceSize.x + keySpacing) * 0.5f, spaceY };
+
+    uis_.push_back(Sprite::Create(texture::SPACEKey, spacePos, 0.0f, spaceSize));  //8
+    uis_.push_back(Sprite::Create(texture::SPACEKey, spacePos2, 0.0f, spaceSize)); //9
+}
+
+void GamePlayScene::UpdateControlUI() {
+    Input* input = Input::GetInstance();
+    if (EventManager::GetInstance()->IsFinished()){
+        // === WASD ===
+        uis_[0]->SetTexture(input->Pushkey(DIK_W) ? texture::W_RED : texture::W);
+        uis_[1]->SetTexture(input->Pushkey(DIK_A) ? texture::A_RED : texture::A);
+        uis_[2]->SetTexture(input->Pushkey(DIK_S) ? texture::S_RED : texture::S);
+        uis_[3]->SetTexture(input->Pushkey(DIK_D) ? texture::D_RED : texture::D);
+        // === Arrow ===
+        uis_[4]->SetTexture(input->Pushkey(DIK_UP) ? texture::ArrowUp_RED : texture::ArrowUp);
+        uis_[5]->SetTexture(input->Pushkey(DIK_RIGHT) ? texture::ArrowRight_RED : texture::ArrowRight);
+        uis_[6]->SetTexture(input->Pushkey(DIK_DOWN) ? texture::ArrowDown_RED : texture::ArrowDown);
+        uis_[7]->SetTexture(input->Pushkey(DIK_LEFT) ? texture::ArrowLeft_RED : texture::ArrowLeft);
+        // === SPACE ===
+        uis_[8]->SetTexture(input->Pushkey(DIK_SPACE) ? texture::SPACEKey_RED : texture::SPACEKey);
+        uis_[9]->SetTexture(input->Pushkey(DIK_LSHIFT) ? texture::SHIFT_RED : texture::SHIFT);
+    }
+}
+
+void GamePlayScene::UpdateControlUIAnimation() {
+    if (!isControlUIAnimating_) return;
+
+    controlUITimer_ += 1.0f / 60.0f;
+    float t = controlUITimer_ / controlUIDuration_;
+
+    if (t >= 1.0f) {
+        t = 1.0f;
+        isControlUIAnimating_ = false;
+    }
+
+    float ease = Easing::EaseOutBack(t);
+
+    for (uint32_t i = 0; i < uis_.size(); ++i) {
+        float width  = Easing::Lerp(0.0f, uiOriginalSizes_[i].x, ease);
+        float height = Easing::Lerp(0.0f, uiOriginalSizes_[i].y, ease);
+
+        uis_[i]->SetSize({ width, height });
+    }
 }
