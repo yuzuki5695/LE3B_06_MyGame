@@ -2,6 +2,7 @@
 #include <ImGuiManager.h>
 
 void ObjectMenu::Render(const std::function<std::string(const std::string&)>& LT) {
+#ifdef USE_IMGUI
     // 「オブジェクト」メニュー開始
     if (!ImGui::BeginMenu(LT("Menu.Object").c_str()))
         return;
@@ -46,6 +47,7 @@ void ObjectMenu::Render(const std::function<std::string(const std::string&)>& LT
         ImGui::EndMenu();
     }
     ImGui::EndMenu();
+#endif // USE_IMGUI
 }
 
 std::vector<Editor::EditorObjectInfo>::iterator ObjectMenu::CloseWindow(const std::string& name) {

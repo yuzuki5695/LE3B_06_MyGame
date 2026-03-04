@@ -93,6 +93,10 @@ void EventManager::Update() {
         // イベントがない場合は何もしない
         return;
     } else if (state_ == EventState::GameStart) {
+        // 1. 進行率の更新 (60FPS想定なら 1.0f/60.0f、デルタタイムがあればそれを使用)
+     /*   float deltaTime = 1.0f / 60.0f;
+        progress_ += deltaTime / phaseDuration_;
+        if (progress_ > 1.0f) progress_ = 1.0f*/;
         // 各スプライトの更新
         sprite_->Update();
         topSprite_->Update();
@@ -103,19 +107,22 @@ void EventManager::Update() {
             // ------------------------------
         // フェーズ1：黒背景のフェードイン
         // ------------------------------
-        case EventPhase::Phase1:
+        case EventPhase::Phase1: 
+            phaseDuration_ = 1.0f; // 1秒かける
             alpha_ += 0.01f;  // 少しずつ明るくする
             sprite_->SetColor({ 1.0f, 1.0f, 1.0f, alpha_ }); // 色（RGBA）を更新
 
             if (alpha_ >= 0.7f) {
                 alpha_ = 0.7f;
                 phase_ = EventPhase::Phase2;
+                progress_ += phaseDuration_;
             }
-            break;            
-        // ------------------------------
-        // フェーズ2：上下のバーが中央へ閉じる
-        // ------------------------------
+            break;
+            // ------------------------------
+            // フェーズ2：上下のバーが中央へ閉じる
+            // ------------------------------
         case EventPhase::Phase2:
+            phaseDuration_ = 0.5f; // 0.5秒で閉じる
             // 上側の移動
             topPos_ = topSprite_->GetPosition();
             if (topPos_.x < 200.0f) { // 左上座標を軸として目的の値の達するまで右へ移動
@@ -137,27 +144,31 @@ void EventManager::Update() {
             // 両方とも中央に到達したら次のフェーズへ
             if (topPos_.x == 0.0f && bottomPos_.x == 0.0f) {
                 phase_ = EventPhase::Phase3;
+                progress_ += phaseDuration_;
             }
 
             break;
-        // ------------------------------
-        // フェーズ3：MISSION文字のフェードイン
-        // ------------------------------
+            // ------------------------------
+            // フェーズ3：MISSION文字のフェードイン
+            // ------------------------------
         case EventPhase::Phase3:
+           phaseDuration_ = 0.3f;
             missionalpha_ += 0.05f;  // 少しずつ明るくする
 
             if (missionalpha_ >= 1.0f) {
                 missionalpha_ = 1.0f;
                 timefige_ = true;
                 phase_ = EventPhase::Phase4;
+                progress_ += phaseDuration_;
             }
 
             mission_->SetColor({ 1.0f, 1.0f, 1.0f, missionalpha_ }); // 色（RGBA）を更新
             break;
-        // ------------------------------
-        // フェーズ4：MISSION表示維持 → フェードアウト → “START”表示
-        // ------------------------------
+            // ------------------------------
+            // フェーズ4：MISSION表示維持 → フェードアウト → “START”表示
+            // ------------------------------
         case EventPhase::Phase4:
+            phaseDuration_ = 2.0f; // 2秒間維持
             // 明るくなってから時間をカウント
             missionTimer_ += 1.0f / 60.0f; // 60fps換算（毎フレーム約0.016秒）
             if (missionTimer_ >= 1.0f && timefige_) {
@@ -171,13 +182,15 @@ void EventManager::Update() {
                 timefige_ = false;
                 mission_->SetTexture(texture::Start);
                 phase_ = EventPhase::End;
+                progress_ += phaseDuration_;
             }
             mission_->SetColor({ 1.0f, 1.0f, 1.0f, missionalpha_ }); // 色（RGBA）を更新
             break;
-        // ------------------------------
-        // フェーズEnd：バーが外へ開いて終了
-        // ------------------------------
+            // ------------------------------
+            // フェーズEnd：バーが外へ開いて終了
+            // ------------------------------
         case EventPhase::End:
+           phaseDuration_ = 0.5f;
             // 上側の移動
             if (topPos_.x < 1280.0f) { // さらにspriteの大きさ分移動
                 topPos_.x += closeSpeed_;

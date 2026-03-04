@@ -98,6 +98,7 @@ void ImGuiManager::Draw() {
 }
 
 void ImGuiManager::SetupFonts() {
+#ifdef USE_IMGUI
 	ImGuiIO& io = ImGui::GetIO();
 	// フォントの読み込み(今回は日本語フォントを使用)
 	ImFont* font = io.Fonts->AddFontFromFileTTF(
@@ -108,4 +109,5 @@ void ImGuiManager::SetupFonts() {
 	);
 	// フォントのビルド
 	io.Fonts->Build();
+#endif // USE_IMGUI
 }

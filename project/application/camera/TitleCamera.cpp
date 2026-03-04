@@ -7,23 +7,44 @@ using namespace Easing;
 using namespace MatrixVector;
 
 void TitleCamera::Initialize() {
+	offset_ = { 30.0f, -5.0f, 300.0f };
     // カメラの値の初期化
-    transform_ = { { 0.0f,0.0f,0.0f },{ 0.0f, 0.0f, 0.0f} };
+    transform_ = { offset_,{ 0.0f, 0.0f, 0.0f} };
     std::vector<CameraTransform> subCams = {
      { {0, 10, -50}, {0, 0, 0} },
-     { {5, 15, -60}, {0, 30, 0} },
     };
     // サブカメラを追加
     AddSubCameras(subCams);
+
+   isFollowAllowed_ = true;
+   fixedHeight_ = 30.0f;
+   fixeZ_ = 40.0f;
 }
 
 void TitleCamera::Update() {
     switch (state_) {
     case TitleCameraState::IntroMove:
-        UpdateIntroMove();
+        if (isFollowAllowed_) {
+            UpdateIntroMove();
+        } else {
+            transform_.translate = Lerp(transform_.translate, secondTargetPos_, 0.08f);
+
+            float distance = Length(secondTargetPos_ - transform_.translate);
+
+            if (distance < 0.1f) {
+                transform_.translate = secondTargetPos_;
+                isFollowAllowed_ = false;
+            }
+        }
+
         break;
 
     case TitleCameraState::Default:
+        
+        UpdateLookAt();
+
+        break;
+    case TitleCameraState::Follow:
         if (CameraManager::GetInstance()->GetMode() == CameraMode::Follow) {
             UpdateLookAt();
         }
@@ -32,37 +53,71 @@ void TitleCamera::Update() {
 }
 
 void TitleCamera::UpdateIntroMove() {
-    moveTimer_ += 1.0f / 60.0f; // deltaTime があればそれを使う
 
-    float t = std::clamp(moveTimer_ / moveDuration_, 0.0f, 1.0f);
-    float easedT = EaseOutQuad(t);
+    if (!isFollowAllowed_) return;
+    if (!target_) return;
 
-    transform_.translate = Lerp(startPos_, endPos_, easedT);
+    // ---------------------------
+    // 🔥 1回だけ目標を固定する
+    // ---------------------------
+    if (!isIntroTargetLocked_) {
+        Vector3 playerPos = target_->GetWorldPosition();
 
-    // Follow 中はターゲットを見る
+        introTargetPos_.x = playerPos.x + fixedHeight_;
+        introTargetPos_.y = playerPos.y;
+        introTargetPos_.z = playerPos.z - fixeZ_;
+
+        isIntroTargetLocked_ = true;
+    }
+
+    // ---------------------------
+    // 固定目標へ補間移動
+    // ---------------------------
+    transform_.translate = Lerp(transform_.translate, introTargetPos_, followTightness_);
+
+    // 移動中は注視
     UpdateLookAt();
 
-    if (t >= 1.0f) {
-        // 終了処理
-        transform_.translate = endPos_;
-        state_ = TitleCameraState::Default;
+    float distance = Length(introTargetPos_ - transform_.translate);
 
-        CameraManager::GetInstance()->SetCameraMode(CameraMode::Default);
+    if (distance < 0.1f) {
+
+        // 完全一致させる
+        transform_.translate = introTargetPos_;
+        secondTargetPos_ = transform_.translate;
+        secondTargetPos_.y += 4.0f;
+        secondTargetPos_.z += 12.0f;
+        // 🔥 注視停止（ここ重要）
+        target_ = nullptr;
+        isFollowAllowed_ = false;
+        isIntroTargetLocked_ = false;
     }
 }
 
 void TitleCamera::UpdateLookAt() {
-    if (!target_) return;
+  if (!target_) return;
 
     Vector3 camPos = transform_.translate;
     Vector3 targetPos = target_->GetWorldPosition();
     Vector3 dir = targetPos - camPos;
 
     if (Length(dir) > 0.0001f) {
+
         dir = Normalize(dir);
-        float yaw = atan2f(dir.x, dir.z);
-        float pitch = -asinf(dir.y);
-        transform_.rotate = { pitch, yaw, 0.0f };
+
+        float targetYaw = atan2f(dir.x, dir.z);
+        float targetPitch = -asinf(dir.y);
+
+        // 🔥 補間係数（小さいほどゆっくり）
+        float rotTightness = 0.1f;
+
+        transform_.rotate.x =
+            LerpAngle(transform_.rotate.x, targetPitch, 0.1f);
+
+        transform_.rotate.y =
+            LerpAngle(transform_.rotate.y, targetYaw, 0.1f);
+
+        transform_.rotate.z = 0.0f;
     }
 }
 

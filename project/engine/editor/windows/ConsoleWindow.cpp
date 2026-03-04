@@ -10,6 +10,7 @@ ConsoleWindow::ConsoleWindow() {
 }
 
 void ConsoleWindow::Draw() {
+#ifdef USE_IMGUI
     //----------------------------------------------------
     // 1. 「Clear」ボタンの表示
     //----------------------------------------------------
@@ -80,4 +81,5 @@ void ConsoleWindow::Draw() {
     }
 
     ImGui::EndChild();
+#endif // USE_IMGUI
 }

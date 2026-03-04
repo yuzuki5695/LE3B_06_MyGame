@@ -6,6 +6,7 @@
 using namespace Editor;
 
 void SettingsMenu::Render(const std::function<std::string(const std::string&)>& LT) {
+#ifdef USE_IMGUI
     // 「Settings」メニュー開始
     // 開いていない場合は即終了
     if (!ImGui::BeginMenu(LT("Menu.Settings").c_str()))
@@ -41,4 +42,5 @@ void SettingsMenu::Render(const std::function<std::string(const std::string&)>& 
     }
     // Settingsメニュー終了
     ImGui::EndMenu();
+#endif // USE_IMGUI
 }

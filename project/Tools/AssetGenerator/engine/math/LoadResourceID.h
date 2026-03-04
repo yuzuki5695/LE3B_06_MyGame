@@ -14,7 +14,7 @@ namespace LoadResourceID {
         constexpr const char* Gage = "Textures/Ui/Gage.png";
         constexpr const char* Gameover = "Textures/Ui/Gameover.png";
         constexpr const char* Mission = "Textures/Ui/Mission.png";
-        constexpr const char* Move = "Textures/Operationui/move.png";
+        constexpr const char* Move = "Textures/Operationui/W.png";
         constexpr const char* Pausemenupanel = "Textures/Ui/PauseMenuPanel.png";
         constexpr const char* PlayerUi = "Textures/Ui/Player_ui.png";
         constexpr const char* Poseicon = "Textures/Ui/Poseicon.png";
@@ -31,6 +31,30 @@ namespace LoadResourceID {
         constexpr const char* Ui01 = "Textures/Ui/UI_01.png";
         constexpr const char* Ui02 = "Textures/Ui/UI_02.png";
         constexpr const char* White = "Textures/fade/white.png";
+        constexpr const char* W = "Textures/Operationui/W.png";
+        constexpr const char* A = "Textures/Operationui/A.png";
+        constexpr const char* S = "Textures/Operationui/S.png";
+        constexpr const char* D = "Textures/Operationui/D.png";
+
+        constexpr const char* W_RED = "Textures/Operationui/W_RED.png";
+        constexpr const char* A_RED = "Textures/Operationui/A_RED.png";  
+        constexpr const char* S_RED = "Textures/Operationui/S_RED.png";        
+        constexpr const char* D_RED = "Textures/Operationui/D_RED.png";
+
+        constexpr const char* ArrowUp = "Textures/Operationui/ArrowUp.png";
+        constexpr const char* ArrowLeft = "Textures/Operationui/ArrowLeft.png";
+        constexpr const char* ArrowDown = "Textures/Operationui/ArrowDown.png";
+        constexpr const char* ArrowRight = "Textures/Operationui/ArrowRight.png";
+        
+        constexpr const char* ArrowUp_RED = "Textures/Operationui/ArrowUp_RED.png";
+        constexpr const char* ArrowLeft_RED = "Textures/Operationui/ArrowLeft_RED.png";
+        constexpr const char* ArrowDown_RED = "Textures/Operationui/ArrowDown_RED.png";
+        constexpr const char* ArrowRight_RED = "Textures/Operationui/ArrowRight_RED.png";
+
+        constexpr const char* SPACEKey = "Textures/Operationui/SPACEKey.png";
+        constexpr const char* SPACEKey_RED = "Textures/Operationui/SPACEKey_RED.png";
+        constexpr const char* SHIFT = "Textures/Operationui/SHIFT.png";
+        constexpr const char* SHIFT_RED = "Textures/Operationui/SHIFT_RED.png";
     }
 
     namespace model {
