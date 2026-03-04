@@ -69,9 +69,11 @@ void GamePlayScene::Initialize() {
 
     TextureManager::GetInstance()->LoadTexture(texture::SPACEKey);    
     TextureManager::GetInstance()->LoadTexture(texture::SPACEKey_RED);
-    
+    TextureManager::GetInstance()->LoadTexture(texture::SHIFT);    
+    TextureManager::GetInstance()->LoadTexture(texture::SHIFT_RED);
+
     Vector2 size = Vector2{ 40.0f,40.0f };
-    Vector2 center = { 70.0f, 470.0f };
+    Vector2 center = { 85.0f, 470.0f };
     CreateWASDUI(
         center, // WASD基準中心
         size,
@@ -383,10 +385,12 @@ void GamePlayScene::Draw() {
         player_->DrawSprite();
     }
 
-    for (std::unique_ptr<Sprite>& ui : uis_) {
-        ui->Draw();
+    if (CameraManager::GetInstance()->GetTypeview() == ViewCameraType::Main) {
+        for (std::unique_ptr<Sprite>& ui : uis_) {
+            ui->Draw();
+        }
     }
-
+    
     gage_->Draw();
     player_ui_->Draw();
     if (isPausedevent_) {
@@ -518,8 +522,8 @@ void GamePlayScene::CreateWASDUI(
     float groupSpacing)         // グループ間の縦間隔
 {
     uis_.clear();
-  
-    float groupHeight = size.y * 2 + keySpacing;  
+
+    float groupHeight = size.y * 2 + keySpacing;
     // W段 + ASD段の高さ
 
     // =====================
@@ -562,14 +566,16 @@ void GamePlayScene::CreateWASDUI(
     // =====================
     // 3. SPACE
     // =====================
+    Vector2 spaceSize = {80.0f, 40.0f};
     float spaceY = arrowTopY + groupHeight + groupSpacing;
+    // 1つ目（中央）
+    Vector2 spacePos = { baseCenter.x - (spaceSize.x + keySpacing) * 0.5f, spaceY };
 
-    Vector2 spacePos = { baseCenter.x, spaceY };
+    // 2つ目（右側）
+    Vector2 spacePos2 = { baseCenter.x + (spaceSize.x + keySpacing) * 0.5f, spaceY };
 
-    uis_.push_back(Sprite::Create(texture::SPACEKey, spacePos, 0.0f, Vector2{80.0f,40.0f})); //8
-
-
-    MAXui_ = static_cast<uint32_t>(uis_.size());
+    uis_.push_back(Sprite::Create(texture::SPACEKey, spacePos, 0.0f, spaceSize));  //8
+    uis_.push_back(Sprite::Create(texture::SPACEKey, spacePos2, 0.0f, spaceSize)); //9
 }
 
 void GamePlayScene::UpdateControlUI() {
@@ -587,6 +593,7 @@ void GamePlayScene::UpdateControlUI() {
         uis_[7]->SetTexture(input->Pushkey(DIK_LEFT) ? texture::ArrowLeft_RED : texture::ArrowLeft);
         // === SPACE ===
         uis_[8]->SetTexture(input->Pushkey(DIK_SPACE) ? texture::SPACEKey_RED : texture::SPACEKey);
+        uis_[9]->SetTexture(input->Pushkey(DIK_LSHIFT) ? texture::SHIFT_RED : texture::SHIFT);
     }
 }
 

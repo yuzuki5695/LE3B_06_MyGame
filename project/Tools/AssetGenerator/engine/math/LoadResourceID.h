@@ -53,6 +53,8 @@ namespace LoadResourceID {
 
         constexpr const char* SPACEKey = "Textures/Operationui/SPACEKey.png";
         constexpr const char* SPACEKey_RED = "Textures/Operationui/SPACEKey_RED.png";
+        constexpr const char* SHIFT = "Textures/Operationui/SHIFT.png";
+        constexpr const char* SHIFT_RED = "Textures/Operationui/SHIFT_RED.png";
     }
 
     namespace model {

@@ -172,6 +172,12 @@
         "s_red": {
             "texture": "Textures/Operationui/S_RED.png"
         },
+        "shift": {
+            "texture": "Textures/Operationui/SHIFT.png"
+        },
+        "shift_red": {
+            "texture": "Textures/Operationui/SHIFT_RED.png"
+        },
         "space": {
             "texture": "Textures/Operationui/space.png"
         },
