@@ -66,7 +66,6 @@ void GamePlayScene::Initialize() {
     TextureManager::GetInstance()->LoadTexture(texture::ArrowLeft_RED);
     TextureManager::GetInstance()->LoadTexture(texture::ArrowDown_RED);
     TextureManager::GetInstance()->LoadTexture(texture::ArrowRight_RED);
-
     TextureManager::GetInstance()->LoadTexture(texture::SPACEKey);    
     TextureManager::GetInstance()->LoadTexture(texture::SPACEKey_RED);
     TextureManager::GetInstance()->LoadTexture(texture::SHIFT);    
