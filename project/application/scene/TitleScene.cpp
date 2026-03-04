@@ -45,8 +45,6 @@ void TitleScene::Initialize() {
     particle_->Initialize(player_->GetPlayerObject());
     StageManager::GetInstance()->Initialize();
     CameraManager::GetInstance()->SetCameraMode(CameraMode::Default);      
-	effect_ = std::make_unique<TitleSpriteMotion>();
-    effect_->Initialize();
     // ImGuiエディタに情報を登録する
     EditorEntities();
     // UIマネージャの初期化
@@ -114,7 +112,6 @@ void TitleScene::Update() {
     	
 #pragma region 全てのSprite個々の更新処理
 
-    effect_->Update(); // タイトルエフェクトの更新
 	// UIマネージャの更新
     UIManager::GetInstance()->Update();
 #pragma endregion 全てのSprite個々の更新処理
@@ -146,7 +143,6 @@ void TitleScene::Draw() {
     // Spriteの描画準備。Spriteの描画に共通のグラフィックスコマンドを積む
     SpriteCommon::GetInstance()->Commondrawing();
     // 各UIの描画処理
-    effect_->Draw2D();
     UIManager::GetInstance()->Draw();
     // フェードの描画
     FadeManager::GetInstance()->Draw();
@@ -174,7 +170,7 @@ void TitleScene::UpdateFadeIn() {
 void TitleScene::UpdateFadeOut() {
     // タイトルシーンにおけるフェード制御を担当
     FadeManager* fade = FadeManager::GetInstance();
-    if (Input::GetInstance()->Triggrkey(DIK_RETURN) && !fade->IsFading() && fade->IsFadeEnd() && !isPlayerBoost_ && !isPreFadeFollow_ && effect_->GetisStartUIFinished_()) {
+    if (Input::GetInstance()->Triggrkey(DIK_RETURN) && !fade->IsFading() && fade->IsFadeEnd() && !isPlayerBoost_ && !isPreFadeFollow_) {
         isPreFadeFollow_ = true;
         preFadeTimer_ = 0.0f;
         // 🔥 カメラをFollowに切り替え

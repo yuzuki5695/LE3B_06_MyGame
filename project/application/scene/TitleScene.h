@@ -8,7 +8,6 @@
 #include <FadeManager.h>
 #include <Titleparticle.h>
 #include <Player.h>
-#include <TitleSpriteMotion.h>
 
 /// <summary>
 /// タイトルシーン
@@ -71,7 +70,6 @@ public: // メンバ関数
     void EditorEntities();
 
 private: // メンバ変数
-    std::unique_ptr <TitleSpriteMotion> effect_;
 
     std::unique_ptr <Player> player_;
     // 背景オブジェクト 

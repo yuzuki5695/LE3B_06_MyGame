@@ -37,14 +37,14 @@ void UIManager::Initialize() {
     }
 
     // 生成したUIの個別初期化
-    for (auto& ui : uiList_) {
+    for (std::unique_ptr<BaseUI>& ui : uiList_) {
         ui->Initialize();
     }
 }
 
 void UIManager::Update() {
     // リストに登録されているUIを順次更新
-    for (auto& ui : uiList_) {
+    for (std::unique_ptr<BaseUI>& ui : uiList_) {
         if (ui->IsActive()) {
             ui->Update();
         }
@@ -53,7 +53,7 @@ void UIManager::Update() {
 
 void UIManager::Draw() {
     // リストにあるUIを画面に描画
-    for (auto& ui : uiList_) {
+    for (std::unique_ptr<BaseUI>& ui : uiList_) {
         if (ui->IsActive()) {
             ui->Draw();
         }
