@@ -113,7 +113,7 @@
       <LanguageStandard>stdcpp20</LanguageStandard>
       <TreatWarningAsError>true</TreatWarningAsError>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(ProjectDir)engine;$(ProjectDir)engine\math;$(ProjectDir)..\..\externals\nlohmann;$(ProjectDir)engine\src;$(ProjectDir)engine\scanner;$(ProjectDir)engine\manifest;$(ProjectDir)engine\asset;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)engine;$(ProjectDir)engine\assetpipeline;$(ProjectDir)..\..\externals\nlohmann;$(ProjectDir)engine\assetpipeline\scanner;$(ProjectDir)engine\assetpipeline\manifest;$(ProjectDir)engine\assetpipeline\asset;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
@@ -135,7 +135,7 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(ProjectDir)engine;$(ProjectDir)engine\math;$(ProjectDir)..\..\externals\nlohmann;$(ProjectDir)engine\src;$(ProjectDir)engine\scanner;$(ProjectDir)engine\manifest;$(ProjectDir)engine\asset;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)engine;$(ProjectDir)engine\assetpipeline;$(ProjectDir)..\..\externals\nlohmann;$(ProjectDir)engine\assetpipeline\scanner;$(ProjectDir)engine\assetpipeline\manifest;$(ProjectDir)engine\assetpipeline\asset;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
@@ -148,32 +148,22 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="engine\AssetTypeDetector.cpp" />
-    <ClCompile Include="engine\JsonExporter.cpp" />
-    <ClCompile Include="engine\ManifestBuilder.cpp" />
-    <ClCompile Include="engine\PathNormalizer.cpp" />
-    <ClCompile Include="engine\ResourceScanner.cpp" />
-    <ClCompile Include="engine\src\FileSearcher.cpp" />
-    <ClCompile Include="engine\src\ManifestExporter.cpp" />
-    <ClCompile Include="engine\src\ResourceCodeGenerator.cpp" />
-    <ClCompile Include="engine\src\ResourceIdGenerator.cpp" />
+    <ClCompile Include="engine\assetpipeline\AssetPipeline.cpp" />
+    <ClCompile Include="engine\assetpipeline\asset\AssetTypeDetector.cpp" />
+    <ClCompile Include="engine\assetpipeline\manifest\JsonExporter.cpp" />
+    <ClCompile Include="engine\assetpipeline\manifest\ManifestBuilder.cpp" />
+    <ClCompile Include="engine\assetpipeline\PathNormalizer.cpp" />
+    <ClCompile Include="engine\assetpipeline\scanner\ResourceScanner.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="engine\AssetTypeDetector.h" />
-    <ClInclude Include="engine\FileInfo.h" />
-    <ClInclude Include="engine\JsonExporter.h" />
-    <ClInclude Include="engine\ManifestBuilder.h" />
-    <ClInclude Include="engine\math\AssetType.h" />
-    <ClInclude Include="engine\math\LoadResourceID.h" />
-    <ClInclude Include="engine\math\ResourceEntry.h" />
-    <ClInclude Include="engine\math\ResourceID.h" />
-    <ClInclude Include="engine\PathNormalizer.h" />
-    <ClInclude Include="engine\ResourceScanner.h" />
-    <ClInclude Include="engine\src\FileSearcher.h" />
-    <ClInclude Include="engine\src\ManifestExporter.h" />
-    <ClInclude Include="engine\src\ResourceCodeGenerator.h" />
-    <ClInclude Include="engine\src\ResourceIdGenerator.h" />
+    <ClInclude Include="engine\assetpipeline\AssetPipeline.h" />
+    <ClInclude Include="engine\assetpipeline\asset\AssetTypeDetector.h" />
+    <ClInclude Include="engine\assetpipeline\asset\FileInfo.h" />
+    <ClInclude Include="engine\assetpipeline\manifest\JsonExporter.h" />
+    <ClInclude Include="engine\assetpipeline\manifest\ManifestBuilder.h" />
+    <ClInclude Include="engine\assetpipeline\PathNormalizer.h" />
+    <ClInclude Include="engine\assetpipeline\scanner\ResourceScanner.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

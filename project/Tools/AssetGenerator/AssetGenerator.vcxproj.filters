@@ -13,111 +13,75 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="ソース ファイル\math">
-      <UniqueIdentifier>{096b1cc1-869c-4c29-a284-64f9c87fdab6}</UniqueIdentifier>
+    <Filter Include="ソース ファイル\assetpipeline">
+      <UniqueIdentifier>{ab513f0c-70d7-44a9-9c36-8cd2736ed1e2}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ヘッダー ファイル\math">
-      <UniqueIdentifier>{98ba7bee-f60b-4677-9458-1d163c0dce99}</UniqueIdentifier>
+    <Filter Include="ヘッダー ファイル\assetpipeline">
+      <UniqueIdentifier>{c6d698a9-6197-4119-8324-3a2e09b1dab1}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ソース ファイル\src">
-      <UniqueIdentifier>{57a01277-271b-4252-a698-7a17c7025440}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ヘッダー ファイル\src">
-      <UniqueIdentifier>{1abe0527-9375-43b4-9357-5a03cbbc1766}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ソース ファイル\asset">
-      <UniqueIdentifier>{f224fb27-254a-4e87-b65d-cec7734e83e0}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ヘッダー ファイル\asset">
-      <UniqueIdentifier>{7496f9db-4e5f-4cce-85da-667f6d9003d2}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ソース ファイル\manifest">
-      <UniqueIdentifier>{f8093c4e-8a8b-4053-81b6-456dde4ec59f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ヘッダー ファイル\manifest">
-      <UniqueIdentifier>{17ee8d3f-5c90-453f-a5cc-15a6c833c902}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ソース ファイル\scanner">
+    <Filter Include="ソース ファイル\assetpipeline\scanner">
       <UniqueIdentifier>{bf46e70a-b227-4123-942d-1ddb5f221ba4}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ヘッダー ファイル\scanner">
-      <UniqueIdentifier>{eaae1a9d-f027-4916-be63-2326d52e2828}</UniqueIdentifier>
+    <Filter Include="ソース ファイル\assetpipeline\manifest">
+      <UniqueIdentifier>{f8093c4e-8a8b-4053-81b6-456dde4ec59f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\assetpipeline\asset">
+      <UniqueIdentifier>{f224fb27-254a-4e87-b65d-cec7734e83e0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\assetpipeline\scanner">
+      <UniqueIdentifier>{2106b343-ba4c-4bbc-a346-80201e31001e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\assetpipeline\manifest">
+      <UniqueIdentifier>{17ee8d3f-5c90-453f-a5cc-15a6c833c902}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\assetpipeline\asset">
+      <UniqueIdentifier>{7496f9db-4e5f-4cce-85da-667f6d9003d2}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="engine\src\ResourceIdGenerator.cpp">
-      <Filter>ソース ファイル\src</Filter>
-    </ClCompile>
-    <ClCompile Include="engine\src\ResourceCodeGenerator.cpp">
-      <Filter>ソース ファイル\src</Filter>
-    </ClCompile>
-    <ClCompile Include="engine\src\ManifestExporter.cpp">
-      <Filter>ソース ファイル\src</Filter>
-    </ClCompile>
-    <ClCompile Include="engine\src\FileSearcher.cpp">
-      <Filter>ソース ファイル\src</Filter>
-    </ClCompile>
     <ClCompile Include="main.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="engine\PathNormalizer.cpp">
+    <ClCompile Include="engine\assetpipeline\PathNormalizer.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="engine\AssetTypeDetector.cpp">
-      <Filter>ソース ファイル\asset</Filter>
+    <ClCompile Include="engine\assetpipeline\AssetPipeline.cpp">
+      <Filter>ソース ファイル\assetpipeline</Filter>
     </ClCompile>
-    <ClCompile Include="engine\JsonExporter.cpp">
-      <Filter>ソース ファイル\manifest</Filter>
+    <ClCompile Include="engine\assetpipeline\asset\AssetTypeDetector.cpp">
+      <Filter>ソース ファイル\assetpipeline\asset</Filter>
     </ClCompile>
-    <ClCompile Include="engine\ManifestBuilder.cpp">
-      <Filter>ソース ファイル\manifest</Filter>
+    <ClCompile Include="engine\assetpipeline\scanner\ResourceScanner.cpp">
+      <Filter>ソース ファイル\assetpipeline\scanner</Filter>
     </ClCompile>
-    <ClCompile Include="engine\ResourceScanner.cpp">
-      <Filter>ソース ファイル\scanner</Filter>
+    <ClCompile Include="engine\assetpipeline\manifest\JsonExporter.cpp">
+      <Filter>ソース ファイル\assetpipeline\manifest</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\assetpipeline\manifest\ManifestBuilder.cpp">
+      <Filter>ソース ファイル\assetpipeline\manifest</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="engine\src\ResourceCodeGenerator.h">
-      <Filter>ヘッダー ファイル\src</Filter>
+    <ClInclude Include="engine\assetpipeline\AssetPipeline.h">
+      <Filter>ヘッダー ファイル\assetpipeline</Filter>
     </ClInclude>
-    <ClInclude Include="engine\src\ManifestExporter.h">
-      <Filter>ヘッダー ファイル\src</Filter>
+    <ClInclude Include="engine\assetpipeline\PathNormalizer.h">
+      <Filter>ヘッダー ファイル\assetpipeline</Filter>
     </ClInclude>
-    <ClInclude Include="engine\src\FileSearcher.h">
-      <Filter>ヘッダー ファイル\src</Filter>
+    <ClInclude Include="engine\assetpipeline\scanner\ResourceScanner.h">
+      <Filter>ヘッダー ファイル\assetpipeline\scanner</Filter>
     </ClInclude>
-    <ClInclude Include="engine\src\ResourceIdGenerator.h">
-      <Filter>ヘッダー ファイル\src</Filter>
+    <ClInclude Include="engine\assetpipeline\asset\AssetTypeDetector.h">
+      <Filter>ヘッダー ファイル\assetpipeline\asset</Filter>
     </ClInclude>
-    <ClInclude Include="engine\math\ResourceID.h">
-      <Filter>ヘッダー ファイル\math</Filter>
+    <ClInclude Include="engine\assetpipeline\asset\FileInfo.h">
+      <Filter>ヘッダー ファイル\assetpipeline\asset</Filter>
     </ClInclude>
-    <ClInclude Include="engine\math\LoadResourceID.h">
-      <Filter>ヘッダー ファイル\math</Filter>
+    <ClInclude Include="engine\assetpipeline\manifest\JsonExporter.h">
+      <Filter>ソース ファイル\assetpipeline\manifest</Filter>
     </ClInclude>
-    <ClInclude Include="engine\math\AssetType.h">
-      <Filter>ヘッダー ファイル\math</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\math\ResourceEntry.h">
-      <Filter>ヘッダー ファイル\math</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\PathNormalizer.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\FileInfo.h">
-      <Filter>ヘッダー ファイル\asset</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\AssetTypeDetector.h">
-      <Filter>ヘッダー ファイル\asset</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\JsonExporter.h">
-      <Filter>ヘッダー ファイル\manifest</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\ManifestBuilder.h">
-      <Filter>ヘッダー ファイル\manifest</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\ResourceScanner.h">
-      <Filter>ヘッダー ファイル\scanner</Filter>
+    <ClInclude Include="engine\assetpipeline\manifest\ManifestBuilder.h">
+      <Filter>ソース ファイル\assetpipeline\manifest</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

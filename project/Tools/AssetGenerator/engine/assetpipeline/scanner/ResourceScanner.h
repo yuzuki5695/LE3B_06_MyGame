@@ -6,7 +6,7 @@
 /// <summary>
 /// 指定されたディレクトリ内のファイルを走査し、アセット情報を収集するクラス
 /// </summary>
-class ResourceScanner　 {
+class ResourceScanner {
 public: // メンバ関数
     /// <summary>
     /// コンストラクタ
