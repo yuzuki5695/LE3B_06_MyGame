@@ -25,6 +25,24 @@
     <Filter Include="ヘッダー ファイル\src">
       <UniqueIdentifier>{1abe0527-9375-43b4-9357-5a03cbbc1766}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ソース ファイル\asset">
+      <UniqueIdentifier>{f224fb27-254a-4e87-b65d-cec7734e83e0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\asset">
+      <UniqueIdentifier>{7496f9db-4e5f-4cce-85da-667f6d9003d2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\manifest">
+      <UniqueIdentifier>{f8093c4e-8a8b-4053-81b6-456dde4ec59f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\manifest">
+      <UniqueIdentifier>{17ee8d3f-5c90-453f-a5cc-15a6c833c902}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\scanner">
+      <UniqueIdentifier>{bf46e70a-b227-4123-942d-1ddb5f221ba4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\scanner">
+      <UniqueIdentifier>{eaae1a9d-f027-4916-be63-2326d52e2828}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="engine\src\ResourceIdGenerator.cpp">
@@ -41,6 +59,21 @@
     </ClCompile>
     <ClCompile Include="main.cpp">
       <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\PathNormalizer.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\AssetTypeDetector.cpp">
+      <Filter>ソース ファイル\asset</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\JsonExporter.cpp">
+      <Filter>ソース ファイル\manifest</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\ManifestBuilder.cpp">
+      <Filter>ソース ファイル\manifest</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\ResourceScanner.cpp">
+      <Filter>ソース ファイル\scanner</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -67,6 +100,24 @@
     </ClInclude>
     <ClInclude Include="engine\math\ResourceEntry.h">
       <Filter>ヘッダー ファイル\math</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\PathNormalizer.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\FileInfo.h">
+      <Filter>ヘッダー ファイル\asset</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\AssetTypeDetector.h">
+      <Filter>ヘッダー ファイル\asset</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\JsonExporter.h">
+      <Filter>ヘッダー ファイル\manifest</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\ManifestBuilder.h">
+      <Filter>ヘッダー ファイル\manifest</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\ResourceScanner.h">
+      <Filter>ヘッダー ファイル\scanner</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
