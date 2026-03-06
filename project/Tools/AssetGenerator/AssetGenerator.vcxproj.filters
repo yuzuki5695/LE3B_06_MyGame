@@ -42,14 +42,8 @@
     <ClCompile Include="main.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="engine\assetpipeline\PathNormalizer.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="engine\assetpipeline\AssetPipeline.cpp">
       <Filter>ソース ファイル\assetpipeline</Filter>
-    </ClCompile>
-    <ClCompile Include="engine\assetpipeline\asset\AssetTypeDetector.cpp">
-      <Filter>ソース ファイル\assetpipeline\asset</Filter>
     </ClCompile>
     <ClCompile Include="engine\assetpipeline\scanner\ResourceScanner.cpp">
       <Filter>ソース ファイル\assetpipeline\scanner</Filter>
@@ -57,31 +51,19 @@
     <ClCompile Include="engine\assetpipeline\manifest\JsonExporter.cpp">
       <Filter>ソース ファイル\assetpipeline\manifest</Filter>
     </ClCompile>
-    <ClCompile Include="engine\assetpipeline\manifest\ManifestBuilder.cpp">
-      <Filter>ソース ファイル\assetpipeline\manifest</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="engine\assetpipeline\AssetPipeline.h">
       <Filter>ヘッダー ファイル\assetpipeline</Filter>
     </ClInclude>
-    <ClInclude Include="engine\assetpipeline\PathNormalizer.h">
-      <Filter>ヘッダー ファイル\assetpipeline</Filter>
-    </ClInclude>
     <ClInclude Include="engine\assetpipeline\scanner\ResourceScanner.h">
       <Filter>ヘッダー ファイル\assetpipeline\scanner</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\assetpipeline\asset\AssetTypeDetector.h">
-      <Filter>ヘッダー ファイル\assetpipeline\asset</Filter>
     </ClInclude>
     <ClInclude Include="engine\assetpipeline\asset\FileInfo.h">
       <Filter>ヘッダー ファイル\assetpipeline\asset</Filter>
     </ClInclude>
     <ClInclude Include="engine\assetpipeline\manifest\JsonExporter.h">
-      <Filter>ソース ファイル\assetpipeline\manifest</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\assetpipeline\manifest\ManifestBuilder.h">
-      <Filter>ソース ファイル\assetpipeline\manifest</Filter>
+      <Filter>ヘッダー ファイル\assetpipeline\manifest</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

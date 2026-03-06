@@ -8,9 +8,9 @@
 //
 //void AssetPipeline::Execute()
 //{
-//    // 1. Scan
+//    // 1. ScanFile
 //    ResourceScanner scanner(resourceDir_);
-//    auto files = scanner.Scan();
+//    auto files = scanner.ScanFile();
 //
 //    // 2. Build
 //    ManifestBuilder builder;

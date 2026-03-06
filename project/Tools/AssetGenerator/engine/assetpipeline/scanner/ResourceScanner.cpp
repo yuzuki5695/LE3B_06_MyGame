@@ -1,42 +1,71 @@
 #include "ResourceScanner.h"
-#include <AssetTypeDetector.h>
-#include <PathNormalizer.h>
 #include <filesystem>
+#include <set>
+#include <iostream>
 
 namespace fs = std::filesystem;
 
 ResourceScanner::ResourceScanner(const std::string& root) : root_(root) {}
 
-std::vector<FileInfo> ResourceScanner::Scan() {
+std::vector<FileInfo> ResourceScanner::ScanFile() {
     std::vector<FileInfo> result;
 
-    // ルートディレクトリから再帰的にファイルを走査
+    if (!fs::exists(root_))
+        return result;
+
     for (const auto& entry : fs::recursive_directory_iterator(root_))
     {
-        // ディレクトリはスキップし、ファイルのみ処理
         if (!entry.is_regular_file())
             continue;
 
-        FileInfo info;
+        fs::path relative = fs::relative(entry.path(), root_);
 
-        // 相対パスを取得し、エンジンの規約に合わせて正規化
-        std::string relative = fs::relative(entry.path(), root_).string();
-        info.path = PathNormalizer::Normalize(relative);
+        // 1階層目（Textures / Models / Audio）
+        std::string group = (*relative.begin()).string();
 
-        // ファイル名と拡張子の分離
-        info.extension = entry.path().extension().string();
-        info.name = entry.path().stem().string();
+        if (group != "Textures" &&
+            group != "Models" &&
+            group != "Audio")
+        {
+            continue;
+        }
 
-        // 拡張子からアセット種別を判定（対象外ならリストに入れない）
-        info.type = AssetTypeDetector::Detect(info.extension);
-        if (info.type == AssetType::Unknown)
+        AssetType type = Detect(entry.path().extension());
+
+        if (type == AssetType::Unknown)
             continue;
 
-        // パスの最初の要素をグループ名（カテゴリ）として採用
-        info.group = entry.path().begin()->string();
+        FileInfo info;
+        info.path = relative;
+        info.type = type;
 
         result.push_back(info);
     }
 
     return result;
+}
+
+std::string ResourceScanner::Normalize(const std::string& path)
+{
+    std::string result = path;
+    // 確実に '文字' として置換
+    std::replace(result.begin(), result.end(), '\\', '/'); 
+    return result;
+}
+
+AssetType ResourceScanner::Detect(const std::filesystem::path& ext)
+{
+    std::string e = ext.string();
+    std::transform(e.begin(), e.end(), e.begin(), ::tolower);
+
+    if (e == ".png" || e == ".jpg" || e == ".dds")
+        return AssetType::Texture;
+
+    if (e == ".obj" || e == ".fbx" || e == ".gltf")
+        return AssetType::Model;
+
+    if (e == ".wav" || e == ".mp3")
+        return AssetType::Audio;
+
+    return AssetType::Unknown;
 }

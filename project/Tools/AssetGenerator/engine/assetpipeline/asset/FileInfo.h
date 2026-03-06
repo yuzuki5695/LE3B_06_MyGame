@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include <json.hpp>
 
 /// <summary>
 /// アセットの種類を定義する列挙型
@@ -16,9 +17,6 @@ enum class AssetType {
 /// スキャンしたアセットのパスや種類、グループ情報を格納する。
 /// </summary>
 struct FileInfo {
-    std::string path;      // Resourcesからの相対パス
-    std::string name;      // ファイル名(拡張子なし)
-    std::string extension; // 拡張子
-    AssetType type;        // アセット種類
-    std::string group;     // 最上位フォルダ（アセットのカテゴリ分けに使用）
+    std::filesystem::path path;
+    AssetType type;
 };

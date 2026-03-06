@@ -149,20 +149,14 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="engine\assetpipeline\AssetPipeline.cpp" />
-    <ClCompile Include="engine\assetpipeline\asset\AssetTypeDetector.cpp" />
     <ClCompile Include="engine\assetpipeline\manifest\JsonExporter.cpp" />
-    <ClCompile Include="engine\assetpipeline\manifest\ManifestBuilder.cpp" />
-    <ClCompile Include="engine\assetpipeline\PathNormalizer.cpp" />
     <ClCompile Include="engine\assetpipeline\scanner\ResourceScanner.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="engine\assetpipeline\AssetPipeline.h" />
-    <ClInclude Include="engine\assetpipeline\asset\AssetTypeDetector.h" />
     <ClInclude Include="engine\assetpipeline\asset\FileInfo.h" />
     <ClInclude Include="engine\assetpipeline\manifest\JsonExporter.h" />
-    <ClInclude Include="engine\assetpipeline\manifest\ManifestBuilder.h" />
-    <ClInclude Include="engine\assetpipeline\PathNormalizer.h" />
     <ClInclude Include="engine\assetpipeline\scanner\ResourceScanner.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
