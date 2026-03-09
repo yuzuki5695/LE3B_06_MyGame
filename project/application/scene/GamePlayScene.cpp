@@ -32,8 +32,8 @@ void GamePlayScene::Finalize() {
     BulletManager::GetInstance()->Finalize();  // 弾の解放処理
     FadeManager::GetInstance()->Finalize();    //  フェードマネージャの解放処理
     EventManager::GetInstance()->Finalize();   //  イベントマネージャの解放処理
-    StageManager::GetInstance()->Finalize();		  // ステージマネージャの解放処理
-	UIManager::GetInstance()->Finalize(); // UIマネージャの解放処理
+    StageManager::GetInstance()->Finalize();   // ステージマネージャの解放処理
+	UIManager::GetInstance()->Finalize();      // UIマネージャの解放処理
 }
 ///====================================================
 /// 初期化処理
@@ -44,10 +44,6 @@ void GamePlayScene::Initialize() {
     CameraManager::GetInstance()->SetTypeview(ViewCameraType::Main);
 
     // テクスチャを読み込む 
-    TextureManager::GetInstance()->LoadTexture(texture::Move);
-    TextureManager::GetInstance()->LoadTexture(texture::Reticlemove);
-    TextureManager::GetInstance()->LoadTexture(texture::Space);
-    TextureManager::GetInstance()->LoadTexture(texture::Avoidance);
     TextureManager::GetInstance()->LoadTexture(texture::Gage);
     TextureManager::GetInstance()->LoadTexture(texture::PlayerUi);
 

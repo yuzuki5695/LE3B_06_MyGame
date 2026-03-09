@@ -6,30 +6,25 @@
 #include <algorithm>
 #include <engine/math/Vector/Vector2.h>
 
-#include <Tools/AssetGenerator/engine/math/LoadResourceID.h>
 #include <Tools/AssetGenerator/engine/generated/ResourceID.h>
 
-//using namespace ResourceID;
-using namespace LoadResourceID;
+using namespace ResourceID;
 using namespace Easing;
 using namespace MatrixVector;
 
-void TitleUI::Initialize()
-{
+void TitleUI::Initialize() {
     titleChars_.clear();
 
-    TextureManager::GetInstance()->LoadTexture(texture::Ui02);
-    TextureManager::GetInstance()->LoadTexture(texture::Title);
+    TextureManager::GetInstance()->LoadTexture(texture::Ui::UI_02);
 
-    const std::vector<std::string> textures =
-    {
-        "Textures/Ui/titile_01.png",
-        "Textures/Ui/titile_02.png",
-        "Textures/Ui/titile_03.png",
-        "Textures/Ui/titile_04.png",
-        "Textures/Ui/titile_05.png",
-        "Textures/Ui/titile_06.png",
-        "Textures/Ui/titile_07.png"
+    const std::vector<std::string> textures = {
+       texture::Ui::titile_01,
+       texture::Ui::titile_02,
+       texture::Ui::titile_03,
+       texture::Ui::titile_04,
+       texture::Ui::titile_05,
+       texture::Ui::titile_06,
+       texture::Ui::titile_07,
     };
 
     for (const auto& t : textures)
@@ -65,7 +60,7 @@ void TitleUI::Initialize()
 
         titleChars_.push_back(std::move(ch));
     }
- 
+
     // Press Start
     startStartPos_ = { 1300.0f, 450.0f };
     startEndPos_ = { 750.0f, 450.0f };
@@ -73,14 +68,15 @@ void TitleUI::Initialize()
 
     timer_ = 0.0f;
     reverseTimer_ = 0.0f;
-    
+
     kStartStartPos = { 1300.0f, 450.0f }; // 右から 
-    kStartEndPos   = { 750.0f, 450.0f };
-    ui_start_ = Sprite::Create(texture::Ui02, kStartStartPos, 0.0f, { 360.0f, 90.0f }); 
+    kStartEndPos = { 750.0f, 450.0f };
+    ui_start_ = Sprite::Create(texture::Ui::UI_02, kStartStartPos, 0.0f, { 360.0f, 90.0f });
     ui_start_->SetTextureSize(Vector2{ 360.0f,90.0f });
     timer_ = 0.0f;
 
 }
+
 void TitleUI::Update() {
     // カメラの状態、または明示的な退場フラグで逆再生を判定
     bool isReverse = isExiting_ || (CameraManager::GetInstance()->GetMode() == CameraMode::Follow);
