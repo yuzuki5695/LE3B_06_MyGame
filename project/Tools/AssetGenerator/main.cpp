@@ -1,36 +1,18 @@
+#include <AssetPipeline.h>
 #include <iostream>
-#include <filesystem>
-#include <fstream>
 
-int main() {
-    // 出力先パス
-    std::filesystem::path outputPath = "engine/test.json";
+int main(int argc, char* argv[]) {
+    // パイプラインの生成  
+    std::unique_ptr<AssetPipeline> pipeline = std::make_unique<AssetPipeline>();
 
-    // engineフォルダが存在しない場合作成
-    std::filesystem::create_directories(outputPath.parent_path());
-
-    // JSONファイル書き込み
-    std::ofstream file(outputPath);
-
-    if (!file)
-    {
-        std::cout << "ファイルを開けませんでした\n";
+    try {
+        // 実行処理
+        pipeline->Run(argc, argv);
+    }
+    catch (const std::exception& e) {
+        std::cerr << "Fatal Error: " << e.what() << std::endl;
         return -1;
     }
-
-    file << "{\n";
-    file << "  \"name\": \"AssetGenerator\",\n";
-    file << "  \"version\": 1,\n";
-    file << "  \"test\": true\n";
-    file << "}\n";
-
-    file.close();
-
-    std::cout << "engine/test.json を生成しました\n";
-
-
-
-
 
     return 0;
 }

@@ -156,10 +156,16 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="engine\AssetPipeline.cpp" />
+    <ClCompile Include="engine\JsonExporter.cpp" />
+    <ClCompile Include="engine\PathManager.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="engine\AssetPipeline.h" />
+    <ClInclude Include="engine\JsonExporter.h" />
     <ClInclude Include="engine\math\LoadResourceID.h" />
+    <ClInclude Include="engine\PathManager.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
