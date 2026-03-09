@@ -55,4 +55,17 @@ public:// メンバ関数
 private: // メンバ変数
     // 現在のシーンで有効なUIインスタンスを保持するリスト
     std::vector<std::unique_ptr<BaseUI>> uiList_;
+public:
+    // UIManager.h 内の public メンバに追加
+    template <typename T>
+    T* GetUI() {
+        for (auto& ui : uiList_) {
+            // dynamic_cast で指定した型 (T) に変換できるか試行
+            T* target = dynamic_cast<T*>(ui.get());
+            if (target) {
+                return target;
+            }
+        }
+        return nullptr;
+    }
 };

@@ -19,6 +19,7 @@
 #include <Tools/AssetGenerator/engine/math/LoadResourceID.h>
 #include <Easing.h>
 #include <UIManager.h>
+#include <GamePlayUI.h>
 
 using namespace LoadResourceID;
 using namespace Collision;
@@ -42,56 +43,6 @@ void GamePlayScene::Initialize() {
     // カメラマネージャの初期化
     CameraManager::GetInstance()->Initialize(CameraTransform({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }));
     CameraManager::GetInstance()->SetTypeview(ViewCameraType::Main);
-
-    // テクスチャを読み込む 
-    TextureManager::GetInstance()->LoadTexture(texture::Gage);
-    TextureManager::GetInstance()->LoadTexture(texture::PlayerUi);
-
-    TextureManager::GetInstance()->LoadTexture(texture::W);
-    TextureManager::GetInstance()->LoadTexture(texture::A);
-    TextureManager::GetInstance()->LoadTexture(texture::S);
-    TextureManager::GetInstance()->LoadTexture(texture::D);
-    TextureManager::GetInstance()->LoadTexture(texture::W_RED);    
-    TextureManager::GetInstance()->LoadTexture(texture::A_RED);    
-    TextureManager::GetInstance()->LoadTexture(texture::S_RED);    
-    TextureManager::GetInstance()->LoadTexture(texture::D_RED);    
-    
-    TextureManager::GetInstance()->LoadTexture(texture::ArrowUp);
-    TextureManager::GetInstance()->LoadTexture(texture::ArrowLeft);
-    TextureManager::GetInstance()->LoadTexture(texture::ArrowDown);
-    TextureManager::GetInstance()->LoadTexture(texture::ArrowRight); 
-    TextureManager::GetInstance()->LoadTexture(texture::ArrowUp_RED);
-    TextureManager::GetInstance()->LoadTexture(texture::ArrowLeft_RED);
-    TextureManager::GetInstance()->LoadTexture(texture::ArrowDown_RED);
-    TextureManager::GetInstance()->LoadTexture(texture::ArrowRight_RED);
-    TextureManager::GetInstance()->LoadTexture(texture::SPACEKey);    
-    TextureManager::GetInstance()->LoadTexture(texture::SPACEKey_RED);
-    TextureManager::GetInstance()->LoadTexture(texture::SHIFT);    
-    TextureManager::GetInstance()->LoadTexture(texture::SHIFT_RED);
-
-    Vector2 size = Vector2{ 40.0f,40.0f };
-    Vector2 center = { 85.0f, 470.0f };
-    CreateWASDUI(
-        center, // WASD基準中心
-        size,
-        4.0f,   // キー間隔
-        25.0f   // グループ間隔
-    );
-    isControlUIAnimating_ = false;
-    controlUITimer_ = 0.0f;
-	controlUIDuration_ = 0.5f; // アニメーションの総時間
-	controlUIOriginalSize_ = size;
-    uiOriginalSizes_.clear();
-    for (auto& ui : uis_) {
-        uiOriginalSizes_.push_back(ui->GetSize()); 
-        ui->SetAnchorPoint({ 0.5f, 0.5f });
-        ui->SetSize({ 0.0f, 0.0f }); // 全部0スタート
-    };
-
-    gage_ = Sprite::Create(texture::Gage, Vector2{ 380.0f, 10.0f }, 0.0f, Vector2{ 500.0f,30.0f });
-    gage_->SetTextureSize(Vector2{ 500.0f,30.0f });
-    player_ui_ = Sprite::Create(texture::PlayerUi, Vector2{ 380.0f, 12.3f }, 0.0f, Vector2{ 25.0f,25.0f });
-    player_ui_->SetTextureSize(Vector2{ 25.0f,25.0f });
 
     // .objファイルからモデルを読み込む
     ModelManager::GetInstance()->LoadModel(model::Goal);
@@ -224,17 +175,22 @@ void GamePlayScene::Update() {
         // イベント終了 → プレイヤーを操作可能に
         player_->SetState(State::Alive);
         isPausedevent_ = true;
-        // 進行度を設定
-        StartStageProgressUI();
+        GamePlayUI* gpUI = UIManager::GetInstance()->GetUI<GamePlayUI>();
+        // 見つかった場合のみ固有のメソッドを呼ぶ
+        if (gpUI) {        
+            // 進行度を設定        
+            gpUI->StartStageProgressUI();
+        }
     }
     
     if (EventManager::GetInstance()->GetProgress() >= 2.5f) {
         // 操作UIのアニメーション開始
-        isControlUIAnimating_ = true;
+        GamePlayUI* gpUI = UIManager::GetInstance()->GetUI<GamePlayUI>();
+        // 見つかった場合のみ固有のメソッドを呼ぶ
+        if (gpUI) {
+            gpUI->StartControlUIAnimation();
+        }
     }
-
-    // ===== UI進行更新 =====
-    UpdateStageProgressUI();
 
     StageManager::GetInstance()->Update();
 
@@ -314,15 +270,6 @@ void GamePlayScene::Update() {
 #pragma endregion 全てのObject3d個々の更新処理
 
 #pragma region 全てのSprite個々の更新処理
-    
-    UpdateControlUIAnimation();
-    UpdateControlUI();
-    for (std::unique_ptr<Sprite>& ui : uis_) {
-        ui->Update();
-    }
-
-    gage_->Update();
-    player_ui_->Update();
 
     // UIマネージャの更新
     UIManager::GetInstance()->Update();
@@ -387,22 +334,17 @@ void GamePlayScene::Draw() {
         player_->DrawSprite();
     }
 
-    if (CameraManager::GetInstance()->GetTypeview() == ViewCameraType::Main) {
-        for (std::unique_ptr<Sprite>& ui : uis_) {
-            ui->Draw();
-        }
-    }
-    
-    gage_->Draw();
-    player_ui_->Draw();
     if (isPausedevent_) {
         if (isPaused_) {
             pausemenu_->Draw();
         }
         pausemenu_->IconDraw();
     }
+    
+    if (CameraManager::GetInstance()->GetTypeview() == ViewCameraType::Main) {
+        UIManager::GetInstance()->Draw();
+    }
 
-    UIManager::GetInstance()->Draw();
     // イベントマネージャの描画処理
     EventManager::GetInstance()->Draw2DSprite();
     // フェードマネージャの描画
@@ -479,145 +421,5 @@ void GamePlayScene::CheckEnemyPlayerCollisionsOBB() {
 
             break;
         }
-    }
-}
-
-void GamePlayScene::StartStageProgressUI() {
-    if (uiProgressStarted_) return;
-    uiStartRailLength_ = CameraManager::GetInstance()->GetGameplayCamera()->GetCurrentRailLength();
-
-    uiProgressStarted_ = true;
-}
-
-void GamePlayScene::UpdateStageProgressUI() {
-    if (!uiProgressStarted_ || uiProgressFinished_) return;
-
-    auto* cam = CameraManager::GetInstance()->GetGameplayCamera();
-
-    float current = cam->GetCurrentRailLength();
-    float total   = cam->GetTotalRailLength();
-
-    float uiTotalLength = total - uiStartRailLength_;
-    if (uiTotalLength <= 0.0001f) return;
-
-    float progress = (current - uiStartRailLength_) / uiTotalLength;
-
-    if (progress >= 1.0f) {
-        progress = 1.0f;
-        uiProgressFinished_ = true;
-    }
-
-    progress = std::clamp(progress, 0.0f, 1.0f);
-
-    constexpr float gageX = 380.0f;
-    constexpr float gageWidth = 500.0f;
-    constexpr float playerWidth = 25.0f;
-
-    float movableWidth = gageWidth - playerWidth;
-    float uiX = gageX + progress * movableWidth;
-
-    player_ui_->SetPosition(Vector2{ uiX, 12.3f });
-}
-
-void GamePlayScene::CreateWASDUI(
-    const Vector2& baseCenter,     // WASD中心
-    const Vector2& size,
-    float keySpacing,           // キー同士の隙間
-    float groupSpacing)         // グループ間の縦間隔
-{
-    uis_.clear();
-
-    float groupHeight = size.y * 2 + keySpacing;
-    // W段 + ASD段の高さ
-
-    // =====================
-    // 1. WASD グループ
-    // =====================
-    Vector2 wasdCenter = baseCenter;
-
-    Vector2 wPos = { wasdCenter.x, wasdCenter.y };
-    Vector2 sRowY = { 0.0f,wasdCenter.y + size.y + keySpacing };
-
-    Vector2 aPos = { wasdCenter.x - size.x - keySpacing, sRowY.y };
-    Vector2 sPos = { wasdCenter.x, sRowY.y };
-    Vector2 dPos = { wasdCenter.x + size.x + keySpacing, sRowY.y };
-
-    uis_.push_back(Sprite::Create(texture::W, wPos, 0.0f, size)); //0
-    uis_.push_back(Sprite::Create(texture::A, aPos, 0.0f, size)); //1
-    uis_.push_back(Sprite::Create(texture::S, sPos, 0.0f, size)); //2
-    uis_.push_back(Sprite::Create(texture::D, dPos, 0.0f, size)); //3
-
-
-    // =====================
-    // 2. Arrow グループ
-    // =====================
-    float arrowTopY = wasdCenter.y + groupHeight + groupSpacing;
-
-    Vector2 arrowTop = { baseCenter.x, arrowTopY };
-    float arrowRowY = arrowTopY + size.y + keySpacing;
-
-    Vector2 upPos = { arrowTop.x, arrowTop.y };
-    Vector2 leftPos = { arrowTop.x - size.x - keySpacing, arrowRowY };
-    Vector2 downPos = { arrowTop.x, arrowRowY };
-    Vector2 rightPos = { arrowTop.x + size.x + keySpacing, arrowRowY };
-
-    uis_.push_back(Sprite::Create(texture::ArrowUp, upPos, 0.0f, size));     //4
-    uis_.push_back(Sprite::Create(texture::ArrowRight, leftPos, 0.0f, size)); //5
-    uis_.push_back(Sprite::Create(texture::ArrowDown, downPos, 0.0f, size)); //6
-    uis_.push_back(Sprite::Create(texture::ArrowLeft, rightPos, 0.0f, size));//7
-
-
-    // =====================
-    // 3. SPACE
-    // =====================
-    Vector2 spaceSize = {80.0f, 40.0f};
-    float spaceY = arrowTopY + groupHeight + groupSpacing;
-    // 1つ目（中央）
-    Vector2 spacePos = { baseCenter.x - (spaceSize.x + keySpacing) * 0.5f, spaceY };
-
-    // 2つ目（右側）
-    Vector2 spacePos2 = { baseCenter.x + (spaceSize.x + keySpacing) * 0.5f, spaceY };
-
-    uis_.push_back(Sprite::Create(texture::SPACEKey, spacePos, 0.0f, spaceSize));  //8
-    uis_.push_back(Sprite::Create(texture::SPACEKey, spacePos2, 0.0f, spaceSize)); //9
-}
-
-void GamePlayScene::UpdateControlUI() {
-    Input* input = Input::GetInstance();
-    if (EventManager::GetInstance()->IsFinished()){
-        // === WASD ===
-        uis_[0]->SetTexture(input->Pushkey(DIK_W) ? texture::W_RED : texture::W);
-        uis_[1]->SetTexture(input->Pushkey(DIK_A) ? texture::A_RED : texture::A);
-        uis_[2]->SetTexture(input->Pushkey(DIK_S) ? texture::S_RED : texture::S);
-        uis_[3]->SetTexture(input->Pushkey(DIK_D) ? texture::D_RED : texture::D);
-        // === Arrow ===
-        uis_[4]->SetTexture(input->Pushkey(DIK_UP) ? texture::ArrowUp_RED : texture::ArrowUp);
-        uis_[5]->SetTexture(input->Pushkey(DIK_RIGHT) ? texture::ArrowRight_RED : texture::ArrowRight);
-        uis_[6]->SetTexture(input->Pushkey(DIK_DOWN) ? texture::ArrowDown_RED : texture::ArrowDown);
-        uis_[7]->SetTexture(input->Pushkey(DIK_LEFT) ? texture::ArrowLeft_RED : texture::ArrowLeft);
-        // === SPACE ===
-        uis_[8]->SetTexture(input->Pushkey(DIK_SPACE) ? texture::SPACEKey_RED : texture::SPACEKey);
-        uis_[9]->SetTexture(input->Pushkey(DIK_LSHIFT) ? texture::SHIFT_RED : texture::SHIFT);
-    }
-}
-
-void GamePlayScene::UpdateControlUIAnimation() {
-    if (!isControlUIAnimating_) return;
-
-    controlUITimer_ += 1.0f / 60.0f;
-    float t = controlUITimer_ / controlUIDuration_;
-
-    if (t >= 1.0f) {
-        t = 1.0f;
-        isControlUIAnimating_ = false;
-    }
-
-    float ease = Easing::EaseOutBack(t);
-
-    for (uint32_t i = 0; i < uis_.size(); ++i) {
-        float width  = Easing::Lerp(0.0f, uiOriginalSizes_[i].x, ease);
-        float height = Easing::Lerp(0.0f, uiOriginalSizes_[i].y, ease);
-
-        uis_[i]->SetSize({ width, height });
     }
 }

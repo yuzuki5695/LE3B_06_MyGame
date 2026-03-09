@@ -56,10 +56,6 @@ public: // メンバ関数
 
     void CheckEnemyPlayerCollisionsOBB();
 
-    void StartStageProgressUI();
-    void UpdateStageProgressUI();
-    void UpdateRandomMove();
-
     void CreateWASDUI(
         const Vector2& baseCenter,     // WASD中心
         const Vector2& size,
@@ -100,20 +96,8 @@ private: // メンバ変数
 
     std::unique_ptr <GamePlayparticle> particles_;
 
-    std::unique_ptr <Sprite> gage_;
-    std::unique_ptr <Sprite> player_ui_;
-    // ===== UI進行管理 =====
-    float uiStartRailLength_ = 0.0f;
-    bool uiProgressStarted_ = false;
-    bool uiProgressFinished_ = false;
-
     std::unique_ptr <Pausemenu> pausemenu_;
     bool isPausedevent_;
     bool isPaused_;
 
-    bool isControlUIAnimating_;
-    float controlUITimer_;
-    float controlUIDuration_;
-    Vector2 controlUIOriginalSize_;
-    std::vector<Vector2> uiOriginalSizes_;
 };
