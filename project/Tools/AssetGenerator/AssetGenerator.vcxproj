@@ -161,6 +161,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="engine\AssetPipeline.cpp" />
+    <ClCompile Include="engine\HeaderGenerator.cpp" />
     <ClCompile Include="engine\JsonExporter.cpp" />
     <ClCompile Include="engine\PathManager.cpp" />
     <ClCompile Include="engine\ResourceScanner.cpp" />
@@ -168,6 +169,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="engine\AssetPipeline.h" />
+    <ClInclude Include="engine\HeaderGenerator.h" />
     <ClInclude Include="engine\JsonExporter.h" />
     <ClInclude Include="engine\math\LoadResourceID.h" />
     <ClInclude Include="engine\PathManager.h" />

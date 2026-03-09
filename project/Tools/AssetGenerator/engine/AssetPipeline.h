@@ -19,19 +19,19 @@ private: // プライベートメンバ関数
     /// ロケールの設定、パスの解決、内部コンポーネントの初期化を行う
     /// </summary>
     void Initialize(int argc, char* argv[]);
-
     /// <summary>
     /// 実際のアセットスキャンやファイル書き出し処理を実行する
     /// </summary>
     void Execute();
-
     /// <summary>
     /// リソースの解放処理を行う
     /// </summary>
     void Finalize();
-
     // メンバ変数
-    std::filesystem::path resourcesRoot_;    // リソースフォルダのルートパス
-    std::unique_ptr<JsonExporter> exporter_; // JSON出力用インスタンス
-    std::wstring manifestFileName_;          // 出力ファイル名を保持する
+    std::wstring manifestFileName_;          // 出力ファイル名(.json)
+    std::filesystem::path resourcesRoot_;    // .JSON出力先のルートとなるフォルダのパス 
+    std::unique_ptr<JsonExporter> exporter_; // .JSON出力用インスタンス
+
+    std::wstring resourceIDFileName_;        // ヘッダーファイル名
+    std::filesystem::path generatedDir_;     // ヘッダー出力先のルートとなるフォルダのパス
 };
