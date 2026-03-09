@@ -13,45 +13,69 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="ソース ファイル\assetpipeline">
+      <UniqueIdentifier>{bc96a297-5988-4762-86c3-a53f31a8343f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\assetpipeline">
+      <UniqueIdentifier>{622b36e6-c56a-4d82-a1d8-b456f7257377}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\scanner">
+      <UniqueIdentifier>{4aad378d-6914-4146-bd42-579c9e1d6f1b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\scanner">
+      <UniqueIdentifier>{1e01f44b-7981-4150-a3e7-646ede88a062}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\exporter">
+      <UniqueIdentifier>{a19d6110-0a27-4188-9523-736474d01bea}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\exporter">
+      <UniqueIdentifier>{db1f4293-d361-4953-8ec5-e17134553877}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\generated">
+      <UniqueIdentifier>{9b1ed82c-60d2-4143-86ef-f1710479e78e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="engine\PathManager.cpp">
-      <Filter>ソース ファイル</Filter>
+    <ClCompile Include="engine\assetpipeline\AssetPipeline.cpp">
+      <Filter>ソース ファイル\assetpipeline</Filter>
     </ClCompile>
-    <ClCompile Include="engine\AssetPipeline.cpp">
-      <Filter>ソース ファイル</Filter>
+    <ClCompile Include="engine\exporter\HeaderGenerator.cpp">
+      <Filter>ソース ファイル\exporter</Filter>
     </ClCompile>
-    <ClCompile Include="engine\JsonExporter.cpp">
-      <Filter>ソース ファイル</Filter>
+    <ClCompile Include="engine\exporter\JsonExporter.cpp">
+      <Filter>ソース ファイル\exporter</Filter>
     </ClCompile>
-    <ClCompile Include="engine\ResourceScanner.cpp">
-      <Filter>ソース ファイル</Filter>
+    <ClCompile Include="engine\scanner\PathManager.cpp">
+      <Filter>ソース ファイル\scanner</Filter>
     </ClCompile>
-    <ClCompile Include="engine\HeaderGenerator.cpp">
-      <Filter>ソース ファイル</Filter>
+    <ClCompile Include="engine\scanner\ResourceScanner.cpp">
+      <Filter>ソース ファイル\scanner</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="engine\math\LoadResourceID.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="engine\AssetPipeline.h">
-      <Filter>ヘッダー ファイル</Filter>
+    <ClInclude Include="engine\assetpipeline\AssetPipeline.h">
+      <Filter>ヘッダー ファイル\assetpipeline</Filter>
     </ClInclude>
-    <ClInclude Include="engine\JsonExporter.h">
-      <Filter>ヘッダー ファイル</Filter>
+    <ClInclude Include="engine\exporter\HeaderGenerator.h">
+      <Filter>ヘッダー ファイル\exporter</Filter>
     </ClInclude>
-    <ClInclude Include="engine\PathManager.h">
-      <Filter>ヘッダー ファイル</Filter>
+    <ClInclude Include="engine\exporter\JsonExporter.h">
+      <Filter>ヘッダー ファイル\exporter</Filter>
     </ClInclude>
-    <ClInclude Include="engine\ResourceScanner.h">
-      <Filter>ヘッダー ファイル</Filter>
+    <ClInclude Include="engine\scanner\PathManager.h">
+      <Filter>ヘッダー ファイル\scanner</Filter>
     </ClInclude>
-    <ClInclude Include="engine\HeaderGenerator.h">
-      <Filter>ヘッダー ファイル</Filter>
+    <ClInclude Include="engine\scanner\ResourceScanner.h">
+      <Filter>ヘッダー ファイル\scanner</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\generated\ResourceID.h">
+      <Filter>ヘッダー ファイル\generated</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
