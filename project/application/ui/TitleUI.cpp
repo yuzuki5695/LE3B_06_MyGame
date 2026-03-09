@@ -1,12 +1,15 @@
 #include "TitleUI.h"
 #include <TextureManager.h>
-#include <Tools/AssetGenerator/engine/math/LoadResourceID.h>
 #include <Easing.h>
 #include <MatrixVector.h>
 #include <CameraManager.h>
 #include <algorithm>
 #include <engine/math/Vector/Vector2.h>
 
+#include <Tools/AssetGenerator/engine/math/LoadResourceID.h>
+#include <Tools/AssetGenerator/engine/generated/ResourceID.h>
+
+//using namespace ResourceID;
 using namespace LoadResourceID;
 using namespace Easing;
 using namespace MatrixVector;
@@ -14,6 +17,9 @@ using namespace MatrixVector;
 void TitleUI::Initialize()
 {
     titleChars_.clear();
+
+    TextureManager::GetInstance()->LoadTexture(texture::Ui02);
+    TextureManager::GetInstance()->LoadTexture(texture::Title);
 
     const std::vector<std::string> textures =
     {

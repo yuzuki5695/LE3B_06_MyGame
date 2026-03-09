@@ -20,7 +20,7 @@ void HeaderGenerator::Generate(const std::filesystem::path& outputPath, const st
     if (!file.is_open()) return;
 
     file << "#pragma once\n#include <string>\n\n";
-    file << "namespace resource {\n";
+    file << "namespace ResourceID {\n";
 
     // データの階層管理用：[大分類(texture/model)][中間パス][ID] = 相対パス
     std::map<std::string, std::map<std::vector<std::string>, std::map<std::string, std::string>>> tree;

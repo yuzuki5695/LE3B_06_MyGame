@@ -46,7 +46,7 @@ void AssetPipeline::Execute() {
     ResourceScanner scanner;
     std::vector<AssetEntry> assets = scanner.Scan(resourcesRoot_, manifestFileName_);
 
-    // 実行日の取得 (YYYY/MM/DD)
+    // 実行日の取得
     const std::chrono::system_clock::time_point now = std::chrono::system_clock::now();
     std::time_t now_c = std::chrono::system_clock::to_time_t(now);
     std::tm now_tm;
@@ -60,7 +60,7 @@ void AssetPipeline::Execute() {
     const std::chrono::duration<double> elapsedSeconds = endTime - startTime;
 
     // jsonファイルの出力
-    std::filesystem::path jsonPath = resourcesRoot_ / manifestFileName_;
+    std::filesystem::path jsonPath = generatedDir_ / manifestFileName_;
     exporter_->Export(jsonPath, dateStream.str(), elapsedSeconds.count(), assets);
 
     // 生成ファイルの出力
