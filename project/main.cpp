@@ -4,12 +4,9 @@
 //Windowsアプリでのエントリーポイント(main関数)
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) { 
 	TimeSystem::Initialize();   // 時間計測開始
-
-	Framework* game = new MyGame();
-
+	// ゲームの生成
+	std::unique_ptr<Framework> game = std::make_unique<MyGame>();
+	// ゲームの実行
 	game->Run();
-
-	delete game;
-
 	return 0;
 }
