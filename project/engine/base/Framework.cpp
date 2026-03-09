@@ -9,8 +9,6 @@
 #include <Controller.h>
 #include <psapi.h>
 #include <SkyboxCommon.h>
-#include <FileSearcher.h>
-#include <ManifestExporter.h>
 #include <EditorManager.h>
 #include <InspectorWindow.h>
 #include <EditorConsole.h>
@@ -112,17 +110,6 @@ void Framework::Initialize() {
     ModelManager::GetInstance()->Initialize(dxCommon.get());
     // パーティクルマネージャの初期化
     ParticleManager::GetInstance()->Initialize(dxCommon.get(), srvManager.get());
- 
-    // ------------------------------------------------------------
-    // リソース走査・マニフェスト生成
-    // ------------------------------------------------------------
-    // 1. 検索クラス
-    FileSearcher searcher("Resources");
-    // 2. 出力クラス
-    ManifestExporter exporter;
-    // 3. 実行：検索した結果をそのまま出力に渡す
-    auto files = searcher.GetAllFiles({ "EditorTemp", ".git" });
-    exporter.Export("Resources/manifest.json", files);
 #pragma region 基盤システムの初期化
     // ------------------------------------------------------------
     // 描画共通部・入力などの基盤システム初期化

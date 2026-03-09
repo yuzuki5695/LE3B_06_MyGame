@@ -2614,7 +2614,7 @@ void ImGui::TableMergeDrawChannels(ImGuiTable* table)
         merge_groups[n].ChannelsMask = (ImBitArrayPtr)(void*)(g.TempBuffer.Data + (size_for_masks_bitarrays_one * n));
     ImBitArrayPtr remaining_mask = (ImBitArrayPtr)(void*)(g.TempBuffer.Data + (size_for_masks_bitarrays_one * 4));
 
-    // 1. Scan channels and take note of those which can be merged
+    // 1. ScanFile channels and take note of those which can be merged
     for (int column_n = 0; column_n < table->ColumnsCount; column_n++)
     {
         if (!IM_BITARRAY_TESTBIT(table->VisibleMaskByIndex, column_n))

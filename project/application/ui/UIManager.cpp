@@ -1,58 +1,71 @@
 #include "UIManager.h"
 #include <SceneManager.h>
+#include <GamePlayUI.h>
+#include <TitleUI.h>
+
+// 静的メンバ変数の定義
+std::unique_ptr<UIManager> UIManager::instance = nullptr;
+
+// シングルトンインスタンスの取得
+UIManager* UIManager::GetInstance() {
+	if (!instance) {
+		instance = std::make_unique<UIManager>();
+	}
+	return instance.get();
+}
+
+// 終了
+void UIManager::Finalize() {
+	// シーンマネージャのインスタンスの解放
+	instance.reset();
+}
 
 void UIManager::Initialize() {
-    CreateAndAddUI("GAMEPLAY");
+    // 前のシーンのUIを削除
+    Clear();
 
-    for (auto& ui : uiList_) {
+    // 現在のシーン状況を確認
+    // SceneManagerが管理している実行中シーンから名前を取得する
+    std::string currentScene = SceneManager::GetInstance()->GetCurrentScene()->GetSceneName();
+
+    // シーン名に紐付いたUIクラスをインスタンス化
+    if (currentScene == "TITLE") {
+        AddUI("TITLE", std::make_unique<TitleUI>());
+    } 
+    else if (currentScene == "GAMEPLAY") {
+        AddUI("GAMEPLAY", std::make_unique<GamePlayUI>());
+    }
+
+    // 生成したUIの個別初期化
+    for (std::unique_ptr<BaseUI>& ui : uiList_) {
         ui->Initialize();
     }
 }
 
 void UIManager::Update() {
-    // 現在のシーン名を取得
-    std::string currentScene = SceneManager::GetInstance()->GetCurrentScene()->GetSceneName();
+    // リストに登録されているUIを順次更新
     for (std::unique_ptr<BaseUI>& ui : uiList_) {
-        // UIがアクティブ 且つ 所属シーンが現在のシーンと一致する場合のみ更新
-        if (ui->IsActive() && ui->GetTargetSceneName() == currentScene) {
+        if (ui->IsActive()) {
             ui->Update();
         }
     }
 }
 
 void UIManager::Draw() {
-    // 現在のシーン名を取得
-    std::string currentScene = SceneManager::GetInstance()->GetCurrentScene()->GetSceneName();
+    // リストにあるUIを画面に描画
     for (std::unique_ptr<BaseUI>& ui : uiList_) {
-        // UIがアクティブ 且つ 所属シーンが現在のシーンと一致する場合のみ描画
-        if (ui->IsActive() && ui->GetTargetSceneName() == currentScene) {
+        if (ui->IsActive()) {
             ui->Draw();
         }
     }
 }
 
 void UIManager::AddUI(const std::string& sceneName, std::unique_ptr<BaseUI> ui) {
-    // 登録時にシーン名をセットしてしまう
+    // どのシーンに属しているかの情報をUI自身に持たせてリストに追加
     ui->SetTargetSceneName(sceneName);
     uiList_.push_back(std::move(ui));
 }
+
 void UIManager::Clear() {
     uiList_.clear();
-}
-
-void UIManager::CreateAndAddUI(const std::string& sceneName) {
-    if (sceneName == "TITLE") {
-        // まだタイトルUIは作ってないけど、こんな感じで作る予定
-        //  auto ui = std::make_unique<TitleUI>();
-        //        ui->Initialize();
-        //        AddUI("TITLE", std::move(ui));
-    } else if (sceneName == "GAMEPLAY") {
-        auto ui = std::make_unique<GamePlayUI>();
-        ui->Initialize();
-        AddUI("GAMEPLAY", std::move(ui));
-    } else if (sceneName == "GAMEPLAY") {
-        auto ui = std::make_unique<GamePlayUI>();
-        ui->Initialize();
-        AddUI("GAMEPLAY", std::move(ui));
-    }
 }

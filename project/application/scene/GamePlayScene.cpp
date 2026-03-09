@@ -18,6 +18,7 @@
 #include <Collision.h>
 #include <Tools/AssetGenerator/engine/math/LoadResourceID.h>
 #include <Easing.h>
+#include <UIManager.h>
 
 using namespace LoadResourceID;
 using namespace Collision;
@@ -31,7 +32,8 @@ void GamePlayScene::Finalize() {
     BulletManager::GetInstance()->Finalize();  // 弾の解放処理
     FadeManager::GetInstance()->Finalize();    //  フェードマネージャの解放処理
     EventManager::GetInstance()->Finalize();   //  イベントマネージャの解放処理
-    StageManager::GetInstance()->Finalize();		  // ステージマネージャの解放処理
+    StageManager::GetInstance()->Finalize();   // ステージマネージャの解放処理
+	UIManager::GetInstance()->Finalize();      // UIマネージャの解放処理
 }
 ///====================================================
 /// 初期化処理
@@ -42,10 +44,6 @@ void GamePlayScene::Initialize() {
     CameraManager::GetInstance()->SetTypeview(ViewCameraType::Main);
 
     // テクスチャを読み込む 
-    TextureManager::GetInstance()->LoadTexture(texture::Move);
-    TextureManager::GetInstance()->LoadTexture(texture::Reticlemove);
-    TextureManager::GetInstance()->LoadTexture(texture::Space);
-    TextureManager::GetInstance()->LoadTexture(texture::Avoidance);
     TextureManager::GetInstance()->LoadTexture(texture::Gage);
     TextureManager::GetInstance()->LoadTexture(texture::PlayerUi);
 
@@ -143,6 +141,9 @@ void GamePlayScene::Initialize() {
     pausemenu_->Initialize();
     isPaused_ = false;
     isPausedevent_ = false;
+
+    // UIマネージャの初期化
+	UIManager::GetInstance()->Initialize();
 }
 ///====================================================
 /// 毎フレーム更新処理
@@ -323,6 +324,8 @@ void GamePlayScene::Update() {
     gage_->Update();
     player_ui_->Update();
 
+    // UIマネージャの更新
+    UIManager::GetInstance()->Update();
 #pragma endregion 全てのSprite個々の更新処理
 
 #pragma region  ImGuiの更新処理開始
@@ -398,6 +401,8 @@ void GamePlayScene::Draw() {
         }
         pausemenu_->IconDraw();
     }
+
+    UIManager::GetInstance()->Draw();
     // イベントマネージャの描画処理
     EventManager::GetInstance()->Draw2DSprite();
     // フェードマネージャの描画

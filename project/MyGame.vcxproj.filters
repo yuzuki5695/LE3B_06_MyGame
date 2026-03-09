@@ -181,9 +181,6 @@
     <Filter Include="ソース ファイル\engine\math\collision">
       <UniqueIdentifier>{f4077ff3-9d86-403e-9ef0-1bebb837b1f8}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ソース ファイル\application\resource">
-      <UniqueIdentifier>{07a86f35-75fe-4831-bfb6-13aa414b3d2f}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ソース ファイル\application\pause">
       <UniqueIdentifier>{c5781d8c-054f-48a2-8959-008b1c5e936f}</UniqueIdentifier>
     </Filter>
@@ -225,9 +222,6 @@
     </Filter>
     <Filter Include="ヘッダー ファイル\application\particle">
       <UniqueIdentifier>{3264e2f4-9fdc-482b-ad88-dcef28660e8d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ヘッダー ファイル\application\resource">
-      <UniqueIdentifier>{479ca9b3-2dfa-4bfe-a30d-0bc400cf9199}</UniqueIdentifier>
     </Filter>
     <Filter Include="ヘッダー ファイル\application\pause">
       <UniqueIdentifier>{5f0ad7e7-d543-4f5d-9f5a-2e8ac0dc99ba}</UniqueIdentifier>
@@ -280,20 +274,11 @@
     <Filter Include="ヘッダー ファイル\engine\editor\layout\editormenubar">
       <UniqueIdentifier>{3f31f402-fcc2-4a1e-9205-9872c0cf30dc}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ソース ファイル\application\motion">
-      <UniqueIdentifier>{7f4de914-2049-4db2-b6a0-fe2e6a4a53ff}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ソース ファイル\application\motion\2d">
-      <UniqueIdentifier>{07aa49a8-a6b4-4799-b742-258aa04f7949}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ヘッダー ファイル\application\motion">
-      <UniqueIdentifier>{c373fd79-4b1f-4857-ac97-2b15a11cc9b4}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ヘッダー ファイル\application\motion\2d">
-      <UniqueIdentifier>{024abc2c-c56b-4195-b948-a995a285e99c}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ソース ファイル\application\ui">
       <UniqueIdentifier>{4540355a-ca3a-4eb8-8c0b-a5fa2d7beb93}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\application\ui">
+      <UniqueIdentifier>{bc06df0e-7372-442f-b366-5195a6b18484}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -519,12 +504,6 @@
     <ClCompile Include="application\loader\EnemyLoader.cpp">
       <Filter>ソース ファイル\application\loader</Filter>
     </ClCompile>
-    <ClCompile Include="application\resource\FileSearcher.cpp">
-      <Filter>ソース ファイル\application\resource</Filter>
-    </ClCompile>
-    <ClCompile Include="application\resource\ManifestExporter.cpp">
-      <Filter>ソース ファイル\application\resource</Filter>
-    </ClCompile>
     <ClCompile Include="application\pause\Pausemenu.cpp">
       <Filter>ソース ファイル\application\pause</Filter>
     </ClCompile>
@@ -570,13 +549,13 @@
     <ClCompile Include="engine\editor\layout\editormenubar\ObjectMenu.cpp">
       <Filter>ソース ファイル\engine\editor\layout\editormenubar</Filter>
     </ClCompile>
-    <ClCompile Include="application\motion\2d\TitleSpriteMotion.cpp">
-      <Filter>ソース ファイル\application\motion\2d</Filter>
-    </ClCompile>
     <ClCompile Include="application\ui\GamePlayUI.cpp">
       <Filter>ソース ファイル\application\ui</Filter>
     </ClCompile>
     <ClCompile Include="application\ui\UIManager.cpp">
+      <Filter>ソース ファイル\application\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="application\ui\TitleUI.cpp">
       <Filter>ソース ファイル\application\ui</Filter>
     </ClCompile>
   </ItemGroup>
@@ -890,12 +869,6 @@
     <ClInclude Include="application\particle\DefaultParticleEmitter.h">
       <Filter>ヘッダー ファイル\application\particle</Filter>
     </ClInclude>
-    <ClInclude Include="application\resource\ManifestExporter.h">
-      <Filter>ヘッダー ファイル\application\resource</Filter>
-    </ClInclude>
-    <ClInclude Include="application\resource\FileSearcher.h">
-      <Filter>ヘッダー ファイル\application\resource</Filter>
-    </ClInclude>
     <ClInclude Include="application\loader\EnemyLoader.h">
       <Filter>ヘッダー ファイル\application\loader</Filter>
     </ClInclude>
@@ -965,17 +938,17 @@
     <ClInclude Include="engine\editor\core\EditorTypes.h">
       <Filter>ヘッダー ファイル\engine\editor\core</Filter>
     </ClInclude>
-    <ClInclude Include="application\motion\2d\TitleSpriteMotion.h">
-      <Filter>ヘッダー ファイル\application\motion\2d</Filter>
+    <ClInclude Include="application\ui\UIManager.h">
+      <Filter>ヘッダー ファイル\application\ui</Filter>
     </ClInclude>
     <ClInclude Include="application\ui\GamePlayUI.h">
-      <Filter>ソース ファイル\application\ui</Filter>
+      <Filter>ヘッダー ファイル\application\ui</Filter>
     </ClInclude>
     <ClInclude Include="application\ui\BaseUI.h">
-      <Filter>ソース ファイル\application\ui</Filter>
+      <Filter>ヘッダー ファイル\application\ui</Filter>
     </ClInclude>
-    <ClInclude Include="application\ui\UIManager.h">
-      <Filter>ソース ファイル\application\ui</Filter>
+    <ClInclude Include="application\ui\TitleUI.h">
+      <Filter>ヘッダー ファイル\application\ui</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
