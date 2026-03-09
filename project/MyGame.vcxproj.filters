@@ -181,9 +181,6 @@
     <Filter Include="ソース ファイル\engine\math\collision">
       <UniqueIdentifier>{f4077ff3-9d86-403e-9ef0-1bebb837b1f8}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ソース ファイル\application\resource">
-      <UniqueIdentifier>{07a86f35-75fe-4831-bfb6-13aa414b3d2f}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ソース ファイル\application\pause">
       <UniqueIdentifier>{c5781d8c-054f-48a2-8959-008b1c5e936f}</UniqueIdentifier>
     </Filter>
@@ -225,9 +222,6 @@
     </Filter>
     <Filter Include="ヘッダー ファイル\application\particle">
       <UniqueIdentifier>{3264e2f4-9fdc-482b-ad88-dcef28660e8d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ヘッダー ファイル\application\resource">
-      <UniqueIdentifier>{479ca9b3-2dfa-4bfe-a30d-0bc400cf9199}</UniqueIdentifier>
     </Filter>
     <Filter Include="ヘッダー ファイル\application\pause">
       <UniqueIdentifier>{5f0ad7e7-d543-4f5d-9f5a-2e8ac0dc99ba}</UniqueIdentifier>
@@ -509,12 +503,6 @@
     </ClCompile>
     <ClCompile Include="application\loader\EnemyLoader.cpp">
       <Filter>ソース ファイル\application\loader</Filter>
-    </ClCompile>
-    <ClCompile Include="application\resource\FileSearcher.cpp">
-      <Filter>ソース ファイル\application\resource</Filter>
-    </ClCompile>
-    <ClCompile Include="application\resource\ManifestExporter.cpp">
-      <Filter>ソース ファイル\application\resource</Filter>
     </ClCompile>
     <ClCompile Include="application\pause\Pausemenu.cpp">
       <Filter>ソース ファイル\application\pause</Filter>
@@ -880,12 +868,6 @@
     </ClInclude>
     <ClInclude Include="application\particle\DefaultParticleEmitter.h">
       <Filter>ヘッダー ファイル\application\particle</Filter>
-    </ClInclude>
-    <ClInclude Include="application\resource\ManifestExporter.h">
-      <Filter>ヘッダー ファイル\application\resource</Filter>
-    </ClInclude>
-    <ClInclude Include="application\resource\FileSearcher.h">
-      <Filter>ヘッダー ファイル\application\resource</Filter>
     </ClInclude>
     <ClInclude Include="application\loader\EnemyLoader.h">
       <Filter>ヘッダー ファイル\application\loader</Filter>

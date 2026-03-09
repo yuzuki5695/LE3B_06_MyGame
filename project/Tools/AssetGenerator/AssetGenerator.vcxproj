@@ -124,6 +124,10 @@
       <AdditionalOptions>/ignore:4049,4048 %(AdditionalOptions)</AdditionalOptions>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
     </Link>
+    <PostBuildEvent>
+      <Command>
+      </Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -146,18 +150,16 @@
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
       <AdditionalOptions>/ignore:4020 %(AdditionalOptions)</AdditionalOptions>
     </Link>
+    <PostBuildEvent>
+      <Command>
+      </Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="engine\assetpipeline\AssetPipeline.cpp" />
-    <ClCompile Include="engine\assetpipeline\manifest\JsonExporter.cpp" />
-    <ClCompile Include="engine\assetpipeline\scanner\ResourceScanner.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="engine\assetpipeline\AssetPipeline.h" />
-    <ClInclude Include="engine\assetpipeline\asset\FileInfo.h" />
-    <ClInclude Include="engine\assetpipeline\manifest\JsonExporter.h" />
-    <ClInclude Include="engine\assetpipeline\scanner\ResourceScanner.h" />
+    <ClInclude Include="engine\math\LoadResourceID.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
