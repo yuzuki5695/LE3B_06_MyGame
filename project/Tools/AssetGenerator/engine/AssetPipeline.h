@@ -14,7 +14,6 @@ public: // メンバ関数
     /// <param name="argc">コマンドライン引数の数</param>
     /// <param name="argv">コマンドライン引数の配列</param>
     void Run(int argc, char* argv[]);
-
 private: // プライベートメンバ関数
     /// <summary>
     /// ロケールの設定、パスの解決、内部コンポーネントの初期化を行う
@@ -32,6 +31,7 @@ private: // プライベートメンバ関数
     void Finalize();
 
     // メンバ変数
-    std::filesystem::path resourcesRoot_; // リソースフォルダのルートパス
+    std::filesystem::path resourcesRoot_;    // リソースフォルダのルートパス
     std::unique_ptr<JsonExporter> exporter_; // JSON出力用インスタンス
+    std::wstring manifestFileName_;          // 出力ファイル名を保持する
 };

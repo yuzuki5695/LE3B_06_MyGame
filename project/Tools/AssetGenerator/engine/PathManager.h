@@ -12,7 +12,6 @@ public: // メンバ関数
     /// </summary>
     /// <returns>実行ファイルの絶対パス</returns>
     static std::filesystem::path GetExePath();
-
     /// <summary>
     /// リソースの出力先となる "Resources" フォルダのルートを特定する
     /// </summary>
@@ -20,7 +19,6 @@ public: // メンバ関数
     /// <param name="argv">コマンドライン引数の配列</param>
     /// <returns>特定された Resources フォルダのパス（見つからない場合は空）</returns>
     static std::filesystem::path FindResourcesRoot(int argc, char* argv[]);
-
 private: // プライベートメンバ関数
     /// <summary>
     /// 指定されたパスから親ディレクトリを遡り、再帰的に Resources フォルダを探索する

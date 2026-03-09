@@ -28,6 +28,8 @@ void TitleScene::Finalize() {
 	UIManager::GetInstance()->Finalize(); // UIマネージャの解放処理
 }
 
+
+
 void TitleScene::Initialize() {
 #pragma region シーンの初期化  
     // カメラの初期化
