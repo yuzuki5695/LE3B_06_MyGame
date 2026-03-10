@@ -90,35 +90,26 @@ void GamePlayScene::Initialize() {
     // ポーズメニューの初期化
     pausemenu_ = std::make_unique<Pausemenu>();
     pausemenu_->Initialize();
-    isPaused_ = false;
-    isPausedevent_ = false;
+    isPausedevent_ = true;
 
     // UIマネージャの初期化
 	UIManager::GetInstance()->Initialize();
 }
-///====================================================
-/// 毎フレーム更新処理
-///====================================================
-void GamePlayScene::Update() { 
-    pausemenu_->IconUpdate();
-    // Enterキーでポーズの「開始」のみをチェック
-    if (isPausedevent_ && !isPaused_ && Input::GetInstance()->Triggrkey(DIK_TAB)) {
-        isPaused_ = true;
+void GamePlayScene::PauseMenuUpdate() {
+    //  Enterキーでポーズの「開始」のみをチェック
+    if (isPausedevent_ && !pausemenu_->IsActive() && Input::GetInstance()->Triggrkey(DIK_TAB)) {
         pausemenu_->SetActive(true); // 演出開始！
     }
+    pausemenu_->Update();
+}
 
+void GamePlayScene::Update() {  
+	// ポーズメニューの更新
+    PauseMenuUpdate();
     //  ポーズ中の処理
-    if (isPaused_) {
-        pausemenu_->Update();
-        // ポーズメニュー内での演出（逆再生含む）がすべて終わったかチェック
-        if (pausemenu_->IsFinished()) {
-            isPaused_ = false; // ゲーム再開
-        }
+    if (pausemenu_->IsActive()) {
 
-        // Resume（再開）の場合は、メニューが閉じ終わるのを待つ
-        if (pausemenu_->IsFinished() && pausemenu_->GetCommand() == PauseCommand::Resume) {
-            isPaused_ = false;
-        } else if (pausemenu_->GetCommand() == PauseCommand::GoToTitle) {
+        if (pausemenu_->GetCommand() == PauseCommand::GoToTitle) {
             // フェードマネージャの更新   
             FadeManager::GetInstance()->Update();
             // メニューが表示されたまま、フェードアウトを開始
@@ -134,8 +125,7 @@ void GamePlayScene::Update() {
             // タイトル移行時はここでreturnし、背後のゲーム処理を止めたままにする
             return;
         }
-        // ポーズ演出中はゲームの他の更新を止める
-        return;
+        return; // ポーズ中は他の更新をスキップ
     }
 
     // フェードイン開始
@@ -330,17 +320,16 @@ void GamePlayScene::Draw() {
     // Spriteの描画準備。Spriteの描画に共通のグラフィックスコマンドを積む
     SpriteCommon::GetInstance()->Commondrawing();
     // プレイヤーのUIスプライト描画
-    if (!end) {
+    if (!end || pausemenu_->IsActive()) {
         player_->DrawSprite();
     }
 
-    if (isPausedevent_) {
-        if (isPaused_) {
+   // if (isPausedevent_) {
+    //    if (pausemenu_->IsActive()) {
             pausemenu_->Draw();
-        }
-        pausemenu_->IconDraw();
-    }
-    
+      //  }
+   // }
+
     if (CameraManager::GetInstance()->GetTypeview() == ViewCameraType::Main) {
         UIManager::GetInstance()->Draw();
     }

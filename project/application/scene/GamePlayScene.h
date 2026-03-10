@@ -25,8 +25,7 @@ enum class ControlUIType
 /// <summary>
 /// ゲームプレイシーン
 /// </summary>
-class GamePlayScene : public BaseScene
-{
+class GamePlayScene : public BaseScene {
 public: // メンバ関数
     /// <summary>
     /// 初期化処理
@@ -65,6 +64,8 @@ public: // メンバ関数
     void UpdateControlUI();
     void UpdateControlUIAnimation();
 
+    void PauseMenuUpdate();
+
 private: // メンバ変数
     // オブジェクトデータ
     // プレイヤー
@@ -98,6 +99,5 @@ private: // メンバ変数
 
     std::unique_ptr <Pausemenu> pausemenu_;
     bool isPausedevent_;
-    bool isPaused_;
 
 };
