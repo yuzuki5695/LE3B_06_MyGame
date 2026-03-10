@@ -90,7 +90,7 @@ void GamePlayScene::Initialize() {
     // ポーズメニューの初期化
     pausemenu_ = std::make_unique<Pausemenu>();
     pausemenu_->Initialize();
-    isPausedevent_ = true;
+    isPausedevent_ = false;
 
     // UIマネージャの初期化
 	UIManager::GetInstance()->Initialize();
@@ -320,15 +320,12 @@ void GamePlayScene::Draw() {
     // Spriteの描画準備。Spriteの描画に共通のグラフィックスコマンドを積む
     SpriteCommon::GetInstance()->Commondrawing();
     // プレイヤーのUIスプライト描画
-    if (!end || pausemenu_->IsActive()) {
+    if (!end) {
         player_->DrawSprite();
     }
 
-   // if (isPausedevent_) {
-    //    if (pausemenu_->IsActive()) {
-            pausemenu_->Draw();
-      //  }
-   // }
+    pausemenu_->Draw();
+  
 
     if (CameraManager::GetInstance()->GetTypeview() == ViewCameraType::Main) {
         UIManager::GetInstance()->Draw();

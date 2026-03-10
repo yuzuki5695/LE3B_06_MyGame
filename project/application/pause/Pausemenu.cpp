@@ -282,6 +282,7 @@ void Pausemenu::ExecuteCommand() {
             UpdateArrowPositions();
             break;
         case PauseCommand::GoToTitle:
+            isCommandRunning_ = true;
             break;
         case PauseCommand::Turnback:
             if (isOperationMode_) {
