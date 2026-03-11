@@ -16,6 +16,7 @@
 #include <EditorEntityRegistry.h>
 #include <Easing.h>
 #include <UIManager.h>
+#include <TitleUI.h>
 
 using namespace Easing;
 namespace { constexpr float kFadeDuration = 1.0f; }
@@ -149,7 +150,10 @@ void TitleScene::UpdateFadeIn() {
 void TitleScene::UpdateFadeOut() {
     // タイトルシーンにおけるフェード制御を担当
     FadeManager* fade = FadeManager::GetInstance();
-    if (Input::GetInstance()->Triggrkey(DIK_RETURN) && !fade->IsFading() && fade->IsFadeEnd() && !isPlayerBoost_ && !isPreFadeFollow_) {
+    TitleUI* titleUI = UIManager::GetInstance()->GetUI<TitleUI>();
+    
+    if (titleUI->IsFinished() && Input::GetInstance()->Triggrkey(DIK_RETURN) && !fade->IsFading() && fade->IsFadeEnd() && !isPlayerBoost_ && !isPreFadeFollow_) {
+        titleUI->StartExitAnimation();
         isPreFadeFollow_ = true;
         preFadeTimer_ = 0.0f;
         // 🔥 カメラをFollowに切り替え
