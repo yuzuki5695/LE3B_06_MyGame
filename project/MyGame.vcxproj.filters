@@ -450,9 +450,6 @@
     <ClCompile Include="application\event\EventManager.cpp">
       <Filter>ソース ファイル\application\event</Filter>
     </ClCompile>
-    <ClCompile Include="application\character\CharacterManager.cpp">
-      <Filter>ソース ファイル\application\character</Filter>
-    </ClCompile>
     <ClCompile Include="application\stage\StageManager.cpp">
       <Filter>ソース ファイル\application\stage</Filter>
     </ClCompile>
@@ -775,9 +772,6 @@
     </ClInclude>
     <ClInclude Include="application\scene\GameOverScene.h">
       <Filter>ヘッダー ファイル\application\scene</Filter>
-    </ClInclude>
-    <ClInclude Include="application\character\CharacterManager.h">
-      <Filter>ヘッダー ファイル\application\character</Filter>
     </ClInclude>
     <ClInclude Include="application\bullet\EnemyBullet.h">
       <Filter>ヘッダー ファイル\application\bullet</Filter>
