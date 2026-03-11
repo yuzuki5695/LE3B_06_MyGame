@@ -8,8 +8,21 @@
     └──     ├── AssetGenerator.vcxproj
     └──     ├── AssetGenerator.vcxproj.filters
     └──     ├── engine/
-    └──     └── └── math/
-    └──     └──     └── LoadResourceID.h
+    └──     └── ├── assetpipeline/
+    └──     └── └── ├── AssetPipeline.cpp
+    └──     └── └── └── AssetPipeline.h
+    └──     └── ├── exporter/
+    └──     └── └── ├── HeaderGenerator.cpp
+    └──     └── └── ├── HeaderGenerator.h
+    └──     └── └── ├── JsonExporter.cpp
+    └──     └── └── └── JsonExporter.h
+    └──     └── ├── math/
+    └──     └── └── └── LoadResourceID.h
+    └──     └── └── scanner/
+    └──     └──     ├── PathManager.cpp
+    └──     └──     ├── PathManager.h
+    └──     └──     ├── ResourceScanner.cpp
+    └──     └──     └── ResourceScanner.h
     └──     └── main.cpp
     ├── application/
     └── ├── bullet/
@@ -456,9 +469,8 @@ File Path: project/MyGame.vcxproj
 copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dxil.dll"</Command>
     </PostBuildEvent>
     <PreBuildEvent>
-      <Command>"$(SolutionDir)..\generated\outputs\$(Configuration)\AssetGenerator.exe" ^
-"$(ProjectDir)$(Configuration)" ^
-"$(ProjectDir)$(Configuration)\manifest.json"</Command>
+      <Command>"$(SolutionDir)..\generated\outputs\$(Configuration)\AssetGenerator.exe" "$(ProjectDir)Resources"
+</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -490,8 +502,8 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
 copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dxil.dll"</Command>
     </PostBuildEvent>
     <PreBuildEvent>
-      <Command>
-      </Command>
+      <Command>"$(SolutionDir)..\generated\outputs\$(Configuration)\AssetGenerator.exe" "$(ProjectDir)Resources"
+</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -1964,7 +1976,7 @@ File Path: project/Tools/AssetGenerator/AssetGenerator.vcxproj
       <LanguageStandard>stdcpp20</LanguageStandard>
       <TreatWarningAsError>true</TreatWarningAsError>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(ProjectDir)engine;$(ProjectDir)engine\assetpipeline;$(ProjectDir)..\..\externals\nlohmann;$(ProjectDir)engine\assetpipeline\scanner;$(ProjectDir)engine\assetpipeline\manifest;$(ProjectDir)engine\assetpipeline\asset;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)engine;$(ProjectDir)..\..\externals\nlohmann;$(ProjectDir)engine\assetpipeline;$(ProjectDir)engine\exporter;$(ProjectDir)engine\scanner;$(ProjectDir)engine\generated;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
@@ -1990,7 +2002,7 @@ File Path: project/Tools/AssetGenerator/AssetGenerator.vcxproj
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(ProjectDir)engine;$(ProjectDir)engine\assetpipeline;$(ProjectDir)..\..\externals\nlohmann;$(ProjectDir)engine\assetpipeline\scanner;$(ProjectDir)engine\assetpipeline\manifest;$(ProjectDir)engine\assetpipeline\asset;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)engine;$(ProjectDir)..\..\externals\nlohmann;$(ProjectDir)engine\assetpipeline;$(ProjectDir)engine\exporter;$(ProjectDir)engine\scanner;$(ProjectDir)engine\generated;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
@@ -2003,14 +2015,29 @@ File Path: project/Tools/AssetGenerator/AssetGenerator.vcxproj
     </Link>
     <PostBuildEvent>
       <Command>
-      </Command>
+</Command>
     </PostBuildEvent>
+    <PreBuildEvent>
+      <Command>
+      </Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="engine\assetpipeline\AssetPipeline.cpp" />
+    <ClCompile Include="engine\exporter\HeaderGenerator.cpp" />
+    <ClCompile Include="engine\exporter\JsonExporter.cpp" />
+    <ClCompile Include="engine\scanner\PathManager.cpp" />
+    <ClCompile Include="engine\scanner\ResourceScanner.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="engine\assetpipeline\AssetPipeline.h" />
+    <ClInclude Include="engine\exporter\HeaderGenerator.h" />
+    <ClInclude Include="engine\exporter\JsonExporter.h" />
+    <ClInclude Include="engine\generated\ResourceID.h" />
     <ClInclude Include="engine\math\LoadResourceID.h" />
+    <ClInclude Include="engine\scanner\PathManager.h" />
+    <ClInclude Include="engine\scanner\ResourceScanner.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
@@ -2035,18 +2062,435 @@ File Path: project/Tools/AssetGenerator/AssetGenerator.vcxproj.filters
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="ソース ファイル\assetpipeline">
+      <UniqueIdentifier>{bc96a297-5988-4762-86c3-a53f31a8343f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\assetpipeline">
+      <UniqueIdentifier>{622b36e6-c56a-4d82-a1d8-b456f7257377}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\scanner">
+      <UniqueIdentifier>{4aad378d-6914-4146-bd42-579c9e1d6f1b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\scanner">
+      <UniqueIdentifier>{1e01f44b-7981-4150-a3e7-646ede88a062}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\exporter">
+      <UniqueIdentifier>{a19d6110-0a27-4188-9523-736474d01bea}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\exporter">
+      <UniqueIdentifier>{db1f4293-d361-4953-8ec5-e17134553877}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\generated">
+      <UniqueIdentifier>{9b1ed82c-60d2-4143-86ef-f1710479e78e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
       <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\assetpipeline\AssetPipeline.cpp">
+      <Filter>ソース ファイル\assetpipeline</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\exporter\HeaderGenerator.cpp">
+      <Filter>ソース ファイル\exporter</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\exporter\JsonExporter.cpp">
+      <Filter>ソース ファイル\exporter</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\scanner\PathManager.cpp">
+      <Filter>ソース ファイル\scanner</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\scanner\ResourceScanner.cpp">
+      <Filter>ソース ファイル\scanner</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="engine\math\LoadResourceID.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
+    <ClInclude Include="engine\assetpipeline\AssetPipeline.h">
+      <Filter>ヘッダー ファイル\assetpipeline</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\exporter\HeaderGenerator.h">
+      <Filter>ヘッダー ファイル\exporter</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\exporter\JsonExporter.h">
+      <Filter>ヘッダー ファイル\exporter</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\scanner\PathManager.h">
+      <Filter>ヘッダー ファイル\scanner</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\scanner\ResourceScanner.h">
+      <Filter>ヘッダー ファイル\scanner</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\generated\ResourceID.h">
+      <Filter>ヘッダー ファイル\generated</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
+
+============================================================
+File Path: project/Tools/AssetGenerator/engine/assetpipeline/AssetPipeline.cpp
+============================================================
+#include "AssetPipeline.h"
+#include <PathManager.h>
+#include <iostream>
+#include <ResourceScanner.h>
+#include <HeaderGenerator.h>
+
+void AssetPipeline::Run(int argc, char* argv[]) {
+	Initialize(argc, argv); // 初期化処理
+	Execute();              // 出力処理
+	Finalize();             // 解放処理
+}
+
+void AssetPipeline::Initialize(int argc, char* argv[]) {
+    // コンソールの日本語表示対応
+    std::locale::global(std::locale("japanese"));
+
+    // パスマネージャを使用して Resources フォルダを特定
+    resourcesRoot_ = PathManager::FindResourcesRoot(argc, argv);
+    // エクスポーターの生成
+    exporter_ = std::make_unique<JsonExporter>();
+    // 出力ファイル名の初期化
+    manifestFileName_ = L"manifest.json";
+    // ヘッダーファイル名の初期化
+    resourceIDFileName_ = L"ResourceID.h";
+    // 生成ファイルの出力先ディレクトリを設定
+    if (!resourcesRoot_.empty()) {
+        // Resources の親(ProjectRoot) -> Tools -> AssetGenerator -> engine -> generated
+        generatedDir_ = resourcesRoot_.parent_path() / L"Tools" / L"AssetGenerator" / L"engine" / L"generated";
+
+        // フォルダが存在しない場合は自動作成
+        if (!std::filesystem::exists(generatedDir_)) {
+            std::filesystem::create_directories(generatedDir_);
+        }
+    }
+    // フォルダが見つからない場合は致命的エラーとして停止
+    if (resourcesRoot_.empty()) {
+        throw std::runtime_error("Resources root directory could not be found.");
+    }
+}
+
+void AssetPipeline::Execute() { 
+    // 処理時間の計測開始
+    const std::chrono::high_resolution_clock::time_point startTime = std::chrono::high_resolution_clock::now();
+
+    // Resources 内の全ファイルを再帰的にスキャン
+    ResourceScanner scanner;
+    std::vector<AssetEntry> assets = scanner.Scan(resourcesRoot_, manifestFileName_);
+
+    // 実行日の取得
+    const std::chrono::system_clock::time_point now = std::chrono::system_clock::now();
+    std::time_t now_c = std::chrono::system_clock::to_time_t(now);
+    std::tm now_tm;
+    localtime_s(&now_tm, &now_c);
+
+    std::stringstream dateStream;
+    dateStream << std::put_time(&now_tm, "%Y/%m/%d");
+
+    // 処理時間の計測終了
+    const std::chrono::high_resolution_clock::time_point endTime = std::chrono::high_resolution_clock::now();
+    const std::chrono::duration<double> elapsedSeconds = endTime - startTime;
+
+    // jsonファイルの出力
+    std::filesystem::path jsonPath = generatedDir_ / manifestFileName_;
+    exporter_->Export(jsonPath, dateStream.str(), elapsedSeconds.count(), assets);
+
+    // 生成ファイルの出力
+    HeaderGenerator headerGen;
+    const std::filesystem::path headerPath = generatedDir_ / resourceIDFileName_;
+    headerGen.Generate(headerPath, assets);
+
+    // 完了ログを表示
+    std::wcout << L"[AssetPipeline] Generated " << manifestFileName_ << L" for " << assets.size() << L" assets." << std::endl;
+}
+
+void AssetPipeline::Finalize() {
+    // インスタンスの破棄と終了通知
+    exporter_.reset();
+    std::wcout << L"[AssetPipeline] Finalize completed." << std::endl;
+}
+
+============================================================
+File Path: project/Tools/AssetGenerator/engine/assetpipeline/AssetPipeline.h
+============================================================
+#pragma once
+#include <memory>
+#include <JsonExporter.h>
+
+/// <summary>
+/// アセット生成プロセスの初期化、実行、終了処理を統括するパイプラインクラス。
+/// エンジンの Framework クラスと同様の役割を持つ。
+/// </summary>
+class AssetPipeline {
+public: // メンバ関数
+    /// <summary>
+    /// パイプラインの一連の処理を実行する
+    /// </summary>
+    /// <param name="argc">コマンドライン引数の数</param>
+    /// <param name="argv">コマンドライン引数の配列</param>
+    void Run(int argc, char* argv[]);
+private: // プライベートメンバ関数
+    /// <summary>
+    /// ロケールの設定、パスの解決、内部コンポーネントの初期化を行う
+    /// </summary>
+    void Initialize(int argc, char* argv[]);
+    /// <summary>
+    /// 実際のアセットスキャンやファイル書き出し処理を実行する
+    /// </summary>
+    void Execute();
+    /// <summary>
+    /// リソースの解放処理を行う
+    /// </summary>
+    void Finalize();
+    // メンバ変数
+    std::wstring manifestFileName_;          // 出力ファイル名(.json)
+    std::filesystem::path resourcesRoot_;    // .JSON出力先のルートとなるフォルダのパス 
+    std::unique_ptr<JsonExporter> exporter_; // .JSON出力用インスタンス
+
+    std::wstring resourceIDFileName_;        // ヘッダーファイル名
+    std::filesystem::path generatedDir_;     // ヘッダー出力先のルートとなるフォルダのパス
+};
+
+============================================================
+File Path: project/Tools/AssetGenerator/engine/exporter/HeaderGenerator.cpp
+============================================================
+#include "HeaderGenerator.h"
+#include "ResourceScanner.h"
+#include <fstream>
+#include <algorithm>
+#include <set>
+#include <map>
+
+std::string HeaderGenerator::Sanitize(const std::string& str) {
+    std::string res = str;
+    // ハイフンやスペースをアンダースコアに
+    std::replace(res.begin(), res.end(), '-', '_');
+    std::replace(res.begin(), res.end(), ' ', '_');
+    std::replace(res.begin(), res.end(), '.', '_');
+    if (!res.empty() && std::isdigit(res[0])) res = "_" + res;
+    return res;
+}
+
+void HeaderGenerator::Generate(const std::filesystem::path& outputPath, const std::vector<AssetEntry>& assets) {
+    std::ofstream file(outputPath);
+    if (!file.is_open()) return;
+
+    file << "#pragma once\n#include <string>\n\n";
+    file << "namespace ResourceID {\n";
+
+    // データの階層管理用：[大分類(texture/model)][中間パス][ID] = 相対パス
+    std::map<std::string, std::map<std::vector<std::string>, std::map<std::string, std::string>>> tree;
+
+    for (const AssetEntry& asset : assets) {
+        if (asset.isDirectory) continue;
+
+        std::filesystem::path p(asset.path);
+        auto it = p.begin();
+        if (it == p.end()) continue;
+
+        std::string rootFolder = Sanitize(it->string());
+        std::string category = "";
+
+        // ルートフォルダ名で namespace を決定
+        if (rootFolder == "Textures") category = "texture";
+        else if (rootFolder == "Models") category = "model";
+        else if (rootFolder == "Audio") category = "audio";
+        else continue; // 今回の条件（Textures/Models以外）はスキップ
+
+        std::vector<std::string> subFolders;
+        it++; // Rootの次から
+        for (; std::next(it) != p.end(); ++it) {
+            subFolders.push_back(Sanitize(it->string()));
+        }
+
+        std::string id = Sanitize(p.stem().string());
+        // 相対パス（正規化済み）を値として保持
+        std::string fullPath = "";
+        for (auto& part : p) {
+            if (!fullPath.empty()) fullPath += "/";
+            fullPath += part.string();
+        }
+
+        tree[category][subFolders][id] = fullPath;
+    }
+
+    // コード生成
+    for (auto const& [catName, folders] : tree) {
+        file << "    namespace " << catName << " {\n";
+        
+        // フォルダ階層を管理して出力（※簡易的な1階層ネスト例。必要に応じて再帰化）
+        for (auto const& [folderPath, items] : folders) {
+            std::string indent = "        ";
+            for (const auto& f : folderPath) {
+                file << indent << "namespace " << f << " {\n";
+                indent += "    ";
+            }
+
+            for (auto const& [id, path] : items) {
+                file << indent << "static const std::string " << id << " = \"" << path << "\";\n";
+            }
+
+            for (size_t i = 0; i < folderPath.size(); ++i) {
+                indent = indent.substr(0, indent.length() - 4);
+                file << indent << "}\n";
+            }
+        }
+        file << "    }\n";
+    }
+
+    file << "}\n";
+}
+
+============================================================
+File Path: project/Tools/AssetGenerator/engine/exporter/HeaderGenerator.h
+============================================================
+#pragma once
+#include <filesystem>
+#include <string>
+#include <vector>
+
+// 前方宣言
+struct AssetEntry;
+
+/// <summary>
+/// アセットパスから C++ で利用可能な ID（enum）を定義したヘッダーファイルを生成する
+/// </summary>
+class HeaderGenerator {
+public: // メンバ関数
+    /// <summary>
+    /// アセットリストを解析し、ResourceID.h を生成する
+    /// </summary>
+    void Generate(const std::filesystem::path& outputPath, const std::vector<AssetEntry>& assets);
+
+private: // プライベートメンバ関数
+    // C++の識別子として使えない文字を置換する
+    std::string Sanitize(const std::string& str);
+};
+
+============================================================
+File Path: project/Tools/AssetGenerator/engine/exporter/JsonExporter.cpp
+============================================================
+#include "JsonExporter.h"
+#include <ResourceScanner.h>
+#include <fstream>
+#include <iomanip>
+#include <Windows.h>
+#include <algorithm>
+#include <map>
+#include <json.hpp>
+
+std::string JsonExporter::NormalizePath(const std::wstring& wstr) {
+    if (wstr.empty()) return "";
+    
+    // Windows環境のワイド文字を UTF-8 マルチバイト文字列へ変換
+    int sizeNeeded = WideCharToMultiByte(CP_UTF8, 0, &wstr[0], (int)wstr.size(), NULL, 0, NULL, NULL);
+    std::string strTo(sizeNeeded, 0);
+    WideCharToMultiByte(CP_UTF8, 0, &wstr[0], (int)wstr.size(), &strTo[0], sizeNeeded, NULL, NULL);
+
+    // JSONや各種ツールで扱いやすいよう、パス区切りを '/' に統一
+    std::replace(strTo.begin(), strTo.end(), '\\', '/');
+    return strTo;
+}
+
+std::string JsonExporter::GetTypeKey(const std::wstring& ext) {
+    // 拡張子を小文字に統一して判定（大文字小文字の揺れを吸収）
+    std::wstring lowerExt = ext;
+    std::transform(lowerExt.begin(), lowerExt.end(), lowerExt.begin(), ::tolower);
+
+    if (lowerExt == L".png" || lowerExt == L".jpg" || lowerExt == L".tga" || lowerExt == L".dds") return "texture";
+    if (lowerExt == L".fbx" || lowerExt == L".obj" || lowerExt == L".gltf") return "model";
+    if (lowerExt == L".wav" || lowerExt == L".mp3" || lowerExt == L".ogg") return "audio";
+    return "unknown";
+}
+
+void JsonExporter::Export(const std::filesystem::path& path, const std::string& date, double duration, const std::vector<AssetEntry>& assets) {
+    // 1. JSON オブジェクトの宣言
+    nlohmann::json root;
+
+    // 2. 基本情報の記録
+    root["info"]["date"] = date;
+    root["info"]["sec"] = duration;
+
+    // 3. アセットリストを階層構造に組み込む
+    for (const AssetEntry& asset : assets) {
+        // フォルダ自体のエントリは記録不要（ファイルへのパスが階層を作るため）
+        if (asset.isDirectory) continue;
+
+        std::string typeKey = GetTypeKey(asset.extension);
+        if (typeKey == "unknown") continue;
+
+        // パスを要素ごとに分解して処理
+        // 例: "Textures/Ui/Arrow.png" -> ["Textures", "Ui", "Arrow.png"]
+        std::filesystem::path p(asset.path);
+
+        // 階層を辿るための参照
+        nlohmann::json* current = &root;
+
+        for (std::filesystem::path::iterator it = p.begin(); it != p.end(); ++it) {
+            std::string part = NormalizePath(it->wstring());
+
+            if (std::next(it) == p.end()) {
+                // --- ファイル（末尾）の処理 ---
+                // ファイル名（拡張子なし）をキーにする
+                std::string id = NormalizePath(std::filesystem::path(*it).stem().wstring());
+                std::transform(id.begin(), id.end(), id.begin(), ::tolower);
+
+                // パスを正規化して格納
+                (*current)[id][typeKey] = NormalizePath(asset.path);
+            } else {
+                // --- 中間フォルダの処理 ---
+                // current を一段深く進める。存在しなければ自動的にオブジェクト "{}" が作られる
+                current = &((*current)[part]);
+            }
+        }
+    }
+
+    // 4. ファイル書き出し
+    std::ofstream file(path);
+    if (file.is_open()) {
+        // インデント4スペースで整形して出力
+        file << root.dump(4) << std::endl;
+    }
+}
+
+============================================================
+File Path: project/Tools/AssetGenerator/engine/exporter/JsonExporter.h
+============================================================
+#pragma once
+#include <filesystem>
+#include <string>
+
+// 前方宣言
+struct AssetEntry;
+
+/// <summary>
+/// 取得したアセット情報等を JSON 形式でファイルに書き出すためのエクスポートクラス
+/// </summary>
+class JsonExporter {
+public: // メンバ関数
+    /// <summary>
+    /// アセットリストを Group/ID 構造に統合し、指定されたパスに JSON を出力する
+    /// </summary>
+    /// <param name="path">出力先のファイルパス</param>
+    /// <param name="date">manifest 内に記録する生成日の文字列</param> 
+    /// <param name="duration">計測された処理時間（秒）</param>
+    /// <param name="assets">Scanner によって取得された生のアセットデータリスト</param>
+    void Export(const std::filesystem::path& path, const std::string& date, double duration, const std::vector<AssetEntry>& assets); 
+    /// <summary>
+    /// Windows形式のパス区切り '\' を、JSONで扱いやすい '/' に置換し、UTF-8へ変換する
+    /// </summary>
+    /// <param name="wstr">変換対象のワイド文字列（パス）</param>
+    /// <returns>変換後の UTF-8 文字列</returns>
+    std::string NormalizePath(const std::wstring& wstr);    
+    /// <summary>
+    /// 拡張子に基づいて、JSON上のキー名（texture / model / audio）を決定する
+    /// </summary>
+    /// <param name="ext">判定対象の拡張子（ドットを含む）</param>
+    /// <returns>アセット種別を表す文字列。対象外なら "unknown"</returns>
+    std::string GetTypeKey(const std::wstring& ext);
+};
 
 ============================================================
 File Path: project/Tools/AssetGenerator/engine/math/LoadResourceID.h
@@ -2131,41 +2575,180 @@ namespace LoadResourceID {
 
 
 ============================================================
-File Path: project/Tools/AssetGenerator/main.cpp
+File Path: project/Tools/AssetGenerator/engine/scanner/PathManager.cpp
 ============================================================
-#include <iostream>
-#include <filesystem>
-#include <fstream>
+#include "PathManager.h"
+#include <Windows.h>
 
-int main() {
-    // 出力先パス
-    std::filesystem::path outputPath = "engine/test.json";
+std::filesystem::path PathManager::GetExePath() {
+    // Windows API を使用してモジュールのフルパスを取得
+    wchar_t path[MAX_PATH];
+    GetModuleFileNameW(NULL, path, MAX_PATH);
+    return std::filesystem::path(path);
+}
 
-    // engineフォルダが存在しない場合作成
-    std::filesystem::create_directories(outputPath.parent_path());
+std::filesystem::path PathManager::FindResourcesRoot(int argc, char* argv[]) {
+    // コマンドライン引数（$(ProjectDir)Resources 等）が渡されている場合は最優先で使用
+    if (argc > 1) {
+        return std::filesystem::absolute(argv[1]);
+    }
+    // 引数がない場合は実行ファイルの場所から遡って自動探索
+    return SearchRecursive(GetExePath());
+}
 
-    // JSONファイル書き込み
-    std::ofstream file(outputPath);
-
-    if (!file)
-    {
-        std::cout << "ファイルを開けませんでした\n";
-        return -1;
+std::filesystem::path PathManager::SearchRecursive(std::filesystem::path current) {
+    current = std::filesystem::absolute(current);
+    if (std::filesystem::is_regular_file(current)) {
+        current = current.parent_path(); // ファイルパスならディレクトリパスへ変換
     }
 
-    file << "{\n";
-    file << "  \"name\": \"AssetGenerator\",\n";
-    file << "  \"version\": 1,\n";
-    file << "  \"test\": true\n";
-    file << "}\n";
+    while (current.has_parent_path()) {
+        // 現在のディレクトリ名が対象(Resources)と一致するか確認
+        if (current.filename() == L"Resources") return current;
 
-    file.close();
+        // 子階層に直接 Resources が含まれるケース（プロジェクトルートからの検索）を確認
+        std::filesystem::path check = current / L"Resources";
+        if (std::filesystem::exists(check)) return check;
 
-    std::cout << "engine/test.json を生成しました\n";
+        // エンジン固有の project フォルダ構造を考慮したパス解決
+        if (current.filename() == L"project") {
+            if (std::filesystem::exists(current / L"Resources")) {
+                return current / L"Resources";
+            }
+        }
 
+        // 上位階層へ遡り、ルート（C:\等）に達したらループを抜ける
+        if (current == current.parent_path()) break;
+        current = current.parent_path();
+    }
+    return "";
+}
 
+============================================================
+File Path: project/Tools/AssetGenerator/engine/scanner/PathManager.h
+============================================================
+#pragma once
+#include <filesystem>
+#include <string>
 
+/// <summary>
+/// 実行環境やプロジェクト構成に合わせて、適切なディレクトリパスを特定・管理するクラス
+/// </summary>
+class PathManager {
+public: // メンバ関数
+    /// <summary>
+    /// 実行ファイル（.exe）自体の絶対パスを取得する
+    /// </summary>
+    /// <returns>実行ファイルの絶対パス</returns>
+    static std::filesystem::path GetExePath();
+    /// <summary>
+    /// リソースの出力先となる "Resources" フォルダのルートを特定する
+    /// </summary>
+    /// <param name="argc">コマンドライン引数の数</param>
+    /// <param name="argv">コマンドライン引数の配列</param>
+    /// <returns>特定された Resources フォルダのパス（見つからない場合は空）</returns>
+    static std::filesystem::path FindResourcesRoot(int argc, char* argv[]);
+private: // プライベートメンバ関数
+    /// <summary>
+    /// 指定されたパスから親ディレクトリを遡り、再帰的に Resources フォルダを探索する
+    /// </summary>
+    /// <param name="current">探索を開始する現在のパス</param>
+    /// <returns>見つかった Resources フォルダのパス</returns>
+    static std::filesystem::path SearchRecursive(std::filesystem::path current);
+};
 
+============================================================
+File Path: project/Tools/AssetGenerator/engine/scanner/ResourceScanner.cpp
+============================================================
+#include "ResourceScanner.h"
+
+namespace fs = std::filesystem;
+
+std::vector<AssetEntry> ResourceScanner::Scan(const fs::path& root, const std::wstring& excludeFileName) {
+    std::vector<AssetEntry> assets;
+
+    // 指定されたルートディレクトリが存在しない場合は、空のリストを返して安全に終了する
+    if (!fs::exists(root)) {
+        return assets;
+    }
+    // サブフォルダの中身まで含めてすべて巡回する
+    for (const fs::directory_entry& entry : fs::recursive_directory_iterator(root)) {
+        AssetEntry asset;
+
+        // --- パスとファイル情報の抽出 ---
+
+        // ルートディレクトリからの相対パスを取得（ファイル内での一意な識別子として使用）
+        asset.path = fs::relative(entry.path(), root).wstring();
+
+        // 拡張子を含む純粋なファイル名を取得
+        asset.fileName = entry.path().filename().wstring();
+
+        // 現在のエントリがディレクトリ（フォルダ）かファイルかを判定
+        asset.isDirectory = entry.is_directory();
+
+        // ファイルの拡張子（.png, .obj など）を取得。後のアセットタイプ判定に使用
+        asset.extension = entry.path().extension().wstring();
+
+        // 除外フィルタリング 
+        if (asset.fileName == excludeFileName) {
+            continue;
+        }
+        // 抽出した情報をリストに追加
+        assets.push_back(asset);
+    }
+
+    return assets;
+}
+
+============================================================
+File Path: project/Tools/AssetGenerator/engine/scanner/ResourceScanner.h
+============================================================
+#pragma once
+#include <filesystem>
+#include <vector>
+#include <string>
+
+/// <summary>
+/// アセットの情報を保持する構造体
+/// </summary>
+struct AssetEntry {
+    std::wstring path;      // Resources からの相対パス
+    std::wstring fileName;  // ファイル名
+    bool isDirectory;       // ディレクトリかどうか
+    std::wstring extension; // 拡張子
+};
+
+/// <summary>
+/// Resources 内のファイルを走査し、アセットリストを作成するクラス
+/// </summary>
+class ResourceScanner {
+public: // メンバ関数
+    /// <summary>
+    /// 指定されたルートディレクトリ以下を再帰的にスキャンする
+    /// </summary>
+    /// <param name="root">スキャンを開始するルート（Resources）のパス</param>
+    /// <param name="excludeFileName">走査対象から除外するファイル名</param>
+    std::vector<AssetEntry> Scan(const std::filesystem::path& root, const std::wstring& excludeFileName);
+};
+
+============================================================
+File Path: project/Tools/AssetGenerator/main.cpp
+============================================================
+#include <AssetPipeline.h>
+#include <iostream>
+
+int main(int argc, char* argv[]) {
+    // パイプラインの生成  
+    std::unique_ptr<AssetPipeline> pipeline = std::make_unique<AssetPipeline>();
+
+    try {
+        // 実行処理
+        pipeline->Run(argc, argv);
+    }
+    catch (const std::exception& e) {
+        std::cerr << "Fatal Error: " << e.what() << std::endl;
+        return -1;
+    }
 
     return 0;
 }
@@ -6784,9 +7367,10 @@ File Path: project/application/pause/Pausemenu.cpp
 #include "Pausemenu.h"
 #include <TextureManager.h>
 #include <Input.h>
-#include<Easing.h>
+#include <Easing.h>
 #include <SceneManager.h>
 #include <FadeManager.h>
+#include <ImGuiManager.h>
 #ifdef min
 #undef min
 #endif
@@ -6794,195 +7378,379 @@ File Path: project/application/pause/Pausemenu.cpp
 #undef max
 #endif
 
+#include <Tools/AssetGenerator/engine/generated/ResourceID.h>
+
+using namespace ResourceID;
 using namespace Easing;
 
 void Pausemenu::Initialize() {
-    TextureManager::GetInstance()->LoadTexture("Textures/Ui/PauseMenuPanel.png");
-    TextureManager::GetInstance()->LoadTexture("Textures/Ui/Arrow.png");
-    TextureManager::GetInstance()->LoadTexture("Textures/Ui/command_01.png");
-    TextureManager::GetInstance()->LoadTexture("Textures/Ui/command_02.png");
-    TextureManager::GetInstance()->LoadTexture("Textures/Ui/Poseicon.png");
-    TextureManager::GetInstance()->LoadTexture("Textures/Ui/command_11.png");
-    TextureManager::GetInstance()->LoadTexture("Textures/Ui/command_12.png");
-    TextureManager::GetInstance()->LoadTexture("Textures/Ui/Poseicon_red.png");
-    command_ = PauseCommand::None;
+    TextureManager::GetInstance()->LoadTexture(texture::Pausemenu::PauseMenuPanel);
+    TextureManager::GetInstance()->LoadTexture(texture::Pausemenu::Poseicon);
+    TextureManager::GetInstance()->LoadTexture(texture::Pausemenu::Poseicon_red);   
+    TextureManager::GetInstance()->LoadTexture(texture::Pausemenu::menu_01);
+    TextureManager::GetInstance()->LoadTexture(texture::Pausemenu::menu_02);
+    TextureManager::GetInstance()->LoadTexture(texture::Pausemenu::menu_03);
+    TextureManager::GetInstance()->LoadTexture(texture::Pausemenu::menu_04);
+    TextureManager::GetInstance()->LoadTexture(texture::Pausemenu::Arrow);
+
+    // 初期状態は非アクティブ
     isActive_ = false;
-    selectedIndex_ = 0;
-    MAXselectedIndex_ = 2;
-    frame_ = 0.0f;
-    baseSize_ = { 700.0f, 400.0f }; // 最終的なサイズ 
-    panelTargetPos = { 650.0f, 350.0f };
-    menupanel_ = Sprite::Create("Textures/Ui/PauseMenuPanel.png", panelTargetPos, 0.0f, baseSize_);
-    menupanel_->SetAnchorPoint(Vector2{ 0.5f,0.5f });
+	// ポーズアイコンの作成
+    paused_ = Sprite::Create(texture::Pausemenu::Poseicon, Vector2{ 3.0f, 3.0f }, 0.0f, Vector2{ 100.0f,100.0f });
+    
+    isOpening_ = false; 
+    isClosing_ = false;
+    openTimer_ = 0.0f;
+    // パネルUIの作成
+    for (uint32_t i = 0; i < 2; i++) {
+        UIElement element;
+        element.size = { 700.0f, 400.0f };
+        element.position = { 640.0f, 350.0f };
+        element.position.x += (350.0f + 700.0f) * i; // 横にずらす
+        // 初期位置（画面下）
+        Vector2 startPos = element.position;
+        startPos.y = 1000.0f;
+
+        element.sprite = Sprite::Create(texture::Pausemenu::PauseMenuPanel, startPos, 0.0f, element.size);
+        element.sprite->SetAnchorPoint({ 0.5f,0.5f });
+        if (i == 1) {
+            element.sprite->SetTextureLeftTop({ 700.0f,0.0f });
+        }
+        panels_.push_back(std::move(element));
+    }
+    
+    // テクスチャ読み込み
+    std::string textures[] = { 
+        texture::Pausemenu::menu_01, texture::Pausemenu::menu_03,
+        texture::Pausemenu::menu_02, texture::Pausemenu::menu_04    
+    };
+	// コマンドUIの作成
+    for (uint32_t i = 0; i < kMaxCommand; ++i) {
+        UIElement command;
+        command.size = { 200.0f,70.0f };
+        if (i == static_cast<uint32_t>(PauseCommand::Turnback)) {
+            commandPanelIndex_[i] = 1;
+        } else {
+            commandPanelIndex_[i] = 0;
+        }
+        if (i == 3) {
+            commandOffset_[i] = { 0.0f,((i - 1) * kMenuIntervalY) };
+        } else {
+            commandOffset_[i] = { 0.0f,(i * kMenuIntervalY) };
+        }
+        Vector2 panelPos = panels_[commandPanelIndex_[i]].sprite->GetPosition();
+        Vector2 pos{ panelPos.x,panelPos.y + commandOffset_[i].y - 20.0f };
+        command.sprite = Sprite::Create(textures[i], pos, 0.0f, command.size);
+        command.sprite->SetAnchorPoint({ 0.5f,0.5f });
+        commands_[i].push_back(std::move(command));
+    }
+
     arrow_.size = { 50.0f,50.0f };
-    arrow_.sprite = Sprite::Create("Textures/Ui/Arrow.png", Vector2{ 770.0f, 350.0f }, 0.0f, arrow_.size);
+    arrow_.position = { commands_[selectedIndex_][0].sprite->GetPosition().x + kArrowOffsetX , commands_[selectedIndex_][0].sprite->GetPosition().y };
+    arrow_.sprite = Sprite::Create(texture::Pausemenu::Arrow, arrow_.position, 0.0f, arrow_.size);
     arrow_.sprite->SetAnchorPoint(Vector2{ 0.5f,0.5f });
 
-    // テクスチャ読み込み
-    std::string textures[] = { "Textures/Ui/command_01.png", "Textures/Ui/command_02.png" };
-    for (uint32_t i = 0; i < kMaxCommand; ++i) {
-        commands_[i].size = { 150.0f, 50.0f };
-        // Y座標を間隔分ずらして配置
-        Vector2 pos = { 640.0f, kMenuTopY + (i * kMenuIntervalY) };
-        if (i == 0) {
-            arrow_.sprite->SetPosition({ 750.0f,pos.y });
-        }
-        commands_[i].sprite = Sprite::Create(textures[i], pos, 0.0f, commands_[i].size);
-        commands_[i].sprite->SetAnchorPoint({ 0.5f, 0.5f });
-    }
-    icon_ = Sprite::Create("Textures/Ui/Poseicon.png", Vector2{ 3.0f, 3.0f }, 0.0f, Vector2{ 100.0f,100.0f });
-    kStartOffestY = 800.0f;
+    selectedIndex_ = 0;
+    fige = false;
 }
 
 void Pausemenu::Update() {
-    // --- 1. アニメーション（演出）の更新 ---
+    if (isOpening_) {
+        openTimer_++;
+        float t = std::clamp(openTimer_ / kOpenMaxFrame, 0.0f, 1.0f);
+        // 既存のイージング関数を使用
+        float easeT = EaseOutBack(t);
+
+
+        for (uint32_t i = 0; i < panels_.size(); i++) {
+
+            Vector2 targetPos = panels_[i].position;
+            Vector2 targetSize = panels_[i].size;
+
+            float startY = 1000.0f;
+
+            float currentY = startY + (targetPos.y - startY) * easeT;
+
+            // サイズ補間
+            Vector2 currentSize{
+                targetSize.x * easeT,
+                targetSize.y * easeT
+            };
+
+            panels_[i].sprite->SetPosition({ targetPos.x, currentY });
+            panels_[i].sprite->SetSize(currentSize);
+        }
+        if (openTimer_ >= kOpenMaxFrame) {
+            isOpening_ = false;
+            fige = true;
+        }
+    }
+    // 閉じるアニメーション
+    if (isClosing_) {
+
+        openTimer_++;
+
+        float t = std::clamp(openTimer_ / kOpenMaxFrame, 0.0f, 1.0f);
+        float easeT = EaseOutBack(t);
+        float reverseT = 1.0f - easeT;
+
+        for (UIElement& panel : panels_) {
+
+            Vector2 targetSize = panel.size;
+
+            float currentY = std::lerp(panel.position.y, 1000.0f, easeT);
+
+            Vector2 currentSize{
+                targetSize.x * reverseT,
+                targetSize.y * reverseT
+            };
+
+            panel.sprite->SetPosition({ panel.position.x, currentY });
+            panel.sprite->SetSize(currentSize);
+        }
+
+        if (openTimer_ >= kOpenMaxFrame) {
+
+            isClosing_ = false;
+            isActive_ = false; // ここでポーズ解除
+        }
+    }
+
     if (isActive_) {
-        if (frame_ < kMaxFrame + 20.0f) { // 全体の演出時間をディレイ分少し伸ばす
-            frame_ += 1.0f;
-        }
+        paused_->SetTexture(texture::Pausemenu::Poseicon_red);
+        keyUpdate();
+        ExecuteCommand(); // コマンド実行
     } else {
-        if (frame_ > 0.0f) {
-            frame_ -= 1.0f;
-        } else {
-            isFinished_ = true;
-        }
+        paused_->SetTexture(texture::Pausemenu::Poseicon);
     }
 
-    // --- 2. 各パーツのサイズ更新（時間差をつける） ---
-    // 背景パネル：即座に開始
-    CalculateEaseSize(menupanel_.get(), baseSize_, frame_, kMaxFrame);
-    CalculateEasePos(menupanel_.get(), panelTargetPos, kStartOffestY, frame_, kMaxFrame);
-
-    // コマンド：背景パネルより 10フレーム遅れて開始
-    float buttonFrame = std::max(0.0f, frame_ - 10.0f);
-    std::string textures_green[] = { "Textures/Ui/command_11.png", "Textures/Ui/command_12.png" };
-    std::string textures_red[] = { "Textures/Ui/command_01.png", "Textures/Ui/command_02.png" };
-    for (uint32_t i = 0; i < kMaxCommand; ++i) {
-        CalculateEaseSize(commands_[i].sprite.get(), commands_[i].size, buttonFrame, kMaxFrame);
-        // --- 選択中のテクスチャ差し替え処理 ---
-        if (isActive_ && i == selectedIndex_) {
-            // インデックス0（Resume）が選択されている時だけ command_11 に差し替える
-            commands_[i].sprite->SetTexture(textures_green[i]);      
-            commands_[i].sprite->SetColor({ 1.0f, 1.0f, 1.0f, 1.0f }); // 色による強調が不要なら白に戻す
-        } else {
-            // 非選択時は元のテクスチャに戻す
-            commands_[i].sprite->SetTexture(textures_red[i]);
-            commands_[i].sprite->SetColor({ 1.0f, 1.0f, 1.0f, 1.0f });
-        }
+    if (isOperationMove_) {
+        UpdateOperationMove();
     }
 
-    // 矢印：背景パネルより 15フレーム遅れて開始
-    float arrowFrame = std::max(0.0f, frame_ - 10.0f);
-    CalculateEaseSize(arrow_.sprite.get(), arrow_.size, arrowFrame, kMaxFrame);
-
-    // 入力と位置の更新（完全に開ききっている時のみ操作可能）
-    if (isActive_ && frame_ >= kMaxFrame) {
-        UpdateSelection(); // コマンド選択
-        UpdateArrowPositions(); // 矢印の処理
-    }
-    menupanel_->Update();
+    paused_->Update();
     arrow_.sprite->Update();
-    for (UIElement& cmd : commands_) {
-        cmd.sprite->Update(); // 全ての選択肢
+
+    for (UIElement& panel : panels_) {
+        panel.sprite->Update();
+    }
+
+    for (std::vector<UIElement>& commandList : commands_) {
+        for (UIElement& command : commandList) {
+            command.sprite->Update();
+        }
     }
 }
 
 void Pausemenu::Draw() {
+    paused_->Draw();
 
-    menupanel_->Draw();
-    for (UIElement& cmd : commands_) {
-        cmd.sprite->Draw(); // 全ての選択肢
+    for (UIElement& panel : panels_) {
+        panel.sprite->Draw();
     }
-    if (isActive_ && frame_ >= kMaxFrame) {
-        arrow_.sprite->Draw();
+
+    for (std::vector<UIElement>& commandList : commands_) {
+        for (UIElement& command : commandList) {
+            command.sprite->Draw();
+        }
     }
+    
+    arrow_.sprite->Draw();
 }
 
-void Pausemenu::CalculateEaseSize(Sprite* sprite, const Vector2& baseSize, float frame, float maxFrame) {
-    if (!sprite) return;
+void Pausemenu::keyUpdate() {
+    // コマンド実行中は選択処理をしない
+    if (!isCommandRunning_) {
 
-    float t = std::clamp(frame / maxFrame, 0.0f, 1.0f);
-    float easeT = 0.0f;
+        // 下
+        if (Input::GetInstance()->Triggrkey(DIK_DOWN)) {
+            selectedIndex_++;
+            if (!isOperationMode_ && selectedIndex_ == static_cast<uint32_t>(PauseCommand::Turnback)) {
+                selectedIndex_ = 0;
+            }
+            if (selectedIndex_ >= kMaxCommand) {
+                selectedIndex_ = 0;
+            }
+            UpdateArrowPositions();
+        }
 
-    if (t == 0.0f) {
-        easeT = 0.0f;
-    } else if (t == 1.0f) {
-        easeT = 1.0f;
-    } else {
-        // easeOutBack の計算式
-        const float c1 = 1.70158f;
-        const float c3 = c1 + 1.0f;
-        easeT = 1.0f + c3 * std::pow(t - 1.0f, 3.0f) + c1 * std::pow(t - 1.0f, 2.0f);
-    }
+        // 上
+        if (Input::GetInstance()->Triggrkey(DIK_UP)) {
+            if (selectedIndex_ == 0) {
+                selectedIndex_ = kMaxCommand - 1;
+            } else {
+                selectedIndex_--;
+            }
 
-    Vector2 currentSize = { baseSize.x * easeT, baseSize.y * easeT };
-    sprite->SetSize(currentSize);
-}
-
-void Pausemenu::UpdateSelection() {
-    // 入力による選択項目の切り替え
-    if (Input::GetInstance()->Triggrkey(DIK_UP) || Input::GetInstance()->Triggrkey(DIK_W)) {
-        selectedIndex_ = (selectedIndex_ - 1 + MAXselectedIndex_) % MAXselectedIndex_;
-    }
-    if (Input::GetInstance()->Triggrkey(DIK_DOWN) || Input::GetInstance()->Triggrkey(DIK_S)) {
-        selectedIndex_ = (selectedIndex_ + 1) % MAXselectedIndex_;
-    }
-    // 決定
-    if (Input::GetInstance()->Triggrkey(DIK_RETURN)) {
-        if (selectedIndex_ == 0) {
-            // Resumeを選択: isActiveをfalseにして逆再生演出を開始させる
-            isActive_ = false;
-            command_ = PauseCommand::None; // まだゲーム側には通知しない（演出を待つため）
-        } else if (selectedIndex_ == 1) {
-            command_ = PauseCommand::GoToTitle;
+            if (!isOperationMode_ && selectedIndex_ == static_cast<uint32_t>(PauseCommand::Turnback)) {
+                selectedIndex_--;
+            }
+            UpdateArrowPositions();
         }
     }
 }
+
 void Pausemenu::UpdateArrowPositions() {
-    // 現在選ばれている項目の位置を取得
-    Vector2 targetPos = commands_[selectedIndex_].sprite->GetPosition();
+    if (commands_[selectedIndex_].empty()) {
+        return;
+    }
+    Vector2 targetPos = commands_[selectedIndex_][0].sprite->GetPosition();
 
-    // 矢印を項目の左側（または右側）に配置するためのオフセット
-    // 例: 項目の中心から左に 120ピクセルずらす
-    float offset = 120.0f;
-    arrow_.sprite->SetPosition(Vector2{ targetPos.x + offset, targetPos.y });
+    arrow_.sprite->SetPosition(Vector2{ targetPos.x + kArrowOffsetX,targetPos.y });
 }
 
-void Pausemenu::IconUpdate() {
-    if (isActive_) {
-        icon_->SetTexture("Textures/Ui/Poseicon_red.png");
-    } else {
-        icon_->SetTexture("Textures/Ui/Poseicon.png");
+void Pausemenu::ExecuteCommand() { 
+
+    if (!isOperationMove_ && Input::GetInstance()->Triggrkey(DIK_RETURN)) {
+        command_ = static_cast<PauseCommand>(selectedIndex_);
+
+        switch (command_) {
+        case PauseCommand::Resume:
+            if (fige) {
+                isClosing_ = true;
+                isOpening_ = false;
+                openTimer_ = 0.0f;
+                fige = false;
+            }
+            break;
+        case PauseCommand::Operation:
+            isOperationMode_ = true;
+            isCommandRunning_ = true;
+            isOperationMove_ = true;
+            operationTimer_ = 0.0f;
+            panel1Start_ = { kPanelCenterX, panels_[0].sprite->GetPosition().y };
+            panel1End_ = { kPanelLeftX,   panels_[0].sprite->GetPosition().y };
+
+            panel2Start_ = { kPanelRightX, panels_[1].sprite->GetPosition().y };
+            panel2End_ = { kPanelCenterX, panels_[1].sprite->GetPosition().y };
+        
+            for (uint32_t i = 0; i < kMaxCommand; i++) {
+                if (commands_[i].empty()) continue;
+
+                Vector2 pos = commands_[i][0].sprite->GetPosition();
+                commandStart_[i] = pos;
+
+                // Turnbackだけパネル2へ
+                if (i == static_cast<uint32_t>(PauseCommand::Turnback)) {
+                    commandEnd_[i] = {
+                        kPanelCenterX,
+                        pos.y
+                    };
+                } else {
+                    // panel1と一緒に左へ
+                    commandEnd_[i] = {
+                        pos.x + (kPanelLeftX - kPanelCenterX),
+                        pos.y
+                    };
+                }
+            }
+            selectedIndex_ = static_cast<uint32_t>(PauseCommand::Turnback);
+            UpdateArrowPositions();
+            break;
+        case PauseCommand::GoToTitle:
+            isCommandRunning_ = true;
+            break;
+        case PauseCommand::Turnback:
+            if (isOperationMode_) {
+
+                isOperationMode_ = false;
+                isCommandRunning_ = false;
+
+                isOperationMove_ = true;
+                operationTimer_ = 0.0f;
+
+                panel1Start_ = { kPanelLeftX, panels_[0].sprite->GetPosition().y };
+                panel1End_ = { kPanelCenterX, panels_[0].sprite->GetPosition().y };
+
+                panel2Start_ = { kPanelCenterX, panels_[1].sprite->GetPosition().y };
+                panel2End_ = { kPanelRightX, panels_[1].sprite->GetPosition().y };
+
+                for (uint32_t i = 0; i < kMaxCommand; i++) {
+
+                    if (commands_[i].empty()) continue;
+
+                    Vector2 pos = commands_[i][0].sprite->GetPosition();
+                    commandStart_[i] = pos;
+
+                    commandEnd_[i] = {
+                        640.0f,
+                        kMenuTopY + (i * kMenuIntervalY)
+                    };
+                }
+
+                selectedIndex_ = static_cast<uint32_t>(PauseCommand::Operation);
+                UpdateArrowPositions();
+            }
+
+            break;
+        default:
+            break;
+        }
     }
 
-    icon_->Update();
+    for (uint32_t i = 0; i < kMaxCommand; i++) {
+
+        if (commands_[i].empty()) {
+            continue;
+        }
+
+        UIElement& command = commands_[i][0];
+
+        // Turnback以外
+        if (i == selectedIndex_ && i != static_cast<uint32_t>(PauseCommand::Turnback)) {
+            command.sprite->SetTextureLeftTop({ 200.0f, 0.0f });
+        } else {
+            command.sprite->SetTextureLeftTop({ 0.0f, 0.0f });
+        }
+    }
+    UpdateCommandPosition();
 }
- 
-void Pausemenu::IconDraw() {
-    icon_->Draw();
-}
 
-// Pausemenu.cpp に追加
-void Pausemenu::CalculateEasePos(Sprite* sprite, const Vector2& targetPos, float startY, float frame, float maxFrame) {
-    if (!sprite) return;
+void Pausemenu::UpdateOperationMove() {
+    operationTimer_ += 1.0f / 60.0f;
 
-    float t = std::clamp(frame / maxFrame, 0.0f, 1.0f);
-    float easeT = 0.0f;
+    float t = operationTimer_ / operationDuration_;
 
-    if (t == 0.0f) {
-        easeT = 0.0f;
-    } else if (t == 1.0f) {
-        easeT = 1.0f;
-    } else {
-        // 現在使用している easeOutBack をそのまま利用
-        const float c1 = 1.70158f;
-        const float c3 = c1 + 1.0f;
-        easeT = 1.0f + c3 * std::pow(t - 1.0f, 3.0f) + c1 * std::pow(t - 1.0f, 2.0f);
+    if (t >= 1.0f) {
+        t = 1.0f;
+        isOperationMove_ = false;
     }
 
-    // Y座標を補間 (startY から targetPos.y まで)
-    float currentY = startY + (targetPos.y - startY) * easeT;
-    sprite->SetPosition({ targetPos.x, currentY });
+    float ease = EaseOutBack(t);
+
+    // パネル
+    Vector2 p1{
+        Lerp(panel1Start_.x, panel1End_.x, ease),
+        Lerp(panel1Start_.y, panel1End_.y, ease)
+    };
+
+    Vector2 p2{
+        Lerp(panel2Start_.x, panel2End_.x, ease),
+        Lerp(panel2Start_.y, panel2End_.y, ease)
+    };
+
+    panels_[0].sprite->SetPosition(p1);
+    panels_[1].sprite->SetPosition(p2);
+}
+
+void Pausemenu::UpdateCommandPosition() {
+    for (uint32_t i = 0; i < kMaxCommand; i++) {
+
+        if (commands_[i].empty()) continue;
+
+        int panelIndex = commandPanelIndex_[i];
+
+        Vector2 panelPos = panels_[panelIndex].sprite->GetPosition();
+
+        Vector2 pos{
+            panelPos.x,
+            panelPos.y + commandOffset_[i].y
+        };
+
+        commands_[i][0].sprite->SetPosition(pos);
+    }
+
+    UpdateArrowPositions();
 }
 
 ============================================================
@@ -6997,7 +7765,9 @@ File Path: project/application/pause/Pausemenu.h
 // ポーズメニューの選択肢
 enum class PauseCommand {
     Resume,     // ゲーム再開
+	Operation,  // 操作説明
     GoToTitle,  // タイトルへ
+    Turnback,   // 戻る 
     kCount,     // 要素数カウント用（常に最後に置く）
     None        // 選択中
 };
@@ -7005,6 +7775,7 @@ enum class PauseCommand {
 // UIパーツごとの演出データをまとめた構造体
 struct UIElement {
     std::unique_ptr<Sprite> sprite;
+    Vector2 position;
     Vector2 size;   // サイズ
 };
 
@@ -7026,52 +7797,86 @@ public: // メンバ関数
     /// </summary>
     void Draw();
 
-    void CalculateEaseSize(Sprite* sprite, const Vector2& baseSize, float frame, float maxFrame);
-    void CalculateEasePos(Sprite* sprite, const Vector2& targetPos, float startY, float frame, float maxFrame);
-    void UpdateSelection();  // キー入力による選択項目の変更
+    void keyUpdate();
     void UpdateArrowPositions();
-    void IconUpdate();
-    void IconDraw();
-private: // メンバ変数
-    std::unique_ptr <Sprite> menupanel_;
-    std::unique_ptr <Sprite> icon_;
-    // 選択肢の表示用（必要に応じて増やす）
-   // std::vector<Sprite*> cursor_;
-    PauseCommand command_ = PauseCommand::None;
-    uint32_t selectedIndex_; // 現在選んでいる項目
-    uint32_t MAXselectedIndex_;
-    float frame_;           // 現在の経過フレーム
-    const float kMaxFrame = 30.0f; // アニメーションにかける時間（30フレーム = 約0.5秒）
-    Vector2 baseSize_; // 最終的なサイズ
+    void ExecuteCommand();
 
-    bool isActive_;   // 今メニューを開こうとしているか
+    void UpdateOperationMove();
+    void UpdateCommandPosition();
+
+    //void Motion();
+    //void StartPause();
+
+    //void CalculateEaseSize(Sprite* sprite, const Vector2& baseSize, float frame, float maxFrame);
+    //void CalculateEasePos(Sprite* sprite, const Vector2& targetPos, float startY, float frame, float maxFrame);
+
+private: // メンバ変数
+    bool isActive_;  // メニューがアクティブか
+    std::unique_ptr <Sprite> paused_;
+    // UIパーツをまとめて管理
+    std::vector<UIElement> panels_;
+    std::vector<Vector2> panelTargetPos_;
+
+    PauseCommand command_ = PauseCommand::None;
+    static const uint32_t kMaxCommand = static_cast<uint32_t>(PauseCommand::kCount);
+    std::vector<UIElement> commands_[kMaxCommand];
+    uint32_t selectedIndex_; // 現在選んでいる項目
+    Vector2 commandOffset_[kMaxCommand];
+    int commandPanelIndex_[kMaxCommand];
+    Vector2 commandStart_[kMaxCommand];
+    Vector2 commandEnd_[kMaxCommand];
+    // 配置用定数
+    const float kMenuTopY = 250.0f;     // 最初の項目のY座標
+    const float kMenuIntervalY = 80.0f; // 項目間の間隔
+    const float kArrowOffsetX = 170.0f; // 項目中心から見た矢印の右オフセット
+
+    UIElement arrow_; // 選択中の項目を示す矢印UI
+
+
+    bool isOperationMove_ = false;
+
+    float operationTimer_ = 0.0f;
+    const float operationDuration_ = 0.5f;
+
+    static constexpr float kPanelCenterX = 640.0f;
+    static constexpr float kPanelRightX = 1980.0f;
+    static constexpr float kPanelLeftX = -1280.0f;
+    Vector2 panel1Start_;
+    Vector2 panel1End_;
+
+    Vector2 panel2Start_;
+    Vector2 panel2End_;
+    bool isOperationMode_ = false;
+    bool isCommandRunning_ = false; // コマンド実行中
+
+
+    float frame_;           // 現在の経過フレーム
+    const float kMaxFrame = 30.0f; // アニメーションにかける時間（30フレーム = 約0.5秒）   
     bool isFinished_ = false; // 閉じる演出が完全に終わった
 
-    UIElement arrow_;
+    float panelStartOffsetY_;
 
-    // 列挙型から要素数を取得
-    static const uint32_t kMaxCommand = static_cast<uint32_t>(PauseCommand::kCount);
-    UIElement commands_[kMaxCommand];
-    // 配置用定数
-    const float kMenuTopY = 300.0f;     // 最初の項目のY座標
-    const float kMenuIntervalY = 80.0f; // 項目間の間隔
-    const float kArrowOffsetX = 120.0f; // 項目中心から見た矢印の右オフセット
-
-    float kStartOffestY;
-
-   Vector2 panelTargetPos;
+    float openTimer_;
+    bool isOpening_;
+    bool isClosing_;
+    static constexpr float kOpenMaxFrame = 20.0f;
+    bool fige;
 public: // メンバ関数 
     // シーン側から状況を確認するための関数
     PauseCommand GetCommand() const { return command_; }
 
-
     bool IsActive() const { return isActive_; }
+
     // ポーズメニューを起動する（または閉じる準備をする）
     void SetActive(bool active) {
+        if (active) {
+            isOpening_ = true;
+            openTimer_ = 0.0f;
+        }
         isActive_ = active;
-        isFinished_ = false; // 状態が変わるたびにリセット
     }
-    bool IsFinished() const { return isFinished_; }
+
+    bool IsOpening_() const { return isOpening_; }
 };
 
 ============================================================
@@ -8863,6 +9668,7 @@ File Path: project/application/scene/GamePlayScene.cpp
 #include <Tools/AssetGenerator/engine/math/LoadResourceID.h>
 #include <Easing.h>
 #include <UIManager.h>
+#include <GamePlayUI.h>
 
 using namespace LoadResourceID;
 using namespace Collision;
@@ -8876,8 +9682,8 @@ void GamePlayScene::Finalize() {
     BulletManager::GetInstance()->Finalize();  // 弾の解放処理
     FadeManager::GetInstance()->Finalize();    //  フェードマネージャの解放処理
     EventManager::GetInstance()->Finalize();   //  イベントマネージャの解放処理
-    StageManager::GetInstance()->Finalize();		  // ステージマネージャの解放処理
-	UIManager::GetInstance()->Finalize(); // UIマネージャの解放処理
+    StageManager::GetInstance()->Finalize();   // ステージマネージャの解放処理
+	UIManager::GetInstance()->Finalize();      // UIマネージャの解放処理
 }
 ///====================================================
 /// 初期化処理
@@ -8886,60 +9692,6 @@ void GamePlayScene::Initialize() {
     // カメラマネージャの初期化
     CameraManager::GetInstance()->Initialize(CameraTransform({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }));
     CameraManager::GetInstance()->SetTypeview(ViewCameraType::Main);
-
-    // テクスチャを読み込む 
-    TextureManager::GetInstance()->LoadTexture(texture::Move);
-    TextureManager::GetInstance()->LoadTexture(texture::Reticlemove);
-    TextureManager::GetInstance()->LoadTexture(texture::Space);
-    TextureManager::GetInstance()->LoadTexture(texture::Avoidance);
-    TextureManager::GetInstance()->LoadTexture(texture::Gage);
-    TextureManager::GetInstance()->LoadTexture(texture::PlayerUi);
-
-    TextureManager::GetInstance()->LoadTexture(texture::W);
-    TextureManager::GetInstance()->LoadTexture(texture::A);
-    TextureManager::GetInstance()->LoadTexture(texture::S);
-    TextureManager::GetInstance()->LoadTexture(texture::D);
-    TextureManager::GetInstance()->LoadTexture(texture::W_RED);    
-    TextureManager::GetInstance()->LoadTexture(texture::A_RED);    
-    TextureManager::GetInstance()->LoadTexture(texture::S_RED);    
-    TextureManager::GetInstance()->LoadTexture(texture::D_RED);    
-    
-    TextureManager::GetInstance()->LoadTexture(texture::ArrowUp);
-    TextureManager::GetInstance()->LoadTexture(texture::ArrowLeft);
-    TextureManager::GetInstance()->LoadTexture(texture::ArrowDown);
-    TextureManager::GetInstance()->LoadTexture(texture::ArrowRight); 
-    TextureManager::GetInstance()->LoadTexture(texture::ArrowUp_RED);
-    TextureManager::GetInstance()->LoadTexture(texture::ArrowLeft_RED);
-    TextureManager::GetInstance()->LoadTexture(texture::ArrowDown_RED);
-    TextureManager::GetInstance()->LoadTexture(texture::ArrowRight_RED);
-    TextureManager::GetInstance()->LoadTexture(texture::SPACEKey);    
-    TextureManager::GetInstance()->LoadTexture(texture::SPACEKey_RED);
-    TextureManager::GetInstance()->LoadTexture(texture::SHIFT);    
-    TextureManager::GetInstance()->LoadTexture(texture::SHIFT_RED);
-
-    Vector2 size = Vector2{ 40.0f,40.0f };
-    Vector2 center = { 85.0f, 470.0f };
-    CreateWASDUI(
-        center, // WASD基準中心
-        size,
-        4.0f,   // キー間隔
-        25.0f   // グループ間隔
-    );
-    isControlUIAnimating_ = false;
-    controlUITimer_ = 0.0f;
-	controlUIDuration_ = 0.5f; // アニメーションの総時間
-	controlUIOriginalSize_ = size;
-    uiOriginalSizes_.clear();
-    for (auto& ui : uis_) {
-        uiOriginalSizes_.push_back(ui->GetSize()); 
-        ui->SetAnchorPoint({ 0.5f, 0.5f });
-        ui->SetSize({ 0.0f, 0.0f }); // 全部0スタート
-    };
-
-    gage_ = Sprite::Create(texture::Gage, Vector2{ 380.0f, 10.0f }, 0.0f, Vector2{ 500.0f,30.0f });
-    gage_->SetTextureSize(Vector2{ 500.0f,30.0f });
-    player_ui_ = Sprite::Create(texture::PlayerUi, Vector2{ 380.0f, 12.3f }, 0.0f, Vector2{ 25.0f,25.0f });
-    player_ui_->SetTextureSize(Vector2{ 25.0f,25.0f });
 
     // .objファイルからモデルを読み込む
     ModelManager::GetInstance()->LoadModel(model::Goal);
@@ -8987,35 +9739,26 @@ void GamePlayScene::Initialize() {
     // ポーズメニューの初期化
     pausemenu_ = std::make_unique<Pausemenu>();
     pausemenu_->Initialize();
-    isPaused_ = false;
     isPausedevent_ = false;
 
     // UIマネージャの初期化
 	UIManager::GetInstance()->Initialize();
 }
-///====================================================
-/// 毎フレーム更新処理
-///====================================================
-void GamePlayScene::Update() { 
-    pausemenu_->IconUpdate();
-    // Enterキーでポーズの「開始」のみをチェック
-    if (isPausedevent_ && !isPaused_ && Input::GetInstance()->Triggrkey(DIK_TAB)) {
-        isPaused_ = true;
+void GamePlayScene::PauseMenuUpdate() {
+    //  Enterキーでポーズの「開始」のみをチェック
+    if (isPausedevent_ && !pausemenu_->IsActive() && Input::GetInstance()->Triggrkey(DIK_TAB)) {
         pausemenu_->SetActive(true); // 演出開始！
     }
+    pausemenu_->Update();
+}
 
+void GamePlayScene::Update() {  
+	// ポーズメニューの更新
+    PauseMenuUpdate();
     //  ポーズ中の処理
-    if (isPaused_) {
-        pausemenu_->Update();
-        // ポーズメニュー内での演出（逆再生含む）がすべて終わったかチェック
-        if (pausemenu_->IsFinished()) {
-            isPaused_ = false; // ゲーム再開
-        }
+    if (pausemenu_->IsActive()) {
 
-        // Resume（再開）の場合は、メニューが閉じ終わるのを待つ
-        if (pausemenu_->IsFinished() && pausemenu_->GetCommand() == PauseCommand::Resume) {
-            isPaused_ = false;
-        } else if (pausemenu_->GetCommand() == PauseCommand::GoToTitle) {
+        if (pausemenu_->GetCommand() == PauseCommand::GoToTitle) {
             // フェードマネージャの更新   
             FadeManager::GetInstance()->Update();
             // メニューが表示されたまま、フェードアウトを開始
@@ -9031,8 +9774,7 @@ void GamePlayScene::Update() {
             // タイトル移行時はここでreturnし、背後のゲーム処理を止めたままにする
             return;
         }
-        // ポーズ演出中はゲームの他の更新を止める
-        return;
+        return; // ポーズ中は他の更新をスキップ
     }
 
     // フェードイン開始
@@ -9072,17 +9814,22 @@ void GamePlayScene::Update() {
         // イベント終了 → プレイヤーを操作可能に
         player_->SetState(State::Alive);
         isPausedevent_ = true;
-        // 進行度を設定
-        StartStageProgressUI();
+        GamePlayUI* gpUI = UIManager::GetInstance()->GetUI<GamePlayUI>();
+        // 見つかった場合のみ固有のメソッドを呼ぶ
+        if (gpUI) {        
+            // 進行度を設定        
+            gpUI->StartStageProgressUI();
+        }
     }
     
     if (EventManager::GetInstance()->GetProgress() >= 2.5f) {
         // 操作UIのアニメーション開始
-        isControlUIAnimating_ = true;
+        GamePlayUI* gpUI = UIManager::GetInstance()->GetUI<GamePlayUI>();
+        // 見つかった場合のみ固有のメソッドを呼ぶ
+        if (gpUI) {
+            gpUI->StartControlUIAnimation();
+        }
     }
-
-    // ===== UI進行更新 =====
-    UpdateStageProgressUI();
 
     StageManager::GetInstance()->Update();
 
@@ -9162,15 +9909,6 @@ void GamePlayScene::Update() {
 #pragma endregion 全てのObject3d個々の更新処理
 
 #pragma region 全てのSprite個々の更新処理
-    
-    UpdateControlUIAnimation();
-    UpdateControlUI();
-    for (std::unique_ptr<Sprite>& ui : uis_) {
-        ui->Update();
-    }
-
-    gage_->Update();
-    player_ui_->Update();
 
     // UIマネージャの更新
     UIManager::GetInstance()->Update();
@@ -9235,22 +9973,13 @@ void GamePlayScene::Draw() {
         player_->DrawSprite();
     }
 
+    pausemenu_->Draw();
+  
+
     if (CameraManager::GetInstance()->GetTypeview() == ViewCameraType::Main) {
-        for (std::unique_ptr<Sprite>& ui : uis_) {
-            ui->Draw();
-        }
-    }
-    
-    gage_->Draw();
-    player_ui_->Draw();
-    if (isPausedevent_) {
-        if (isPaused_) {
-            pausemenu_->Draw();
-        }
-        pausemenu_->IconDraw();
+        UIManager::GetInstance()->Draw();
     }
 
-    UIManager::GetInstance()->Draw();
     // イベントマネージャの描画処理
     EventManager::GetInstance()->Draw2DSprite();
     // フェードマネージャの描画
@@ -9330,146 +10059,6 @@ void GamePlayScene::CheckEnemyPlayerCollisionsOBB() {
     }
 }
 
-void GamePlayScene::StartStageProgressUI() {
-    if (uiProgressStarted_) return;
-    uiStartRailLength_ = CameraManager::GetInstance()->GetGameplayCamera()->GetCurrentRailLength();
-
-    uiProgressStarted_ = true;
-}
-
-void GamePlayScene::UpdateStageProgressUI() {
-    if (!uiProgressStarted_ || uiProgressFinished_) return;
-
-    auto* cam = CameraManager::GetInstance()->GetGameplayCamera();
-
-    float current = cam->GetCurrentRailLength();
-    float total   = cam->GetTotalRailLength();
-
-    float uiTotalLength = total - uiStartRailLength_;
-    if (uiTotalLength <= 0.0001f) return;
-
-    float progress = (current - uiStartRailLength_) / uiTotalLength;
-
-    if (progress >= 1.0f) {
-        progress = 1.0f;
-        uiProgressFinished_ = true;
-    }
-
-    progress = std::clamp(progress, 0.0f, 1.0f);
-
-    constexpr float gageX = 380.0f;
-    constexpr float gageWidth = 500.0f;
-    constexpr float playerWidth = 25.0f;
-
-    float movableWidth = gageWidth - playerWidth;
-    float uiX = gageX + progress * movableWidth;
-
-    player_ui_->SetPosition(Vector2{ uiX, 12.3f });
-}
-
-void GamePlayScene::CreateWASDUI(
-    const Vector2& baseCenter,     // WASD中心
-    const Vector2& size,
-    float keySpacing,           // キー同士の隙間
-    float groupSpacing)         // グループ間の縦間隔
-{
-    uis_.clear();
-
-    float groupHeight = size.y * 2 + keySpacing;
-    // W段 + ASD段の高さ
-
-    // =====================
-    // 1. WASD グループ
-    // =====================
-    Vector2 wasdCenter = baseCenter;
-
-    Vector2 wPos = { wasdCenter.x, wasdCenter.y };
-    Vector2 sRowY = { 0.0f,wasdCenter.y + size.y + keySpacing };
-
-    Vector2 aPos = { wasdCenter.x - size.x - keySpacing, sRowY.y };
-    Vector2 sPos = { wasdCenter.x, sRowY.y };
-    Vector2 dPos = { wasdCenter.x + size.x + keySpacing, sRowY.y };
-
-    uis_.push_back(Sprite::Create(texture::W, wPos, 0.0f, size)); //0
-    uis_.push_back(Sprite::Create(texture::A, aPos, 0.0f, size)); //1
-    uis_.push_back(Sprite::Create(texture::S, sPos, 0.0f, size)); //2
-    uis_.push_back(Sprite::Create(texture::D, dPos, 0.0f, size)); //3
-
-
-    // =====================
-    // 2. Arrow グループ
-    // =====================
-    float arrowTopY = wasdCenter.y + groupHeight + groupSpacing;
-
-    Vector2 arrowTop = { baseCenter.x, arrowTopY };
-    float arrowRowY = arrowTopY + size.y + keySpacing;
-
-    Vector2 upPos = { arrowTop.x, arrowTop.y };
-    Vector2 leftPos = { arrowTop.x - size.x - keySpacing, arrowRowY };
-    Vector2 downPos = { arrowTop.x, arrowRowY };
-    Vector2 rightPos = { arrowTop.x + size.x + keySpacing, arrowRowY };
-
-    uis_.push_back(Sprite::Create(texture::ArrowUp, upPos, 0.0f, size));     //4
-    uis_.push_back(Sprite::Create(texture::ArrowRight, leftPos, 0.0f, size)); //5
-    uis_.push_back(Sprite::Create(texture::ArrowDown, downPos, 0.0f, size)); //6
-    uis_.push_back(Sprite::Create(texture::ArrowLeft, rightPos, 0.0f, size));//7
-
-
-    // =====================
-    // 3. SPACE
-    // =====================
-    Vector2 spaceSize = {80.0f, 40.0f};
-    float spaceY = arrowTopY + groupHeight + groupSpacing;
-    // 1つ目（中央）
-    Vector2 spacePos = { baseCenter.x - (spaceSize.x + keySpacing) * 0.5f, spaceY };
-
-    // 2つ目（右側）
-    Vector2 spacePos2 = { baseCenter.x + (spaceSize.x + keySpacing) * 0.5f, spaceY };
-
-    uis_.push_back(Sprite::Create(texture::SPACEKey, spacePos, 0.0f, spaceSize));  //8
-    uis_.push_back(Sprite::Create(texture::SPACEKey, spacePos2, 0.0f, spaceSize)); //9
-}
-
-void GamePlayScene::UpdateControlUI() {
-    Input* input = Input::GetInstance();
-    if (EventManager::GetInstance()->IsFinished()){
-        // === WASD ===
-        uis_[0]->SetTexture(input->Pushkey(DIK_W) ? texture::W_RED : texture::W);
-        uis_[1]->SetTexture(input->Pushkey(DIK_A) ? texture::A_RED : texture::A);
-        uis_[2]->SetTexture(input->Pushkey(DIK_S) ? texture::S_RED : texture::S);
-        uis_[3]->SetTexture(input->Pushkey(DIK_D) ? texture::D_RED : texture::D);
-        // === Arrow ===
-        uis_[4]->SetTexture(input->Pushkey(DIK_UP) ? texture::ArrowUp_RED : texture::ArrowUp);
-        uis_[5]->SetTexture(input->Pushkey(DIK_RIGHT) ? texture::ArrowRight_RED : texture::ArrowRight);
-        uis_[6]->SetTexture(input->Pushkey(DIK_DOWN) ? texture::ArrowDown_RED : texture::ArrowDown);
-        uis_[7]->SetTexture(input->Pushkey(DIK_LEFT) ? texture::ArrowLeft_RED : texture::ArrowLeft);
-        // === SPACE ===
-        uis_[8]->SetTexture(input->Pushkey(DIK_SPACE) ? texture::SPACEKey_RED : texture::SPACEKey);
-        uis_[9]->SetTexture(input->Pushkey(DIK_LSHIFT) ? texture::SHIFT_RED : texture::SHIFT);
-    }
-}
-
-void GamePlayScene::UpdateControlUIAnimation() {
-    if (!isControlUIAnimating_) return;
-
-    controlUITimer_ += 1.0f / 60.0f;
-    float t = controlUITimer_ / controlUIDuration_;
-
-    if (t >= 1.0f) {
-        t = 1.0f;
-        isControlUIAnimating_ = false;
-    }
-
-    float ease = Easing::EaseOutBack(t);
-
-    for (uint32_t i = 0; i < uis_.size(); ++i) {
-        float width  = Easing::Lerp(0.0f, uiOriginalSizes_[i].x, ease);
-        float height = Easing::Lerp(0.0f, uiOriginalSizes_[i].y, ease);
-
-        uis_[i]->SetSize({ width, height });
-    }
-}
-
 ============================================================
 File Path: project/application/scene/GamePlayScene.h
 ============================================================
@@ -9500,8 +10089,7 @@ enum class ControlUIType
 /// <summary>
 /// ゲームプレイシーン
 /// </summary>
-class GamePlayScene : public BaseScene
-{
+class GamePlayScene : public BaseScene {
 public: // メンバ関数
     /// <summary>
     /// 初期化処理
@@ -9531,10 +10119,6 @@ public: // メンバ関数
 
     void CheckEnemyPlayerCollisionsOBB();
 
-    void StartStageProgressUI();
-    void UpdateStageProgressUI();
-    void UpdateRandomMove();
-
     void CreateWASDUI(
         const Vector2& baseCenter,     // WASD中心
         const Vector2& size,
@@ -9543,6 +10127,8 @@ public: // メンバ関数
 
     void UpdateControlUI();
     void UpdateControlUIAnimation();
+
+    void PauseMenuUpdate();
 
 private: // メンバ変数
     // オブジェクトデータ
@@ -9575,22 +10161,9 @@ private: // メンバ変数
 
     std::unique_ptr <GamePlayparticle> particles_;
 
-    std::unique_ptr <Sprite> gage_;
-    std::unique_ptr <Sprite> player_ui_;
-    // ===== UI進行管理 =====
-    float uiStartRailLength_ = 0.0f;
-    bool uiProgressStarted_ = false;
-    bool uiProgressFinished_ = false;
-
     std::unique_ptr <Pausemenu> pausemenu_;
     bool isPausedevent_;
-    bool isPaused_;
 
-    bool isControlUIAnimating_;
-    float controlUITimer_;
-    float controlUIDuration_;
-    Vector2 controlUIOriginalSize_;
-    std::vector<Vector2> uiOriginalSizes_;
 };
 
 ============================================================
@@ -9610,60 +10183,28 @@ File Path: project/application/scene/TitleScene.cpp
 #include <ParticleCommon.h>
 #include <SkyboxCommon.h>
 #include <FadeManager.h>
-#include <Tools/AssetGenerator/engine/math/LoadResourceID.h>
 #include <StageManager.h>
 #include <EditorEntityRegistry.h>
 #include <Easing.h>
 #include <UIManager.h>
+#include <TitleUI.h>
 
 using namespace Easing;
-using namespace LoadResourceID;
 namespace { constexpr float kFadeDuration = 1.0f; }
 
 void TitleScene::Finalize() {
     FadeManager::GetInstance()->Finalize();  // フェードマネージャの解放処理
 	StageManager::GetInstance()->Finalize(); // ステージマネージャの解放処理
-	UIManager::GetInstance()->Finalize(); // UIマネージャの解放処理
+	UIManager::GetInstance()->Finalize();    // UIマネージャの解放処理
 }
 
 void TitleScene::Initialize() {
 #pragma region シーンの初期化  
-    // カメラの初期化
-    InitializeCamera();
-    // フェードマネージャの初期化
-    FadeManager::GetInstance()->Initialize();
-    // リソースの読み込み
-    LoadResources();
-    // UIの初期化
-    InitializeUI();
-    // モデルの初期化
-    InitializeModel();
-    // パーティクルのの生成、初期化
-    particle_ = std::make_unique<Titleparticle>();
-    particle_->Initialize(player_->GetPlayerObject());
-    StageManager::GetInstance()->Initialize();
-    CameraManager::GetInstance()->SetCameraMode(CameraMode::Default);      
-    // ImGuiエディタに情報を登録する
-    EditorEntities();
-    // UIマネージャの初期化
-	UIManager::GetInstance()->Initialize();
-#pragma endregion シーンの初期化
-}
-
-void TitleScene::InitializeCamera() {
     // カメラマネージャの生成、初期化
     CameraManager::GetInstance()->Initialize(CameraTransform({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }));
-}
-
-void TitleScene::LoadResources() {
-    //  テクスチャの読み込み
-    TextureManager::GetInstance()->LoadTexture(texture::Ui02);
-    TextureManager::GetInstance()->LoadTexture(texture::Title);
-}
-
-void TitleScene::InitializeUI() {}
-
-void TitleScene::InitializeModel() {
+    // フェードマネージャの初期化
+    FadeManager::GetInstance()->Initialize();
+    
     // プレイヤーパラメータ 
     playertransform_ = { {1.0f, 1.0f, 1.0f}, {0.0f, 0.3f, 0.0f},  {-20.0f,0.0f,40.0f } };
     titleStartX_ = -20.0f;
@@ -9685,6 +10226,18 @@ void TitleScene::InitializeModel() {
     playerMoveTimer_ = 0.0f;
 	playerTargetZ_ = 700.0f; // 目標Z座標
     playerStartZ_ = playertransform_.translate.z;
+
+    // パーティクルのの生成、初期化
+    particle_ = std::make_unique<Titleparticle>();
+    particle_->Initialize(player_->GetPlayerObject());
+    StageManager::GetInstance()->Initialize();
+    CameraManager::GetInstance()->SetCameraMode(CameraMode::Default);      
+
+    // ImGuiエディタに情報を登録する
+    EditorEntities();
+    // UIマネージャの初期化
+	UIManager::GetInstance()->Initialize();
+#pragma endregion シーンの初期化
 }
 
 void TitleScene::Update() {
@@ -9768,7 +10321,10 @@ void TitleScene::UpdateFadeIn() {
 void TitleScene::UpdateFadeOut() {
     // タイトルシーンにおけるフェード制御を担当
     FadeManager* fade = FadeManager::GetInstance();
-    if (Input::GetInstance()->Triggrkey(DIK_RETURN) && !fade->IsFading() && fade->IsFadeEnd() && !isPlayerBoost_ && !isPreFadeFollow_) {
+    TitleUI* titleUI = UIManager::GetInstance()->GetUI<TitleUI>();
+    
+    if (titleUI->IsFinished() && Input::GetInstance()->Triggrkey(DIK_RETURN) && !fade->IsFading() && fade->IsFadeEnd() && !isPlayerBoost_ && !isPreFadeFollow_) {
+        titleUI->StartExitAnimation();
         isPreFadeFollow_ = true;
         preFadeTimer_ = 0.0f;
         // 🔥 カメラをFollowに切り替え
@@ -9894,22 +10450,6 @@ public: // メンバ関数
     /// 描画処理
     /// </summary>
     void Draw() override;
-    /// <summary>
-    /// カメラの初期化を行う
-    /// </summary> 
-    void InitializeCamera();
-    /// <summary>
-    /// テクスチャの、モデルの読み込み
-    /// </summary>
-    void LoadResources();
-    /// <summary>
-    /// UIスプライトの生成と初期化を行う
-    /// </summary> 
-    void InitializeUI();
-    /// <summary>
-    /// モデルの生成と初期化を行う
-    /// </summary> 
-    void InitializeModel();
     /// <summary>
     /// フェードイン開始および更新処理
     /// </summary>
@@ -10218,27 +10758,233 @@ File Path: project/application/ui/GamePlayUI.cpp
 ============================================================
 #include "GamePlayUI.h"
 #include <TextureManager.h>
-#include <Tools/AssetGenerator/engine/math/LoadResourceID.h>
+#include <Input.h>
+#include <Easing.h>
+#include <Player.h>
+#include <Tools/AssetGenerator/engine/generated/ResourceID.h>
+#include <EventManager.h>
+#include <CameraManager.h>
 
-using namespace LoadResourceID;
+
+using namespace ResourceID::texture;
+using namespace Easing;
 
 void GamePlayUI::Initialize() {
-	TextureManager::GetInstance()->LoadTexture(texture::W);
-	Vector2 size = Vector2{ 40.0f,40.0f };
-	ui_start_ = Sprite::Create(texture::W, Vector2{ 640.0f, 550.0f }, 0.0f, size);
+
+    TextureManager::GetInstance()->LoadTexture(Operationui::W);
+    TextureManager::GetInstance()->LoadTexture(Operationui::A);
+    TextureManager::GetInstance()->LoadTexture(Operationui::S);
+    TextureManager::GetInstance()->LoadTexture(Operationui::D);
+    TextureManager::GetInstance()->LoadTexture(Operationui::ArrowUp);
+    TextureManager::GetInstance()->LoadTexture(Operationui::ArrowLeft);
+    TextureManager::GetInstance()->LoadTexture(Operationui::ArrowDown);
+    TextureManager::GetInstance()->LoadTexture(Operationui::ArrowRight);
+    TextureManager::GetInstance()->LoadTexture(Operationui::SPACEKey);
+    TextureManager::GetInstance()->LoadTexture(Operationui::SHIFT);
+
+    TextureManager::GetInstance()->LoadTexture(Operationui::W_RED);
+    TextureManager::GetInstance()->LoadTexture(Operationui::A_RED);
+    TextureManager::GetInstance()->LoadTexture(Operationui::S_RED);
+    TextureManager::GetInstance()->LoadTexture(Operationui::D_RED);
+    TextureManager::GetInstance()->LoadTexture(Operationui::ArrowUp_RED);
+    TextureManager::GetInstance()->LoadTexture(Operationui::ArrowLeft_RED);
+    TextureManager::GetInstance()->LoadTexture(Operationui::ArrowDown_RED);
+    TextureManager::GetInstance()->LoadTexture(Operationui::ArrowRight_RED);
+    TextureManager::GetInstance()->LoadTexture(Operationui::SPACEKey_RED);
+    TextureManager::GetInstance()->LoadTexture(Operationui::SHIFT_RED);
+
+    
+    TextureManager::GetInstance()->LoadTexture(Ui::Gage);
+    TextureManager::GetInstance()->LoadTexture(Ui::Player_ui);
+
+    gage_ = Sprite::Create(Ui::Gage, Vector2{ 380.0f, 10.0f }, 0.0f, Vector2{ 500.0f,30.0f });
+    player_ui_ = Sprite::Create(Ui::Player_ui, Vector2{ 380.0f, 12.3f }, 0.0f, Vector2{ 25.0f,25.0f });
+
+    // 2. UI生成
+    Vector2 size = { 40.0f, 40.0f };
+    Vector2 center = { 85.0f, 470.0f };
+    CreateWASDUI(center, size, 4.0f, 25.0f);
+
+    // 3. 初期状態設定（サイズ0）
+    for (auto& ui : uis_) {
+        uiOriginalSizes_.push_back(ui->GetSize());
+        ui->SetAnchorPoint({ 0.5f, 0.5f });
+        ui->SetSize({ 0.0f, 0.0f });
+    }
+
+    isAnimating_ = false;
+    timer_ = 0.0f;
+    duration_ = 0.5f;
 }
 
-void GamePlayUI::Update(){
-	ui_start_->Update();
+void GamePlayUI::Update() { 
+    // ===== UI進行更新 =====
+    UpdateStageProgressUI();
+
+    gage_->Update();
+    player_ui_->Update();
+
+
+
+    UpdateControlUIAnimation();
+    UpdateControlUI(); 
+    for (auto& ui : uis_) {
+        ui->Update();
+    }
 }
 
 void GamePlayUI::Draw() {
-	ui_start_->Draw();
+    
+    gage_->Draw();
+    player_ui_->Draw();
+
+    for (auto& ui : uis_) {
+        ui->Draw();
+    }
 }
 
 
+void GamePlayUI::StartStageProgressUI() {
+    if (uiProgressStarted_) return;
+    uiStartRailLength_ = CameraManager::GetInstance()->GetGameplayCamera()->GetCurrentRailLength();
+
+    uiProgressStarted_ = true;
+}
+
+void GamePlayUI::UpdateStageProgressUI() {
+    if (!uiProgressStarted_ || uiProgressFinished_) return;
+
+    auto* cam = CameraManager::GetInstance()->GetGameplayCamera();
+
+    float current = cam->GetCurrentRailLength();
+    float total   = cam->GetTotalRailLength();
+
+    float uiTotalLength = total - uiStartRailLength_;
+    if (uiTotalLength <= 0.0001f) return;
+
+    float progress = (current - uiStartRailLength_) / uiTotalLength;
+
+    if (progress >= 1.0f) {
+        progress = 1.0f;
+        uiProgressFinished_ = true;
+    }
+
+    progress = std::clamp(progress, 0.0f, 1.0f);
+
+    constexpr float gageX = 380.0f;
+    constexpr float gageWidth = 500.0f;
+    constexpr float playerWidth = 25.0f;
+
+    float movableWidth = gageWidth - playerWidth;
+    float uiX = gageX + progress * movableWidth;
+
+    player_ui_->SetPosition(Vector2{ uiX, 12.3f });
+}
+
+void GamePlayUI::StartControlUIAnimation() {
+    if (!isAnimating_) {
+        isAnimating_ = true;
+    }
+}
+
+void GamePlayUI::CreateWASDUI(const Vector2& baseCenter, const Vector2& size, float keySpacing, float groupSpacing) {
+    uis_.clear();
+
+    float groupHeight = size.y * 2 + keySpacing;
+    // W段 + ASD段の高さ
+
+    // =====================
+    // 1. WASD グループ
+    // =====================
+    Vector2 wasdCenter = baseCenter;
+
+    Vector2 wPos = { wasdCenter.x, wasdCenter.y };
+    Vector2 sRowY = { 0.0f,wasdCenter.y + size.y + keySpacing };
+
+    Vector2 aPos = { wasdCenter.x - size.x - keySpacing, sRowY.y };
+    Vector2 sPos = { wasdCenter.x, sRowY.y };
+    Vector2 dPos = { wasdCenter.x + size.x + keySpacing, sRowY.y };
+
+    uis_.push_back(Sprite::Create(Operationui::W, wPos, 0.0f, size)); //0
+    uis_.push_back(Sprite::Create(Operationui::A, aPos, 0.0f, size)); //1
+    uis_.push_back(Sprite::Create(Operationui::S, sPos, 0.0f, size)); //2
+    uis_.push_back(Sprite::Create(Operationui::D, dPos, 0.0f, size)); //3
 
 
+    // =====================
+    // 2. Arrow グループ
+    // =====================
+    float arrowTopY = wasdCenter.y + groupHeight + groupSpacing;
+
+    Vector2 arrowTop = { baseCenter.x, arrowTopY };
+    float arrowRowY = arrowTopY + size.y + keySpacing;
+
+    Vector2 upPos = { arrowTop.x, arrowTop.y };
+    Vector2 leftPos = { arrowTop.x - size.x - keySpacing, arrowRowY };
+    Vector2 downPos = { arrowTop.x, arrowRowY };
+    Vector2 rightPos = { arrowTop.x + size.x + keySpacing, arrowRowY };
+
+    uis_.push_back(Sprite::Create(Operationui::ArrowUp, upPos, 0.0f, size));     //4
+    uis_.push_back(Sprite::Create(Operationui::ArrowRight, leftPos, 0.0f, size)); //5
+    uis_.push_back(Sprite::Create(Operationui::ArrowDown, downPos, 0.0f, size)); //6
+    uis_.push_back(Sprite::Create(Operationui::ArrowLeft, rightPos, 0.0f, size));//7
+
+
+    // =====================
+    // 3. SPACE
+    // =====================
+    Vector2 spaceSize = { 80.0f, 40.0f };
+    float spaceY = arrowTopY + groupHeight + groupSpacing;
+    // 1つ目（中央）
+    Vector2 spacePos = { baseCenter.x - (spaceSize.x + keySpacing) * 0.5f, spaceY };
+
+    // 2つ目（右側）
+    Vector2 spacePos2 = { baseCenter.x + (spaceSize.x + keySpacing) * 0.5f, spaceY };
+
+    uis_.push_back(Sprite::Create(Operationui::SPACEKey, spacePos, 0.0f, spaceSize));  //8
+    uis_.push_back(Sprite::Create(Operationui::SPACEKey, spacePos2, 0.0f, spaceSize)); //9
+}
+
+void GamePlayUI::UpdateControlUI() {
+    Input* input = Input::GetInstance();
+    if (EventManager::GetInstance()->IsFinished()) {
+        // === WASD ===
+        uis_[0]->SetTexture(input->Pushkey(DIK_W) ? Operationui::W_RED : Operationui::W);
+        uis_[1]->SetTexture(input->Pushkey(DIK_A) ? Operationui::A_RED : Operationui::A);
+        uis_[2]->SetTexture(input->Pushkey(DIK_S) ? Operationui::S_RED : Operationui::S);
+        uis_[3]->SetTexture(input->Pushkey(DIK_D) ? Operationui::D_RED : Operationui::D);
+
+        // === Arrow ===
+        uis_[4]->SetTexture(input->Pushkey(DIK_UP) ? Operationui::ArrowUp_RED : Operationui::ArrowUp);
+        uis_[5]->SetTexture(input->Pushkey(DIK_RIGHT) ? Operationui::ArrowRight_RED : Operationui::ArrowRight);
+        uis_[6]->SetTexture(input->Pushkey(DIK_DOWN) ? Operationui::ArrowDown_RED : Operationui::ArrowDown);
+        uis_[7]->SetTexture(input->Pushkey(DIK_LEFT) ? Operationui::ArrowLeft_RED : Operationui::ArrowLeft);
+
+        // === SPACE / SHIFT ===
+        uis_[8]->SetTexture(input->Pushkey(DIK_SPACE) ? Operationui::SPACEKey_RED : Operationui::SPACEKey);
+        uis_[9]->SetTexture(input->Pushkey(DIK_LSHIFT) ? Operationui::SHIFT_RED : Operationui::SHIFT);
+    }
+}
+
+void GamePlayUI::UpdateControlUIAnimation() {
+    if (!isAnimating_) return;
+
+    timer_ += 1.0f / 60.0f;
+    float t = std::min(timer_ / duration_, 1.0f);
+    float ease = Easing::EaseOutBack(t);
+    if (t >= 1.0f) {
+        t = 1.0f;
+        isAnimating_ = false;
+    }
+
+    for (size_t i = 0; i < uis_.size(); ++i) {
+        float w = Easing::Lerp(0.0f, uiOriginalSizes_[i].x, ease);
+        float h = Easing::Lerp(0.0f, uiOriginalSizes_[i].y, ease);
+        uis_[i]->SetSize({ w, h });
+    }
+
+    if (t >= 1.0f) isAnimating_ = false;
+}
 
 ============================================================
 File Path: project/application/ui/GamePlayUI.h
@@ -10247,45 +10993,84 @@ File Path: project/application/ui/GamePlayUI.h
 #include <BaseUI.h>
 
 class GamePlayUI : public BaseUI {
-public:
+public: // メンバ関数
     void Initialize() override;
     void Update() override;
     void Draw() override;
+    // アニメーション開始トリガー
+    void StartControlUIAnimation();
+    void StartStageProgressUI();
+private: // プレイベートメンバ関数
+    void UpdateStageProgressUI();
 
-private: 
-    std::unique_ptr<Sprite> ui_start_;
+    // UI生成用の内部関数
+    void CreateWASDUI(const Vector2& baseCenter, const Vector2& size, float keySpacing, float groupSpacing); 
+    // 更新処理の細分化
+    void UpdateControlUI();
+    void UpdateControlUIAnimation();
+private: // メンバ変数
+    std::vector<std::unique_ptr<Sprite>> uis_;
+    std::vector<Vector2> uiOriginalSizes_;
+    
+    bool isAnimating_;
+    float timer_;
+    float duration_;
+
+      
+    std::unique_ptr <Sprite> gage_;
+    std::unique_ptr <Sprite> player_ui_;
+    float uiStartRailLength_ = 0.0f;
+    bool uiProgressStarted_ = false;
+    bool uiProgressFinished_ = false;
 };
-
 
 ============================================================
 File Path: project/application/ui/TitleUI.cpp
 ============================================================
 #include "TitleUI.h"
 #include <TextureManager.h>
-#include <Tools/AssetGenerator/engine/math/LoadResourceID.h>
 #include <Easing.h>
 #include <MatrixVector.h>
 #include <CameraManager.h>
 #include <algorithm>
-#include <engine/math/Vector/Vector2.h>
+#ifdef min
+#undef min
+#endif
+#ifdef max
+#undef max
+#endif
 
-using namespace LoadResourceID;
+#include <Tools/AssetGenerator/engine/generated/ResourceID.h>
+
+using namespace ResourceID;
 using namespace Easing;
 using namespace MatrixVector;
 
-void TitleUI::Initialize()
+void TitleUI::StartExitAnimation()
 {
-    titleChars_.clear();
-
-    const std::vector<std::string> textures =
+    if (!isExiting_)
     {
-        "Textures/Ui/titile_01.png",
-        "Textures/Ui/titile_02.png",
-        "Textures/Ui/titile_03.png",
-        "Textures/Ui/titile_04.png",
-        "Textures/Ui/titile_05.png",
-        "Textures/Ui/titile_06.png",
-        "Textures/Ui/titile_07.png"
+        isExiting_ = true;
+        exitTimer_ = 0.0f;
+    }
+}
+
+void TitleUI::Initialize() {
+
+    titleChars_.clear();
+    isFinished_ = false;
+    isExiting_ = false;
+
+    TextureManager::GetInstance()->LoadTexture(texture::Ui::UI_02);
+
+    const std::vector<std::string> textures = {
+        texture::Ui::titile_01,
+        texture::Ui::titile_02,
+        texture::Ui::titile_03,
+        texture::Ui::titile_04,
+        texture::Ui::titile_05,
+        texture::Ui::titile_06,
+        texture::Ui::titile_07,
     };
 
     for (const auto& t : textures)
@@ -10293,147 +11078,161 @@ void TitleUI::Initialize()
         TextureManager::GetInstance()->LoadTexture(t);
     }
 
-    titleSize_ = { 120.0f, 100.0f };
-    titleStartPos_ = { 1500.0f, 70.0f };
-    titleEndPos_ = { 650.0f, 70.0f };
+    titleSize_ = {120.0f,100.0f};
 
-    duration_ = 1.0f;
-    interval_ = 0.1f;
+    titleStartPos_ = {1500.0f,70.0f};
+    titleEndPos_   = {650.0f,70.0f};
 
     const float stepX = 130.0f;
 
-    for (int i = 0; i < (int)textures.size(); ++i)
-    {
-        TitleChar ch;
+    // ----------------------
+    // タイトル文字生成
+    // ----------------------
+
+    for (int i = 0; i < (int)textures.size(); ++i) {
+
+        TitleChar ch{};
 
         ch.sprite = Sprite::Create(textures[i], titleStartPos_, 0.0f, titleSize_);
         ch.sprite->SetTextureSize(titleSize_);
 
-        ch.delay = i * interval_;
+        ch.delay = i * kInterval;
 
         if (i < 3)
-        {
-            ch.offset = { stepX * i, 0.0f };
-        } else
-        {
-            ch.offset = { stepX * (i - 3), 120.0f };
-        }
+            ch.offset = {stepX * i,0};
+        else
+            ch.offset = {stepX * (i-3),120};
 
         titleChars_.push_back(std::move(ch));
     }
- 
-    // Press Start
-    startStartPos_ = { 1300.0f, 450.0f };
-    startEndPos_ = { 750.0f, 450.0f };
 
+    // ----------------------
+    // PressStart
+    // ----------------------
+
+    TitleChar startUI{};
+
+    Vector2 startStart = {1300.0f,450.0f};
+    Vector2 startEnd   = {750.0f,450.0f};
+
+    startUI.sprite = Sprite::Create(texture::Ui::UI_02,startStart,0.0f,{360,90});
+    startUI.sprite->SetTextureSize({360,90});
+
+    startUI.startPos = startStart;
+    startUI.endPos   = startEnd;
+
+    startUI.useCustomPos = true;
+
+    startUI.delay = textures.size() * kInterval + kDuration;
+
+    titleChars_.push_back(std::move(startUI));
 
     timer_ = 0.0f;
-    reverseTimer_ = 0.0f;
-    
-    kStartStartPos = { 1300.0f, 450.0f }; // 右から 
-    kStartEndPos   = { 750.0f, 450.0f };
-    ui_start_ = Sprite::Create(texture::Ui02, kStartStartPos, 0.0f, { 360.0f, 90.0f }); 
-    ui_start_->SetTextureSize(Vector2{ 360.0f,90.0f });
-    timer_ = 0.0f;
-
 }
+
 void TitleUI::Update() {
-    // カメラの状態、または明示的な退場フラグで逆再生を判定
-    bool isReverse = isExiting_ || (CameraManager::GetInstance()->GetMode() == CameraMode::Follow);
+
+    bool isReverse = isExiting_ ||
+        (CameraManager::GetInstance()->GetMode() == CameraMode::Follow);
+
+    // ----------------------
+    // 退場アニメ
+    // ----------------------
 
     if (isReverse) {
-        // --- 退場（逆再生）処理 ---
-        exitTimer_ += 1.0f / 60.0f;
-        // 1.0から0.0に向かうように計算
-        float globalT = 1.0f - std::clamp(exitTimer_ / kDuration, 0.0f, 1.0f);
 
-        for (size_t i = 0; i < titleChars_.size(); ++i) {
-            // 各文字に少しずつ遅延をかけて消す場合はここで調整
-            UpdateChar(titleChars_[i], globalT);
+        exitTimer_ += 1.0f / 60.0f;
+
+        float t = std::clamp(exitTimer_ / kDuration,0.0f,1.0f);
+        float easeT = EaseInCubic(t);
+
+        for (auto& ch : titleChars_) {
+
+            Vector2 start;
+            Vector2 end;
+
+            if (ch.useCustomPos)
+            {
+                start = ch.endPos;
+                end   = ch.startPos;
+            }
+            else
+            {
+                start = titleEndPos_ + ch.offset;
+                end   = titleStartPos_ + ch.offset;
+            }
+
+            ch.sprite->SetPosition(Vector2::Lerp(start,end,easeT));
         }
-    } else {
-        if (!CameraManager::GetInstance()->GetTitleCamera()->GetIsFollowAllowed() && CameraManager::GetInstance()->GetMode() == CameraMode::Default) {
-            // --- 登場（通常再生）処理 ---
+    }
+
+    // ----------------------
+    // 登場アニメ
+    // ----------------------
+
+    else {
+
+        if (!CameraManager::GetInstance()->GetTitleCamera()->GetIsFollowAllowed() &&
+            CameraManager::GetInstance()->GetMode() == CameraMode::Default)
+        {
             timer_ += 1.0f / 60.0f;
 
-            for (size_t i = 0; i < titleChars_.size(); ++i) {
-                // 文字ごとの遅延時間を考慮して進捗(0.0～1.0)を計算
-                float charDelay = i * kInterval;
-                float localT = std::clamp((timer_ - charDelay) / kDuration, 0.0f, 1.0f);
+            for (auto& ch : titleChars_) {
 
-                float easeT = Easing::EaseOutCubic(localT);
-                UpdateChar(titleChars_[i], easeT);
+                float localT = std::clamp((timer_ - ch.delay)/kDuration,0.0f,1.0f);
+                float easeT  = EaseOutCubic(localT);
+
+                UpdateChar(ch,easeT);
             }
-        }
-    }
-     
-    if (isReverse) {
-        float t = std::clamp(reverseTimer_ / kDuration, 0.0f, 1.0f);
-        float easeT = EaseOutBack(1.0f - t);
-        // ui_start_
-        Vector2 pos;
-        pos.x = kStartStartPos.x + (kStartEndPos.x - kStartStartPos.x) * easeT;
-        pos.y = kStartStartPos.y;
-        ui_start_->SetPosition(pos);
-        ui_start_->Update();
-    }
 
-    if (!CameraManager::GetInstance()->GetTitleCamera()->GetIsFollowAllowed() && CameraManager::GetInstance()->GetMode() == CameraMode::Default) {
-        timer_ += 1.0f / 60.0f;
+            float lastEndTime = 0.0f;
 
-        int lastIndex = static_cast<int>(titleChars_.size()) - 1;
-        float lastEndTime = (lastIndex * kInterval) + kDuration;
-
-        if (!isStartUIActive_ && timer_ >= lastEndTime)
-        {
-            isStartUIActive_ = true;
-            startUITimer_ = 0.0f;
-        }
-        if (isStartUIActive_)
-        {
-            startUITimer_ += 1.0f / 60.0f;
-
-            float t = std::clamp(static_cast<float>(startUITimer_ / kStartDuration), 0.0f, 1.0f);
-            if (t >= 1.0f)
+            for (auto& ch : titleChars_)
             {
-                t = 1.0f;
-                //isStartUIFinished_ = true;   // 🔥 ここで完了
+                float endTime = ch.delay + kDuration;
+                lastEndTime = std::max(lastEndTime,endTime);
             }
 
-            float easeT = EaseOutBack(t);
-
-            Vector2 pos;
-            pos.x = kStartStartPos.x +
-                (kStartEndPos.x - kStartStartPos.x) * easeT;
-            pos.y = kStartStartPos.y;
-
-            ui_start_->SetPosition(pos);
-
+            if (timer_ >= lastEndTime)
+            {
+                isFinished_ = true;
+            }
         }
-        ui_start_->Update();
     }
-    // スプライト自体の更新
-    for (auto& ch : titleChars_) {
+
+    for (auto& ch : titleChars_)
+    {
         ch.sprite->Update();
     }
 }
+
 void TitleUI::Draw() {
+
     for (auto& ch : titleChars_)
     {
         ch.sprite->Draw();
     }
-
-    ui_start_->Draw();
 }
 
-void TitleUI::UpdateChar(TitleChar& ch, float t) {
+void TitleUI::UpdateChar(TitleChar& ch,float t) {
+
     float easeT = EaseOutBack(t);
 
-    Vector2 start = titleStartPos_ + ch.offset;
-    Vector2 end = titleEndPos_ + ch.offset;
+    Vector2 start;
+    Vector2 end;
 
-    ch.sprite->SetPosition(Vector2::Lerp(start, end, easeT));
-    ch.sprite->Update();
+    if (ch.useCustomPos)
+    {
+        start = ch.startPos;
+        end   = ch.endPos;
+    }
+    else
+    {
+        start = titleStartPos_ + ch.offset;
+        end   = titleEndPos_ + ch.offset;
+    }
+
+    ch.sprite->SetPosition(Vector2::Lerp(start,end,easeT));
 }
 
 ============================================================
@@ -10445,11 +11244,15 @@ File Path: project/application/ui/TitleUI.h
 class TitleUI : public BaseUI {
 private:
 
-    struct TitleChar
-    {
+    struct TitleChar {
         std::unique_ptr<Sprite> sprite;
+
+        Vector2 startPos;   // 開始位置
+        Vector2 endPos;     // 終了位置
         Vector2 offset;
         float delay;
+
+        bool useCustomPos = false; // PressStartなど専用位置
     };
 public:
     void Initialize() override;
@@ -10461,46 +11264,33 @@ public:
     /// <summary>
     /// 退場演出（逆再生）を開始する
     /// </summary>
-    void StartExitAnimation() { isExiting_ = true; }
+    void StartExitAnimation();
 private:
-
     std::vector<TitleChar> titleChars_;
-    std::vector<std::unique_ptr<Sprite>> uis_;
 
     Vector2 titleSize_;
-    Vector2 titleStartPos_{}; // 左から
-    Vector2 titleEndPos_{};
-    Vector2 startStartPos_{}; // 右から
-    Vector2 startEndPos_{};
+    Vector2 titleStartPos_;
+    Vector2 titleEndPos_;
 
-    float timer_;
-    float reverseTimer_;
-    float  duration_;
-    float interval_;
+    float timer_ = 0.0f;
 
-    float delay = 0.0f;      // 出現遅延
-    float duration = 1.0f;   // 個別アニメ時間
+    float duration_ = 1.0f;
+    float interval_ = 0.1f;
 
-    // --- アニメーション用変数 ---
+    // --- 退場アニメ ---
     float exitTimer_ = 0.0f;
-    bool isExiting_ = false; // 退場中フラグ
+    bool isExiting_ = false;
 
-    // 定数（TitleSpriteMotionから移植）
     const float kDuration = 1.0f;
     const float kInterval = 0.1f;
 
+    bool isFinished_ = false;
 
+public:
 
-    Vector2 kStartStartPos{}; // 右から
-    Vector2 kStartEndPos{};
-
-    
-    std::unique_ptr<Sprite> ui_start_;
-    bool isStartUIActive_ = false;
-    float startUITimer_ = 0.0f;
-    const float kStartDuration = 0.5f;
+    void SetFinished(bool active) { isFinished_ = active; }
+    bool IsFinished() const { return isFinished_; }
 };
-
 
 ============================================================
 File Path: project/application/ui/UIManager.cpp
@@ -10637,6 +11427,19 @@ public:// メンバ関数
 private: // メンバ変数
     // 現在のシーンで有効なUIインスタンスを保持するリスト
     std::vector<std::unique_ptr<BaseUI>> uiList_;
+public:
+    // UIManager.h 内の public メンバに追加
+    template <typename T>
+    T* GetUI() {
+        for (auto& ui : uiList_) {
+            // dynamic_cast で指定した型 (T) に変換できるか試行
+            T* target = dynamic_cast<T*>(ui.get());
+            if (target) {
+                return target;
+            }
+        }
+        return nullptr;
+    }
 };
 
 ============================================================
@@ -70485,13 +71288,10 @@ File Path: project/main.cpp
 //Windowsアプリでのエントリーポイント(main関数)
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) { 
 	TimeSystem::Initialize();   // 時間計測開始
-
-	Framework* game = new MyGame();
-
+	// ゲームの生成
+	std::unique_ptr<Framework> game = std::make_unique<MyGame>();
+	// ゲームの実行
 	game->Run();
-
-	delete game;
-
 	return 0;
 }
 
