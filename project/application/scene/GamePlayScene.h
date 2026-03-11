@@ -15,15 +15,10 @@
 #include <EnemySpawner.h>
 #include <Pausemenu.h>
 
-enum class ControlUIType
-{
-    WASD,
-    Arrow,
-    Space
-};
-
 /// <summary>
-/// ゲームプレイシーン
+/// 実際のゲームプレイを行うシーン。
+/// プレイヤー操作、ステージ進行、イベント管理、
+/// ポーズメニュー、UI表示などゲーム本編の処理を担当
 /// </summary>
 class GamePlayScene : public BaseScene {
 public: // メンバ関数
@@ -43,61 +38,28 @@ public: // メンバ関数
     /// 描画処理
     /// </summary>
     void Draw() override;
-
+      
     /// <summary>
-    /// プレイヤーの弾と敵との衝突判定処理
+    /// ポーズメニューの更新処理
+    /// TABキー入力によるポーズ開始やメニュー操作を管理
     /// </summary>
-    void CheckBulletEnemyCollisionsOBB();
-    /// <summary>
-    /// 敵の弾とプレイヤーとの衝突判定処理
-    /// </summary>
-    void CheckEnemyBulletPlayerCollisionsOBB();
-
-    void CheckEnemyPlayerCollisionsOBB();
-
-    void CreateWASDUI(
-        const Vector2& baseCenter,     // WASD中心
-        const Vector2& size,
-        float keySpacing,           // キー同士の隙間
-        float groupSpacing);    // グループ間の縦間隔
-
-    void UpdateControlUI();
-    void UpdateControlUIAnimation();
-
     void PauseMenuUpdate();
 
 private: // メンバ変数
     // オブジェクトデータ
     // プレイヤー
     std::unique_ptr <Player> player_ = nullptr;
-    // キャラクターローダー
-    std::unique_ptr<CharacterLoader> levelLoader_ = nullptr;
-    // レベルデータ格納用インスタンスを生成
-    LevelData* levelData = nullptr;
-    bool end;
-    // 最大数
-    int MAX_ENEMY;
-    // 敵リスト
-    std::vector<std::unique_ptr<Enemy>> enemies_;
-    std::unique_ptr<EnemySpawner> enemySpawner_;
-    // 敵出現トリガーリスト
-    std::vector<EnemySpawnTrigger> spawnTriggers_;
-    // クリアゲート(仮)
-    std::unique_ptr <Object3d> wall = nullptr;
+	bool end; /// ゲーム終了フラグ
+
+    std::unique_ptr <Object3d> wall = nullptr;    /// クリアゲート(仮)
     // ゴールフラグ
     bool goal_ = false;
     // スカイボックス
     std::unique_ptr <Skybox> Box_ = nullptr;
-    // イベント処理
-    std::vector<EventManager> event_;
-    /// UI(タイトルへ(仮))
-    std::unique_ptr <Sprite> ui1_;
-    std::vector<std::unique_ptr<Sprite>> uis_;
-    uint32_t MAXui_;
+    std::vector<EventManager> event_;  /// イベント処理
 
-    std::unique_ptr <GamePlayparticle> particles_;
+	std::unique_ptr <GamePlayparticle> particles_; /// プレイ中のパーティクル
 
-    std::unique_ptr <Pausemenu> pausemenu_;
-    bool isPausedevent_;
-
+    std::unique_ptr <Pausemenu> pausemenu_;    /// ポーズメニュー
+    bool isPausedevent_;                       /// ポーズ可能状態かどうか
 };

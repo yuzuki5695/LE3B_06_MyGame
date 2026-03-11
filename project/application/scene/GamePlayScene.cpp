@@ -26,9 +26,6 @@ using namespace Collision;
 using namespace MatrixVector;
 using namespace Easing;
 
-///====================================================
-/// 終了処理（リソース解放）
-///====================================================
 void GamePlayScene::Finalize() {
     BulletManager::GetInstance()->Finalize();  // 弾の解放処理
     FadeManager::GetInstance()->Finalize();    //  フェードマネージャの解放処理
@@ -36,9 +33,7 @@ void GamePlayScene::Finalize() {
     StageManager::GetInstance()->Finalize();   // ステージマネージャの解放処理
 	UIManager::GetInstance()->Finalize();      // UIマネージャの解放処理
 }
-///====================================================
-/// 初期化処理
-///====================================================
+
 void GamePlayScene::Initialize() {
     // カメラマネージャの初期化
     CameraManager::GetInstance()->Initialize(CameraTransform({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }));
@@ -57,19 +52,6 @@ void GamePlayScene::Initialize() {
     particles_ = std::make_unique<GamePlayparticle>();
     particles_->Initialize(player_->GetPlayerObject());
 
-    // 敵関連の初期化
-    MAX_ENEMY = 300; // 敵の最大数
-    // 敵をリストに追加して初期化
-    for (int i = 0; i < MAX_ENEMY; ++i) {
-        std::unique_ptr<Enemy> enemy = std::make_unique<Enemy>();
-        enemy->Initialize();
-        enemy->SetPlayer(player_.get());
-        enemy->SetActive(false);  // 非アクティブにしておく
-        enemies_.emplace_back(std::move(enemy));
-    }
-    // 敵出現トリガー
-    enemySpawner_ = std::make_unique<EnemySpawner>(); enemySpawner_->Initialize(player_.get(), CameraManager::GetInstance(), &enemies_);
-
     // クリアゲート(仮)
     wall = Object3d::Create(model::Goal, Transform{ { 2.0f, 2.0f, 2.0f }, { 0.0f, 0.0f, 0.0f }, { 8.0f, 39.0f, 800.0f } });
     // スカイボックスの作成
@@ -81,8 +63,6 @@ void GamePlayScene::Initialize() {
     FadeManager::GetInstance()->Initialize();
     // イベントマネージャの初期化
     EventManager::GetInstance()->Initialize("gamestart");
-    // ゲームカメラの移動許可
-   // CameraManager::GetInstance()->GetGameCamera()->Setmovefige(true);
     // ステージマネージャの初期化
     StageManager::GetInstance()->Initialize();
 
@@ -193,39 +173,15 @@ void GamePlayScene::Update() {
 #pragma region 全てのObject3d個々の更新処理
     // 終了しない限り更新処理
     if (!end) {
-        if (EventManager::GetInstance()->IsFinished() ){
-            // 敵出現動作
-            enemySpawner_->Update();
-        }
-        // 各衝突判定
-        CheckBulletEnemyCollisionsOBB();
-        CheckEnemyBulletPlayerCollisionsOBB(); 
-        CheckEnemyPlayerCollisionsOBB();
         // 更新処理
         player_->Update();
         // プレイヤーがゴール手前までは敵も更新
         if (player_->GetPosition().z <=  CameraManager::GetInstance()->GetGameplayCamera()->GetBezierPoints().back().controlPoint.z) {
-            // 敵の更新
-            for (auto& enemy : enemies_) {
-                if (enemy->IsActive()) {
-                    enemy->SetPlayer(player_.get());
-                    enemy->Update();
-                }
-            }
+
         }
         wall->Update();
         // Bulletマネージャの更新処理
         BulletManager::GetInstance()->Update();
-    }
-
-    // 敵がプレイヤーから離れすぎたら削除（過去の敵掃除）
-    for (auto& enemy : enemies_) {
-        if (!enemy->IsActive()) continue;
-        float playerZ = player_->GetPosition().z;
-        float spawnZ = enemy->GetSpawnBaseZ();  // 出現基準Z
-        if (playerZ > spawnZ + 30) { // 出現位置より進んでたら削除
-            enemy->Kill();
-        }
     }
 
     // フェードアウトが完了したら次のシーンへ
@@ -239,21 +195,10 @@ void GamePlayScene::Update() {
         }
     }
 
-    // 死んだ敵の削除
-    enemies_.erase(
-        std::remove_if(enemies_.begin(), enemies_.end(),
-            [](const std::unique_ptr<Enemy>& e) {
-                return e->IsDead();  // ← 出現前の非アクティブは残す！
-            }),
-        enemies_.end());
     // スカイボックス更新
     Box_->Update(); 
 
-    for (auto& enemy : enemies_) {
-        enemy->onDeathCallback = [this](const Vector3& pos) {
-            particles_->AddHitPosition(pos);
-            };
-    }
+
     // パーティクル更新
     ParticleManager::GetInstance()->Update();
     particles_->Update();
@@ -298,15 +243,7 @@ void GamePlayScene::Draw() {
         // Bulletマネージャの描画処理
         BulletManager::GetInstance()->Draw();
     }
-    // プレイヤーがゴール地点に達するまでは敵や壁を描画
-    if (player_->GetPosition().z <= CameraManager::GetInstance()->GetGameplayCamera()->GetBezierPoints().back().controlPoint.z) {
-        // 敵の更新
-        for (auto& enemy : enemies_) {
-            if (enemy->IsActive()) {
-                enemy->Draw();
-            }
-        }
-    }
+
     wall->Draw();
     // イベントマネージャの描画処理
     EventManager::GetInstance()->Drawo3Dbject();
@@ -336,76 +273,4 @@ void GamePlayScene::Draw() {
     // フェードマネージャの描画
     FadeManager::GetInstance()->Draw();
 #pragma endregion 全てのSprite個々の描画処理
-}
-
-///====================================================
-/// プレイヤー弾 vs 敵の当たり判定
-///====================================================
-void GamePlayScene::CheckBulletEnemyCollisionsOBB() {
-    const auto& bullets = BulletManager::GetInstance()->GetPlayerBullets();
-
-    for (const std::unique_ptr<PlayerBullet>& bullet : bullets) {
-        if (!bullet->IsActive()) continue;
-
-        for (auto& enemy : enemies_) {
-            if (!enemy->IsActive()) continue;
-
-            OBB bulletOBB = bullet->GetOBB(); // bulletがOBB情報を持っている必要あり
-            OBB enemyOBB = enemy->GetOBB();   // 敵のOBBも同様に
-
-            if (IsOBBIntersect(bulletOBB, enemyOBB)) {
-                bullet->SetInactive();
-                enemy->OnHit();
-                
-               // particles_->AddHitPosition(enemy->GetPosition());
-                // パーティクル生成など
-                break;
-            }
-        }
-    }
-}
-///====================================================
-/// 敵弾 vs プレイヤーの当たり判定
-///====================================================
-void GamePlayScene::CheckEnemyBulletPlayerCollisionsOBB() {
-    const auto& bullets = BulletManager::GetInstance()->GetEnemyBullets();
-
-    OBB playerOBB = player_->GetOBB(); // プレイヤーがOBBを返すようにしておく必要あり
-
-    for (const std::unique_ptr<EnemyBullet>& bullet : bullets) {
-        if (!bullet->IsActive()) continue;
-
-        OBB bulletOBB = bullet->GetOBB(); // 弾にもOBBが必要
-
-        if (IsOBBIntersect(bulletOBB, playerOBB)) {
-            bullet->SetInactive();
-            player_->SetState(State::Dead);
-
-            end = true;
-            // ヒットエフェクトなど追加
-            break;
-        }
-    }
-}
-///====================================================
-/// 敵 vs プレイヤー の当たり判定
-///====================================================
-void GamePlayScene::CheckEnemyPlayerCollisionsOBB() {
-    // プレイヤーのOBBを取得
-    OBB playerOBB = player_->GetOBB();
-
-    for (auto& enemy : enemies_) {
-        if (!enemy->IsActive() || enemy->IsDead()) continue;
-
-        // 敵のOBBを取得
-        OBB enemyOBB = enemy->GetOBB();
-
-        // 衝突判定
-        if (IsOBBIntersect(playerOBB, enemyOBB)) {
-            player_->SetState(State::Dead);
-            end = true; // ゲームオーバーへ遷移など
-
-            break;
-        }
-    }
 }
