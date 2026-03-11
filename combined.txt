@@ -45,13 +45,27 @@
     └── └── └── TitleCamera.h
     └── ├── character/
     └── └── ├── BaseCharacter.h
-    └── └── ├── CharacterManager.cpp
-    └── └── └── CharacterManager.h
-    └── ├── enemy/
-    └── └── ├── Enemy.cpp
-    └── └── ├── Enemy.h
-    └── └── ├── EnemySpawner.cpp
-    └── └── └── EnemySpawner.h
+    └── └── ├── enemy/
+    └── └── └── ├── Enemy.cpp
+    └── └── └── ├── Enemy.h
+    └── └── └── ├── EnemySpawner.cpp
+    └── └── └── └── EnemySpawner.h
+    └── └── └── player/
+    └── └──     ├── Player.cpp
+    └── └──     ├── Player.h
+    └── └──     ├── PlayerDash.cpp
+    └── └──     ├── PlayerDash.h
+    └── └──     ├── PlayerDeath.cpp
+    └── └──     ├── PlayerDeath.h
+    └── └──     ├── PlayerMove.cpp
+    └── └──     ├── PlayerMove.h
+    └── └──     ├── PlayerReticle.cpp
+    └── └──     ├── PlayerReticle.h
+    └── └──     ├── PlayerWeapon.cpp
+    └── └──     └── PlayerWeapon.h
+    └── ├── collision/
+    └── └── ├── CollisionManager.cpp
+    └── └── └── CollisionManager.h
     └── ├── event/
     └── └── ├── EventManager.cpp
     └── └── └── EventManager.h
@@ -81,19 +95,6 @@
     └── ├── pause/
     └── └── ├── Pausemenu.cpp
     └── └── └── Pausemenu.h
-    └── ├── player/
-    └── └── ├── Player.cpp
-    └── └── ├── Player.h
-    └── └── ├── PlayerDash.cpp
-    └── └── ├── PlayerDash.h
-    └── └── ├── PlayerDeath.cpp
-    └── └── ├── PlayerDeath.h
-    └── └── ├── PlayerMove.cpp
-    └── └── ├── PlayerMove.h
-    └── └── ├── PlayerReticle.cpp
-    └── └── ├── PlayerReticle.h
-    └── └── ├── PlayerWeapon.cpp
-    └── └── └── PlayerWeapon.h
     └── ├── scene/
     └── └── ├── GameClearScene.cpp
     └── └── ├── GameClearScene.h
@@ -453,7 +454,7 @@ File Path: project/MyGame.vcxproj
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)engine\2d;$(ProjectDir)engine\3d;$(ProjectDir)engine\audio;$(ProjectDir)engine\base;$(ProjectDir)engine\io;$(ProjectDir)engine\math;$(ProjectDir)engine\scene;$(ProjectDir)engine\3d\Particle;$(ProjectDir)engine\camera;$(ProjectDir)engine\base\DirectXCommon;$(ProjectDir)engine\base\Utility;$(ProjectDir)engine\base\ViewManager;$(ProjectDir)engine\math\Light;$(ProjectDir)engine\math\Matrix;$(ProjectDir)engine\math\Model;$(ProjectDir)engine\math\Vector;$(ProjectDir)engine\resource;$(ProjectDir)externals\nlohmann;$(ProjectDir)application\scene;$(ProjectDir)application\character;$(ProjectDir)application\player;$(ProjectDir)application\bullet;$(ProjectDir)application\loader;$(ProjectDir)application\camera;$(ProjectDir)application\enemy;$(ProjectDir)externals\assimp\include;$(ProjectDir)engine\math\collision;$(ProjectDir)application\collision;$(ProjectDir)application\fade;$(ProjectDir)application\event;$(ProjectDir)application\stage;$(ProjectDir)engine\math\Easing;$(ProjectDir)application\particle;$(ProjectDir)engine\math\ParticleData;$(ProjectDir)application\resource;$(ProjectDir)application\pause;$(ProjectDir)engine\editor;$(ProjectDir)engine\editor\core;$(ProjectDir)engine\editor\console;$(ProjectDir)engine\editor\layout;$(ProjectDir)engine\editor\windows;$(ProjectDir)engine\time;$(ProjectDir)engine\editor\layout\editormenubar;$(ProjectDir)application\motion\2d;$(ProjectDir)application\ui</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)engine\2d;$(ProjectDir)engine\3d;$(ProjectDir)engine\audio;$(ProjectDir)engine\base;$(ProjectDir)engine\io;$(ProjectDir)engine\math;$(ProjectDir)engine\scene;$(ProjectDir)engine\3d\Particle;$(ProjectDir)engine\camera;$(ProjectDir)engine\base\DirectXCommon;$(ProjectDir)engine\base\Utility;$(ProjectDir)engine\base\ViewManager;$(ProjectDir)engine\math\Light;$(ProjectDir)engine\math\Matrix;$(ProjectDir)engine\math\Model;$(ProjectDir)engine\math\Vector;$(ProjectDir)engine\resource;$(ProjectDir)externals\nlohmann;$(ProjectDir)application\scene;$(ProjectDir)application\character;$(ProjectDir)application\character\player;$(ProjectDir)application\bullet;$(ProjectDir)application\loader;$(ProjectDir)application\camera;$(ProjectDir)application\character\enemy;$(ProjectDir)externals\assimp\include;$(ProjectDir)engine\math\collision;$(ProjectDir)application\collision;$(ProjectDir)application\fade;$(ProjectDir)application\event;$(ProjectDir)application\stage;$(ProjectDir)engine\math\Easing;$(ProjectDir)application\particle;$(ProjectDir)engine\math\ParticleData;$(ProjectDir)application\resource;$(ProjectDir)application\pause;$(ProjectDir)engine\editor;$(ProjectDir)engine\editor\core;$(ProjectDir)engine\editor\console;$(ProjectDir)engine\editor\layout;$(ProjectDir)engine\editor\windows;$(ProjectDir)engine\time;$(ProjectDir)engine\editor\layout\editormenubar;$(ProjectDir)application\motion\2d;$(ProjectDir)application\ui</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
     </ClCompile>
     <Link>
@@ -485,7 +486,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)engine\2d;$(ProjectDir)engine\3d;$(ProjectDir)engine\audio;$(ProjectDir)engine\base;$(ProjectDir)engine\io;$(ProjectDir)engine\math;$(ProjectDir)engine\scene;$(ProjectDir)engine\3d\Particle;$(ProjectDir)engine\camera;$(ProjectDir)engine\base\DirectXCommon;$(ProjectDir)engine\base\Utility;$(ProjectDir)engine\base\ViewManager;$(ProjectDir)engine\math\Light;$(ProjectDir)engine\math\Matrix;$(ProjectDir)engine\math\Model;$(ProjectDir)engine\math\Vector;$(ProjectDir)engine\resource;$(ProjectDir)externals\nlohmann;$(ProjectDir)application\scene;$(ProjectDir)application\character;$(ProjectDir)application\player;$(ProjectDir)application\bullet;$(ProjectDir)application\loader;$(ProjectDir)application\camera;$(ProjectDir)application\enemy;$(ProjectDir)externals\assimp\include;$(ProjectDir)engine\math\collision;$(ProjectDir)application\collision;$(ProjectDir)application\fade;$(ProjectDir)application\event;$(ProjectDir)application\stage;$(ProjectDir)engine\math\Easing;$(ProjectDir)application\particle;$(ProjectDir)engine\math\ParticleData;$(ProjectDir)application\resource;$(ProjectDir)application\pause;$(ProjectDir)engine\editor;$(ProjectDir)engine\editor\core;$(ProjectDir)engine\editor\console;$(ProjectDir)engine\editor\layout;$(ProjectDir)engine\editor\windows;$(ProjectDir)engine\time;$(ProjectDir)engine\editor\layout\editormenubar;$(ProjectDir)application\motion\2d;$(ProjectDir)application\ui</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)engine\2d;$(ProjectDir)engine\3d;$(ProjectDir)engine\audio;$(ProjectDir)engine\base;$(ProjectDir)engine\io;$(ProjectDir)engine\math;$(ProjectDir)engine\scene;$(ProjectDir)engine\3d\Particle;$(ProjectDir)engine\camera;$(ProjectDir)engine\base\DirectXCommon;$(ProjectDir)engine\base\Utility;$(ProjectDir)engine\base\ViewManager;$(ProjectDir)engine\math\Light;$(ProjectDir)engine\math\Matrix;$(ProjectDir)engine\math\Model;$(ProjectDir)engine\math\Vector;$(ProjectDir)engine\resource;$(ProjectDir)externals\nlohmann;$(ProjectDir)application\scene;$(ProjectDir)application\character;$(ProjectDir)application\character\player;$(ProjectDir)application\bullet;$(ProjectDir)application\loader;$(ProjectDir)application\camera;$(ProjectDir)application\character\enemy;$(ProjectDir)externals\assimp\include;$(ProjectDir)engine\math\collision;$(ProjectDir)application\collision;$(ProjectDir)application\fade;$(ProjectDir)application\event;$(ProjectDir)application\stage;$(ProjectDir)engine\math\Easing;$(ProjectDir)application\particle;$(ProjectDir)engine\math\ParticleData;$(ProjectDir)application\resource;$(ProjectDir)application\pause;$(ProjectDir)engine\editor;$(ProjectDir)engine\editor\core;$(ProjectDir)engine\editor\console;$(ProjectDir)engine\editor\layout;$(ProjectDir)engine\editor\windows;$(ProjectDir)engine\time;$(ProjectDir)engine\editor\layout\editormenubar;$(ProjectDir)application\motion\2d;$(ProjectDir)application\ui</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -513,9 +514,15 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="application\camera\GameClearCamera.cpp" />
     <ClCompile Include="application\camera\GameOverCamera.cpp" />
     <ClCompile Include="application\camera\GamePlayCamera.cpp" />
-    <ClCompile Include="application\character\CharacterManager.cpp" />
-    <ClCompile Include="application\enemy\Enemy.cpp" />
-    <ClCompile Include="application\enemy\EnemySpawner.cpp" />
+    <ClCompile Include="application\character\enemy\Enemy.cpp" />
+    <ClCompile Include="application\character\enemy\EnemySpawner.cpp" />
+    <ClCompile Include="application\character\player\Player.cpp" />
+    <ClCompile Include="application\character\player\PlayerDash.cpp" />
+    <ClCompile Include="application\character\player\PlayerDeath.cpp" />
+    <ClCompile Include="application\character\player\PlayerMove.cpp" />
+    <ClCompile Include="application\character\player\PlayerReticle.cpp" />
+    <ClCompile Include="application\character\player\PlayerWeapon.cpp" />
+    <ClCompile Include="application\collision\CollisionManager.cpp" />
     <ClCompile Include="application\fade\FadeManager.cpp" />
     <ClCompile Include="application\loader\CharacterLoader.cpp" />
     <ClCompile Include="application\loader\CurveJsonLoader.cpp" />
@@ -526,12 +533,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="application\particle\GamePlayparticle.cpp" />
     <ClCompile Include="application\particle\Titleparticle.cpp" />
     <ClCompile Include="application\pause\Pausemenu.cpp" />
-    <ClCompile Include="application\player\Player.cpp" />
-    <ClCompile Include="application\player\PlayerDash.cpp" />
-    <ClCompile Include="application\player\PlayerDeath.cpp" />
-    <ClCompile Include="application\player\PlayerMove.cpp" />
-    <ClCompile Include="application\player\PlayerReticle.cpp" />
-    <ClCompile Include="application\player\PlayerWeapon.cpp" />
     <ClCompile Include="application\scene\GameOverScene.cpp" />
     <ClCompile Include="application\scene\GamePlayScene.cpp" />
     <ClCompile Include="application\scene\TitleScene.cpp" />
@@ -610,9 +611,15 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\camera\GamePlayCamera.h" />
     <ClInclude Include="application\camera\SceneCameraBase.h" />
     <ClInclude Include="application\character\BaseCharacter.h" />
-    <ClInclude Include="application\character\CharacterManager.h" />
-    <ClInclude Include="application\enemy\Enemy.h" />
-    <ClInclude Include="application\enemy\EnemySpawner.h" />
+    <ClInclude Include="application\character\enemy\Enemy.h" />
+    <ClInclude Include="application\character\enemy\EnemySpawner.h" />
+    <ClInclude Include="application\character\player\Player.h" />
+    <ClInclude Include="application\character\player\PlayerDash.h" />
+    <ClInclude Include="application\character\player\PlayerDeath.h" />
+    <ClInclude Include="application\character\player\PlayerMove.h" />
+    <ClInclude Include="application\character\player\PlayerReticle.h" />
+    <ClInclude Include="application\character\player\PlayerWeapon.h" />
+    <ClInclude Include="application\collision\CollisionManager.h" />
     <ClInclude Include="application\fade\FadeManager.h" />
     <ClInclude Include="application\loader\CharacterLoader.h" />
     <ClInclude Include="application\loader\CurveJsonLoader.h" />
@@ -625,12 +632,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\particle\GamePlayparticle.h" />
     <ClInclude Include="application\particle\Titleparticle.h" />
     <ClInclude Include="application\pause\Pausemenu.h" />
-    <ClInclude Include="application\player\Player.h" />
-    <ClInclude Include="application\player\PlayerDash.h" />
-    <ClInclude Include="application\player\PlayerDeath.h" />
-    <ClInclude Include="application\player\PlayerMove.h" />
-    <ClInclude Include="application\player\PlayerReticle.h" />
-    <ClInclude Include="application\player\PlayerWeapon.h" />
     <ClInclude Include="application\scene\GameOverScene.h" />
     <ClInclude Include="application\ui\BaseUI.h" />
     <ClInclude Include="application\ui\GamePlayUI.h" />
@@ -962,9 +963,6 @@ File Path: project/MyGame.vcxproj.filters
     <Filter Include="ヘッダー ファイル\engine\math\Vector">
       <UniqueIdentifier>{e13f2e36-4292-41c9-b7c0-9808517079de}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ソース ファイル\application\player">
-      <UniqueIdentifier>{a7eab18e-630a-472c-afe5-35bace2ee948}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ソース ファイル\application\character">
       <UniqueIdentifier>{2a9f0528-9f22-4368-a9d5-57d0c9e90e83}</UniqueIdentifier>
     </Filter>
@@ -976,9 +974,6 @@ File Path: project/MyGame.vcxproj.filters
     </Filter>
     <Filter Include="ソース ファイル\application\bullet">
       <UniqueIdentifier>{43779993-e4ed-4cb3-86e8-2e2a8fc165da}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ソース ファイル\application\enemy">
-      <UniqueIdentifier>{4b99df62-1041-4fee-a5fd-1decbabccbe3}</UniqueIdentifier>
     </Filter>
     <Filter Include="ソース ファイル\application\fade">
       <UniqueIdentifier>{6de3d2ff-57ef-4f70-81ac-7a699de0dd44}</UniqueIdentifier>
@@ -1022,9 +1017,6 @@ File Path: project/MyGame.vcxproj.filters
     <Filter Include="ヘッダー ファイル\application\character">
       <UniqueIdentifier>{88d1f61c-35e7-4b87-8d52-a0fe6ed451ec}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ヘッダー ファイル\application\player">
-      <UniqueIdentifier>{2a7546ab-cebe-44d3-a852-a35e4e04e782}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ヘッダー ファイル\application\loader">
       <UniqueIdentifier>{4fd94a91-62be-4991-98c1-9fe49ec67cec}</UniqueIdentifier>
     </Filter>
@@ -1033,9 +1025,6 @@ File Path: project/MyGame.vcxproj.filters
     </Filter>
     <Filter Include="ヘッダー ファイル\application\bullet">
       <UniqueIdentifier>{91330ba0-b2ca-4345-9fa7-f3775f10d4e6}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ヘッダー ファイル\application\enemy">
-      <UniqueIdentifier>{8ca6f24a-1c20-4541-8f80-30ba17e68e7f}</UniqueIdentifier>
     </Filter>
     <Filter Include="ヘッダー ファイル\application\fade">
       <UniqueIdentifier>{fca0a5c4-0cca-4f32-9665-08aef2b11991}</UniqueIdentifier>
@@ -1108,6 +1097,18 @@ File Path: project/MyGame.vcxproj.filters
     </Filter>
     <Filter Include="ヘッダー ファイル\application\ui">
       <UniqueIdentifier>{bc06df0e-7372-442f-b366-5195a6b18484}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\application\character\player">
+      <UniqueIdentifier>{2a7546ab-cebe-44d3-a852-a35e4e04e782}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\application\character\enemy">
+      <UniqueIdentifier>{8ca6f24a-1c20-4541-8f80-30ba17e68e7f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\application\character\enemy">
+      <UniqueIdentifier>{4b99df62-1041-4fee-a5fd-1decbabccbe3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\application\character\player">
+      <UniqueIdentifier>{a7eab18e-630a-472c-afe5-35bace2ee948}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -1255,9 +1256,6 @@ File Path: project/MyGame.vcxproj.filters
     <ClCompile Include="engine\io\Controller.cpp">
       <Filter>ソース ファイル\engine\io</Filter>
     </ClCompile>
-    <ClCompile Include="application\player\Player.cpp">
-      <Filter>ソース ファイル\application\player</Filter>
-    </ClCompile>
     <ClCompile Include="application\loader\CurveJsonLoader.cpp">
       <Filter>ソース ファイル\application\loader</Filter>
     </ClCompile>
@@ -1270,9 +1268,6 @@ File Path: project/MyGame.vcxproj.filters
     <ClCompile Include="application\bullet\PlayerBullet.cpp">
       <Filter>ソース ファイル\application\bullet</Filter>
     </ClCompile>
-    <ClCompile Include="application\enemy\Enemy.cpp">
-      <Filter>ソース ファイル\application\enemy</Filter>
-    </ClCompile>
     <ClCompile Include="application\bullet\EnemyBullet.cpp">
       <Filter>ソース ファイル\application\bullet</Filter>
     </ClCompile>
@@ -1284,9 +1279,6 @@ File Path: project/MyGame.vcxproj.filters
     </ClCompile>
     <ClCompile Include="application\event\EventManager.cpp">
       <Filter>ソース ファイル\application\event</Filter>
-    </ClCompile>
-    <ClCompile Include="application\character\CharacterManager.cpp">
-      <Filter>ソース ファイル\application\character</Filter>
     </ClCompile>
     <ClCompile Include="application\stage\StageManager.cpp">
       <Filter>ソース ファイル\application\stage</Filter>
@@ -1327,29 +1319,11 @@ File Path: project/MyGame.vcxproj.filters
     <ClCompile Include="application\particle\DefaultParticleEmitter.cpp">
       <Filter>ソース ファイル\application\particle</Filter>
     </ClCompile>
-    <ClCompile Include="application\enemy\EnemySpawner.cpp">
-      <Filter>ソース ファイル\application\enemy</Filter>
-    </ClCompile>
     <ClCompile Include="application\loader\EnemyLoader.cpp">
       <Filter>ソース ファイル\application\loader</Filter>
     </ClCompile>
     <ClCompile Include="application\pause\Pausemenu.cpp">
       <Filter>ソース ファイル\application\pause</Filter>
-    </ClCompile>
-    <ClCompile Include="application\player\PlayerMove.cpp">
-      <Filter>ソース ファイル\application\player</Filter>
-    </ClCompile>
-    <ClCompile Include="application\player\PlayerReticle.cpp">
-      <Filter>ソース ファイル\application\player</Filter>
-    </ClCompile>
-    <ClCompile Include="application\player\PlayerWeapon.cpp">
-      <Filter>ソース ファイル\application\player</Filter>
-    </ClCompile>
-    <ClCompile Include="application\player\PlayerDeath.cpp">
-      <Filter>ソース ファイル\application\player</Filter>
-    </ClCompile>
-    <ClCompile Include="application\player\PlayerDash.cpp">
-      <Filter>ソース ファイル\application\player</Filter>
     </ClCompile>
     <ClCompile Include="engine\editor\core\EditorManager.cpp">
       <Filter>ソース ファイル\engine\editor\core</Filter>
@@ -1386,6 +1360,33 @@ File Path: project/MyGame.vcxproj.filters
     </ClCompile>
     <ClCompile Include="application\ui\TitleUI.cpp">
       <Filter>ソース ファイル\application\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="application\collision\CollisionManager.cpp">
+      <Filter>ソース ファイル\application\collision</Filter>
+    </ClCompile>
+    <ClCompile Include="application\character\enemy\EnemySpawner.cpp">
+      <Filter>ソース ファイル\application\character\enemy</Filter>
+    </ClCompile>
+    <ClCompile Include="application\character\enemy\Enemy.cpp">
+      <Filter>ソース ファイル\application\character\enemy</Filter>
+    </ClCompile>
+    <ClCompile Include="application\character\player\PlayerWeapon.cpp">
+      <Filter>ソース ファイル\application\character\player</Filter>
+    </ClCompile>
+    <ClCompile Include="application\character\player\PlayerReticle.cpp">
+      <Filter>ソース ファイル\application\character\player</Filter>
+    </ClCompile>
+    <ClCompile Include="application\character\player\PlayerMove.cpp">
+      <Filter>ソース ファイル\application\character\player</Filter>
+    </ClCompile>
+    <ClCompile Include="application\character\player\PlayerDeath.cpp">
+      <Filter>ソース ファイル\application\character\player</Filter>
+    </ClCompile>
+    <ClCompile Include="application\character\player\PlayerDash.cpp">
+      <Filter>ソース ファイル\application\character\player</Filter>
+    </ClCompile>
+    <ClCompile Include="application\character\player\Player.cpp">
+      <Filter>ソース ファイル\application\character\player</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1581,9 +1582,6 @@ File Path: project/MyGame.vcxproj.filters
     <ClInclude Include="application\character\BaseCharacter.h">
       <Filter>ヘッダー ファイル\application\character</Filter>
     </ClInclude>
-    <ClInclude Include="application\player\Player.h">
-      <Filter>ヘッダー ファイル\application\player</Filter>
-    </ClInclude>
     <ClInclude Include="application\loader\CurveJsonLoader.h">
       <Filter>ヘッダー ファイル\application\loader</Filter>
     </ClInclude>
@@ -1604,12 +1602,6 @@ File Path: project/MyGame.vcxproj.filters
     </ClInclude>
     <ClInclude Include="application\scene\GameOverScene.h">
       <Filter>ヘッダー ファイル\application\scene</Filter>
-    </ClInclude>
-    <ClInclude Include="application\character\CharacterManager.h">
-      <Filter>ヘッダー ファイル\application\character</Filter>
-    </ClInclude>
-    <ClInclude Include="application\enemy\Enemy.h">
-      <Filter>ヘッダー ファイル\application\enemy</Filter>
     </ClInclude>
     <ClInclude Include="application\bullet\EnemyBullet.h">
       <Filter>ヘッダー ファイル\application\bullet</Filter>
@@ -1704,24 +1696,6 @@ File Path: project/MyGame.vcxproj.filters
     <ClInclude Include="application\pause\Pausemenu.h">
       <Filter>ヘッダー ファイル\application\pause</Filter>
     </ClInclude>
-    <ClInclude Include="application\enemy\EnemySpawner.h">
-      <Filter>ヘッダー ファイル\application\enemy</Filter>
-    </ClInclude>
-    <ClInclude Include="application\player\PlayerDeath.h">
-      <Filter>ヘッダー ファイル\application\player</Filter>
-    </ClInclude>
-    <ClInclude Include="application\player\PlayerMove.h">
-      <Filter>ヘッダー ファイル\application\player</Filter>
-    </ClInclude>
-    <ClInclude Include="application\player\PlayerReticle.h">
-      <Filter>ヘッダー ファイル\application\player</Filter>
-    </ClInclude>
-    <ClInclude Include="application\player\PlayerWeapon.h">
-      <Filter>ヘッダー ファイル\application\player</Filter>
-    </ClInclude>
-    <ClInclude Include="application\player\PlayerDash.h">
-      <Filter>ヘッダー ファイル\application\player</Filter>
-    </ClInclude>
     <ClInclude Include="engine\editor\InspectorWindow.h">
       <Filter>ヘッダー ファイル\engine\editor</Filter>
     </ClInclude>
@@ -1778,6 +1752,33 @@ File Path: project/MyGame.vcxproj.filters
     </ClInclude>
     <ClInclude Include="application\ui\TitleUI.h">
       <Filter>ヘッダー ファイル\application\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="application\character\enemy\Enemy.h">
+      <Filter>ヘッダー ファイル\application\character\enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="application\character\enemy\EnemySpawner.h">
+      <Filter>ヘッダー ファイル\application\character\enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="application\character\player\Player.h">
+      <Filter>ヘッダー ファイル\application\character\player</Filter>
+    </ClInclude>
+    <ClInclude Include="application\character\player\PlayerDash.h">
+      <Filter>ヘッダー ファイル\application\character\player</Filter>
+    </ClInclude>
+    <ClInclude Include="application\character\player\PlayerDeath.h">
+      <Filter>ヘッダー ファイル\application\character\player</Filter>
+    </ClInclude>
+    <ClInclude Include="application\character\player\PlayerMove.h">
+      <Filter>ヘッダー ファイル\application\character\player</Filter>
+    </ClInclude>
+    <ClInclude Include="application\character\player\PlayerReticle.h">
+      <Filter>ヘッダー ファイル\application\character\player</Filter>
+    </ClInclude>
+    <ClInclude Include="application\character\player\PlayerWeapon.h">
+      <Filter>ヘッダー ファイル\application\character\player</Filter>
+    </ClInclude>
+    <ClInclude Include="application\collision\CollisionManager.h">
+      <Filter>ヘッダー ファイル\application\collision</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -4422,124 +4423,7 @@ public:
 };
 
 ============================================================
-File Path: project/application/character/CharacterManager.cpp
-============================================================
-#include "CharacterManager.h"
-#include <Player.h>
-
-// シングルトン用インスタンス
-std::unique_ptr<CharacterManager> CharacterManager::instance = nullptr;
-
-///====================================================
-/// シングルトンインスタンスの取得
-///====================================================
-CharacterManager* CharacterManager::GetInstance() {
-    if (!instance) {
-        instance = std::make_unique<CharacterManager>();
-    }
-    return instance.get();
-}
-
-///====================================================
-/// 終了処理
-///====================================================
-void CharacterManager::Finalize() {
-    instance.reset();  // `delete` 不要
-}
-///====================================================
-/// 初期化処理
-///====================================================
-void CharacterManager::Initialize() {
-    for (auto& Character : characters_) Character->Initialize();
-}
-///====================================================
-/// 更新処理
-///====================================================
-void CharacterManager::Update() {
-    for (auto& Character : characters_) Character->Update();
-}
-///====================================================
-/// 描画処理
-///====================================================
-void CharacterManager::Draw() {
-    for (auto& Character : characters_) Character->Draw();
-}
-///====================================================
-/// キャラクター追加処理
-///====================================================
-void CharacterManager::AddCharacter(std::unique_ptr<BaseCharacter> character) {
-    // Playerかどうかを動的キャストでチェック
-    if (Player* player = dynamic_cast<Player*>(character.get())) {
-        player_ = player;
-    }
-    // キャラクターリストに登録
-    characters_.push_back(std::move(character));
-}
-
-
-============================================================
-File Path: project/application/character/CharacterManager.h
-============================================================
-#pragma once
-#include <vector>
-#include <BaseCharacter.h>
-
-// ヘッダーの重複を防ぐ前方宣言
-class Player;
-
-///====================================================
-/// CharacterManager
-/// キャラクター（プレイヤー・敵など）を一括管理するマネージャクラス。
-///====================================================
-class CharacterManager {
-private:
-	static std::unique_ptr<CharacterManager> instance;
-
-	CharacterManager(CharacterManager&) = delete;
-	CharacterManager& operator=(CharacterManager&) = delete;
-public: // メンバ関数
-	CharacterManager() = default;
-	~CharacterManager() = default;
-	// シングルトンインスタンスの取得
-	static CharacterManager* GetInstance();
-	/// <summary>
-	/// 終了処理
-	/// </summary>
-	void Finalize();
-	/// <summary>
-	/// 初期化処理
-	/// </summary>
-	void Initialize();	
-	/// <summary>
-	/// 更新更新
-	/// </summary>
-	void Update();
-	/// <summary>
-	/// 描画更新
-	/// </summary>
-	void Draw(); 
-	/// <summary>
-    /// キャラクターの追加登録 (現状プレイヤ―用)
-    /// </summary> 
-	void AddCharacter(std::unique_ptr<BaseCharacter> character);
-private:// メンバ変数
-	std::vector<std::unique_ptr<BaseCharacter>> characters_; 	// キャラクター登録
-	Player* player_ = nullptr;								    // プレイヤーキャラクター
-public: // アクセッサ（Getter / Setter）
-	// getter
-
-	/// <summary>
-    /// プレイヤーキャラクターへのポインタを取得
-    /// </summary>
-	Player* GetPlayer() const {
-		assert(player_ != nullptr && "Player has not been registered!");
-		return player_;
-	}
-};
-
-
-============================================================
-File Path: project/application/enemy/Enemy.cpp
+File Path: project/application/character/enemy/Enemy.cpp
 ============================================================
 #include "Enemy.h"
 #include <MatrixVector.h>
@@ -4841,7 +4725,7 @@ void Enemy::UpdateDying() {
 }
 
 ============================================================
-File Path: project/application/enemy/Enemy.h
+File Path: project/application/character/enemy/Enemy.h
 ============================================================
 #pragma once
 #include <Vector3.h>
@@ -5001,329 +4885,1309 @@ public:   // アクセッサ（Getter / Setter）
 };
 
 ============================================================
-File Path: project/application/enemy/EnemySpawner.cpp
+File Path: project/application/character/enemy/EnemySpawner.cpp
 ============================================================
-#include"EnemySpawner.h"
+//#include"EnemySpawner.h"
+//#include <MatrixVector.h>
+//
+//using namespace MatrixVector;
+//
+//void EnemySpawner::Initialize(Player* player, CameraManager* cameraManager, std::vector<std::unique_ptr<Enemy>>* enemies) {
+//    player_ = player;
+//    cameraManager_ = cameraManager;
+//    enemies_ = enemies;
+//
+//    // Loader を生成
+//    levelLoader_ = std::make_unique<EnemyLoader>();
+//
+//    // レベルデータ読み込み
+//    levelData = levelLoader_->LoadFile("Enemy");
+//
+//
+//    for (const auto& e : levelData->enemies) {
+//        EnemySpawnTrigger trigger;
+//        trigger.Position = e.translation;
+//        trigger.spawnCount = 5;
+//        trigger.hasSpawned = false;
+//
+//        trigger.moveType =
+//            (e.enemyType == 1) ? MoveType::None :
+//            (e.enemyType == 2) ? MoveType::None :
+//            MoveType::None;
+//
+//        spawnTriggers_.push_back(trigger);
+//    }
+//}
+//
+//void EnemySpawner::Update() {
+//    // 固定位置での出現
+//    EnemySpawn();
+//
+//    // ランダム出現
+//    std::uniform_real_distribution<float> time(3.0f, 8.0f);    
+//    randomSpawnTimer_ += 1.0f / 60.0f;
+//    if (randomSpawnTimer_ >= nextRandomSpawnTime_) {
+//        std::uniform_int_distribution<int> distCount(2, 5);
+//        int spawnCount = distCount(randomEngine);
+//        SpawnRandomEnemy(spawnCount);
+//
+//        nextRandomSpawnTime_ = time(randomEngine); // 次の出現間隔
+//        randomSpawnTimer_ = 0.0f;
+//    }
+//}
+//
+//void EnemySpawner::EnemySpawn() {
+//    Vector3 playerPos = player_->GetPosition();
+//    GamePlayCamera* gameCam = cameraManager_->GetGameplayCamera();
+//    if (!gameCam) return;
+//
+//    Vector3 forward = gameCam->GetForward();
+//    Vector3 right = Normalize(Cross({0,1,0}, forward));
+//    Vector3 up = Normalize(Cross(forward, right));
+//    
+//    // 乱数生成器
+//    std::random_device rd;
+//    std::mt19937 rng(rd());
+//    std::uniform_int_distribution<int> patternDist(0, 2); // 0:V, 1:ZigZag, 2:ReverseStep
+//
+//
+//    for (size_t i = 0; i < spawnTriggers_.size(); ++i) {
+//        auto& trigger = spawnTriggers_[i];
+//
+//        float distanceForward =
+//            Dot((trigger.Position - playerPos), forward);
+//        
+//
+//        if (!trigger.hasSpawned &&
+//            distanceForward >= 0.0f &&
+//            distanceForward < 10.0f) {
+//
+//            // ランダムに出現パターンを選択
+//            int selectedPattern = patternDist(rng);
+//
+//            switch (selectedPattern) {
+//            case 0:
+//                SpawnVFormation(trigger);
+//                break;
+//            case 1:
+//                SpawnZigZagFormation(trigger);
+//                break;
+//            case 2:
+//                SpawnReverseStepFormation(trigger);
+//                break;
+//            }
+//
+//
+//            trigger.hasSpawned = true;
+//        }
+//    }
+//}
+//
+/////====================================================
+///// 敵出現パターン：V字フォーメーション（姿勢対応）
+/////====================================================
+//void EnemySpawner::SpawnVFormation(const EnemySpawnTrigger& trigger) {
+//    // プレイヤー・カメラ情報を取得
+//    Vector3 playerPos = player_->GetPosition();
+//    GamePlayCamera* gameCam = CameraManager::GetInstance()->GetGameplayCamera(); 
+//    if (!gameCam) return;
+//
+//    Vector3 forward = Normalize(gameCam->GetForward());
+//    Vector3 right   = Normalize(Cross({ 0,1,0 }, forward));
+//    Vector3 up      = Normalize(Cross(forward, right));
+//
+//    // 敵配置設定
+//    int activated = 0;
+//
+//    const float forwardDist = 60.0f;  // 前方距離
+//    const float baseY = 1.0f;
+//    const float stepX = 3.0f;
+//    const float stepY = -2.0f;
+//
+//    for (auto& enemy : *enemies_) {
+//        if (!enemy->IsActive()) {
+//            float x = 0.0f;
+//            float y = 0.0f;
+//
+//            switch (activated) {
+//            case 0: x =  0.0f; y =  0.0f; break;               // 中央
+//            case 1: x = -stepX; y = stepY; break;              // 左上
+//            case 2: x =  stepX; y = stepY; break;              // 右上
+//            case 3: x = -stepX * 2; y = stepY * 2; break;      // 左下
+//            case 4: x =  stepX * 2; y = stepY * 2; break;      // 右下
+//            default:
+//                x = (activated - 2) * stepX;
+//                y = stepY * 3;
+//                break;
+//            }
+//
+//            Vector3 spawnPos =
+//                playerPos +
+//                forward * forwardDist +
+//                right * x +
+//                up * (baseY + y);
+//
+//            enemy->Spawn(spawnPos, trigger.moveType);
+//            enemy->SetActive(true);
+//
+//            ++activated;
+//            if (activated >= trigger.spawnCount) break;
+//        }
+//    }
+//}
+//
+//
+//
+/////====================================================
+///// 敵出現パターン：ジグザグフォーメーション
+/////====================================================
+//void EnemySpawner::SpawnZigZagFormation(const EnemySpawnTrigger& trigger) {
+//    // プレイヤー・カメラ情報を取得
+//    Vector3 playerPos = player_->GetPosition();
+//    GamePlayCamera* gameCam = CameraManager::GetInstance()->GetGameplayCamera();
+//    if (!gameCam) return;
+//
+//    Vector3 forward = Normalize(gameCam->GetForward());
+//    Vector3 right = Normalize(Cross({ 0,1,0 }, forward));
+//    Vector3 up = Normalize(Cross(forward, right));
+//
+//    // 敵配置設定
+//    int activated = 0;
+//    const int numEnemies = 5;
+//    const float forwardDist = 50.0f;
+//    const float baseY = 5.0f;
+//
+//    const float xOffsets[5] = { -1.5f,  1.5f,  0.0f, -1.5f,  1.5f };
+//    const float yOffsets[5] = { 2.0f,  2.0f,  0.0f, -2.0f, -2.0f };
+//
+//    for (auto& enemy : *enemies_) {
+//        if (!enemy->IsActive() && activated < numEnemies) {
+//            float x = xOffsets[activated];
+//            float y = yOffsets[activated];
+//
+//            Vector3 spawnPos =
+//                playerPos +
+//                forward * forwardDist +
+//                right * x +
+//                up * (baseY + y);
+//
+//            enemy->Spawn(spawnPos, trigger.moveType);
+//            enemy->SetActive(true);
+//            ++activated;
+//        }
+//    }
+//}
+//
+/////====================================================
+///// 敵出現パターン：逆ステップフォーメーション（姿勢対応）
+/////====================================================
+//void EnemySpawner::SpawnReverseStepFormation(const EnemySpawnTrigger& trigger) {
+//    // プレイヤー・カメラ情報を取得
+//    Vector3 playerPos = player_->GetPosition();
+//    GamePlayCamera* gameCam = CameraManager::GetInstance()->GetGameplayCamera();
+//    if (!gameCam) return;
+//
+//    Vector3 forward = Normalize(gameCam->GetForward());
+//    Vector3 right = Normalize(Cross({ 0,1,0 }, forward));
+//    Vector3 up = Normalize(Cross(forward, right));
+//
+//    // 敵配置設定
+//    int activated = 0;
+//    const float baseY = 5.0f;
+//    const float forwardBase = 80.0f;
+//    const float stepX = 1.5f;
+//    const float stepY = -1.2f;
+//    const float stepZ = 5.0f;
+//
+//    for (auto& enemy : *enemies_) {
+//        if (!enemy->IsActive()) {
+//            Vector3 spawnPos =
+//                playerPos +
+//                forward * (forwardBase - stepZ * activated) +
+//                right * -(stepX * activated) +
+//                up * (baseY + stepY * activated);
+//
+//            enemy->Spawn(spawnPos, trigger.moveType);
+//            enemy->SetActive(true);
+//
+//            ++activated;
+//            if (activated >= trigger.spawnCount) break;
+//        }
+//    }
+//}
+//
+//void EnemySpawner::SpawnRandomEnemy(int count) {
+//    // カメラ取得
+//    GamePlayCamera* gameCam = cameraManager_->GetGameplayCamera();
+//    if (!gameCam) return;
+//
+//    Vector3 camPos = gameCam->GetMainTransform().translate;
+//    Vector3 forward = Normalize(gameCam->GetForward());
+//    Vector3 right   = Normalize(Cross({0,1,0}, forward));
+//    Vector3 up      = Normalize(Cross(forward, right));
+//    
+//    // 乱数エンジンを初期化
+//    std::random_device rd;// 乱数生成器
+//    randomEngine = std::mt19937(rd());
+//
+//    std::uniform_real_distribution<float> distX(-15.0f, 15.0f);
+//    std::uniform_real_distribution<float> disty(-4.0f, 8.0f);
+//    std::uniform_real_distribution<float> distz(80.0f, 250.0f);
+//
+//    int activated = 0;
+//    for (auto& enemy : *enemies_) {
+//        if (!enemy->IsActive() && activated < count) { // 1体ずつ出す場合
+//            // ランダム座標生成
+//            float randX = distX(randomEngine); // 横幅の範囲
+//            float randY = disty(randomEngine);  // 高さ
+//            float randZ = distz(randomEngine); // 奥行き
+//
+//            Vector3 spawnPos = camPos + forward * randZ + right * randX + up * randY;
+//            
+//            // ランダム移動を有効に
+//            std::uniform_int_distribution<int> typeDist(0, 3); // 0:None,1:Vertical,2:Horizontal
+//            MoveType moveType = static_cast<MoveType>(typeDist(randomEngine));
+//
+//            enemy->Spawn(spawnPos, moveType);
+//            enemy->SetActive(true);
+//
+//            ++activated;
+//        }
+//    }
+//}
+
+============================================================
+File Path: project/application/character/enemy/EnemySpawner.h
+============================================================
+//#pragma once
+//#include <Player.h>
+//#include <CameraManager.h>
+//#include <Enemy.h>
+//#include<EnemyLoader.h>
+//
+///// <summary>
+///// 敵の出現条件（トリガー）を定義する構造体
+///// </summary>
+//struct EnemySpawnTrigger {
+//    Vector3 Position;   // 出現位置
+//    int spawnCount;     // 同時に出現させる数
+//    bool hasSpawned;    // すでに出現済みかどうか
+//    MoveType moveType;  // 敵の移動タイプ
+//};
+//
+//class EnemySpawner {
+//public:
+//    void Initialize(Player* player, CameraManager* camera, std::vector<std::unique_ptr<Enemy>>* enemies);
+//
+//    void Update();
+//
+//private:
+//    void EnemySpawn();
+//    void SpawnRandomEnemy(int count);
+//
+//    void SpawnVFormation(const EnemySpawnTrigger& trigger);
+//    void SpawnReverseStepFormation(const EnemySpawnTrigger& trigger);
+//    void SpawnZigZagFormation(const EnemySpawnTrigger& trigger);
+//
+//private:
+//    Player* player_ = nullptr;
+//    CameraManager* cameraManager_ = nullptr;
+//    std::vector<std::unique_ptr<Enemy>>* enemies_ = nullptr;
+//    std::vector<EnemySpawnTrigger> spawnTriggers_;
+//        
+//       
+//    // =========================
+//    // ランダム出現用
+//    // =========================
+//    float randomSpawnTimer_ = 0.0f;           // 経過時間
+//    float nextRandomSpawnTime_ = 2.0f;        // 次に出現させるまでの時間（秒）
+//    std::mt19937 randomEngine;               // 乱数生成器
+//
+//    // キャラクターローダー
+//    std::unique_ptr<EnemyLoader> levelLoader_ = nullptr;
+//    // レベルデータ格納用インスタンスを生成
+//    LevelEnemyData* levelData = nullptr;
+//};
+
+============================================================
+File Path: project/application/character/player/Player.cpp
+============================================================
+#include "Player.h"
+#include <ModelManager.h>
+#include <CameraManager.h>
+#ifdef USE_IMGUI
+#include <ImGuiManager.h>
+#endif // USE_IMGUI
+#include <Input.h>
+#include <PlayerBullet.h>
+#include <BulletManager.h>
 #include <MatrixVector.h>
+#include <TextureManager.h>
+#include <algorithm>
+#include <chrono>
+#include <Skybox.h>
+#include <ModelDate.h>
+#include <Tools/AssetGenerator/engine/math/LoadResourceID.h>
+
+using namespace LoadResourceID;
+using namespace MatrixVector;
+
+Player::~Player() {}
+
+void Player::Initialize() {
+    // モデル・テクスチャ読み込み
+    ModelManager::GetInstance()->LoadModel(model::Player);
+    ModelManager::GetInstance()->LoadModel(model::Playerbullet);
+    TextureManager::GetInstance()->LoadTexture(texture::Target);
+
+    // プレイヤーの初期位置と回転を設定
+    transform_ = { {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f},  0.0f,0.0f,0.0f };
+    // プレイヤー生成
+    object = Object3d::Create(model::Player, transform_);
+
+    targettransform_ = { {0.3f, 0.3f, 0.3f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 30.0f} };
+    target_ = Object3d::Create(model::Playerbullet, targettransform_);
+
+    // レティクル初期化
+    targetreticle_ = Sprite::Create(texture::Target, Vector2{ 640.0f, 360.0f }, 0.0f, Vector2{ 100.0f, 100.0f });
+    targetreticle_->SetTextureSize(Vector2{ 512.0f, 512.0f });
+    targetreticle_->SetAnchorPoint(Vector2{ 0.5f, 0.5f }); // 中心基準
+
+    // 軽くスケールを上げる演出など
+    transform_.scale = { 0.5f, 0.5f, 0.5f };
+
+    // インスタンスの生成
+    move_ = std::make_unique<PlayerMove>();
+    reticle_ = std::make_unique<PlayerReticle>();
+    weapon_ = std::make_unique<PlayerWeapon>();
+    weapon_->Initialize();
+    death_ = std::make_unique<PlayerDeath>();
+    death_->Initialize();
+    dash_ = std::make_unique<PlayerDash>();
+    dash_->Initialize();
+}
+
+void Player::Update() {
+    CameraManager* camMgr = CameraManager::GetInstance();
+    Camera* activeCam = camMgr->GetMainCamera();
+
+    // GamePlayCameraのみ更新処理を行う
+    if (camMgr->GetActiveSceneCamera() == SceneCameraType::Gameplay) {
+        SyncWorldTransformByRail(); // ワールド座標同期処理
+        // メインカメラ中
+        if (CameraManager::GetInstance()->GetTypeview() == ViewCameraType::Main) {
+            // プレイヤー回転もカメラに合わせる
+            transform_.rotate = activeCam->GetRotate();
+        }
+
+        // 現在の状態に応じて関数を呼び分け
+        switch (state_) {
+        case State::Alive:   UpdateAlive();   break;
+        case State::Dead:    UpdateDead();    break;
+        case State::Goal:    UpdateGoal();    break;
+        case State::Event:   UpdateEvent();   break;
+        }
+
+        // デバッグ中のImGui表示
+        DebugImgui();
+        targetreticle_->Update();
+     
+        // ターゲット（3D照準）に反映
+        target_->SetTranslate(targettransform_.translate);
+        target_->Update();
+        // Objectに反映
+        object->SetTranslate(transform_.translate);
+        object->SetRotate(transform_.rotate);
+        object->SetScale(transform_.scale);
+    }
+    // プレイヤー更新(GamePlayCamera以外ではただのobjectとして扱う)
+    object->Update();
+}
+
+void Player::Draw() {
+    // プレイヤー描画
+    object->Draw(); 
+}
+
+void Player::DrawSprite() { 
+    if (state_ == State::Alive) {
+        targetreticle_->Draw();
+    }
+}
+
+void Player::DebugImgui() {
+#ifdef USE_IMGUI
+
+    //object->DrawImGui("Player");
+    //ImGui::Begin("Player Control");
+    //ImGui::DragFloat3("Translate", &transform_.translate.x, 0.01f);
+    //ImGui::DragFloat3("Rotate", &transform_.rotate.x, 0.01f);
+    //ImGui::DragFloat3("Scale", &transform_.scale.x, 0.01f);
+    //ImGui::End();
+#endif // USE_IMGUI
+}
+
+void Player::UpdateAlive() {
+    CameraManager* camMgr = CameraManager::GetInstance();
+    Input* input = Input::GetInstance();
+
+    // --- 1. 回避入力 ---
+    if (input->Pushkey(DIK_LSHIFT) && dash_->CanDash()) {
+        // 現在の移動入力から方向を決定
+        float moveDirX = 0.0f;
+        if (input->Pushkey(DIK_A)) moveDirX = -1.0f;
+        if (input->Pushkey(DIK_D)) moveDirX = 1.0f;
+        dash_->Start(moveDirX);
+    }
+
+    // --- 2. 回避状態の更新 ---
+    dash_->Update();
+
+    // --- 3. 移動の更新 ---
+    // PlayerMoveに現在の速度倍率を渡す（PlayerMove側のUpdateに引数を追加するか、内部で計算）
+    // ここでは、一時的に移動速度を上げるためにダッシュ倍率を適用
+    float currentSpeedMult = dash_->GetSpeedMultiplier();
+
+    // move_->Updateの中で speed * currentSpeedMult されるように調整
+    move_->Update(transform_, CameraManager::GetInstance()->GetMainCamera()->GetRotate(), currentSpeedMult);
+
+    // --- 4. 回転の合成 ---
+    transform_.rotate.z += dash_->GetRotationZ();
+    // レティクル
+    reticle_->Update(targettransform_, transform_.translate, target_.get());
+    // 攻撃
+    weapon_->Update(transform_.translate, target_->GetTranslate(), camMgr->GetGameplayCamera());
+    // レティクル(2Dスプライト)の同期
+    reticle_->UpdateSprite(target_->GetTranslate(), targetreticle_.get(), camMgr->GetActiveCamera());
+}
+
+void Player::UpdateDead() {
+
+
+    // 死亡演出：ここに落下や回転のロジックを書く（後にクラス化も可能）
+    death_->Update(transform_.rotate, deathOffset_, object.get());
+    // 座標の同期（これが重要）
+    SyncWorldTransformByRail();
+}
+
+void Player::UpdateGoal() {
+
+}
+
+void Player::UpdateEvent() {
+    // イベント：自動移動のロジックなど
+}
+
+void Player::SyncWorldTransformByRail() {
+    CameraManager* camMgr = CameraManager::GetInstance();
+    GamePlayCamera* gameCam = camMgr->GetGameplayCamera();
+    Camera* activeCam = camMgr->GetMainCamera();
+
+    // カメラのレール情報
+    Vector3 camPos = gameCam->GetBezierPos();
+    Vector3 forward = gameCam->GetForward();
+    Vector3 right = gameCam->GetRight();
+    Vector3 up = gameCam->GetUp();
+    // 1. 基本となるオフセット位置（カメラの30m前方、3m下）
+    Vector3 cameraBaseOffset = { 0.0f, -3.0f, 30.0f };
+    Vector3 cameraBaseWorld = (right * cameraBaseOffset.x) + (up * cameraBaseOffset.y) + (forward * cameraBaseOffset.z);
+
+    // 2. 自機の移動分（move_から取得）をワールド方向に変換して加算
+    Vector3 playerMoveOffset = (right * move_->GetLocalPosition().x) + (up * move_->GetLocalPosition().y);
+    Vector3 basePos = camPos + cameraBaseWorld + playerMoveOffset;
+    // 3. 回転の同期（メインカメラ時）
+    if (camMgr->GetTypeview() == ViewCameraType::Main) {
+        transform_.rotate = activeCam->GetRotate();
+    }
+
+    // 4. 座標の最終決定（死亡演出中のSubカメラならオフセットを加算）
+    if (camMgr->GetTypeview() == ViewCameraType::Sub) {
+        transform_.translate = basePos + deathOffset_;
+    } else {
+        transform_.translate = basePos;
+    }
+}
+
+///=====================================================================
+/// OBB当たり判定取得
+///=====================================================================
+OBB Player::GetOBB() const {
+    OBB obb;
+
+    // 中心座標
+    obb.center = transform_.translate;
+
+    // ハーフサイズ（スケールの半分）
+    obb.halfSize = {
+        transform_.scale.x / 2.0f, 
+        transform_.scale.y / 2.0f, 
+        transform_.scale.z / 2.0f
+    };
+
+    // 回転行列（XYZ順で回転を合成）
+    Matrix4x4 rotX = MakeRotateXMatrix(transform_.rotate.x);
+    Matrix4x4 rotY = MakeRotateYMatrix(transform_.rotate.y);
+    Matrix4x4 rotZ = MakeRotateZMatrix(transform_.rotate.z);
+
+    // Z→X→Y の順に掛けることで、XYZ回転（ローカル空間回転）を再現
+    Matrix4x4 rotMat = Multiply(Multiply(rotZ, rotX), rotY);
+
+    // ローカル軸（X, Y, Z）をワールド空間へ回転適用
+    obb.axis[0] = Normalize(Multiply4x4x3(rotMat, Vector3{ 1, 0, 0 })); // X軸
+    obb.axis[1] = Normalize(Multiply4x4x3(rotMat, Vector3{ 0, 1, 0 })); // Y軸
+    obb.axis[2] = Normalize(Multiply4x4x3(rotMat, Vector3{ 0, 0, 1 })); // Z軸
+    
+    return obb;
+}
+
+============================================================
+File Path: project/application/character/player/Player.h
+============================================================
+#pragma once
+#include <BaseCharacter.h>
+#include <Sprite.h>
+#include <ParticleEmitter.h>
+#include <OBB.h>
+#include <PlayerMove.h>
+#include <PlayerReticle.h>
+#include <PlayerWeapon.h>
+#include <PlayerDeath.h>
+#include <PlayerDash.h>
+
+// プレイヤーの状態を定義
+enum class State {
+	None,
+	Alive,      // 通常時（操作可能）
+	Dead,       // 死亡演出中
+	Goal,       // ゴール到達後
+	Event,      // イベント中（操作不能・自動移動など）
+};
+
+/// <summary>
+/// プレイヤーキャラクタークラス
+/// </summary>
+class Player : public BaseCharacter {
+public:// メンバ関数
+	// デストラクタ
+	~Player() override;
+	/// <summary>
+	/// 初期化
+	/// </summary>
+	void Initialize() override;
+	/// <summary>
+	/// 更新更新
+	/// </summary>
+	void Update() override;
+	/// <summary>
+	/// 3Dモデルの描画更新
+	/// </summary>
+	void Draw() override;
+	/// <summary>
+	/// 2Dスプライトの描画処理
+	/// </summary>	
+	void DrawSprite();
+	/// <summary>
+	/// デバッグ用のImGui描画
+	/// </summary>
+	void DebugImgui();
+	/// <summary>
+	/// 当たり判定用を取得
+	/// </summary>
+	OBB GetOBB() const;
+	/// <summary>
+    /// カメラのレール移動に合わせてプレイヤーのワールド座標を更新する
+    /// </summary>
+    void SyncWorldTransformByRail();
+
+    // ... 省略 ...
+    void SetState(State state) { state_ = state; }
+	State GetState() { return state_; }
+	
+	// --- 各ステートの専用更新関数 ---
+    void UpdateAlive();
+    void UpdateDead();
+	void UpdateGoal();
+	void UpdateEvent();
+
+private:// メンバ変数	
+	// 各機能をクラスのインスタンス
+	std::unique_ptr<PlayerMove> move_;          // プレイヤ―の移動制御クラス
+	std::unique_ptr<PlayerReticle> reticle_;    // プレイヤ―の照準制御クラス
+	std::unique_ptr<PlayerWeapon> weapon_;      // プレイヤ―の武器制御クラス
+	std::unique_ptr<PlayerDeath> death_;        // プレイヤ―の死亡演出クラス
+	std::unique_ptr<PlayerDash> dash_;          // プレイヤ―の回避制御クラス
+	State state_ = State::None; // 初期状態
+
+	std::unique_ptr <Object3d> object;  // プレイヤーの3Dオブジェクト
+	Transform transform_{};
+	std::unique_ptr <Object3d> target_; // ターゲット用3Dオブジェクト
+	Transform targettransform_{};
+	std::unique_ptr <Sprite> targetreticle_; // レティクル用スプライト	
+	// 死亡演出用のオフセット（落下や回転のため）
+	Vector3 deathOffset_;
+
+public:// メンバ変数
+	// getter
+	// 参照を返す（変更不可）
+	Object3d* GetPlayerObject() { return object.get(); }
+	void SetTransform(const Transform& t) {
+		transform_ = t;
+		object->SetTranslate(transform_.translate);
+		object->SetRotate(transform_.rotate);
+		object->SetScale(transform_.scale);
+	}
+
+	// Transformのpositionを返すgetter
+	Vector3 GetPosition() const {
+		return transform_.translate;
+	}
+};
+
+============================================================
+File Path: project/application/character/player/PlayerDash.cpp
+============================================================
+#include "PlayerDash.h"
+#include <cmath>
+#include <numbers>
+#include <algorithm>
+
+void PlayerDash::Initialize() {
+    isDashing_ = false;
+    dashTimer_ = 0.0f;
+    coolDownTimer_ = 0.0f;
+    speedMultiplier_ = 1.0f;
+    extraRotationZ_ = 0.0f;
+}
+
+void PlayerDash::Start(float directionX) {
+    // クールタイム中なら受け付けない
+    if (!CanDash()) return;
+
+    isDashing_ = true;
+    dashTimer_ = 0.0f;
+    
+    // 入力方向に基づいて回転方向を決める（入力がなければ右回転にする）
+    dashDirX_ = (std::abs(directionX) > 0.01f) ? (directionX > 0 ? 1.0f : -1.0f) : 1.0f;
+}
+
+void PlayerDash::Update() {
+    float deltaTime = 1.0f / 60.0f;
+
+    if (isDashing_) {
+        // --- ダッシュ中の処理 ---
+        dashTimer_ += deltaTime;
+        
+        // ダッシュの進捗率（0.0 ～ 1.0）を計算
+        float progress = std::clamp(dashTimer_ / kDashDuration, 0.0f, 1.0f);
+
+        // 回転の計算
+        // 360度（2π）を現在の進捗率に掛けて、回転角を算出する
+        float totalRotation = 2.0f * std::numbers::pi_v<float>;
+        extraRotationZ_ = -dashDirX_ * (totalRotation * progress);
+
+        // 速度倍率の計算
+        // sin波を利用して、開始時と終了時は「1.0」、中間地点で「kMaxSpeedMult」になるように調整
+        // これにより、滑らかに加速して滑らかに減速する
+        speedMultiplier_ = 1.0f + (kMaxSpeedMult - 1.0f) * std::sin(progress * std::numbers::pi_v<float>);
+
+        // 時間が経過したらダッシュ終了
+        if (dashTimer_ >= kDashDuration) {
+            isDashing_ = false;
+            dashTimer_ = 0.0f;
+            extraRotationZ_ = 0.0f;   // 回転をリセット
+            speedMultiplier_ = 1.0f;  // 速度を通常に戻す
+            coolDownTimer_ = kCoolDownTime; // クールタイム開始
+        }
+    }
+    else if (coolDownTimer_ > 0.0f) {
+        // --- クールタイムのカウントダウン ---
+        coolDownTimer_ -= deltaTime;
+    }
+}
+
+============================================================
+File Path: project/application/character/player/PlayerDash.h
+============================================================
+#pragma once
+#include <Vector3.h>
+
+/// <summary>
+/// プレイヤーのダッシュ（回避・高速移動）管理クラス
+/// 一定時間速度を上げ、機体をロール（回転）させる演出を制御する。
+/// </summary>
+class PlayerDash {
+public:
+    /// <summary>
+    /// 初期化（パラメータのリセット）
+    /// </summary>
+    void Initialize();
+    /// <summary>
+    /// ダッシュの開始
+    /// </summary>
+    /// <param name="directionX">現在の左右入力値（回転方向を決定するために使用）</param>
+    void Start(float directionX);
+    /// <summary>
+    /// ダッシュ状態とクールタイムの更新
+    /// </summary>
+    void Update();
+private:
+    // --- 状態管理 ---
+    bool isDashing_ = false;       // 現在ダッシュ中か
+    float dashTimer_ = 0.0f;       // ダッシュ開始からの経過時間
+    float coolDownTimer_ = 0.0f;   // 再使用までの残り時間
+    // --- 設定定数 ---
+    const float kDashDuration = 0.5f;   // ダッシュ（回転）が続く時間
+    const float kCoolDownTime = 3.0f;   // ダッシュ終了後のクールタイム
+    const float kMaxSpeedMult = 2.5f;   // ダッシュ中の最大速度倍率
+    // --- 演出用変数 ---
+    float dashDirX_ = 0.0f;        // 回転する方向（左:-1.0, 右:1.0）
+    float extraRotationZ_ = 0.0f;  // ダッシュによる追加のZ軸回転量（ラジアン）
+    float speedMultiplier_ = 1.0f; // 移動クラスに渡す速度倍率
+public: // アクセッサ
+	// Getter
+    // 現在の回転角を取得（PlayerMoveの回転に加算する）
+    float GetRotationZ() const { return extraRotationZ_; } 
+    // 現在の速度倍率を取得（PlayerMoveの移動量に掛ける）
+    float GetSpeedMultiplier() const { return speedMultiplier_; }    
+    // クールタイムの進捗（0.0～1.0） ※UIのゲージ表示などに利用
+    float GetCoolDownProgress() const { return coolDownTimer_ / kCoolDownTime; }
+
+    // ダッシュ中かどうか
+    bool IsDashing() const { return isDashing_; }
+    // 現在ダッシュ可能か（ダッシュ中でなく、かつクールタイムが終了しているか）
+    bool CanDash() const { return !isDashing_ && coolDownTimer_ <= 0.0f; }    
+};
+
+============================================================
+File Path: project/application/character/player/PlayerDeath.cpp
+============================================================
+#include "PlayerDeath.h"
+#include <Object3d.h>
+#include <cmath>
+
+void PlayerDeath::Initialize() {
+    timer_ = 0.0f;
+}
+
+void PlayerDeath::Update(Vector3& rotate, Vector3& offset, Object3d* object) {
+    if (!object) return;
+
+    // フレーム加算（60FPS想定）
+    timer_ += 1.0f / 60.0f;
+
+    // 落下挙動の計算
+    offset.y -= kFallSpeedY;
+    offset.z += kFallSpeedZ;
+
+    // フラフラとした回転の更新
+    // 単純な加算ではなく、sin/cos を使うことで「機体が揺れながら回る」不規則さを演出
+    // X軸（ピッチ）とZ軸（ロール）を別々の周期で揺らす
+    rotate.x += 0.004f + 0.002f * std::sin(timer_ * 0.5f);
+    rotate.z += 0.003f + 0.0015f * std::cos(timer_ * 0.4f);
+
+    // 被弾点滅処理 
+    // サイン波を使って 0.0 ～ 1.0 の間を高速に往復する数値（s）を作る
+    float s = (std::sin(timer_ * kBlinkSpeed) + 1.0f) * 0.5f;
+
+    // 算出した s が特定の閾値（0.85）を超えた瞬間だけ、モデルの色を「赤」に変える
+    if (s > 0.85f) {
+        // 赤色（RGBA: 1, 0, 0, 1）
+        object->SetMaterialColor({ 1.0f, 0.0f, 0.0f, 1.0f });
+    }
+    else {
+        // 通常（白色：RGBA: 1, 1, 1, 1）
+        object->SetMaterialColor({ 1.0f, 1.0f, 1.0f, 1.0f });
+    }
+}
+
+============================================================
+File Path: project/application/character/player/PlayerDeath.h
+============================================================
+#pragma once
+#include <Vector3.h>
+#include <Vector4.h>
+
+// 前方宣言
+class Object3d;
+
+/// <summary>
+/// プレイヤーの死亡時演出管理クラス
+/// 撃墜された際、制御不能になって落下しながら点滅する等の視覚効果を制御する。
+/// </summary>
+class PlayerDeath {
+public:
+    /// <summary>
+    /// 初期化（タイマーのリセット）
+    /// </summary>
+    void Initialize();
+
+    /// <summary>
+    /// 死亡演出の更新
+    /// </summary>
+    /// <param name="rotate">機体の回転角（これに回転を加えてフラフラさせる）</param>
+    /// <param name="offset">機体の位置オフセット（これに値を足して落下させる）</param>
+    /// <param name="object">色を変えるための3Dモデルポインタ（点滅用）</param>
+    void Update(Vector3& rotate, Vector3& offset, Object3d* object);
+
+    /// <summary>
+    /// 演出が終了したかどうか（シーン遷移のトリガーなどに使用）
+    /// </summary>
+    bool IsFinished() const { return timer_ >= kDuration; }
+private:
+    float timer_ = 0.0f;          // 経過時間タイマー
+    const float kDuration = 2.5f; // 演出の合計時間（秒）
+
+    // --- 演出用の設定定数 ---
+    const float kFallSpeedY = 0.02f; // 下方向への落下速度
+    const float kFallSpeedZ = 0.2f;  // 前方向への慣性移動速度
+    const float kBlinkSpeed = 50.0f; // 赤点滅の速さ
+};
+
+============================================================
+File Path: project/application/character/player/PlayerMove.cpp
+============================================================
+#include "PlayerMove.h"
+#include <Input.h>
+#include <algorithm>
+#include <CameraManager.h>
+#include <Object3d.h>
+#include <Transform.h>
+
+void PlayerMove::Update(Transform& transform, const Vector3& cameraRotate, float speedMultiplier) {
+    // GetInstanceの省略
+    Input* input = Input::GetInstance();
+    const float speed = 0.17f * speedMultiplier;
+
+    // --- 1. 入力値の取得 ---
+    Vector3 moveInput = { 0, 0, 0 };
+    if (input->Pushkey(DIK_A)) moveInput.x -= speed;
+    if (input->Pushkey(DIK_D)) moveInput.x += speed;
+    if (input->Pushkey(DIK_W)) moveInput.y += speed;
+    if (input->Pushkey(DIK_S)) moveInput.y -= speed;
+
+    // --- 2. 移動の実行と制限 ---
+    relativePos_.x += moveInput.x;
+    relativePos_.y += moveInput.y;
+    ApplyConstraint();
+
+    // --- 3. 傾き計算 ---
+    // 入力がある場合は傾け、ない場合は緩やかに水平に戻す
+    UpdateTilt(moveInput);
+
+    // --- 4. プレイヤーの回転に反映 ---
+    // ベースとなるカメラの回転に、操作による傾き(tilt)を合成する
+    transform.rotate.x = cameraRotate.x + tiltX_;
+    transform.rotate.y = cameraRotate.y;
+    transform.rotate.z = cameraRotate.z + tiltZ_;
+}
+
+void PlayerMove::ApplyConstraint() {
+    // 画面外（レールの移動可能範囲）に出ないようにクランプ
+    relativePos_.x = std::clamp(relativePos_.x, -10.0f, 10.0f);
+    relativePos_.y = std::clamp(relativePos_.y, -2.5f, 9.0f);
+}
+
+void PlayerMove::UpdateTilt(const Vector3& moveInput) {
+    const float tiltSpeed = 0.05f;   // 1フレームで傾く速度
+    const float maxTilt = 0.4f;      // 最大傾斜角
+    const float returnSpeed = 0.08f; // 入力がない時に戻る速度(0.0~1.0)
+
+    // 横入力によるロール演出 (Z軸回転)
+    if (moveInput.x < 0) {        // 左入力中
+        tiltZ_ += tiltSpeed;
+    } else if (moveInput.x > 0) { // 右入力中
+        tiltZ_ -= tiltSpeed;
+    } else {                      // 入力なし：中央に戻る
+        tiltZ_ *= (1.0f - returnSpeed);
+    }
+
+    // 縦入力によるピッチ演出 (X軸回転)
+    if (moveInput.y > 0) {        // 上入力中
+        tiltX_ -= tiltSpeed;
+    } else if (moveInput.y < 0) { // 下入力中
+        tiltX_ += tiltSpeed;
+    } else {                      // 入力なし：中央に戻る
+        tiltX_ *= (1.0f - returnSpeed);
+    }
+
+    // 傾きの限界値を設定（端に押し付けている間もこの角度を維持する）
+    tiltX_ = std::clamp(tiltX_, -maxTilt, maxTilt);
+    tiltZ_ = std::clamp(tiltZ_, -maxTilt, maxTilt);
+}
+
+============================================================
+File Path: project/application/character/player/PlayerMove.h
+============================================================
+#pragma once
+#include <Vector3.h>
+
+// 前方宣言
+class Object3d;
+struct Transform;
+
+/// <summary>
+/// プレイヤーの移動・傾き制御クラス
+/// レールカメラの移動に追従しながら、画面内での相対的な移動と、その入力に応じた機体の傾きを制御する。
+/// </summary>
+class PlayerMove {
+public:// メンバ関数
+    /// <summary>
+    /// 毎フレームの更新処理
+    /// </summary>
+    /// <param name="transform">プレイヤーのトランスフォーム</param>
+    /// <param name="cameraRotate">現在のカメラの回転角</param>
+    /// <param name="speedMultiplier">移動速度の倍率</param>
+    void Update(Transform& transform, const Vector3& cameraRotate, float speedMultiplier);
+private:
+    /// <summary>
+    /// プレイヤーが画面外に出ないよう座標を制限する
+    /// </summary>
+    void ApplyConstraint();
+    /// <summary>
+    /// 移動入力に基づいた傾き演出の計算
+    /// </summary>
+    /// <param name="moveInput">現在のフレームの移動量ベクトル</param>
+    void UpdateTilt(const Vector3& moveInput);
+private:// メンバ変数
+    // カメラ座標系における自機の相対座標
+    Vector3 relativePos_{};
+    // 演出用傾き角
+    float tiltX_{}; // 上下移動によるピッチ（機首の上げ下げ）
+    float tiltZ_{}; // 左右移動によるロール（翼の傾き）
+public: // アクセッサ
+    // Getter
+    const Vector3& GetLocalPosition() const { return relativePos_; }
+	// Setter
+    void SetLocalPosition(const Vector3& pos) { relativePos_ = pos; }
+};
+
+============================================================
+File Path: project/application/character/player/PlayerReticle.cpp
+============================================================
+#include "PlayerReticle.h"
+#include <Transform.h>
+#include <Camera.h>
+#include <MatrixVector.h>
+#include <algorithm>
+#include <Sprite.h>
+#include <Object3d.h>
+#include <Input.h>
+#include <CameraManager.h>
 
 using namespace MatrixVector;
 
-void EnemySpawner::Initialize(Player* player, CameraManager* cameraManager, std::vector<std::unique_ptr<Enemy>>* enemies) {
-    player_ = player;
-    cameraManager_ = cameraManager;
-    enemies_ = enemies;
+void PlayerReticle::Update(Transform& reticleTransform, const Vector3& playerWorldPos, Object3d* targetObj) {
+if (!targetObj) return;
+    Input* input = Input::GetInstance();
 
-    // Loader を生成
-    levelLoader_ = std::make_unique<EnemyLoader>();
+    // 入力でターゲットを動かす
+    // 方向キーでレティクルの相対座標を動かす
+    if (input->Pushkey(DIK_LEFT))  reticleTransform.translate.x -= kSpeed;
+    if (input->Pushkey(DIK_RIGHT)) reticleTransform.translate.x += kSpeed;
+    if (input->Pushkey(DIK_UP))    reticleTransform.translate.y += kSpeed;
+    if (input->Pushkey(DIK_DOWN))  reticleTransform.translate.y -= kSpeed;
 
-    // レベルデータ読み込み
-    levelData = levelLoader_->LoadFile("Enemy");
+    // 移動範囲の制限（クランプ)
+    reticleTransform.translate.x = std::clamp(reticleTransform.translate.x, kMinX, kMaxX);
+    reticleTransform.translate.y = std::clamp(reticleTransform.translate.y, kMinY, kMaxY);
 
-
-    for (const auto& e : levelData->enemies) {
-        EnemySpawnTrigger trigger;
-        trigger.Position = e.translation;
-        trigger.spawnCount = 5;
-        trigger.hasSpawned = false;
-
-        trigger.moveType =
-            (e.enemyType == 1) ? MoveType::None :
-            (e.enemyType == 2) ? MoveType::None :
-            MoveType::None;
-
-        spawnTriggers_.push_back(trigger);
-    }
-}
-
-void EnemySpawner::Update() {
-    // 固定位置での出現
-    EnemySpawn();
-
-    // ランダム出現
-    std::uniform_real_distribution<float> time(3.0f, 8.0f);    
-    randomSpawnTimer_ += 1.0f / 60.0f;
-    if (randomSpawnTimer_ >= nextRandomSpawnTime_) {
-        std::uniform_int_distribution<int> distCount(2, 5);
-        int spawnCount = distCount(randomEngine);
-        SpawnRandomEnemy(spawnCount);
-
-        nextRandomSpawnTime_ = time(randomEngine); // 次の出現間隔
-        randomSpawnTimer_ = 0.0f;
-    }
-}
-
-void EnemySpawner::EnemySpawn() {
-    Vector3 playerPos = player_->GetPosition();
-    GamePlayCamera* gameCam = cameraManager_->GetGameplayCamera();
+    // カメラ基準の方向ベクトル計算
+    // カメラの回転から、世界軸ではない「現在の視点における正面・右・上」を割り出す
+    GamePlayCamera* gameCam = CameraManager::GetInstance()->GetGameplayCamera();
     if (!gameCam) return;
-
     Vector3 forward = gameCam->GetForward();
-    Vector3 right = Normalize(Cross({0,1,0}, forward));
-    Vector3 up = Normalize(Cross(forward, right));
-    
-    // 乱数生成器
-    std::random_device rd;
-    std::mt19937 rng(rd());
-    std::uniform_int_distribution<int> patternDist(0, 2); // 0:V, 1:ZigZag, 2:ReverseStep
-
-
-    for (size_t i = 0; i < spawnTriggers_.size(); ++i) {
-        auto& trigger = spawnTriggers_[i];
-
-        float distanceForward =
-            Dot((trigger.Position - playerPos), forward);
-        
-
-        if (!trigger.hasSpawned &&
-            distanceForward >= 0.0f &&
-            distanceForward < 10.0f) {
-
-            // ランダムに出現パターンを選択
-            int selectedPattern = patternDist(rng);
-
-            switch (selectedPattern) {
-            case 0:
-                SpawnVFormation(trigger);
-                break;
-            case 1:
-                SpawnZigZagFormation(trigger);
-                break;
-            case 2:
-                SpawnReverseStepFormation(trigger);
-                break;
-            }
-
-
-            trigger.hasSpawned = true;
-        }
-    }
-}
-
-///====================================================
-/// 敵出現パターン：V字フォーメーション（姿勢対応）
-///====================================================
-void EnemySpawner::SpawnVFormation(const EnemySpawnTrigger& trigger) {
-    // プレイヤー・カメラ情報を取得
-    Vector3 playerPos = player_->GetPosition();
-    GamePlayCamera* gameCam = CameraManager::GetInstance()->GetGameplayCamera(); 
-    if (!gameCam) return;
-
-    Vector3 forward = Normalize(gameCam->GetForward());
-    Vector3 right   = Normalize(Cross({ 0,1,0 }, forward));
+    // カメラの向きに基づいた右方向と上方向
+    Vector3 right   = Normalize(Cross({0.0f, 1.0f, 0.0f}, forward));
     Vector3 up      = Normalize(Cross(forward, right));
 
-    // 敵配置設定
-    int activated = 0;
+    // プレイヤーの位置から「前方に一定距離」＋「操作による上下左右のオフセット」を加算
+    Vector3 offset =
+        right * reticleTransform.translate.x +
+        up    * reticleTransform.translate.y +
+        forward * kForwardDistance;
 
-    const float forwardDist = 60.0f;  // 前方距離
-    const float baseY = 1.0f;
-    const float stepX = 3.0f;
-    const float stepY = -2.0f;
-
-    for (auto& enemy : *enemies_) {
-        if (!enemy->IsActive()) {
-            float x = 0.0f;
-            float y = 0.0f;
-
-            switch (activated) {
-            case 0: x =  0.0f; y =  0.0f; break;               // 中央
-            case 1: x = -stepX; y = stepY; break;              // 左上
-            case 2: x =  stepX; y = stepY; break;              // 右上
-            case 3: x = -stepX * 2; y = stepY * 2; break;      // 左下
-            case 4: x =  stepX * 2; y = stepY * 2; break;      // 右下
-            default:
-                x = (activated - 2) * stepX;
-                y = stepY * 3;
-                break;
-            }
-
-            Vector3 spawnPos =
-                playerPos +
-                forward * forwardDist +
-                right * x +
-                up * (baseY + y);
-
-            enemy->Spawn(spawnPos, trigger.moveType);
-            enemy->SetActive(true);
-
-            ++activated;
-            if (activated >= trigger.spawnCount) break;
-        }
-    }
+    // 最終的な座標を計算して反映
+    Vector3 finalPos = playerWorldPos + offset;
+    // 計算した座標を3Dオブジェクトに反映
+    targetObj->SetTranslate(finalPos);
+    targetObj->Update();
 }
 
-
-
-///====================================================
-/// 敵出現パターン：ジグザグフォーメーション
-///====================================================
-void EnemySpawner::SpawnZigZagFormation(const EnemySpawnTrigger& trigger) {
-    // プレイヤー・カメラ情報を取得
-    Vector3 playerPos = player_->GetPosition();
-    GamePlayCamera* gameCam = CameraManager::GetInstance()->GetGameplayCamera();
-    if (!gameCam) return;
-
-    Vector3 forward = Normalize(gameCam->GetForward());
-    Vector3 right = Normalize(Cross({ 0,1,0 }, forward));
-    Vector3 up = Normalize(Cross(forward, right));
-
-    // 敵配置設定
-    int activated = 0;
-    const int numEnemies = 5;
-    const float forwardDist = 50.0f;
-    const float baseY = 5.0f;
-
-    const float xOffsets[5] = { -1.5f,  1.5f,  0.0f, -1.5f,  1.5f };
-    const float yOffsets[5] = { 2.0f,  2.0f,  0.0f, -2.0f, -2.0f };
-
-    for (auto& enemy : *enemies_) {
-        if (!enemy->IsActive() && activated < numEnemies) {
-            float x = xOffsets[activated];
-            float y = yOffsets[activated];
-
-            Vector3 spawnPos =
-                playerPos +
-                forward * forwardDist +
-                right * x +
-                up * (baseY + y);
-
-            enemy->Spawn(spawnPos, trigger.moveType);
-            enemy->SetActive(true);
-            ++activated;
-        }
+void PlayerReticle::UpdateSprite(const Vector3& worldPos, Sprite* targetSprite, Camera* activeCamera) {
+    if (!targetSprite || !activeCamera) return; 
+    // ビュー・プロジェクション行列を取得
+    const Matrix4x4& viewProj = activeCamera->GetViewProjectionMatrix();
+    // ワールド座標をクリップ座標系（-1.0 ～ 1.0）へ変換
+    Vector4 clipPos = {
+        worldPos.x * viewProj.m[0][0] + worldPos.y * viewProj.m[1][0] + worldPos.z * viewProj.m[2][0] + viewProj.m[3][0],
+        worldPos.x * viewProj.m[0][1] + worldPos.y * viewProj.m[1][1] + worldPos.z * viewProj.m[2][1] + viewProj.m[3][1],
+        worldPos.x * worldPos.y * viewProj.m[0][2] + worldPos.y * viewProj.m[1][2] + worldPos.z * viewProj.m[2][2] + viewProj.m[3][2],
+        worldPos.x * viewProj.m[0][3] + worldPos.y * viewProj.m[1][3] + worldPos.z * viewProj.m[2][3] + viewProj.m[3][3]
+    };
+    // w成分で除算して正規化デバイス座標(NDC)に変換
+    if (clipPos.w != 0.0f) {
+        clipPos.x /= clipPos.w;
+        clipPos.y /= clipPos.w;
     }
-}
-
-///====================================================
-/// 敵出現パターン：逆ステップフォーメーション（姿勢対応）
-///====================================================
-void EnemySpawner::SpawnReverseStepFormation(const EnemySpawnTrigger& trigger) {
-    // プレイヤー・カメラ情報を取得
-    Vector3 playerPos = player_->GetPosition();
-    GamePlayCamera* gameCam = CameraManager::GetInstance()->GetGameplayCamera();
-    if (!gameCam) return;
-
-    Vector3 forward = Normalize(gameCam->GetForward());
-    Vector3 right = Normalize(Cross({ 0,1,0 }, forward));
-    Vector3 up = Normalize(Cross(forward, right));
-
-    // 敵配置設定
-    int activated = 0;
-    const float baseY = 5.0f;
-    const float forwardBase = 80.0f;
-    const float stepX = 1.5f;
-    const float stepY = -1.2f;
-    const float stepZ = 5.0f;
-
-    for (auto& enemy : *enemies_) {
-        if (!enemy->IsActive()) {
-            Vector3 spawnPos =
-                playerPos +
-                forward * (forwardBase - stepZ * activated) +
-                right * -(stepX * activated) +
-                up * (baseY + stepY * activated);
-
-            enemy->Spawn(spawnPos, trigger.moveType);
-            enemy->SetActive(true);
-
-            ++activated;
-            if (activated >= trigger.spawnCount) break;
-        }
-    }
-}
-
-void EnemySpawner::SpawnRandomEnemy(int count) {
-    // カメラ取得
-    GamePlayCamera* gameCam = cameraManager_->GetGameplayCamera();
-    if (!gameCam) return;
-
-    Vector3 camPos = gameCam->GetMainTransform().translate;
-    Vector3 forward = Normalize(gameCam->GetForward());
-    Vector3 right   = Normalize(Cross({0,1,0}, forward));
-    Vector3 up      = Normalize(Cross(forward, right));
-    
-    // 乱数エンジンを初期化
-    std::random_device rd;// 乱数生成器
-    randomEngine = std::mt19937(rd());
-
-    std::uniform_real_distribution<float> distX(-15.0f, 15.0f);
-    std::uniform_real_distribution<float> disty(-4.0f, 8.0f);
-    std::uniform_real_distribution<float> distz(80.0f, 250.0f);
-
-    int activated = 0;
-    for (auto& enemy : *enemies_) {
-        if (!enemy->IsActive() && activated < count) { // 1体ずつ出す場合
-            // ランダム座標生成
-            float randX = distX(randomEngine); // 横幅の範囲
-            float randY = disty(randomEngine);  // 高さ
-            float randZ = distz(randomEngine); // 奥行き
-
-            Vector3 spawnPos = camPos + forward * randZ + right * randX + up * randY;
-            
-            // ランダム移動を有効に
-            std::uniform_int_distribution<int> typeDist(0, 3); // 0:None,1:Vertical,2:Horizontal
-            MoveType moveType = static_cast<MoveType>(typeDist(randomEngine));
-
-            enemy->Spawn(spawnPos, moveType);
-            enemy->SetActive(true);
-
-            ++activated;
-        }
-    }
+    // スクリーン座標へのマッピング
+    // NDC (-1.0 ～ 1.0) を画面解像度 (0 ～ 1280, 0 ～ 720) に変換
+    // ※Y軸は上がプラスなので、スプライト（上がマイナス）に合わせて反転させる
+    Vector2 screenPos;
+    screenPos.x = (clipPos.x * 0.5f + 0.5f) * 1280.0f;
+    screenPos.y = (-clipPos.y * 0.5f + 0.5f) * 720.0f;
+    // スプライトの位置を更新
+    targetSprite->SetPosition(screenPos);
 }
 
 ============================================================
-File Path: project/application/enemy/EnemySpawner.h
+File Path: project/application/character/player/PlayerReticle.h
 ============================================================
 #pragma once
-#include <Player.h>
-#include <CameraManager.h>
-#include <Enemy.h>
-#include<EnemyLoader.h>
+#include <Vector3.h>
+
+// 前方宣言
+struct Transform;
+class Camera;
+class Sprite;
+class Object3d;
 
 /// <summary>
-/// 敵の出現条件（トリガー）を定義する構造体
+/// プレイヤーのレティクル（照準）計算クラス
+/// 3D空間上のターゲット位置の計算と、それを2D画面上のスプライトへ変換する機能を持つ。
 /// </summary>
-struct EnemySpawnTrigger {
-    Vector3 Position;   // 出現位置
-    int spawnCount;     // 同時に出現させる数
-    bool hasSpawned;    // すでに出現済みかどうか
-    MoveType moveType;  // 敵の移動タイプ
-};
-
-class EnemySpawner {
+class PlayerReticle {
 public:
-    void Initialize(Player* player, CameraManager* camera, std::vector<std::unique_ptr<Enemy>>* enemies);
+    /// <summary>
+    /// レティクルの3D座標更新
+    /// キー入力に応じて照準を移動させ、プレイヤーの前方に配置する。
+    /// </summary>
+    /// <param name="reticleTransform">レティクルの相対トランスフォーム（入力で書き換わる）</param>
+    /// <param name="playerWorldPos">プレイヤーの現在のワールド座標</param>
+    /// <param name="targetObj">描画用の3Dレティクルオブジェクト</param>
+    void Update(Transform& reticleTransform, const Vector3& playerWorldPos, Object3d* targetObj);
 
-    void Update();
+    /// <summary>
+    /// 3D座標から2D座標への変換処理
+    /// 3D空間上のレティクル位置をスクリーン座標に変換し、2Dスプライトの位置を同期させる。
+    /// </summary>
+    /// <param name="worldPos">変換元の3Dワールド座標</param>
+    /// <param name="targetSprite">表示する2Dスプライト</param>
+    /// <param name="activeCamera">レンダリングに使用しているカメラ</param>
+    void UpdateSprite(const Vector3& worldPos, Sprite* targetSprite, Camera* activeCamera);
 
 private:
-    void EnemySpawn();
-    void SpawnRandomEnemy(int count);
-
-    void SpawnVFormation(const EnemySpawnTrigger& trigger);
-    void SpawnReverseStepFormation(const EnemySpawnTrigger& trigger);
-    void SpawnZigZagFormation(const EnemySpawnTrigger& trigger);
-
-private:
-    Player* player_ = nullptr;
-    CameraManager* cameraManager_ = nullptr;
-    std::vector<std::unique_ptr<Enemy>>* enemies_ = nullptr;
-    std::vector<EnemySpawnTrigger> spawnTriggers_;
-        
-       
-    // =========================
-    // ランダム出現用
-    // =========================
-    float randomSpawnTimer_ = 0.0f;           // 経過時間
-    float nextRandomSpawnTime_ = 2.0f;        // 次に出現させるまでの時間（秒）
-    std::mt19937 randomEngine;               // 乱数生成器
-
-    // キャラクターローダー
-    std::unique_ptr<EnemyLoader> levelLoader_ = nullptr;
-    // レベルデータ格納用インスタンスを生成
-    LevelEnemyData* levelData = nullptr;
+    // --- 設定定数 ---
+    const float kSpeed = 0.4f;            // レティクルの移動速度
+    const float kMaxX = 12.0f;           // 左右の移動限界
+    const float kMinX = -12.0f;
+    const float kMaxY = 7.0f;            // 上下の移動限界
+    const float kMinY = -7.0f;
+    const float kForwardDistance = 30.0f; // プレイヤーからどれくらい前方に配置するか
 };
+
+============================================================
+File Path: project/application/character/player/PlayerWeapon.cpp
+============================================================
+#include "PlayerWeapon.h"
+#include <Input.h>
+#include <PlayerBullet.h>
+#include <BulletManager.h>
+#include <MatrixVector.h>
+#include <GamePlayCamera.h>
+
+using namespace MatrixVector;
+
+void PlayerWeapon::Initialize() { 
+	// 各変数の初期化
+    bulletTimer_ = 0.0f;
+    canShoot_ = true;
+}
+
+void PlayerWeapon::Update(const Vector3& playerWorldPos, const Vector3& targetWorldPos, GamePlayCamera* gameCam) {
+    if (!gameCam) return;
+
+    // --- 連射タイマー処理 ---
+    bulletTimer_ += 1.0f / 60.0f;
+    if (bulletTimer_ >= bulletInterval_) {
+        canShoot_ = true;
+        bulletTimer_ = 0.0f;
+    }
+
+    if (!canShoot_) return;
+
+    // --- 発射入力チェック ---
+    if (Input::GetInstance()->Pushkey(DIK_SPACE)) {
+        // カメラの前方方向を取得
+        Vector3 cameraForward = gameCam->GetForward();
+
+        // 弾の初期位置（プレイヤーの少し前）
+        // bulletStartPos = transform_.translate + gameCam->GetForward() * 2.0f;
+        Vector3 bulletStartPos;
+        bulletStartPos = playerWorldPos + cameraForward * 2.0f;
+
+        // ターゲット（レティクル3D）方向へのベクトルを計算
+        // Vector3 shootDir = Normalize(targetPos - bulletStartPos);
+        Vector3 diff;
+        diff = targetWorldPos - bulletStartPos;
+        
+        Vector3 shootDir = Normalize(diff);
+        // 弾の生成と初期化
+        std::unique_ptr<PlayerBullet> bullet = std::make_unique<PlayerBullet>(); 
+        // 10.0f 先を終点として計算
+        Vector3 endPos;
+        endPos = bulletStartPos + shootDir * 10.0f;
+        // 元の初期化形式: Initialize(始点, 終点, 方向, スピード)
+        bullet->Initialize(bulletStartPos, endPos, cameraForward, 5.0f);
+        // マネージャーへ追加
+        BulletManager::GetInstance()->AddPlayerBullet(std::move(bullet));
+        // 発射フラグを折る
+        canShoot_ = false;
+    }
+}
+
+============================================================
+File Path: project/application/character/player/PlayerWeapon.h
+============================================================
+#pragma once
+#include <Vector3.h>
+#include <memory>
+
+// 前方宣言
+struct Transform;
+class GamePlayCamera;
+
+/// <summary>
+/// プレイヤーの武器（弾発射）管理クラス
+/// 発射間隔（リロード）の制御と、ターゲットに向けた弾の生成を行う。
+/// </summary>
+class PlayerWeapon {
+public:
+    /// <summary>
+    /// 初期化処理
+    /// </summary>
+    void Initialize();
+    
+    /// <summary>
+    /// 毎フレームの更新と発射入力のチェック
+    /// </summary>
+    /// <param name="playerWorldPos">自機の現在のワールド座標</param>
+    /// <param name="targetWorldPos">レティクル（照準）のワールド座標</param>
+    /// <param name="gameCam">メインカメラ（発射方向の算出に使用）</param>
+    void Update(const Vector3& playerWorldPos, const Vector3& targetWorldPos, GamePlayCamera* gameCam);
+private:
+    // --- 連射制御関連 ---
+    float bulletTimer_ = 0.0f;           // 次の弾が打てるまでの経過時間
+    const float bulletInterval_ = 0.15f; // 発射間隔
+    bool canShoot_ = true;               // 現在発射可能かどうかのフラグ
+};
+
+============================================================
+File Path: project/application/collision/CollisionManager.cpp
+============================================================
+//#include "CollisionManager.h"
+//#include "Player.h"
+//#include "Enemy.h"
+//#include "BulletManager.h"
+//#include "Collision.h"
+//
+//using namespace Collision;
+//
+//void CollisionManager::CheckAllCollisions()
+//{
+//    CheckBulletEnemy();
+//    CheckEnemyBulletPlayer();
+//    CheckEnemyPlayer();
+//}
+//
+//void CollisionManager::CheckBulletEnemy()
+//{
+//    const auto& bullets = BulletManager::GetInstance()->GetPlayerBullets();
+//
+//    for (const auto& bullet : bullets) {
+//
+//        if (!bullet->IsActive()) continue;
+//
+//        for (auto& enemy : *enemies_) {
+//
+//            if (!enemy->IsActive()) continue;
+//
+//            if (IsOBBIntersect(bullet->GetOBB(), enemy->GetOBB())) {
+//
+//                bullet->SetInactive();
+//                enemy->OnHit();
+//                break;
+//            }
+//        }
+//    }
+//}
+//
+//void CollisionManager::CheckEnemyBulletPlayer()
+//{
+//    const auto& bullets = BulletManager::GetInstance()->GetEnemyBullets();
+//
+//    OBB playerOBB = player_->GetOBB();
+//
+//    for (const auto& bullet : bullets) {
+//
+//        if (!bullet->IsActive()) continue;
+//
+//        if (IsOBBIntersect(bullet->GetOBB(), playerOBB)) {
+//
+//            bullet->SetInactive();
+//            player_->SetState(State::Dead);
+//        }
+//    }
+//}
+//
+//void CollisionManager::CheckEnemyPlayer()
+//{
+//    OBB playerOBB = player_->GetOBB();
+//
+//    for (auto& enemy : *enemies_) {
+//
+//        if (!enemy->IsActive()) continue;
+//
+//        if (IsOBBIntersect(enemy->GetOBB(), playerOBB)) {
+//
+//            player_->SetState(State::Dead);
+//        }
+//    }
+//}
+
+============================================================
+File Path: project/application/collision/CollisionManager.h
+============================================================
+//#pragma once
+//#include <vector>
+//#include <memory>
+//
+//// 前方宣言
+//class Player;
+//class Enemy;
+//class PlayerBullet;
+//class EnemyBullet;
+//
+//class CollisionManager {
+//public:
+//
+//    void SetPlayer(Player* player);
+//
+//    void SetEnemies(std::vector<std::unique_ptr<Enemy>>* enemies);
+//
+//    void CheckAllCollisions();
+//
+//private:
+//
+//    void CheckBulletEnemy();
+//    void CheckEnemyBulletPlayer();
+//    void CheckEnemyPlayer();
+//
+//private:
+//
+//    Player* player_ = nullptr;
+//
+//    std::vector<std::unique_ptr<Enemy>>* enemies_ = nullptr;
+//};
 
 ============================================================
 File Path: project/application/event/EventManager.cpp
@@ -7880,878 +8744,6 @@ public: // メンバ関数
 };
 
 ============================================================
-File Path: project/application/player/Player.cpp
-============================================================
-#include "Player.h"
-#include <ModelManager.h>
-#include <CameraManager.h>
-#ifdef USE_IMGUI
-#include <ImGuiManager.h>
-#endif // USE_IMGUI
-#include <Input.h>
-#include <PlayerBullet.h>
-#include <BulletManager.h>
-#include <MatrixVector.h>
-#include <TextureManager.h>
-#include <algorithm>
-#include <chrono>
-#include <Skybox.h>
-#include <ModelDate.h>
-#include <Tools/AssetGenerator/engine/math/LoadResourceID.h>
-
-using namespace LoadResourceID;
-using namespace MatrixVector;
-
-Player::~Player() {}
-
-void Player::Initialize() {
-    // モデル・テクスチャ読み込み
-    ModelManager::GetInstance()->LoadModel(model::Player);
-    ModelManager::GetInstance()->LoadModel(model::Playerbullet);
-    TextureManager::GetInstance()->LoadTexture(texture::Target);
-
-    // プレイヤーの初期位置と回転を設定
-    transform_ = { {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f},  0.0f,0.0f,0.0f };
-    // プレイヤー生成
-    object = Object3d::Create(model::Player, transform_);
-
-    targettransform_ = { {0.3f, 0.3f, 0.3f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 30.0f} };
-    target_ = Object3d::Create(model::Playerbullet, targettransform_);
-
-    // レティクル初期化
-    targetreticle_ = Sprite::Create(texture::Target, Vector2{ 640.0f, 360.0f }, 0.0f, Vector2{ 100.0f, 100.0f });
-    targetreticle_->SetTextureSize(Vector2{ 512.0f, 512.0f });
-    targetreticle_->SetAnchorPoint(Vector2{ 0.5f, 0.5f }); // 中心基準
-
-    // 軽くスケールを上げる演出など
-    transform_.scale = { 0.5f, 0.5f, 0.5f };
-
-    // インスタンスの生成
-    move_ = std::make_unique<PlayerMove>();
-    reticle_ = std::make_unique<PlayerReticle>();
-    weapon_ = std::make_unique<PlayerWeapon>();
-    weapon_->Initialize();
-    death_ = std::make_unique<PlayerDeath>();
-    death_->Initialize();
-    dash_ = std::make_unique<PlayerDash>();
-    dash_->Initialize();
-}
-
-void Player::Update() {
-    CameraManager* camMgr = CameraManager::GetInstance();
-    Camera* activeCam = camMgr->GetMainCamera();
-
-    // GamePlayCameraのみ更新処理を行う
-    if (camMgr->GetActiveSceneCamera() == SceneCameraType::Gameplay) {
-        SyncWorldTransformByRail(); // ワールド座標同期処理
-        // メインカメラ中
-        if (CameraManager::GetInstance()->GetTypeview() == ViewCameraType::Main) {
-            // プレイヤー回転もカメラに合わせる
-            transform_.rotate = activeCam->GetRotate();
-        }
-
-        // 現在の状態に応じて関数を呼び分け
-        switch (state_) {
-        case State::Alive:   UpdateAlive();   break;
-        case State::Dead:    UpdateDead();    break;
-        case State::Goal:    UpdateGoal();    break;
-        case State::Event:   UpdateEvent();   break;
-        }
-
-        // デバッグ中のImGui表示
-        DebugImgui();
-        targetreticle_->Update();
-     
-        // ターゲット（3D照準）に反映
-        target_->SetTranslate(targettransform_.translate);
-        target_->Update();
-        // Objectに反映
-        object->SetTranslate(transform_.translate);
-        object->SetRotate(transform_.rotate);
-        object->SetScale(transform_.scale);
-    }
-    // プレイヤー更新(GamePlayCamera以外ではただのobjectとして扱う)
-    object->Update();
-}
-
-void Player::Draw() {
-    // プレイヤー描画
-    object->Draw(); 
-}
-
-void Player::DrawSprite() { 
-    if (state_ == State::Alive) {
-        targetreticle_->Draw();
-    }
-}
-
-void Player::DebugImgui() {
-#ifdef USE_IMGUI
-
-    //object->DrawImGui("Player");
-    //ImGui::Begin("Player Control");
-    //ImGui::DragFloat3("Translate", &transform_.translate.x, 0.01f);
-    //ImGui::DragFloat3("Rotate", &transform_.rotate.x, 0.01f);
-    //ImGui::DragFloat3("Scale", &transform_.scale.x, 0.01f);
-    //ImGui::End();
-#endif // USE_IMGUI
-}
-
-void Player::UpdateAlive() {
-    CameraManager* camMgr = CameraManager::GetInstance();
-    Input* input = Input::GetInstance();
-
-    // --- 1. 回避入力 ---
-    if (input->Pushkey(DIK_LSHIFT) && dash_->CanDash()) {
-        // 現在の移動入力から方向を決定
-        float moveDirX = 0.0f;
-        if (input->Pushkey(DIK_A)) moveDirX = -1.0f;
-        if (input->Pushkey(DIK_D)) moveDirX = 1.0f;
-        dash_->Start(moveDirX);
-    }
-
-    // --- 2. 回避状態の更新 ---
-    dash_->Update();
-
-    // --- 3. 移動の更新 ---
-    // PlayerMoveに現在の速度倍率を渡す（PlayerMove側のUpdateに引数を追加するか、内部で計算）
-    // ここでは、一時的に移動速度を上げるためにダッシュ倍率を適用
-    float currentSpeedMult = dash_->GetSpeedMultiplier();
-
-    // move_->Updateの中で speed * currentSpeedMult されるように調整
-    move_->Update(transform_, CameraManager::GetInstance()->GetMainCamera()->GetRotate(), currentSpeedMult);
-
-    // --- 4. 回転の合成 ---
-    transform_.rotate.z += dash_->GetRotationZ();
-    // レティクル
-    reticle_->Update(targettransform_, transform_.translate, target_.get());
-    // 攻撃
-    weapon_->Update(transform_.translate, target_->GetTranslate(), camMgr->GetGameplayCamera());
-    // レティクル(2Dスプライト)の同期
-    reticle_->UpdateSprite(target_->GetTranslate(), targetreticle_.get(), camMgr->GetActiveCamera());
-}
-
-void Player::UpdateDead() {
-
-
-    // 死亡演出：ここに落下や回転のロジックを書く（後にクラス化も可能）
-    death_->Update(transform_.rotate, deathOffset_, object.get());
-    // 座標の同期（これが重要）
-    SyncWorldTransformByRail();
-}
-
-void Player::UpdateGoal() {
-
-}
-
-void Player::UpdateEvent() {
-    // イベント：自動移動のロジックなど
-}
-
-void Player::SyncWorldTransformByRail() {
-    CameraManager* camMgr = CameraManager::GetInstance();
-    GamePlayCamera* gameCam = camMgr->GetGameplayCamera();
-    Camera* activeCam = camMgr->GetMainCamera();
-
-    // カメラのレール情報
-    Vector3 camPos = gameCam->GetBezierPos();
-    Vector3 forward = gameCam->GetForward();
-    Vector3 right = gameCam->GetRight();
-    Vector3 up = gameCam->GetUp();
-    // 1. 基本となるオフセット位置（カメラの30m前方、3m下）
-    Vector3 cameraBaseOffset = { 0.0f, -3.0f, 30.0f };
-    Vector3 cameraBaseWorld = (right * cameraBaseOffset.x) + (up * cameraBaseOffset.y) + (forward * cameraBaseOffset.z);
-
-    // 2. 自機の移動分（move_から取得）をワールド方向に変換して加算
-    Vector3 playerMoveOffset = (right * move_->GetLocalPosition().x) + (up * move_->GetLocalPosition().y);
-    Vector3 basePos = camPos + cameraBaseWorld + playerMoveOffset;
-    // 3. 回転の同期（メインカメラ時）
-    if (camMgr->GetTypeview() == ViewCameraType::Main) {
-        transform_.rotate = activeCam->GetRotate();
-    }
-
-    // 4. 座標の最終決定（死亡演出中のSubカメラならオフセットを加算）
-    if (camMgr->GetTypeview() == ViewCameraType::Sub) {
-        transform_.translate = basePos + deathOffset_;
-    } else {
-        transform_.translate = basePos;
-    }
-}
-
-///=====================================================================
-/// OBB当たり判定取得
-///=====================================================================
-OBB Player::GetOBB() const {
-    OBB obb;
-
-    // 中心座標
-    obb.center = transform_.translate;
-
-    // ハーフサイズ（スケールの半分）
-    obb.halfSize = {
-        transform_.scale.x / 2.0f, 
-        transform_.scale.y / 2.0f, 
-        transform_.scale.z / 2.0f
-    };
-
-    // 回転行列（XYZ順で回転を合成）
-    Matrix4x4 rotX = MakeRotateXMatrix(transform_.rotate.x);
-    Matrix4x4 rotY = MakeRotateYMatrix(transform_.rotate.y);
-    Matrix4x4 rotZ = MakeRotateZMatrix(transform_.rotate.z);
-
-    // Z→X→Y の順に掛けることで、XYZ回転（ローカル空間回転）を再現
-    Matrix4x4 rotMat = Multiply(Multiply(rotZ, rotX), rotY);
-
-    // ローカル軸（X, Y, Z）をワールド空間へ回転適用
-    obb.axis[0] = Normalize(Multiply4x4x3(rotMat, Vector3{ 1, 0, 0 })); // X軸
-    obb.axis[1] = Normalize(Multiply4x4x3(rotMat, Vector3{ 0, 1, 0 })); // Y軸
-    obb.axis[2] = Normalize(Multiply4x4x3(rotMat, Vector3{ 0, 0, 1 })); // Z軸
-    
-    return obb;
-}
-
-============================================================
-File Path: project/application/player/Player.h
-============================================================
-#pragma once
-#include <BaseCharacter.h>
-#include <Sprite.h>
-#include <ParticleEmitter.h>
-#include <OBB.h>
-#include <PlayerMove.h>
-#include <PlayerReticle.h>
-#include <PlayerWeapon.h>
-#include <PlayerDeath.h>
-#include <PlayerDash.h>
-
-// プレイヤーの状態を定義
-enum class State {
-	None,
-	Alive,      // 通常時（操作可能）
-	Dead,       // 死亡演出中
-	Goal,       // ゴール到達後
-	Event,      // イベント中（操作不能・自動移動など）
-};
-
-/// <summary>
-/// プレイヤーキャラクタークラス
-/// </summary>
-class Player : public BaseCharacter {
-public:// メンバ関数
-	// デストラクタ
-	~Player() override;
-	/// <summary>
-	/// 初期化
-	/// </summary>
-	void Initialize() override;
-	/// <summary>
-	/// 更新更新
-	/// </summary>
-	void Update() override;
-	/// <summary>
-	/// 3Dモデルの描画更新
-	/// </summary>
-	void Draw() override;
-	/// <summary>
-	/// 2Dスプライトの描画処理
-	/// </summary>	
-	void DrawSprite();
-	/// <summary>
-	/// デバッグ用のImGui描画
-	/// </summary>
-	void DebugImgui();
-	/// <summary>
-	/// 当たり判定用を取得
-	/// </summary>
-	OBB GetOBB() const;
-	/// <summary>
-    /// カメラのレール移動に合わせてプレイヤーのワールド座標を更新する
-    /// </summary>
-    void SyncWorldTransformByRail();
-
-    // ... 省略 ...
-    void SetState(State state) { state_ = state; }
-	State GetState() { return state_; }
-	
-	// --- 各ステートの専用更新関数 ---
-    void UpdateAlive();
-    void UpdateDead();
-	void UpdateGoal();
-	void UpdateEvent();
-
-private:// メンバ変数	
-	// 各機能をクラスのインスタンス
-	std::unique_ptr<PlayerMove> move_;          // プレイヤ―の移動制御クラス
-	std::unique_ptr<PlayerReticle> reticle_;    // プレイヤ―の照準制御クラス
-	std::unique_ptr<PlayerWeapon> weapon_;      // プレイヤ―の武器制御クラス
-	std::unique_ptr<PlayerDeath> death_;        // プレイヤ―の死亡演出クラス
-	std::unique_ptr<PlayerDash> dash_;          // プレイヤ―の回避制御クラス
-	State state_ = State::None; // 初期状態
-
-	std::unique_ptr <Object3d> object;  // プレイヤーの3Dオブジェクト
-	Transform transform_{};
-	std::unique_ptr <Object3d> target_; // ターゲット用3Dオブジェクト
-	Transform targettransform_{};
-	std::unique_ptr <Sprite> targetreticle_; // レティクル用スプライト	
-	// 死亡演出用のオフセット（落下や回転のため）
-	Vector3 deathOffset_;
-
-public:// メンバ変数
-	// getter
-	// 参照を返す（変更不可）
-	Object3d* GetPlayerObject() { return object.get(); }
-	void SetTransform(const Transform& t) {
-		transform_ = t;
-		object->SetTranslate(transform_.translate);
-		object->SetRotate(transform_.rotate);
-		object->SetScale(transform_.scale);
-	}
-
-	// Transformのpositionを返すgetter
-	Vector3 GetPosition() const {
-		return transform_.translate;
-	}
-};
-
-============================================================
-File Path: project/application/player/PlayerDash.cpp
-============================================================
-#include "PlayerDash.h"
-#include <cmath>
-#include <numbers>
-#include <algorithm>
-
-void PlayerDash::Initialize() {
-    isDashing_ = false;
-    dashTimer_ = 0.0f;
-    coolDownTimer_ = 0.0f;
-    speedMultiplier_ = 1.0f;
-    extraRotationZ_ = 0.0f;
-}
-
-void PlayerDash::Start(float directionX) {
-    // クールタイム中なら受け付けない
-    if (!CanDash()) return;
-
-    isDashing_ = true;
-    dashTimer_ = 0.0f;
-    
-    // 入力方向に基づいて回転方向を決める（入力がなければ右回転にする）
-    dashDirX_ = (std::abs(directionX) > 0.01f) ? (directionX > 0 ? 1.0f : -1.0f) : 1.0f;
-}
-
-void PlayerDash::Update() {
-    float deltaTime = 1.0f / 60.0f;
-
-    if (isDashing_) {
-        // --- ダッシュ中の処理 ---
-        dashTimer_ += deltaTime;
-        
-        // ダッシュの進捗率（0.0 ～ 1.0）を計算
-        float progress = std::clamp(dashTimer_ / kDashDuration, 0.0f, 1.0f);
-
-        // 回転の計算
-        // 360度（2π）を現在の進捗率に掛けて、回転角を算出する
-        float totalRotation = 2.0f * std::numbers::pi_v<float>;
-        extraRotationZ_ = -dashDirX_ * (totalRotation * progress);
-
-        // 速度倍率の計算
-        // sin波を利用して、開始時と終了時は「1.0」、中間地点で「kMaxSpeedMult」になるように調整
-        // これにより、滑らかに加速して滑らかに減速する
-        speedMultiplier_ = 1.0f + (kMaxSpeedMult - 1.0f) * std::sin(progress * std::numbers::pi_v<float>);
-
-        // 時間が経過したらダッシュ終了
-        if (dashTimer_ >= kDashDuration) {
-            isDashing_ = false;
-            dashTimer_ = 0.0f;
-            extraRotationZ_ = 0.0f;   // 回転をリセット
-            speedMultiplier_ = 1.0f;  // 速度を通常に戻す
-            coolDownTimer_ = kCoolDownTime; // クールタイム開始
-        }
-    }
-    else if (coolDownTimer_ > 0.0f) {
-        // --- クールタイムのカウントダウン ---
-        coolDownTimer_ -= deltaTime;
-    }
-}
-
-============================================================
-File Path: project/application/player/PlayerDash.h
-============================================================
-#pragma once
-#include <Vector3.h>
-
-/// <summary>
-/// プレイヤーのダッシュ（回避・高速移動）管理クラス
-/// 一定時間速度を上げ、機体をロール（回転）させる演出を制御する。
-/// </summary>
-class PlayerDash {
-public:
-    /// <summary>
-    /// 初期化（パラメータのリセット）
-    /// </summary>
-    void Initialize();
-    /// <summary>
-    /// ダッシュの開始
-    /// </summary>
-    /// <param name="directionX">現在の左右入力値（回転方向を決定するために使用）</param>
-    void Start(float directionX);
-    /// <summary>
-    /// ダッシュ状態とクールタイムの更新
-    /// </summary>
-    void Update();
-private:
-    // --- 状態管理 ---
-    bool isDashing_ = false;       // 現在ダッシュ中か
-    float dashTimer_ = 0.0f;       // ダッシュ開始からの経過時間
-    float coolDownTimer_ = 0.0f;   // 再使用までの残り時間
-    // --- 設定定数 ---
-    const float kDashDuration = 0.5f;   // ダッシュ（回転）が続く時間
-    const float kCoolDownTime = 3.0f;   // ダッシュ終了後のクールタイム
-    const float kMaxSpeedMult = 2.5f;   // ダッシュ中の最大速度倍率
-    // --- 演出用変数 ---
-    float dashDirX_ = 0.0f;        // 回転する方向（左:-1.0, 右:1.0）
-    float extraRotationZ_ = 0.0f;  // ダッシュによる追加のZ軸回転量（ラジアン）
-    float speedMultiplier_ = 1.0f; // 移動クラスに渡す速度倍率
-public: // アクセッサ
-	// Getter
-    // 現在の回転角を取得（PlayerMoveの回転に加算する）
-    float GetRotationZ() const { return extraRotationZ_; } 
-    // 現在の速度倍率を取得（PlayerMoveの移動量に掛ける）
-    float GetSpeedMultiplier() const { return speedMultiplier_; }    
-    // クールタイムの進捗（0.0～1.0） ※UIのゲージ表示などに利用
-    float GetCoolDownProgress() const { return coolDownTimer_ / kCoolDownTime; }
-
-    // ダッシュ中かどうか
-    bool IsDashing() const { return isDashing_; }
-    // 現在ダッシュ可能か（ダッシュ中でなく、かつクールタイムが終了しているか）
-    bool CanDash() const { return !isDashing_ && coolDownTimer_ <= 0.0f; }    
-};
-
-============================================================
-File Path: project/application/player/PlayerDeath.cpp
-============================================================
-#include "PlayerDeath.h"
-#include <Object3d.h>
-#include <cmath>
-
-void PlayerDeath::Initialize() {
-    timer_ = 0.0f;
-}
-
-void PlayerDeath::Update(Vector3& rotate, Vector3& offset, Object3d* object) {
-    if (!object) return;
-
-    // フレーム加算（60FPS想定）
-    timer_ += 1.0f / 60.0f;
-
-    // 落下挙動の計算
-    offset.y -= kFallSpeedY;
-    offset.z += kFallSpeedZ;
-
-    // フラフラとした回転の更新
-    // 単純な加算ではなく、sin/cos を使うことで「機体が揺れながら回る」不規則さを演出
-    // X軸（ピッチ）とZ軸（ロール）を別々の周期で揺らす
-    rotate.x += 0.004f + 0.002f * std::sin(timer_ * 0.5f);
-    rotate.z += 0.003f + 0.0015f * std::cos(timer_ * 0.4f);
-
-    // 被弾点滅処理 
-    // サイン波を使って 0.0 ～ 1.0 の間を高速に往復する数値（s）を作る
-    float s = (std::sin(timer_ * kBlinkSpeed) + 1.0f) * 0.5f;
-
-    // 算出した s が特定の閾値（0.85）を超えた瞬間だけ、モデルの色を「赤」に変える
-    if (s > 0.85f) {
-        // 赤色（RGBA: 1, 0, 0, 1）
-        object->SetMaterialColor({ 1.0f, 0.0f, 0.0f, 1.0f });
-    }
-    else {
-        // 通常（白色：RGBA: 1, 1, 1, 1）
-        object->SetMaterialColor({ 1.0f, 1.0f, 1.0f, 1.0f });
-    }
-}
-
-============================================================
-File Path: project/application/player/PlayerDeath.h
-============================================================
-#pragma once
-#include <Vector3.h>
-#include <Vector4.h>
-
-// 前方宣言
-class Object3d;
-
-/// <summary>
-/// プレイヤーの死亡時演出管理クラス
-/// 撃墜された際、制御不能になって落下しながら点滅する等の視覚効果を制御する。
-/// </summary>
-class PlayerDeath {
-public:
-    /// <summary>
-    /// 初期化（タイマーのリセット）
-    /// </summary>
-    void Initialize();
-
-    /// <summary>
-    /// 死亡演出の更新
-    /// </summary>
-    /// <param name="rotate">機体の回転角（これに回転を加えてフラフラさせる）</param>
-    /// <param name="offset">機体の位置オフセット（これに値を足して落下させる）</param>
-    /// <param name="object">色を変えるための3Dモデルポインタ（点滅用）</param>
-    void Update(Vector3& rotate, Vector3& offset, Object3d* object);
-
-    /// <summary>
-    /// 演出が終了したかどうか（シーン遷移のトリガーなどに使用）
-    /// </summary>
-    bool IsFinished() const { return timer_ >= kDuration; }
-private:
-    float timer_ = 0.0f;          // 経過時間タイマー
-    const float kDuration = 2.5f; // 演出の合計時間（秒）
-
-    // --- 演出用の設定定数 ---
-    const float kFallSpeedY = 0.02f; // 下方向への落下速度
-    const float kFallSpeedZ = 0.2f;  // 前方向への慣性移動速度
-    const float kBlinkSpeed = 50.0f; // 赤点滅の速さ
-};
-
-============================================================
-File Path: project/application/player/PlayerMove.cpp
-============================================================
-#include "PlayerMove.h"
-#include <Input.h>
-#include <algorithm>
-#include <CameraManager.h>
-#include <Object3d.h>
-#include <Transform.h>
-
-void PlayerMove::Update(Transform& transform, const Vector3& cameraRotate, float speedMultiplier) {
-    // GetInstanceの省略
-    Input* input = Input::GetInstance();
-    const float speed = 0.17f * speedMultiplier;
-
-    // --- 1. 入力値の取得 ---
-    Vector3 moveInput = { 0, 0, 0 };
-    if (input->Pushkey(DIK_A)) moveInput.x -= speed;
-    if (input->Pushkey(DIK_D)) moveInput.x += speed;
-    if (input->Pushkey(DIK_W)) moveInput.y += speed;
-    if (input->Pushkey(DIK_S)) moveInput.y -= speed;
-
-    // --- 2. 移動の実行と制限 ---
-    relativePos_.x += moveInput.x;
-    relativePos_.y += moveInput.y;
-    ApplyConstraint();
-
-    // --- 3. 傾き計算 ---
-    // 入力がある場合は傾け、ない場合は緩やかに水平に戻す
-    UpdateTilt(moveInput);
-
-    // --- 4. プレイヤーの回転に反映 ---
-    // ベースとなるカメラの回転に、操作による傾き(tilt)を合成する
-    transform.rotate.x = cameraRotate.x + tiltX_;
-    transform.rotate.y = cameraRotate.y;
-    transform.rotate.z = cameraRotate.z + tiltZ_;
-}
-
-void PlayerMove::ApplyConstraint() {
-    // 画面外（レールの移動可能範囲）に出ないようにクランプ
-    relativePos_.x = std::clamp(relativePos_.x, -10.0f, 10.0f);
-    relativePos_.y = std::clamp(relativePos_.y, -2.5f, 9.0f);
-}
-
-void PlayerMove::UpdateTilt(const Vector3& moveInput) {
-    const float tiltSpeed = 0.05f;   // 1フレームで傾く速度
-    const float maxTilt = 0.4f;      // 最大傾斜角
-    const float returnSpeed = 0.08f; // 入力がない時に戻る速度(0.0~1.0)
-
-    // 横入力によるロール演出 (Z軸回転)
-    if (moveInput.x < 0) {        // 左入力中
-        tiltZ_ += tiltSpeed;
-    } else if (moveInput.x > 0) { // 右入力中
-        tiltZ_ -= tiltSpeed;
-    } else {                      // 入力なし：中央に戻る
-        tiltZ_ *= (1.0f - returnSpeed);
-    }
-
-    // 縦入力によるピッチ演出 (X軸回転)
-    if (moveInput.y > 0) {        // 上入力中
-        tiltX_ -= tiltSpeed;
-    } else if (moveInput.y < 0) { // 下入力中
-        tiltX_ += tiltSpeed;
-    } else {                      // 入力なし：中央に戻る
-        tiltX_ *= (1.0f - returnSpeed);
-    }
-
-    // 傾きの限界値を設定（端に押し付けている間もこの角度を維持する）
-    tiltX_ = std::clamp(tiltX_, -maxTilt, maxTilt);
-    tiltZ_ = std::clamp(tiltZ_, -maxTilt, maxTilt);
-}
-
-============================================================
-File Path: project/application/player/PlayerMove.h
-============================================================
-#pragma once
-#include <Vector3.h>
-
-// 前方宣言
-class Object3d;
-struct Transform;
-
-/// <summary>
-/// プレイヤーの移動・傾き制御クラス
-/// レールカメラの移動に追従しながら、画面内での相対的な移動と、その入力に応じた機体の傾きを制御する。
-/// </summary>
-class PlayerMove {
-public:// メンバ関数
-    /// <summary>
-    /// 毎フレームの更新処理
-    /// </summary>
-    /// <param name="transform">プレイヤーのトランスフォーム</param>
-    /// <param name="cameraRotate">現在のカメラの回転角</param>
-    /// <param name="speedMultiplier">移動速度の倍率</param>
-    void Update(Transform& transform, const Vector3& cameraRotate, float speedMultiplier);
-private:
-    /// <summary>
-    /// プレイヤーが画面外に出ないよう座標を制限する
-    /// </summary>
-    void ApplyConstraint();
-    /// <summary>
-    /// 移動入力に基づいた傾き演出の計算
-    /// </summary>
-    /// <param name="moveInput">現在のフレームの移動量ベクトル</param>
-    void UpdateTilt(const Vector3& moveInput);
-private:// メンバ変数
-    // カメラ座標系における自機の相対座標
-    Vector3 relativePos_{};
-    // 演出用傾き角
-    float tiltX_{}; // 上下移動によるピッチ（機首の上げ下げ）
-    float tiltZ_{}; // 左右移動によるロール（翼の傾き）
-public: // アクセッサ
-    // Getter
-    const Vector3& GetLocalPosition() const { return relativePos_; }
-	// Setter
-    void SetLocalPosition(const Vector3& pos) { relativePos_ = pos; }
-};
-
-============================================================
-File Path: project/application/player/PlayerReticle.cpp
-============================================================
-#include "PlayerReticle.h"
-#include <Transform.h>
-#include <Camera.h>
-#include <MatrixVector.h>
-#include <algorithm>
-#include <Sprite.h>
-#include <Object3d.h>
-#include <Input.h>
-#include <CameraManager.h>
-
-using namespace MatrixVector;
-
-void PlayerReticle::Update(Transform& reticleTransform, const Vector3& playerWorldPos, Object3d* targetObj) {
-if (!targetObj) return;
-    Input* input = Input::GetInstance();
-
-    // 入力でターゲットを動かす
-    // 方向キーでレティクルの相対座標を動かす
-    if (input->Pushkey(DIK_LEFT))  reticleTransform.translate.x -= kSpeed;
-    if (input->Pushkey(DIK_RIGHT)) reticleTransform.translate.x += kSpeed;
-    if (input->Pushkey(DIK_UP))    reticleTransform.translate.y += kSpeed;
-    if (input->Pushkey(DIK_DOWN))  reticleTransform.translate.y -= kSpeed;
-
-    // 移動範囲の制限（クランプ)
-    reticleTransform.translate.x = std::clamp(reticleTransform.translate.x, kMinX, kMaxX);
-    reticleTransform.translate.y = std::clamp(reticleTransform.translate.y, kMinY, kMaxY);
-
-    // カメラ基準の方向ベクトル計算
-    // カメラの回転から、世界軸ではない「現在の視点における正面・右・上」を割り出す
-    GamePlayCamera* gameCam = CameraManager::GetInstance()->GetGameplayCamera();
-    if (!gameCam) return;
-    Vector3 forward = gameCam->GetForward();
-    // カメラの向きに基づいた右方向と上方向
-    Vector3 right   = Normalize(Cross({0.0f, 1.0f, 0.0f}, forward));
-    Vector3 up      = Normalize(Cross(forward, right));
-
-    // プレイヤーの位置から「前方に一定距離」＋「操作による上下左右のオフセット」を加算
-    Vector3 offset =
-        right * reticleTransform.translate.x +
-        up    * reticleTransform.translate.y +
-        forward * kForwardDistance;
-
-    // 最終的な座標を計算して反映
-    Vector3 finalPos = playerWorldPos + offset;
-    // 計算した座標を3Dオブジェクトに反映
-    targetObj->SetTranslate(finalPos);
-    targetObj->Update();
-}
-
-void PlayerReticle::UpdateSprite(const Vector3& worldPos, Sprite* targetSprite, Camera* activeCamera) {
-    if (!targetSprite || !activeCamera) return; 
-    // ビュー・プロジェクション行列を取得
-    const Matrix4x4& viewProj = activeCamera->GetViewProjectionMatrix();
-    // ワールド座標をクリップ座標系（-1.0 ～ 1.0）へ変換
-    Vector4 clipPos = {
-        worldPos.x * viewProj.m[0][0] + worldPos.y * viewProj.m[1][0] + worldPos.z * viewProj.m[2][0] + viewProj.m[3][0],
-        worldPos.x * viewProj.m[0][1] + worldPos.y * viewProj.m[1][1] + worldPos.z * viewProj.m[2][1] + viewProj.m[3][1],
-        worldPos.x * worldPos.y * viewProj.m[0][2] + worldPos.y * viewProj.m[1][2] + worldPos.z * viewProj.m[2][2] + viewProj.m[3][2],
-        worldPos.x * viewProj.m[0][3] + worldPos.y * viewProj.m[1][3] + worldPos.z * viewProj.m[2][3] + viewProj.m[3][3]
-    };
-    // w成分で除算して正規化デバイス座標(NDC)に変換
-    if (clipPos.w != 0.0f) {
-        clipPos.x /= clipPos.w;
-        clipPos.y /= clipPos.w;
-    }
-    // スクリーン座標へのマッピング
-    // NDC (-1.0 ～ 1.0) を画面解像度 (0 ～ 1280, 0 ～ 720) に変換
-    // ※Y軸は上がプラスなので、スプライト（上がマイナス）に合わせて反転させる
-    Vector2 screenPos;
-    screenPos.x = (clipPos.x * 0.5f + 0.5f) * 1280.0f;
-    screenPos.y = (-clipPos.y * 0.5f + 0.5f) * 720.0f;
-    // スプライトの位置を更新
-    targetSprite->SetPosition(screenPos);
-}
-
-============================================================
-File Path: project/application/player/PlayerReticle.h
-============================================================
-#pragma once
-#include <Vector3.h>
-
-// 前方宣言
-struct Transform;
-class Camera;
-class Sprite;
-class Object3d;
-
-/// <summary>
-/// プレイヤーのレティクル（照準）計算クラス
-/// 3D空間上のターゲット位置の計算と、それを2D画面上のスプライトへ変換する機能を持つ。
-/// </summary>
-class PlayerReticle {
-public:
-    /// <summary>
-    /// レティクルの3D座標更新
-    /// キー入力に応じて照準を移動させ、プレイヤーの前方に配置する。
-    /// </summary>
-    /// <param name="reticleTransform">レティクルの相対トランスフォーム（入力で書き換わる）</param>
-    /// <param name="playerWorldPos">プレイヤーの現在のワールド座標</param>
-    /// <param name="targetObj">描画用の3Dレティクルオブジェクト</param>
-    void Update(Transform& reticleTransform, const Vector3& playerWorldPos, Object3d* targetObj);
-
-    /// <summary>
-    /// 3D座標から2D座標への変換処理
-    /// 3D空間上のレティクル位置をスクリーン座標に変換し、2Dスプライトの位置を同期させる。
-    /// </summary>
-    /// <param name="worldPos">変換元の3Dワールド座標</param>
-    /// <param name="targetSprite">表示する2Dスプライト</param>
-    /// <param name="activeCamera">レンダリングに使用しているカメラ</param>
-    void UpdateSprite(const Vector3& worldPos, Sprite* targetSprite, Camera* activeCamera);
-
-private:
-    // --- 設定定数 ---
-    const float kSpeed = 0.4f;            // レティクルの移動速度
-    const float kMaxX = 12.0f;           // 左右の移動限界
-    const float kMinX = -12.0f;
-    const float kMaxY = 7.0f;            // 上下の移動限界
-    const float kMinY = -7.0f;
-    const float kForwardDistance = 30.0f; // プレイヤーからどれくらい前方に配置するか
-};
-
-============================================================
-File Path: project/application/player/PlayerWeapon.cpp
-============================================================
-#include "PlayerWeapon.h"
-#include <Input.h>
-#include <PlayerBullet.h>
-#include <BulletManager.h>
-#include <MatrixVector.h>
-#include <GamePlayCamera.h>
-
-using namespace MatrixVector;
-
-void PlayerWeapon::Initialize() { 
-	// 各変数の初期化
-    bulletTimer_ = 0.0f;
-    canShoot_ = true;
-}
-
-void PlayerWeapon::Update(const Vector3& playerWorldPos, const Vector3& targetWorldPos, GamePlayCamera* gameCam) {
-    if (!gameCam) return;
-
-    // --- 連射タイマー処理 ---
-    bulletTimer_ += 1.0f / 60.0f;
-    if (bulletTimer_ >= bulletInterval_) {
-        canShoot_ = true;
-        bulletTimer_ = 0.0f;
-    }
-
-    if (!canShoot_) return;
-
-    // --- 発射入力チェック ---
-    if (Input::GetInstance()->Pushkey(DIK_SPACE)) {
-        // カメラの前方方向を取得
-        Vector3 cameraForward = gameCam->GetForward();
-
-        // 弾の初期位置（プレイヤーの少し前）
-        // bulletStartPos = transform_.translate + gameCam->GetForward() * 2.0f;
-        Vector3 bulletStartPos;
-        bulletStartPos = playerWorldPos + cameraForward * 2.0f;
-
-        // ターゲット（レティクル3D）方向へのベクトルを計算
-        // Vector3 shootDir = Normalize(targetPos - bulletStartPos);
-        Vector3 diff;
-        diff = targetWorldPos - bulletStartPos;
-        
-        Vector3 shootDir = Normalize(diff);
-        // 弾の生成と初期化
-        std::unique_ptr<PlayerBullet> bullet = std::make_unique<PlayerBullet>(); 
-        // 10.0f 先を終点として計算
-        Vector3 endPos;
-        endPos = bulletStartPos + shootDir * 10.0f;
-        // 元の初期化形式: Initialize(始点, 終点, 方向, スピード)
-        bullet->Initialize(bulletStartPos, endPos, cameraForward, 5.0f);
-        // マネージャーへ追加
-        BulletManager::GetInstance()->AddPlayerBullet(std::move(bullet));
-        // 発射フラグを折る
-        canShoot_ = false;
-    }
-}
-
-============================================================
-File Path: project/application/player/PlayerWeapon.h
-============================================================
-#pragma once
-#include <Vector3.h>
-#include <memory>
-
-// 前方宣言
-struct Transform;
-class GamePlayCamera;
-
-/// <summary>
-/// プレイヤーの武器（弾発射）管理クラス
-/// 発射間隔（リロード）の制御と、ターゲットに向けた弾の生成を行う。
-/// </summary>
-class PlayerWeapon {
-public:
-    /// <summary>
-    /// 初期化処理
-    /// </summary>
-    void Initialize();
-    
-    /// <summary>
-    /// 毎フレームの更新と発射入力のチェック
-    /// </summary>
-    /// <param name="playerWorldPos">自機の現在のワールド座標</param>
-    /// <param name="targetWorldPos">レティクル（照準）のワールド座標</param>
-    /// <param name="gameCam">メインカメラ（発射方向の算出に使用）</param>
-    void Update(const Vector3& playerWorldPos, const Vector3& targetWorldPos, GamePlayCamera* gameCam);
-private:
-    // --- 連射制御関連 ---
-    float bulletTimer_ = 0.0f;           // 次の弾が打てるまでの経過時間
-    const float bulletInterval_ = 0.15f; // 発射間隔
-    bool canShoot_ = true;               // 現在発射可能かどうかのフラグ
-};
-
-============================================================
 File Path: project/application/scene/GameClearScene.cpp
 ============================================================
 #include "GameClearScene.h"
@@ -9661,7 +9653,6 @@ File Path: project/application/scene/GamePlayScene.cpp
 #include <ImGuiManager.h>
 #endif // USE_IMGUI
 #include <SkyboxCommon.h>
-#include <Player.h>
 #include <BulletManager.h>
 #include <MatrixVector.h>
 #include <Collision.h>
@@ -9669,15 +9660,14 @@ File Path: project/application/scene/GamePlayScene.cpp
 #include <Easing.h>
 #include <UIManager.h>
 #include <GamePlayUI.h>
+#include <StageManager.h>
 
+// 各種マネージャやユーティリティの名前空間を使用
 using namespace LoadResourceID;
 using namespace Collision;
 using namespace MatrixVector;
 using namespace Easing;
 
-///====================================================
-/// 終了処理（リソース解放）
-///====================================================
 void GamePlayScene::Finalize() {
     BulletManager::GetInstance()->Finalize();  // 弾の解放処理
     FadeManager::GetInstance()->Finalize();    //  フェードマネージャの解放処理
@@ -9685,9 +9675,7 @@ void GamePlayScene::Finalize() {
     StageManager::GetInstance()->Finalize();   // ステージマネージャの解放処理
 	UIManager::GetInstance()->Finalize();      // UIマネージャの解放処理
 }
-///====================================================
-/// 初期化処理
-///====================================================
+
 void GamePlayScene::Initialize() {
     // カメラマネージャの初期化
     CameraManager::GetInstance()->Initialize(CameraTransform({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }));
@@ -9706,19 +9694,6 @@ void GamePlayScene::Initialize() {
     particles_ = std::make_unique<GamePlayparticle>();
     particles_->Initialize(player_->GetPlayerObject());
 
-    // 敵関連の初期化
-    MAX_ENEMY = 300; // 敵の最大数
-    // 敵をリストに追加して初期化
-    for (int i = 0; i < MAX_ENEMY; ++i) {
-        std::unique_ptr<Enemy> enemy = std::make_unique<Enemy>();
-        enemy->Initialize();
-        enemy->SetPlayer(player_.get());
-        enemy->SetActive(false);  // 非アクティブにしておく
-        enemies_.emplace_back(std::move(enemy));
-    }
-    // 敵出現トリガー
-    enemySpawner_ = std::make_unique<EnemySpawner>(); enemySpawner_->Initialize(player_.get(), CameraManager::GetInstance(), &enemies_);
-
     // クリアゲート(仮)
     wall = Object3d::Create(model::Goal, Transform{ { 2.0f, 2.0f, 2.0f }, { 0.0f, 0.0f, 0.0f }, { 8.0f, 39.0f, 800.0f } });
     // スカイボックスの作成
@@ -9730,8 +9705,6 @@ void GamePlayScene::Initialize() {
     FadeManager::GetInstance()->Initialize();
     // イベントマネージャの初期化
     EventManager::GetInstance()->Initialize("gamestart");
-    // ゲームカメラの移動許可
-   // CameraManager::GetInstance()->GetGameCamera()->Setmovefige(true);
     // ステージマネージャの初期化
     StageManager::GetInstance()->Initialize();
 
@@ -9752,129 +9725,50 @@ void GamePlayScene::PauseMenuUpdate() {
     pausemenu_->Update();
 }
 
-void GamePlayScene::Update() {  
+void GamePlayScene::Update() {       
+    // ---------------------------
+    // ポーズメニュー処理
+    // ---------------------------
 	// ポーズメニューの更新
     PauseMenuUpdate();
-    //  ポーズ中の処理
     if (pausemenu_->IsActive()) {
-
-        if (pausemenu_->GetCommand() == PauseCommand::GoToTitle) {
-            // フェードマネージャの更新   
-            FadeManager::GetInstance()->Update();
-            // メニューが表示されたまま、フェードアウトを開始
-            if (!goal_) {
-                FadeManager::GetInstance()->StartFadeOut(1.0f, FadeStyle::Normal);
-                goal_ = true; // フェード開始フラグとして利用
-            }
-
-            // フェードが終わったらシーン遷移
-            if (FadeManager::GetInstance()->IsFadeEnd()) {
-                SceneManager::GetInstance()->ChangeScene("TITLE");
-            }
-            // タイトル移行時はここでreturnし、背後のゲーム処理を止めたままにする
-            return;
-        }
-        return; // ポーズ中は他の更新をスキップ
+        HandlePauseMenuCommands();  // ポーズ中のコマンド処理
+        return;                     // ポーズ中はその他の処理をスキップ
     }
-
-    // フェードイン開始
-    if (!FadeManager::GetInstance()->IsFadeStart() && !FadeManager::GetInstance()->IsFading()) {
-        // フェード開始
-        FadeManager::GetInstance()->StartFadeIn(1.0f, FadeStyle::SilhouetteExplode);
-    }
-    // フェードマネージャの更新   
-    FadeManager::GetInstance()->Update();
-    // イベントマネージャの更新
+    // ---------------------------
+    // フェード処理の開始
+    // ---------------------------
+    HandleFadeInOut();
+    // ---------------------------
+    // イベントマネージャ更新
+    // ---------------------------
     EventManager::GetInstance()->Update(); 	
-
-    // 死亡演出
-    if (player_->GetState() == State::Dead && CameraManager::GetInstance()->GetTypeview() == ViewCameraType::Main) {
-        CameraManager::GetInstance()->SetMode(CameraMode::Default);
-        CameraManager::GetInstance()->SetTypeview(ViewCameraType::Sub);
-        // フェード開始             
-        end = false;
-    }
-
-    if (CameraManager::GetInstance()->GetTypeview() == ViewCameraType::Sub && CameraManager::GetInstance()->GetMode() == CameraMode::Default) {
-        FadeManager::GetInstance()->StartFadeOut(1.0f, FadeStyle::Normal);
-        CameraManager::GetInstance()->SetMode(CameraMode::Follow);
-    }
-
-    // ゴール演出
-    if (!goal_ && player_->GetState() == State::Alive && player_->GetPosition().z >= CameraManager::GetInstance()->GetGameplayCamera()->GetBezierPoints().back().controlPoint.z && CameraManager::GetInstance()->GetTypeview() == ViewCameraType::Main) {
-        FadeManager::GetInstance()->StartFadeOut(1.0f, FadeStyle::Normal);
-        player_->SetState(State::Goal);
-        // フェード開始             
-        goal_ = true;
-        end = false;
-    }
-
-    // ゲームスタートイベントが終了したらプレイヤ―操作可能に
-    if (player_->GetState() == State::None && EventManager::GetInstance()->IsFinished() && CameraManager::GetInstance()->GetTypeview() == ViewCameraType::Main) {
-        // イベント終了 → プレイヤーを操作可能に
-        player_->SetState(State::Alive);
-        isPausedevent_ = true;
-        GamePlayUI* gpUI = UIManager::GetInstance()->GetUI<GamePlayUI>();
-        // 見つかった場合のみ固有のメソッドを呼ぶ
-        if (gpUI) {        
-            // 進行度を設定        
-            gpUI->StartStageProgressUI();
-        }
-    }
-    
-    if (EventManager::GetInstance()->GetProgress() >= 2.5f) {
-        // 操作UIのアニメーション開始
-        GamePlayUI* gpUI = UIManager::GetInstance()->GetUI<GamePlayUI>();
-        // 見つかった場合のみ固有のメソッドを呼ぶ
-        if (gpUI) {
-            gpUI->StartControlUIAnimation();
-        }
-    }
-
+    // ---------------------------
+    // プレイヤーの状態に応じた処理
+    // ---------------------------
+    HandlePlayerState();       
+    // ---------------------------
+    // ステージ更新
+    // ---------------------------
     StageManager::GetInstance()->Update();
-
-    /*-------------------------------------------*/
-    /*--------------Cameraの更新処理---------------*/
-    /*------------------------------------------*/
+    // ---------------------------
+    // カメラの更新処理
+    // ---------------------------
     // サブカメラはプレイヤーを追わせる
     CameraManager::GetInstance()->SetGamecameraTarget(player_->GetPlayerObject());
     CameraManager::GetInstance()->Update();
 #pragma region 全てのObject3d個々の更新処理
     // 終了しない限り更新処理
     if (!end) {
-        if (EventManager::GetInstance()->IsFinished() ){
-            // 敵出現動作
-            enemySpawner_->Update();
-        }
-        // 各衝突判定
-        CheckBulletEnemyCollisionsOBB();
-        CheckEnemyBulletPlayerCollisionsOBB(); 
-        CheckEnemyPlayerCollisionsOBB();
         // 更新処理
         player_->Update();
         // プレイヤーがゴール手前までは敵も更新
         if (player_->GetPosition().z <=  CameraManager::GetInstance()->GetGameplayCamera()->GetBezierPoints().back().controlPoint.z) {
-            // 敵の更新
-            for (auto& enemy : enemies_) {
-                if (enemy->IsActive()) {
-                    enemy->SetPlayer(player_.get());
-                    enemy->Update();
-                }
-            }
+
         }
         wall->Update();
         // Bulletマネージャの更新処理
         BulletManager::GetInstance()->Update();
-    }
-
-    // 敵がプレイヤーから離れすぎたら削除（過去の敵掃除）
-    for (auto& enemy : enemies_) {
-        if (!enemy->IsActive()) continue;
-        float playerZ = player_->GetPosition().z;
-        float spawnZ = enemy->GetSpawnBaseZ();  // 出現基準Z
-        if (playerZ > spawnZ + 30) { // 出現位置より進んでたら削除
-            enemy->Kill();
-        }
     }
 
     // フェードアウトが完了したら次のシーンへ
@@ -9888,21 +9782,10 @@ void GamePlayScene::Update() {
         }
     }
 
-    // 死んだ敵の削除
-    enemies_.erase(
-        std::remove_if(enemies_.begin(), enemies_.end(),
-            [](const std::unique_ptr<Enemy>& e) {
-                return e->IsDead();  // ← 出現前の非アクティブは残す！
-            }),
-        enemies_.end());
     // スカイボックス更新
     Box_->Update(); 
 
-    for (auto& enemy : enemies_) {
-        enemy->onDeathCallback = [this](const Vector3& pos) {
-            particles_->AddHitPosition(pos);
-            };
-    }
+
     // パーティクル更新
     ParticleManager::GetInstance()->Update();
     particles_->Update();
@@ -9947,15 +9830,7 @@ void GamePlayScene::Draw() {
         // Bulletマネージャの描画処理
         BulletManager::GetInstance()->Draw();
     }
-    // プレイヤーがゴール地点に達するまでは敵や壁を描画
-    if (player_->GetPosition().z <= CameraManager::GetInstance()->GetGameplayCamera()->GetBezierPoints().back().controlPoint.z) {
-        // 敵の更新
-        for (auto& enemy : enemies_) {
-            if (enemy->IsActive()) {
-                enemy->Draw();
-            }
-        }
-    }
+
     wall->Draw();
     // イベントマネージャの描画処理
     EventManager::GetInstance()->Drawo3Dbject();
@@ -9987,85 +9862,71 @@ void GamePlayScene::Draw() {
 #pragma endregion 全てのSprite個々の描画処理
 }
 
-///====================================================
-/// プレイヤー弾 vs 敵の当たり判定
-///====================================================
-void GamePlayScene::CheckBulletEnemyCollisionsOBB() {
-    const auto& bullets = BulletManager::GetInstance()->GetPlayerBullets();
-
-    for (const std::unique_ptr<PlayerBullet>& bullet : bullets) {
-        if (!bullet->IsActive()) continue;
-
-        for (auto& enemy : enemies_) {
-            if (!enemy->IsActive()) continue;
-
-            OBB bulletOBB = bullet->GetOBB(); // bulletがOBB情報を持っている必要あり
-            OBB enemyOBB = enemy->GetOBB();   // 敵のOBBも同様に
-
-            if (IsOBBIntersect(bulletOBB, enemyOBB)) {
-                bullet->SetInactive();
-                enemy->OnHit();
-                
-               // particles_->AddHitPosition(enemy->GetPosition());
-                // パーティクル生成など
-                break;
-            }
+void GamePlayScene::HandlePauseMenuCommands() {
+    if (pausemenu_->GetCommand() == PauseCommand::GoToTitle) {
+        FadeManager::GetInstance()->Update();
+        if (!goal_) {
+            FadeManager::GetInstance()->StartFadeOut(1.0f, FadeStyle::Normal);
+            goal_ = true;
+        }
+        if (FadeManager::GetInstance()->IsFadeEnd()) {
+            SceneManager::GetInstance()->ChangeScene("TITLE");
         }
     }
 }
-///====================================================
-/// 敵弾 vs プレイヤーの当たり判定
-///====================================================
-void GamePlayScene::CheckEnemyBulletPlayerCollisionsOBB() {
-    const auto& bullets = BulletManager::GetInstance()->GetEnemyBullets();
 
-    OBB playerOBB = player_->GetOBB(); // プレイヤーがOBBを返すようにしておく必要あり
+void GamePlayScene::HandleFadeInOut() {
+    if (!FadeManager::GetInstance()->IsFadeStart() && !FadeManager::GetInstance()->IsFading()) {
+        FadeManager::GetInstance()->StartFadeIn(1.0f, FadeStyle::SilhouetteExplode);
+    }
+    FadeManager::GetInstance()->Update();
+}
 
-    for (const std::unique_ptr<EnemyBullet>& bullet : bullets) {
-        if (!bullet->IsActive()) continue;
+void GamePlayScene::HandlePlayerState() {
+    // 死亡演出
+    if (player_->GetState() == State::Dead && CameraManager::GetInstance()->GetTypeview() == ViewCameraType::Main) {
+        CameraManager::GetInstance()->SetMode(CameraMode::Default);
+        CameraManager::GetInstance()->SetTypeview(ViewCameraType::Sub);
+        end = false;
+    }
 
-        OBB bulletOBB = bullet->GetOBB(); // 弾にもOBBが必要
+    // サブカメラ時の処理
+    if (CameraManager::GetInstance()->GetTypeview() == ViewCameraType::Sub && CameraManager::GetInstance()->GetMode() == CameraMode::Default) {
+        FadeManager::GetInstance()->StartFadeOut(1.0f, FadeStyle::Normal);
+        CameraManager::GetInstance()->SetMode(CameraMode::Follow);
+    }
 
-        if (IsOBBIntersect(bulletOBB, playerOBB)) {
-            bullet->SetInactive();
-            player_->SetState(State::Dead);
+    // ゴール判定
+    if (!goal_ && player_->GetState() == State::Alive && player_->GetPosition().z >= CameraManager::GetInstance()->GetGameplayCamera()->GetBezierPoints().back().controlPoint.z) {
+        FadeManager::GetInstance()->StartFadeOut(1.0f, FadeStyle::Normal);
+        player_->SetState(State::Goal);
+        goal_ = true;
+        end = false;
+    }
 
-            end = true;
-            // ヒットエフェクトなど追加
-            break;
+    // ゲーム開始後にプレイヤー操作可能に
+    if (player_->GetState() == State::None && EventManager::GetInstance()->IsFinished()) {
+        player_->SetState(State::Alive);
+        isPausedevent_ = true;
+        if (auto gpUI = UIManager::GetInstance()->GetUI<GamePlayUI>()) {
+            gpUI->StartStageProgressUI();
+        }
+    }
+
+    // 操作UIのアニメーション開始
+    if (EventManager::GetInstance()->GetProgress() >= 2.5f) {
+        if (auto gpUI = UIManager::GetInstance()->GetUI<GamePlayUI>()) {
+            gpUI->StartControlUIAnimation();
         }
     }
 }
-///====================================================
-/// 敵 vs プレイヤー の当たり判定
-///====================================================
-void GamePlayScene::CheckEnemyPlayerCollisionsOBB() {
-    // プレイヤーのOBBを取得
-    OBB playerOBB = player_->GetOBB();
 
-    for (auto& enemy : enemies_) {
-        if (!enemy->IsActive() || enemy->IsDead()) continue;
-
-        // 敵のOBBを取得
-        OBB enemyOBB = enemy->GetOBB();
-
-        // 衝突判定
-        if (IsOBBIntersect(playerOBB, enemyOBB)) {
-            player_->SetState(State::Dead);
-            end = true; // ゲームオーバーへ遷移など
-
-            break;
-        }
-    }
-}
 
 ============================================================
 File Path: project/application/scene/GamePlayScene.h
 ============================================================
 #pragma once
 #include <BaseScene.h>
-#include <Sprite.h>
-#include <Object3d.h>
 #include <ParticleEmitter.h>
 #include <SoundPlayer.h>
 #include <Skybox.h>
@@ -10074,20 +9935,14 @@ File Path: project/application/scene/GamePlayScene.h
 #include <Enemy.h>
 #include <FadeManager.h>
 #include <EventManager.h>
-#include <StageManager.h>
 #include <GamePlayparticle.h>
 #include <EnemySpawner.h>
 #include <Pausemenu.h>
 
-enum class ControlUIType
-{
-    WASD,
-    Arrow,
-    Space
-};
-
 /// <summary>
-/// ゲームプレイシーン
+/// 実際のゲームプレイを行うシーン。
+/// プレイヤー操作、ステージ進行、イベント管理、
+/// ポーズメニュー、UI表示などゲーム本編の処理を担当
 /// </summary>
 class GamePlayScene : public BaseScene {
 public: // メンバ関数
@@ -10107,63 +9962,43 @@ public: // メンバ関数
     /// 描画処理
     /// </summary>
     void Draw() override;
-
     /// <summary>
-    /// プレイヤーの弾と敵との衝突判定処理
+    /// ポーズメニューの更新処理
+    /// TABキー入力によるポーズ開始やメニュー操作を管理
     /// </summary>
-    void CheckBulletEnemyCollisionsOBB();
-    /// <summary>
-    /// 敵の弾とプレイヤーとの衝突判定処理
-    /// </summary>
-    void CheckEnemyBulletPlayerCollisionsOBB();
-
-    void CheckEnemyPlayerCollisionsOBB();
-
-    void CreateWASDUI(
-        const Vector2& baseCenter,     // WASD中心
-        const Vector2& size,
-        float keySpacing,           // キー同士の隙間
-        float groupSpacing);    // グループ間の縦間隔
-
-    void UpdateControlUI();
-    void UpdateControlUIAnimation();
-
     void PauseMenuUpdate();
-
+    /// <summary>
+    /// ポーズ中のコマンド処理。
+    /// GoToTitle などの選択肢に応じた処理を実行。
+    /// </summary>
+    void HandlePauseMenuCommands();
+    /// <summary>
+    /// フェードイン・フェードアウト処理の管理。
+    /// フェード開始、更新、終了チェックを行う。
+    /// </summary>
+    void HandleFadeInOut();
+    /// <summary>
+    /// プレイヤー状態ごとの処理。
+    /// 死亡、ゴール、操作可能状態への遷移などを管理する。
+    /// </summary>
+    void HandlePlayerState();
 private: // メンバ変数
     // オブジェクトデータ
     // プレイヤー
-    std::unique_ptr <Player> player_ = nullptr;
-    // キャラクターローダー
-    std::unique_ptr<CharacterLoader> levelLoader_ = nullptr;
-    // レベルデータ格納用インスタンスを生成
-    LevelData* levelData = nullptr;
-    bool end;
-    // 最大数
-    int MAX_ENEMY;
-    // 敵リスト
-    std::vector<std::unique_ptr<Enemy>> enemies_;
-    std::unique_ptr<EnemySpawner> enemySpawner_;
-    // 敵出現トリガーリスト
-    std::vector<EnemySpawnTrigger> spawnTriggers_;
-    // クリアゲート(仮)
-    std::unique_ptr <Object3d> wall = nullptr;
+    std::unique_ptr <Player> player_;
+	bool end; /// ゲーム終了フラグ
+
+    std::unique_ptr <Object3d> wall;    /// クリアゲート(仮)
     // ゴールフラグ
     bool goal_ = false;
     // スカイボックス
-    std::unique_ptr <Skybox> Box_ = nullptr;
-    // イベント処理
-    std::vector<EventManager> event_;
-    /// UI(タイトルへ(仮))
-    std::unique_ptr <Sprite> ui1_;
-    std::vector<std::unique_ptr<Sprite>> uis_;
-    uint32_t MAXui_;
+    std::unique_ptr <Skybox> Box_;
+    std::vector<EventManager> event_;  /// イベント処理
 
-    std::unique_ptr <GamePlayparticle> particles_;
+	std::unique_ptr <GamePlayparticle> particles_; /// プレイ中のパーティクル
 
-    std::unique_ptr <Pausemenu> pausemenu_;
-    bool isPausedevent_;
-
+    std::unique_ptr <Pausemenu> pausemenu_;    /// ポーズメニュー
+    bool isPausedevent_;                       /// ポーズ可能状態かどうか
 };
 
 ============================================================
@@ -21916,7 +21751,7 @@ void MyGame::Initialize() {
 	// GAMEPLAY           ゲームプレイ
 	// GAMECLEAR          ゲームクリア
     // GAMEOVER           ゲームオーバー
-    SceneManager::GetInstance()->ChangeScene("TITLE");
+    SceneManager::GetInstance()->ChangeScene("GAMEPLAY");
 }
 
 void MyGame::Update() {
