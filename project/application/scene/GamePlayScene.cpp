@@ -12,7 +12,6 @@
 #include <ImGuiManager.h>
 #endif // USE_IMGUI
 #include <SkyboxCommon.h>
-#include <Player.h>
 #include <BulletManager.h>
 #include <MatrixVector.h>
 #include <Collision.h>
@@ -20,7 +19,9 @@
 #include <Easing.h>
 #include <UIManager.h>
 #include <GamePlayUI.h>
+#include <StageManager.h>
 
+// 各種マネージャやユーティリティの名前空間を使用
 using namespace LoadResourceID;
 using namespace Collision;
 using namespace MatrixVector;
@@ -83,90 +84,35 @@ void GamePlayScene::PauseMenuUpdate() {
     pausemenu_->Update();
 }
 
-void GamePlayScene::Update() {  
+void GamePlayScene::Update() {       
+    // ---------------------------
+    // ポーズメニュー処理
+    // ---------------------------
 	// ポーズメニューの更新
     PauseMenuUpdate();
-    //  ポーズ中の処理
     if (pausemenu_->IsActive()) {
-
-        if (pausemenu_->GetCommand() == PauseCommand::GoToTitle) {
-            // フェードマネージャの更新   
-            FadeManager::GetInstance()->Update();
-            // メニューが表示されたまま、フェードアウトを開始
-            if (!goal_) {
-                FadeManager::GetInstance()->StartFadeOut(1.0f, FadeStyle::Normal);
-                goal_ = true; // フェード開始フラグとして利用
-            }
-
-            // フェードが終わったらシーン遷移
-            if (FadeManager::GetInstance()->IsFadeEnd()) {
-                SceneManager::GetInstance()->ChangeScene("TITLE");
-            }
-            // タイトル移行時はここでreturnし、背後のゲーム処理を止めたままにする
-            return;
-        }
-        return; // ポーズ中は他の更新をスキップ
+        HandlePauseMenuCommands();  // ポーズ中のコマンド処理
+        return;                     // ポーズ中はその他の処理をスキップ
     }
-
-    // フェードイン開始
-    if (!FadeManager::GetInstance()->IsFadeStart() && !FadeManager::GetInstance()->IsFading()) {
-        // フェード開始
-        FadeManager::GetInstance()->StartFadeIn(1.0f, FadeStyle::SilhouetteExplode);
-    }
-    // フェードマネージャの更新   
-    FadeManager::GetInstance()->Update();
-    // イベントマネージャの更新
+    // ---------------------------
+    // フェード処理の開始
+    // ---------------------------
+    HandleFadeInOut();
+    // ---------------------------
+    // イベントマネージャ更新
+    // ---------------------------
     EventManager::GetInstance()->Update(); 	
-
-    // 死亡演出
-    if (player_->GetState() == State::Dead && CameraManager::GetInstance()->GetTypeview() == ViewCameraType::Main) {
-        CameraManager::GetInstance()->SetMode(CameraMode::Default);
-        CameraManager::GetInstance()->SetTypeview(ViewCameraType::Sub);
-        // フェード開始             
-        end = false;
-    }
-
-    if (CameraManager::GetInstance()->GetTypeview() == ViewCameraType::Sub && CameraManager::GetInstance()->GetMode() == CameraMode::Default) {
-        FadeManager::GetInstance()->StartFadeOut(1.0f, FadeStyle::Normal);
-        CameraManager::GetInstance()->SetMode(CameraMode::Follow);
-    }
-
-    // ゴール演出
-    if (!goal_ && player_->GetState() == State::Alive && player_->GetPosition().z >= CameraManager::GetInstance()->GetGameplayCamera()->GetBezierPoints().back().controlPoint.z && CameraManager::GetInstance()->GetTypeview() == ViewCameraType::Main) {
-        FadeManager::GetInstance()->StartFadeOut(1.0f, FadeStyle::Normal);
-        player_->SetState(State::Goal);
-        // フェード開始             
-        goal_ = true;
-        end = false;
-    }
-
-    // ゲームスタートイベントが終了したらプレイヤ―操作可能に
-    if (player_->GetState() == State::None && EventManager::GetInstance()->IsFinished() && CameraManager::GetInstance()->GetTypeview() == ViewCameraType::Main) {
-        // イベント終了 → プレイヤーを操作可能に
-        player_->SetState(State::Alive);
-        isPausedevent_ = true;
-        GamePlayUI* gpUI = UIManager::GetInstance()->GetUI<GamePlayUI>();
-        // 見つかった場合のみ固有のメソッドを呼ぶ
-        if (gpUI) {        
-            // 進行度を設定        
-            gpUI->StartStageProgressUI();
-        }
-    }
-    
-    if (EventManager::GetInstance()->GetProgress() >= 2.5f) {
-        // 操作UIのアニメーション開始
-        GamePlayUI* gpUI = UIManager::GetInstance()->GetUI<GamePlayUI>();
-        // 見つかった場合のみ固有のメソッドを呼ぶ
-        if (gpUI) {
-            gpUI->StartControlUIAnimation();
-        }
-    }
-
+    // ---------------------------
+    // プレイヤーの状態に応じた処理
+    // ---------------------------
+    HandlePlayerState();       
+    // ---------------------------
+    // ステージ更新
+    // ---------------------------
     StageManager::GetInstance()->Update();
-
-    /*-------------------------------------------*/
-    /*--------------Cameraの更新処理---------------*/
-    /*------------------------------------------*/
+    // ---------------------------
+    // カメラの更新処理
+    // ---------------------------
     // サブカメラはプレイヤーを追わせる
     CameraManager::GetInstance()->SetGamecameraTarget(player_->GetPlayerObject());
     CameraManager::GetInstance()->Update();
@@ -273,4 +219,63 @@ void GamePlayScene::Draw() {
     // フェードマネージャの描画
     FadeManager::GetInstance()->Draw();
 #pragma endregion 全てのSprite個々の描画処理
+}
+
+void GamePlayScene::HandlePauseMenuCommands() {
+    if (pausemenu_->GetCommand() == PauseCommand::GoToTitle) {
+        FadeManager::GetInstance()->Update();
+        if (!goal_) {
+            FadeManager::GetInstance()->StartFadeOut(1.0f, FadeStyle::Normal);
+            goal_ = true;
+        }
+        if (FadeManager::GetInstance()->IsFadeEnd()) {
+            SceneManager::GetInstance()->ChangeScene("TITLE");
+        }
+    }
+}
+
+void GamePlayScene::HandleFadeInOut() {
+    if (!FadeManager::GetInstance()->IsFadeStart() && !FadeManager::GetInstance()->IsFading()) {
+        FadeManager::GetInstance()->StartFadeIn(1.0f, FadeStyle::SilhouetteExplode);
+    }
+    FadeManager::GetInstance()->Update();
+}
+
+void GamePlayScene::HandlePlayerState() {
+    // 死亡演出
+    if (player_->GetState() == State::Dead && CameraManager::GetInstance()->GetTypeview() == ViewCameraType::Main) {
+        CameraManager::GetInstance()->SetMode(CameraMode::Default);
+        CameraManager::GetInstance()->SetTypeview(ViewCameraType::Sub);
+        end = false;
+    }
+
+    // サブカメラ時の処理
+    if (CameraManager::GetInstance()->GetTypeview() == ViewCameraType::Sub && CameraManager::GetInstance()->GetMode() == CameraMode::Default) {
+        FadeManager::GetInstance()->StartFadeOut(1.0f, FadeStyle::Normal);
+        CameraManager::GetInstance()->SetMode(CameraMode::Follow);
+    }
+
+    // ゴール判定
+    if (!goal_ && player_->GetState() == State::Alive && player_->GetPosition().z >= CameraManager::GetInstance()->GetGameplayCamera()->GetBezierPoints().back().controlPoint.z) {
+        FadeManager::GetInstance()->StartFadeOut(1.0f, FadeStyle::Normal);
+        player_->SetState(State::Goal);
+        goal_ = true;
+        end = false;
+    }
+
+    // ゲーム開始後にプレイヤー操作可能に
+    if (player_->GetState() == State::None && EventManager::GetInstance()->IsFinished()) {
+        player_->SetState(State::Alive);
+        isPausedevent_ = true;
+        if (auto gpUI = UIManager::GetInstance()->GetUI<GamePlayUI>()) {
+            gpUI->StartStageProgressUI();
+        }
+    }
+
+    // 操作UIのアニメーション開始
+    if (EventManager::GetInstance()->GetProgress() >= 2.5f) {
+        if (auto gpUI = UIManager::GetInstance()->GetUI<GamePlayUI>()) {
+            gpUI->StartControlUIAnimation();
+        }
+    }
 }

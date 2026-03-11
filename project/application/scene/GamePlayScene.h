@@ -1,7 +1,5 @@
 #pragma once
 #include <BaseScene.h>
-#include <Sprite.h>
-#include <Object3d.h>
 #include <ParticleEmitter.h>
 #include <SoundPlayer.h>
 #include <Skybox.h>
@@ -10,7 +8,6 @@
 #include <Enemy.h>
 #include <FadeManager.h>
 #include <EventManager.h>
-#include <StageManager.h>
 #include <GamePlayparticle.h>
 #include <EnemySpawner.h>
 #include <Pausemenu.h>
@@ -38,24 +35,37 @@ public: // メンバ関数
     /// 描画処理
     /// </summary>
     void Draw() override;
-      
     /// <summary>
     /// ポーズメニューの更新処理
     /// TABキー入力によるポーズ開始やメニュー操作を管理
     /// </summary>
     void PauseMenuUpdate();
-
+    /// <summary>
+    /// ポーズ中のコマンド処理。
+    /// GoToTitle などの選択肢に応じた処理を実行。
+    /// </summary>
+    void HandlePauseMenuCommands();
+    /// <summary>
+    /// フェードイン・フェードアウト処理の管理。
+    /// フェード開始、更新、終了チェックを行う。
+    /// </summary>
+    void HandleFadeInOut();
+    /// <summary>
+    /// プレイヤー状態ごとの処理。
+    /// 死亡、ゴール、操作可能状態への遷移などを管理する。
+    /// </summary>
+    void HandlePlayerState();
 private: // メンバ変数
     // オブジェクトデータ
     // プレイヤー
-    std::unique_ptr <Player> player_ = nullptr;
+    std::unique_ptr <Player> player_;
 	bool end; /// ゲーム終了フラグ
 
-    std::unique_ptr <Object3d> wall = nullptr;    /// クリアゲート(仮)
+    std::unique_ptr <Object3d> wall;    /// クリアゲート(仮)
     // ゴールフラグ
     bool goal_ = false;
     // スカイボックス
-    std::unique_ptr <Skybox> Box_ = nullptr;
+    std::unique_ptr <Skybox> Box_;
     std::vector<EventManager> event_;  /// イベント処理
 
 	std::unique_ptr <GamePlayparticle> particles_; /// プレイ中のパーティクル
