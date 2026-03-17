@@ -1,9 +1,10 @@
 #include "Pausemenu.h"
 #include <TextureManager.h>
 #include <Input.h>
-#include<Easing.h>
+#include <Easing.h>
 #include <SceneManager.h>
 #include <FadeManager.h>
+#include <ImGuiManager.h>
 #ifdef min
 #undef min
 #endif
@@ -11,193 +12,377 @@
 #undef max
 #endif
 
+#include <Tools/AssetGenerator/engine/generated/ResourceID.h>
+
+using namespace ResourceID;
 using namespace Easing;
 
 void Pausemenu::Initialize() {
-    TextureManager::GetInstance()->LoadTexture("Textures/Ui/PauseMenuPanel.png");
-    TextureManager::GetInstance()->LoadTexture("Textures/Ui/Arrow.png");
-    TextureManager::GetInstance()->LoadTexture("Textures/Ui/command_01.png");
-    TextureManager::GetInstance()->LoadTexture("Textures/Ui/command_02.png");
-    TextureManager::GetInstance()->LoadTexture("Textures/Ui/Poseicon.png");
-    TextureManager::GetInstance()->LoadTexture("Textures/Ui/command_11.png");
-    TextureManager::GetInstance()->LoadTexture("Textures/Ui/command_12.png");
-    TextureManager::GetInstance()->LoadTexture("Textures/Ui/Poseicon_red.png");
-    command_ = PauseCommand::None;
+    TextureManager::GetInstance()->LoadTexture(texture::Pausemenu::PauseMenuPanel);
+    TextureManager::GetInstance()->LoadTexture(texture::Pausemenu::Poseicon);
+    TextureManager::GetInstance()->LoadTexture(texture::Pausemenu::Poseicon_red);   
+    TextureManager::GetInstance()->LoadTexture(texture::Pausemenu::menu_01);
+    TextureManager::GetInstance()->LoadTexture(texture::Pausemenu::menu_02);
+    TextureManager::GetInstance()->LoadTexture(texture::Pausemenu::menu_03);
+    TextureManager::GetInstance()->LoadTexture(texture::Pausemenu::menu_04);
+    TextureManager::GetInstance()->LoadTexture(texture::Pausemenu::Arrow);
+
+    // 初期状態は非アクティブ
     isActive_ = false;
-    selectedIndex_ = 0;
-    MAXselectedIndex_ = 2;
-    frame_ = 0.0f;
-    baseSize_ = { 700.0f, 400.0f }; // 最終的なサイズ 
-    panelTargetPos = { 650.0f, 350.0f };
-    menupanel_ = Sprite::Create("Textures/Ui/PauseMenuPanel.png", panelTargetPos, 0.0f, baseSize_);
-    menupanel_->SetAnchorPoint(Vector2{ 0.5f,0.5f });
+	// ポーズアイコンの作成
+    paused_ = Sprite::Create(texture::Pausemenu::Poseicon, Vector2{ 3.0f, 3.0f }, 0.0f, Vector2{ 100.0f,100.0f });
+    
+    isOpening_ = false; 
+    isClosing_ = false;
+    openTimer_ = 0.0f;
+    // パネルUIの作成
+    for (uint32_t i = 0; i < 2; i++) {
+        UIElement element;
+        element.size = { 700.0f, 400.0f };
+        element.position = { 640.0f, 350.0f };
+        element.position.x += (350.0f + 700.0f) * i; // 横にずらす
+        // 初期位置（画面下）
+        Vector2 startPos = element.position;
+        startPos.y = 1000.0f;
+
+        element.sprite = Sprite::Create(texture::Pausemenu::PauseMenuPanel, startPos, 0.0f, element.size);
+        element.sprite->SetAnchorPoint({ 0.5f,0.5f });
+        if (i == 1) {
+            element.sprite->SetTextureLeftTop({ 700.0f,0.0f });
+        }
+        panels_.push_back(std::move(element));
+    }
+    
+    // テクスチャ読み込み
+    std::string textures[] = { 
+        texture::Pausemenu::menu_01, texture::Pausemenu::menu_03,
+        texture::Pausemenu::menu_02, texture::Pausemenu::menu_04    
+    };
+	// コマンドUIの作成
+    for (uint32_t i = 0; i < kMaxCommand; ++i) {
+        UIElement command;
+        command.size = { 200.0f,70.0f };
+        if (i == static_cast<uint32_t>(PauseCommand::Turnback)) {
+            commandPanelIndex_[i] = 1;
+        } else {
+            commandPanelIndex_[i] = 0;
+        }
+        if (i == 3) {
+            commandOffset_[i] = { 0.0f,((i - 1) * kMenuIntervalY) };
+        } else {
+            commandOffset_[i] = { 0.0f,(i * kMenuIntervalY) };
+        }
+        Vector2 panelPos = panels_[commandPanelIndex_[i]].sprite->GetPosition();
+        Vector2 pos{ panelPos.x,panelPos.y + commandOffset_[i].y - 20.0f };
+        command.sprite = Sprite::Create(textures[i], pos, 0.0f, command.size);
+        command.sprite->SetAnchorPoint({ 0.5f,0.5f });
+        commands_[i].push_back(std::move(command));
+    }
+
     arrow_.size = { 50.0f,50.0f };
-    arrow_.sprite = Sprite::Create("Textures/Ui/Arrow.png", Vector2{ 770.0f, 350.0f }, 0.0f, arrow_.size);
+    arrow_.position = { commands_[selectedIndex_][0].sprite->GetPosition().x + kArrowOffsetX , commands_[selectedIndex_][0].sprite->GetPosition().y };
+    arrow_.sprite = Sprite::Create(texture::Pausemenu::Arrow, arrow_.position, 0.0f, arrow_.size);
     arrow_.sprite->SetAnchorPoint(Vector2{ 0.5f,0.5f });
 
-    // テクスチャ読み込み
-    std::string textures[] = { "Textures/Ui/command_01.png", "Textures/Ui/command_02.png" };
-    for (uint32_t i = 0; i < kMaxCommand; ++i) {
-        commands_[i].size = { 150.0f, 50.0f };
-        // Y座標を間隔分ずらして配置
-        Vector2 pos = { 640.0f, kMenuTopY + (i * kMenuIntervalY) };
-        if (i == 0) {
-            arrow_.sprite->SetPosition({ 750.0f,pos.y });
-        }
-        commands_[i].sprite = Sprite::Create(textures[i], pos, 0.0f, commands_[i].size);
-        commands_[i].sprite->SetAnchorPoint({ 0.5f, 0.5f });
-    }
-    icon_ = Sprite::Create("Textures/Ui/Poseicon.png", Vector2{ 3.0f, 3.0f }, 0.0f, Vector2{ 100.0f,100.0f });
-    kStartOffestY = 800.0f;
+    selectedIndex_ = 0;
+    fige = false;
 }
 
 void Pausemenu::Update() {
-    // --- 1. アニメーション（演出）の更新 ---
+    if (isOpening_) {
+        openTimer_++;
+        float t = std::clamp(openTimer_ / kOpenMaxFrame, 0.0f, 1.0f);
+        // 既存のイージング関数を使用
+        float easeT = EaseOutBack(t);
+
+
+        for (uint32_t i = 0; i < panels_.size(); i++) {
+
+            Vector2 targetPos = panels_[i].position;
+            Vector2 targetSize = panels_[i].size;
+
+            float startY = 1000.0f;
+
+            float currentY = startY + (targetPos.y - startY) * easeT;
+
+            // サイズ補間
+            Vector2 currentSize{
+                targetSize.x * easeT,
+                targetSize.y * easeT
+            };
+
+            panels_[i].sprite->SetPosition({ targetPos.x, currentY });
+            panels_[i].sprite->SetSize(currentSize);
+        }
+        if (openTimer_ >= kOpenMaxFrame) {
+            isOpening_ = false;
+            fige = true;
+        }
+    }
+    // 閉じるアニメーション
+    if (isClosing_) {
+
+        openTimer_++;
+
+        float t = std::clamp(openTimer_ / kOpenMaxFrame, 0.0f, 1.0f);
+        float easeT = EaseOutBack(t);
+        float reverseT = 1.0f - easeT;
+
+        for (UIElement& panel : panels_) {
+
+            Vector2 targetSize = panel.size;
+
+            float currentY = std::lerp(panel.position.y, 1000.0f, easeT);
+
+            Vector2 currentSize{
+                targetSize.x * reverseT,
+                targetSize.y * reverseT
+            };
+
+            panel.sprite->SetPosition({ panel.position.x, currentY });
+            panel.sprite->SetSize(currentSize);
+        }
+
+        if (openTimer_ >= kOpenMaxFrame) {
+
+            isClosing_ = false;
+            isActive_ = false; // ここでポーズ解除
+        }
+    }
+
     if (isActive_) {
-        if (frame_ < kMaxFrame + 20.0f) { // 全体の演出時間をディレイ分少し伸ばす
-            frame_ += 1.0f;
-        }
+        paused_->SetTexture(texture::Pausemenu::Poseicon_red);
+        keyUpdate();
+        ExecuteCommand(); // コマンド実行
     } else {
-        if (frame_ > 0.0f) {
-            frame_ -= 1.0f;
-        } else {
-            isFinished_ = true;
-        }
+        paused_->SetTexture(texture::Pausemenu::Poseicon);
     }
 
-    // --- 2. 各パーツのサイズ更新（時間差をつける） ---
-    // 背景パネル：即座に開始
-    CalculateEaseSize(menupanel_.get(), baseSize_, frame_, kMaxFrame);
-    CalculateEasePos(menupanel_.get(), panelTargetPos, kStartOffestY, frame_, kMaxFrame);
-
-    // コマンド：背景パネルより 10フレーム遅れて開始
-    float buttonFrame = std::max(0.0f, frame_ - 10.0f);
-    std::string textures_green[] = { "Textures/Ui/command_11.png", "Textures/Ui/command_12.png" };
-    std::string textures_red[] = { "Textures/Ui/command_01.png", "Textures/Ui/command_02.png" };
-    for (uint32_t i = 0; i < kMaxCommand; ++i) {
-        CalculateEaseSize(commands_[i].sprite.get(), commands_[i].size, buttonFrame, kMaxFrame);
-        // --- 選択中のテクスチャ差し替え処理 ---
-        if (isActive_ && i == selectedIndex_) {
-            // インデックス0（Resume）が選択されている時だけ command_11 に差し替える
-            commands_[i].sprite->SetTexture(textures_green[i]);      
-            commands_[i].sprite->SetColor({ 1.0f, 1.0f, 1.0f, 1.0f }); // 色による強調が不要なら白に戻す
-        } else {
-            // 非選択時は元のテクスチャに戻す
-            commands_[i].sprite->SetTexture(textures_red[i]);
-            commands_[i].sprite->SetColor({ 1.0f, 1.0f, 1.0f, 1.0f });
-        }
+    if (isOperationMove_) {
+        UpdateOperationMove();
     }
 
-    // 矢印：背景パネルより 15フレーム遅れて開始
-    float arrowFrame = std::max(0.0f, frame_ - 10.0f);
-    CalculateEaseSize(arrow_.sprite.get(), arrow_.size, arrowFrame, kMaxFrame);
-
-    // 入力と位置の更新（完全に開ききっている時のみ操作可能）
-    if (isActive_ && frame_ >= kMaxFrame) {
-        UpdateSelection(); // コマンド選択
-        UpdateArrowPositions(); // 矢印の処理
-    }
-    menupanel_->Update();
+    paused_->Update();
     arrow_.sprite->Update();
-    for (UIElement& cmd : commands_) {
-        cmd.sprite->Update(); // 全ての選択肢
+
+    for (UIElement& panel : panels_) {
+        panel.sprite->Update();
+    }
+
+    for (std::vector<UIElement>& commandList : commands_) {
+        for (UIElement& command : commandList) {
+            command.sprite->Update();
+        }
     }
 }
 
 void Pausemenu::Draw() {
+    paused_->Draw();
 
-    menupanel_->Draw();
-    for (UIElement& cmd : commands_) {
-        cmd.sprite->Draw(); // 全ての選択肢
+    for (UIElement& panel : panels_) {
+        panel.sprite->Draw();
     }
-    if (isActive_ && frame_ >= kMaxFrame) {
-        arrow_.sprite->Draw();
+
+    for (std::vector<UIElement>& commandList : commands_) {
+        for (UIElement& command : commandList) {
+            command.sprite->Draw();
+        }
     }
+    
+    arrow_.sprite->Draw();
 }
 
-void Pausemenu::CalculateEaseSize(Sprite* sprite, const Vector2& baseSize, float frame, float maxFrame) {
-    if (!sprite) return;
+void Pausemenu::keyUpdate() {
+    // コマンド実行中は選択処理をしない
+    if (!isCommandRunning_) {
 
-    float t = std::clamp(frame / maxFrame, 0.0f, 1.0f);
-    float easeT = 0.0f;
+        // 下
+        if (Input::GetInstance()->Triggrkey(DIK_DOWN)) {
+            selectedIndex_++;
+            if (!isOperationMode_ && selectedIndex_ == static_cast<uint32_t>(PauseCommand::Turnback)) {
+                selectedIndex_ = 0;
+            }
+            if (selectedIndex_ >= kMaxCommand) {
+                selectedIndex_ = 0;
+            }
+            UpdateArrowPositions();
+        }
 
-    if (t == 0.0f) {
-        easeT = 0.0f;
-    } else if (t == 1.0f) {
-        easeT = 1.0f;
-    } else {
-        // easeOutBack の計算式
-        const float c1 = 1.70158f;
-        const float c3 = c1 + 1.0f;
-        easeT = 1.0f + c3 * std::pow(t - 1.0f, 3.0f) + c1 * std::pow(t - 1.0f, 2.0f);
-    }
+        // 上
+        if (Input::GetInstance()->Triggrkey(DIK_UP)) {
+            if (selectedIndex_ == 0) {
+                selectedIndex_ = kMaxCommand - 1;
+            } else {
+                selectedIndex_--;
+            }
 
-    Vector2 currentSize = { baseSize.x * easeT, baseSize.y * easeT };
-    sprite->SetSize(currentSize);
-}
-
-void Pausemenu::UpdateSelection() {
-    // 入力による選択項目の切り替え
-    if (Input::GetInstance()->Triggrkey(DIK_UP) || Input::GetInstance()->Triggrkey(DIK_W)) {
-        selectedIndex_ = (selectedIndex_ - 1 + MAXselectedIndex_) % MAXselectedIndex_;
-    }
-    if (Input::GetInstance()->Triggrkey(DIK_DOWN) || Input::GetInstance()->Triggrkey(DIK_S)) {
-        selectedIndex_ = (selectedIndex_ + 1) % MAXselectedIndex_;
-    }
-    // 決定
-    if (Input::GetInstance()->Triggrkey(DIK_RETURN)) {
-        if (selectedIndex_ == 0) {
-            // Resumeを選択: isActiveをfalseにして逆再生演出を開始させる
-            isActive_ = false;
-            command_ = PauseCommand::None; // まだゲーム側には通知しない（演出を待つため）
-        } else if (selectedIndex_ == 1) {
-            command_ = PauseCommand::GoToTitle;
+            if (!isOperationMode_ && selectedIndex_ == static_cast<uint32_t>(PauseCommand::Turnback)) {
+                selectedIndex_--;
+            }
+            UpdateArrowPositions();
         }
     }
 }
+
 void Pausemenu::UpdateArrowPositions() {
-    // 現在選ばれている項目の位置を取得
-    Vector2 targetPos = commands_[selectedIndex_].sprite->GetPosition();
+    if (commands_[selectedIndex_].empty()) {
+        return;
+    }
+    Vector2 targetPos = commands_[selectedIndex_][0].sprite->GetPosition();
 
-    // 矢印を項目の左側（または右側）に配置するためのオフセット
-    // 例: 項目の中心から左に 120ピクセルずらす
-    float offset = 120.0f;
-    arrow_.sprite->SetPosition(Vector2{ targetPos.x + offset, targetPos.y });
+    arrow_.sprite->SetPosition(Vector2{ targetPos.x + kArrowOffsetX,targetPos.y });
 }
 
-void Pausemenu::IconUpdate() {
-    if (isActive_) {
-        icon_->SetTexture("Textures/Ui/Poseicon_red.png");
-    } else {
-        icon_->SetTexture("Textures/Ui/Poseicon.png");
+void Pausemenu::ExecuteCommand() { 
+
+    if (!isOperationMove_ && Input::GetInstance()->Triggrkey(DIK_RETURN)) {
+        command_ = static_cast<PauseCommand>(selectedIndex_);
+
+        switch (command_) {
+        case PauseCommand::Resume:
+            if (fige) {
+                isClosing_ = true;
+                isOpening_ = false;
+                openTimer_ = 0.0f;
+                fige = false;
+            }
+            break;
+        case PauseCommand::Operation:
+            isOperationMode_ = true;
+            isCommandRunning_ = true;
+            isOperationMove_ = true;
+            operationTimer_ = 0.0f;
+            panel1Start_ = { kPanelCenterX, panels_[0].sprite->GetPosition().y };
+            panel1End_ = { kPanelLeftX,   panels_[0].sprite->GetPosition().y };
+
+            panel2Start_ = { kPanelRightX, panels_[1].sprite->GetPosition().y };
+            panel2End_ = { kPanelCenterX, panels_[1].sprite->GetPosition().y };
+        
+            for (uint32_t i = 0; i < kMaxCommand; i++) {
+                if (commands_[i].empty()) continue;
+
+                Vector2 pos = commands_[i][0].sprite->GetPosition();
+                commandStart_[i] = pos;
+
+                // Turnbackだけパネル2へ
+                if (i == static_cast<uint32_t>(PauseCommand::Turnback)) {
+                    commandEnd_[i] = {
+                        kPanelCenterX,
+                        pos.y
+                    };
+                } else {
+                    // panel1と一緒に左へ
+                    commandEnd_[i] = {
+                        pos.x + (kPanelLeftX - kPanelCenterX),
+                        pos.y
+                    };
+                }
+            }
+            selectedIndex_ = static_cast<uint32_t>(PauseCommand::Turnback);
+            UpdateArrowPositions();
+            break;
+        case PauseCommand::GoToTitle:
+            isCommandRunning_ = true;
+            break;
+        case PauseCommand::Turnback:
+            if (isOperationMode_) {
+
+                isOperationMode_ = false;
+                isCommandRunning_ = false;
+
+                isOperationMove_ = true;
+                operationTimer_ = 0.0f;
+
+                panel1Start_ = { kPanelLeftX, panels_[0].sprite->GetPosition().y };
+                panel1End_ = { kPanelCenterX, panels_[0].sprite->GetPosition().y };
+
+                panel2Start_ = { kPanelCenterX, panels_[1].sprite->GetPosition().y };
+                panel2End_ = { kPanelRightX, panels_[1].sprite->GetPosition().y };
+
+                for (uint32_t i = 0; i < kMaxCommand; i++) {
+
+                    if (commands_[i].empty()) continue;
+
+                    Vector2 pos = commands_[i][0].sprite->GetPosition();
+                    commandStart_[i] = pos;
+
+                    commandEnd_[i] = {
+                        640.0f,
+                        kMenuTopY + (i * kMenuIntervalY)
+                    };
+                }
+
+                selectedIndex_ = static_cast<uint32_t>(PauseCommand::Operation);
+                UpdateArrowPositions();
+            }
+
+            break;
+        default:
+            break;
+        }
     }
 
-    icon_->Update();
+    for (uint32_t i = 0; i < kMaxCommand; i++) {
+
+        if (commands_[i].empty()) {
+            continue;
+        }
+
+        UIElement& command = commands_[i][0];
+
+        // Turnback以外
+        if (i == selectedIndex_ && i != static_cast<uint32_t>(PauseCommand::Turnback)) {
+            command.sprite->SetTextureLeftTop({ 200.0f, 0.0f });
+        } else {
+            command.sprite->SetTextureLeftTop({ 0.0f, 0.0f });
+        }
+    }
+    UpdateCommandPosition();
 }
- 
-void Pausemenu::IconDraw() {
-    icon_->Draw();
-}
 
-// Pausemenu.cpp に追加
-void Pausemenu::CalculateEasePos(Sprite* sprite, const Vector2& targetPos, float startY, float frame, float maxFrame) {
-    if (!sprite) return;
+void Pausemenu::UpdateOperationMove() {
+    operationTimer_ += 1.0f / 60.0f;
 
-    float t = std::clamp(frame / maxFrame, 0.0f, 1.0f);
-    float easeT = 0.0f;
+    float t = operationTimer_ / operationDuration_;
 
-    if (t == 0.0f) {
-        easeT = 0.0f;
-    } else if (t == 1.0f) {
-        easeT = 1.0f;
-    } else {
-        // 現在使用している easeOutBack をそのまま利用
-        const float c1 = 1.70158f;
-        const float c3 = c1 + 1.0f;
-        easeT = 1.0f + c3 * std::pow(t - 1.0f, 3.0f) + c1 * std::pow(t - 1.0f, 2.0f);
+    if (t >= 1.0f) {
+        t = 1.0f;
+        isOperationMove_ = false;
     }
 
-    // Y座標を補間 (startY から targetPos.y まで)
-    float currentY = startY + (targetPos.y - startY) * easeT;
-    sprite->SetPosition({ targetPos.x, currentY });
+    float ease = EaseOutBack(t);
+
+    // パネル
+    Vector2 p1{
+        Lerp(panel1Start_.x, panel1End_.x, ease),
+        Lerp(panel1Start_.y, panel1End_.y, ease)
+    };
+
+    Vector2 p2{
+        Lerp(panel2Start_.x, panel2End_.x, ease),
+        Lerp(panel2Start_.y, panel2End_.y, ease)
+    };
+
+    panels_[0].sprite->SetPosition(p1);
+    panels_[1].sprite->SetPosition(p2);
+}
+
+void Pausemenu::UpdateCommandPosition() {
+    for (uint32_t i = 0; i < kMaxCommand; i++) {
+
+        if (commands_[i].empty()) continue;
+
+        int panelIndex = commandPanelIndex_[i];
+
+        Vector2 panelPos = panels_[panelIndex].sprite->GetPosition();
+
+        Vector2 pos{
+            panelPos.x,
+            panelPos.y + commandOffset_[i].y
+        };
+
+        commands_[i][0].sprite->SetPosition(pos);
+    }
+
+    UpdateArrowPositions();
 }
