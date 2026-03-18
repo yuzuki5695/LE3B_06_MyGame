@@ -8,7 +8,6 @@
 #include <FadeManager.h>
 #include <Titleparticle.h>
 #include <Player.h>
-#include <TitleSpriteMotion.h>
 
 /// <summary>
 /// タイトルシーン
@@ -34,22 +33,6 @@ public: // メンバ関数
     /// </summary>
     void Draw() override;
     /// <summary>
-    /// カメラの初期化を行う
-    /// </summary> 
-    void InitializeCamera();
-    /// <summary>
-    /// テクスチャの、モデルの読み込み
-    /// </summary>
-    void LoadResources();
-    /// <summary>
-    /// UIスプライトの生成と初期化を行う
-    /// </summary> 
-    void InitializeUI();
-    /// <summary>
-    /// モデルの生成と初期化を行う
-    /// </summary> 
-    void InitializeModel();
-    /// <summary>
     /// フェードイン開始および更新処理
     /// </summary>
     void UpdateFadeIn();
@@ -71,7 +54,6 @@ public: // メンバ関数
     void EditorEntities();
 
 private: // メンバ変数
-    std::unique_ptr <TitleSpriteMotion> effect_;
 
     std::unique_ptr <Player> player_;
     // 背景オブジェクト 

@@ -1,7 +1,5 @@
 #pragma once
 #include <BaseScene.h>
-#include <Sprite.h>
-#include <Object3d.h>
 #include <ParticleEmitter.h>
 #include <SoundPlayer.h>
 #include <Skybox.h>
@@ -10,23 +8,16 @@
 #include <Enemy.h>
 #include <FadeManager.h>
 #include <EventManager.h>
-#include <StageManager.h>
 #include <GamePlayparticle.h>
 #include <EnemySpawner.h>
 #include <Pausemenu.h>
 
-enum class ControlUIType
-{
-    WASD,
-    Arrow,
-    Space
-};
-
 /// <summary>
-/// ゲームプレイシーン
+/// 実際のゲームプレイを行うシーン。
+/// プレイヤー操作、ステージ進行、イベント管理、
+/// ポーズメニュー、UI表示などゲーム本編の処理を担当
 /// </summary>
-class GamePlayScene : public BaseScene
-{
+class GamePlayScene : public BaseScene {
 public: // メンバ関数
     /// <summary>
     /// 初期化処理
@@ -44,7 +35,29 @@ public: // メンバ関数
     /// 描画処理
     /// </summary>
     void Draw() override;
+    /// <summary>
+    /// ポーズメニューの更新処理
+    /// TABキー入力によるポーズ開始やメニュー操作を管理
+    /// </summary>
+    void PauseMenuUpdate();
+    /// <summary>
+    /// ポーズ中のコマンド処理。
+    /// GoToTitle などの選択肢に応じた処理を実行。
+    /// </summary>
+    void HandlePauseMenuCommands();
+    /// <summary>
+    /// フェードイン・フェードアウト処理の管理。
+    /// フェード開始、更新、終了チェックを行う。
+    /// </summary>
+    void HandleFadeInOut();
+    /// <summary>
+    /// プレイヤー状態ごとの処理。
+    /// 死亡、ゴール、操作可能状態への遷移などを管理する。
+    /// </summary>
+    void HandlePlayerState();
 
+
+    
     /// <summary>
     /// プレイヤーの弾と敵との衝突判定処理
     /// </summary>
@@ -55,29 +68,24 @@ public: // メンバ関数
     void CheckEnemyBulletPlayerCollisionsOBB();
 
     void CheckEnemyPlayerCollisionsOBB();
-
-    void StartStageProgressUI();
-    void UpdateStageProgressUI();
-    void UpdateRandomMove();
-
-    void CreateWASDUI(
-        const Vector2& baseCenter,     // WASD中心
-        const Vector2& size,
-        float keySpacing,           // キー同士の隙間
-        float groupSpacing);    // グループ間の縦間隔
-
-    void UpdateControlUI();
-    void UpdateControlUIAnimation();
-
 private: // メンバ変数
     // オブジェクトデータ
     // プレイヤー
-    std::unique_ptr <Player> player_ = nullptr;
-    // キャラクターローダー
-    std::unique_ptr<CharacterLoader> levelLoader_ = nullptr;
-    // レベルデータ格納用インスタンスを生成
-    LevelData* levelData = nullptr;
-    bool end;
+    std::unique_ptr <Player> player_;
+	bool end; /// ゲーム終了フラグ
+
+    std::unique_ptr <Object3d> wall;    /// クリアゲート(仮)
+    // ゴールフラグ
+    bool goal_ = false;
+    // スカイボックス
+    std::unique_ptr <Skybox> Box_;
+    std::vector<EventManager> event_;  /// イベント処理
+
+	std::unique_ptr <GamePlayparticle> particles_; /// プレイ中のパーティクル
+
+    std::unique_ptr <Pausemenu> pausemenu_;    /// ポーズメニュー
+    bool isPausedevent_;                       /// ポーズ可能状態かどうか
+    
     // 最大数
     int MAX_ENEMY;
     // 敵リスト
@@ -85,35 +93,4 @@ private: // メンバ変数
     std::unique_ptr<EnemySpawner> enemySpawner_;
     // 敵出現トリガーリスト
     std::vector<EnemySpawnTrigger> spawnTriggers_;
-    // クリアゲート(仮)
-    std::unique_ptr <Object3d> wall = nullptr;
-    // ゴールフラグ
-    bool goal_ = false;
-    // スカイボックス
-    std::unique_ptr <Skybox> Box_ = nullptr;
-    // イベント処理
-    std::vector<EventManager> event_;
-    /// UI(タイトルへ(仮))
-    std::unique_ptr <Sprite> ui1_;
-    std::vector<std::unique_ptr<Sprite>> uis_;
-    uint32_t MAXui_;
-
-    std::unique_ptr <GamePlayparticle> particles_;
-
-    std::unique_ptr <Sprite> gage_;
-    std::unique_ptr <Sprite> player_ui_;
-    // ===== UI進行管理 =====
-    float uiStartRailLength_ = 0.0f;
-    bool uiProgressStarted_ = false;
-    bool uiProgressFinished_ = false;
-
-    std::unique_ptr <Pausemenu> pausemenu_;
-    bool isPausedevent_;
-    bool isPaused_;
-
-    bool isControlUIAnimating_;
-    float controlUITimer_;
-    float controlUIDuration_;
-    Vector2 controlUIOriginalSize_;
-    std::vector<Vector2> uiOriginalSizes_;
 };

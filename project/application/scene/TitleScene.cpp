@@ -12,58 +12,28 @@
 #include <ParticleCommon.h>
 #include <SkyboxCommon.h>
 #include <FadeManager.h>
-#include <Tools/AssetGenerator/engine/math/LoadResourceID.h>
 #include <StageManager.h>
 #include <EditorEntityRegistry.h>
 #include <Easing.h>
+#include <UIManager.h>
+#include <TitleUI.h>
 
 using namespace Easing;
-using namespace LoadResourceID;
 namespace { constexpr float kFadeDuration = 1.0f; }
 
 void TitleScene::Finalize() {
     FadeManager::GetInstance()->Finalize();  // フェードマネージャの解放処理
 	StageManager::GetInstance()->Finalize(); // ステージマネージャの解放処理
+	UIManager::GetInstance()->Finalize();    // UIマネージャの解放処理
 }
 
 void TitleScene::Initialize() {
 #pragma region シーンの初期化  
-    // カメラの初期化
-    InitializeCamera();
-    // フェードマネージャの初期化
-    FadeManager::GetInstance()->Initialize();
-    // リソースの読み込み
-    LoadResources();
-    // UIの初期化
-    InitializeUI();
-    // モデルの初期化
-    InitializeModel();
-    // パーティクルのの生成、初期化
-    particle_ = std::make_unique<Titleparticle>();
-    particle_->Initialize(player_->GetPlayerObject());
-    StageManager::GetInstance()->Initialize();
-    CameraManager::GetInstance()->SetCameraMode(CameraMode::Default);      
-	effect_ = std::make_unique<TitleSpriteMotion>();
-    effect_->Initialize();
-    // ImGuiエディタに情報を登録する
-    EditorEntities();
-#pragma endregion シーンの初期化
-}
-
-void TitleScene::InitializeCamera() {
     // カメラマネージャの生成、初期化
     CameraManager::GetInstance()->Initialize(CameraTransform({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }));
-}
-
-void TitleScene::LoadResources() {
-    //  テクスチャの読み込み
-    TextureManager::GetInstance()->LoadTexture(texture::Ui02);
-    TextureManager::GetInstance()->LoadTexture(texture::Title);
-}
-
-void TitleScene::InitializeUI() {}
-
-void TitleScene::InitializeModel() {
+    // フェードマネージャの初期化
+    FadeManager::GetInstance()->Initialize();
+    
     // プレイヤーパラメータ 
     playertransform_ = { {1.0f, 1.0f, 1.0f}, {0.0f, 0.3f, 0.0f},  {-20.0f,0.0f,40.0f } };
     titleStartX_ = -20.0f;
@@ -85,6 +55,18 @@ void TitleScene::InitializeModel() {
     playerMoveTimer_ = 0.0f;
 	playerTargetZ_ = 700.0f; // 目標Z座標
     playerStartZ_ = playertransform_.translate.z;
+
+    // パーティクルのの生成、初期化
+    particle_ = std::make_unique<Titleparticle>();
+    particle_->Initialize(player_->GetPlayerObject());
+    StageManager::GetInstance()->Initialize();
+    CameraManager::GetInstance()->SetCameraMode(CameraMode::Default);      
+
+    // ImGuiエディタに情報を登録する
+    EditorEntities();
+    // UIマネージャの初期化
+	UIManager::GetInstance()->Initialize();
+#pragma endregion シーンの初期化
 }
 
 void TitleScene::Update() {
@@ -110,8 +92,8 @@ void TitleScene::Update() {
     	
 #pragma region 全てのSprite個々の更新処理
 
-    effect_->Update(); // タイトルエフェクトの更新
-
+	// UIマネージャの更新
+    UIManager::GetInstance()->Update();
 #pragma endregion 全てのSprite個々の更新処理
 
 #pragma region  ImGuiの更新処理開始
@@ -141,8 +123,8 @@ void TitleScene::Draw() {
     // Spriteの描画準備。Spriteの描画に共通のグラフィックスコマンドを積む
     SpriteCommon::GetInstance()->Commondrawing();
     // 各UIの描画処理
-    effect_->Draw2D();
-	// フェードの描画
+    UIManager::GetInstance()->Draw();
+    // フェードの描画
     FadeManager::GetInstance()->Draw();
 #pragma endregion 全てのSprite個々の描画処理
 }
@@ -168,7 +150,10 @@ void TitleScene::UpdateFadeIn() {
 void TitleScene::UpdateFadeOut() {
     // タイトルシーンにおけるフェード制御を担当
     FadeManager* fade = FadeManager::GetInstance();
-    if (Input::GetInstance()->Triggrkey(DIK_RETURN) && !fade->IsFading() && fade->IsFadeEnd() && !isPlayerBoost_ && !isPreFadeFollow_ && effect_->GetisStartUIFinished_()) {
+    TitleUI* titleUI = UIManager::GetInstance()->GetUI<TitleUI>();
+    
+    if (titleUI->IsFinished() && Input::GetInstance()->Triggrkey(DIK_RETURN) && !fade->IsFading() && fade->IsFadeEnd() && !isPlayerBoost_ && !isPreFadeFollow_) {
+        titleUI->StartExitAnimation();
         isPreFadeFollow_ = true;
         preFadeTimer_ = 0.0f;
         // 🔥 カメラをFollowに切り替え

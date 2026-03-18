@@ -113,7 +113,7 @@
       <LanguageStandard>stdcpp20</LanguageStandard>
       <TreatWarningAsError>true</TreatWarningAsError>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(ProjectDir)engine\src;$(ProjectDir)engine\math;$(ProjectDir)..\..\externals\nlohmann;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)engine;$(ProjectDir)..\..\externals\nlohmann;$(ProjectDir)engine\assetpipeline;$(ProjectDir)engine\exporter;$(ProjectDir)engine\scanner;$(ProjectDir)engine\generated;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
@@ -124,6 +124,10 @@
       <AdditionalOptions>/ignore:4049,4048 %(AdditionalOptions)</AdditionalOptions>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
     </Link>
+    <PostBuildEvent>
+      <Command>
+      </Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -135,7 +139,7 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(ProjectDir)engine\src;$(ProjectDir)engine\math;$(ProjectDir)..\..\externals\nlohmann;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)engine;$(ProjectDir)..\..\externals\nlohmann;$(ProjectDir)engine\assetpipeline;$(ProjectDir)engine\exporter;$(ProjectDir)engine\scanner;$(ProjectDir)engine\generated;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
@@ -144,24 +148,33 @@
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
+      <AdditionalOptions>/ignore:4020 %(AdditionalOptions)</AdditionalOptions>
     </Link>
+    <PostBuildEvent>
+      <Command>
+</Command>
+    </PostBuildEvent>
+    <PreBuildEvent>
+      <Command>
+      </Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="engine\src\FileSearcher.cpp" />
-    <ClCompile Include="engine\src\ManifestExporter.cpp" />
-    <ClCompile Include="engine\src\ResourceCodeGenerator.cpp" />
-    <ClCompile Include="engine\src\ResourceIdGenerator.cpp" />
+    <ClCompile Include="engine\assetpipeline\AssetPipeline.cpp" />
+    <ClCompile Include="engine\exporter\HeaderGenerator.cpp" />
+    <ClCompile Include="engine\exporter\JsonExporter.cpp" />
+    <ClCompile Include="engine\scanner\PathManager.cpp" />
+    <ClCompile Include="engine\scanner\ResourceScanner.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="engine\math\AssetType.h" />
+    <ClInclude Include="engine\assetpipeline\AssetPipeline.h" />
+    <ClInclude Include="engine\exporter\HeaderGenerator.h" />
+    <ClInclude Include="engine\exporter\JsonExporter.h" />
+    <ClInclude Include="engine\generated\ResourceID.h" />
     <ClInclude Include="engine\math\LoadResourceID.h" />
-    <ClInclude Include="engine\math\ResourceEntry.h" />
-    <ClInclude Include="engine\math\ResourceID.h" />
-    <ClInclude Include="engine\src\FileSearcher.h" />
-    <ClInclude Include="engine\src\ManifestExporter.h" />
-    <ClInclude Include="engine\src\ResourceCodeGenerator.h" />
-    <ClInclude Include="engine\src\ResourceIdGenerator.h" />
+    <ClInclude Include="engine\scanner\PathManager.h" />
+    <ClInclude Include="engine\scanner\ResourceScanner.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

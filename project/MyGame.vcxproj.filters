@@ -133,9 +133,6 @@
     <Filter Include="ヘッダー ファイル\engine\math\Vector">
       <UniqueIdentifier>{e13f2e36-4292-41c9-b7c0-9808517079de}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ソース ファイル\application\player">
-      <UniqueIdentifier>{a7eab18e-630a-472c-afe5-35bace2ee948}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ソース ファイル\application\character">
       <UniqueIdentifier>{2a9f0528-9f22-4368-a9d5-57d0c9e90e83}</UniqueIdentifier>
     </Filter>
@@ -147,9 +144,6 @@
     </Filter>
     <Filter Include="ソース ファイル\application\bullet">
       <UniqueIdentifier>{43779993-e4ed-4cb3-86e8-2e2a8fc165da}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ソース ファイル\application\enemy">
-      <UniqueIdentifier>{4b99df62-1041-4fee-a5fd-1decbabccbe3}</UniqueIdentifier>
     </Filter>
     <Filter Include="ソース ファイル\application\fade">
       <UniqueIdentifier>{6de3d2ff-57ef-4f70-81ac-7a699de0dd44}</UniqueIdentifier>
@@ -181,9 +175,6 @@
     <Filter Include="ソース ファイル\engine\math\collision">
       <UniqueIdentifier>{f4077ff3-9d86-403e-9ef0-1bebb837b1f8}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ソース ファイル\application\resource">
-      <UniqueIdentifier>{07a86f35-75fe-4831-bfb6-13aa414b3d2f}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ソース ファイル\application\pause">
       <UniqueIdentifier>{c5781d8c-054f-48a2-8959-008b1c5e936f}</UniqueIdentifier>
     </Filter>
@@ -196,9 +187,6 @@
     <Filter Include="ヘッダー ファイル\application\character">
       <UniqueIdentifier>{88d1f61c-35e7-4b87-8d52-a0fe6ed451ec}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ヘッダー ファイル\application\player">
-      <UniqueIdentifier>{2a7546ab-cebe-44d3-a852-a35e4e04e782}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ヘッダー ファイル\application\loader">
       <UniqueIdentifier>{4fd94a91-62be-4991-98c1-9fe49ec67cec}</UniqueIdentifier>
     </Filter>
@@ -207,9 +195,6 @@
     </Filter>
     <Filter Include="ヘッダー ファイル\application\bullet">
       <UniqueIdentifier>{91330ba0-b2ca-4345-9fa7-f3775f10d4e6}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ヘッダー ファイル\application\enemy">
-      <UniqueIdentifier>{8ca6f24a-1c20-4541-8f80-30ba17e68e7f}</UniqueIdentifier>
     </Filter>
     <Filter Include="ヘッダー ファイル\application\fade">
       <UniqueIdentifier>{fca0a5c4-0cca-4f32-9665-08aef2b11991}</UniqueIdentifier>
@@ -225,9 +210,6 @@
     </Filter>
     <Filter Include="ヘッダー ファイル\application\particle">
       <UniqueIdentifier>{3264e2f4-9fdc-482b-ad88-dcef28660e8d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ヘッダー ファイル\application\resource">
-      <UniqueIdentifier>{479ca9b3-2dfa-4bfe-a30d-0bc400cf9199}</UniqueIdentifier>
     </Filter>
     <Filter Include="ヘッダー ファイル\application\pause">
       <UniqueIdentifier>{5f0ad7e7-d543-4f5d-9f5a-2e8ac0dc99ba}</UniqueIdentifier>
@@ -280,17 +262,23 @@
     <Filter Include="ヘッダー ファイル\engine\editor\layout\editormenubar">
       <UniqueIdentifier>{3f31f402-fcc2-4a1e-9205-9872c0cf30dc}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ソース ファイル\application\motion">
-      <UniqueIdentifier>{7f4de914-2049-4db2-b6a0-fe2e6a4a53ff}</UniqueIdentifier>
+    <Filter Include="ソース ファイル\application\ui">
+      <UniqueIdentifier>{4540355a-ca3a-4eb8-8c0b-a5fa2d7beb93}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ソース ファイル\application\motion\2d">
-      <UniqueIdentifier>{07aa49a8-a6b4-4799-b742-258aa04f7949}</UniqueIdentifier>
+    <Filter Include="ヘッダー ファイル\application\ui">
+      <UniqueIdentifier>{bc06df0e-7372-442f-b366-5195a6b18484}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ヘッダー ファイル\application\motion">
-      <UniqueIdentifier>{c373fd79-4b1f-4857-ac97-2b15a11cc9b4}</UniqueIdentifier>
+    <Filter Include="ヘッダー ファイル\application\character\player">
+      <UniqueIdentifier>{2a7546ab-cebe-44d3-a852-a35e4e04e782}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ヘッダー ファイル\application\motion\2d">
-      <UniqueIdentifier>{024abc2c-c56b-4195-b948-a995a285e99c}</UniqueIdentifier>
+    <Filter Include="ヘッダー ファイル\application\character\enemy">
+      <UniqueIdentifier>{8ca6f24a-1c20-4541-8f80-30ba17e68e7f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\application\character\enemy">
+      <UniqueIdentifier>{4b99df62-1041-4fee-a5fd-1decbabccbe3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\application\character\player">
+      <UniqueIdentifier>{a7eab18e-630a-472c-afe5-35bace2ee948}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -438,9 +426,6 @@
     <ClCompile Include="engine\io\Controller.cpp">
       <Filter>ソース ファイル\engine\io</Filter>
     </ClCompile>
-    <ClCompile Include="application\player\Player.cpp">
-      <Filter>ソース ファイル\application\player</Filter>
-    </ClCompile>
     <ClCompile Include="application\loader\CurveJsonLoader.cpp">
       <Filter>ソース ファイル\application\loader</Filter>
     </ClCompile>
@@ -453,9 +438,6 @@
     <ClCompile Include="application\bullet\PlayerBullet.cpp">
       <Filter>ソース ファイル\application\bullet</Filter>
     </ClCompile>
-    <ClCompile Include="application\enemy\Enemy.cpp">
-      <Filter>ソース ファイル\application\enemy</Filter>
-    </ClCompile>
     <ClCompile Include="application\bullet\EnemyBullet.cpp">
       <Filter>ソース ファイル\application\bullet</Filter>
     </ClCompile>
@@ -467,9 +449,6 @@
     </ClCompile>
     <ClCompile Include="application\event\EventManager.cpp">
       <Filter>ソース ファイル\application\event</Filter>
-    </ClCompile>
-    <ClCompile Include="application\character\CharacterManager.cpp">
-      <Filter>ソース ファイル\application\character</Filter>
     </ClCompile>
     <ClCompile Include="application\stage\StageManager.cpp">
       <Filter>ソース ファイル\application\stage</Filter>
@@ -510,35 +489,11 @@
     <ClCompile Include="application\particle\DefaultParticleEmitter.cpp">
       <Filter>ソース ファイル\application\particle</Filter>
     </ClCompile>
-    <ClCompile Include="application\enemy\EnemySpawner.cpp">
-      <Filter>ソース ファイル\application\enemy</Filter>
-    </ClCompile>
     <ClCompile Include="application\loader\EnemyLoader.cpp">
       <Filter>ソース ファイル\application\loader</Filter>
     </ClCompile>
-    <ClCompile Include="application\resource\FileSearcher.cpp">
-      <Filter>ソース ファイル\application\resource</Filter>
-    </ClCompile>
-    <ClCompile Include="application\resource\ManifestExporter.cpp">
-      <Filter>ソース ファイル\application\resource</Filter>
-    </ClCompile>
     <ClCompile Include="application\pause\Pausemenu.cpp">
       <Filter>ソース ファイル\application\pause</Filter>
-    </ClCompile>
-    <ClCompile Include="application\player\PlayerMove.cpp">
-      <Filter>ソース ファイル\application\player</Filter>
-    </ClCompile>
-    <ClCompile Include="application\player\PlayerReticle.cpp">
-      <Filter>ソース ファイル\application\player</Filter>
-    </ClCompile>
-    <ClCompile Include="application\player\PlayerWeapon.cpp">
-      <Filter>ソース ファイル\application\player</Filter>
-    </ClCompile>
-    <ClCompile Include="application\player\PlayerDeath.cpp">
-      <Filter>ソース ファイル\application\player</Filter>
-    </ClCompile>
-    <ClCompile Include="application\player\PlayerDash.cpp">
-      <Filter>ソース ファイル\application\player</Filter>
     </ClCompile>
     <ClCompile Include="engine\editor\core\EditorManager.cpp">
       <Filter>ソース ファイル\engine\editor\core</Filter>
@@ -567,8 +522,41 @@
     <ClCompile Include="engine\editor\layout\editormenubar\ObjectMenu.cpp">
       <Filter>ソース ファイル\engine\editor\layout\editormenubar</Filter>
     </ClCompile>
-    <ClCompile Include="application\motion\2d\TitleSpriteMotion.cpp">
-      <Filter>ソース ファイル\application\motion\2d</Filter>
+    <ClCompile Include="application\ui\GamePlayUI.cpp">
+      <Filter>ソース ファイル\application\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="application\ui\UIManager.cpp">
+      <Filter>ソース ファイル\application\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="application\ui\TitleUI.cpp">
+      <Filter>ソース ファイル\application\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="application\collision\CollisionManager.cpp">
+      <Filter>ソース ファイル\application\collision</Filter>
+    </ClCompile>
+    <ClCompile Include="application\character\enemy\EnemySpawner.cpp">
+      <Filter>ソース ファイル\application\character\enemy</Filter>
+    </ClCompile>
+    <ClCompile Include="application\character\enemy\Enemy.cpp">
+      <Filter>ソース ファイル\application\character\enemy</Filter>
+    </ClCompile>
+    <ClCompile Include="application\character\player\PlayerWeapon.cpp">
+      <Filter>ソース ファイル\application\character\player</Filter>
+    </ClCompile>
+    <ClCompile Include="application\character\player\PlayerReticle.cpp">
+      <Filter>ソース ファイル\application\character\player</Filter>
+    </ClCompile>
+    <ClCompile Include="application\character\player\PlayerMove.cpp">
+      <Filter>ソース ファイル\application\character\player</Filter>
+    </ClCompile>
+    <ClCompile Include="application\character\player\PlayerDeath.cpp">
+      <Filter>ソース ファイル\application\character\player</Filter>
+    </ClCompile>
+    <ClCompile Include="application\character\player\PlayerDash.cpp">
+      <Filter>ソース ファイル\application\character\player</Filter>
+    </ClCompile>
+    <ClCompile Include="application\character\player\Player.cpp">
+      <Filter>ソース ファイル\application\character\player</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -764,9 +752,6 @@
     <ClInclude Include="application\character\BaseCharacter.h">
       <Filter>ヘッダー ファイル\application\character</Filter>
     </ClInclude>
-    <ClInclude Include="application\player\Player.h">
-      <Filter>ヘッダー ファイル\application\player</Filter>
-    </ClInclude>
     <ClInclude Include="application\loader\CurveJsonLoader.h">
       <Filter>ヘッダー ファイル\application\loader</Filter>
     </ClInclude>
@@ -787,12 +772,6 @@
     </ClInclude>
     <ClInclude Include="application\scene\GameOverScene.h">
       <Filter>ヘッダー ファイル\application\scene</Filter>
-    </ClInclude>
-    <ClInclude Include="application\character\CharacterManager.h">
-      <Filter>ヘッダー ファイル\application\character</Filter>
-    </ClInclude>
-    <ClInclude Include="application\enemy\Enemy.h">
-      <Filter>ヘッダー ファイル\application\enemy</Filter>
     </ClInclude>
     <ClInclude Include="application\bullet\EnemyBullet.h">
       <Filter>ヘッダー ファイル\application\bullet</Filter>
@@ -881,35 +860,11 @@
     <ClInclude Include="application\particle\DefaultParticleEmitter.h">
       <Filter>ヘッダー ファイル\application\particle</Filter>
     </ClInclude>
-    <ClInclude Include="application\resource\ManifestExporter.h">
-      <Filter>ヘッダー ファイル\application\resource</Filter>
-    </ClInclude>
-    <ClInclude Include="application\resource\FileSearcher.h">
-      <Filter>ヘッダー ファイル\application\resource</Filter>
-    </ClInclude>
     <ClInclude Include="application\loader\EnemyLoader.h">
       <Filter>ヘッダー ファイル\application\loader</Filter>
     </ClInclude>
     <ClInclude Include="application\pause\Pausemenu.h">
       <Filter>ヘッダー ファイル\application\pause</Filter>
-    </ClInclude>
-    <ClInclude Include="application\enemy\EnemySpawner.h">
-      <Filter>ヘッダー ファイル\application\enemy</Filter>
-    </ClInclude>
-    <ClInclude Include="application\player\PlayerDeath.h">
-      <Filter>ヘッダー ファイル\application\player</Filter>
-    </ClInclude>
-    <ClInclude Include="application\player\PlayerMove.h">
-      <Filter>ヘッダー ファイル\application\player</Filter>
-    </ClInclude>
-    <ClInclude Include="application\player\PlayerReticle.h">
-      <Filter>ヘッダー ファイル\application\player</Filter>
-    </ClInclude>
-    <ClInclude Include="application\player\PlayerWeapon.h">
-      <Filter>ヘッダー ファイル\application\player</Filter>
-    </ClInclude>
-    <ClInclude Include="application\player\PlayerDash.h">
-      <Filter>ヘッダー ファイル\application\player</Filter>
     </ClInclude>
     <ClInclude Include="engine\editor\InspectorWindow.h">
       <Filter>ヘッダー ファイル\engine\editor</Filter>
@@ -956,8 +911,44 @@
     <ClInclude Include="engine\editor\core\EditorTypes.h">
       <Filter>ヘッダー ファイル\engine\editor\core</Filter>
     </ClInclude>
-    <ClInclude Include="application\motion\2d\TitleSpriteMotion.h">
-      <Filter>ヘッダー ファイル\application\motion\2d</Filter>
+    <ClInclude Include="application\ui\UIManager.h">
+      <Filter>ヘッダー ファイル\application\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="application\ui\GamePlayUI.h">
+      <Filter>ヘッダー ファイル\application\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="application\ui\BaseUI.h">
+      <Filter>ヘッダー ファイル\application\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="application\ui\TitleUI.h">
+      <Filter>ヘッダー ファイル\application\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="application\character\enemy\Enemy.h">
+      <Filter>ヘッダー ファイル\application\character\enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="application\character\enemy\EnemySpawner.h">
+      <Filter>ヘッダー ファイル\application\character\enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="application\character\player\Player.h">
+      <Filter>ヘッダー ファイル\application\character\player</Filter>
+    </ClInclude>
+    <ClInclude Include="application\character\player\PlayerDash.h">
+      <Filter>ヘッダー ファイル\application\character\player</Filter>
+    </ClInclude>
+    <ClInclude Include="application\character\player\PlayerDeath.h">
+      <Filter>ヘッダー ファイル\application\character\player</Filter>
+    </ClInclude>
+    <ClInclude Include="application\character\player\PlayerMove.h">
+      <Filter>ヘッダー ファイル\application\character\player</Filter>
+    </ClInclude>
+    <ClInclude Include="application\character\player\PlayerReticle.h">
+      <Filter>ヘッダー ファイル\application\character\player</Filter>
+    </ClInclude>
+    <ClInclude Include="application\character\player\PlayerWeapon.h">
+      <Filter>ヘッダー ファイル\application\character\player</Filter>
+    </ClInclude>
+    <ClInclude Include="application\collision\CollisionManager.h">
+      <Filter>ヘッダー ファイル\application\collision</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

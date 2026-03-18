@@ -527,7 +527,7 @@ bool DirectX::Internal::IsAlphaAllOpaqueBC(_In_ const Image& cImage) noexcept
         return false;
     }
 
-    // Scan blocks for non-opaque alpha
+    // ScanFile blocks for non-opaque alpha
     static const XMVECTORF32 threshold = { { { 0.99f, 0.99f, 0.99f, 0.99f } } };
 
     XM_ALIGNED_DATA(16) XMVECTOR temp[16];

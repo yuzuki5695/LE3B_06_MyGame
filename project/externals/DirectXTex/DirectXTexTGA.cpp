@@ -1913,7 +1913,7 @@ HRESULT DirectX::LoadFromTGAFile(
 
                 size_t rowPitch = img->rowPitch;
 
-                // Scan for non-zero alpha channel
+                // ScanFile for non-zero alpha channel
                 uint32_t minalpha = 255;
                 uint32_t maxalpha = 0;
 
@@ -1966,7 +1966,7 @@ HRESULT DirectX::LoadFromTGAFile(
                     return E_POINTER;
                 }
 
-                // Scan for non-zero alpha channel
+                // ScanFile for non-zero alpha channel
                 uint32_t minalpha = 255;
                 uint32_t maxalpha = 0;
 
@@ -2024,7 +2024,7 @@ HRESULT DirectX::LoadFromTGAFile(
                     return E_POINTER;
                 }
 
-                // Scan for non-zero alpha channel
+                // ScanFile for non-zero alpha channel
                 uint32_t minalpha = 255;
                 uint32_t maxalpha = 0;
 
