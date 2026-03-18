@@ -4484,6 +4484,9 @@ void Enemy::Update() {
     case State::Active:
         UpdateActive();
         break;
+
+    case State::Charge: UpdateCharge(); break; // 追加
+    case State::Dash:   UpdateDash();   break; // 追加
     case State::Dying:
         UpdateDying();
         break;
@@ -4661,6 +4664,29 @@ void Enemy::OnHit() {
 void Enemy::UpdateActive() {
     if (player_) {
         AttachBullet(player_->GetPosition());
+        // 2. 突撃への遷移チェック
+        attackTimer_ += 1.0f / 60.0f;
+        if (attackTimer_ >= attackInterval_) {
+            Vector3 pPos = player_->GetPosition();
+            Vector3 ePos = transform_.translate;
+
+            // 各軸の距離の絶対値を合計 (例: 50+50+50 = 150)
+            float totalDist = std::abs(pPos.x - ePos.x) +
+                std::abs(pPos.y - ePos.y) +
+                std::abs(pPos.z - ePos.z);
+
+            if (totalDist >= attackDistanceThreshold_) {
+                // 十分に離れているので突撃準備へ
+                state_ = State::Charge;
+                chargeTimer_ = 0.0f;
+                attackTimer_ = 0.0f;
+                // 溜め開始時の座標を保存（引く動作の基準）
+                spawnTargetPos_ = transform_.translate;
+            } else {
+                // 近すぎる場合はタイマーだけリセットして射撃を継続
+                attackTimer_ = 0.0f;
+            }
+        }
     }
     switch (moveType_) {
     case MoveType::Vertical:
@@ -4681,7 +4707,64 @@ void Enemy::UpdateActive() {
         break;
     }
     }
+    object->SetRotate(transform_.rotate); // 回転を反映
 }
+
+// 突撃前の溜め（プレイヤーの方を向く、少し震えるなど）
+void Enemy::UpdateCharge() {
+    chargeTimer_ += 1.0f / 60.0f;
+    float t = std::min(chargeTimer_ / chargeDuration_, 1.0f);
+
+    if (player_) {
+        Vector3 playerPos = player_->GetPosition();
+        Vector3 toPlayer = Normalize(playerPos - transform_.translate);
+
+        // 1. 溜め演出：少し引きながら回転を加速
+        Vector3 backVec = toPlayer * -2.0f; // 後ろに引く距離
+        transform_.translate = Lerp(spawnTargetPos_, spawnTargetPos_ + backVec, EaseOutBack(t));
+        
+        // 2. 溜め中はプレイヤーを注視 (ロックオン)
+        transform_.rotate.y = std::atan2(toPlayer.x, toPlayer.z);
+        transform_.rotate.z += 0.8f * t; // ドリル回転加速
+    }
+
+    object->SetTranslate(transform_.translate);
+    object->SetRotate(transform_.rotate);
+
+    // --- 溜め完了：突撃ベクトルを固定してロック解除 ---
+    if (t >= 1.0f) {
+        if (player_) {
+            Vector3 finalDir = Normalize(player_->GetPosition() - transform_.translate);
+            dashVelocity_ = finalDir * 1.8f; // 突撃速度(dashSpeed)
+        }
+        state_ = State::Dash;
+    }
+}
+// 突撃中
+void Enemy::UpdateDash() {
+    // 溜め終了時に固定したベクトルで移動（ロックオフ状態）
+    transform_.translate += dashVelocity_;
+
+    // 突撃中の回転演出
+    transform_.rotate.z += dashRotationSpeed_ * 2.0f;
+
+    object->SetTranslate(transform_.translate);
+    object->SetRotate(transform_.rotate);
+
+    // --- 削除判定（演出スキップ） ---
+    // プレイヤーの背後、または画面外（Z軸）に到達したら即削除
+    float limitZ = -20.0f; // カメラの後方など、適切な基準値を設定
+    if (player_) {
+        limitZ = player_->GetPosition().z - 20.0f;
+    }
+
+    if (transform_.translate.z < limitZ) {
+        isDead_ = true;
+        isActive_ = false;
+        state_ = State::Dead;
+    }
+}
+
 void Enemy::UpdateDying() {
     // 死亡判定中（スケール縮小アニメーション）
     if (isDying_) {
@@ -4757,7 +4840,9 @@ public: // メンバ関数
     enum class State {
         Spawn,   // 出現演出中
         Active,  // 通常行動
-        Dying,   // 死亡演出
+        Charge,  // ← 追加：突撃予備動作（赤く光る、静止するなど）
+        Dash,    // ← 追加：突撃中
+        Dying,   
         Dead
     };
 
@@ -4823,7 +4908,8 @@ public: // メンバ関数
     void OnHit();   // ← これを追加
     void UpdateActive();
     void UpdateDying();
-
+    void UpdateCharge();
+    void UpdateDash();
 private: // メンバ変数
 	// ポインタ
     Player* player_; // プレイヤー
@@ -4871,6 +4957,24 @@ private: // メンバ変数
     Vector3 spawnStartPos_;
     Vector3 spawnTargetPos_;
     bool hasTriggeredParticle_ = false;
+
+
+    // 突撃用変数
+    Vector3 dashVelocity_;        // 突撃時の速度ベクトル
+    float attackTimer_ = 0.0f;    // 次の攻撃（射撃or突撃）までのタイマー
+    float attackInterval_ = 3.0f; // 攻撃間隔
+    
+    // 突撃パラメータ
+    const float dashSpeed_ = 1.5f;     // 突撃速度
+    const float chargeDuration_ = 1.5f; // 突撃前の溜め時間 
+    float chargeTimer_= 0.0f;
+    float chargeRotation_ = 0.0f;    // 溜め中の回転角度
+    Vector3 startChargePos_;        // 溜め開始時の座標
+    float rotationSpeed_ = 0.05f; // 通常移動時の回転速度
+    float dashRotationSpeed_ = 0.5f; // 突撃時の高速回転速度
+    // 距離判定の閾値 (x, y, z の差の合計)
+    const float attackDistanceThreshold_ = 150.0f;
+
 public:   // アクセッサ（Getter / Setter）
 	   
     std::function<void(const Vector3&)> onDeathCallback;
@@ -4887,327 +4991,327 @@ public:   // アクセッサ（Getter / Setter）
 ============================================================
 File Path: project/application/character/enemy/EnemySpawner.cpp
 ============================================================
-//#include"EnemySpawner.h"
-//#include <MatrixVector.h>
-//
-//using namespace MatrixVector;
-//
-//void EnemySpawner::Initialize(Player* player, CameraManager* cameraManager, std::vector<std::unique_ptr<Enemy>>* enemies) {
-//    player_ = player;
-//    cameraManager_ = cameraManager;
-//    enemies_ = enemies;
-//
-//    // Loader を生成
-//    levelLoader_ = std::make_unique<EnemyLoader>();
-//
-//    // レベルデータ読み込み
-//    levelData = levelLoader_->LoadFile("Enemy");
-//
-//
-//    for (const auto& e : levelData->enemies) {
-//        EnemySpawnTrigger trigger;
-//        trigger.Position = e.translation;
-//        trigger.spawnCount = 5;
-//        trigger.hasSpawned = false;
-//
-//        trigger.moveType =
-//            (e.enemyType == 1) ? MoveType::None :
-//            (e.enemyType == 2) ? MoveType::None :
-//            MoveType::None;
-//
-//        spawnTriggers_.push_back(trigger);
-//    }
-//}
-//
-//void EnemySpawner::Update() {
-//    // 固定位置での出現
-//    EnemySpawn();
-//
-//    // ランダム出現
-//    std::uniform_real_distribution<float> time(3.0f, 8.0f);    
-//    randomSpawnTimer_ += 1.0f / 60.0f;
-//    if (randomSpawnTimer_ >= nextRandomSpawnTime_) {
-//        std::uniform_int_distribution<int> distCount(2, 5);
-//        int spawnCount = distCount(randomEngine);
-//        SpawnRandomEnemy(spawnCount);
-//
-//        nextRandomSpawnTime_ = time(randomEngine); // 次の出現間隔
-//        randomSpawnTimer_ = 0.0f;
-//    }
-//}
-//
-//void EnemySpawner::EnemySpawn() {
-//    Vector3 playerPos = player_->GetPosition();
-//    GamePlayCamera* gameCam = cameraManager_->GetGameplayCamera();
-//    if (!gameCam) return;
-//
-//    Vector3 forward = gameCam->GetForward();
-//    Vector3 right = Normalize(Cross({0,1,0}, forward));
-//    Vector3 up = Normalize(Cross(forward, right));
-//    
-//    // 乱数生成器
-//    std::random_device rd;
-//    std::mt19937 rng(rd());
-//    std::uniform_int_distribution<int> patternDist(0, 2); // 0:V, 1:ZigZag, 2:ReverseStep
-//
-//
-//    for (size_t i = 0; i < spawnTriggers_.size(); ++i) {
-//        auto& trigger = spawnTriggers_[i];
-//
-//        float distanceForward =
-//            Dot((trigger.Position - playerPos), forward);
-//        
-//
-//        if (!trigger.hasSpawned &&
-//            distanceForward >= 0.0f &&
-//            distanceForward < 10.0f) {
-//
-//            // ランダムに出現パターンを選択
-//            int selectedPattern = patternDist(rng);
-//
-//            switch (selectedPattern) {
-//            case 0:
-//                SpawnVFormation(trigger);
-//                break;
-//            case 1:
-//                SpawnZigZagFormation(trigger);
-//                break;
-//            case 2:
-//                SpawnReverseStepFormation(trigger);
-//                break;
-//            }
-//
-//
-//            trigger.hasSpawned = true;
-//        }
-//    }
-//}
-//
-/////====================================================
-///// 敵出現パターン：V字フォーメーション（姿勢対応）
-/////====================================================
-//void EnemySpawner::SpawnVFormation(const EnemySpawnTrigger& trigger) {
-//    // プレイヤー・カメラ情報を取得
-//    Vector3 playerPos = player_->GetPosition();
-//    GamePlayCamera* gameCam = CameraManager::GetInstance()->GetGameplayCamera(); 
-//    if (!gameCam) return;
-//
-//    Vector3 forward = Normalize(gameCam->GetForward());
-//    Vector3 right   = Normalize(Cross({ 0,1,0 }, forward));
-//    Vector3 up      = Normalize(Cross(forward, right));
-//
-//    // 敵配置設定
-//    int activated = 0;
-//
-//    const float forwardDist = 60.0f;  // 前方距離
-//    const float baseY = 1.0f;
-//    const float stepX = 3.0f;
-//    const float stepY = -2.0f;
-//
-//    for (auto& enemy : *enemies_) {
-//        if (!enemy->IsActive()) {
-//            float x = 0.0f;
-//            float y = 0.0f;
-//
-//            switch (activated) {
-//            case 0: x =  0.0f; y =  0.0f; break;               // 中央
-//            case 1: x = -stepX; y = stepY; break;              // 左上
-//            case 2: x =  stepX; y = stepY; break;              // 右上
-//            case 3: x = -stepX * 2; y = stepY * 2; break;      // 左下
-//            case 4: x =  stepX * 2; y = stepY * 2; break;      // 右下
-//            default:
-//                x = (activated - 2) * stepX;
-//                y = stepY * 3;
-//                break;
-//            }
-//
-//            Vector3 spawnPos =
-//                playerPos +
-//                forward * forwardDist +
-//                right * x +
-//                up * (baseY + y);
-//
-//            enemy->Spawn(spawnPos, trigger.moveType);
-//            enemy->SetActive(true);
-//
-//            ++activated;
-//            if (activated >= trigger.spawnCount) break;
-//        }
-//    }
-//}
-//
-//
-//
-/////====================================================
-///// 敵出現パターン：ジグザグフォーメーション
-/////====================================================
-//void EnemySpawner::SpawnZigZagFormation(const EnemySpawnTrigger& trigger) {
-//    // プレイヤー・カメラ情報を取得
-//    Vector3 playerPos = player_->GetPosition();
-//    GamePlayCamera* gameCam = CameraManager::GetInstance()->GetGameplayCamera();
-//    if (!gameCam) return;
-//
-//    Vector3 forward = Normalize(gameCam->GetForward());
-//    Vector3 right = Normalize(Cross({ 0,1,0 }, forward));
-//    Vector3 up = Normalize(Cross(forward, right));
-//
-//    // 敵配置設定
-//    int activated = 0;
-//    const int numEnemies = 5;
-//    const float forwardDist = 50.0f;
-//    const float baseY = 5.0f;
-//
-//    const float xOffsets[5] = { -1.5f,  1.5f,  0.0f, -1.5f,  1.5f };
-//    const float yOffsets[5] = { 2.0f,  2.0f,  0.0f, -2.0f, -2.0f };
-//
-//    for (auto& enemy : *enemies_) {
-//        if (!enemy->IsActive() && activated < numEnemies) {
-//            float x = xOffsets[activated];
-//            float y = yOffsets[activated];
-//
-//            Vector3 spawnPos =
-//                playerPos +
-//                forward * forwardDist +
-//                right * x +
-//                up * (baseY + y);
-//
-//            enemy->Spawn(spawnPos, trigger.moveType);
-//            enemy->SetActive(true);
-//            ++activated;
-//        }
-//    }
-//}
-//
-/////====================================================
-///// 敵出現パターン：逆ステップフォーメーション（姿勢対応）
-/////====================================================
-//void EnemySpawner::SpawnReverseStepFormation(const EnemySpawnTrigger& trigger) {
-//    // プレイヤー・カメラ情報を取得
-//    Vector3 playerPos = player_->GetPosition();
-//    GamePlayCamera* gameCam = CameraManager::GetInstance()->GetGameplayCamera();
-//    if (!gameCam) return;
-//
-//    Vector3 forward = Normalize(gameCam->GetForward());
-//    Vector3 right = Normalize(Cross({ 0,1,0 }, forward));
-//    Vector3 up = Normalize(Cross(forward, right));
-//
-//    // 敵配置設定
-//    int activated = 0;
-//    const float baseY = 5.0f;
-//    const float forwardBase = 80.0f;
-//    const float stepX = 1.5f;
-//    const float stepY = -1.2f;
-//    const float stepZ = 5.0f;
-//
-//    for (auto& enemy : *enemies_) {
-//        if (!enemy->IsActive()) {
-//            Vector3 spawnPos =
-//                playerPos +
-//                forward * (forwardBase - stepZ * activated) +
-//                right * -(stepX * activated) +
-//                up * (baseY + stepY * activated);
-//
-//            enemy->Spawn(spawnPos, trigger.moveType);
-//            enemy->SetActive(true);
-//
-//            ++activated;
-//            if (activated >= trigger.spawnCount) break;
-//        }
-//    }
-//}
-//
-//void EnemySpawner::SpawnRandomEnemy(int count) {
-//    // カメラ取得
-//    GamePlayCamera* gameCam = cameraManager_->GetGameplayCamera();
-//    if (!gameCam) return;
-//
-//    Vector3 camPos = gameCam->GetMainTransform().translate;
-//    Vector3 forward = Normalize(gameCam->GetForward());
-//    Vector3 right   = Normalize(Cross({0,1,0}, forward));
-//    Vector3 up      = Normalize(Cross(forward, right));
-//    
-//    // 乱数エンジンを初期化
-//    std::random_device rd;// 乱数生成器
-//    randomEngine = std::mt19937(rd());
-//
-//    std::uniform_real_distribution<float> distX(-15.0f, 15.0f);
-//    std::uniform_real_distribution<float> disty(-4.0f, 8.0f);
-//    std::uniform_real_distribution<float> distz(80.0f, 250.0f);
-//
-//    int activated = 0;
-//    for (auto& enemy : *enemies_) {
-//        if (!enemy->IsActive() && activated < count) { // 1体ずつ出す場合
-//            // ランダム座標生成
-//            float randX = distX(randomEngine); // 横幅の範囲
-//            float randY = disty(randomEngine);  // 高さ
-//            float randZ = distz(randomEngine); // 奥行き
-//
-//            Vector3 spawnPos = camPos + forward * randZ + right * randX + up * randY;
-//            
-//            // ランダム移動を有効に
-//            std::uniform_int_distribution<int> typeDist(0, 3); // 0:None,1:Vertical,2:Horizontal
-//            MoveType moveType = static_cast<MoveType>(typeDist(randomEngine));
-//
-//            enemy->Spawn(spawnPos, moveType);
-//            enemy->SetActive(true);
-//
-//            ++activated;
-//        }
-//    }
-//}
+#include"EnemySpawner.h"
+#include <MatrixVector.h>
+
+using namespace MatrixVector;
+
+void EnemySpawner::Initialize(Player* player, CameraManager* cameraManager, std::vector<std::unique_ptr<Enemy>>* enemies) {
+    player_ = player;
+    cameraManager_ = cameraManager;
+    enemies_ = enemies;
+
+    // Loader を生成
+    levelLoader_ = std::make_unique<EnemyLoader>();
+
+    // レベルデータ読み込み
+    levelData = levelLoader_->LoadFile("Enemy");
+
+
+    for (const auto& e : levelData->enemies) {
+        EnemySpawnTrigger trigger;
+        trigger.Position = e.translation;
+        trigger.spawnCount = 5;
+        trigger.hasSpawned = false;
+
+        trigger.moveType =
+            (e.enemyType == 1) ? MoveType::None :
+            (e.enemyType == 2) ? MoveType::None :
+            MoveType::None;
+
+        spawnTriggers_.push_back(trigger);
+    }
+}
+
+void EnemySpawner::Update() {
+    // 固定位置での出現
+    EnemySpawn();
+
+    // ランダム出現
+    std::uniform_real_distribution<float> time(3.0f, 8.0f);    
+    randomSpawnTimer_ += 1.0f / 60.0f;
+    if (randomSpawnTimer_ >= nextRandomSpawnTime_) {
+        std::uniform_int_distribution<int> distCount(2, 5);
+        int spawnCount = distCount(randomEngine);
+        SpawnRandomEnemy(spawnCount);
+
+        nextRandomSpawnTime_ = time(randomEngine); // 次の出現間隔
+        randomSpawnTimer_ = 0.0f;
+    }
+}
+
+void EnemySpawner::EnemySpawn() {
+    Vector3 playerPos = player_->GetPosition();
+    GamePlayCamera* gameCam = cameraManager_->GetGameplayCamera();
+    if (!gameCam) return;
+
+    Vector3 forward = gameCam->GetForward();
+    Vector3 right = Normalize(Cross({0,1,0}, forward));
+    Vector3 up = Normalize(Cross(forward, right));
+    
+    // 乱数生成器
+    std::random_device rd;
+    std::mt19937 rng(rd());
+    std::uniform_int_distribution<int> patternDist(0, 2); // 0:V, 1:ZigZag, 2:ReverseStep
+
+
+    for (size_t i = 0; i < spawnTriggers_.size(); ++i) {
+        auto& trigger = spawnTriggers_[i];
+
+        float distanceForward =
+            Dot((trigger.Position - playerPos), forward);
+        
+
+        if (!trigger.hasSpawned &&
+            distanceForward >= 0.0f &&
+            distanceForward < 10.0f) {
+
+            // ランダムに出現パターンを選択
+            int selectedPattern = patternDist(rng);
+
+            switch (selectedPattern) {
+            case 0:
+                SpawnVFormation(trigger);
+                break;
+            case 1:
+                SpawnZigZagFormation(trigger);
+                break;
+            case 2:
+                SpawnReverseStepFormation(trigger);
+                break;
+            }
+
+
+            trigger.hasSpawned = true;
+        }
+    }
+}
+
+///====================================================
+/// 敵出現パターン：V字フォーメーション（姿勢対応）
+///====================================================
+void EnemySpawner::SpawnVFormation(const EnemySpawnTrigger& trigger) {
+    // プレイヤー・カメラ情報を取得
+    Vector3 playerPos = player_->GetPosition();
+    GamePlayCamera* gameCam = CameraManager::GetInstance()->GetGameplayCamera(); 
+    if (!gameCam) return;
+
+    Vector3 forward = Normalize(gameCam->GetForward());
+    Vector3 right   = Normalize(Cross({ 0,1,0 }, forward));
+    Vector3 up      = Normalize(Cross(forward, right));
+
+    // 敵配置設定
+    int activated = 0;
+
+    const float forwardDist = 60.0f;  // 前方距離
+    const float baseY = 1.0f;
+    const float stepX = 3.0f;
+    const float stepY = -2.0f;
+
+    for (auto& enemy : *enemies_) {
+        if (!enemy->IsActive()) {
+            float x = 0.0f;
+            float y = 0.0f;
+
+            switch (activated) {
+            case 0: x =  0.0f; y =  0.0f; break;               // 中央
+            case 1: x = -stepX; y = stepY; break;              // 左上
+            case 2: x =  stepX; y = stepY; break;              // 右上
+            case 3: x = -stepX * 2; y = stepY * 2; break;      // 左下
+            case 4: x =  stepX * 2; y = stepY * 2; break;      // 右下
+            default:
+                x = (activated - 2) * stepX;
+                y = stepY * 3;
+                break;
+            }
+
+            Vector3 spawnPos =
+                playerPos +
+                forward * forwardDist +
+                right * x +
+                up * (baseY + y);
+
+            enemy->Spawn(spawnPos, trigger.moveType);
+            enemy->SetActive(true);
+
+            ++activated;
+            if (activated >= trigger.spawnCount) break;
+        }
+    }
+}
+
+
+
+///====================================================
+/// 敵出現パターン：ジグザグフォーメーション
+///====================================================
+void EnemySpawner::SpawnZigZagFormation(const EnemySpawnTrigger& trigger) {
+    // プレイヤー・カメラ情報を取得
+    Vector3 playerPos = player_->GetPosition();
+    GamePlayCamera* gameCam = CameraManager::GetInstance()->GetGameplayCamera();
+    if (!gameCam) return;
+
+    Vector3 forward = Normalize(gameCam->GetForward());
+    Vector3 right = Normalize(Cross({ 0,1,0 }, forward));
+    Vector3 up = Normalize(Cross(forward, right));
+
+    // 敵配置設定
+    int activated = 0;
+    const int numEnemies = 5;
+    const float forwardDist = 50.0f;
+    const float baseY = 5.0f;
+
+    const float xOffsets[5] = { -1.5f,  1.5f,  0.0f, -1.5f,  1.5f };
+    const float yOffsets[5] = { 2.0f,  2.0f,  0.0f, -2.0f, -2.0f };
+
+    for (auto& enemy : *enemies_) {
+        if (!enemy->IsActive() && activated < numEnemies) {
+            float x = xOffsets[activated];
+            float y = yOffsets[activated];
+
+            Vector3 spawnPos =
+                playerPos +
+                forward * forwardDist +
+                right * x +
+                up * (baseY + y);
+
+            enemy->Spawn(spawnPos, trigger.moveType);
+            enemy->SetActive(true);
+            ++activated;
+        }
+    }
+}
+
+///====================================================
+/// 敵出現パターン：逆ステップフォーメーション（姿勢対応）
+///====================================================
+void EnemySpawner::SpawnReverseStepFormation(const EnemySpawnTrigger& trigger) {
+    // プレイヤー・カメラ情報を取得
+    Vector3 playerPos = player_->GetPosition();
+    GamePlayCamera* gameCam = CameraManager::GetInstance()->GetGameplayCamera();
+    if (!gameCam) return;
+
+    Vector3 forward = Normalize(gameCam->GetForward());
+    Vector3 right = Normalize(Cross({ 0,1,0 }, forward));
+    Vector3 up = Normalize(Cross(forward, right));
+
+    // 敵配置設定
+    int activated = 0;
+    const float baseY = 5.0f;
+    const float forwardBase = 80.0f;
+    const float stepX = 1.5f;
+    const float stepY = -1.2f;
+    const float stepZ = 5.0f;
+
+    for (auto& enemy : *enemies_) {
+        if (!enemy->IsActive()) {
+            Vector3 spawnPos =
+                playerPos +
+                forward * (forwardBase - stepZ * activated) +
+                right * -(stepX * activated) +
+                up * (baseY + stepY * activated);
+
+            enemy->Spawn(spawnPos, trigger.moveType);
+            enemy->SetActive(true);
+
+            ++activated;
+            if (activated >= trigger.spawnCount) break;
+        }
+    }
+}
+
+void EnemySpawner::SpawnRandomEnemy(int count) {
+    // カメラ取得
+    GamePlayCamera* gameCam = cameraManager_->GetGameplayCamera();
+    if (!gameCam) return;
+
+    Vector3 camPos = gameCam->GetMainTransform().translate;
+    Vector3 forward = Normalize(gameCam->GetForward());
+    Vector3 right   = Normalize(Cross({0,1,0}, forward));
+    Vector3 up      = Normalize(Cross(forward, right));
+    
+    // 乱数エンジンを初期化
+    std::random_device rd;// 乱数生成器
+    randomEngine = std::mt19937(rd());
+
+    std::uniform_real_distribution<float> distX(-15.0f, 15.0f);
+    std::uniform_real_distribution<float> disty(-4.0f, 8.0f);
+    std::uniform_real_distribution<float> distz(80.0f, 250.0f);
+
+    int activated = 0;
+    for (auto& enemy : *enemies_) {
+        if (!enemy->IsActive() && activated < count) { // 1体ずつ出す場合
+            // ランダム座標生成
+            float randX = distX(randomEngine); // 横幅の範囲
+            float randY = disty(randomEngine);  // 高さ
+            float randZ = distz(randomEngine); // 奥行き
+
+            Vector3 spawnPos = camPos + forward * randZ + right * randX + up * randY;
+            
+            // ランダム移動を有効に
+            std::uniform_int_distribution<int> typeDist(0, 3); // 0:None,1:Vertical,2:Horizontal
+            MoveType moveType = static_cast<MoveType>(typeDist(randomEngine));
+
+            enemy->Spawn(spawnPos, moveType);
+            enemy->SetActive(true);
+
+            ++activated;
+        }
+    }
+}
 
 ============================================================
 File Path: project/application/character/enemy/EnemySpawner.h
 ============================================================
-//#pragma once
-//#include <Player.h>
-//#include <CameraManager.h>
-//#include <Enemy.h>
-//#include<EnemyLoader.h>
-//
-///// <summary>
-///// 敵の出現条件（トリガー）を定義する構造体
-///// </summary>
-//struct EnemySpawnTrigger {
-//    Vector3 Position;   // 出現位置
-//    int spawnCount;     // 同時に出現させる数
-//    bool hasSpawned;    // すでに出現済みかどうか
-//    MoveType moveType;  // 敵の移動タイプ
-//};
-//
-//class EnemySpawner {
-//public:
-//    void Initialize(Player* player, CameraManager* camera, std::vector<std::unique_ptr<Enemy>>* enemies);
-//
-//    void Update();
-//
-//private:
-//    void EnemySpawn();
-//    void SpawnRandomEnemy(int count);
-//
-//    void SpawnVFormation(const EnemySpawnTrigger& trigger);
-//    void SpawnReverseStepFormation(const EnemySpawnTrigger& trigger);
-//    void SpawnZigZagFormation(const EnemySpawnTrigger& trigger);
-//
-//private:
-//    Player* player_ = nullptr;
-//    CameraManager* cameraManager_ = nullptr;
-//    std::vector<std::unique_ptr<Enemy>>* enemies_ = nullptr;
-//    std::vector<EnemySpawnTrigger> spawnTriggers_;
-//        
-//       
-//    // =========================
-//    // ランダム出現用
-//    // =========================
-//    float randomSpawnTimer_ = 0.0f;           // 経過時間
-//    float nextRandomSpawnTime_ = 2.0f;        // 次に出現させるまでの時間（秒）
-//    std::mt19937 randomEngine;               // 乱数生成器
-//
-//    // キャラクターローダー
-//    std::unique_ptr<EnemyLoader> levelLoader_ = nullptr;
-//    // レベルデータ格納用インスタンスを生成
-//    LevelEnemyData* levelData = nullptr;
-//};
+#pragma once
+#include <Player.h>
+#include <CameraManager.h>
+#include <Enemy.h>
+#include<EnemyLoader.h>
+
+/// <summary>
+/// 敵の出現条件（トリガー）を定義する構造体
+/// </summary>
+struct EnemySpawnTrigger {
+    Vector3 Position;   // 出現位置
+    int spawnCount;     // 同時に出現させる数
+    bool hasSpawned;    // すでに出現済みかどうか
+    MoveType moveType;  // 敵の移動タイプ
+};
+
+class EnemySpawner {
+public:
+    void Initialize(Player* player, CameraManager* camera, std::vector<std::unique_ptr<Enemy>>* enemies);
+
+    void Update();
+
+private:
+    void EnemySpawn();
+    void SpawnRandomEnemy(int count);
+
+    void SpawnVFormation(const EnemySpawnTrigger& trigger);
+    void SpawnReverseStepFormation(const EnemySpawnTrigger& trigger);
+    void SpawnZigZagFormation(const EnemySpawnTrigger& trigger);
+
+private:
+    Player* player_ = nullptr;
+    CameraManager* cameraManager_ = nullptr;
+    std::vector<std::unique_ptr<Enemy>>* enemies_ = nullptr;
+    std::vector<EnemySpawnTrigger> spawnTriggers_;
+        
+       
+    // =========================
+    // ランダム出現用
+    // =========================
+    float randomSpawnTimer_ = 0.0f;           // 経過時間
+    float nextRandomSpawnTime_ = 2.0f;        // 次に出現させるまでの時間（秒）
+    std::mt19937 randomEngine;               // 乱数生成器
+
+    // キャラクターローダー
+    std::unique_ptr<EnemyLoader> levelLoader_ = nullptr;
+    // レベルデータ格納用インスタンスを生成
+    LevelEnemyData* levelData = nullptr;
+};
 
 ============================================================
 File Path: project/application/character/player/Player.cpp
@@ -9693,6 +9797,20 @@ void GamePlayScene::Initialize() {
     // パーティクル
     particles_ = std::make_unique<GamePlayparticle>();
     particles_->Initialize(player_->GetPlayerObject());
+    
+    // 敵関連の初期化
+    MAX_ENEMY = 300; // 敵の最大数
+    // 敵をリストに追加して初期化
+    for (int i = 0; i < MAX_ENEMY; ++i) {
+        std::unique_ptr<Enemy> enemy = std::make_unique<Enemy>();
+        enemy->Initialize();
+        enemy->SetPlayer(player_.get());
+        enemy->SetActive(false);  // 非アクティブにしておく
+        enemies_.emplace_back(std::move(enemy));
+    }
+    // 敵出現トリガー
+    enemySpawner_ = std::make_unique<EnemySpawner>(); enemySpawner_->Initialize(player_.get(), CameraManager::GetInstance(), &enemies_);
+
 
     // クリアゲート(仮)
     wall = Object3d::Create(model::Goal, Transform{ { 2.0f, 2.0f, 2.0f }, { 0.0f, 0.0f, 0.0f }, { 8.0f, 39.0f, 800.0f } });
@@ -9760,15 +9878,41 @@ void GamePlayScene::Update() {
 #pragma region 全てのObject3d個々の更新処理
     // 終了しない限り更新処理
     if (!end) {
+        if (EventManager::GetInstance()->IsFinished()) {
+            // 敵出現動作
+            enemySpawner_->Update();
+        }
+        
+        // 各衝突判定
+        CheckBulletEnemyCollisionsOBB();
+        CheckEnemyBulletPlayerCollisionsOBB(); 
+        CheckEnemyPlayerCollisionsOBB();
+
         // 更新処理
         player_->Update();
+
         // プレイヤーがゴール手前までは敵も更新
         if (player_->GetPosition().z <=  CameraManager::GetInstance()->GetGameplayCamera()->GetBezierPoints().back().controlPoint.z) {
-
+            // 敵の更新
+            for (auto& enemy : enemies_) {
+                if (enemy->IsActive()) {
+                    enemy->SetPlayer(player_.get());
+                    enemy->Update();
+                }
+            }
         }
         wall->Update();
         // Bulletマネージャの更新処理
         BulletManager::GetInstance()->Update();
+    }
+        // 敵がプレイヤーから離れすぎたら削除（過去の敵掃除）
+    for (auto& enemy : enemies_) {
+        if (!enemy->IsActive()) continue;
+        float playerZ = player_->GetPosition().z;
+        float spawnZ = enemy->GetSpawnBaseZ();  // 出現基準Z
+        if (playerZ > spawnZ + 30) { // 出現位置より進んでたら削除
+            enemy->Kill();
+        }
     }
 
     // フェードアウトが完了したら次のシーンへ
@@ -9785,7 +9929,11 @@ void GamePlayScene::Update() {
     // スカイボックス更新
     Box_->Update(); 
 
-
+    for (auto& enemy : enemies_) {
+        enemy->onDeathCallback = [this](const Vector3& pos) {
+            particles_->AddHitPosition(pos);
+            };
+    }
     // パーティクル更新
     ParticleManager::GetInstance()->Update();
     particles_->Update();
@@ -9830,7 +9978,15 @@ void GamePlayScene::Draw() {
         // Bulletマネージャの描画処理
         BulletManager::GetInstance()->Draw();
     }
-
+        // プレイヤーがゴール地点に達するまでは敵や壁を描画
+    if (player_->GetPosition().z <= CameraManager::GetInstance()->GetGameplayCamera()->GetBezierPoints().back().controlPoint.z) {
+        // 敵の更新
+        for (auto& enemy : enemies_) {
+            if (enemy->IsActive()) {
+                enemy->Draw();
+            }
+        }
+    }
     wall->Draw();
     // イベントマネージャの描画処理
     EventManager::GetInstance()->Drawo3Dbject();
@@ -9922,6 +10078,79 @@ void GamePlayScene::HandlePlayerState() {
 }
 
 
+///====================================================
+/// プレイヤー弾 vs 敵の当たり判定
+///====================================================
+void GamePlayScene::CheckBulletEnemyCollisionsOBB() {
+    const auto& bullets = BulletManager::GetInstance()->GetPlayerBullets();
+
+    for (const std::unique_ptr<PlayerBullet>& bullet : bullets) {
+        if (!bullet->IsActive()) continue;
+
+        for (auto& enemy : enemies_) {
+            if (!enemy->IsActive()) continue;
+
+            OBB bulletOBB = bullet->GetOBB(); // bulletがOBB情報を持っている必要あり
+            OBB enemyOBB = enemy->GetOBB();   // 敵のOBBも同様に
+
+            if (IsOBBIntersect(bulletOBB, enemyOBB)) {
+                bullet->SetInactive();
+                enemy->OnHit();
+                
+               // particles_->AddHitPosition(enemy->GetPosition());
+                // パーティクル生成など
+                break;
+            }
+        }
+    }
+}
+///====================================================
+/// 敵弾 vs プレイヤーの当たり判定
+///====================================================
+void GamePlayScene::CheckEnemyBulletPlayerCollisionsOBB() {
+    const auto& bullets = BulletManager::GetInstance()->GetEnemyBullets();
+
+    OBB playerOBB = player_->GetOBB(); // プレイヤーがOBBを返すようにしておく必要あり
+
+    for (const std::unique_ptr<EnemyBullet>& bullet : bullets) {
+        if (!bullet->IsActive()) continue;
+
+        OBB bulletOBB = bullet->GetOBB(); // 弾にもOBBが必要
+
+        if (IsOBBIntersect(bulletOBB, playerOBB)) {
+            bullet->SetInactive();
+            player_->SetState(State::Dead);
+
+            end = true;
+            // ヒットエフェクトなど追加
+            break;
+        }
+    }
+}
+///====================================================
+/// 敵 vs プレイヤー の当たり判定
+///====================================================
+void GamePlayScene::CheckEnemyPlayerCollisionsOBB() {
+    // プレイヤーのOBBを取得
+    OBB playerOBB = player_->GetOBB();
+
+    for (auto& enemy : enemies_) {
+        if (!enemy->IsActive() || enemy->IsDead()) continue;
+
+        // 敵のOBBを取得
+        OBB enemyOBB = enemy->GetOBB();
+
+        // 衝突判定
+        if (IsOBBIntersect(playerOBB, enemyOBB)) {
+            player_->SetState(State::Dead);
+            end = true; // ゲームオーバーへ遷移など
+
+            break;
+        }
+    }
+}
+
+
 ============================================================
 File Path: project/application/scene/GamePlayScene.h
 ============================================================
@@ -9982,6 +10211,19 @@ public: // メンバ関数
     /// 死亡、ゴール、操作可能状態への遷移などを管理する。
     /// </summary>
     void HandlePlayerState();
+
+
+    
+    /// <summary>
+    /// プレイヤーの弾と敵との衝突判定処理
+    /// </summary>
+    void CheckBulletEnemyCollisionsOBB();
+    /// <summary>
+    /// 敵の弾とプレイヤーとの衝突判定処理
+    /// </summary>
+    void CheckEnemyBulletPlayerCollisionsOBB();
+
+    void CheckEnemyPlayerCollisionsOBB();
 private: // メンバ変数
     // オブジェクトデータ
     // プレイヤー
@@ -9999,6 +10241,14 @@ private: // メンバ変数
 
     std::unique_ptr <Pausemenu> pausemenu_;    /// ポーズメニュー
     bool isPausedevent_;                       /// ポーズ可能状態かどうか
+    
+    // 最大数
+    int MAX_ENEMY;
+    // 敵リスト
+    std::vector<std::unique_ptr<Enemy>> enemies_;
+    std::unique_ptr<EnemySpawner> enemySpawner_;
+    // 敵出現トリガーリスト
+    std::vector<EnemySpawnTrigger> spawnTriggers_;
 };
 
 ============================================================
@@ -21751,7 +22001,7 @@ void MyGame::Initialize() {
 	// GAMEPLAY           ゲームプレイ
 	// GAMECLEAR          ゲームクリア
     // GAMEOVER           ゲームオーバー
-    SceneManager::GetInstance()->ChangeScene("GAMEPLAY");
+    SceneManager::GetInstance()->ChangeScene("TITLE");
 }
 
 void MyGame::Update() {
