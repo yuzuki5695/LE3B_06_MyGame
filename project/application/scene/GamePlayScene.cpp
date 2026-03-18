@@ -52,20 +52,9 @@ void GamePlayScene::Initialize() {
     // パーティクル
     particles_ = std::make_unique<GamePlayparticle>();
     particles_->Initialize(player_->GetPlayerObject());
-    //
-    //// 敵関連の初期化
-    //MAX_ENEMY = 300; // 敵の最大数
-    //// 敵をリストに追加して初期化
-    //for (int i = 0; i < MAX_ENEMY; ++i) {
-    //    std::unique_ptr<Enemy> enemy = std::make_unique<Enemy>();
-    //    enemy->Initialize();
-    //    enemy->SetPlayer(player_.get());
-    //    enemy->SetActive(false);  // 非アクティブにしておく
-    //    enemies_.emplace_back(std::move(enemy));
-    //}
-    //// 敵出現トリガー
-    //enemySpawner_ = std::make_unique<EnemySpawner>(); enemySpawner_->Initialize(player_.get(), CameraManager::GetInstance(), &enemies_);
 
+    enemy_ = std::make_unique<Enemy>();
+    enemy_->Initialize();
 
     // クリアゲート(仮)
     wall = Object3d::Create(model::Goal, Transform{ { 2.0f, 2.0f, 2.0f }, { 0.0f, 0.0f, 0.0f }, { 8.0f, 39.0f, 800.0f } });
@@ -183,12 +172,9 @@ void GamePlayScene::Update() {
 
     // スカイボックス更新
     Box_->Update(); 
+    
+    enemy_->Update();
 
-    //for (auto& enemy : enemies_) {
-    //    enemy->onDeathCallback = [this](const Vector3& pos) {
-    //        particles_->AddHitPosition(pos);
-    //        };
-    //}
     // パーティクル更新
     ParticleManager::GetInstance()->Update();
     particles_->Update();
@@ -233,15 +219,9 @@ void GamePlayScene::Draw() {
         // Bulletマネージャの描画処理
         BulletManager::GetInstance()->Draw();
     }
-    //    // プレイヤーがゴール地点に達するまでは敵や壁を描画
-    //if (player_->GetPosition().z <= CameraManager::GetInstance()->GetGameplayCamera()->GetBezierPoints().back().controlPoint.z) {
-    //    // 敵の更新
-    //    for (auto& enemy : enemies_) {
-    //        if (enemy->IsActive()) {
-    //            enemy->Draw();
-    //        }
-    //    }
-    //}
+
+    enemy_->Draw();
+
     wall->Draw();
     // イベントマネージャの描画処理
     EventManager::GetInstance()->Drawo3Dbject();
