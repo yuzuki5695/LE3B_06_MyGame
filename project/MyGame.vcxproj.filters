@@ -917,9 +917,6 @@
     <ClInclude Include="application\ui\GamePlayUI.h">
       <Filter>ヘッダー ファイル\application\ui</Filter>
     </ClInclude>
-    <ClInclude Include="application\ui\BaseUI.h">
-      <Filter>ヘッダー ファイル\application\ui</Filter>
-    </ClInclude>
     <ClInclude Include="application\ui\TitleUI.h">
       <Filter>ヘッダー ファイル\application\ui</Filter>
     </ClInclude>
@@ -949,6 +946,9 @@
     </ClInclude>
     <ClInclude Include="application\collision\CollisionManager.h">
       <Filter>ヘッダー ファイル\application\collision</Filter>
+    </ClInclude>
+    <ClInclude Include="application\ui\BaseUI.h">
+      <Filter>ヘッダー ファイル\application\ui</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
