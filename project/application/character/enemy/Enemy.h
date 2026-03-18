@@ -28,7 +28,9 @@ public: // メンバ関数
     enum class State {
         Spawn,   // 出現演出中
         Active,  // 通常行動
-        Dying,   // 死亡演出
+        Charge,  // ← 追加：突撃予備動作（赤く光る、静止するなど）
+        Dash,    // ← 追加：突撃中
+        Dying,   
         Dead
     };
 
@@ -94,7 +96,8 @@ public: // メンバ関数
     void OnHit();   // ← これを追加
     void UpdateActive();
     void UpdateDying();
-
+    void UpdateCharge();
+    void UpdateDash();
 private: // メンバ変数
 	// ポインタ
     Player* player_; // プレイヤー
@@ -142,6 +145,24 @@ private: // メンバ変数
     Vector3 spawnStartPos_;
     Vector3 spawnTargetPos_;
     bool hasTriggeredParticle_ = false;
+
+
+    // 突撃用変数
+    Vector3 dashVelocity_;        // 突撃時の速度ベクトル
+    float attackTimer_ = 0.0f;    // 次の攻撃（射撃or突撃）までのタイマー
+    float attackInterval_ = 3.0f; // 攻撃間隔
+    
+    // 突撃パラメータ
+    const float dashSpeed_ = 1.5f;     // 突撃速度
+    const float chargeDuration_ = 1.5f; // 突撃前の溜め時間 
+    float chargeTimer_= 0.0f;
+    float chargeRotation_ = 0.0f;    // 溜め中の回転角度
+    Vector3 startChargePos_;        // 溜め開始時の座標
+    float rotationSpeed_ = 0.05f; // 通常移動時の回転速度
+    float dashRotationSpeed_ = 0.5f; // 突撃時の高速回転速度
+    // 距離判定の閾値 (x, y, z の差の合計)
+    const float attackDistanceThreshold_ = 150.0f;
+
 public:   // アクセッサ（Getter / Setter）
 	   
     std::function<void(const Vector3&)> onDeathCallback;

@@ -57,6 +57,9 @@ void Enemy::Update() {
     case State::Active:
         UpdateActive();
         break;
+
+    case State::Charge: UpdateCharge(); break; // 追加
+    case State::Dash:   UpdateDash();   break; // 追加
     case State::Dying:
         UpdateDying();
         break;
@@ -234,6 +237,29 @@ void Enemy::OnHit() {
 void Enemy::UpdateActive() {
     if (player_) {
         AttachBullet(player_->GetPosition());
+        // 2. 突撃への遷移チェック
+        attackTimer_ += 1.0f / 60.0f;
+        if (attackTimer_ >= attackInterval_) {
+            Vector3 pPos = player_->GetPosition();
+            Vector3 ePos = transform_.translate;
+
+            // 各軸の距離の絶対値を合計 (例: 50+50+50 = 150)
+            float totalDist = std::abs(pPos.x - ePos.x) +
+                std::abs(pPos.y - ePos.y) +
+                std::abs(pPos.z - ePos.z);
+
+            if (totalDist >= attackDistanceThreshold_) {
+                // 十分に離れているので突撃準備へ
+                state_ = State::Charge;
+                chargeTimer_ = 0.0f;
+                attackTimer_ = 0.0f;
+                // 溜め開始時の座標を保存（引く動作の基準）
+                spawnTargetPos_ = transform_.translate;
+            } else {
+                // 近すぎる場合はタイマーだけリセットして射撃を継続
+                attackTimer_ = 0.0f;
+            }
+        }
     }
     switch (moveType_) {
     case MoveType::Vertical:
@@ -254,7 +280,64 @@ void Enemy::UpdateActive() {
         break;
     }
     }
+    object->SetRotate(transform_.rotate); // 回転を反映
 }
+
+// 突撃前の溜め（プレイヤーの方を向く、少し震えるなど）
+void Enemy::UpdateCharge() {
+    chargeTimer_ += 1.0f / 60.0f;
+    float t = std::min(chargeTimer_ / chargeDuration_, 1.0f);
+
+    if (player_) {
+        Vector3 playerPos = player_->GetPosition();
+        Vector3 toPlayer = Normalize(playerPos - transform_.translate);
+
+        // 1. 溜め演出：少し引きながら回転を加速
+        Vector3 backVec = toPlayer * -2.0f; // 後ろに引く距離
+        transform_.translate = Lerp(spawnTargetPos_, spawnTargetPos_ + backVec, EaseOutBack(t));
+        
+        // 2. 溜め中はプレイヤーを注視 (ロックオン)
+        transform_.rotate.y = std::atan2(toPlayer.x, toPlayer.z);
+        transform_.rotate.z += 0.8f * t; // ドリル回転加速
+    }
+
+    object->SetTranslate(transform_.translate);
+    object->SetRotate(transform_.rotate);
+
+    // --- 溜め完了：突撃ベクトルを固定してロック解除 ---
+    if (t >= 1.0f) {
+        if (player_) {
+            Vector3 finalDir = Normalize(player_->GetPosition() - transform_.translate);
+            dashVelocity_ = finalDir * 1.8f; // 突撃速度(dashSpeed)
+        }
+        state_ = State::Dash;
+    }
+}
+// 突撃中
+void Enemy::UpdateDash() {
+    // 溜め終了時に固定したベクトルで移動（ロックオフ状態）
+    transform_.translate += dashVelocity_;
+
+    // 突撃中の回転演出
+    transform_.rotate.z += dashRotationSpeed_ * 2.0f;
+
+    object->SetTranslate(transform_.translate);
+    object->SetRotate(transform_.rotate);
+
+    // --- 削除判定（演出スキップ） ---
+    // プレイヤーの背後、または画面外（Z軸）に到達したら即削除
+    float limitZ = -20.0f; // カメラの後方など、適切な基準値を設定
+    if (player_) {
+        limitZ = player_->GetPosition().z - 20.0f;
+    }
+
+    if (transform_.translate.z < limitZ) {
+        isDead_ = true;
+        isActive_ = false;
+        state_ = State::Dead;
+    }
+}
+
 void Enemy::UpdateDying() {
     // 死亡判定中（スケール縮小アニメーション）
     if (isDying_) {
