@@ -19,7 +19,13 @@ using namespace LoadResourceID;
 using namespace MatrixVector;
 
 Player::~Player() {}
-
+Vector3 Player::GetForward() {
+    return {
+        sinf(transform_.rotate.y),
+        0.0f,
+        cosf(transform_.rotate.y)
+    };
+}
 void Player::Initialize() {
     // モデル・テクスチャ読み込み
     ModelManager::GetInstance()->LoadModel(model::Player);
