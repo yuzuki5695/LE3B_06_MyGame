@@ -96,4 +96,6 @@ public:// メンバ変数
 	Vector3 GetPosition() const {
 		return transform_.translate;
 	}
+	Vector3 GetForward();
+
 };

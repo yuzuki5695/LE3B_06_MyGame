@@ -9,8 +9,9 @@
 #include <FadeManager.h>
 #include <EventManager.h>
 #include <GamePlayparticle.h>
-#include <EnemySpawner.h>
 #include <Pausemenu.h>
+
+#include <Enemy.h>
 
 /// <summary>
 /// 実際のゲームプレイを行うシーン。
@@ -58,16 +59,16 @@ public: // メンバ関数
 
 
     
-    /// <summary>
-    /// プレイヤーの弾と敵との衝突判定処理
-    /// </summary>
-    void CheckBulletEnemyCollisionsOBB();
-    /// <summary>
-    /// 敵の弾とプレイヤーとの衝突判定処理
-    /// </summary>
-    void CheckEnemyBulletPlayerCollisionsOBB();
+    ///// <summary>
+    ///// プレイヤーの弾と敵との衝突判定処理
+    ///// </summary>
+    //void CheckBulletEnemyCollisionsOBB();
+    ///// <summary>
+    ///// 敵の弾とプレイヤーとの衝突判定処理
+    ///// </summary>
+    //void CheckEnemyBulletPlayerCollisionsOBB();
 
-    void CheckEnemyPlayerCollisionsOBB();
+    //void CheckEnemyPlayerCollisionsOBB();
 private: // メンバ変数
     // オブジェクトデータ
     // プレイヤー
@@ -86,11 +87,5 @@ private: // メンバ変数
     std::unique_ptr <Pausemenu> pausemenu_;    /// ポーズメニュー
     bool isPausedevent_;                       /// ポーズ可能状態かどうか
     
-    // 最大数
-    int MAX_ENEMY;
-    // 敵リスト
-    std::vector<std::unique_ptr<Enemy>> enemies_;
-    std::unique_ptr<EnemySpawner> enemySpawner_;
-    // 敵出現トリガーリスト
-    std::vector<EnemySpawnTrigger> spawnTriggers_;
+    std::unique_ptr <Enemy> enemy_;
 };
