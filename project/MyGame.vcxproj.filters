@@ -16,9 +16,6 @@
     <Filter Include="ソース ファイル\engine">
       <UniqueIdentifier>{e5bb12bd-eb6c-4539-8614-50e10be7f71c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ソース ファイル\engine\2d">
-      <UniqueIdentifier>{87dbf081-2f7b-4eab-8c81-08ea214b5ba0}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ソース ファイル\engine\3d">
       <UniqueIdentifier>{e4f54486-87d7-4c08-acbf-10af73162a20}</UniqueIdentifier>
     </Filter>
@@ -279,6 +276,9 @@
     </Filter>
     <Filter Include="ソース ファイル\application\character\player">
       <UniqueIdentifier>{a7eab18e-630a-472c-afe5-35bace2ee948}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\engine\2d">
+      <UniqueIdentifier>{87dbf081-2f7b-4eab-8c81-08ea214b5ba0}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -552,11 +552,11 @@
     <ClCompile Include="application\character\player\PlayerDeath.cpp">
       <Filter>ソース ファイル\application\character\player</Filter>
     </ClCompile>
-    <ClCompile Include="application\character\player\PlayerDash.cpp">
-      <Filter>ソース ファイル\application\character\player</Filter>
-    </ClCompile>
     <ClCompile Include="application\character\player\Player.cpp">
       <Filter>ソース ファイル\application\character\player</Filter>
+    </ClCompile>
+    <ClCompile Include="application\loader\PlayerDataLoader.cpp">
+      <Filter>ソース ファイル\application\loader</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -932,9 +932,6 @@
     <ClInclude Include="application\character\player\Player.h">
       <Filter>ヘッダー ファイル\application\character\player</Filter>
     </ClInclude>
-    <ClInclude Include="application\character\player\PlayerDash.h">
-      <Filter>ヘッダー ファイル\application\character\player</Filter>
-    </ClInclude>
     <ClInclude Include="application\character\player\PlayerDeath.h">
       <Filter>ヘッダー ファイル\application\character\player</Filter>
     </ClInclude>
@@ -949,6 +946,12 @@
     </ClInclude>
     <ClInclude Include="application\collision\CollisionManager.h">
       <Filter>ヘッダー ファイル\application\collision</Filter>
+    </ClInclude>
+    <ClInclude Include="application\loader\PlayerDataLoader.h">
+      <Filter>ソース ファイル\application\loader</Filter>
+    </ClInclude>
+    <ClInclude Include="application\character\player\PlayerData.h">
+      <Filter>ヘッダー ファイル\application\character\player</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -14,6 +14,7 @@
 #include <Skybox.h>
 #include <ModelDate.h>
 #include <Tools/AssetGenerator/engine/math/LoadResourceID.h>
+#include <PlayerDataLoader.h>
 
 using namespace LoadResourceID;
 using namespace MatrixVector;
@@ -32,8 +33,8 @@ void Player::Initialize() {
     ModelManager::GetInstance()->LoadModel(model::Playerbullet);
     TextureManager::GetInstance()->LoadTexture(texture::Target);
 
-    // プレイヤーの初期位置と回転を設定
-    transform_ = { {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f},  0.0f,0.0f,0.0f };
+    data_ = PlayerDataLoader::Load("player");
+    transform_ = data_.transform;
     // プレイヤー生成
     object = Object3d::Create(model::Player, transform_);
 
@@ -50,13 +51,13 @@ void Player::Initialize() {
 
     // インスタンスの生成
     move_ = std::make_unique<PlayerMove>();
+    move_->Initialize(data_.move);
     reticle_ = std::make_unique<PlayerReticle>();
+    reticle_->Initialize(data_.reticle);
     weapon_ = std::make_unique<PlayerWeapon>();
-    weapon_->Initialize();
+    weapon_->Initialize(data_.weapon);
     death_ = std::make_unique<PlayerDeath>();
     death_->Initialize();
-    dash_ = std::make_unique<PlayerDash>();
-    dash_->Initialize();
 }
 
 void Player::Update() {
@@ -121,30 +122,8 @@ void Player::DebugImgui() {
 
 void Player::UpdateAlive() {
     CameraManager* camMgr = CameraManager::GetInstance();
-    Input* input = Input::GetInstance();
-
-    // --- 1. 回避入力 ---
-    if (input->Pushkey(DIK_LSHIFT) && dash_->CanDash()) {
-        // 現在の移動入力から方向を決定
-        float moveDirX = 0.0f;
-        if (input->Pushkey(DIK_A)) moveDirX = -1.0f;
-        if (input->Pushkey(DIK_D)) moveDirX = 1.0f;
-        dash_->Start(moveDirX);
-    }
-
-    // --- 2. 回避状態の更新 ---
-    dash_->Update();
-
-    // --- 3. 移動の更新 ---
-    // PlayerMoveに現在の速度倍率を渡す（PlayerMove側のUpdateに引数を追加するか、内部で計算）
-    // ここでは、一時的に移動速度を上げるためにダッシュ倍率を適用
-    float currentSpeedMult = dash_->GetSpeedMultiplier();
-
-    // move_->Updateの中で speed * currentSpeedMult されるように調整
-    move_->Update(transform_, CameraManager::GetInstance()->GetMainCamera()->GetRotate(), currentSpeedMult);
-
-    // --- 4. 回転の合成 ---
-    transform_.rotate.z += dash_->GetRotationZ();
+	// 移動処理の更新（ローカル座標での移動量を取得）
+    move_->Update(transform_,camMgr->GetMainCamera()->GetRotate());
     // レティクル
     reticle_->Update(targettransform_, transform_.translate, target_.get());
     // 攻撃
@@ -154,8 +133,6 @@ void Player::UpdateAlive() {
 }
 
 void Player::UpdateDead() {
-
-
     // 死亡演出：ここに落下や回転のロジックを書く（後にクラス化も可能）
     death_->Update(transform_.rotate, deathOffset_, object.get());
     // 座標の同期（これが重要）
@@ -198,36 +175,4 @@ void Player::SyncWorldTransformByRail() {
     } else {
         transform_.translate = basePos;
     }
-}
-
-///=====================================================================
-/// OBB当たり判定取得
-///=====================================================================
-OBB Player::GetOBB() const {
-    OBB obb;
-
-    // 中心座標
-    obb.center = transform_.translate;
-
-    // ハーフサイズ（スケールの半分）
-    obb.halfSize = {
-        transform_.scale.x / 2.0f, 
-        transform_.scale.y / 2.0f, 
-        transform_.scale.z / 2.0f
-    };
-
-    // 回転行列（XYZ順で回転を合成）
-    Matrix4x4 rotX = MakeRotateXMatrix(transform_.rotate.x);
-    Matrix4x4 rotY = MakeRotateYMatrix(transform_.rotate.y);
-    Matrix4x4 rotZ = MakeRotateZMatrix(transform_.rotate.z);
-
-    // Z→X→Y の順に掛けることで、XYZ回転（ローカル空間回転）を再現
-    Matrix4x4 rotMat = Multiply(Multiply(rotZ, rotX), rotY);
-
-    // ローカル軸（X, Y, Z）をワールド空間へ回転適用
-    obb.axis[0] = Normalize(Multiply4x4x3(rotMat, Vector3{ 1, 0, 0 })); // X軸
-    obb.axis[1] = Normalize(Multiply4x4x3(rotMat, Vector3{ 0, 1, 0 })); // Y軸
-    obb.axis[2] = Normalize(Multiply4x4x3(rotMat, Vector3{ 0, 0, 1 })); // Z軸
-    
-    return obb;
 }

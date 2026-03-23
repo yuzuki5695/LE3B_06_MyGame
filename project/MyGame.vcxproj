@@ -126,7 +126,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="application\character\enemy\Enemy.cpp" />
     <ClCompile Include="application\character\enemy\EnemySpawner.cpp" />
     <ClCompile Include="application\character\player\Player.cpp" />
-    <ClCompile Include="application\character\player\PlayerDash.cpp" />
     <ClCompile Include="application\character\player\PlayerDeath.cpp" />
     <ClCompile Include="application\character\player\PlayerMove.cpp" />
     <ClCompile Include="application\character\player\PlayerReticle.cpp" />
@@ -136,6 +135,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="application\loader\CharacterLoader.cpp" />
     <ClCompile Include="application\loader\CurveJsonLoader.cpp" />
     <ClCompile Include="application\loader\EnemyLoader.cpp" />
+    <ClCompile Include="application\loader\PlayerDataLoader.cpp" />
     <ClCompile Include="application\particle\DefaultParticleEmitter.cpp" />
     <ClCompile Include="application\particle\GameClearparticle.cpp" />
     <ClCompile Include="application\particle\GameOverparticle.cpp" />
@@ -223,7 +223,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\character\enemy\Enemy.h" />
     <ClInclude Include="application\character\enemy\EnemySpawner.h" />
     <ClInclude Include="application\character\player\Player.h" />
-    <ClInclude Include="application\character\player\PlayerDash.h" />
+    <ClInclude Include="application\character\player\PlayerData.h" />
     <ClInclude Include="application\character\player\PlayerDeath.h" />
     <ClInclude Include="application\character\player\PlayerMove.h" />
     <ClInclude Include="application\character\player\PlayerReticle.h" />
@@ -233,6 +233,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\loader\CharacterLoader.h" />
     <ClInclude Include="application\loader\CurveJsonLoader.h" />
     <ClInclude Include="application\loader\EnemyLoader.h" />
+    <ClInclude Include="application\loader\PlayerDataLoader.h" />
     <ClInclude Include="application\particle\BaseEmitter.h" />
     <ClInclude Include="application\particle\DefaultParticleEmitter.h" />
     <ClInclude Include="application\particle\FollowEmitter.h" />

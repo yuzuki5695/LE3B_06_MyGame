@@ -1,0 +1,32 @@
+﻿{
+  "name": "Player",
+  "transform": {
+    "translation": [ 0.0, 0.0, 0.0 ],
+    "rotation": [ 0.0, 0.0, 0.0 ],
+    "scaling": [ 0.5, 0.5, 0.5 ]
+  },
+  "move": {
+    "speed": 0.17,
+    "maxX": 10.0,
+    "minY": -2.5,
+    "maxY": 9.0,
+    "tiltSpeed": 0.05,
+    "maxTilt": 0.4,
+    "returnSpeed": 0.08,
+    "dashDuration": 0.5,
+    "dashCoolDown": 3.0,
+    "dashSpeedMult": 2.5
+  },
+  "reticle": {
+    "speed": 0.4,
+    "maxX": 12.0,
+    "minX": -12.0,
+    "maxY": 7.0,
+    "minY": -7.0,
+    "forwardDistance": 30.0
+  },
+  "weapon": {
+    "bulletInterval": 0.15,
+    "bulletSpeed": 5.0
+  }
+}

@@ -1,6 +1,7 @@
 #pragma once
 #include <Vector3.h>
 #include <memory>
+#include <PlayerData.h>
 
 // 前方宣言
 struct Transform;
@@ -15,7 +16,7 @@ public:
     /// <summary>
     /// 初期化処理
     /// </summary>
-    void Initialize();
+    void Initialize(const PlayerWeaponData& data);
     
     /// <summary>
     /// 毎フレームの更新と発射入力のチェック
@@ -25,8 +26,8 @@ public:
     /// <param name="gameCam">メインカメラ（発射方向の算出に使用）</param>
     void Update(const Vector3& playerWorldPos, const Vector3& targetWorldPos, GamePlayCamera* gameCam);
 private:
+    PlayerWeaponData data_{}; // 設定値を保持
     // --- 連射制御関連 ---
     float bulletTimer_ = 0.0f;           // 次の弾が打てるまでの経過時間
-    const float bulletInterval_ = 0.15f; // 発射間隔
     bool canShoot_ = true;               // 現在発射可能かどうかのフラグ
 };

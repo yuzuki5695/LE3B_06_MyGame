@@ -33,7 +33,10 @@ public: // メンバ関数
     void SetPlayer(Player* player) { player_ = player; }
     // 移動タイプの設定
     void SetMoveType(EnemyMoveType type) { moveType_ = type; }
-    void SyncWithPlayerFront();
+private:
+    // 内部計算メソッド
+    //void LookAtPlayer(); // 未実装
+    void SyncWithRail();
 
 private: // メンバ変数
     std::unique_ptr<Object3d> object;// 敵モデルデータ
@@ -45,7 +48,4 @@ private: // メンバ変数
     // レール同期用のオフセット（カメラから見てどの位置にいたいか）
     Vector3 railOffset_ = { 0.0f, 0.0f, 50.0f };
 
-    // 内部計算メソッド
-    void LookAtPlayer();
-    void SyncWithRail();
 };

@@ -7,8 +7,8 @@
 
 using namespace MatrixVector;
 
-void PlayerWeapon::Initialize() { 
-	// 各変数の初期化
+void PlayerWeapon::Initialize(const PlayerWeaponData& data) { 
+    data_ = data; // JSONからのデータを保存
     bulletTimer_ = 0.0f;
     canShoot_ = true;
 }
@@ -18,7 +18,7 @@ void PlayerWeapon::Update(const Vector3& playerWorldPos, const Vector3& targetWo
 
     // --- 連射タイマー処理 ---
     bulletTimer_ += 1.0f / 60.0f;
-    if (bulletTimer_ >= bulletInterval_) {
+    if (bulletTimer_ >= data_.bulletInterval) {
         canShoot_ = true;
         bulletTimer_ = 0.0f;
     }
@@ -47,7 +47,7 @@ void PlayerWeapon::Update(const Vector3& playerWorldPos, const Vector3& targetWo
         Vector3 endPos;
         endPos = bulletStartPos + shootDir * 10.0f;
         // 元の初期化形式: Initialize(始点, 終点, 方向, スピード)
-        bullet->Initialize(bulletStartPos, endPos, cameraForward, 5.0f);
+        bullet->Initialize(bulletStartPos, endPos, cameraForward, data_.bulletSpeed);
         // マネージャーへ追加
         BulletManager::GetInstance()->AddPlayerBullet(std::move(bullet));
         // 発射フラグを折る

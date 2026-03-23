@@ -1,0 +1,101 @@
+#include "PlayerDataLoader.h"
+#include <fstream>
+#include <cassert>
+
+using json = nlohmann::json;
+
+const std::string PlayerDataLoader::kDefaultBaseDirectory = "Resources/Data/Player/";
+const std::string PlayerDataLoader::kExtension = ".json";
+
+PlayerData PlayerDataLoader::Load(const std::string& fileName) {
+    // 連結してフルパスを得る
+    const std::string fullpath = kDefaultBaseDirectory + fileName + kExtension;
+
+    PlayerData data{};
+
+    // ファイルを開く
+    std::ifstream file(fullpath);
+    if (!file.is_open()) {
+        throw std::runtime_error("JSONファイルを開けませんでした");
+    }
+
+    // JSONデータを読み込む
+    json j;
+    file >> j;
+
+    // 必須チェック
+    assert(j.contains("name"));
+    assert(j.contains("transform"));
+    assert(j.contains("move"));
+
+    // データ取得
+    data.fileName = j["name"].get<std::string>();
+    data.transform = LoadTransform(j["transform"]);
+    data.move = LoadMove(j["move"]);
+    data.reticle = LoadReticle(j["reticle"]);
+    data.weapon = LoadWeapon(j["weapon"]);
+    return data;
+}
+
+PlayerMoveData PlayerDataLoader::LoadMove(const json& move) {
+    PlayerMoveData result{};
+
+    if (move.contains("speed")) result.speed = move["speed"];
+    if (move.contains("maxX")) result.maxX = move["maxX"];
+    if (move.contains("minY")) result.minY = move["minY"];
+    if (move.contains("maxY")) result.maxY = move["maxY"];
+
+    if (move.contains("tiltSpeed")) result.tiltSpeed = move["tiltSpeed"];
+    if (move.contains("maxTilt")) result.maxTilt = move["maxTilt"];
+    if (move.contains("returnSpeed")) result.returnSpeed = move["returnSpeed"];
+
+    if (move.contains("dashDuration")) result.dashDuration = move["dashDuration"];
+    if (move.contains("dashCoolDown")) result.dashCoolDown = move["dashCoolDown"];
+    if (move.contains("dashSpeedMult")) result.dashSpeedMult = move["dashSpeedMult"];
+
+    return result;
+}
+
+Transform PlayerDataLoader::LoadTransform(const json& transform) {
+    Transform result{};
+
+    // 安全チェック
+    assert(t.contains("translation"));
+    assert(t.contains("rotation"));
+    assert(t.contains("scaling"));
+
+    // translation
+    result.translate.x = (float)transform["translation"][0];
+    result.translate.y = (float)transform["translation"][2]; // YZ入れ替え
+    result.translate.z = (float)transform["translation"][1];
+
+    // rotation
+    result.rotate.x = -(float)transform["rotation"][0];
+    result.rotate.y = -(float)transform["rotation"][2];
+    result.rotate.z = -(float)transform["rotation"][1];
+
+    // scale
+    result.scale.x = (float)transform["scaling"][0];
+    result.scale.y = (float)transform["scaling"][2];
+    result.scale.z = (float)transform["scaling"][1];
+
+    return result;
+}
+
+PlayerReticleData PlayerDataLoader::LoadReticle(const nlohmann::json& reticle) {
+    PlayerReticleData result{};
+    if (reticle.contains("speed")) result.speed = reticle["speed"];
+    if (reticle.contains("maxX")) result.maxX = reticle["maxX"];
+    if (reticle.contains("minX")) result.minX = reticle["minX"];
+    if (reticle.contains("maxY")) result.maxY = reticle["maxY"];
+    if (reticle.contains("minY")) result.minY = reticle["minY"];
+    if (reticle.contains("forwardDistance")) result.forwardDistance = reticle["forwardDistance"];
+    return result;
+}
+
+PlayerWeaponData LoadWeapon(const nlohmann::json& weapon) {
+    PlayerWeaponData result{};
+    if (weapon.contains("bulletInterval")) result.bulletInterval = weapon["bulletInterval"];
+    if (weapon.contains("bulletSpeed")) result.bulletSpeed = weapon["bulletSpeed"];
+    return result;
+}

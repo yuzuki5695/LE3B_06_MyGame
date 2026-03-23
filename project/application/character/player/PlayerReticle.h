@@ -1,5 +1,6 @@
 #pragma once
 #include <Vector3.h>
+#include <PlayerData.h>
 
 // 前方宣言
 struct Transform;
@@ -13,6 +14,9 @@ class Object3d;
 /// </summary>
 class PlayerReticle {
 public:
+
+    void Initialize(const PlayerReticleData& data); // 初期化関数を追加
+    
     /// <summary>
     /// レティクルの3D座標更新
     /// キー入力に応じて照準を移動させ、プレイヤーの前方に配置する。
@@ -32,11 +36,5 @@ public:
     void UpdateSprite(const Vector3& worldPos, Sprite* targetSprite, Camera* activeCamera);
 
 private:
-    // --- 設定定数 ---
-    const float kSpeed = 0.4f;            // レティクルの移動速度
-    const float kMaxX = 12.0f;           // 左右の移動限界
-    const float kMinX = -12.0f;
-    const float kMaxY = 7.0f;            // 上下の移動限界
-    const float kMinY = -7.0f;
-    const float kForwardDistance = 30.0f; // プレイヤーからどれくらい前方に配置するか
+    PlayerReticleData data_{}; // 設定値を保持
 };

@@ -7,7 +7,7 @@
 #include <PlayerReticle.h>
 #include <PlayerWeapon.h>
 #include <PlayerDeath.h>
-#include <PlayerDash.h>
+#include <PlayerData.h>
 
 // プレイヤーの状態を定義
 enum class State {
@@ -48,7 +48,7 @@ public:// メンバ関数
 	/// <summary>
 	/// 当たり判定用を取得
 	/// </summary>
-	OBB GetOBB() const;
+	//OBB GetOBB() const;
 	/// <summary>
     /// カメラのレール移動に合わせてプレイヤーのワールド座標を更新する
     /// </summary>
@@ -70,11 +70,13 @@ private:// メンバ変数
 	std::unique_ptr<PlayerReticle> reticle_;    // プレイヤ―の照準制御クラス
 	std::unique_ptr<PlayerWeapon> weapon_;      // プレイヤ―の武器制御クラス
 	std::unique_ptr<PlayerDeath> death_;        // プレイヤ―の死亡演出クラス
-	std::unique_ptr<PlayerDash> dash_;          // プレイヤ―の回避制御クラス
 	State state_ = State::None; // 初期状態
 
 	std::unique_ptr <Object3d> object;  // プレイヤーの3Dオブジェクト
+	PlayerData data_; // プレイヤーのデータ構造体
+
 	Transform transform_{};
+
 	std::unique_ptr <Object3d> target_; // ターゲット用3Dオブジェクト
 	Transform targettransform_{};
 	std::unique_ptr <Sprite> targetreticle_; // レティクル用スプライト	
@@ -86,16 +88,17 @@ public:// メンバ変数
 	// 参照を返す（変更不可）
 	Object3d* GetPlayerObject() { return object.get(); }
 	void SetTransform(const Transform& t) {
-		transform_ = t;
-		object->SetTranslate(transform_.translate);
-		object->SetRotate(transform_.rotate);
-		object->SetScale(transform_.scale);
+		data_.transform = t;
+		object->SetTranslate(data_.transform.translate);
+		object->SetRotate(data_.transform.rotate);
+		object->SetScale(data_.transform.scale);
 	}
 
 	// Transformのpositionを返すgetter
 	Vector3 GetPosition() const {
-		return transform_.translate;
+		return data_.transform.translate;
 	}
 	Vector3 GetForward();
+	Vector3 GetWorldPosition()const { return object->GetWorldPosition(); }
 
 };

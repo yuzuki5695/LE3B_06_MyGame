@@ -10,20 +10,24 @@
 
 using namespace MatrixVector;
 
+void PlayerReticle::Initialize(const PlayerReticleData& data) {
+    data_ = data;
+}
+
 void PlayerReticle::Update(Transform& reticleTransform, const Vector3& playerWorldPos, Object3d* targetObj) {
 if (!targetObj) return;
     Input* input = Input::GetInstance();
 
     // 入力でターゲットを動かす
     // 方向キーでレティクルの相対座標を動かす
-    if (input->Pushkey(DIK_LEFT))  reticleTransform.translate.x -= kSpeed;
-    if (input->Pushkey(DIK_RIGHT)) reticleTransform.translate.x += kSpeed;
-    if (input->Pushkey(DIK_UP))    reticleTransform.translate.y += kSpeed;
-    if (input->Pushkey(DIK_DOWN))  reticleTransform.translate.y -= kSpeed;
+    if (input->Pushkey(DIK_LEFT))  reticleTransform.translate.x -= data_.speed;
+    if (input->Pushkey(DIK_RIGHT)) reticleTransform.translate.x += data_.speed;
+    if (input->Pushkey(DIK_UP))    reticleTransform.translate.y += data_.speed;
+    if (input->Pushkey(DIK_DOWN))  reticleTransform.translate.y -= data_.speed;
 
     // 移動範囲の制限（クランプ)
-    reticleTransform.translate.x = std::clamp(reticleTransform.translate.x, kMinX, kMaxX);
-    reticleTransform.translate.y = std::clamp(reticleTransform.translate.y, kMinY, kMaxY);
+    reticleTransform.translate.x = std::clamp(reticleTransform.translate.x, data_.minX, data_.maxX);
+    reticleTransform.translate.y = std::clamp(reticleTransform.translate.y, data_.minY, data_.maxY);
 
     // カメラ基準の方向ベクトル計算
     // カメラの回転から、世界軸ではない「現在の視点における正面・右・上」を割り出す
@@ -38,7 +42,7 @@ if (!targetObj) return;
     Vector3 offset =
         right * reticleTransform.translate.x +
         up    * reticleTransform.translate.y +
-        forward * kForwardDistance;
+        forward * data_.forwardDistance;
 
     // 最終的な座標を計算して反映
     Vector3 finalPos = playerWorldPos + offset;
