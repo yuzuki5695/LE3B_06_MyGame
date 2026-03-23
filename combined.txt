@@ -53,8 +53,7 @@
     └── └── └── player/
     └── └──     ├── Player.cpp
     └── └──     ├── Player.h
-    └── └──     ├── PlayerDash.cpp
-    └── └──     ├── PlayerDash.h
+    └── └──     ├── PlayerData.h
     └── └──     ├── PlayerDeath.cpp
     └── └──     ├── PlayerDeath.h
     └── └──     ├── PlayerMove.cpp
@@ -78,7 +77,9 @@
     └── └── ├── CurveJsonLoader.cpp
     └── └── ├── CurveJsonLoader.h
     └── └── ├── EnemyLoader.cpp
-    └── └── └── EnemyLoader.h
+    └── └── ├── EnemyLoader.h
+    └── └── ├── PlayerDataLoader.cpp
+    └── └── └── PlayerDataLoader.h
     └── ├── particle/
     └── └── ├── BaseEmitter.h
     └── └── ├── DefaultParticleEmitter.cpp
@@ -517,7 +518,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="application\character\enemy\Enemy.cpp" />
     <ClCompile Include="application\character\enemy\EnemySpawner.cpp" />
     <ClCompile Include="application\character\player\Player.cpp" />
-    <ClCompile Include="application\character\player\PlayerDash.cpp" />
     <ClCompile Include="application\character\player\PlayerDeath.cpp" />
     <ClCompile Include="application\character\player\PlayerMove.cpp" />
     <ClCompile Include="application\character\player\PlayerReticle.cpp" />
@@ -527,6 +527,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="application\loader\CharacterLoader.cpp" />
     <ClCompile Include="application\loader\CurveJsonLoader.cpp" />
     <ClCompile Include="application\loader\EnemyLoader.cpp" />
+    <ClCompile Include="application\loader\PlayerDataLoader.cpp" />
     <ClCompile Include="application\particle\DefaultParticleEmitter.cpp" />
     <ClCompile Include="application\particle\GameClearparticle.cpp" />
     <ClCompile Include="application\particle\GameOverparticle.cpp" />
@@ -614,7 +615,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\character\enemy\Enemy.h" />
     <ClInclude Include="application\character\enemy\EnemySpawner.h" />
     <ClInclude Include="application\character\player\Player.h" />
-    <ClInclude Include="application\character\player\PlayerDash.h" />
+    <ClInclude Include="application\character\player\PlayerData.h" />
     <ClInclude Include="application\character\player\PlayerDeath.h" />
     <ClInclude Include="application\character\player\PlayerMove.h" />
     <ClInclude Include="application\character\player\PlayerReticle.h" />
@@ -624,6 +625,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\loader\CharacterLoader.h" />
     <ClInclude Include="application\loader\CurveJsonLoader.h" />
     <ClInclude Include="application\loader\EnemyLoader.h" />
+    <ClInclude Include="application\loader\PlayerDataLoader.h" />
     <ClInclude Include="application\particle\BaseEmitter.h" />
     <ClInclude Include="application\particle\DefaultParticleEmitter.h" />
     <ClInclude Include="application\particle\FollowEmitter.h" />
@@ -845,9 +847,6 @@ File Path: project/MyGame.vcxproj.filters
     </Filter>
     <Filter Include="ソース ファイル\engine">
       <UniqueIdentifier>{e5bb12bd-eb6c-4539-8614-50e10be7f71c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ソース ファイル\engine\2d">
-      <UniqueIdentifier>{87dbf081-2f7b-4eab-8c81-08ea214b5ba0}</UniqueIdentifier>
     </Filter>
     <Filter Include="ソース ファイル\engine\3d">
       <UniqueIdentifier>{e4f54486-87d7-4c08-acbf-10af73162a20}</UniqueIdentifier>
@@ -1109,6 +1108,9 @@ File Path: project/MyGame.vcxproj.filters
     </Filter>
     <Filter Include="ソース ファイル\application\character\player">
       <UniqueIdentifier>{a7eab18e-630a-472c-afe5-35bace2ee948}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\engine\2d">
+      <UniqueIdentifier>{87dbf081-2f7b-4eab-8c81-08ea214b5ba0}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -1382,11 +1384,11 @@ File Path: project/MyGame.vcxproj.filters
     <ClCompile Include="application\character\player\PlayerDeath.cpp">
       <Filter>ソース ファイル\application\character\player</Filter>
     </ClCompile>
-    <ClCompile Include="application\character\player\PlayerDash.cpp">
-      <Filter>ソース ファイル\application\character\player</Filter>
-    </ClCompile>
     <ClCompile Include="application\character\player\Player.cpp">
       <Filter>ソース ファイル\application\character\player</Filter>
+    </ClCompile>
+    <ClCompile Include="application\loader\PlayerDataLoader.cpp">
+      <Filter>ソース ファイル\application\loader</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1762,9 +1764,6 @@ File Path: project/MyGame.vcxproj.filters
     <ClInclude Include="application\character\player\Player.h">
       <Filter>ヘッダー ファイル\application\character\player</Filter>
     </ClInclude>
-    <ClInclude Include="application\character\player\PlayerDash.h">
-      <Filter>ヘッダー ファイル\application\character\player</Filter>
-    </ClInclude>
     <ClInclude Include="application\character\player\PlayerDeath.h">
       <Filter>ヘッダー ファイル\application\character\player</Filter>
     </ClInclude>
@@ -1779,6 +1778,12 @@ File Path: project/MyGame.vcxproj.filters
     </ClInclude>
     <ClInclude Include="application\collision\CollisionManager.h">
       <Filter>ヘッダー ファイル\application\collision</Filter>
+    </ClInclude>
+    <ClInclude Include="application\loader\PlayerDataLoader.h">
+      <Filter>ソース ファイル\application\loader</Filter>
+    </ClInclude>
+    <ClInclude Include="application\character\player\PlayerData.h">
+      <Filter>ヘッダー ファイル\application\character\player</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -4429,55 +4434,38 @@ File Path: project/application/character/enemy/Enemy.cpp
 #include <ModelManager.h>
 #include <Tools/AssetGenerator/engine/math/LoadResourceID.h>
 #include <CameraManager.h>
+#include <MatrixVector.h>
 
 using namespace LoadResourceID;
+using namespace MatrixVector;
 
 Enemy::~Enemy() {}
 
 void Enemy::Initialize() {
     ModelManager::GetInstance()->LoadModel(model::Enemy);
-    transform_ = { { 1.0f, 1.0f, 1.0f }, { 0.0f, 0.0f, 0.0f },{0.0f,10.0f,300.0f} };
+    transform_ = { { 1.0f, 1.0f, 1.0f }, { 0.0f, 0.0f, 0.0f },{-20.0f,15.0f,300.0f} };
+    transform_.rotate.x = 10.0f;
+    transform_.rotate.y = 10.0f;    
+    transform_.rotate.z = 25.0f;
     object = Object3d::Create(model::Enemy, transform_);
 
     moveType_ = EnemyMoveType::Stationary;
 }
 
 void Enemy::Update() {
+
     // 1. 移動：レール同期タイプなら座標を更新
     if (moveType_ == EnemyMoveType::RailFollow) {
-        SyncWithRail();
-    }
-    
-    if (moveType_ == EnemyMoveType::RailFollow) {
-        SyncWithPlayerFront();
+        // SyncWithRail();
     }
 
-    // 2. 向き：プレイヤーの方を向く
-    LookAtPlayer();
-
-    // 3. 描画オブジェクトへの反映
     object->SetTranslate(transform_.translate);
-    object->SetRotate(transform_.rotate);
     object->SetScale(transform_.scale);
     object->Update();
 }
 
 void Enemy::Draw() {
 	object->Draw();
-}
-
-void Enemy::LookAtPlayer() {
-    if (!player_) return;
-
-    // 敵からプレイヤーへのベクトル
-    Vector3 toPlayer = player_->GetPosition() - transform_.translate;
-    
-    // Y軸周りの回転（Yaw）を計算
-    transform_.rotate.y = atan2f(toPlayer.x, toPlayer.z);
-
-    // 上下方向（Pitch）も合わせる場合
-    float distanceXZ = sqrtf(toPlayer.x * toPlayer.x + toPlayer.z * toPlayer.z);
-    transform_.rotate.x = -atan2f(toPlayer.y, distanceXZ);
 }
 
 void Enemy::SyncWithRail() {
@@ -4499,21 +4487,6 @@ void Enemy::SyncWithRail() {
     transform_.translate = camPos + worldOffset;
 }
 
-void Enemy::SyncWithPlayerFront() {
-    if (!player_) return;
-
-    // プレイヤーの情報取得
-    Vector3 playerPos = player_->GetPosition();
-    Vector3 forward = player_->GetForward(); // ← これ必要
-
-    float distance = 30.0f; // 前にどれだけ出すか
-
-    // プレイヤーの前方に配置
-    transform_.translate = playerPos + forward * distance;
-
-    // 向きはプレイヤーと同じ
-    transform_.rotate = player_->GetPlayerObject()->GetRotate();
-}
 
 ============================================================
 File Path: project/application/character/enemy/Enemy.h
@@ -4553,7 +4526,10 @@ public: // メンバ関数
     void SetPlayer(Player* player) { player_ = player; }
     // 移動タイプの設定
     void SetMoveType(EnemyMoveType type) { moveType_ = type; }
-    void SyncWithPlayerFront();
+private:
+    // 内部計算メソッド
+    //void LookAtPlayer(); // 未実装
+    void SyncWithRail();
 
 private: // メンバ変数
     std::unique_ptr<Object3d> object;// 敵モデルデータ
@@ -4565,9 +4541,6 @@ private: // メンバ変数
     // レール同期用のオフセット（カメラから見てどの位置にいたいか）
     Vector3 railOffset_ = { 0.0f, 0.0f, 50.0f };
 
-    // 内部計算メソッド
-    void LookAtPlayer();
-    void SyncWithRail();
 };
 
 ============================================================
@@ -4914,6 +4887,7 @@ File Path: project/application/character/player/Player.cpp
 #include <Skybox.h>
 #include <ModelDate.h>
 #include <Tools/AssetGenerator/engine/math/LoadResourceID.h>
+#include <PlayerDataLoader.h>
 
 using namespace LoadResourceID;
 using namespace MatrixVector;
@@ -4932,8 +4906,8 @@ void Player::Initialize() {
     ModelManager::GetInstance()->LoadModel(model::Playerbullet);
     TextureManager::GetInstance()->LoadTexture(texture::Target);
 
-    // プレイヤーの初期位置と回転を設定
-    transform_ = { {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f},  0.0f,0.0f,0.0f };
+    data_ = PlayerDataLoader::Load("player");
+    transform_ = data_.transform;
     // プレイヤー生成
     object = Object3d::Create(model::Player, transform_);
 
@@ -4950,13 +4924,13 @@ void Player::Initialize() {
 
     // インスタンスの生成
     move_ = std::make_unique<PlayerMove>();
+    move_->Initialize(data_.move);
     reticle_ = std::make_unique<PlayerReticle>();
+    reticle_->Initialize(data_.reticle);
     weapon_ = std::make_unique<PlayerWeapon>();
-    weapon_->Initialize();
+    weapon_->Initialize(data_.weapon);
     death_ = std::make_unique<PlayerDeath>();
-    death_->Initialize();
-    dash_ = std::make_unique<PlayerDash>();
-    dash_->Initialize();
+    death_->Initialize(data_.death);
 }
 
 void Player::Update() {
@@ -5021,30 +4995,8 @@ void Player::DebugImgui() {
 
 void Player::UpdateAlive() {
     CameraManager* camMgr = CameraManager::GetInstance();
-    Input* input = Input::GetInstance();
-
-    // --- 1. 回避入力 ---
-    if (input->Pushkey(DIK_LSHIFT) && dash_->CanDash()) {
-        // 現在の移動入力から方向を決定
-        float moveDirX = 0.0f;
-        if (input->Pushkey(DIK_A)) moveDirX = -1.0f;
-        if (input->Pushkey(DIK_D)) moveDirX = 1.0f;
-        dash_->Start(moveDirX);
-    }
-
-    // --- 2. 回避状態の更新 ---
-    dash_->Update();
-
-    // --- 3. 移動の更新 ---
-    // PlayerMoveに現在の速度倍率を渡す（PlayerMove側のUpdateに引数を追加するか、内部で計算）
-    // ここでは、一時的に移動速度を上げるためにダッシュ倍率を適用
-    float currentSpeedMult = dash_->GetSpeedMultiplier();
-
-    // move_->Updateの中で speed * currentSpeedMult されるように調整
-    move_->Update(transform_, CameraManager::GetInstance()->GetMainCamera()->GetRotate(), currentSpeedMult);
-
-    // --- 4. 回転の合成 ---
-    transform_.rotate.z += dash_->GetRotationZ();
+	// 移動処理の更新（ローカル座標での移動量を取得）
+    move_->Update(transform_,camMgr->GetMainCamera()->GetRotate());
     // レティクル
     reticle_->Update(targettransform_, transform_.translate, target_.get());
     // 攻撃
@@ -5054,8 +5006,6 @@ void Player::UpdateAlive() {
 }
 
 void Player::UpdateDead() {
-
-
     // 死亡演出：ここに落下や回転のロジックを書く（後にクラス化も可能）
     death_->Update(transform_.rotate, deathOffset_, object.get());
     // 座標の同期（これが重要）
@@ -5100,38 +5050,6 @@ void Player::SyncWorldTransformByRail() {
     }
 }
 
-///=====================================================================
-/// OBB当たり判定取得
-///=====================================================================
-OBB Player::GetOBB() const {
-    OBB obb;
-
-    // 中心座標
-    obb.center = transform_.translate;
-
-    // ハーフサイズ（スケールの半分）
-    obb.halfSize = {
-        transform_.scale.x / 2.0f, 
-        transform_.scale.y / 2.0f, 
-        transform_.scale.z / 2.0f
-    };
-
-    // 回転行列（XYZ順で回転を合成）
-    Matrix4x4 rotX = MakeRotateXMatrix(transform_.rotate.x);
-    Matrix4x4 rotY = MakeRotateYMatrix(transform_.rotate.y);
-    Matrix4x4 rotZ = MakeRotateZMatrix(transform_.rotate.z);
-
-    // Z→X→Y の順に掛けることで、XYZ回転（ローカル空間回転）を再現
-    Matrix4x4 rotMat = Multiply(Multiply(rotZ, rotX), rotY);
-
-    // ローカル軸（X, Y, Z）をワールド空間へ回転適用
-    obb.axis[0] = Normalize(Multiply4x4x3(rotMat, Vector3{ 1, 0, 0 })); // X軸
-    obb.axis[1] = Normalize(Multiply4x4x3(rotMat, Vector3{ 0, 1, 0 })); // Y軸
-    obb.axis[2] = Normalize(Multiply4x4x3(rotMat, Vector3{ 0, 0, 1 })); // Z軸
-    
-    return obb;
-}
-
 ============================================================
 File Path: project/application/character/player/Player.h
 ============================================================
@@ -5144,7 +5062,7 @@ File Path: project/application/character/player/Player.h
 #include <PlayerReticle.h>
 #include <PlayerWeapon.h>
 #include <PlayerDeath.h>
-#include <PlayerDash.h>
+#include <PlayerData.h>
 
 // プレイヤーの状態を定義
 enum class State {
@@ -5185,7 +5103,7 @@ public:// メンバ関数
 	/// <summary>
 	/// 当たり判定用を取得
 	/// </summary>
-	OBB GetOBB() const;
+	//OBB GetOBB() const;
 	/// <summary>
     /// カメラのレール移動に合わせてプレイヤーのワールド座標を更新する
     /// </summary>
@@ -5207,11 +5125,13 @@ private:// メンバ変数
 	std::unique_ptr<PlayerReticle> reticle_;    // プレイヤ―の照準制御クラス
 	std::unique_ptr<PlayerWeapon> weapon_;      // プレイヤ―の武器制御クラス
 	std::unique_ptr<PlayerDeath> death_;        // プレイヤ―の死亡演出クラス
-	std::unique_ptr<PlayerDash> dash_;          // プレイヤ―の回避制御クラス
 	State state_ = State::None; // 初期状態
 
 	std::unique_ptr <Object3d> object;  // プレイヤーの3Dオブジェクト
+	PlayerData data_; // プレイヤーのデータ構造体
+
 	Transform transform_{};
+
 	std::unique_ptr <Object3d> target_; // ターゲット用3Dオブジェクト
 	Transform targettransform_{};
 	std::unique_ptr <Sprite> targetreticle_; // レティクル用スプライト	
@@ -5223,134 +5143,78 @@ public:// メンバ変数
 	// 参照を返す（変更不可）
 	Object3d* GetPlayerObject() { return object.get(); }
 	void SetTransform(const Transform& t) {
-		transform_ = t;
-		object->SetTranslate(transform_.translate);
-		object->SetRotate(transform_.rotate);
-		object->SetScale(transform_.scale);
+		data_.transform = t;
+		object->SetTranslate(data_.transform.translate);
+		object->SetRotate(data_.transform.rotate);
+		object->SetScale(data_.transform.scale);
 	}
 
 	// Transformのpositionを返すgetter
 	Vector3 GetPosition() const {
-		return transform_.translate;
+		return data_.transform.translate;
 	}
 	Vector3 GetForward();
+	Vector3 GetWorldPosition()const { return object->GetWorldPosition(); }
 
 };
 
 ============================================================
-File Path: project/application/character/player/PlayerDash.cpp
-============================================================
-#include "PlayerDash.h"
-#include <cmath>
-#include <numbers>
-#include <algorithm>
-
-void PlayerDash::Initialize() {
-    isDashing_ = false;
-    dashTimer_ = 0.0f;
-    coolDownTimer_ = 0.0f;
-    speedMultiplier_ = 1.0f;
-    extraRotationZ_ = 0.0f;
-}
-
-void PlayerDash::Start(float directionX) {
-    // クールタイム中なら受け付けない
-    if (!CanDash()) return;
-
-    isDashing_ = true;
-    dashTimer_ = 0.0f;
-    
-    // 入力方向に基づいて回転方向を決める（入力がなければ右回転にする）
-    dashDirX_ = (std::abs(directionX) > 0.01f) ? (directionX > 0 ? 1.0f : -1.0f) : 1.0f;
-}
-
-void PlayerDash::Update() {
-    float deltaTime = 1.0f / 60.0f;
-
-    if (isDashing_) {
-        // --- ダッシュ中の処理 ---
-        dashTimer_ += deltaTime;
-        
-        // ダッシュの進捗率（0.0 ～ 1.0）を計算
-        float progress = std::clamp(dashTimer_ / kDashDuration, 0.0f, 1.0f);
-
-        // 回転の計算
-        // 360度（2π）を現在の進捗率に掛けて、回転角を算出する
-        float totalRotation = 2.0f * std::numbers::pi_v<float>;
-        extraRotationZ_ = -dashDirX_ * (totalRotation * progress);
-
-        // 速度倍率の計算
-        // sin波を利用して、開始時と終了時は「1.0」、中間地点で「kMaxSpeedMult」になるように調整
-        // これにより、滑らかに加速して滑らかに減速する
-        speedMultiplier_ = 1.0f + (kMaxSpeedMult - 1.0f) * std::sin(progress * std::numbers::pi_v<float>);
-
-        // 時間が経過したらダッシュ終了
-        if (dashTimer_ >= kDashDuration) {
-            isDashing_ = false;
-            dashTimer_ = 0.0f;
-            extraRotationZ_ = 0.0f;   // 回転をリセット
-            speedMultiplier_ = 1.0f;  // 速度を通常に戻す
-            coolDownTimer_ = kCoolDownTime; // クールタイム開始
-        }
-    }
-    else if (coolDownTimer_ > 0.0f) {
-        // --- クールタイムのカウントダウン ---
-        coolDownTimer_ -= deltaTime;
-    }
-}
-
-============================================================
-File Path: project/application/character/player/PlayerDash.h
+File Path: project/application/character/player/PlayerData.h
 ============================================================
 #pragma once
-#include <Vector3.h>
+#include <Transform.h>
+#include <string>
 
-/// <summary>
-/// プレイヤーのダッシュ（回避・高速移動）管理クラス
-/// 一定時間速度を上げ、機体をロール（回転）させる演出を制御する。
-/// </summary>
-class PlayerDash {
-public:
-    /// <summary>
-    /// 初期化（パラメータのリセット）
-    /// </summary>
-    void Initialize();
-    /// <summary>
-    /// ダッシュの開始
-    /// </summary>
-    /// <param name="directionX">現在の左右入力値（回転方向を決定するために使用）</param>
-    void Start(float directionX);
-    /// <summary>
-    /// ダッシュ状態とクールタイムの更新
-    /// </summary>
-    void Update();
-private:
-    // --- 状態管理 ---
-    bool isDashing_ = false;       // 現在ダッシュ中か
-    float dashTimer_ = 0.0f;       // ダッシュ開始からの経過時間
-    float coolDownTimer_ = 0.0f;   // 再使用までの残り時間
-    // --- 設定定数 ---
-    const float kDashDuration = 0.5f;   // ダッシュ（回転）が続く時間
-    const float kCoolDownTime = 3.0f;   // ダッシュ終了後のクールタイム
-    const float kMaxSpeedMult = 2.5f;   // ダッシュ中の最大速度倍率
-    // --- 演出用変数 ---
-    float dashDirX_ = 0.0f;        // 回転する方向（左:-1.0, 右:1.0）
-    float extraRotationZ_ = 0.0f;  // ダッシュによる追加のZ軸回転量（ラジアン）
-    float speedMultiplier_ = 1.0f; // 移動クラスに渡す速度倍率
-public: // アクセッサ
-	// Getter
-    // 現在の回転角を取得（PlayerMoveの回転に加算する）
-    float GetRotationZ() const { return extraRotationZ_; } 
-    // 現在の速度倍率を取得（PlayerMoveの移動量に掛ける）
-    float GetSpeedMultiplier() const { return speedMultiplier_; }    
-    // クールタイムの進捗（0.0～1.0） ※UIのゲージ表示などに利用
-    float GetCoolDownProgress() const { return coolDownTimer_ / kCoolDownTime; }
-
-    // ダッシュ中かどうか
-    bool IsDashing() const { return isDashing_; }
-    // 現在ダッシュ可能か（ダッシュ中でなく、かつクールタイムが終了しているか）
-    bool CanDash() const { return !isDashing_ && coolDownTimer_ <= 0.0f; }    
+// 死亡演出のデータ構造体
+struct PlayerDeathData {
+    float duration;      // 演出の合計時間
+    float fallSpeedY;    // 下方向への落下速度
+    float fallSpeedZ;    // 前方向への慣性移動速度
+    float blinkSpeed;    // 点滅の速さ
+    float blinkThreshold; // 点滅判定の閾値 (0.0~1.0)
+    float rotateSpeedX;  // 基本回転速度X
+    float rotateSpeedZ;  // 基本回転速度Z
+    float shakeAmount;   // 揺らぎの強さ
 };
+
+// 武器用データ構造体
+struct PlayerWeaponData {
+    float bulletInterval; // 発射間隔
+    float bulletSpeed;    // 弾速（現在はPlayerBullet側にあるかもしれませんが、ここで管理すると調整が楽です）
+};
+
+struct PlayerMoveData {
+    float speed;
+    float maxX;
+    float minY;
+    float maxY;
+    float tiltSpeed;
+    float maxTilt;
+    float returnSpeed;
+    float dashDuration;
+	float dashCoolDown;
+	float dashSpeedMult;
+};
+
+struct PlayerReticleData {
+    float speed;            // レティクルの移動速度
+    float maxX;             // 左右の移動制限
+    float minX;             
+    float minY;             // 下方向の制限
+    float maxY;             // 上方向の制限
+    float forwardDistance;  // プレイヤーからどれくらい前方に配置するか
+};
+
+struct PlayerData {
+    std::string fileName;
+    Transform transform;
+    PlayerMoveData move;
+    PlayerReticleData reticle;
+    PlayerWeaponData weapon;
+    PlayerDeathData death;
+};
+
+
 
 ============================================================
 File Path: project/application/character/player/PlayerDeath.cpp
@@ -5359,8 +5223,9 @@ File Path: project/application/character/player/PlayerDeath.cpp
 #include <Object3d.h>
 #include <cmath>
 
-void PlayerDeath::Initialize() {
+void PlayerDeath::Initialize(const PlayerDeathData& data) {
     timer_ = 0.0f;
+    data_ = data; // データを保存
 }
 
 void PlayerDeath::Update(Vector3& rotate, Vector3& offset, Object3d* object) {
@@ -5370,18 +5235,18 @@ void PlayerDeath::Update(Vector3& rotate, Vector3& offset, Object3d* object) {
     timer_ += 1.0f / 60.0f;
 
     // 落下挙動の計算
-    offset.y -= kFallSpeedY;
-    offset.z += kFallSpeedZ;
+    offset.y -= data_.fallSpeedY;
+    offset.z += data_.fallSpeedZ;
 
     // フラフラとした回転の更新
     // 単純な加算ではなく、sin/cos を使うことで「機体が揺れながら回る」不規則さを演出
     // X軸（ピッチ）とZ軸（ロール）を別々の周期で揺らす
-    rotate.x += 0.004f + 0.002f * std::sin(timer_ * 0.5f);
-    rotate.z += 0.003f + 0.0015f * std::cos(timer_ * 0.4f);
+    rotate.x += data_.rotateSpeedX + data_.shakeAmount * std::sin(timer_ * 0.5f);
+    rotate.z += data_.rotateSpeedZ + (data_.shakeAmount * 0.75f) * std::cos(timer_ * 0.4f);
 
     // 被弾点滅処理 
     // サイン波を使って 0.0 ～ 1.0 の間を高速に往復する数値（s）を作る
-    float s = (std::sin(timer_ * kBlinkSpeed) + 1.0f) * 0.5f;
+    float s = (std::sin(timer_ * data_.blinkSpeed) + 1.0f) * 0.5f;
 
     // 算出した s が特定の閾値（0.85）を超えた瞬間だけ、モデルの色を「赤」に変える
     if (s > 0.85f) {
@@ -5400,6 +5265,7 @@ File Path: project/application/character/player/PlayerDeath.h
 #pragma once
 #include <Vector3.h>
 #include <Vector4.h>
+#include <PlayerData.h>
 
 // 前方宣言
 class Object3d;
@@ -5413,7 +5279,7 @@ public:
     /// <summary>
     /// 初期化（タイマーのリセット）
     /// </summary>
-    void Initialize();
+    void Initialize(const PlayerDeathData& data);
 
     /// <summary>
     /// 死亡演出の更新
@@ -5426,15 +5292,10 @@ public:
     /// <summary>
     /// 演出が終了したかどうか（シーン遷移のトリガーなどに使用）
     /// </summary>
-    bool IsFinished() const { return timer_ >= kDuration; }
+    bool IsFinished() const { return timer_ >= data_.duration; }
 private:
+    PlayerDeathData data_{};
     float timer_ = 0.0f;          // 経過時間タイマー
-    const float kDuration = 2.5f; // 演出の合計時間（秒）
-
-    // --- 演出用の設定定数 ---
-    const float kFallSpeedY = 0.02f; // 下方向への落下速度
-    const float kFallSpeedZ = 0.2f;  // 前方向への慣性移動速度
-    const float kBlinkSpeed = 50.0f; // 赤点滅の速さ
 };
 
 ============================================================
@@ -5445,68 +5306,127 @@ File Path: project/application/character/player/PlayerMove.cpp
 #include <algorithm>
 #include <CameraManager.h>
 #include <Object3d.h>
-#include <Transform.h>
+#include <numbers>
 
-void PlayerMove::Update(Transform& transform, const Vector3& cameraRotate, float speedMultiplier) {
+void PlayerMove::Initialize(const PlayerMoveData& data) {
+    data_ = data;
+    isDashing_ = false;
+    dashTimer_ = 0.0f;
+    coolDownTimer_ = 0.0f; // 初期化時にクールタイムもリセット
+    currentDashSpeedMult_ = 1.0f;
+    relativePos_ = { 0.0f, 0.0f, 0.0f };
+}
+
+void PlayerMove::Update(Transform& transform, const Vector3& cameraRotate) {
     // GetInstanceの省略
     Input* input = Input::GetInstance();
-    const float speed = 0.17f * speedMultiplier;
+    float deltaTime = 1.0f / 60.0f; 
 
-    // --- 1. 入力値の取得 ---
-    Vector3 moveInput = { 0, 0, 0 };
-    if (input->Pushkey(DIK_A)) moveInput.x -= speed;
-    if (input->Pushkey(DIK_D)) moveInput.x += speed;
-    if (input->Pushkey(DIK_W)) moveInput.y += speed;
-    if (input->Pushkey(DIK_S)) moveInput.y -= speed;
+    // --- 1. クールタイムの更新 ---
+    if (coolDownTimer_ > 0.0f) {
+        coolDownTimer_ -= deltaTime;
+    }
 
-    // --- 2. 移動の実行と制限 ---
-    relativePos_.x += moveInput.x;
-    relativePos_.y += moveInput.y;
+    // --- 2. 回避入力の受付 ---
+    // 非回避中かつクールタイムが終わっていれば回避可能
+    if (input->Triggrkey(DIK_LSHIFT) && !isDashing_ && coolDownTimer_ <= 0.0f) {
+        // 現在の左右入力（A/D）から回避方向を決定。入力がなければ右(1.0)へ
+        float dir = static_cast<float>(input->Pushkey(DIK_D) - input->Pushkey(DIK_A));
+        StartDash(dir);
+    }
+       
+    // --- 移動量の合成 ---
+    Vector3 move = UpdateNormal();
+
+    if (isDashing_) {
+        move += UpdateDash(deltaTime); // ← ここが本質🔥
+    }
+
+    // 最後にまとめて適用
+    relativePos_ += move;
     ApplyConstraint();
 
-    // --- 3. 傾き計算 ---
-    // 入力がある場合は傾け、ない場合は緩やかに水平に戻す
-    UpdateTilt(moveInput);
 
     // --- 4. プレイヤーの回転に反映 ---
     // ベースとなるカメラの回転に、操作による傾き(tilt)を合成する
     transform.rotate.x = cameraRotate.x + tiltX_;
     transform.rotate.y = cameraRotate.y;
-    transform.rotate.z = cameraRotate.z + tiltZ_;
+    transform.rotate.z = cameraRotate.z + tiltZ_ + extraRotationZ_;
 }
 
 void PlayerMove::ApplyConstraint() {
     // 画面外（レールの移動可能範囲）に出ないようにクランプ
-    relativePos_.x = std::clamp(relativePos_.x, -10.0f, 10.0f);
-    relativePos_.y = std::clamp(relativePos_.y, -2.5f, 9.0f);
+    relativePos_.x = std::clamp(relativePos_.x, -data_.maxX, data_.maxX);
+    relativePos_.y = std::clamp(relativePos_.y, data_.minY, data_.maxY);
 }
 
 void PlayerMove::UpdateTilt(const Vector3& moveInput) {
-    const float tiltSpeed = 0.05f;   // 1フレームで傾く速度
-    const float maxTilt = 0.4f;      // 最大傾斜角
-    const float returnSpeed = 0.08f; // 入力がない時に戻る速度(0.0~1.0)
+    auto approach = [](float& value, float target, float speed) {
+        value += (target - value) * speed;
+    };
 
-    // 横入力によるロール演出 (Z軸回転)
-    if (moveInput.x < 0) {        // 左入力中
-        tiltZ_ += tiltSpeed;
-    } else if (moveInput.x > 0) { // 右入力中
-        tiltZ_ -= tiltSpeed;
-    } else {                      // 入力なし：中央に戻る
-        tiltZ_ *= (1.0f - returnSpeed);
+    // 入力方向だけ使う（強さは無視）
+    float inputX = static_cast<float>((moveInput.x > 0) - (moveInput.x < 0));
+    float inputY = static_cast<float>((moveInput.y > 0) - (moveInput.y < 0));
+
+    float targetTiltZ = -inputX * data_.maxTilt;
+    float targetTiltX = -inputY * data_.maxTilt;
+
+    approach(tiltZ_, targetTiltZ, data_.returnSpeed);
+    approach(tiltX_, targetTiltX, data_.returnSpeed);
+
+    tiltX_ = std::clamp(tiltX_, -data_.maxTilt, data_.maxTilt);
+    tiltZ_ = std::clamp(tiltZ_, -data_.maxTilt, data_.maxTilt);
+}
+
+void PlayerMove::StartDash(float directionX) {
+    // クールタイム中なら受け付けない
+    if (isDashing_ || coolDownTimer_ > 0.0f) return;
+
+    isDashing_ = true;
+    dashTimer_ = 0.0f;
+
+    // 入力方向に基づいて回転方向を決める（入力がなければ右回転にする）
+    dashDirX_ = (std::abs(directionX) > 0.01f) ? (directionX > 0 ? 1.0f : -1.0f) : 1.0f;
+}
+
+Vector3 PlayerMove::UpdateDash(float deltaTime) {
+    dashTimer_ += deltaTime;
+
+    float progress = std::clamp(dashTimer_ / data_.dashDuration, 0.0f, 1.0f);
+
+    float totalRotation = 2.0f * std::numbers::pi_v<float>;
+    extraRotationZ_ = -dashDirX_ * totalRotation * progress;
+
+    // ダッシュ移動量だけ作る
+    float dashSpeed = data_.speed * data_.dashSpeedMult;
+    Vector3 dashMove{ dashDirX_ * dashSpeed, 0.0f, 0.0f };
+
+    // 傾き演出
+    tiltZ_ = -dashDirX_ * data_.maxTilt;
+
+    if (progress >= 1.0f) {
+        isDashing_ = false;
+        extraRotationZ_ = 0.0f;
+        coolDownTimer_ = data_.dashCoolDown;
     }
 
-    // 縦入力によるピッチ演出 (X軸回転)
-    if (moveInput.y > 0) {        // 上入力中
-        tiltX_ -= tiltSpeed;
-    } else if (moveInput.y < 0) { // 下入力中
-        tiltX_ += tiltSpeed;
-    } else {                      // 入力なし：中央に戻る
-        tiltX_ *= (1.0f - returnSpeed);
-    }
+    return dashMove;
+}
 
-    // 傾きの限界値を設定（端に押し付けている間もこの角度を維持する）
-    tiltX_ = std::clamp(tiltX_, -maxTilt, maxTilt);
-    tiltZ_ = std::clamp(tiltZ_, -maxTilt, maxTilt);
+Vector3 PlayerMove::UpdateNormal() {
+    Input* input = Input::GetInstance();
+    const float speed = data_.speed;
+
+    Vector3 moveInput{
+        (input->Pushkey(DIK_D) - input->Pushkey(DIK_A)) * speed,
+        (input->Pushkey(DIK_W) - input->Pushkey(DIK_S)) * speed,
+        0.0f
+    };
+
+    UpdateTilt(moveInput);
+
+    return moveInput;
 }
 
 ============================================================
@@ -5514,6 +5434,7 @@ File Path: project/application/character/player/PlayerMove.h
 ============================================================
 #pragma once
 #include <Vector3.h>
+#include <PlayerData.h>
 
 // 前方宣言
 class Object3d;
@@ -5525,13 +5446,16 @@ struct Transform;
 /// </summary>
 class PlayerMove {
 public:// メンバ関数
+    // 初期化関数を追加
+    void Initialize(const PlayerMoveData& data);
     /// <summary>
     /// 毎フレームの更新処理
     /// </summary>
     /// <param name="transform">プレイヤーのトランスフォーム</param>
     /// <param name="cameraRotate">現在のカメラの回転角</param>
-    /// <param name="speedMultiplier">移動速度の倍率</param>
-    void Update(Transform& transform, const Vector3& cameraRotate, float speedMultiplier);
+    void Update(Transform& transform, const Vector3& cameraRotate);
+    // ダッシュ開始トリガー
+    void StartDash(float directionX);
 private:
     /// <summary>
     /// プレイヤーが画面外に出ないよう座標を制限する
@@ -5542,12 +5466,25 @@ private:
     /// </summary>
     /// <param name="moveInput">現在のフレームの移動量ベクトル</param>
     void UpdateTilt(const Vector3& moveInput);
+    Vector3 UpdateNormal();
+    // ダッシュ状態の更新用
+    Vector3 UpdateDash(float deltaTime);
 private:// メンバ変数
+    PlayerMoveData data_{}; // JSONから読み込んだ設定値を保持
     // カメラ座標系における自機の相対座標
     Vector3 relativePos_{};
     // 演出用傾き角
     float tiltX_{}; // 上下移動によるピッチ（機首の上げ下げ）
     float tiltZ_{}; // 左右移動によるロール（翼の傾き）
+
+    // --- ダッシュ用変数を移植 ---
+    bool isDashing_;
+    float dashTimer_;
+    float coolDownTimer_;
+    float dashDirX_;
+    float extraRotationZ_ ;
+    float currentDashSpeedMult_ ;
+
 public: // アクセッサ
     // Getter
     const Vector3& GetLocalPosition() const { return relativePos_; }
@@ -5570,20 +5507,24 @@ File Path: project/application/character/player/PlayerReticle.cpp
 
 using namespace MatrixVector;
 
+void PlayerReticle::Initialize(const PlayerReticleData& data) {
+    data_ = data;
+}
+
 void PlayerReticle::Update(Transform& reticleTransform, const Vector3& playerWorldPos, Object3d* targetObj) {
 if (!targetObj) return;
     Input* input = Input::GetInstance();
 
     // 入力でターゲットを動かす
     // 方向キーでレティクルの相対座標を動かす
-    if (input->Pushkey(DIK_LEFT))  reticleTransform.translate.x -= kSpeed;
-    if (input->Pushkey(DIK_RIGHT)) reticleTransform.translate.x += kSpeed;
-    if (input->Pushkey(DIK_UP))    reticleTransform.translate.y += kSpeed;
-    if (input->Pushkey(DIK_DOWN))  reticleTransform.translate.y -= kSpeed;
+    if (input->Pushkey(DIK_LEFT))  reticleTransform.translate.x -= data_.speed;
+    if (input->Pushkey(DIK_RIGHT)) reticleTransform.translate.x += data_.speed;
+    if (input->Pushkey(DIK_UP))    reticleTransform.translate.y += data_.speed;
+    if (input->Pushkey(DIK_DOWN))  reticleTransform.translate.y -= data_.speed;
 
     // 移動範囲の制限（クランプ)
-    reticleTransform.translate.x = std::clamp(reticleTransform.translate.x, kMinX, kMaxX);
-    reticleTransform.translate.y = std::clamp(reticleTransform.translate.y, kMinY, kMaxY);
+    reticleTransform.translate.x = std::clamp(reticleTransform.translate.x, data_.minX, data_.maxX);
+    reticleTransform.translate.y = std::clamp(reticleTransform.translate.y, data_.minY, data_.maxY);
 
     // カメラ基準の方向ベクトル計算
     // カメラの回転から、世界軸ではない「現在の視点における正面・右・上」を割り出す
@@ -5598,7 +5539,7 @@ if (!targetObj) return;
     Vector3 offset =
         right * reticleTransform.translate.x +
         up    * reticleTransform.translate.y +
-        forward * kForwardDistance;
+        forward * data_.forwardDistance;
 
     // 最終的な座標を計算して反映
     Vector3 finalPos = playerWorldPos + offset;
@@ -5638,6 +5579,7 @@ File Path: project/application/character/player/PlayerReticle.h
 ============================================================
 #pragma once
 #include <Vector3.h>
+#include <PlayerData.h>
 
 // 前方宣言
 struct Transform;
@@ -5651,6 +5593,9 @@ class Object3d;
 /// </summary>
 class PlayerReticle {
 public:
+
+    void Initialize(const PlayerReticleData& data); // 初期化関数を追加
+    
     /// <summary>
     /// レティクルの3D座標更新
     /// キー入力に応じて照準を移動させ、プレイヤーの前方に配置する。
@@ -5670,13 +5615,7 @@ public:
     void UpdateSprite(const Vector3& worldPos, Sprite* targetSprite, Camera* activeCamera);
 
 private:
-    // --- 設定定数 ---
-    const float kSpeed = 0.4f;            // レティクルの移動速度
-    const float kMaxX = 12.0f;           // 左右の移動限界
-    const float kMinX = -12.0f;
-    const float kMaxY = 7.0f;            // 上下の移動限界
-    const float kMinY = -7.0f;
-    const float kForwardDistance = 30.0f; // プレイヤーからどれくらい前方に配置するか
+    PlayerReticleData data_{}; // 設定値を保持
 };
 
 ============================================================
@@ -5691,8 +5630,8 @@ File Path: project/application/character/player/PlayerWeapon.cpp
 
 using namespace MatrixVector;
 
-void PlayerWeapon::Initialize() { 
-	// 各変数の初期化
+void PlayerWeapon::Initialize(const PlayerWeaponData& data) { 
+    data_ = data; // JSONからのデータを保存
     bulletTimer_ = 0.0f;
     canShoot_ = true;
 }
@@ -5702,7 +5641,7 @@ void PlayerWeapon::Update(const Vector3& playerWorldPos, const Vector3& targetWo
 
     // --- 連射タイマー処理 ---
     bulletTimer_ += 1.0f / 60.0f;
-    if (bulletTimer_ >= bulletInterval_) {
+    if (bulletTimer_ >= data_.bulletInterval) {
         canShoot_ = true;
         bulletTimer_ = 0.0f;
     }
@@ -5731,7 +5670,7 @@ void PlayerWeapon::Update(const Vector3& playerWorldPos, const Vector3& targetWo
         Vector3 endPos;
         endPos = bulletStartPos + shootDir * 10.0f;
         // 元の初期化形式: Initialize(始点, 終点, 方向, スピード)
-        bullet->Initialize(bulletStartPos, endPos, cameraForward, 5.0f);
+        bullet->Initialize(bulletStartPos, endPos, cameraForward, data_.bulletSpeed);
         // マネージャーへ追加
         BulletManager::GetInstance()->AddPlayerBullet(std::move(bullet));
         // 発射フラグを折る
@@ -5745,6 +5684,7 @@ File Path: project/application/character/player/PlayerWeapon.h
 #pragma once
 #include <Vector3.h>
 #include <memory>
+#include <PlayerData.h>
 
 // 前方宣言
 struct Transform;
@@ -5759,7 +5699,7 @@ public:
     /// <summary>
     /// 初期化処理
     /// </summary>
-    void Initialize();
+    void Initialize(const PlayerWeaponData& data);
     
     /// <summary>
     /// 毎フレームの更新と発射入力のチェック
@@ -5769,9 +5709,9 @@ public:
     /// <param name="gameCam">メインカメラ（発射方向の算出に使用）</param>
     void Update(const Vector3& playerWorldPos, const Vector3& targetWorldPos, GamePlayCamera* gameCam);
 private:
+    PlayerWeaponData data_{}; // 設定値を保持
     // --- 連射制御関連 ---
     float bulletTimer_ = 0.0f;           // 次の弾が打てるまでの経過時間
-    const float bulletInterval_ = 0.15f; // 発射間隔
     bool canShoot_ = true;               // 現在発射可能かどうかのフラグ
 };
 
@@ -7175,6 +7115,148 @@ public:
 		}
 		return std::stoi(fileName.substr(5));// type_01 → 1
 	}
+};
+
+============================================================
+File Path: project/application/loader/PlayerDataLoader.cpp
+============================================================
+#include "PlayerDataLoader.h"
+#include <fstream>
+#include <cassert>
+
+using json = nlohmann::json;
+
+const std::string PlayerDataLoader::kDefaultBaseDirectory = "Resources/Data/Player/";
+const std::string PlayerDataLoader::kExtension = ".json";
+
+PlayerData PlayerDataLoader::Load(const std::string& fileName) {
+    // 連結してフルパスを得る
+    const std::string fullpath = kDefaultBaseDirectory + fileName + kExtension;
+
+    PlayerData data{};
+
+    // ファイルを開く
+    std::ifstream file(fullpath);
+    if (!file.is_open()) {
+        throw std::runtime_error("JSONファイルを開けませんでした");
+    }
+
+    // JSONデータを読み込む
+    json j;
+    file >> j;
+
+    // 必須チェック
+    assert(j.contains("name"));
+    assert(j.contains("transform"));
+    assert(j.contains("move"));
+
+    // データ取得
+    data.fileName = j["name"].get<std::string>();
+    data.transform = LoadTransform(j["transform"]);
+    data.move = LoadMove(j["move"]);
+    data.reticle = LoadReticle(j["reticle"]);
+    data.weapon = LoadWeapon(j["weapon"]);
+    data.reticle = LoadReticle(j["reticle"]);
+    data.death = LoadDeath(j["death"]);
+ 
+    return data;
+}
+
+PlayerMoveData PlayerDataLoader::LoadMove(const json& move) {
+    PlayerMoveData result{};
+
+    if (move.contains("speed")) result.speed = move["speed"];
+    if (move.contains("maxX")) result.maxX = move["maxX"];
+    if (move.contains("minY")) result.minY = move["minY"];
+    if (move.contains("maxY")) result.maxY = move["maxY"];
+
+    if (move.contains("tiltSpeed")) result.tiltSpeed = move["tiltSpeed"];
+    if (move.contains("maxTilt")) result.maxTilt = move["maxTilt"];
+    if (move.contains("returnSpeed")) result.returnSpeed = move["returnSpeed"];
+
+    if (move.contains("dashDuration")) result.dashDuration = move["dashDuration"];
+    if (move.contains("dashCoolDown")) result.dashCoolDown = move["dashCoolDown"];
+    if (move.contains("dashSpeedMult")) result.dashSpeedMult = move["dashSpeedMult"];
+
+    return result;
+}
+
+Transform PlayerDataLoader::LoadTransform(const json& transform) {
+    Transform result{};
+
+    // 安全チェック
+    assert(t.contains("translation"));
+    assert(t.contains("rotation"));
+    assert(t.contains("scaling"));
+
+    // translation
+    result.translate.x = (float)transform["translation"][0];
+    result.translate.y = (float)transform["translation"][2]; // YZ入れ替え
+    result.translate.z = (float)transform["translation"][1];
+
+    // rotation
+    result.rotate.x = -(float)transform["rotation"][0];
+    result.rotate.y = -(float)transform["rotation"][2];
+    result.rotate.z = -(float)transform["rotation"][1];
+
+    // scale
+    result.scale.x = (float)transform["scaling"][0];
+    result.scale.y = (float)transform["scaling"][2];
+    result.scale.z = (float)transform["scaling"][1];
+
+    return result;
+}
+
+PlayerReticleData PlayerDataLoader::LoadReticle(const nlohmann::json& reticle) {
+    PlayerReticleData result{};
+    if (reticle.contains("speed")) result.speed = reticle["speed"];
+    if (reticle.contains("maxX")) result.maxX = reticle["maxX"];
+    if (reticle.contains("minX")) result.minX = reticle["minX"];
+    if (reticle.contains("maxY")) result.maxY = reticle["maxY"];
+    if (reticle.contains("minY")) result.minY = reticle["minY"];
+    if (reticle.contains("forwardDistance")) result.forwardDistance = reticle["forwardDistance"];
+    return result;
+}
+
+PlayerWeaponData PlayerDataLoader::LoadWeapon(const nlohmann::json& weapon) {
+    PlayerWeaponData result{};
+    if (weapon.contains("bulletInterval")) result.bulletInterval = weapon["bulletInterval"];
+    if (weapon.contains("bulletSpeed")) result.bulletSpeed = weapon["bulletSpeed"];
+    return result;
+}
+
+PlayerDeathData PlayerDataLoader::LoadDeath(const nlohmann::json& death) {
+    PlayerDeathData result{};
+    if (death.contains("duration")) result.duration = death["duration"];
+    if (death.contains("fallSpeedY")) result.fallSpeedY = death["fallSpeedY"];
+    if (death.contains("fallSpeedZ")) result.fallSpeedZ = death["fallSpeedZ"];
+    if (death.contains("blinkSpeed")) result.blinkSpeed = death["blinkSpeed"];
+    if (death.contains("blinkThreshold")) result.blinkThreshold = death["blinkThreshold"];
+    if (death.contains("rotateSpeedX")) result.rotateSpeedX = death["rotateSpeedX"];
+    if (death.contains("rotateSpeedZ")) result.rotateSpeedZ = death["rotateSpeedZ"];
+    if (death.contains("shakeAmount")) result.shakeAmount = death["shakeAmount"];
+    return result;
+}
+
+============================================================
+File Path: project/application/loader/PlayerDataLoader.h
+============================================================
+#pragma once
+#include <string>
+#include <PlayerData.h>
+#include <json.hpp>
+
+class PlayerDataLoader {
+public:// メンバ関数			
+    static PlayerData Load(const std::string& path);
+    static Transform LoadTransform(const nlohmann::json& transform);
+    static  PlayerMoveData LoadMove(const nlohmann::json& move);
+    static  PlayerReticleData LoadReticle(const nlohmann::json& reticle);
+    static PlayerWeaponData LoadWeapon(const nlohmann::json& weapon);
+    static PlayerDeathData LoadDeath(const nlohmann::json& death);
+private: // メンバ変数
+    static const std::string kDefaultBaseDirectory;
+    static const std::string kExtension;
 };
 
 ============================================================
