@@ -93,7 +93,7 @@ PlayerReticleData PlayerDataLoader::LoadReticle(const nlohmann::json& reticle) {
     return result;
 }
 
-PlayerWeaponData LoadWeapon(const nlohmann::json& weapon) {
+PlayerWeaponData PlayerDataLoader::LoadWeapon(const nlohmann::json& weapon) {
     PlayerWeaponData result{};
     if (weapon.contains("bulletInterval")) result.bulletInterval = weapon["bulletInterval"];
     if (weapon.contains("bulletSpeed")) result.bulletSpeed = weapon["bulletSpeed"];
