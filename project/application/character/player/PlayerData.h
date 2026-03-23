@@ -2,6 +2,18 @@
 #include <Transform.h>
 #include <string>
 
+// 死亡演出のデータ構造体
+struct PlayerDeathData {
+    float duration;      // 演出の合計時間
+    float fallSpeedY;    // 下方向への落下速度
+    float fallSpeedZ;    // 前方向への慣性移動速度
+    float blinkSpeed;    // 点滅の速さ
+    float blinkThreshold; // 点滅判定の閾値 (0.0~1.0)
+    float rotateSpeedX;  // 基本回転速度X
+    float rotateSpeedZ;  // 基本回転速度Z
+    float shakeAmount;   // 揺らぎの強さ
+};
+
 // 武器用データ構造体
 struct PlayerWeaponData {
     float bulletInterval; // 発射間隔
@@ -36,5 +48,6 @@ struct PlayerData {
     PlayerMoveData move;
     PlayerReticleData reticle;
     PlayerWeaponData weapon;
+    PlayerDeathData death;
 };
 

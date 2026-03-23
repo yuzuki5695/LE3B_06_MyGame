@@ -34,6 +34,9 @@ PlayerData PlayerDataLoader::Load(const std::string& fileName) {
     data.move = LoadMove(j["move"]);
     data.reticle = LoadReticle(j["reticle"]);
     data.weapon = LoadWeapon(j["weapon"]);
+    data.reticle = LoadReticle(j["reticle"]);
+    data.death = LoadDeath(j["death"]);
+ 
     return data;
 }
 
@@ -97,5 +100,18 @@ PlayerWeaponData PlayerDataLoader::LoadWeapon(const nlohmann::json& weapon) {
     PlayerWeaponData result{};
     if (weapon.contains("bulletInterval")) result.bulletInterval = weapon["bulletInterval"];
     if (weapon.contains("bulletSpeed")) result.bulletSpeed = weapon["bulletSpeed"];
+    return result;
+}
+
+PlayerDeathData PlayerDataLoader::LoadDeath(const nlohmann::json& death) {
+    PlayerDeathData result{};
+    if (death.contains("duration")) result.duration = death["duration"];
+    if (death.contains("fallSpeedY")) result.fallSpeedY = death["fallSpeedY"];
+    if (death.contains("fallSpeedZ")) result.fallSpeedZ = death["fallSpeedZ"];
+    if (death.contains("blinkSpeed")) result.blinkSpeed = death["blinkSpeed"];
+    if (death.contains("blinkThreshold")) result.blinkThreshold = death["blinkThreshold"];
+    if (death.contains("rotateSpeedX")) result.rotateSpeedX = death["rotateSpeedX"];
+    if (death.contains("rotateSpeedZ")) result.rotateSpeedZ = death["rotateSpeedZ"];
+    if (death.contains("shakeAmount")) result.shakeAmount = death["shakeAmount"];
     return result;
 }

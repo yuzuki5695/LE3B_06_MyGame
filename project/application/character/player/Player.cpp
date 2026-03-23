@@ -57,7 +57,7 @@ void Player::Initialize() {
     weapon_ = std::make_unique<PlayerWeapon>();
     weapon_->Initialize(data_.weapon);
     death_ = std::make_unique<PlayerDeath>();
-    death_->Initialize();
+    death_->Initialize(data_.death);
 }
 
 void Player::Update() {

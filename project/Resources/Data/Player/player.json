@@ -28,5 +28,15 @@
   "weapon": {
     "bulletInterval": 0.15,
     "bulletSpeed": 5.0
+  },
+  "death": {
+    "duration": 2.5,
+    "fallSpeedY": 0.02,
+    "fallSpeedZ": 0.2,
+    "blinkSpeed": 50.0,
+    "blinkThreshold": 0.85,
+    "rotateSpeedX": 0.004,
+    "rotateSpeedZ": 0.003,
+    "shakeAmount": 0.002
   }
 }

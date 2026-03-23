@@ -1,6 +1,7 @@
 #pragma once
 #include <Vector3.h>
 #include <Vector4.h>
+#include <PlayerData.h>
 
 // 前方宣言
 class Object3d;
@@ -14,7 +15,7 @@ public:
     /// <summary>
     /// 初期化（タイマーのリセット）
     /// </summary>
-    void Initialize();
+    void Initialize(const PlayerDeathData& data);
 
     /// <summary>
     /// 死亡演出の更新
@@ -27,13 +28,8 @@ public:
     /// <summary>
     /// 演出が終了したかどうか（シーン遷移のトリガーなどに使用）
     /// </summary>
-    bool IsFinished() const { return timer_ >= kDuration; }
+    bool IsFinished() const { return timer_ >= data_.duration; }
 private:
+    PlayerDeathData data_{};
     float timer_ = 0.0f;          // 経過時間タイマー
-    const float kDuration = 2.5f; // 演出の合計時間（秒）
-
-    // --- 演出用の設定定数 ---
-    const float kFallSpeedY = 0.02f; // 下方向への落下速度
-    const float kFallSpeedZ = 0.2f;  // 前方向への慣性移動速度
-    const float kBlinkSpeed = 50.0f; // 赤点滅の速さ
 };

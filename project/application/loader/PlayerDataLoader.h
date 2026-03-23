@@ -10,6 +10,7 @@ public:// メンバ関数
     static  PlayerMoveData LoadMove(const nlohmann::json& move);
     static  PlayerReticleData LoadReticle(const nlohmann::json& reticle);
     static PlayerWeaponData LoadWeapon(const nlohmann::json& weapon);
+    static PlayerDeathData LoadDeath(const nlohmann::json& death);
 private: // メンバ変数
     static const std::string kDefaultBaseDirectory;
     static const std::string kExtension;
