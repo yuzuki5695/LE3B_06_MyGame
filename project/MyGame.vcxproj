@@ -129,6 +129,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="application\character\player\PlayerDeath.cpp" />
     <ClCompile Include="application\character\player\PlayerMove.cpp" />
     <ClCompile Include="application\character\player\PlayerReticle.cpp" />
+    <ClCompile Include="application\character\player\PlayerState.cpp" />
     <ClCompile Include="application\character\player\PlayerWeapon.cpp" />
     <ClCompile Include="application\collision\CollisionManager.cpp" />
     <ClCompile Include="application\fade\FadeManager.cpp" />
@@ -222,11 +223,13 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\character\BaseCharacter.h" />
     <ClInclude Include="application\character\enemy\Enemy.h" />
     <ClInclude Include="application\character\enemy\EnemySpawner.h" />
+    <ClInclude Include="application\character\player\IPlayerState.h" />
     <ClInclude Include="application\character\player\Player.h" />
     <ClInclude Include="application\character\player\PlayerData.h" />
     <ClInclude Include="application\character\player\PlayerDeath.h" />
     <ClInclude Include="application\character\player\PlayerMove.h" />
     <ClInclude Include="application\character\player\PlayerReticle.h" />
+    <ClInclude Include="application\character\player\PlayerState.h" />
     <ClInclude Include="application\character\player\PlayerWeapon.h" />
     <ClInclude Include="application\collision\CollisionManager.h" />
     <ClInclude Include="application\fade\FadeManager.h" />

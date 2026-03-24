@@ -58,6 +58,7 @@ void Player::Initialize() {
     weapon_->Initialize(data_.weapon);
     death_ = std::make_unique<PlayerDeath>();
     death_->Initialize(data_.death);
+    activeState_ = std::make_unique<PlayerStateAlive>();
 }
 
 void Player::Update() {
@@ -72,14 +73,17 @@ void Player::Update() {
             // プレイヤー回転もカメラに合わせる
             transform_.rotate = activeCam->GetRotate();
         }
-
-        // 現在の状態に応じて関数を呼び分け
-        switch (state_) {
-        case State::Alive:   UpdateAlive();   break;
-        case State::Dead:    UpdateDead();    break;
-        case State::Goal:    UpdateGoal();    break;
-        case State::Event:   UpdateEvent();   break;
+        
+        // 状態固有の更新
+        if (activeState_) {
+            activeState_->Update(this);
         }
+
+        //// 現在の状態に応じて関数を呼び分け
+        //switch (state_) {
+        //case State::Alive:   UpdateAlive();   break;
+        //case State::Dead:    UpdateDead();    break;
+        //}
 
         // デバッグ中のImGui表示
         DebugImgui();
@@ -121,31 +125,24 @@ void Player::DebugImgui() {
 }
 
 void Player::UpdateAlive() {
-    CameraManager* camMgr = CameraManager::GetInstance();
-	// 移動処理の更新（ローカル座標での移動量を取得）
-    move_->Update(transform_,camMgr->GetMainCamera()->GetRotate());
-    // レティクル
-    reticle_->Update(targettransform_, transform_.translate, target_.get());
-    // 攻撃
-    weapon_->Update(transform_.translate, target_->GetTranslate(), camMgr->GetGameplayCamera());
-    // レティクル(2Dスプライト)の同期
-    reticle_->UpdateSprite(target_->GetTranslate(), targetreticle_.get(), camMgr->GetActiveCamera());
+ //   CameraManager* camMgr = CameraManager::GetInstance();
+	//// 移動処理の更新（ローカル座標での移動量を取得）
+ //   move_->Update(transform_,camMgr->GetMainCamera()->GetRotate());
+ //   // レティクル
+ //   reticle_->Update(targettransform_, transform_.translate, target_.get());
+ //   // 攻撃
+ //   weapon_->Update(transform_.translate, target_->GetTranslate(), camMgr->GetGameplayCamera());
+ //   // レティクル(2Dスプライト)の同期
+ //   reticle_->UpdateSprite(target_->GetTranslate(), targetreticle_.get(), camMgr->GetActiveCamera());
 }
 
 void Player::UpdateDead() {
-    // 死亡演出：ここに落下や回転のロジックを書く（後にクラス化も可能）
-    death_->Update(transform_.rotate, deathOffset_, object.get());
-    // 座標の同期（これが重要）
-    SyncWorldTransformByRail();
+    //// 死亡演出：ここに落下や回転のロジックを書く（後にクラス化も可能）
+    //death_->Update(transform_.rotate, deathOffset_, object.get());
+    //// 座標の同期（これが重要）
+    //SyncWorldTransformByRail();
 }
 
-void Player::UpdateGoal() {
-
-}
-
-void Player::UpdateEvent() {
-    // イベント：自動移動のロジックなど
-}
 
 void Player::SyncWorldTransformByRail() {
     CameraManager* camMgr = CameraManager::GetInstance();

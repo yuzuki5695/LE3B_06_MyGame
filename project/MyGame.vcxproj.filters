@@ -558,6 +558,9 @@
     <ClCompile Include="application\loader\PlayerDataLoader.cpp">
       <Filter>ソース ファイル\application\loader</Filter>
     </ClCompile>
+    <ClCompile Include="application\character\player\PlayerState.cpp">
+      <Filter>ソース ファイル\application\character\player</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="engine\2d\Sprite.h">
@@ -952,6 +955,12 @@
     </ClInclude>
     <ClInclude Include="application\character\player\PlayerData.h">
       <Filter>ヘッダー ファイル\application\character\player</Filter>
+    </ClInclude>
+    <ClInclude Include="application\character\player\IPlayerState.h">
+      <Filter>ソース ファイル\application\character\player</Filter>
+    </ClInclude>
+    <ClInclude Include="application\character\player\PlayerState.h">
+      <Filter>ソース ファイル\application\character\player</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

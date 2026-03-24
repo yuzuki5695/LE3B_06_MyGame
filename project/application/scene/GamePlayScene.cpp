@@ -164,10 +164,10 @@ void GamePlayScene::Update() {
         if (player_->GetState() == State::Dead) {
             // シーン切り替え
             SceneManager::GetInstance()->ChangeScene("GAMEOVER");
-        } else if (player_->GetState() == State::Goal) {
-            // シーン切り替え
-            SceneManager::GetInstance()->ChangeScene("GAMECLEAR");
-        }
+        } //else if (player_->GetState() == State::Goal) {
+        //    // シーン切り替え
+        //    SceneManager::GetInstance()->ChangeScene("GAMECLEAR");
+        //}
     }
 
     // スカイボックス更新
@@ -290,7 +290,7 @@ void GamePlayScene::HandlePlayerState() {
     // ゴール判定
     if (!goal_ && player_->GetState() == State::Alive && player_->GetPosition().z >= CameraManager::GetInstance()->GetGameplayCamera()->GetBezierPoints().back().controlPoint.z) {
         FadeManager::GetInstance()->StartFadeOut(1.0f, FadeStyle::Normal);
-        player_->SetState(State::Goal);
+       // player_->SetState(State::Goal);
         goal_ = true;
         end = false;
     }

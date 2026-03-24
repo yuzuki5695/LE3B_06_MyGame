@@ -8,14 +8,13 @@
 #include <PlayerWeapon.h>
 #include <PlayerDeath.h>
 #include <PlayerData.h>
+#include <PlayerState.h>
 
 // プレイヤーの状態を定義
 enum class State {
 	None,
 	Alive,      // 通常時（操作可能）
 	Dead,       // 死亡演出中
-	Goal,       // ゴール到達後
-	Event,      // イベント中（操作不能・自動移動など）
 };
 
 /// <summary>
@@ -61,8 +60,6 @@ public:// メンバ関数
 	// --- 各ステートの専用更新関数 ---
     void UpdateAlive();
     void UpdateDead();
-	void UpdateGoal();
-	void UpdateEvent();
 
 private:// メンバ変数	
 	// 各機能をクラスのインスタンス
@@ -82,11 +79,12 @@ private:// メンバ変数
 	std::unique_ptr <Sprite> targetreticle_; // レティクル用スプライト	
 	// 死亡演出用のオフセット（落下や回転のため）
 	Vector3 deathOffset_;
-
+	std::unique_ptr<IPlayerState> activeState_; // 現在の状態
 public:// メンバ変数
 	// getter
 	// 参照を返す（変更不可）
 	Object3d* GetPlayerObject() { return object.get(); }
+	Sprite* GetTargetReticle() { return targetreticle_.get(); }
 	void SetTransform(const Transform& t) {
 		data_.transform = t;
 		object->SetTranslate(data_.transform.translate);
@@ -100,5 +98,22 @@ public:// メンバ変数
 	}
 	Vector3 GetForward();
 	Vector3 GetWorldPosition()const { return object->GetWorldPosition(); }
+	void ChangeState(std::unique_ptr<IPlayerState> newState) {
+		if (activeState_) activeState_->Exit(this);
+		activeState_ = std::move(newState);
+		activeState_->Enter(this);
+	}
+
+	// 各機能へのゲッター（Stateクラスから触れるようにする）
+    PlayerMove* GetMove() { return move_.get(); }
+	PlayerReticle* GetReticle() { return reticle_.get(); }
+	PlayerWeapon* GetWeapon() { return weapon_.get(); }
+	PlayerDeath* GetDeath() { return death_.get(); }
+	// Stateクラスからアクセスするためのゲッター
+    Transform& GetTransform() { return transform_; }	   
+	Vector3& GetRotate() { return transform_.rotate; }
+	Vector3& GetDeathOffset() { return deathOffset_; }
+	Transform& GetTarGetTransform() { return targettransform_; }
+	Object3d* GetTarget() { return target_.get(); }
 
 };
