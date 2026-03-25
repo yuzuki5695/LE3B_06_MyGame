@@ -12,6 +12,9 @@ struct PlayerDeathData {
     float rotateSpeedX;  // 基本回転速度X
     float rotateSpeedZ;  // 基本回転速度Z
     float shakeAmount;   // 揺らぎの強さ
+    float shakeCycleX;    // sin(timer_ * 0.5f) の 0.5f 部分
+    float shakeCycleZ;    // cos(timer_ * 0.4f) の 0.4f 部分
+    float shakeAmountMultZ; // (data_.shakeAmount * 0.75f) の 0.75f 部分
 };
 
 // 武器用データ構造体

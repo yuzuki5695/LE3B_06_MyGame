@@ -21,5 +21,5 @@ void PlayerStateDead::Update(Player* player) {
     // 死亡演出：ここに落下や回転のロジックを書く（後にクラス化も可能）
     player->GetDeath()->Update(player->GetRotate(), player->GetDeathOffset(), player->GetPlayerObject());
     // 座標の同期（これが重要）
-    player->SyncWorldTransformByRail();
+   // player->SyncWorldTransformByRail();
 }

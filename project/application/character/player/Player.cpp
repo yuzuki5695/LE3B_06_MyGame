@@ -79,16 +79,9 @@ void Player::Update() {
             activeState_->Update(this);
         }
 
-        //// 現在の状態に応じて関数を呼び分け
-        //switch (state_) {
-        //case State::Alive:   UpdateAlive();   break;
-        //case State::Dead:    UpdateDead();    break;
-        //}
-
         // デバッグ中のImGui表示
         DebugImgui();
-        targetreticle_->Update();
-     
+        targetreticle_->Update(); 
         // ターゲット（3D照準）に反映
         target_->SetTranslate(targettransform_.translate);
         target_->Update();
@@ -123,26 +116,6 @@ void Player::DebugImgui() {
     //ImGui::End();
 #endif // USE_IMGUI
 }
-
-void Player::UpdateAlive() {
- //   CameraManager* camMgr = CameraManager::GetInstance();
-	//// 移動処理の更新（ローカル座標での移動量を取得）
- //   move_->Update(transform_,camMgr->GetMainCamera()->GetRotate());
- //   // レティクル
- //   reticle_->Update(targettransform_, transform_.translate, target_.get());
- //   // 攻撃
- //   weapon_->Update(transform_.translate, target_->GetTranslate(), camMgr->GetGameplayCamera());
- //   // レティクル(2Dスプライト)の同期
- //   reticle_->UpdateSprite(target_->GetTranslate(), targetreticle_.get(), camMgr->GetActiveCamera());
-}
-
-void Player::UpdateDead() {
-    //// 死亡演出：ここに落下や回転のロジックを書く（後にクラス化も可能）
-    //death_->Update(transform_.rotate, deathOffset_, object.get());
-    //// 座標の同期（これが重要）
-    //SyncWorldTransformByRail();
-}
-
 
 void Player::SyncWorldTransformByRail() {
     CameraManager* camMgr = CameraManager::GetInstance();

@@ -37,6 +37,9 @@
     "blinkThreshold": 0.85,
     "rotateSpeedX": 0.004,
     "rotateSpeedZ": 0.003,
-    "shakeAmount": 0.002
+    "shakeAmount": 0.002,
+    "shakeCycleX": 0.5,
+    "shakeCycleZ": 0.4,
+    "shakeAmountMultZ": 0.75
   }
 }

@@ -57,10 +57,6 @@ public:// メンバ関数
     void SetState(State state) { state_ = state; }
 	State GetState() { return state_; }
 	
-	// --- 各ステートの専用更新関数 ---
-    void UpdateAlive();
-    void UpdateDead();
-
 private:// メンバ変数	
 	// 各機能をクラスのインスタンス
 	std::unique_ptr<PlayerMove> move_;          // プレイヤ―の移動制御クラス

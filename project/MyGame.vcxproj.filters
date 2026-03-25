@@ -280,6 +280,12 @@
     <Filter Include="ソース ファイル\engine\2d">
       <UniqueIdentifier>{87dbf081-2f7b-4eab-8c81-08ea214b5ba0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="リソース ファイル\Data\Player">
+      <UniqueIdentifier>{9c2ece67-3355-432f-932a-f04b9164c3d6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="リソース ファイル\Data\Enemy">
+      <UniqueIdentifier>{5fcf1482-e3f5-4526-9f5e-916da7edbc14}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -560,6 +566,9 @@
     </ClCompile>
     <ClCompile Include="application\character\player\PlayerState.cpp">
       <Filter>ソース ファイル\application\character\player</Filter>
+    </ClCompile>
+    <ClCompile Include="application\loader\EnemyDataLoader.cpp">
+      <Filter>ソース ファイル\application\character\enemy</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -950,17 +959,20 @@
     <ClInclude Include="application\collision\CollisionManager.h">
       <Filter>ヘッダー ファイル\application\collision</Filter>
     </ClInclude>
-    <ClInclude Include="application\loader\PlayerDataLoader.h">
-      <Filter>ソース ファイル\application\loader</Filter>
-    </ClInclude>
     <ClInclude Include="application\character\player\PlayerData.h">
       <Filter>ヘッダー ファイル\application\character\player</Filter>
     </ClInclude>
-    <ClInclude Include="application\character\player\IPlayerState.h">
-      <Filter>ソース ファイル\application\character\player</Filter>
-    </ClInclude>
     <ClInclude Include="application\character\player\PlayerState.h">
-      <Filter>ソース ファイル\application\character\player</Filter>
+      <Filter>ヘッダー ファイル\application\character\player</Filter>
+    </ClInclude>
+    <ClInclude Include="application\character\player\IPlayerState.h">
+      <Filter>ヘッダー ファイル\application\character\player</Filter>
+    </ClInclude>
+    <ClInclude Include="application\loader\PlayerDataLoader.h">
+      <Filter>ヘッダー ファイル\application\loader</Filter>
+    </ClInclude>
+    <ClInclude Include="application\loader\EnemyDataLoader.h">
+      <Filter>ソース ファイル\application\character\enemy</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1037,6 +1049,12 @@
     </None>
     <None Include="Resources\Data\Languages\Localization.json">
       <Filter>リソース ファイル\Data\Languages</Filter>
+    </None>
+    <None Include="Resources\Data\Player\player.json">
+      <Filter>リソース ファイル\Data\Player</Filter>
+    </None>
+    <None Include="Resources\Data\Enemy\Enemy.json">
+      <Filter>リソース ファイル\Data\Enemy</Filter>
     </None>
   </ItemGroup>
 </Project>

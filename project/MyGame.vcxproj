@@ -135,6 +135,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="application\fade\FadeManager.cpp" />
     <ClCompile Include="application\loader\CharacterLoader.cpp" />
     <ClCompile Include="application\loader\CurveJsonLoader.cpp" />
+    <ClCompile Include="application\loader\EnemyDataLoader.cpp" />
     <ClCompile Include="application\loader\EnemyLoader.cpp" />
     <ClCompile Include="application\loader\PlayerDataLoader.cpp" />
     <ClCompile Include="application\particle\DefaultParticleEmitter.cpp" />
@@ -235,6 +236,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\fade\FadeManager.h" />
     <ClInclude Include="application\loader\CharacterLoader.h" />
     <ClInclude Include="application\loader\CurveJsonLoader.h" />
+    <ClInclude Include="application\loader\EnemyDataLoader.h" />
     <ClInclude Include="application\loader\EnemyLoader.h" />
     <ClInclude Include="application\loader\PlayerDataLoader.h" />
     <ClInclude Include="application\particle\BaseEmitter.h" />
@@ -358,7 +360,9 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\Data\Enemy\Enemy.json" />
     <None Include="Resources\Data\Languages\Localization.json" />
+    <None Include="Resources\Data\Player\player.json" />
     <None Include="Resources\levels\bezier.json" />
     <None Include="Resources\levels\untitled.json" />
     <None Include="Resources\shaders\Fullscreen\Fullscreen.hlsli" />

@@ -20,19 +20,18 @@ void PlayerDeath::Update(Vector3& rotate, Vector3& offset, Object3d* object) {
     // フラフラとした回転の更新
     // 単純な加算ではなく、sin/cos を使うことで「機体が揺れながら回る」不規則さを演出
     // X軸（ピッチ）とZ軸（ロール）を別々の周期で揺らす
-    rotate.x += data_.rotateSpeedX + data_.shakeAmount * std::sin(timer_ * 0.5f);
-    rotate.z += data_.rotateSpeedZ + (data_.shakeAmount * 0.75f) * std::cos(timer_ * 0.4f);
+    rotate.x += data_.rotateSpeedX + data_.shakeAmount * std::sin(timer_ * data_.shakeCycleX);
+    rotate.z += data_.rotateSpeedZ + (data_.shakeAmount * data_.shakeAmountMultZ) * std::cos(timer_ * data_.shakeCycleZ);
 
     // 被弾点滅処理 
     // サイン波を使って 0.0 ～ 1.0 の間を高速に往復する数値（s）を作る
-    float s = (std::sin(timer_ * data_.blinkSpeed) + 1.0f) * 0.5f;
+    float s = (std::sin(timer_ * data_.blinkSpeed) + 1.0f) * data_.shakeCycleX;
 
     // 算出した s が特定の閾値（0.85）を超えた瞬間だけ、モデルの色を「赤」に変える
-    if (s > 0.85f) {
+    if (s > data_.blinkThreshold) {
         // 赤色（RGBA: 1, 0, 0, 1）
         object->SetMaterialColor({ 1.0f, 0.0f, 0.0f, 1.0f });
-    }
-    else {
+    } else {
         // 通常（白色：RGBA: 1, 1, 1, 1）
         object->SetMaterialColor({ 1.0f, 1.0f, 1.0f, 1.0f });
     }
