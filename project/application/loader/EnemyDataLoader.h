@@ -1,17 +1,17 @@
 #pragma once
-#include <string>
-#include <PlayerData.h>
-#include <json.hpp>
+#include <BaseCharacterJsonLoader.h>
+#include <EnemyData.h>
 
-class PlayerDataLoader {
-public:// メンバ関数			
-    static PlayerData Load(const std::string& path);
-    static Transform LoadTransform(const nlohmann::json& transform);
-    static  PlayerMoveData LoadMove(const nlohmann::json& move);
-    static  PlayerReticleData LoadReticle(const nlohmann::json& reticle);
-    static PlayerWeaponData LoadWeapon(const nlohmann::json& weapon);
-    static PlayerDeathData LoadDeath(const nlohmann::json& death);
+class EnemyDataLoader : public BaseCharacterJsonLoader {
+public:// メンバ関数  
+    /// <summary>
+    /// JSONファイルからEnemyDataを読み込む
+    /// </summary>
+    /// <param name="fileName">拡張子なしのファイル名</param>
+    /// <returns>EnemyData構造体</returns>
+    static EnemyData Load(const std::string& fileName);
+
 private: // メンバ変数
-    static const std::string kDefaultBaseDirectory;
-    static const std::string kExtension;
+    static const std::string kDefaultBaseDirectory;   /// 格納ディレクトリ
+    static const std::string kExtension;              /// ファイル拡張子
 };

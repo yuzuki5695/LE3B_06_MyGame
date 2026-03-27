@@ -1,11 +1,7 @@
 #pragma once
 #include <BaseCharacter.h>
 #include <Player.h>
-
-enum class EnemyMoveType {
-    Stationary, // その場に固定（マップ配置）
-    RailFollow  // レールカメラに同期（画面内に居座る）
-};
+#include <EnemyData.h>
 
 /// <summary>
 /// 敵キャラクタークラス
@@ -47,5 +43,8 @@ private: // メンバ変数
 
     // レール同期用のオフセット（カメラから見てどの位置にいたいか）
     Vector3 railOffset_ = { 0.0f, 0.0f, 50.0f };
+    	
+    EnemyData data_; // プレイヤーのデータ構造体
+
 
 };

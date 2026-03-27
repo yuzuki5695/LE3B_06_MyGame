@@ -223,6 +223,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\camera\SceneCameraBase.h" />
     <ClInclude Include="application\character\BaseCharacter.h" />
     <ClInclude Include="application\character\enemy\Enemy.h" />
+    <ClInclude Include="application\character\enemy\EnemyData.h" />
     <ClInclude Include="application\character\enemy\EnemySpawner.h" />
     <ClInclude Include="application\character\player\IPlayerState.h" />
     <ClInclude Include="application\character\player\Player.h" />
@@ -234,6 +235,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\character\player\PlayerWeapon.h" />
     <ClInclude Include="application\collision\CollisionManager.h" />
     <ClInclude Include="application\fade\FadeManager.h" />
+    <ClInclude Include="application\loader\BaseCharacterJsonLoader.h" />
     <ClInclude Include="application\loader\CharacterLoader.h" />
     <ClInclude Include="application\loader\CurveJsonLoader.h" />
     <ClInclude Include="application\loader\EnemyDataLoader.h" />
@@ -360,7 +362,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\Data\Enemy\Enemy.json" />
+    <None Include="Resources\Data\Enemy\enemy.json" />
     <None Include="Resources\Data\Languages\Localization.json" />
     <None Include="Resources\Data\Player\player.json" />
     <None Include="Resources\levels\bezier.json" />

@@ -63,14 +63,14 @@ Transform PlayerDataLoader::LoadTransform(const json& transform) {
     Transform result{};
 
     // 安全チェック
-    assert(t.contains("translation"));
-    assert(t.contains("rotation"));
-    assert(t.contains("scaling"));
+    assert(transform.contains("translation"));
+    assert(transform.contains("rotation"));
+    assert(transform.contains("scaling"));
 
     // translation
     result.translate.x = (float)transform["translation"][0];
-    result.translate.y = (float)transform["translation"][2]; // YZ入れ替え
-    result.translate.z = (float)transform["translation"][1];
+    result.translate.y = (float)transform["translation"][1];
+    result.translate.z = (float)transform["translation"][2];
 
     // rotation
     result.rotate.x = -(float)transform["rotation"][0];

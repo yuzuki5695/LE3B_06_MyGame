@@ -974,6 +974,12 @@
     <ClInclude Include="application\loader\EnemyDataLoader.h">
       <Filter>ソース ファイル\application\character\enemy</Filter>
     </ClInclude>
+    <ClInclude Include="application\character\enemy\EnemyData.h">
+      <Filter>ソース ファイル\application\character\enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="application\loader\BaseCharacterJsonLoader.h">
+      <Filter>ヘッダー ファイル\application\loader</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Resources\shaders\Sprite\Sprite.PS.hlsl">
@@ -1053,7 +1059,7 @@
     <None Include="Resources\Data\Player\player.json">
       <Filter>リソース ファイル\Data\Player</Filter>
     </None>
-    <None Include="Resources\Data\Enemy\Enemy.json">
+    <None Include="Resources\Data\Enemy\enemy.json">
       <Filter>リソース ファイル\Data\Enemy</Filter>
     </None>
   </ItemGroup>
