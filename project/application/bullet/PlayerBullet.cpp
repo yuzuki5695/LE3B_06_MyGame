@@ -3,7 +3,9 @@
 #include <ModelManager.h>
 #include <MatrixVector.h>
 #include<Tools/AssetGenerator/engine/math/LoadResourceID.h>
+#include <CollisionConfig.h>
 
+using namespace CollisionConfig;
 using namespace LoadResourceID;
 using namespace MatrixVector;
 
@@ -16,6 +18,8 @@ PlayerBullet::PlayerBullet() {}
 /// デストラクタ
 ///====================================================
 PlayerBullet::~PlayerBullet() {
+    // 削除されるときにマネージャーから登録を解除する
+    CollisionManager::GetInstance()->UnregisterCollider(this);
     Finalize();  // リソース解放
 }
 
@@ -81,7 +85,11 @@ void PlayerBullet::Initialize(const Vector3& startPos, const Vector3& targetPos,
         // スケール設定
         object_->SetScale({ 0.5f, 0.5f, 0.5f });
     }
-  
+      // --- 当たり判定の設定 ---
+    this->SetCollisionAttribute(kGroupPlayerBullet); // 自身はプレイヤー弾
+    this->SetCollisionMask(kGroupEnemy);           // 敵に当たりたい
+    // 衝突マネージャーに登録
+    CollisionManager::GetInstance()->RegisterCollider(this);
     // --- カメラ前方向に基づく修正 ---
     // 完全にターゲット方向へ飛ばす
     Vector3 dir = Normalize(targetPos - startPos);
@@ -128,22 +136,13 @@ void PlayerBullet::Draw() {
     object_->Draw();
 }
 
-///====================================================
-/// 当たり判定用OBBの取得
-///====================================================
+// 共通ユーティリティを使ってOBBを取得
 OBB PlayerBullet::GetOBB() const {
-    OBB obb;
+    return CollisionUtils::CreateOBB(transform_);
+}
 
-    // 中心は現在の位置
-    obb.center = transform_.translate;
-
-    // サイズ（スケール）
-    obb.halfSize = { transform_.scale};
-
-    // 軸はXYZの単位ベクトル
-    obb.axis[0] = { 1,0,0 }; // X軸
-    obb.axis[1] = { 0,1,0 }; // Y軸
-    obb.axis[2] = { 0,0,1 }; // Z軸
-
-    return obb;
+// 衝突時の処理
+void PlayerBullet::OnCollision(Collider* other) {
+    // 敵（またはターゲット）に当たったら自分を消す
+    this->SetInactive();
 }

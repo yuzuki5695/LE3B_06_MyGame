@@ -133,22 +133,3 @@ void EnemyBullet::Draw() {
 	object_->Draw();
 }
 
-///====================================================
-/// 当たり判定用OBBの取得
-///====================================================
-OBB EnemyBullet::GetOBB() const {
-    OBB obb;
-
-    // 中心は現在の位置
-    obb.center = transform_.translate;
-
-    // サイズ（スケール）の半分をハーフサイズにする
-    obb.halfSize = { transform_.scale.x };
-
-    // 軸はXYZの単位ベクトル
-    obb.axis[0] = {1, 0, 0}; // X軸
-    obb.axis[1] = {0, 1, 0}; // Y軸
-    obb.axis[2] = {0, 0, 1}; // Z軸
-
-    return obb;
-}

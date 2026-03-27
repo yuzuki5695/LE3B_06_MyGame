@@ -2,7 +2,7 @@
 #include <BaseBullet.h>
 #include <Transform.h>
 #include <BaseCharacter.h>
-#include<OBB.h>
+#include <CollisionManager.h>
 
 // ヘッダーの重複を防ぐ前方宣言
 class Object3d;
@@ -12,7 +12,7 @@ class Object3d;
 /// BaseBulletを継承
 /// プレイヤーの弾の生成・移動・描画・衝突判定を管理する
 /// </summary>
-class PlayerBullet : public BaseBullet {
+class PlayerBullet : public BaseBullet, public Collider {
 public: // メンバ関数
     /// <summary>
     /// コンストラクタ
@@ -54,11 +54,11 @@ public: // メンバ関数
     /// 弾モデルを3D空間に描画する
     /// </summary>
     void Draw() override;
-    /// <summary>
-    /// 弾の当たり判定情報（OBB）を取得する
-    /// </summary>
-    /// <returns>弾のOBB（回転付き当たり判定）</returns>
-    OBB GetOBB() const;
+    
+    // Colliderの純粋仮想関数を実装
+    OBB GetOBB() const override;
+    void OnCollision(Collider* other) override; // 当たった時の処理（ダメージなど）
+
 private: // メンバ変数
 	// 3Dオブジェクト
     std::unique_ptr<Object3d> object_;	   

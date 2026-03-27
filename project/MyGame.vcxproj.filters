@@ -573,6 +573,9 @@
     <ClCompile Include="application\character\enemy\EnemyWeapon.cpp">
       <Filter>ソース ファイル\application\character\enemy</Filter>
     </ClCompile>
+    <ClCompile Include="application\character\enemy\EnemyState.cpp">
+      <Filter>ソース ファイル\application\character\enemy</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="engine\2d\Sprite.h">
@@ -985,6 +988,18 @@
     </ClInclude>
     <ClInclude Include="application\character\enemy\EnemyWeapon.h">
       <Filter>ヘッダー ファイル\application\character\enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="application\character\enemy\EnemyState.h">
+      <Filter>ヘッダー ファイル\application\character\enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="application\character\enemy\IEnemyState.h">
+      <Filter>ヘッダー ファイル\application\character\enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="application\collision\CollisionUtils.h">
+      <Filter>ヘッダー ファイル\application\collision</Filter>
+    </ClInclude>
+    <ClInclude Include="application\collision\CollisionConfig.h">
+      <Filter>ヘッダー ファイル\application\collision</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

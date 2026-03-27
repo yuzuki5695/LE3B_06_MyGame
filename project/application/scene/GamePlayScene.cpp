@@ -123,45 +123,28 @@ void GamePlayScene::Update() {
 #pragma region 全てのObject3d個々の更新処理
     // 終了しない限り更新処理
     if (!end) {
-        //if (EventManager::GetInstance()->IsFinished()) {
-        //    // 敵出現動作
-        //    enemySpawner_->Update();
-        //}
-        //
-        //// 各衝突判定
-        //CheckBulletEnemyCollisionsOBB();
-        //CheckEnemyBulletPlayerCollisionsOBB(); 
-        //CheckEnemyPlayerCollisionsOBB();
-
         // 更新処理
-        player_->Update();
+        if (player_) {
+            player_->Update();
+        }
+        if (enemy_) {
+            enemy_->Update();
+        }
 
-        //// プレイヤーがゴール手前までは敵も更新
-        //if (player_->GetPosition().z <=  CameraManager::GetInstance()->GetGameplayCamera()->GetBezierPoints().back().controlPoint.z) {
-        //    // 敵の更新
-        //    for (auto& enemy : enemies_) {
-        //        if (enemy->IsActive()) {
-        //            enemy->SetPlayer(player_.get());
-        //            enemy->Update();
-        //        }
-        //    }
-        //}
-
-        enemy_->Update();
-
-        wall->Update();
         // Bulletマネージャの更新処理
         BulletManager::GetInstance()->Update();
+
+        // 当たり判定を常に実行
+        CollisionManager::GetInstance()->CheckAllCollisions();
+
+
+        wall->Update();
+
+        // 4. 【重要】削除処理は必ず「全ての更新・判定」が終わった最後に行う
+        if (enemy_ && enemy_->IsDead()) {
+            enemy_.reset(); // ここで初めて nullptr になる
+        }
     }
-    //    // 敵がプレイヤーから離れすぎたら削除（過去の敵掃除）
-    //for (auto& enemy : enemies_) {
-    //    if (!enemy->IsActive()) continue;
-    //    float playerZ = player_->GetPosition().z;
-    //    float spawnZ = enemy->GetSpawnBaseZ();  // 出現基準Z
-    //    if (playerZ > spawnZ + 30) { // 出現位置より進んでたら削除
-    //        enemy->Kill();
-    //    }
-    //}
 
     // フェードアウトが完了したら次のシーンへ
     if (FadeManager::GetInstance()->IsFadeEnd() && FadeManager::GetInstance()->GetFadeType() == FadeType::FadeOut) {
@@ -223,7 +206,9 @@ void GamePlayScene::Draw() {
         BulletManager::GetInstance()->Draw();
     }
 
-    enemy_->Draw();
+    if (enemy_) {
+        enemy_->Draw();
+    }
 
     wall->Draw();
     // イベントマネージャの描画処理
@@ -250,7 +235,7 @@ void GamePlayScene::Draw() {
     }
 
     // イベントマネージャの描画処理
-    //EventManager::GetInstance()->Draw2DSprite();
+    EventManager::GetInstance()->Draw2DSprite();
     // フェードマネージャの描画
     FadeManager::GetInstance()->Draw();
 #pragma endregion 全てのSprite個々の描画処理

@@ -55,11 +55,6 @@ public:
     /// 弾モデルを3D空間に描画する
     /// </summary>
     void Draw() override;
-    /// <summary>
-    /// 弾の当たり判定情報（OBB）を取得する
-    /// </summary>
-    /// <returns>弾のOBB（回転付き当たり判定）</returns>
-    OBB GetOBB() const;
 private:    // メンバ変数
 	// 3Dオブジェクト
     std::unique_ptr<Object3d> object_;
