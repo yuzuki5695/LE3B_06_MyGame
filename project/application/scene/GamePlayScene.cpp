@@ -55,6 +55,7 @@ void GamePlayScene::Initialize() {
 
     enemy_ = std::make_unique<Enemy>();
     enemy_->Initialize();
+    enemy_->SetPlayer(player_.get());
 
     // クリアゲート(仮)
     wall = Object3d::Create(model::Goal, Transform{ { 2.0f, 2.0f, 2.0f }, { 0.0f, 0.0f, 0.0f }, { 8.0f, 39.0f, 800.0f } });
@@ -145,6 +146,9 @@ void GamePlayScene::Update() {
         //        }
         //    }
         //}
+
+        enemy_->Update();
+
         wall->Update();
         // Bulletマネージャの更新処理
         BulletManager::GetInstance()->Update();
@@ -172,8 +176,7 @@ void GamePlayScene::Update() {
 
     // スカイボックス更新
     Box_->Update(); 
-    
-    enemy_->Update();
+
 
     // パーティクル更新
     ParticleManager::GetInstance()->Update();
@@ -247,7 +250,7 @@ void GamePlayScene::Draw() {
     }
 
     // イベントマネージャの描画処理
-    EventManager::GetInstance()->Draw2DSprite();
+    //EventManager::GetInstance()->Draw2DSprite();
     // フェードマネージャの描画
     FadeManager::GetInstance()->Draw();
 #pragma endregion 全てのSprite個々の描画処理

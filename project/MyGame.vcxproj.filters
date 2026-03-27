@@ -570,6 +570,9 @@
     <ClCompile Include="application\loader\EnemyDataLoader.cpp">
       <Filter>ソース ファイル\application\character\enemy</Filter>
     </ClCompile>
+    <ClCompile Include="application\character\enemy\EnemyWeapon.cpp">
+      <Filter>ソース ファイル\application\character\enemy</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="engine\2d\Sprite.h">
@@ -760,9 +763,6 @@
     </ClInclude>
     <ClInclude Include="engine\math\Vector\Transform.h">
       <Filter>ヘッダー ファイル\engine\math\Vector</Filter>
-    </ClInclude>
-    <ClInclude Include="application\character\BaseCharacter.h">
-      <Filter>ヘッダー ファイル\application\character</Filter>
     </ClInclude>
     <ClInclude Include="application\loader\CurveJsonLoader.h">
       <Filter>ヘッダー ファイル\application\loader</Filter>
@@ -971,14 +971,20 @@
     <ClInclude Include="application\loader\PlayerDataLoader.h">
       <Filter>ヘッダー ファイル\application\loader</Filter>
     </ClInclude>
-    <ClInclude Include="application\loader\EnemyDataLoader.h">
-      <Filter>ソース ファイル\application\character\enemy</Filter>
-    </ClInclude>
-    <ClInclude Include="application\character\enemy\EnemyData.h">
-      <Filter>ソース ファイル\application\character\enemy</Filter>
-    </ClInclude>
     <ClInclude Include="application\loader\BaseCharacterJsonLoader.h">
       <Filter>ヘッダー ファイル\application\loader</Filter>
+    </ClInclude>
+    <ClInclude Include="application\character\enemy\EnemyData.h">
+      <Filter>ヘッダー ファイル\application\character\enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="application\loader\EnemyDataLoader.h">
+      <Filter>ヘッダー ファイル\application\character\enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="application\character\BaseCharacter.h">
+      <Filter>ヘッダー ファイル\application\character</Filter>
+    </ClInclude>
+    <ClInclude Include="application\character\enemy\EnemyWeapon.h">
+      <Filter>ヘッダー ファイル\application\character\enemy</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -125,6 +125,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="application\camera\GamePlayCamera.cpp" />
     <ClCompile Include="application\character\enemy\Enemy.cpp" />
     <ClCompile Include="application\character\enemy\EnemySpawner.cpp" />
+    <ClCompile Include="application\character\enemy\EnemyWeapon.cpp" />
     <ClCompile Include="application\character\player\Player.cpp" />
     <ClCompile Include="application\character\player\PlayerDeath.cpp" />
     <ClCompile Include="application\character\player\PlayerMove.cpp" />
@@ -225,6 +226,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\character\enemy\Enemy.h" />
     <ClInclude Include="application\character\enemy\EnemyData.h" />
     <ClInclude Include="application\character\enemy\EnemySpawner.h" />
+    <ClInclude Include="application\character\enemy\EnemyWeapon.h" />
     <ClInclude Include="application\character\player\IPlayerState.h" />
     <ClInclude Include="application\character\player\Player.h" />
     <ClInclude Include="application\character\player\PlayerData.h" />
