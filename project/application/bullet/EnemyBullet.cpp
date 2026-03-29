@@ -3,7 +3,9 @@
 #include <MatrixVector.h>
 #include <Object3d.h>
 #include<Tools/AssetGenerator/engine/math/LoadResourceID.h>
+#include <CollisionConfig.h>
 
+using namespace CollisionConfig;
 using namespace LoadResourceID;
 using namespace MatrixVector;
 
@@ -85,7 +87,11 @@ void EnemyBullet::Initialize(const Vector3& startPos, const Vector3& targetPos, 
         // スケール設定
         object_->SetScale({ 0.5f, 0.5f, 0.5f });
     }
-
+    // --- 当たり判定の設定 ---
+    //this->SetCollisionAttribute(kGroupPlayerBullet); // 自身はプレイヤー弾
+   // this->SetCollisionMask(kGroupEnemy | kGroupEnemyBullet);           // 敵に当たりたい
+    // 衝突マネージャーに登録
+   // CollisionManager::GetInstance()->RegisterCollider(this);
     // --- カメラ前方向に基づく修正 ---
     // 完全にターゲット方向へ飛ばす
     // 弾の向き計算
@@ -131,5 +137,16 @@ void EnemyBullet::Update() {
 ///====================================================
 void EnemyBullet::Draw() {       
 	object_->Draw();
+}
+
+// 共通ユーティリティを使ってOBBを取得
+OBB EnemyBullet::GetOBB() const {
+    return CollisionUtils::CreateOBB(transform_);
+}
+
+// 衝突時の処理
+void EnemyBullet::OnCollision(Collider* other) {
+    // 敵（またはターゲット）に当たったら自分を消す
+    this->SetInactive();
 }
 

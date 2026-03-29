@@ -85,9 +85,9 @@ void PlayerBullet::Initialize(const Vector3& startPos, const Vector3& targetPos,
         // スケール設定
         object_->SetScale({ 0.5f, 0.5f, 0.5f });
     }
-      // --- 当たり判定の設定 ---
+    // --- 当たり判定の設定 ---
     this->SetCollisionAttribute(kGroupPlayerBullet); // 自身はプレイヤー弾
-    this->SetCollisionMask(kGroupEnemy);           // 敵に当たりたい
+    this->SetCollisionMask(kGroupEnemy | kGroupEnemyBullet);           // 敵に当たりたい
     // 衝突マネージャーに登録
     CollisionManager::GetInstance()->RegisterCollider(this);
     // --- カメラ前方向に基づく修正 ---
