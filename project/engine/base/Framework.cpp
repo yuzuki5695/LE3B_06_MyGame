@@ -77,7 +77,8 @@ void Framework::Initialize() {
     // WindowsAPIの初期化
     winApp = std::make_unique <WinApp>();
     // ウィンドウのタイトルを変更
-    winApp->SetWindowTitle(L"LE3B_07_オノデラ_ユヅキ_Skyraider");
+//    winApp->SetWindowTitle(L"LE4B_08_オノデラ_ユヅキ_Skyraider");
+    winApp->SetWindowTitle(L"Skyraider");
     winApp->Initialize();
     // DirectXの初期化
     dxCommon = std::make_unique <DirectXCommon>();
