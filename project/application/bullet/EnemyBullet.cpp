@@ -143,7 +143,7 @@ OBB EnemyBullet::GetOBB() const {
     obb.center = transform_.translate;
 
     // サイズ（スケール）の半分をハーフサイズにする
-    obb.halfSize = { transform_.scale.x };
+    obb.halfSize = { transform_.scale.x * 1.5f };
 
     // 軸はXYZの単位ベクトル
     obb.axis[0] = {1, 0, 0}; // X軸

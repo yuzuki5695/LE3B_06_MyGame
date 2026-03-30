@@ -33,6 +33,8 @@ private:
     float dashDirX_ = 0.0f;        // 回転する方向（左:-1.0, 右:1.0）
     float extraRotationZ_ = 0.0f;  // ダッシュによる追加のZ軸回転量（ラジアン）
     float speedMultiplier_ = 1.0f; // 移動クラスに渡す速度倍率
+
+
 public: // アクセッサ
 	// Getter
     // 現在の回転角を取得（PlayerMoveの回転に加算する）
@@ -41,7 +43,7 @@ public: // アクセッサ
     float GetSpeedMultiplier() const { return speedMultiplier_; }    
     // クールタイムの進捗（0.0～1.0） ※UIのゲージ表示などに利用
     float GetCoolDownProgress() const { return coolDownTimer_ / kCoolDownTime; }
-
+    
     // ダッシュ中かどうか
     bool IsDashing() const { return isDashing_; }
     // 現在ダッシュ可能か（ダッシュ中でなく、かつクールタイムが終了しているか）

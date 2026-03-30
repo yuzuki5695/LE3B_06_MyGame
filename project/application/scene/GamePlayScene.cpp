@@ -52,7 +52,7 @@ void GamePlayScene::Initialize() {
     // パーティクル
     particles_ = std::make_unique<GamePlayparticle>();
     particles_->Initialize(player_->GetPlayerObject());
-    
+
     // 敵関連の初期化
     MAX_ENEMY = 300; // 敵の最大数
     // 敵をリストに追加して初期化
@@ -88,7 +88,12 @@ void GamePlayScene::Initialize() {
     isPausedevent_ = false;
 
     // UIマネージャの初期化
-	UIManager::GetInstance()->Initialize();
+    UIManager::GetInstance()->Initialize();
+    // 3. UIManagerから GamePlayUI を探してプレイヤーを渡す
+    GamePlayUI* gpUI = UIManager::GetInstance()->GetUI<GamePlayUI>();
+    if (gpUI) {
+        gpUI->SetPlayer(player_.get());
+    }
 }
 void GamePlayScene::PauseMenuUpdate() {
     //  Enterキーでポーズの「開始」のみをチェック
@@ -131,6 +136,9 @@ void GamePlayScene::Update() {
     CameraManager::GetInstance()->SetGamecameraTarget(player_->GetPlayerObject());
     CameraManager::GetInstance()->Update();
 #pragma region 全てのObject3d個々の更新処理
+
+
+
     // 終了しない限り更新処理
     if (!end) {
         if (EventManager::GetInstance()->IsFinished()) {
@@ -143,9 +151,6 @@ void GamePlayScene::Update() {
         CheckEnemyBulletPlayerCollisionsOBB(); 
         CheckEnemyPlayerCollisionsOBB();
 
-        // 更新処理
-        player_->Update();
-
         // プレイヤーがゴール手前までは敵も更新
         if (player_->GetPosition().z <=  CameraManager::GetInstance()->GetGameplayCamera()->GetBezierPoints().back().controlPoint.z) {
             // 敵の更新
@@ -157,10 +162,16 @@ void GamePlayScene::Update() {
             }
         }
         wall->Update();
+
+    }
+    // 更新処理
+    player_->Update();
+    if (!end) {
         // Bulletマネージャの更新処理
         BulletManager::GetInstance()->Update();
     }
-        // 敵がプレイヤーから離れすぎたら削除（過去の敵掃除）
+     
+    // 敵がプレイヤーから離れすぎたら削除（過去の敵掃除）
     for (auto& enemy : enemies_) {
         if (!enemy->IsActive()) continue;
         float playerZ = player_->GetPosition().z;
@@ -330,6 +341,7 @@ void GamePlayScene::HandlePlayerState() {
             gpUI->StartControlUIAnimation();
         }
     }
+   
 }
 
 
@@ -397,9 +409,9 @@ void GamePlayScene::CheckEnemyPlayerCollisionsOBB() {
 
         // 衝突判定
         if (IsOBBIntersect(playerOBB, enemyOBB)) {
+            enemy->OnHit();
             player_->SetState(State::Dead);
             end = true; // ゲームオーバーへ遷移など
-
             break;
         }
     }

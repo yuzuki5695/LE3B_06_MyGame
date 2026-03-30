@@ -116,35 +116,36 @@ void Player::DebugImgui() {
 void Player::UpdateAlive() {
     CameraManager* camMgr = CameraManager::GetInstance();
     Input* input = Input::GetInstance();
+    if (CameraManager::GetInstance()->GetTypeview() == ViewCameraType::Main) {
+        // --- 1. 回避入力 ---
+        if (input->Pushkey(DIK_LSHIFT) && dash_->CanDash()) {
+            // 現在の移動入力から方向を決定
+            float moveDirX = 0.0f;
+            if (input->Pushkey(DIK_A)) moveDirX = -1.0f;
+            if (input->Pushkey(DIK_D)) moveDirX = 1.0f;
+            dash_->Start(moveDirX);
+        }
 
-    // --- 1. 回避入力 ---
-    if (input->Pushkey(DIK_LSHIFT) && dash_->CanDash()) {
-        // 現在の移動入力から方向を決定
-        float moveDirX = 0.0f;
-        if (input->Pushkey(DIK_A)) moveDirX = -1.0f;
-        if (input->Pushkey(DIK_D)) moveDirX = 1.0f;
-        dash_->Start(moveDirX);
+        // --- 2. 回避状態の更新 ---
+        dash_->Update();
+
+        // --- 3. 移動の更新 ---
+        // PlayerMoveに現在の速度倍率を渡す（PlayerMove側のUpdateに引数を追加するか、内部で計算）
+        // ここでは、一時的に移動速度を上げるためにダッシュ倍率を適用
+        float currentSpeedMult = dash_->GetSpeedMultiplier();
+
+        // move_->Updateの中で speed * currentSpeedMult されるように調整
+        move_->Update(transform_, CameraManager::GetInstance()->GetMainCamera()->GetRotate(), currentSpeedMult);
+
+        // --- 4. 回転の合成 ---
+        transform_.rotate.z += dash_->GetRotationZ();
+        // レティクル
+        reticle_->Update(targettransform_, transform_.translate, target_.get());
+        // 攻撃
+        weapon_->Update(transform_.translate, target_->GetTranslate(), camMgr->GetGameplayCamera());
+        // レティクル(2Dスプライト)の同期
+        reticle_->UpdateSprite(target_->GetTranslate(), targetreticle_.get(), camMgr->GetActiveCamera());
     }
-
-    // --- 2. 回避状態の更新 ---
-    dash_->Update();
-
-    // --- 3. 移動の更新 ---
-    // PlayerMoveに現在の速度倍率を渡す（PlayerMove側のUpdateに引数を追加するか、内部で計算）
-    // ここでは、一時的に移動速度を上げるためにダッシュ倍率を適用
-    float currentSpeedMult = dash_->GetSpeedMultiplier();
-
-    // move_->Updateの中で speed * currentSpeedMult されるように調整
-    move_->Update(transform_, CameraManager::GetInstance()->GetMainCamera()->GetRotate(), currentSpeedMult);
-
-    // --- 4. 回転の合成 ---
-    transform_.rotate.z += dash_->GetRotationZ();
-    // レティクル
-    reticle_->Update(targettransform_, transform_.translate, target_.get());
-    // 攻撃
-    weapon_->Update(transform_.translate, target_->GetTranslate(), camMgr->GetGameplayCamera());
-    // レティクル(2Dスプライト)の同期
-    reticle_->UpdateSprite(target_->GetTranslate(), targetreticle_.get(), camMgr->GetActiveCamera());
 }
 
 void Player::UpdateDead() {
@@ -152,8 +153,8 @@ void Player::UpdateDead() {
 
     // 死亡演出：ここに落下や回転のロジックを書く（後にクラス化も可能）
     death_->Update(transform_.rotate, deathOffset_, object.get());
-    // 座標の同期（これが重要）
-    SyncWorldTransformByRail();
+    //// 座標の同期（これが重要）
+    //SyncWorldTransformByRail();
 }
 
 void Player::UpdateGoal() {

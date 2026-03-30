@@ -91,7 +91,7 @@ public:// メンバ変数
 		object->SetRotate(transform_.rotate);
 		object->SetScale(transform_.scale);
 	}
-
+	PlayerDash* GetDash() { return dash_.get(); }
 	// Transformのpositionを返すgetter
 	Vector3 GetPosition() const {
 		return transform_.translate;

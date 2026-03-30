@@ -65,7 +65,7 @@ void GamePlayCamera::Update() {
     }
 
     if (CameraManager::GetInstance()->GetMode() == CameraMode::Transition) {
-//        UpdateTransition();
+        UpdateTransition();
 
         CameraManager::GetInstance()->SetTypeview(ViewCameraType::Sub);
 

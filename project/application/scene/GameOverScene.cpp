@@ -64,7 +64,7 @@ void GameOverScene::Initialize() {
     std::mt19937 randomEngine(rd());
     std::uniform_real_distribution<float> transformY(10.0f, 13.0f);
     std::uniform_real_distribution<float> distX(-10.0f, 3.0f);
-    std::uniform_real_distribution<float> distY(0.01f, 0.03f);
+    std::uniform_real_distribution<float> distY(0.06f, 0.12f);
     std::uniform_real_distribution<float> rotateX(-0.01f, 0.01f);
     std::uniform_real_distribution<float> rotateY(-0.01f, 0.01f);
     std::uniform_real_distribution<float> rotateZ(-0.01f, 0.01f);

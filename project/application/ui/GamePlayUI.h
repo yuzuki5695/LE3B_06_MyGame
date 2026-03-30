@@ -1,6 +1,8 @@
 #pragma once
 #include <BaseUI.h>
 
+class Player; // 前方宣言
+
 class GamePlayUI : public BaseUI {
 public: // メンバ関数
     void Initialize() override;
@@ -9,6 +11,7 @@ public: // メンバ関数
     // アニメーション開始トリガー
     void StartControlUIAnimation();
     void StartStageProgressUI();
+    void SetPlayer(Player* player) { player_ = player; }
 private: // プレイベートメンバ関数
     void UpdateStageProgressUI();
 
@@ -20,7 +23,7 @@ private: // プレイベートメンバ関数
 private: // メンバ変数
     std::vector<std::unique_ptr<Sprite>> uis_;
     std::vector<Vector2> uiOriginalSizes_;
-    
+    Player* player_ = nullptr;
     bool isAnimating_;
     float timer_;
     float duration_;

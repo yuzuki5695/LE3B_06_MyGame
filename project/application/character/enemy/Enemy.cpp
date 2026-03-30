@@ -131,7 +131,7 @@ void Enemy::AttachBullet(const Vector3& playerPos) {
     std::unique_ptr<EnemyBullet> bullet = std::make_unique<EnemyBullet>();
     bullet->Initialize(
         bulletStartPos,
-        bulletStartPos + shootDir * 10.0f,
+        bulletStartPos + shootDir * 13.0f,
         shootDir,
         0.8f
     );
@@ -308,7 +308,7 @@ void Enemy::UpdateCharge() {
     if (t >= 1.0f) {
         if (player_) {
             Vector3 finalDir = Normalize(player_->GetPosition() - transform_.translate);
-            dashVelocity_ = finalDir * 1.8f; // 突撃速度(dashSpeed)
+            dashVelocity_ = finalDir * 2.2f; // 突撃速度(dashSpeed)
         }
         state_ = State::Dash;
     }

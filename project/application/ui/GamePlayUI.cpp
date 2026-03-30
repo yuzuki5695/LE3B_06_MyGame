@@ -184,7 +184,7 @@ void GamePlayUI::CreateWASDUI(const Vector2& baseCenter, const Vector2& size, fl
     Vector2 spacePos2 = { baseCenter.x + (spaceSize.x + keySpacing) * 0.5f, spaceY };
 
     uis_.push_back(Sprite::Create(Operationui::SPACEKey, spacePos, 0.0f, spaceSize));  //8
-    uis_.push_back(Sprite::Create(Operationui::SPACEKey, spacePos2, 0.0f, spaceSize)); //9
+    uis_.push_back(Sprite::Create(Operationui::SHIFT, spacePos2, 0.0f, spaceSize)); //9
 }
 
 void GamePlayUI::UpdateControlUI() {
@@ -204,7 +204,23 @@ void GamePlayUI::UpdateControlUI() {
 
         // === SPACE / SHIFT ===
         uis_[8]->SetTexture(input->Pushkey(DIK_SPACE) ? Operationui::SPACEKey_RED : Operationui::SPACEKey);
-        uis_[9]->SetTexture(input->Pushkey(DIK_LSHIFT) ? Operationui::SHIFT_RED : Operationui::SHIFT);
+//        uis_[9]->SetTexture(input->Pushkey(DIK_LSHIFT) ? Operationui::SHIFT_RED : Operationui::SHIFT);
+
+        // プレイヤーからDashクラスの情報を取得できる前提
+        if (player_) {
+            // CanDash() は「ダッシュ中でない 且つ クールタイム終了(<=0)」を返してくれる
+            bool canDash = player_->GetDash()->CanDash();
+
+            if (!canDash) {
+                // 【クールタイム中 または ダッシュ演出中】
+                // キー入力に関係なく、強制的に「赤（使用不可/リキャスト中）」を表示
+                uis_[9]->SetTexture(Operationui::SHIFT_RED);
+            } else {
+                // 【ダッシュ準備完了】
+                // 通常時：SHIFT（白など）、押している間：SHIFT_RED（赤）
+                uis_[9]->SetTexture(input->Pushkey(DIK_LSHIFT) ? Operationui::SHIFT_RED : Operationui::SHIFT);
+            }
+        }
     }
 }
 
