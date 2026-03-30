@@ -149,12 +149,10 @@ void Player::UpdateAlive() {
 }
 
 void Player::UpdateDead() {
-
-
+    // 座標の同期
+    SyncWorldTransformByRail();
     // 死亡演出：ここに落下や回転のロジックを書く（後にクラス化も可能）
     death_->Update(transform_.rotate, deathOffset_, object.get());
-    //// 座標の同期（これが重要）
-    //SyncWorldTransformByRail();
 }
 
 void Player::UpdateGoal() {

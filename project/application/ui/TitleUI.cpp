@@ -39,9 +39,9 @@ void TitleUI::Initialize() {
         texture::Ui::titile_02,
         texture::Ui::titile_03,
         texture::Ui::titile_04,
+        texture::Ui::titile_03,
         texture::Ui::titile_05,
         texture::Ui::titile_06,
-        texture::Ui::titile_07,
     };
 
     for (const auto& t : textures)

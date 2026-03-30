@@ -137,8 +137,6 @@ void GamePlayScene::Update() {
     CameraManager::GetInstance()->Update();
 #pragma region 全てのObject3d個々の更新処理
 
-
-
     // 終了しない限り更新処理
     if (!end) {
         if (EventManager::GetInstance()->IsFinished()) {
@@ -150,22 +148,23 @@ void GamePlayScene::Update() {
         CheckBulletEnemyCollisionsOBB();
         CheckEnemyBulletPlayerCollisionsOBB(); 
         CheckEnemyPlayerCollisionsOBB();
-
-        // プレイヤーがゴール手前までは敵も更新
-        if (player_->GetPosition().z <=  CameraManager::GetInstance()->GetGameplayCamera()->GetBezierPoints().back().controlPoint.z) {
-            // 敵の更新
-            for (auto& enemy : enemies_) {
-                if (enemy->IsActive()) {
-                    enemy->SetPlayer(player_.get());
-                    enemy->Update();
-                }
-            }
-        }
         wall->Update();
 
     }
     // 更新処理
     player_->Update();
+    
+    // プレイヤーがゴール手前までは敵も更新
+    if (player_->GetPosition().z <= CameraManager::GetInstance()->GetGameplayCamera()->GetBezierPoints().back().controlPoint.z) {
+        // 敵の更新
+        for (auto& enemy : enemies_) {
+            if (enemy->IsActive()) {
+                enemy->SetPlayer(player_.get());
+                enemy->Update();
+            }
+        }
+    }
+
     if (!end) {
         // Bulletマネージャの更新処理
         BulletManager::GetInstance()->Update();
@@ -238,13 +237,16 @@ void GamePlayScene::Draw() {
     Object3dCommon::GetInstance()->Commondrawing();
     StageManager::GetInstance()->Draw();
 
-    // 描画処理
+    player_->Draw();
+    
+    // 描画処理    
     if (!end) {
-        player_->Draw();
         // Bulletマネージャの描画処理
         BulletManager::GetInstance()->Draw();
     }
-        // プレイヤーがゴール地点に達するまでは敵や壁を描画
+
+
+    // プレイヤーがゴール地点に達するまでは敵や壁を描画
     if (player_->GetPosition().z <= CameraManager::GetInstance()->GetGameplayCamera()->GetBezierPoints().back().controlPoint.z) {
         // 敵の更新
         for (auto& enemy : enemies_) {
@@ -374,7 +376,12 @@ void GamePlayScene::CheckBulletEnemyCollisionsOBB() {
 ///====================================================
 /// 敵弾 vs プレイヤーの当たり判定
 ///====================================================
-void GamePlayScene::CheckEnemyBulletPlayerCollisionsOBB() {
+void GamePlayScene::CheckEnemyBulletPlayerCollisionsOBB() { 
+    // プレイヤーがダッシュ中なら、当たり判定を一切行わずに終了する
+    if (player_->GetDash()->IsDashing()) {
+        return; 
+    }
+
     const auto& bullets = BulletManager::GetInstance()->GetEnemyBullets();
 
     OBB playerOBB = player_->GetOBB(); // プレイヤーがOBBを返すようにしておく必要あり
@@ -397,7 +404,12 @@ void GamePlayScene::CheckEnemyBulletPlayerCollisionsOBB() {
 ///====================================================
 /// 敵 vs プレイヤー の当たり判定
 ///====================================================
-void GamePlayScene::CheckEnemyPlayerCollisionsOBB() {
+void GamePlayScene::CheckEnemyPlayerCollisionsOBB() { 
+    // プレイヤーがダッシュ中なら、当たり判定を一切行わずに終了する
+    if (player_->GetDash()->IsDashing()) {
+        return;
+    }
+
     // プレイヤーのOBBを取得
     OBB playerOBB = player_->GetOBB();
 

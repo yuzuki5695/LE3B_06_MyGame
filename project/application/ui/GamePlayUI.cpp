@@ -215,8 +215,10 @@ void GamePlayUI::UpdateControlUI() {
                 // 【クールタイム中 または ダッシュ演出中】
                 // キー入力に関係なく、強制的に「赤（使用不可/リキャスト中）」を表示
                 uis_[9]->SetTexture(Operationui::SHIFT_RED);
+                uis_[9]->SetColor({ 0.3f, 0.3f, 0.3f, 1.0f });
             } else {
                 // 【ダッシュ準備完了】
+                uis_[9]->SetColor({ 1.0f, 1.0f, 1.0f, 1.0f });
                 // 通常時：SHIFT（白など）、押している間：SHIFT_RED（赤）
                 uis_[9]->SetTexture(input->Pushkey(DIK_LSHIFT) ? Operationui::SHIFT_RED : Operationui::SHIFT);
             }
