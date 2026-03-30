@@ -153,6 +153,22 @@ void GamePlayScene::Update() {
     }
     // 更新処理
     player_->Update();
+  
+    // 敵がプレイヤーから離れすぎたら削除（過去の敵掃除）
+    for (auto& enemy : enemies_) { 
+        float playerZ = player_->GetPosition().z;
+        float spawnZ = enemy->GetSpawnBaseZ();  // 出現基準Z
+        
+        if (playerZ >= spawnZ + 10) {
+            enemy->SetState(Enemy::EnemyState::teisi);
+        }
+
+        if (!enemy->IsActive()) continue;
+
+        if (playerZ > spawnZ + 30) { // 出現位置より進んでたら削除
+            enemy->Kill();
+        }
+    } 
     
     // プレイヤーがゴール手前までは敵も更新
     if (player_->GetPosition().z <= CameraManager::GetInstance()->GetGameplayCamera()->GetBezierPoints().back().controlPoint.z) {
@@ -170,16 +186,6 @@ void GamePlayScene::Update() {
         BulletManager::GetInstance()->Update();
     }
      
-    // 敵がプレイヤーから離れすぎたら削除（過去の敵掃除）
-    for (auto& enemy : enemies_) {
-        if (!enemy->IsActive()) continue;
-        float playerZ = player_->GetPosition().z;
-        float spawnZ = enemy->GetSpawnBaseZ();  // 出現基準Z
-        if (playerZ > spawnZ + 30) { // 出現位置より進んでたら削除
-            enemy->Kill();
-        }
-    }
-
     // フェードアウトが完了したら次のシーンへ
     if (FadeManager::GetInstance()->IsFadeEnd() && FadeManager::GetInstance()->GetFadeType() == FadeType::FadeOut) {
         if (player_->GetState() == State::Dead) {
@@ -421,7 +427,6 @@ void GamePlayScene::CheckEnemyPlayerCollisionsOBB() {
 
         // 衝突判定
         if (IsOBBIntersect(playerOBB, enemyOBB)) {
-            enemy->OnHit();
             player_->SetState(State::Dead);
             end = true; // ゲームオーバーへ遷移など
             break;

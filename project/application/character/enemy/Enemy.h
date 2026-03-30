@@ -25,12 +25,13 @@ enum class MoveType {
 /// </summary>
 class Enemy : public BaseCharacter {
 public: // メンバ関数
-    enum class State {
+    enum class EnemyState {
         Spawn,   // 出現演出中
         Active,  // 通常行動
         Charge,  // ← 追加：突撃予備動作（赤く光る、静止するなど）
         Dash,    // ← 追加：突撃中
         Dying,   
+        teisi,   // teisi
         Dead
     };
 
@@ -136,7 +137,7 @@ private: // メンバ変数
     float t;
 
     // 状態遷移
-    State state_ = State::Dead;
+    EnemyState state_ = EnemyState::Dead;
 
 
     // Spawn演出用
@@ -168,8 +169,10 @@ public:   // アクセッサ（Getter / Setter）
     std::function<void(const Vector3&)> onDeathCallback;
 
     float GetSpawnBaseZ() const { return spawnBaseZ_; }
-     
-	// Transformのpositionを返すgetter
+
+    void SetState(EnemyState state) { state_ = state; }
+
+    // Transformのpositionを返すgetter
 	Vector3 GetPosition() const {
 		return transform_.translate;
 	}

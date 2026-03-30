@@ -51,19 +51,22 @@ void Enemy::Initialize() {
 ///====================================================
 void Enemy::Update() {
     switch (state_) {
-    case State::Spawn:
+    case EnemyState::Spawn:
         UpdateSpawn();
         break;
-    case State::Active:
+    case EnemyState::Active:
         UpdateActive();
         break;
 
-    case State::Charge: UpdateCharge(); break; // 追加
-    case State::Dash:   UpdateDash();   break; // 追加
-    case State::Dying:
+    case EnemyState::Charge: UpdateCharge(); break; // 追加
+    case EnemyState::Dash:   UpdateDash();   break; // 追加
+    case EnemyState::Dying:
         UpdateDying();
         break;
-    case State::Dead:
+    case EnemyState::teisi:
+
+        break;
+    case EnemyState::Dead:
         return;
     }
     
@@ -180,7 +183,7 @@ void Enemy::Spawn(const Vector3& pos, MoveType moveType) {
     bulletInterval_ = bulletIntervalDist_(randomEngine);
 
     // ===== Spawn ステート開始 =====
-    state_ = State::Spawn;
+    state_ = EnemyState::Spawn;
     spawnTimer_ = 0.0f;
 
     spawnTargetPos_ = pos;
@@ -220,17 +223,17 @@ void Enemy::UpdateSpawn() {
 
     if (t >= 1.0f) {
         transform_.scale = { 1,1,1 }; // 念のため収束
-        state_ = State::Active;
+        state_ = EnemyState::Active;
     }
 }
 
 void Enemy::OnHit() {
     // すでに死にかけ or 死亡済みなら無視
-    if (state_ == State::Dying || state_ == State::Dead) {
+    if (state_ == EnemyState::Dying || state_ == EnemyState::Dead) {
         return;
     }
 
-    state_ = State::Dying;
+    state_ = EnemyState::Dying;
     isDying_ = true;
     deathTimer_ = 0.0f;
 }
@@ -250,7 +253,7 @@ void Enemy::UpdateActive() {
 
             if (totalDist >= attackDistanceThreshold_) {
                 // 十分に離れているので突撃準備へ
-                state_ = State::Charge;
+                state_ = EnemyState::Charge;
                 chargeTimer_ = 0.0f;
                 attackTimer_ = 0.0f;
                 // 溜め開始時の座標を保存（引く動作の基準）
@@ -310,7 +313,7 @@ void Enemy::UpdateCharge() {
             Vector3 finalDir = Normalize(player_->GetPosition() - transform_.translate);
             dashVelocity_ = finalDir * 2.2f; // 突撃速度(dashSpeed)
         }
-        state_ = State::Dash;
+        state_ = EnemyState::Dash;
     }
 }
 // 突撃中
@@ -334,7 +337,7 @@ void Enemy::UpdateDash() {
     if (transform_.translate.z < limitZ) {
         isDead_ = true;
         isActive_ = false;
-        state_ = State::Dead;
+        state_ = EnemyState::Dead;
     }
 }
 
