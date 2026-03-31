@@ -17,7 +17,7 @@ void GamePlayScene::Finalize() {
 void GamePlayScene::Initialize() {
     // カメラマネージャの初期化
     CameraManager::GetInstance()->Initialize(CameraTransform({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }));
-    CameraManager::GetInstance()->SetTypeview(ViewCameraType::Main);
+  //  CameraManager::GetInstance()->SetTypeview(ViewCameraType::Main);
 
 }
 

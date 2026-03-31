@@ -27,16 +27,16 @@ public: // メンバ関数
     /// 更新処理
     /// </summary> 
     void Update();
-    // ImGui描画   
-    void DrawImGui();
-    // カメラモード設定
-    void SetCameraMode(CameraMode mode);
-    // サブカメラを一括登録
-    void RegisterSubCameras(std::vector<std::unique_ptr<Camera>>&& cameras, const std::string& prefix);
-    // シーンマネージャーから現在のシ―ンを判定する
-    void NotifySceneChangedByName(const std::string& sceneName);
-    // 各シーン用カメラの切替
-    //void OnSceneChanged(SceneCameraType type);
+    //// ImGui描画   
+    //void DrawImGui();
+    //// カメラモード設定
+    //void SetCameraMode(CameraMode mode);
+    //// サブカメラを一括登録
+    //void RegisterSubCameras(std::vector<std::unique_ptr<Camera>>&& cameras, const std::string& prefix);
+    //// シーンマネージャーから現在のシ―ンを判定する
+    //void NotifySceneChangedByName(const std::string& sceneName);
+    //// 各シーン用カメラの切替
+    ////void OnSceneChanged(SceneCameraType type);
 
 
 private: // メンバ変数
@@ -58,33 +58,33 @@ private: // メンバ変数
 public: // メンバ関数
     // 現在アクティブなカメラ
     Camera* GetActiveCamera();
-    // アクティブカメラを更新し、共通リソースに設定する
-    void SetActiveCamera();
+    //// アクティブカメラを更新し、共通リソースに設定する
+    //void SetActiveCamera();
 
-    ViewCameraType GetTypeview() const { return Typeview_; }
-    void SetTypeview(ViewCameraType type) { Typeview_ = type; }
-    CameraMode GetMode() const { return currentMode_; }
-    void SetMode(CameraMode mode) { currentMode_ = mode; }
+    //ViewCameraType GetTypeview() const { return Typeview_; }
+    //void SetTypeview(ViewCameraType type) { Typeview_ = type; }
+    //CameraMode GetMode() const { return currentMode_; }
+    //void SetMode(CameraMode mode) { currentMode_ = mode; }
 
-    SceneCameraType GetActiveSceneCamera() const{ return activeSceneCameraType_; }
+    //SceneCameraType GetActiveSceneCamera() const{ return activeSceneCameraType_; }
 
-    CameraSwitchType GetSwitchType() const { return switchType_; }
-    void SetSwitchType(CameraSwitchType type) { switchType_ = type; }
+    //CameraSwitchType GetSwitchType() const { return switchType_; }
+    //void SetSwitchType(CameraSwitchType type) { switchType_ = type; }
 
-    Camera* GetMainCamera() const {
-        return mainCamera_.get();
-    }
+    //Camera* GetMainCamera() const {
+    //    return mainCamera_.get();
+    //}
 
-    const CameraTransform& GetMainCameraTransform() const {
-        return maintrans_;
-    }
+    //const CameraTransform& GetMainCameraTransform() const {
+    //    return maintrans_;
+    //}
 
-    Camera* GetSubCamera(const std::string& name) {
-        auto it = subCamerasMap_.find(name);
-        if (it != subCamerasMap_.end()) {
-            return it->second.get();
-        }
-        return nullptr;
-    }
+    //Camera* GetSubCamera(const std::string& name) {
+    //    auto it = subCamerasMap_.find(name);
+    //    if (it != subCamerasMap_.end()) {
+    //        return it->second.get();
+    //    }
+    //    return nullptr;
+    //}
 
 };

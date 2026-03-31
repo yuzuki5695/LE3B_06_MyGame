@@ -735,12 +735,6 @@
     <None Include="Resources\shaders\Object3d\Object3d.hlsli">
       <Filter>リソース ファイル\shaders\Object3d</Filter>
     </None>
-    <None Include="Resources\levels\bezier.json">
-      <Filter>リソース ファイル</Filter>
-    </None>
-    <None Include="Resources\levels\untitled.json">
-      <Filter>リソース ファイル</Filter>
-    </None>
     <None Include="Resources\Data\Languages\Localization.json">
       <Filter>リソース ファイル\Data\Languages</Filter>
     </None>
