@@ -130,32 +130,8 @@
     <Filter Include="ヘッダー ファイル\engine\math\Vector">
       <UniqueIdentifier>{e13f2e36-4292-41c9-b7c0-9808517079de}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ソース ファイル\application\character">
-      <UniqueIdentifier>{2a9f0528-9f22-4368-a9d5-57d0c9e90e83}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ソース ファイル\application\loader">
-      <UniqueIdentifier>{737ec024-93f3-4b94-94b0-39ecb63a733d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ソース ファイル\application\camera">
-      <UniqueIdentifier>{2c45c29c-d0c3-4ba3-83cc-fde300d51295}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ソース ファイル\application\bullet">
-      <UniqueIdentifier>{43779993-e4ed-4cb3-86e8-2e2a8fc165da}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ソース ファイル\application\fade">
-      <UniqueIdentifier>{6de3d2ff-57ef-4f70-81ac-7a699de0dd44}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ヘッダー ファイル\engine\math\collision">
       <UniqueIdentifier>{5f01e14b-13b2-42aa-ae79-9affb9303730}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ソース ファイル\application\event">
-      <UniqueIdentifier>{560a6f91-295f-44f1-b0b7-b2aa1307c46e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ソース ファイル\application\collision">
-      <UniqueIdentifier>{c7d8663d-47b8-4017-9149-5c426a1193a4}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ソース ファイル\application\stage">
-      <UniqueIdentifier>{956b23a1-c000-4af9-816b-d60f4377254e}</UniqueIdentifier>
     </Filter>
     <Filter Include="ヘッダー ファイル\engine\math\Easing">
       <UniqueIdentifier>{dd67d91e-27df-46e4-b34a-c55c296e5fd1}</UniqueIdentifier>
@@ -163,53 +139,11 @@
     <Filter Include="ソース ファイル\engine\math\Easing">
       <UniqueIdentifier>{97eaff47-422d-4b71-86af-e4d42b61b8d3}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ソース ファイル\application\particle">
-      <UniqueIdentifier>{0d377709-ece8-4a7d-9b05-29fc250084e0}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ヘッダー ファイル\engine\math\ParticleData">
       <UniqueIdentifier>{ab309e3a-ec4e-44c9-8978-c114a46308b8}</UniqueIdentifier>
     </Filter>
     <Filter Include="ソース ファイル\engine\math\collision">
       <UniqueIdentifier>{f4077ff3-9d86-403e-9ef0-1bebb837b1f8}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ソース ファイル\application\pause">
-      <UniqueIdentifier>{c5781d8c-054f-48a2-8959-008b1c5e936f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ヘッダー ファイル\application">
-      <UniqueIdentifier>{8879c179-8943-4fc5-a19e-f0b38a474781}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ヘッダー ファイル\application\scene">
-      <UniqueIdentifier>{274efcee-0964-497f-a839-b32ab88eb2cf}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ヘッダー ファイル\application\character">
-      <UniqueIdentifier>{88d1f61c-35e7-4b87-8d52-a0fe6ed451ec}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ヘッダー ファイル\application\loader">
-      <UniqueIdentifier>{4fd94a91-62be-4991-98c1-9fe49ec67cec}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ヘッダー ファイル\application\camera">
-      <UniqueIdentifier>{225bec48-4135-4122-8a6e-3b5d8149494c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ヘッダー ファイル\application\bullet">
-      <UniqueIdentifier>{91330ba0-b2ca-4345-9fa7-f3775f10d4e6}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ヘッダー ファイル\application\fade">
-      <UniqueIdentifier>{fca0a5c4-0cca-4f32-9665-08aef2b11991}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ヘッダー ファイル\application\collision">
-      <UniqueIdentifier>{2b551131-8003-4282-b5ca-995d168aec00}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ヘッダー ファイル\application\event">
-      <UniqueIdentifier>{2e44f535-1b69-4651-b91a-3c6c9d1fef4a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ヘッダー ファイル\application\stage">
-      <UniqueIdentifier>{1d514fa6-6226-4b6e-ad61-846cfd2e44bb}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ヘッダー ファイル\application\particle">
-      <UniqueIdentifier>{3264e2f4-9fdc-482b-ad88-dcef28660e8d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ヘッダー ファイル\application\pause">
-      <UniqueIdentifier>{5f0ad7e7-d543-4f5d-9f5a-2e8ac0dc99ba}</UniqueIdentifier>
     </Filter>
     <Filter Include="ソース ファイル\engine\editor">
       <UniqueIdentifier>{8c81b882-315d-49b9-b80a-322138110a27}</UniqueIdentifier>
@@ -259,24 +193,6 @@
     <Filter Include="ヘッダー ファイル\engine\editor\layout\editormenubar">
       <UniqueIdentifier>{3f31f402-fcc2-4a1e-9205-9872c0cf30dc}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ソース ファイル\application\ui">
-      <UniqueIdentifier>{4540355a-ca3a-4eb8-8c0b-a5fa2d7beb93}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ヘッダー ファイル\application\ui">
-      <UniqueIdentifier>{bc06df0e-7372-442f-b366-5195a6b18484}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ヘッダー ファイル\application\character\player">
-      <UniqueIdentifier>{2a7546ab-cebe-44d3-a852-a35e4e04e782}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ヘッダー ファイル\application\character\enemy">
-      <UniqueIdentifier>{8ca6f24a-1c20-4541-8f80-30ba17e68e7f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ソース ファイル\application\character\enemy">
-      <UniqueIdentifier>{4b99df62-1041-4fee-a5fd-1decbabccbe3}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ソース ファイル\application\character\player">
-      <UniqueIdentifier>{a7eab18e-630a-472c-afe5-35bace2ee948}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ソース ファイル\engine\2d">
       <UniqueIdentifier>{87dbf081-2f7b-4eab-8c81-08ea214b5ba0}</UniqueIdentifier>
     </Filter>
@@ -285,6 +201,9 @@
     </Filter>
     <Filter Include="リソース ファイル\Data\Enemy">
       <UniqueIdentifier>{5fcf1482-e3f5-4526-9f5e-916da7edbc14}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\application">
+      <UniqueIdentifier>{97840e1a-ca5d-462a-866a-541cd4e15495}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -432,74 +351,17 @@
     <ClCompile Include="engine\io\Controller.cpp">
       <Filter>ソース ファイル\engine\io</Filter>
     </ClCompile>
-    <ClCompile Include="application\loader\CurveJsonLoader.cpp">
-      <Filter>ソース ファイル\application\loader</Filter>
-    </ClCompile>
-    <ClCompile Include="application\loader\CharacterLoader.cpp">
-      <Filter>ソース ファイル\application\loader</Filter>
-    </ClCompile>
-    <ClCompile Include="application\bullet\BulletManager.cpp">
-      <Filter>ソース ファイル\application\bullet</Filter>
-    </ClCompile>
-    <ClCompile Include="application\bullet\PlayerBullet.cpp">
-      <Filter>ソース ファイル\application\bullet</Filter>
-    </ClCompile>
-    <ClCompile Include="application\bullet\EnemyBullet.cpp">
-      <Filter>ソース ファイル\application\bullet</Filter>
-    </ClCompile>
     <ClCompile Include="application\scene\GameOverScene.cpp">
       <Filter>ソース ファイル\application\scene</Filter>
     </ClCompile>
-    <ClCompile Include="application\fade\FadeManager.cpp">
-      <Filter>ソース ファイル\application\fade</Filter>
-    </ClCompile>
-    <ClCompile Include="application\event\EventManager.cpp">
-      <Filter>ソース ファイル\application\event</Filter>
-    </ClCompile>
-    <ClCompile Include="application\stage\StageManager.cpp">
-      <Filter>ソース ファイル\application\stage</Filter>
-    </ClCompile>
-    <ClCompile Include="application\camera\TitleCamera.cpp">
-      <Filter>ソース ファイル\application\camera</Filter>
-    </ClCompile>
-    <ClCompile Include="application\camera\GameOverCamera.cpp">
-      <Filter>ソース ファイル\application\camera</Filter>
-    </ClCompile>
-    <ClCompile Include="application\camera\GameClearCamera.cpp">
-      <Filter>ソース ファイル\application\camera</Filter>
-    </ClCompile>
     <ClCompile Include="engine\math\Easing\Easing.cpp">
       <Filter>ソース ファイル\engine\math\Easing</Filter>
-    </ClCompile>
-    <ClCompile Include="application\camera\GamePlayCamera.cpp">
-      <Filter>ソース ファイル\application\camera</Filter>
-    </ClCompile>
-    <ClCompile Include="application\particle\Titleparticle.cpp">
-      <Filter>ソース ファイル\application\particle</Filter>
-    </ClCompile>
-    <ClCompile Include="application\particle\GamePlayparticle.cpp">
-      <Filter>ソース ファイル\application\particle</Filter>
-    </ClCompile>
-    <ClCompile Include="application\particle\GameClearparticle.cpp">
-      <Filter>ソース ファイル\application\particle</Filter>
-    </ClCompile>
-    <ClCompile Include="application\particle\GameOverparticle.cpp">
-      <Filter>ソース ファイル\application\particle</Filter>
     </ClCompile>
     <ClCompile Include="engine\math\Collision\Collision.cpp">
       <Filter>ソース ファイル\engine\math\collision</Filter>
     </ClCompile>
     <ClCompile Include="engine\math\MathUtil.cpp">
       <Filter>ソース ファイル\engine\math</Filter>
-    </ClCompile>
-    <ClCompile Include="application\particle\DefaultParticleEmitter.cpp">
-      <Filter>ソース ファイル\application\particle</Filter>
-    </ClCompile>
-    <ClCompile Include="application\loader\EnemyLoader.cpp">
-      <Filter>ソース ファイル\application\loader</Filter>
-    </ClCompile>
-    <ClCompile Include="application\pause\Pausemenu.cpp">
-      <Filter>ソース ファイル\application\pause</Filter>
     </ClCompile>
     <ClCompile Include="engine\editor\core\EditorManager.cpp">
       <Filter>ソース ファイル\engine\editor\core</Filter>
@@ -527,54 +389,6 @@
     </ClCompile>
     <ClCompile Include="engine\editor\layout\editormenubar\ObjectMenu.cpp">
       <Filter>ソース ファイル\engine\editor\layout\editormenubar</Filter>
-    </ClCompile>
-    <ClCompile Include="application\ui\GamePlayUI.cpp">
-      <Filter>ソース ファイル\application\ui</Filter>
-    </ClCompile>
-    <ClCompile Include="application\ui\UIManager.cpp">
-      <Filter>ソース ファイル\application\ui</Filter>
-    </ClCompile>
-    <ClCompile Include="application\ui\TitleUI.cpp">
-      <Filter>ソース ファイル\application\ui</Filter>
-    </ClCompile>
-    <ClCompile Include="application\collision\CollisionManager.cpp">
-      <Filter>ソース ファイル\application\collision</Filter>
-    </ClCompile>
-    <ClCompile Include="application\character\enemy\EnemySpawner.cpp">
-      <Filter>ソース ファイル\application\character\enemy</Filter>
-    </ClCompile>
-    <ClCompile Include="application\character\enemy\Enemy.cpp">
-      <Filter>ソース ファイル\application\character\enemy</Filter>
-    </ClCompile>
-    <ClCompile Include="application\character\player\PlayerWeapon.cpp">
-      <Filter>ソース ファイル\application\character\player</Filter>
-    </ClCompile>
-    <ClCompile Include="application\character\player\PlayerReticle.cpp">
-      <Filter>ソース ファイル\application\character\player</Filter>
-    </ClCompile>
-    <ClCompile Include="application\character\player\PlayerMove.cpp">
-      <Filter>ソース ファイル\application\character\player</Filter>
-    </ClCompile>
-    <ClCompile Include="application\character\player\PlayerDeath.cpp">
-      <Filter>ソース ファイル\application\character\player</Filter>
-    </ClCompile>
-    <ClCompile Include="application\character\player\Player.cpp">
-      <Filter>ソース ファイル\application\character\player</Filter>
-    </ClCompile>
-    <ClCompile Include="application\loader\PlayerDataLoader.cpp">
-      <Filter>ソース ファイル\application\loader</Filter>
-    </ClCompile>
-    <ClCompile Include="application\character\player\PlayerState.cpp">
-      <Filter>ソース ファイル\application\character\player</Filter>
-    </ClCompile>
-    <ClCompile Include="application\loader\EnemyDataLoader.cpp">
-      <Filter>ソース ファイル\application\character\enemy</Filter>
-    </ClCompile>
-    <ClCompile Include="application\character\enemy\EnemyWeapon.cpp">
-      <Filter>ソース ファイル\application\character\enemy</Filter>
-    </ClCompile>
-    <ClCompile Include="application\character\enemy\EnemyState.cpp">
-      <Filter>ソース ファイル\application\character\enemy</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -647,12 +461,6 @@
     <ClInclude Include="engine\math\PrimitiveGenerator.h">
       <Filter>ヘッダー ファイル\engine\math</Filter>
     </ClInclude>
-    <ClInclude Include="application\scene\GamePlayScene.h">
-      <Filter>ヘッダー ファイル\application\scene</Filter>
-    </ClInclude>
-    <ClInclude Include="application\scene\TitleScene.h">
-      <Filter>ヘッダー ファイル\application\scene</Filter>
-    </ClInclude>
     <ClInclude Include="engine\camera\Camera.h">
       <Filter>ヘッダー ファイル\engine\camera</Filter>
     </ClInclude>
@@ -661,9 +469,6 @@
     </ClInclude>
     <ClInclude Include="engine\io\Controller.h">
       <Filter>ヘッダー ファイル\engine\io</Filter>
-    </ClInclude>
-    <ClInclude Include="application\scene\GameClearScene.h">
-      <Filter>ヘッダー ファイル\application\scene</Filter>
     </ClInclude>
     <ClInclude Include="engine\3d\Skybox.h">
       <Filter>ヘッダー ファイル\engine\3d</Filter>
@@ -767,39 +572,6 @@
     <ClInclude Include="engine\math\Vector\Transform.h">
       <Filter>ヘッダー ファイル\engine\math\Vector</Filter>
     </ClInclude>
-    <ClInclude Include="application\loader\CurveJsonLoader.h">
-      <Filter>ヘッダー ファイル\application\loader</Filter>
-    </ClInclude>
-    <ClInclude Include="application\camera\GameCamera.h">
-      <Filter>ヘッダー ファイル\application\camera</Filter>
-    </ClInclude>
-    <ClInclude Include="application\loader\CharacterLoader.h">
-      <Filter>ヘッダー ファイル\application\loader</Filter>
-    </ClInclude>
-    <ClInclude Include="application\bullet\BaseBullet.h">
-      <Filter>ヘッダー ファイル\application\bullet</Filter>
-    </ClInclude>
-    <ClInclude Include="application\bullet\BulletManager.h">
-      <Filter>ヘッダー ファイル\application\bullet</Filter>
-    </ClInclude>
-    <ClInclude Include="application\bullet\PlayerBullet.h">
-      <Filter>ヘッダー ファイル\application\bullet</Filter>
-    </ClInclude>
-    <ClInclude Include="application\scene\GameOverScene.h">
-      <Filter>ヘッダー ファイル\application\scene</Filter>
-    </ClInclude>
-    <ClInclude Include="application\bullet\EnemyBullet.h">
-      <Filter>ヘッダー ファイル\application\bullet</Filter>
-    </ClInclude>
-    <ClInclude Include="application\fade\FadeManager.h">
-      <Filter>ヘッダー ファイル\application\fade</Filter>
-    </ClInclude>
-    <ClInclude Include="application\event\EventManager.h">
-      <Filter>ヘッダー ファイル\application\event</Filter>
-    </ClInclude>
-    <ClInclude Include="application\stage\StageManager.h">
-      <Filter>ヘッダー ファイル\application\stage</Filter>
-    </ClInclude>
     <ClInclude Include="engine\math\Quaternion.h">
       <Filter>ヘッダー ファイル\engine\math</Filter>
     </ClInclude>
@@ -808,18 +580,6 @@
     </ClInclude>
     <ClInclude Include="engine\camera\CameraTransform.h">
       <Filter>ヘッダー ファイル\engine\camera</Filter>
-    </ClInclude>
-    <ClInclude Include="application\camera\TitleCamera.h">
-      <Filter>ヘッダー ファイル\application\camera</Filter>
-    </ClInclude>
-    <ClInclude Include="application\camera\GameOverCamera.h">
-      <Filter>ヘッダー ファイル\application\camera</Filter>
-    </ClInclude>
-    <ClInclude Include="application\camera\SceneCameraBase.h">
-      <Filter>ヘッダー ファイル\application\camera</Filter>
-    </ClInclude>
-    <ClInclude Include="application\camera\GameClearCamera.h">
-      <Filter>ヘッダー ファイル\application\camera</Filter>
     </ClInclude>
     <ClInclude Include="engine\math\Easing\Easing.h">
       <Filter>ヘッダー ファイル\engine\math\Easing</Filter>
@@ -842,44 +602,14 @@
     <ClInclude Include="engine\math\ParticleData\Velocity.h">
       <Filter>ヘッダー ファイル\engine\math\ParticleData</Filter>
     </ClInclude>
-    <ClInclude Include="application\particle\BaseEmitter.h">
-      <Filter>ヘッダー ファイル\application\particle</Filter>
-    </ClInclude>
-    <ClInclude Include="application\particle\FollowEmitter.h">
-      <Filter>ヘッダー ファイル\application\particle</Filter>
-    </ClInclude>
-    <ClInclude Include="application\particle\Titleparticle.h">
-      <Filter>ヘッダー ファイル\application\particle</Filter>
-    </ClInclude>
-    <ClInclude Include="application\particle\GamePlayparticle.h">
-      <Filter>ヘッダー ファイル\application\particle</Filter>
-    </ClInclude>
-    <ClInclude Include="application\particle\GameClearparticle.h">
-      <Filter>ヘッダー ファイル\application\particle</Filter>
-    </ClInclude>
-    <ClInclude Include="application\particle\GameOverparticle.h">
-      <Filter>ヘッダー ファイル\application\particle</Filter>
-    </ClInclude>
     <ClInclude Include="engine\math\Collision\OBB.h">
       <Filter>ヘッダー ファイル\engine\math\collision</Filter>
     </ClInclude>
     <ClInclude Include="engine\math\Collision\Collision.h">
       <Filter>ヘッダー ファイル\engine\math\collision</Filter>
     </ClInclude>
-    <ClInclude Include="application\camera\GamePlayCamera.h">
-      <Filter>ヘッダー ファイル\application\camera</Filter>
-    </ClInclude>
     <ClInclude Include="engine\math\MathUtil.h">
       <Filter>ヘッダー ファイル\engine\math</Filter>
-    </ClInclude>
-    <ClInclude Include="application\particle\DefaultParticleEmitter.h">
-      <Filter>ヘッダー ファイル\application\particle</Filter>
-    </ClInclude>
-    <ClInclude Include="application\loader\EnemyLoader.h">
-      <Filter>ヘッダー ファイル\application\loader</Filter>
-    </ClInclude>
-    <ClInclude Include="application\pause\Pausemenu.h">
-      <Filter>ヘッダー ファイル\application\pause</Filter>
     </ClInclude>
     <ClInclude Include="engine\editor\InspectorWindow.h">
       <Filter>ヘッダー ファイル\engine\editor</Filter>
@@ -926,80 +656,17 @@
     <ClInclude Include="engine\editor\core\EditorTypes.h">
       <Filter>ヘッダー ファイル\engine\editor\core</Filter>
     </ClInclude>
-    <ClInclude Include="application\ui\UIManager.h">
-      <Filter>ヘッダー ファイル\application\ui</Filter>
+    <ClInclude Include="application\scene\GameClearScene.h">
+      <Filter>ヘッダー ファイル\application</Filter>
     </ClInclude>
-    <ClInclude Include="application\ui\GamePlayUI.h">
-      <Filter>ヘッダー ファイル\application\ui</Filter>
+    <ClInclude Include="application\scene\GameOverScene.h">
+      <Filter>ヘッダー ファイル\application</Filter>
     </ClInclude>
-    <ClInclude Include="application\ui\BaseUI.h">
-      <Filter>ヘッダー ファイル\application\ui</Filter>
+    <ClInclude Include="application\scene\GamePlayScene.h">
+      <Filter>ヘッダー ファイル\application</Filter>
     </ClInclude>
-    <ClInclude Include="application\ui\TitleUI.h">
-      <Filter>ヘッダー ファイル\application\ui</Filter>
-    </ClInclude>
-    <ClInclude Include="application\character\enemy\Enemy.h">
-      <Filter>ヘッダー ファイル\application\character\enemy</Filter>
-    </ClInclude>
-    <ClInclude Include="application\character\enemy\EnemySpawner.h">
-      <Filter>ヘッダー ファイル\application\character\enemy</Filter>
-    </ClInclude>
-    <ClInclude Include="application\character\player\Player.h">
-      <Filter>ヘッダー ファイル\application\character\player</Filter>
-    </ClInclude>
-    <ClInclude Include="application\character\player\PlayerDeath.h">
-      <Filter>ヘッダー ファイル\application\character\player</Filter>
-    </ClInclude>
-    <ClInclude Include="application\character\player\PlayerMove.h">
-      <Filter>ヘッダー ファイル\application\character\player</Filter>
-    </ClInclude>
-    <ClInclude Include="application\character\player\PlayerReticle.h">
-      <Filter>ヘッダー ファイル\application\character\player</Filter>
-    </ClInclude>
-    <ClInclude Include="application\character\player\PlayerWeapon.h">
-      <Filter>ヘッダー ファイル\application\character\player</Filter>
-    </ClInclude>
-    <ClInclude Include="application\collision\CollisionManager.h">
-      <Filter>ヘッダー ファイル\application\collision</Filter>
-    </ClInclude>
-    <ClInclude Include="application\character\player\PlayerData.h">
-      <Filter>ヘッダー ファイル\application\character\player</Filter>
-    </ClInclude>
-    <ClInclude Include="application\character\player\PlayerState.h">
-      <Filter>ヘッダー ファイル\application\character\player</Filter>
-    </ClInclude>
-    <ClInclude Include="application\character\player\IPlayerState.h">
-      <Filter>ヘッダー ファイル\application\character\player</Filter>
-    </ClInclude>
-    <ClInclude Include="application\loader\PlayerDataLoader.h">
-      <Filter>ヘッダー ファイル\application\loader</Filter>
-    </ClInclude>
-    <ClInclude Include="application\loader\BaseCharacterJsonLoader.h">
-      <Filter>ヘッダー ファイル\application\loader</Filter>
-    </ClInclude>
-    <ClInclude Include="application\character\enemy\EnemyData.h">
-      <Filter>ヘッダー ファイル\application\character\enemy</Filter>
-    </ClInclude>
-    <ClInclude Include="application\loader\EnemyDataLoader.h">
-      <Filter>ヘッダー ファイル\application\character\enemy</Filter>
-    </ClInclude>
-    <ClInclude Include="application\character\BaseCharacter.h">
-      <Filter>ヘッダー ファイル\application\character</Filter>
-    </ClInclude>
-    <ClInclude Include="application\character\enemy\EnemyWeapon.h">
-      <Filter>ヘッダー ファイル\application\character\enemy</Filter>
-    </ClInclude>
-    <ClInclude Include="application\character\enemy\EnemyState.h">
-      <Filter>ヘッダー ファイル\application\character\enemy</Filter>
-    </ClInclude>
-    <ClInclude Include="application\character\enemy\IEnemyState.h">
-      <Filter>ヘッダー ファイル\application\character\enemy</Filter>
-    </ClInclude>
-    <ClInclude Include="application\collision\CollisionUtils.h">
-      <Filter>ヘッダー ファイル\application\collision</Filter>
-    </ClInclude>
-    <ClInclude Include="application\collision\CollisionConfig.h">
-      <Filter>ヘッダー ファイル\application\collision</Filter>
+    <ClInclude Include="application\scene\TitleScene.h">
+      <Filter>ヘッダー ファイル\application</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

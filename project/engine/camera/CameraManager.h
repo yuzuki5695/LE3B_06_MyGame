@@ -2,10 +2,6 @@
 #include <Object3d.h>
 #include<CameraTransform.h>
 #include<CameraTypes.h>
-#include<TitleCamera.h>
-#include<GamePlayCamera.h>
-#include<GameOverCamera.h>
-#include<GameClearCamera.h>
 
 using namespace CameraTypes;
 
@@ -40,7 +36,7 @@ public: // メンバ関数
     // シーンマネージャーから現在のシ―ンを判定する
     void NotifySceneChangedByName(const std::string& sceneName);
     // 各シーン用カメラの切替
-    void OnSceneChanged(SceneCameraType type);
+    //void OnSceneChanged(SceneCameraType type);
 
 
 private: // メンバ変数
@@ -53,14 +49,7 @@ private: // メンバ変数
     std::unordered_map<std::string, std::unique_ptr<Camera>> subCamerasMap_;   // サブカメラ(複数の設置に対応できる)
     std::string activeSubCameraName_;                                          // 登録したサブカメラの名前
     Camera* activeCamera_ = nullptr;                                           // アクティブ中のカメラ
-    // 各シーン用カメラクラス
-    std::unique_ptr<TitleCamera> title_;      // タイトル
-    std::unique_ptr<GamePlayCamera> gameplay_;        // ゲームプレイ
-    std::unique_ptr<GameClearCamera> gameclear_;  // ゲームオーバー
-    std::unique_ptr<GameOverCamera> gameover_;    // ゲームクリア
 
-
-    SceneCameraBase* currentSceneCamera_;
     // 前回のシーンカメラタイプ
     SceneCameraType lastSceneCameraType_ = SceneCameraType::Title;
     // シーン切替直後Update時に一度だけ各シーン用カメラの情報を反映
@@ -76,11 +65,6 @@ public: // メンバ関数
     void SetTypeview(ViewCameraType type) { Typeview_ = type; }
     CameraMode GetMode() const { return currentMode_; }
     void SetMode(CameraMode mode) { currentMode_ = mode; }
-    GamePlayCamera* GetGameCamera() const { return gameplay_.get(); };
-    // ゲーム用カメラ（GameCamera）を返す getter
-    GamePlayCamera* GetGameplayCamera() const { return gameplay_.get(); }
-    GameClearCamera* GetGameClearCamera() { return gameclear_.get(); }
-    TitleCamera* GetTitleCamera() { return title_.get(); }
 
     SceneCameraType GetActiveSceneCamera() const{ return activeSceneCameraType_; }
 
@@ -103,12 +87,4 @@ public: // メンバ関数
         return nullptr;
     }
 
-    const std::unordered_map<std::string, std::unique_ptr<Camera>>& GetSubCameraMap() const {
-        return subCamerasMap_;
-    }
-
-    void SetGamecameraTarget(Object3d* target) {
-        if (!gameplay_) return;
-        gameplay_->SetFollowTarget(target);
-    }
 };

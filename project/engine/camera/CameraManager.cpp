@@ -37,54 +37,36 @@ void CameraManager::Initialize(CameraTransform transform) {
     mainCamera_->SetTranslate(maintrans_.translate);
     mainCamera_->SetRotate(maintrans_.rotate);
     activeCamera_ = mainCamera_.get();  // 初期化時はメインカメラをアクティブにする
-
-    // タイトル用カメラの生成、初期化
-    title_ = std::make_unique<TitleCamera>();
-    title_->Initialize();
-    // ゲームプレイ用カメラの生成、初期化
-    gameplay_ = std::make_unique<GamePlayCamera>();
-    gameplay_->Initialize();
-    // ゲームクリア用カメラの生成、初期化
-    gameclear_ = std::make_unique<GameClearCamera>();
-    gameclear_->Initialize();
-    // ゲームオーバー用カメラの生成、初期化
-    gameover_ = std::make_unique<GameOverCamera>();
-    gameover_->Initialize();
-
-
-    // 初期のシーンはタイトルカメラ
-    currentSceneCamera_ = title_.get();
-    sceneCameraJustChanged_ = true;
 }
 
 // 更新処理
 void CameraManager::Update() {
     // シーンカメラが変わったら一度だけTransformとサブカメラを反映
-    if (sceneCameraJustChanged_) {
-        // 前のサブカメラを破棄
-        subCamerasMap_.clear();
-        // 新しいシーンに切り替えるときのみムーブ
-        if (currentSceneCamera_) { RegisterSubCameras(std::move(currentSceneCamera_->MoveSubCameras()), "SubCamera"); }
-        sceneCameraJustChanged_ = false;
-    }
+    //if (sceneCameraJustChanged_) {
+    //    // 前のサブカメラを破棄
+    //    subCamerasMap_.clear();
+    //    // 新しいシーンに切り替えるときのみムーブ
+    //    if (currentSceneCamera_) { RegisterSubCameras(std::move(currentSceneCamera_->MoveSubCameras()), "SubCamera"); }
+    //    sceneCameraJustChanged_ = false;
+    //}
 
-    // 現在のシーンカメラの更新
-    if (currentSceneCamera_) { currentSceneCamera_->Update(); }
+    //// 現在のシーンカメラの更新
+    //if (currentSceneCamera_) { currentSceneCamera_->Update(); }
 
-    // メインカメラに値を反映
-    if (mainCamera_ && currentSceneCamera_) {
-        maintrans_ = currentSceneCamera_->GetMainTransform();
-        mainCamera_->SetTranslate(maintrans_.translate);
-        mainCamera_->SetRotate(maintrans_.rotate);
-        mainCamera_->Update();
-    }
+    //// メインカメラに値を反映
+    //if (mainCamera_ && currentSceneCamera_) {
+    //    maintrans_ = currentSceneCamera_->GetMainTransform();
+    //    mainCamera_->SetTranslate(maintrans_.translate);
+    //    mainCamera_->SetRotate(maintrans_.rotate);
+    //    mainCamera_->Update();
+    //}
 
-    // サブカメラ更新
-    for (std::pair<const std::string, std::unique_ptr<Camera>>& subcameras : subCamerasMap_) {
-        subcameras.second->Update();
-    }
-    // アクティブ登録
-    SetActiveCamera();
+    //// サブカメラ更新
+    //for (std::pair<const std::string, std::unique_ptr<Camera>>& subcameras : subCamerasMap_) {
+    //    subcameras.second->Update();
+    //}
+    //// アクティブ登録
+    //SetActiveCamera();
 }
 
 // ViewCameraType → const char*
@@ -269,45 +251,22 @@ void CameraManager::RegisterSubCameras(std::vector<std::unique_ptr<Camera>>&& ca
     }
 }
 
-// 各シーン用カメラの切替
-void CameraManager::OnSceneChanged(SceneCameraType type) {
-    activeSceneCameraType_ = type;
-    // シーンタイプに応じたカメラを設定
-    switch (type) {
-    case SceneCameraType::Title:
-        currentSceneCamera_ = title_.get();
-        break;
-    case SceneCameraType::Gameplay:
-        currentSceneCamera_ = gameplay_.get();
-        break;
-    case SceneCameraType::GameClear:
-        currentSceneCamera_ = gameclear_.get();
-        break;
-    case SceneCameraType::GameOver:
-        currentSceneCamera_ = gameover_.get();
-        break;
-    }
-    // imguiのサブカメラ選択をリセット
-    Typeview_ = ViewCameraType::Main;  // メインカメラに戻す
-    activeSubCameraName_.clear();
-    sceneCameraJustChanged_ = true;
-}
 
 // シーンマネージャーから現在のシ―ンを判定する
 void CameraManager::NotifySceneChangedByName(const std::string& sceneName) {
-    SceneCameraType newType;
+    //SceneCameraType newType;
 
-    if (sceneName == "TITLE")     newType = SceneCameraType::Title;
-    else if (sceneName == "GAMEPLAY")  newType = SceneCameraType::Gameplay;
-    else if (sceneName == "GAMECLEAR") newType = SceneCameraType::GameClear;
-    else if (sceneName == "GAMEOVER")  newType = SceneCameraType::GameOver;
-    else newType = SceneCameraType::Title;
+    //if (sceneName == "TITLE")     newType = SceneCameraType::Title;
+    //else if (sceneName == "GAMEPLAY")  newType = SceneCameraType::Gameplay;
+    //else if (sceneName == "GAMECLEAR") newType = SceneCameraType::GameClear;
+    //else if (sceneName == "GAMEOVER")  newType = SceneCameraType::GameOver;
+    //else newType = SceneCameraType::Title;
 
-    // 変更を検知しシーンが変わったら処理
-    if (newType != activeSceneCameraType_) {
-        sceneCameraJustChanged_ = true;
-        lastSceneCameraType_ = activeSceneCameraType_;
-        activeSceneCameraType_ = newType;
-        OnSceneChanged(newType);// 各シーン用カメラの切替もここで反映する
-    }
+    //// 変更を検知しシーンが変わったら処理
+    //if (newType != activeSceneCameraType_) {
+    //    sceneCameraJustChanged_ = true;
+    //    lastSceneCameraType_ = activeSceneCameraType_;
+    //    activeSceneCameraType_ = newType;
+    //    OnSceneChanged(newType);// 各シーン用カメラの切替もここで反映する
+    //}
 }
