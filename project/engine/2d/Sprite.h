@@ -29,7 +29,7 @@ public: // メンバ関数
 	void Draw();
 
 	// スプライト作成関数
-	static std::unique_ptr<Sprite> Create(std::string textureFilePath, Vector2 position, float rotation, Vector2 size);
+	static std::unique_ptr<Sprite> Create(std::string textureFilePath, const Vector2 position, float rotation, const Vector2 size);
 
 	// ImGuiの更新
 	void DrawImGui(const std::string& name);
