@@ -1,11 +1,11 @@
 #include "Model.h"
-#include "Object3d.h"
-#include "MatrixVector.h"
-#include "TextureManager.h"
+#include <Object3d.h>
+#include <MatrixVector.h>
+#include <TextureManager.h>
 #include <ResourceFactory.h>
-#include<assimp/Importer.hpp>
-#include<assimp/scene.h>
-#include<assimp/postprocess.h>
+#include <assimp/Importer.hpp>
+#include <assimp/scene.h>
+#include <assimp/postprocess.h>
 
 using namespace MatrixVector;
 using namespace ResourceFactory;

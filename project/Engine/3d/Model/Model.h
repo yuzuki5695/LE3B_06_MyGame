@@ -22,7 +22,6 @@ struct glTFModelData {
     Node rootNode;
 };
 
-
 class Model {
 public: // メンバ関数
 	// 初期化
