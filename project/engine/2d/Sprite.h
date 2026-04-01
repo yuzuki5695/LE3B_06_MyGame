@@ -90,8 +90,8 @@ public:
 	const Vector4& GetColor() const { return materialData->color; }
 	const Vector2& GetSize()const { return size_; }
 	const Vector2& GetAnchorPoint()const { return anchorPoint; }
-	const bool& GetisFlipX()const { return isFlipX_; }
-	const bool& GetisFlipY()const { return isFlipY_; }
+	const bool& GetasFlipX()const { return isFlipX_; }
+	const bool& GetasFlipY()const { return isFlipY_; }
 	const Vector2& GetTextureLeftTop()const { return textureLeftTop; }
 	const Vector2& GetTextureSize()const { return textureSize; }
 	// setter
@@ -101,8 +101,8 @@ public:
 	void SetSize(const Vector2& size) { this->size_ = size; }
 	void SetTexture(const std::string& textureFilePath);
 	void SetAnchorPoint(const Vector2& anchorPoint) { this->anchorPoint = anchorPoint; }
-	void SetisFlipX(const bool& isFlipX) { this->isFlipX_ = isFlipX; }
-	void SetisFlipY(const bool& isFlipY) { this->isFlipY_ = isFlipY; }
+	void SetsFlipX(const bool& isFlipX) { this->isFlipX_ = isFlipX; }
+	void SetsFlipY(const bool& isFlipY) { this->isFlipY_ = isFlipY; }
 	void SetTextureLeftTop(const Vector2& textureLeftTop) { this->textureLeftTop = textureLeftTop; }
 	void SetTextureSize(const Vector2& textureSize) { this->textureSize = textureSize; }
 };
