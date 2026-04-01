@@ -205,6 +205,9 @@
     <Filter Include="ヘッダー ファイル\application">
       <UniqueIdentifier>{97840e1a-ca5d-462a-866a-541cd4e15495}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ヘッダー ファイル\application\scene">
+      <UniqueIdentifier>{dcd0cdbb-4eac-4865-9d63-f3458001297c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -657,16 +660,16 @@
       <Filter>ヘッダー ファイル\engine\editor\core</Filter>
     </ClInclude>
     <ClInclude Include="application\scene\GameClearScene.h">
-      <Filter>ヘッダー ファイル\application</Filter>
+      <Filter>ヘッダー ファイル\application\scene</Filter>
     </ClInclude>
     <ClInclude Include="application\scene\GameOverScene.h">
-      <Filter>ヘッダー ファイル\application</Filter>
-    </ClInclude>
-    <ClInclude Include="application\scene\GamePlayScene.h">
-      <Filter>ヘッダー ファイル\application</Filter>
+      <Filter>ヘッダー ファイル\application\scene</Filter>
     </ClInclude>
     <ClInclude Include="application\scene\TitleScene.h">
-      <Filter>ヘッダー ファイル\application</Filter>
+      <Filter>ヘッダー ファイル\application\scene</Filter>
+    </ClInclude>
+    <ClInclude Include="application\scene\GamePlayScene.h">
+      <Filter>ヘッダー ファイル\application\scene</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

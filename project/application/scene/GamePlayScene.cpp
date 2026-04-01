@@ -7,11 +7,6 @@
 #include <CameraManager.h>
 
 void GamePlayScene::Finalize() {
- //   BulletManager::GetInstance()->Finalize();  // 弾の解放処理
- //   FadeManager::GetInstance()->Finalize();    //  フェードマネージャの解放処理
- //   EventManager::GetInstance()->Finalize();   //  イベントマネージャの解放処理
- //   StageManager::GetInstance()->Finalize();   // ステージマネージャの解放処理
-	//UIManager::GetInstance()->Finalize();      // UIマネージャの解放処理
 }
 
 void GamePlayScene::Initialize() {
@@ -51,15 +46,7 @@ void GamePlayScene::Draw() {
  //   Box_->Draw();
     // 3Dオブジェクトの描画準備。3Dオブジェクトの描画に共通のグラフィックスコマンドを積む
     Object3dCommon::GetInstance()->Commondrawing();
-   // StageManager::GetInstance()->Draw();
 
-    //if (enemy_) {
-    //    enemy_->Draw();
-    //}
-
-    //wall->Draw();
-    //// イベントマネージャの描画処理
-    //EventManager::GetInstance()->Drawo3Dbject();
 
     // パーティクルの描画準備。パーティクルの描画に共通のグラフィックスコマンドを積む 
  ///   ParticleCommon::GetInstance()->Commondrawing();
@@ -69,13 +56,7 @@ void GamePlayScene::Draw() {
 #pragma region 全てのSprite個々の描画処理
     // Spriteの描画準備。Spriteの描画に共通のグラフィックスコマンドを積む
     SpriteCommon::GetInstance()->Commondrawing();
-    //// プレイヤーのUIスプライト描画
-    //if (!end) {
 
-    //// イベントマネージャの描画処理
-    //EventManager::GetInstance()->Draw2DSprite();
-    //// フェードマネージャの描画
-    //FadeManager::GetInstance()->Draw();
 #pragma endregion 全てのSprite個々の描画処理
 }
 
