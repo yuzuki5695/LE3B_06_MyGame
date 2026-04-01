@@ -1,7 +1,6 @@
 #pragma once
 #include <ModelData.h>
-#include <Particle.h>
-#include <InstanceData.h>
+#include <ParticleData.h>
 #include <wrl/client.h>
 #include <d3d12.h>
 #include <list>

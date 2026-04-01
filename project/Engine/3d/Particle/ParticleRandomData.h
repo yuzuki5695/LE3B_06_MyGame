@@ -1,6 +1,5 @@
 #pragma once
-#include <Velocity.h>
-#include <Vector4.h>
+#include <ParticleData.h>
 
 struct ParticleRandomData {
     Vector3 offset;

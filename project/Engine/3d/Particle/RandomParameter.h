@@ -1,6 +1,5 @@
 #pragma once
-#include <Vector4.h>
-#include <Velocity.h>
+#include <ParticleData.h>
 #ifdef USE_IMGUI
 #include<ImGuiManager.h>
 #endif // USE_IMGUI
