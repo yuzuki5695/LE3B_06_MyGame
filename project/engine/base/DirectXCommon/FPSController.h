@@ -1,7 +1,9 @@
 #pragma once
 #include <chrono>
 
-// FPS固定
+// ========================================
+// FPS固定処理クラス
+// ========================================
 class FPSController {
 public: // メンバ関数
 	/// <summary>
@@ -11,6 +13,12 @@ public: // メンバ関数
 	//  FPS固定更新
 	void Update();	
 private: // メンバ変数
-	// 記録時間(FPS固定)
+    // 前フレームの記録時間
 	std::chrono::steady_clock::time_point reference_;
+    static const float kTargetFPS;                 // 目標FPS
+    static const float kCheckFPS;                  // チェック用FPS
+    static const int64_t kMicroSecondsPerSecond;   // 1秒 = 1000000μs
+
+    static const std::chrono::microseconds kMinTime;       // 1フレーム時間
+    static const std::chrono::microseconds kMinCheckTime;  // チェック用時間
 };
