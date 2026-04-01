@@ -1,19 +1,14 @@
 #pragma once
-#include"ModelCommon.h"
-#include"Transform.h"
-#include"Vector2.h"
-#include"Vector4.h"
-#include "Matrix4x4.h"
-#include<d3d12.h>
-#include<wrl.h>
-#include<cstdint>
-#include<fstream>
-#include<string>
-#include<vector>
-#include<Vertex.h>
-#include<Material.h>
-#include<ModelDate.h>
+#include <ModelCommon.h>
+#include <Transform.h>
+#include <d3d12.h>
+#include <wrl.h>
+#include <cstdint>
+#include <fstream>
+#include <string>
+#include <vector>
 #include <assimp/mesh.h>
+#include <ModelData.h>
 
 struct Node {
     Matrix4x4 localMatrix;
@@ -23,9 +18,10 @@ struct Node {
 
 struct glTFModelData {
     std::vector<VertexData> vertices;
-    MaterialDate material;
+    MaterialData material;
     Node rootNode;
 };
+
 
 class Model {
 public: // メンバ関数
@@ -35,9 +31,9 @@ public: // メンバ関数
 	void Draw();
 
 	// .mtlファイルの読み取り
-	static MaterialDate LoadMaterialTemplateFile(const std::string& directoryPath, const std::string& filename);
+	static MaterialData LoadMaterialTemplateFile(const std::string& directoryPath, const std::string& filename);
 	// .objファイルの読み取り
-	static ModelDate LoadObjFile(const std::string& directoryPath, const std::string& filename);
+	static ModelData LoadObjFile(const std::string& directoryPath, const std::string& filename);
 
 	// 再帰的にノードを読み取る
 	Node ReadNode(aiNode* node);	
@@ -50,7 +46,7 @@ private:
 	// ポインタ
 	ModelCommon* modelCommon = nullptr;
 	// Objファイルのデータ
-	ModelDate modelDate;
+	ModelData modelData;
 	// バッファリソース
 	Microsoft::WRL::ComPtr <ID3D12Resource> vertexResoruce;
 	// バッファリソースの使い道を補足するバッファビュー

@@ -1,14 +1,10 @@
 #pragma once
 #include <Transform.h>
-#include <Vector2.h>
-#include <Vector4.h>
-#include <Matrix4x4.h>
 #include <wrl.h>
 #include <d3d12.h>
 #include <cstdint>
 #include <fstream>
-#include <Vertex.h>
-#include <Material.h>
+#include <ModelData.h>
 
 class SpriteCommon;
 

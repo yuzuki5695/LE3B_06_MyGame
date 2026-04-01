@@ -1,12 +1,11 @@
 #pragma once
-#include "Camera.h"
-#include<TransformationMatrix.h>
+#include <Camera.h>
+#include <TransformationMatrix.h>
 #include <memory>
 #include <wrl.h>
 #include <d3d12.h>
-#include<vector>
-#include<Material.h>
-#include<MaterialDate.h>
+#include <vector>
+#include <ModelData.h>
 
 class SkyboxCommon;
 
@@ -24,7 +23,7 @@ public: // メンバ関数
 
 	struct skyModelDate {
 		std::vector<VertexShaderInput> vertices;
-		MaterialDate material;
+		MaterialData material;
 	};
 
 public: // メンバ関数
@@ -54,7 +53,7 @@ private:
 	SkyboxCommon* skyboxCommon = nullptr;
 	Camera* camera = nullptr;
 	// モデルデータ
-	skyModelDate modelDate;
+	skyModelDate modelData;
 	// バッファリソース
 	Microsoft::WRL::ComPtr <ID3D12Resource> vertexResoruce;
 	Microsoft::WRL::ComPtr <ID3D12Resource> materialResource;

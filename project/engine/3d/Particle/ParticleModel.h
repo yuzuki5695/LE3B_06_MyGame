@@ -26,9 +26,9 @@ public:
 
 private:
 	// .mtlファイルの読み取り
-	static MaterialDate LoadMaterialTemplateFile(const std::string& directoryPath, const std::string& filename);
+	static MaterialData LoadMaterialTemplateFile(const std::string& directoryPath, const std::string& filename);
 	// .objファイルの読み取り
-	static ModelDate LoadObjFile(const std::string& directoryPath, const std::string& filename);
+	static ModelData LoadObjFile(const std::string& directoryPath, const std::string& filename);
 	// 頂点データ作成
 	void CreateVertexBuffer();        // 共通処理にする
 	void VertexDataModel();
@@ -46,7 +46,7 @@ private:
 	// ポインタ
 	DirectXCommon* dxCommon_;
 	// Objファイルのデータ
-	ModelDate modelDate;
+	ModelData modelData;
 	// バッファリソース
 	Microsoft::WRL::ComPtr <ID3D12Resource> vertexResoruce;
 	Microsoft::WRL::ComPtr<ID3D12Resource> materialResource;;
@@ -61,7 +61,7 @@ private:
 	uint32_t vertexCount; // 頂点数
 public:
 
-	size_t GetVertexCount() const { return modelDate.vertices.size(); }
+	size_t GetVertexCount() const { return modelData.vertices.size(); }
 
 
 	void SetVertexType(VertexType type) { vertexType_ = type; }

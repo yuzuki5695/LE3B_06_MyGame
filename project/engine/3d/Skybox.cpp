@@ -59,16 +59,16 @@ void Skybox::Draw() {
     // ルートパラメータ[1] = b0 : 変換行列用CBV
     skyboxCommon->GetDxCommon()->GetCommandList()->SetGraphicsRootConstantBufferView(1, transformationMatrixResource->GetGPUVirtualAddress());
     // ルートパラメータ[2] = t0 : キューブマップSRV
-    skyboxCommon->GetDxCommon()->GetCommandList()->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->GetSrvHandleGPU(modelDate.material.textureFilePath));
+    skyboxCommon->GetDxCommon()->GetCommandList()->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->GetSrvHandleGPU(modelData.material.textureFilePath));
     // 描画呼び出しを変更！
     skyboxCommon->GetDxCommon()->GetCommandList()->DrawInstanced(vertexCount, 1, 0, 0);
 }
 
 void Skybox::SetTexture(const std::string& textureFilePath) {
     // モデルデータのテクスチャファイルにファイル名を取得
-    modelDate.material.textureFilePath = "Resources/" + textureFilePath;
+    modelData.material.textureFilePath = "Resources/" + textureFilePath;
     // 読み込んだテクスチャの番号を取得
-    modelDate.material.textureindex = TextureManager::GetInstance()->GetSrvIndex(modelDate.material.textureFilePath);
+    modelData.material.textureindex = TextureManager::GetInstance()->GetSrvIndex(modelData.material.textureFilePath);
 }
 
 std::unique_ptr<Skybox> Skybox::Create(const std::string& textureFilePath, Transform transform) {
@@ -84,9 +84,9 @@ std::unique_ptr<Skybox> Skybox::Create(const std::string& textureFilePath, Trans
 
 void Skybox::VertexDatacreation() {   
     // 頂点データ生成
-    modelDate.vertices = CreateSkyboxCubeVertices();
+    modelData.vertices = CreateSkyboxCubeVertices();
     // 頂点数更新
-    vertexCount = static_cast<uint32_t>(modelDate.vertices.size());
+    vertexCount = static_cast<uint32_t>(modelData.vertices.size());
     // 頂点バッファ用リソース作成
     vertexResoruce = CreateBufferResource(skyboxCommon->GetDxCommon()->GetDevice(), sizeof(VertexShaderInput) * vertexCount);
     // 頂点バッファビューの設定
@@ -95,7 +95,7 @@ void Skybox::VertexDatacreation() {
     vertexBufferView.StrideInBytes = sizeof(VertexShaderInput);
     // GPUバッファに書き込み（Map/Unmap）
     vertexResoruce->Map(0, nullptr, reinterpret_cast<void**>(&vertexData));
-    memcpy(vertexData, modelDate.vertices.data(), sizeof(VertexShaderInput) * vertexCount);
+    memcpy(vertexData, modelData.vertices.data(), sizeof(VertexShaderInput) * vertexCount);
     vertexResoruce->Unmap(0, nullptr);
 }
 

@@ -10,7 +10,6 @@
 #include <psapi.h>
 #include <SkyboxCommon.h>
 #include <EditorManager.h>
-#include <InspectorWindow.h>
 #include <EditorConsole.h>
 #include <TimeSystem.h>
 
@@ -127,6 +126,7 @@ void Framework::Initialize() {
     // 箱の共通部の初期化
     SkyboxCommon::GetInstance()->Initialize(dxCommon.get(), dsvManager.get());
 #pragma endregion 基盤システムの初期化
+#ifdef USE_IMGUI
     // ------------------------------------------------------------
     // Debugエディタ初期化
     // ------------------------------------------------------------
@@ -141,6 +141,7 @@ void Framework::Initialize() {
     std::string formatString = MessageService::GetText("System.EngineInit");                      // ローカライズされたメッセージ取得
     std::string finalMessage = std::vformat(formatString, std::make_format_args(startupTime));    // 秒数をフォーマット埋め込み
     EditorConsole::GetInstance()->AddLog(finalMessage);                                           // コンソールへ出力
+#endif
 }
 
 void Framework::Update() {

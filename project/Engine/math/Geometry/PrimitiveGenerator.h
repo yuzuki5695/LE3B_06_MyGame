@@ -1,8 +1,5 @@
 #pragma once
-#include<Vertex.h>
-#include<Material.h>
-#include<MaterialDate.h>
-#include<ModelDate.h>
+#include <Model.h>
 
 namespace PrimitiveGenerator
 {

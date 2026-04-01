@@ -121,29 +121,8 @@
     <Filter Include="ヘッダー ファイル\engine\math\Light">
       <UniqueIdentifier>{72c878a0-46ae-46b1-850c-b98866920993}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ヘッダー ファイル\engine\math\Matrix">
-      <UniqueIdentifier>{8fae8f0b-6440-44fa-ae95-9916e7827649}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ヘッダー ファイル\engine\math\Model">
-      <UniqueIdentifier>{debaee5f-585e-40d7-9014-0afc1300cc73}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ヘッダー ファイル\engine\math\Vector">
-      <UniqueIdentifier>{e13f2e36-4292-41c9-b7c0-9808517079de}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ヘッダー ファイル\engine\math\collision">
-      <UniqueIdentifier>{5f01e14b-13b2-42aa-ae79-9affb9303730}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ヘッダー ファイル\engine\math\Easing">
-      <UniqueIdentifier>{dd67d91e-27df-46e4-b34a-c55c296e5fd1}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ソース ファイル\engine\math\Easing">
-      <UniqueIdentifier>{97eaff47-422d-4b71-86af-e4d42b61b8d3}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ヘッダー ファイル\engine\math\ParticleData">
       <UniqueIdentifier>{ab309e3a-ec4e-44c9-8978-c114a46308b8}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ソース ファイル\engine\math\collision">
-      <UniqueIdentifier>{f4077ff3-9d86-403e-9ef0-1bebb837b1f8}</UniqueIdentifier>
     </Filter>
     <Filter Include="ソース ファイル\engine\editor">
       <UniqueIdentifier>{8c81b882-315d-49b9-b80a-322138110a27}</UniqueIdentifier>
@@ -208,6 +187,21 @@
     <Filter Include="ヘッダー ファイル\application\scene">
       <UniqueIdentifier>{dcd0cdbb-4eac-4865-9d63-f3458001297c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ヘッダー ファイル\engine\math\Base">
+      <UniqueIdentifier>{d659fe17-0123-452c-b850-4f59de09868c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\engine\math\Functions">
+      <UniqueIdentifier>{0b9625a1-23e6-4d63-92a7-f7797313d193}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\engine\math\Functions">
+      <UniqueIdentifier>{b3d5db4e-d920-49c4-ae74-04fc8279d42c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\engine\math\Geometry">
+      <UniqueIdentifier>{6fded999-75f3-4628-bc97-2b97f4c97792}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\engine\math\Geometry">
+      <UniqueIdentifier>{fd3d2e4e-3749-48d6-b050-443633a50d01}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -224,9 +218,6 @@
     </ClCompile>
     <ClCompile Include="engine\base\WinApp.cpp">
       <Filter>ソース ファイル\engine\base</Filter>
-    </ClCompile>
-    <ClCompile Include="engine\math\MatrixVector.cpp">
-      <Filter>ソース ファイル\engine\math</Filter>
     </ClCompile>
     <ClCompile Include="engine\3d\Object3d.cpp">
       <Filter>ソース ファイル\engine\3d</Filter>
@@ -275,9 +266,6 @@
     </ClCompile>
     <ClCompile Include="engine\3d\Particle\ParticleModel.cpp">
       <Filter>ソース ファイル\engine\3d\Particle</Filter>
-    </ClCompile>
-    <ClCompile Include="engine\math\PrimitiveGenerator.cpp">
-      <Filter>ソース ファイル\engine\math</Filter>
     </ClCompile>
     <ClCompile Include="application\scene\GamePlayScene.cpp">
       <Filter>ソース ファイル\application\scene</Filter>
@@ -357,15 +345,6 @@
     <ClCompile Include="application\scene\GameOverScene.cpp">
       <Filter>ソース ファイル\application\scene</Filter>
     </ClCompile>
-    <ClCompile Include="engine\math\Easing\Easing.cpp">
-      <Filter>ソース ファイル\engine\math\Easing</Filter>
-    </ClCompile>
-    <ClCompile Include="engine\math\Collision\Collision.cpp">
-      <Filter>ソース ファイル\engine\math\collision</Filter>
-    </ClCompile>
-    <ClCompile Include="engine\math\MathUtil.cpp">
-      <Filter>ソース ファイル\engine\math</Filter>
-    </ClCompile>
     <ClCompile Include="engine\editor\core\EditorManager.cpp">
       <Filter>ソース ファイル\engine\editor\core</Filter>
     </ClCompile>
@@ -393,6 +372,21 @@
     <ClCompile Include="engine\editor\layout\editormenubar\ObjectMenu.cpp">
       <Filter>ソース ファイル\engine\editor\layout\editormenubar</Filter>
     </ClCompile>
+    <ClCompile Include="Engine\math\Functions\Easing.cpp">
+      <Filter>ソース ファイル\engine\math\Functions</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\math\Functions\MathUtil.cpp">
+      <Filter>ソース ファイル\engine\math\Functions</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\math\Functions\MatrixVector.cpp">
+      <Filter>ソース ファイル\engine\math\Functions</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\math\Geometry\Collision.cpp">
+      <Filter>ソース ファイル\engine\math\Geometry</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\math\Geometry\PrimitiveGenerator.cpp">
+      <Filter>ソース ファイル\engine\math\Geometry</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="engine\2d\Sprite.h">
@@ -403,9 +397,6 @@
     </ClInclude>
     <ClInclude Include="engine\io\Input.h">
       <Filter>ヘッダー ファイル\engine\io</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\math\MatrixVector.h">
-      <Filter>ヘッダー ファイル\engine\math</Filter>
     </ClInclude>
     <ClInclude Include="engine\base\WinApp.h">
       <Filter>ヘッダー ファイル\engine\base</Filter>
@@ -460,9 +451,6 @@
     </ClInclude>
     <ClInclude Include="engine\3d\Particle\ParticleModel.h">
       <Filter>ヘッダー ファイル\engine\3d\Particle</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\math\PrimitiveGenerator.h">
-      <Filter>ヘッダー ファイル\engine\math</Filter>
     </ClInclude>
     <ClInclude Include="engine\camera\Camera.h">
       <Filter>ヘッダー ファイル\engine\camera</Filter>
@@ -542,50 +530,11 @@
     <ClInclude Include="engine\base\DirectXCommon\ShaderCompiler.h">
       <Filter>ヘッダー ファイル\engine\base\DirectXCommon</Filter>
     </ClInclude>
-    <ClInclude Include="engine\math\Matrix\Matrix4x4.h">
-      <Filter>ヘッダー ファイル\engine\math\Matrix</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\math\Matrix\Matrix3x3.h">
-      <Filter>ヘッダー ファイル\engine\math\Matrix</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\math\Matrix\TransformationMatrix.h">
-      <Filter>ヘッダー ファイル\engine\math\Matrix</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\math\Model\ModelDate.h">
-      <Filter>ヘッダー ファイル\engine\math\Model</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\math\Model\MaterialDate.h">
-      <Filter>ヘッダー ファイル\engine\math\Model</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\math\Model\Material.h">
-      <Filter>ヘッダー ファイル\engine\math\Model</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\math\Model\Vertex.h">
-      <Filter>ヘッダー ファイル\engine\math\Model</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\math\Vector\Vector4.h">
-      <Filter>ヘッダー ファイル\engine\math\Vector</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\math\Vector\Vector3.h">
-      <Filter>ヘッダー ファイル\engine\math\Vector</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\math\Vector\Vector2.h">
-      <Filter>ヘッダー ファイル\engine\math\Vector</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\math\Vector\Transform.h">
-      <Filter>ヘッダー ファイル\engine\math\Vector</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\math\Quaternion.h">
-      <Filter>ヘッダー ファイル\engine\math</Filter>
-    </ClInclude>
     <ClInclude Include="engine\camera\CameraTypes.h">
       <Filter>ヘッダー ファイル\engine\camera</Filter>
     </ClInclude>
     <ClInclude Include="engine\camera\CameraTransform.h">
       <Filter>ヘッダー ファイル\engine\camera</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\math\Easing\Easing.h">
-      <Filter>ヘッダー ファイル\engine\math\Easing</Filter>
     </ClInclude>
     <ClInclude Include="engine\math\ParticleData\InstanceData.h">
       <Filter>ヘッダー ファイル\engine\math\ParticleData</Filter>
@@ -604,18 +553,6 @@
     </ClInclude>
     <ClInclude Include="engine\math\ParticleData\Velocity.h">
       <Filter>ヘッダー ファイル\engine\math\ParticleData</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\math\Collision\OBB.h">
-      <Filter>ヘッダー ファイル\engine\math\collision</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\math\Collision\Collision.h">
-      <Filter>ヘッダー ファイル\engine\math\collision</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\math\MathUtil.h">
-      <Filter>ヘッダー ファイル\engine\math</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\editor\InspectorWindow.h">
-      <Filter>ヘッダー ファイル\engine\editor</Filter>
     </ClInclude>
     <ClInclude Include="engine\time\TimeSystem.h">
       <Filter>ヘッダー ファイル\engine\time</Filter>
@@ -670,6 +607,45 @@
     </ClInclude>
     <ClInclude Include="application\scene\GamePlayScene.h">
       <Filter>ヘッダー ファイル\application\scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\math\Base\Quaternion.h">
+      <Filter>ヘッダー ファイル\engine\math\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\math\Base\Vector2.h">
+      <Filter>ヘッダー ファイル\engine\math\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\math\Base\Vector3.h">
+      <Filter>ヘッダー ファイル\engine\math\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\math\Base\Vector4.h">
+      <Filter>ヘッダー ファイル\engine\math\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\math\Base\Matrix3x3.h">
+      <Filter>ヘッダー ファイル\engine\math\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\math\Base\Matrix4x4.h">
+      <Filter>ヘッダー ファイル\engine\math\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\math\Functions\MatrixVector.h">
+      <Filter>ヘッダー ファイル\engine\math\Functions</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\math\Functions\Easing.h">
+      <Filter>ヘッダー ファイル\engine\math\Functions</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\math\Functions\MathUtil.h">
+      <Filter>ヘッダー ファイル\engine\math\Functions</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\math\Geometry\Collision.h">
+      <Filter>ヘッダー ファイル\engine\math\Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\math\Geometry\OBB.h">
+      <Filter>ヘッダー ファイル\engine\math\Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\math\Geometry\PrimitiveGenerator.h">
+      <Filter>ヘッダー ファイル\engine\math\Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\3d\ModelData.h">
+      <Filter>ヘッダー ファイル\engine\3d</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

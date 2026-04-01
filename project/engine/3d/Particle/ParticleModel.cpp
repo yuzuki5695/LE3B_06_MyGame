@@ -25,12 +25,12 @@ void ParticleModel::Initialize(DirectXCommon* birectxcommon, const std::string& 
     MaterialGenerate();
 	// 頂点データの作成
 	if (vertexType_ == VertexType::Model) { // モデルの頂点データを作成
-        modelDate = LoadObjFile("Resources/Particle", filename);
+        modelData = LoadObjFile("Resources/Particle", filename);
         VertexDataModel();  // 頂点データコピー
         //.objの参照しているテクスチャ読み込み
-        TextureManager::GetInstance()->LoadTexture(modelDate.material.textureFilePath);
+        TextureManager::GetInstance()->LoadTexture(modelData.material.textureFilePath);
         // 読み込んだテクスチャの番号を取得
-        modelDate.material.textureindex = TextureManager::GetInstance()->GetSrvIndex(modelDate.material.textureFilePath);
+        modelData.material.textureindex = TextureManager::GetInstance()->GetSrvIndex(modelData.material.textureFilePath);
 	} else if (vertexType_ == VertexType::Ring) { // リングの頂点データを作成
         VertexDataRing();
 	} else if (vertexType_ == VertexType::Sphere) { // 球の頂点データを作成
@@ -59,12 +59,12 @@ void ParticleModel::Draw() {
 
 void ParticleModel::CreateVertexBuffer() {
     // 関数化したResouceで作成
-    vertexResoruce = CreateBufferResource(dxCommon_->GetDevice(), sizeof(VertexData) * modelDate.vertices.size());
+    vertexResoruce = CreateBufferResource(dxCommon_->GetDevice(), sizeof(VertexData) * modelData.vertices.size());
     //頂点バッファビューを作成する
     // リソースの先頭のアドレスから使う
     vertexBufferView.BufferLocation = vertexResoruce->GetGPUVirtualAddress();
     // 使用するリソースのサイズはの頂点のサイズ
-    vertexBufferView.SizeInBytes = UINT(sizeof(VertexData) * modelDate.vertices.size());
+    vertexBufferView.SizeInBytes = UINT(sizeof(VertexData) * modelData.vertices.size());
     // 1頂点当たりのサイズ
     vertexBufferView.StrideInBytes = sizeof(VertexData);
     // 頂点リソースにデータを書き込むためのアドレスを取得
@@ -74,7 +74,7 @@ void ParticleModel::CreateVertexBuffer() {
 void ParticleModel::VertexDataModel() {
     // 共通の頂点バッファビュー処理
     CreateVertexBuffer();
-    std::memcpy(vertexData, modelDate.vertices.data(), sizeof(VertexData) * modelDate.vertices.size());
+    std::memcpy(vertexData, modelData.vertices.data(), sizeof(VertexData) * modelData.vertices.size());
 }
 
 void ParticleModel::VertexDataRing() {
@@ -83,22 +83,22 @@ void ParticleModel::VertexDataRing() {
     const float kInnerRadius = 0.2f;
     vertexCount = kRingDivide * 6;
     // 頂点数を計算
-    modelDate.vertices.resize(vertexCount);
+    modelData.vertices.resize(vertexCount);
     // 共通の頂点バッファビュー処理
     CreateVertexBuffer();
     // 頂点データ生成
-    modelDate.vertices = DrawRing(vertexData, kRingDivide, kOuterRadius, kInnerRadius);
+    modelData.vertices = DrawRing(vertexData, kRingDivide, kOuterRadius, kInnerRadius);
 }
 
 void ParticleModel::VertexDataSphere() {
     const uint32_t kSubdivision = 16;
     vertexCount = kSubdivision * kSubdivision * 6;
     // 頂点数を計算
-    modelDate.vertices.resize(vertexCount);
+    modelData.vertices.resize(vertexCount);
     // 共通の頂点バッファビュー処理
     CreateVertexBuffer();
     // 頂点データ生成
-    modelDate.vertices = DrawSphere(kSubdivision, vertexData);
+    modelData.vertices = DrawSphere(kSubdivision, vertexData);
 }
 
 void ParticleModel::VertexDataCylinder() {
@@ -109,11 +109,11 @@ void ParticleModel::VertexDataCylinder() {
     const float radianPerDivide = 2.0f * std::numbers::pi_v<float> / float(kCylinderDivide);
     vertexCount = kCylinderDivide * 6;
     // 頂点数を計算
-    modelDate.vertices.resize(vertexCount);
+    modelData.vertices.resize(vertexCount);
     // 共通の頂点バッファビュー処理
     CreateVertexBuffer();
     // 頂点データ生成
-    modelDate.vertices = DrawCylinder(vertexData, kCylinderDivide, kTopRadius, kBottomRadius, kHeight);
+    modelData.vertices = DrawCylinder(vertexData, kCylinderDivide, kTopRadius, kBottomRadius, kHeight);
 }
 
 void ParticleModel::VertexDataStar() {
@@ -122,18 +122,18 @@ void ParticleModel::VertexDataStar() {
     const float kInnerRadius = 0.5f;
     vertexCount = kNumPoints * 6;
     // 頂点数を計算
-    modelDate.vertices.resize(vertexCount);
+    modelData.vertices.resize(vertexCount);
     // 共通の頂点バッファビュー処理
     CreateVertexBuffer();
     // 頂点データ生成
-    modelDate.vertices = DrawStar(vertexData, kNumPoints, kOuterRadius, kInnerRadius);
+    modelData.vertices = DrawStar(vertexData, kNumPoints, kOuterRadius, kInnerRadius);
 }
 
 void ParticleModel::VertexDataSpiral() {
     uint32_t kSpiralDiv = 100;
     vertexCount = kSpiralDiv + 1;
     // 頂点数を計算
-    modelDate.vertices.resize(vertexCount);
+    modelData.vertices.resize(vertexCount);
     // 共通の頂点バッファビュー処理
     CreateVertexBuffer();
     // 頂点データ生成
@@ -156,15 +156,15 @@ void ParticleModel::VertexDataCircle() {
     const float kRadius = 1.0f;
     // 頂点数は線で円を構成するので segmentCount+1（ループ閉じ）
     vertexCount = (kSegmentCount + 1);
-    modelDate.vertices.resize(vertexCount);
+    modelData.vertices.resize(vertexCount);
     // 頂点バッファ作成
     CreateVertexBuffer();
-    modelDate.vertices = DrawCircle(vertexData, kSegmentCount, kRadius);
+    modelData.vertices = DrawCircle(vertexData, kSegmentCount, kRadius);
 }
 
-MaterialDate ParticleModel::LoadMaterialTemplateFile(const std::string& directoryPath, const std::string& filename) {
+MaterialData ParticleModel::LoadMaterialTemplateFile(const std::string& directoryPath, const std::string& filename) {
     // 1. 中で必要となる変数の宣言
-    MaterialDate materialDate; // 構築するMaterialDate
+    MaterialData materialDate; // 構築するMaterialDate
     std::string line; // ファイルから読んだ1行を格納するもの
     std::ifstream file(directoryPath + "/" + filename); // 2.ファイルを開く
     assert(file.is_open()); // とりあえず開けなかったら止める
@@ -203,23 +203,23 @@ void ParticleModel::VertexDataCloud() {
     }
 
     vertexCount = static_cast<int>(cloudVertices.size());
-    modelDate.vertices = cloudVertices;
+    modelData.vertices = cloudVertices;
 
     CreateVertexBuffer();
-    std::memcpy(vertexData, modelDate.vertices.data(), sizeof(VertexData) * vertexCount);
+    std::memcpy(vertexData, modelData.vertices.data(), sizeof(VertexData) * vertexCount);
 }
 
 
 void ParticleModel::VertexDataBox() {
     vertexCount = 36; // 立方体は常に36頂点
-    modelDate.vertices.resize(vertexCount);
+    modelData.vertices.resize(vertexCount);
     CreateVertexBuffer();
-    modelDate.vertices = DrawBox(vertexData);
+    modelData.vertices = DrawBox(vertexData);
 }
 
-ModelDate ParticleModel::LoadObjFile(const std::string& directoryPath, const std::string& filename) {
+ModelData ParticleModel::LoadObjFile(const std::string& directoryPath, const std::string& filename) {
     // 1. 中で必要となる変数の宣言
-    ModelDate modelDate; // 構築するModelDate
+    ModelData modelData; // 構築するModelDate
     // 2. Assimpでの読み込み
     Assimp::Importer importer;
     std::string filePath(directoryPath + "/" + filename); // ファイルを開く
@@ -250,7 +250,7 @@ ModelDate ParticleModel::LoadObjFile(const std::string& directoryPath, const std
                 // aiProcess_MakeLeftHandedはz*=-1で、右手->左手に変換するので手動で対処
                 vertex.position.x *= -1.0f;
                 vertex.normal.x *= -1.0f;
-                modelDate.vertices.push_back(vertex);
+                modelData.vertices.push_back(vertex);
             }
         }
     }
@@ -260,10 +260,10 @@ ModelDate ParticleModel::LoadObjFile(const std::string& directoryPath, const std
         if (material->GetTextureCount(aiTextureType_DIFFUSE) != 0) {
             aiString textureFilePath;
             material->GetTexture(aiTextureType_DIFFUSE, 0, &textureFilePath);
-            modelDate.material.textureFilePath = directoryPath + "/" + textureFilePath.C_Str();
+            modelData.material.textureFilePath = directoryPath + "/" + textureFilePath.C_Str();
         }
     }
 
     // 5. ModelDateを返す
-    return modelDate;
+    return modelData;
 }
