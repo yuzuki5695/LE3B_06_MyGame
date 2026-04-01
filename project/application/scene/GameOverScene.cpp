@@ -1,5 +1,7 @@
 #include "GameOverScene.h"
 
+using namespace MyEngine;
+
 void GameOverScene::Finalize() {
 
 }

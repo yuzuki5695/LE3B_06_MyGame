@@ -1,5 +1,7 @@
 #include "GameClearScene.h"
 
+using namespace MyEngine;
+
 
 void GameClearScene::Finalize() {
 

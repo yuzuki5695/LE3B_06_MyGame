@@ -6,7 +6,7 @@
 /// タイトル画面を管理するシーン。
 /// UI 表示、タイトル演出用モデル、パーティクル、フェード制御を担当する。
 /// </summary>
-class TitleScene : public BaseScene {
+class TitleScene : public MyEngine::BaseScene {
 public: // メンバ関数
     /// <summary>
     /// 初期化処理

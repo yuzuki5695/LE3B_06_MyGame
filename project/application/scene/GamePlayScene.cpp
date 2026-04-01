@@ -6,6 +6,8 @@
 #include <Object3dCommon.h>
 #include <CameraManager.h>
 
+using namespace MyEngine;
+
 void GamePlayScene::Finalize() {
 }
 

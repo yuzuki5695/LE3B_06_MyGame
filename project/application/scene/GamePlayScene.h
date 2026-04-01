@@ -4,7 +4,7 @@
 /// <summary>
 /// 実際のゲームプレイを行うシーン。
 /// </summary>
-class GamePlayScene : public BaseScene {
+class GamePlayScene : public MyEngine::BaseScene {
 public: // メンバ関数
     /// <summary>
     /// 初期化処理

@@ -1,41 +1,43 @@
 #pragma once
-#include"DirectXCommon.h"
+#include <DirectXCommon.h>
 
-class DsvManager;
+namespace MyEngine {
+	class DsvManager;
 
-// スプライト共通部
-class SpriteCommon {
-private:
-	static std::unique_ptr<SpriteCommon> instance;
+	// スプライト共通部
+	class SpriteCommon {
+	private:
+		static std::unique_ptr<SpriteCommon> instance;
 
-	SpriteCommon(SpriteCommon&) = delete;
-	SpriteCommon& operator=(SpriteCommon&) = delete;
-public: // メンバ関数
-	SpriteCommon() = default;
-	~SpriteCommon() = default;
+		SpriteCommon(SpriteCommon&) = delete;
+		SpriteCommon& operator=(SpriteCommon&) = delete;
+	public: // メンバ関数
+		SpriteCommon() = default;
+		~SpriteCommon() = default;
 
-	// シングルトンインスタンスの取得
-	static SpriteCommon* GetInstance();
-	// 終了
-	void Finalize();
-	// 初期化
-	void Initialize(DirectXCommon* dxCommon,DsvManager* dsvManager);
-	// 共通描画設定
-	void Commondrawing();
+		// シングルトンインスタンスの取得
+		static SpriteCommon* GetInstance();
+		// 終了
+		void Finalize();
+		// 初期化
+		void Initialize(DirectXCommon* dxCommon, DsvManager* dsvManager);
+		// 共通描画設定
+		void Commondrawing();
 
-private:
-	// ルートシグネチャの生成
-	void RootSignatureGenerate();
-	// グラフィックスパイプラインの生成
-	void GraphicsPipelineGenerate();
-private:
-	// ポインタ
-	DirectXCommon* dxCommon_;
-	DsvManager* dsvManager_;
-	// RootSignature
-	Microsoft::WRL::ComPtr <ID3D12RootSignature> rootSignature = nullptr;
-	Microsoft::WRL::ComPtr <ID3D12PipelineState> graphicsPipelineState = nullptr;
-public:
-	// gettre
-	DirectXCommon* GetDxCommon() const { return  dxCommon_; }
-};
+	private:
+		// ルートシグネチャの生成
+		void RootSignatureGenerate();
+		// グラフィックスパイプラインの生成
+		void GraphicsPipelineGenerate();
+	private:
+		// ポインタ
+		DirectXCommon* dxCommon_;
+		DsvManager* dsvManager_;
+		// RootSignature
+		Microsoft::WRL::ComPtr <ID3D12RootSignature> rootSignature = nullptr;
+		Microsoft::WRL::ComPtr <ID3D12PipelineState> graphicsPipelineState = nullptr;
+	public:
+		// gettre
+		DirectXCommon* GetDxCommon() const { return  dxCommon_; }
+	};
+}

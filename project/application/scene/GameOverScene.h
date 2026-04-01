@@ -4,7 +4,7 @@
 /// <summary>
 /// ゲームオーバーシーン
 /// </summary>
-class GameOverScene : public BaseScene
+class GameOverScene : public MyEngine::BaseScene
 {
 public: // メンバ関数
     /// <summary>

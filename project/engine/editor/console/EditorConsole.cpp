@@ -4,37 +4,40 @@
 #include <MessageService.h>
 #include <TimeSystem.h>
 
-using namespace Editor::console;
+namespace MyEngine {
+
+    using namespace Editor::console;
 
     // 静的メンバ変数の定義
-std::unique_ptr<EditorConsole> EditorConsole::instance = nullptr;
+    std::unique_ptr<EditorConsole> EditorConsole::instance = nullptr;
 
-// シングルトンインスタンスの取得
-EditorConsole* EditorConsole::GetInstance() {
-    if (!instance) {
-        instance = std::make_unique<EditorConsole>();
+    // シングルトンインスタンスの取得
+    EditorConsole* EditorConsole::GetInstance() {
+        if (!instance) {
+            instance = std::make_unique<EditorConsole>();
+        }
+        return instance.get();
     }
-    return instance.get();
-}
 
-// 終了
-void EditorConsole::Finalize() {
-    instance.reset();  // `delete` 不要
-}
+    // 終了
+    void EditorConsole::Finalize() {
+        instance.reset();  // `delete` 不要
+    }
 
-void EditorConsole::Clear() {
-    // ログ履歴の全消去
-    logs_.clear();
-}
+    void EditorConsole::Clear() {
+        // ログ履歴の全消去
+        logs_.clear();
+    }
 
-void EditorConsole::AddLog(const std::string& message, LogLevel level) {
-	float elapsed = static_cast<float>(TimeSystem::GetElapsedSeconds()); // エンジン起動からの経過時間を取得
-    logs_.push_back({ message, level, elapsed });
-}
+    void EditorConsole::AddLog(const std::string& message, LogLevel level) {
+        float elapsed = static_cast<float>(TimeSystem::GetElapsedSeconds()); // エンジン起動からの経過時間を取得
+        logs_.push_back({ message, level, elapsed });
+    }
 
-void EditorConsole::AddLocalizedLog(const std::string& key, LogLevel level) {
-    // MessageServiceから翻訳テキストを取得
-    std::string message = MessageService::GetText(key);
-    // 実際の追加処理
-    AddLog(message, level);
+    void EditorConsole::AddLocalizedLog(const std::string& key, LogLevel level) {
+        // MessageServiceから翻訳テキストを取得
+        std::string message = MessageService::GetText(key);
+        // 実際の追加処理
+        AddLog(message, level);
+    }
 }

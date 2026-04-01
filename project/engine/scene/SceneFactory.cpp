@@ -1,26 +1,28 @@
 #include "SceneFactory.h"
-#include<TitleScene.h>
-#include<GamePlayScene.h>
-#include<GameClearScene.h>
-#include<GameOverScene.h>
+#include <TitleScene.h>
+#include <GamePlayScene.h>
+#include <GameClearScene.h>
+#include <GameOverScene.h>
 
-BaseScene* SceneFactory::CreateScene(const std::string& sceneName) {
-	// 次のシーンの生成
-	BaseScene* newScene = nullptr;
+namespace MyEngine {
+	BaseScene* SceneFactory::CreateScene(const std::string& sceneName) {
+		// 次のシーンの生成
+		BaseScene* newScene = nullptr;
 
-	if (sceneName == "TITLE") {
-		newScene = new TitleScene();
-	} else if (sceneName == "GAMEPLAY") {
-		newScene = new GamePlayScene();
-	}else if (sceneName == "GAMECLEAR") {
-		newScene = new GameClearScene();
-	}else if (sceneName == "GAMEOVER") {
-		newScene = new GameOverScene();
+		if (sceneName == "TITLE") {
+			newScene = new TitleScene();
+		} /*else if (sceneName == "GAMEPLAY") {
+			newScene = new GamePlayScene();
+		} else if (sceneName == "GAMECLEAR") {
+			newScene = new GameClearScene();
+		} else if (sceneName == "GAMEOVER") {
+			newScene = new GameOverScene();
+		}*/
+
+		// シーン名を登録しておく
+		if (newScene) {
+			newScene->SetSceneName(sceneName);
+		}
+		return newScene;
 	}
-	
-	// シーン名を登録しておく
-	if (newScene) {
-		newScene->SetSceneName(sceneName);
-	}
-	return newScene;
 }

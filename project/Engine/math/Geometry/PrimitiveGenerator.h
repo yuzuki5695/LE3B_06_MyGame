@@ -1,31 +1,34 @@
 #pragma once
 #include <Model.h>
 
-namespace PrimitiveGenerator
-{
- 
-	// リングの頂点データを生成する関数
-	std::vector<VertexData> DrawRing(VertexData* vertexData, uint32_t KRingDivide, float KOuterRadius, float KInnerRadius);
+namespace MyEngine {
+	namespace PrimitiveGenerator
+	{
 
-	// 球の頂点データを生成する関数
-	std::vector<VertexData> DrawSphere(const uint32_t ksubdivision, VertexData* vertexdata);
+		// リングの頂点データを生成する関数
+		std::vector<VertexData> DrawRing(VertexData* vertexData, uint32_t KRingDivide, float KOuterRadius, float KInnerRadius);
 
-    // 円柱の頂点データを生成する関数
-    std::vector<VertexData> DrawCylinder(VertexData* vertexData, uint32_t kCylinderDivide, float kTopRadius, float kBottomRadius, float kHeight);
+		// 球の頂点データを生成する関数
+		std::vector<VertexData> DrawSphere(const uint32_t ksubdivision, VertexData* vertexdata);
 
-	// 星形の頂点データを生成する関数
-	std::vector<VertexData> DrawStar(VertexData* vertexData, uint32_t kNumPoints, float kOuterRadius, float kInnerRadius);
+		// 円柱の頂点データを生成する関数
+		std::vector<VertexData> DrawCylinder(VertexData* vertexData, uint32_t kCylinderDivide, float kTopRadius, float kBottomRadius, float kHeight);
 
-	// スパイラル状の頂点データを生成する関数
-	void DrawSpiral(uint32_t kSpiralDiv, float spiralRadius, float spiralHeight, uint32_t spiralTurn, VertexData* vertexData);
-	
-	// サークルの頂点データを作成する関数
-	std::vector<VertexData> DrawCircle(VertexData* vertexData, uint32_t segmentCount, float radius);
-	
-	// 正方形の頂点データを作成する関数
-	std::vector<VertexData> DrawBox(VertexData* vertexData);
+		// 星形の頂点データを生成する関数
+		std::vector<VertexData> DrawStar(VertexData* vertexData, uint32_t kNumPoints, float kOuterRadius, float kInnerRadius);
 
-	std::vector<VertexData> GenerateCircle(float cx, float cy, float cz, float radius, int segments);
+		// スパイラル状の頂点データを生成する関数
+		void DrawSpiral(uint32_t kSpiralDiv, float spiralRadius, float spiralHeight, uint32_t spiralTurn, VertexData* vertexData);
+
+		// サークルの頂点データを作成する関数
+		std::vector<VertexData> DrawCircle(VertexData* vertexData, uint32_t segmentCount, float radius);
+
+		// 正方形の頂点データを作成する関数
+		std::vector<VertexData> DrawBox(VertexData* vertexData);
+
+		std::vector<VertexData> GenerateCircle(float cx, float cy, float cz, float radius, int segments);
 
 
-};
+	};
+
+}

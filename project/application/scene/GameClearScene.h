@@ -4,7 +4,7 @@
 /// <summary>
 /// ゲームクリアシーン
 /// </summary>
-class GameClearScene : public BaseScene {
+class GameClearScene : public MyEngine::BaseScene {
 public: // メンバ関数
     /// <summary>
     /// 初期化処理
