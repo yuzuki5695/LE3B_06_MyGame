@@ -44,53 +44,11 @@ namespace MyEngine {
 
     // 更新処理
     void CameraManager::Update() {
-        // シーンカメラが変わったら一度だけTransformとサブカメラを反映
-        //if (sceneCameraJustChanged_) {
-        //    // 前のサブカメラを破棄
-        //    subCamerasMap_.clear();
-        //    // 新しいシーンに切り替えるときのみムーブ
-        //    if (currentSceneCamera_) { RegisterSubCameras(std::move(currentSceneCamera_->MoveSubCameras()), "SubCamera"); }
-        //    sceneCameraJustChanged_ = false;
-        //}
-
-        //// 現在のシーンカメラの更新
-        //if (currentSceneCamera_) { currentSceneCamera_->Update(); }
-
-        //// メインカメラに値を反映
-        //if (mainCamera_ && currentSceneCamera_) {
-        //    maintrans_ = currentSceneCamera_->GetMainTransform();
-        //    mainCamera_->SetTranslate(maintrans_.translate);
-        //    mainCamera_->SetRotate(maintrans_.rotate);
-        //    mainCamera_->Update();
-        //}
-
-        //// サブカメラ更新
-        //for (std::pair<const std::string, std::unique_ptr<Camera>>& subcameras : subCamerasMap_) {
-        //    subcameras.second->Update();
-        //}
-        //// アクティブ登録
-        //SetActiveCamera();
+    
     }
 
     // アクティブカメラを取得
     Camera* CameraManager::GetActiveCamera() {
-        //// Transition中は常にメインカメラを返す
-        //if (currentMode_ == CameraMode::Transition) {
-        //    return mainCamera_.get();
-        //}
-
-        //switch (Typeview_) {
-        //case ViewCameraType::Main:
-        //    return mainCamera_.get();
-        //case ViewCameraType::Sub:
-        //    if (!activeSubCameraName_.empty() && subCamerasMap_.count(activeSubCameraName_)) {
-        //        return subCamerasMap_[activeSubCameraName_].get();
-        //    }
-        //    else if (!subCamerasMap_.empty()) {
-        //        return subCamerasMap_.begin()->second.get(); // 最初のサブカメラ
-        //    }
-        //    break;
-        //}
         return mainCamera_.get();
     }
 }
