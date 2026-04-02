@@ -1,5 +1,7 @@
 #pragma once
 #include <BaseScene.h>
+#include <Object3d.h>
+#include<Sprite.h>
 
 /// <summary>
 /// 実際のゲームプレイを行うシーン。
@@ -23,5 +25,9 @@ public: // メンバ関数
     /// </summary>
     void Draw() override;
 private: // メンバ変数
+    
+    std::unique_ptr <MyEngine::Sprite> Sprite_;
+
+    std::unique_ptr <MyEngine::Object3d> player_;
 
 };
