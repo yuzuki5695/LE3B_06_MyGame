@@ -11,28 +11,40 @@ namespace MyEngine {
 	//  3Dオブジェクト
 	class Object3d {
 	public: // メンバ関数
-		struct CameraForGPU
-		{
+		struct CameraForGPU {
 			Vector3 worldPosition;
 		};
-
 	public: // メンバ関数
-		// 初期化
+		/// <summary>
+		/// 3Dオブジェクトの初期化
+		/// </summary>	
+		/// <param name="object3dCommon">3Dオブジェクト共通管理クラスのポインタ</param>	
+		/// <remarks>
+		/// インスタンスごとの定数バッファ生成や、座標情報の初期化を行います。
+		/// </remarks>
 		void Initialize(Object3dCommon* object3dCommon);
-		// 更新処理
+		/// <summary>	
+		/// 更新処理
+		/// </summary>
 		void Update();
-		// 描画処理
+		/// <summary>
+		/// 描画処理
+		/// </summary>
 		void Draw();
-
-		// 3Dobject作成関数
+		/// <summary>
+		/// 3Dオブジェクトのインスタンスを生成・初期化する
+		/// </summary>
+		/// <param name="filePath">モデルファイルのパス（Resourcesフォルダからの相対パス）</param>
+		/// <param name="transform">初期状態のトランスフォーム設定（座標、回転、スケール）</param>
+		/// <returns>生成されたObject3dのユニークポインタ。失敗した場合はnullptrを返す。</returns>
+		/// <remarks>
+		/// モデルの読み込み、定数バッファの生成、およびトランスフォームの初期設定を内部で一括して行います。
+		/// </remarks>
 		static std::unique_ptr<Object3d> Create(std::string filePath, Transform transform);
 
 		// imgui
 		void DrawImGui(const std::string& name);
-
-		Vector3 GetWorldPosition() const;
-
-	private:
+	private: // 内部関数
 		// リソース
 		// マテリアル
 		void MaterialGenerate();
@@ -40,7 +52,7 @@ namespace MyEngine {
 		void TransformationMatrixGenerate();
 		// カメラリソース
 		void CameraForGPUGenerate();
-	private:
+	private: // メンバ変数
 		// ポインタ
 		Object3dCommon* object3dCommon = nullptr;
 		Model* model = nullptr;
@@ -53,8 +65,10 @@ namespace MyEngine {
 		Material* materialData = nullptr;
 		TransformationMatrix* transformationMatrixData = nullptr;
 		CameraForGPU* cameraForGPUData = nullptr;
-
-		Transform transform_;
+		/// ローカル座標系でのTransform
+		Transform transform_;	
+		/// ワールド座標座標
+		Matrix4x4 worldMatrix_;
 	public:
 		// getter	
 		Model* GetModel() const { return model; }
@@ -62,6 +76,7 @@ namespace MyEngine {
 		const Vector3& GetScale() const { return transform_.scale; }
 		const Vector3& GetRotate() const { return transform_.rotate; }
 		const Vector3& GetTranslate() const { return transform_.translate; }
+		const Vector3& GetWorldPosition() const;
 
 		// setter
 		void SetModel(const std::string& filePath);
@@ -69,8 +84,6 @@ namespace MyEngine {
 		void SetRotate(const Vector3& rotate) { this->transform_.rotate = rotate; }
 		void SetTranslate(const Vector3& translate) { this->transform_.translate = translate; }
 		void SetCamera(Camera* camera) { this->camera = camera; }
-
-
 		void SetMaterialColor(const Vector4& color);
 	};
 }

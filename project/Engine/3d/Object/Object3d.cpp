@@ -17,20 +17,6 @@ namespace MyEngine {
     using namespace MatrixVector;
     using namespace ResourceFactory;
 
-    Vector3 Object3d::GetWorldPosition() const {
-        Matrix4x4 worldMatrix = MatrixVector::MakeAffineMatrix(
-            transform_.scale, transform_.rotate, transform_.translate
-        );
-
-        Vector3 worldPos = {
-            worldMatrix.m[3][0],
-            worldMatrix.m[3][1],
-            worldMatrix.m[3][2]
-        };
-
-        return worldPos;
-    }
-
     void Object3d::Initialize(Object3dCommon* object3dCommon) {
         // NULL検出
         assert(object3dCommon);
@@ -145,7 +131,18 @@ namespace MyEngine {
         object3d->SetMaterialColor({ 1.0f, 1.0f, 1.0f, 1.0f });
         // 座標をセット
         object3d->transform_ = transform;
+		// ワールド座標を初期化
+        object3d->worldMatrix_ = MakeAftineMatrix(object3d->transform_.scale, object3d->transform_.rotate, object3d->transform_.translate);
         return object3d;
+    }
+    
+    const Vector3& Object3d::GetWorldPosition() const {
+        static Vector3 worldPos;
+        worldPos.x = worldMatrix_.m[3][0];
+        worldPos.y = worldMatrix_.m[3][1];
+        worldPos.z = worldMatrix_.m[3][2];
+
+        return worldPos;
     }
 
     void Object3d::DrawImGui(const std::string& name) {
