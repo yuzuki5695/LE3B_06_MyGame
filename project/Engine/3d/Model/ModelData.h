@@ -23,10 +23,10 @@ namespace MyEngine {
     /// </summary>
     struct Material final {
         Vector4 color;
-        int32_t endbleLighting;
+        int32_t enableLighting;
         float padding[3];
         Matrix4x4 uvTransform;
-        float shinimess;
+        float shininess;
     };
 
     /// <summary>

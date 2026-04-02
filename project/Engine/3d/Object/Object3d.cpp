@@ -93,11 +93,11 @@ namespace MyEngine {
         // マテリアルデータの初期値を書き込む
         materialData->color = { 1.0f, 1.0f, 1.0f, 1.0f };
         // SpriteはLightingしないでfalseを設定する
-        materialData->endbleLighting = true;
+        materialData->enableLighting = true;
         // 単位行列を書き込んでおく
         materialData->uvTransform = MakeIdentity4x4();
         // 光沢度を書き込む
-        materialData->shinimess = 70;
+        materialData->shininess = 70;
     }
 
     void Object3d::TransformationMatrixGenerate() {
@@ -208,7 +208,7 @@ namespace MyEngine {
                     reinterpret_cast<float*>(&materialData->color));
 
                 ImGui::DragFloat("Shininess",
-                    &materialData->shinimess,
+                    &materialData->shininess,
                     0.1f, 0.0f, 256.0f);
 
                 ImGui::TreePop();

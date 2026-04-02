@@ -149,7 +149,7 @@ namespace MyEngine {
         materialResource->Map(0, nullptr, reinterpret_cast<void**>(&materialData));
         // マテリアルデータの初期値を書き込む
         materialData->color = { 1.0f, 1.0f, 1.0f, 1.0f };
-        materialData->endbleLighting = true;
+        materialData->enableLighting = true;
         materialData->uvTransform = MakeIdentity4x4();
     }
 
