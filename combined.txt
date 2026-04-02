@@ -24,30 +24,32 @@
     └── └──     ├── Skybox.h
     └── └──     ├── SkyboxCommon.cpp
     └── └──     └── SkyboxCommon.h
-    └── └── math/
-    └──     ├── Base/
-    └──     └── ├── Matrix3x3.h
-    └──     └── ├── Matrix4x4.h
-    └──     └── ├── Quaternion.h
-    └──     └── ├── Vector2.h
-    └──     └── ├── Vector3.h
-    └──     └── └── Vector4.h
-    └──     ├── Functions/
-    └──     └── ├── Easing.cpp
-    └──     └── ├── Easing.h
-    └──     └── ├── MathUtil.cpp
-    └──     └── ├── MathUtil.h
-    └──     └── ├── MatrixVector.cpp
-    └──     └── └── MatrixVector.h
-    └──     ├── Geometry/
-    └──     └── ├── Collision.cpp
-    └──     └── ├── Collision.h
-    └──     └── ├── OBB.h
-    └──     └── ├── PrimitiveGenerator.cpp
-    └──     └── └── PrimitiveGenerator.h
-    └──     └── Transform/
-    └──         ├── Transform.h
-    └──         └── TransformationMatrix.h
+    └── ├── math/
+    └── └── ├── Base/
+    └── └── └── ├── Matrix3x3.h
+    └── └── └── ├── Matrix4x4.h
+    └── └── └── ├── Quaternion.h
+    └── └── └── ├── Vector2.h
+    └── └── └── ├── Vector3.h
+    └── └── └── └── Vector4.h
+    └── └── ├── Functions/
+    └── └── └── ├── Easing.cpp
+    └── └── └── ├── Easing.h
+    └── └── └── ├── MathUtil.cpp
+    └── └── └── ├── MathUtil.h
+    └── └── └── ├── MatrixVector.cpp
+    └── └── └── └── MatrixVector.h
+    └── └── ├── Geometry/
+    └── └── └── ├── Collision.cpp
+    └── └── └── ├── Collision.h
+    └── └── └── ├── OBB.h
+    └── └── └── ├── PrimitiveGenerator.cpp
+    └── └── └── └── PrimitiveGenerator.h
+    └── └── └── Transform/
+    └── └──     ├── Transform.h
+    └── └──     └── TransformationMatrix.h
+    └── └── scene/
+    └──     └── SceneName.h
     ├── MyGame.vcxproj
     ├── MyGame.vcxproj.filters
     ├── application/
@@ -173,7 +175,6 @@
     └── └── └── TextureManager.h
     └── ├── scene/
     └── └── ├── AbstractSceneFactory.h
-    └── └── ├── BaseScene.cpp
     └── └── ├── BaseScene.h
     └── └── ├── MyGame.cpp
     └── └── ├── MyGame.h
@@ -3759,6 +3760,24 @@ namespace MyEngine {
 }
 
 ============================================================
+File Path: project/Engine/scene/SceneName.h
+============================================================
+#pragma once
+#include <string>
+
+namespace MyEngine {
+    /// <summary>
+    /// シーン識別用の定数群
+    /// </summary>
+    struct SceneName {
+		static inline const std::string TITLE = "TITLE";             // タイトル
+		static inline const std::string GAMEPLAY = "GAMEPLAY";       // ゲームプレイ 
+		static inline const std::string GAMECLEAR = "GAMECLEAR";     // ゲームクリア
+		static inline const std::string GAMEOVER = "GAMEOVER";       // ゲームオーバー
+    };
+}
+
+============================================================
 File Path: project/MyGame.vcxproj
 ============================================================
 <?xml version="1.0" encoding="utf-8"?>
@@ -3923,7 +3942,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="engine\base\ImGuiManager.cpp" />
     <ClCompile Include="engine\io\Input.cpp" />
     <ClCompile Include="engine\base\Utility\Logger.cpp" />
-    <ClCompile Include="engine\scene\BaseScene.cpp" />
     <ClCompile Include="engine\scene\SceneFactory.cpp" />
     <ClCompile Include="application\scene\GameClearScene.cpp" />
     <ClCompile Include="engine\base\DirectXCommon\FenceManager.cpp" />
@@ -4027,6 +4045,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="engine\base\DirectXCommon\ViewportManager.h" />
     <ClInclude Include="engine\base\DirectXCommon\FPSController.h" />
     <ClInclude Include="engine\base\DirectXCommon\SwapChainManager.h" />
+    <ClInclude Include="Engine\scene\SceneName.h" />
     <ClInclude Include="engine\time\TimeSystem.h" />
   </ItemGroup>
   <ItemGroup>
@@ -4371,9 +4390,6 @@ File Path: project/MyGame.vcxproj.filters
     </ClCompile>
     <ClCompile Include="engine\base\Framework.cpp">
       <Filter>ソース ファイル\engine\base</Filter>
-    </ClCompile>
-    <ClCompile Include="engine\scene\BaseScene.cpp">
-      <Filter>ソース ファイル\engine\scene</Filter>
     </ClCompile>
     <ClCompile Include="engine\scene\SceneManager.cpp">
       <Filter>ソース ファイル\engine\scene</Filter>
@@ -4779,6 +4795,9 @@ File Path: project/MyGame.vcxproj.filters
     <ClInclude Include="Engine\3d\Particle\RandomParameter.h">
       <Filter>ヘッダー ファイル\engine\3d\Particle</Filter>
     </ClInclude>
+    <ClInclude Include="Engine\scene\SceneName.h">
+      <Filter>ヘッダー ファイル\engine\scene</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Resources\shaders\Sprite\Sprite.PS.hlsl">
@@ -5071,6 +5090,9 @@ private: // メンバ変数
 File Path: project/application/scene/TitleScene.cpp
 ============================================================
 #include "TitleScene.h"
+#include <SceneManager.h>
+#include <SceneName.h>
+#include <Input.h>
 
 using namespace MyEngine;
 
@@ -5083,7 +5105,9 @@ void TitleScene::Initialize() {
 }
 
 void TitleScene::Update() {
-
+	if (Input::GetInstance()->Triggrkey(DIK_RETURN)) {
+		SceneManager::GetInstance()->ChangeScene(SceneName::TITLE);
+	}
 }
 
 void TitleScene::Draw() {
@@ -12098,11 +12122,6 @@ namespace MyEngine {
 }
 
 ============================================================
-File Path: project/engine/scene/BaseScene.cpp
-============================================================
-#include<BaseScene.h>
-
-============================================================
 File Path: project/engine/scene/BaseScene.h
 ============================================================
 #pragma once
@@ -12129,12 +12148,12 @@ namespace MyEngine {
 		virtual void Draw() = 0;
 	private:
 		// シーンマネージャ（借りてくる）
-		SceneManager* sceneManeger_ = nullptr;
+		SceneManager* sceneManager_ = nullptr;
 		// シーン名
 		std::string sceneName_;
 	public:// メンバ関数
-		virtual void SetSceneManeger(SceneManager* sceneManeger) { sceneManeger_ = sceneManeger; }
-		SceneManager* GetSceneManeger() { return sceneManeger_; }
+		virtual void SetSceneManager(SceneManager* sceneManeger) { sceneManager_ = sceneManeger; }
+		SceneManager* GetSceneManager() { return sceneManager_; }
 		void SetSceneName(const std::string& name) { sceneName_ = name; }
 		const std::string& GetSceneName() const { return sceneName_; }
 	};
@@ -12145,6 +12164,7 @@ File Path: project/engine/scene/MyGame.cpp
 ============================================================
 #include "MyGame.h"
 #include <SceneFactory.h>
+#include <SceneName.h>
 
 namespace MyEngine {
     void MyGame::Finalize() {
@@ -12158,13 +12178,8 @@ namespace MyEngine {
         // シーンファクトリを生成し、マネージャにセット
         sceneFactory_ = std::make_unique<SceneFactory>();
         SceneManager::GetInstance()->SetSceneFactory(sceneFactory_.get());
-        // シーンマネージャに最初のシーンをセットした
-
-        // TITLE              タイトル
-        // GAMEPLAY           ゲームプレイ
-        // GAMECLEAR          ゲームクリア
-        // GAMEOVER           ゲームオーバー
-        SceneManager::GetInstance()->ChangeScene("TITLE");
+        // シーンマネージャに最初のシーンをセット
+        SceneManager::GetInstance()->ChangeScene(SceneName::TITLE);
     }
 
     void MyGame::Update() {
@@ -12207,31 +12222,35 @@ namespace MyEngine {
 File Path: project/engine/scene/SceneFactory.cpp
 ============================================================
 #include "SceneFactory.h"
+#include <SceneName.h>
 #include <TitleScene.h>
 #include <GamePlayScene.h>
 #include <GameClearScene.h>
 #include <GameOverScene.h>
 
 namespace MyEngine {
+	// コンストラクタで各シーンを登録
+	SceneFactory::SceneFactory() { RegisterScenes(); }
+
+	void SceneFactory::RegisterScenes() {
+		// 二重登録しないようにガードを入れる 
+		if (!sceneRegistry_.empty()) return;
+		// ラムダ式を使用して各シーンの生成処理を登録
+		sceneRegistry_[SceneName::TITLE] = []() { return new TitleScene(); };
+		sceneRegistry_[SceneName::GAMEPLAY] = []() { return new GamePlayScene(); };
+		sceneRegistry_[SceneName::GAMECLEAR] = []() { return new GameClearScene(); };
+		sceneRegistry_[SceneName::GAMEOVER] = []() { return new GameOverScene(); };
+	}
+
 	BaseScene* SceneFactory::CreateScene(const std::string& sceneName) {
-		// 次のシーンの生成
-		BaseScene* newScene = nullptr;
-
-		if (sceneName == "TITLE") {
-			newScene = new TitleScene();
-		} /*else if (sceneName == "GAMEPLAY") {
-			newScene = new GamePlayScene();
-		} else if (sceneName == "GAMECLEAR") {
-			newScene = new GameClearScene();
-		} else if (sceneName == "GAMEOVER") {
-			newScene = new GameOverScene();
-		}*/
-
-		// シーン名を登録しておく
-		if (newScene) {
+		// マップ検索で捜す
+		std::unordered_map<std::string, std::function<BaseScene* ()>>::iterator it = sceneRegistry_.find(sceneName);
+		if (it != sceneRegistry_.end()) {
+			BaseScene* newScene = it->second(); // 登録された関数を実行
 			newScene->SetSceneName(sceneName);
+			return newScene;
 		}
-		return newScene;
+		return nullptr;
 	}
 }
 
@@ -12240,17 +12259,28 @@ File Path: project/engine/scene/SceneFactory.h
 ============================================================
 #pragma once
 #include <AbstractSceneFactory.h>
+#include <unordered_map>
+#include <functional>
 
 namespace MyEngine {
 	// このゲーム用のシーン工場
 	class SceneFactory : public AbstractSceneFactory {
-	public:
+	public: // メンバ関数
+		//	コンストラクタ
+		SceneFactory();
+
+		// 初期化時にシーンを登録する関数
+		void RegisterScenes();
+
 		/// <summary>
 		/// シーン生成
 		/// </summary>
 		/// <param name="sceneName">シーン名</param>
 		/// <returns>生成したシーン</returns>
 		virtual BaseScene* CreateScene(const std::string& sceneName) override;
+	private: // メンバ変数
+		// シーン名と生成関数のマップ
+		std::unordered_map<std::string, std::function<BaseScene* ()>> sceneRegistry_;
 	};
 }
 
@@ -12287,7 +12317,6 @@ namespace MyEngine {
 	void SceneManager::Update() {
 		// TODO:シーンの切り替え機構
 
-
 		// 次のシーンの予約があるなら
 		if (nextScene_) {
 			// 旧シーンの終了
@@ -12299,12 +12328,9 @@ namespace MyEngine {
 			scene_ = std::move(nextScene_); // 所有権を移動
 			nextScene_ = nullptr;
 			// シーンマネージャをセット 
-			scene_->SetSceneManeger(this);
+			scene_->SetSceneManager(this);
 			// 次のシーンを初期化する
 			scene_->Initialize();
-
-			// ---- シーン変更通知をカメラへ ----
-			//CameraManager::GetInstance()->NotifySceneChangedByName(scene_->GetSceneName());
 		}
 
 		// 実行中シーンを更新する
@@ -12316,10 +12342,8 @@ namespace MyEngine {
 	}
 
 	void SceneManager::ChangeScene(const std::string& sceneName) {
-		assert(sceneFactory_);
-		assert(nextScene_ == nullptr);
-
-		//次シーン生成
+		assert(sceneFactory_ && nextScene_ == nullptr);
+		// 次のシーン生成
 		nextScene_ = std::unique_ptr<BaseScene>(sceneFactory_->CreateScene(sceneName));
 	}
 }
@@ -12336,6 +12360,14 @@ File Path: project/engine/scene/SceneManager.h
 namespace MyEngine {
 	// シーン管理
 	class SceneManager {
+	public: // メンバ関数
+		// シーンマネージャの状態
+		enum class State {
+			Idle,        // 通常実行中
+			FadeOut,     // シーン終了演出中
+			Change,      // シーン差し替え実行
+			FadeIn       // 次のシーン開始演出中
+		};
 	private:
 		static std::unique_ptr<SceneManager> instance;
 
@@ -12353,7 +12385,8 @@ namespace MyEngine {
 		void Update();
 		// 描画
 		void Draw();
-	private: // メンバ変数
+	private: // メンバ変数	
+		//State state_ = State::Idle; // 現在の状態
 		// 今のシーン(実行中シーン)
 		std::unique_ptr<BaseScene> scene_ = nullptr;
 		// 次のシーン
@@ -61542,7 +61575,7 @@ inline void swap(nlohmann::NLOHMANN_BASIC_JSON_TPL& j1, nlohmann::NLOHMANN_BASIC
 ============================================================
 File Path: project/main.cpp
 ============================================================
-#include "MyGame.h"
+#include <MyGame.h>
 #include <TimeSystem.h>
 
 using namespace MyEngine;
