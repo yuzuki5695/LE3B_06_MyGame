@@ -49,7 +49,7 @@ namespace MyEngine {
 		// Objファイルのデータ
 		ModelData modelData;
 		// バッファリソース
-		Microsoft::WRL::ComPtr <ID3D12Resource> vertexResoruce;
+		Microsoft::WRL::ComPtr <ID3D12Resource> vertexResource;
 		Microsoft::WRL::ComPtr<ID3D12Resource> materialResource;;
 		// バッファリソース内のデータを指すポインタ
 		VertexData* vertexData = nullptr;

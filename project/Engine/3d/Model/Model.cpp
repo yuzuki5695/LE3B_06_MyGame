@@ -60,18 +60,18 @@ namespace MyEngine {
     void Model::VertexDatacreation() {
 
         // 関数化したResouceで作成
-        vertexResoruce = CreateBufferResource(modelCommon->GetDxCommon()->GetDevice(), sizeof(VertexData) * modelData.vertices.size());
+        vertexResource = CreateBufferResource(modelCommon->GetDxCommon()->GetDevice(), sizeof(VertexData) * modelData.vertices.size());
 
         //頂点バッファビューを作成する
         // リソースの先頭のアドレスから使う
-        vertexBufferView.BufferLocation = vertexResoruce->GetGPUVirtualAddress();
+        vertexBufferView.BufferLocation = vertexResource->GetGPUVirtualAddress();
         // 使用するリソースのサイズはの頂点のサイズ
         vertexBufferView.SizeInBytes = UINT(sizeof(VertexData) * modelData.vertices.size());
         // 1頂点当たりのサイズ
         vertexBufferView.StrideInBytes = sizeof(VertexData);
 
         // 頂点リソースにデータを書き込むためのアドレスを取得
-        vertexResoruce->Map(0, nullptr, reinterpret_cast<void**>(&vertexData));
+        vertexResource->Map(0, nullptr, reinterpret_cast<void**>(&vertexData));
         // 頂点データをリソースにコピー
         std::memcpy(vertexData, modelData.vertices.data(), sizeof(VertexData) * modelData.vertices.size());
     }
@@ -98,6 +98,36 @@ namespace MyEngine {
         }
         return materialDate;
     }
+    
+    void  Model::ProcessMesh(aiMesh* mesh, std::vector<VertexData>& vertices, bool flipX) {
+        assert(mesh->HasNormals());          // 法線がないMeshは今回は非対応
+        assert(mesh->HasTextureCoords(0));;  // TexcoordがないMeshは今回は非対応
+        // Meshの中身(Face)を解析していく
+        for (uint32_t faceIndex = 0; faceIndex < mesh->mNumFaces; ++faceIndex) {
+            aiFace& face = mesh->mFaces[faceIndex];
+            assert(face.mNumIndices == 3);// 三角形のみサポート
+            // Faceの中身(Vertex)を解析していく
+            for (uint32_t i = 0; i < face.mNumIndices; ++i) {
+                uint32_t vertexIndex = face.mIndices[i];
+                // 頂点の各要素を取得
+                aiVector3D& position = mesh->mVertices[vertexIndex];
+                aiVector3D& normal = mesh->mNormals[vertexIndex];
+                aiVector3D& texcoord = mesh->mTextureCoords[0][vertexIndex];
+                // 1頂点分のデータを構築してModelDateに追加していく
+                VertexData vertex{};
+                vertex.position = { -position.x,position.y,position.z,1.0f }; // 位置のx成分を反転
+                vertex.normal = { -normal.x,normal.y,normal.z };              // 法線のx成分を反転 
+                vertex.texcoord = { texcoord.x,texcoord.y };                  // テクスチャ座標のy成分を反転
+                // 左手系対応
+                if (flipX) {
+                    // aiProcess_MakeLeftHandedはz*=-1で、右手->左手に変換するので手動で対処
+                    vertex.position.x *= -1.0f;
+                    vertex.normal.x *= -1.0f;
+                }
+                vertices.push_back(vertex);
+            }
+        }
+    }
 
     ModelData Model::LoadObjFile(const std::string& directoryPath, const std::string& filename) {
         // 1. 中で必要となる変数の宣言
@@ -110,31 +140,8 @@ namespace MyEngine {
 
         // 3. Meshを解析する
         for (size_t meshIndex = 0; meshIndex < scene->mNumMeshes; ++meshIndex) {
-            aiMesh* mesh = scene->mMeshes[meshIndex];
-            assert(mesh->HasNormals()); // 法線がないMeshは今回は非対応
-            assert(mesh->HasTextureCoords(0)); // TexcoordがないMeshは今回は非対応
-            // Meshの中身(Face)を解析していく
-            for (size_t faceIndex = 0; faceIndex < mesh->mNumFaces; ++faceIndex) {
-                aiFace& face = mesh->mFaces[faceIndex];
-                assert(face.mNumIndices == 3); // 三角形のみサポート
-                // Faceの中身(Vertex)を解析していく
-                for (size_t elememt = 0; elememt < face.mNumIndices; ++elememt) {
-                    uint32_t vertexIndex = face.mIndices[elememt];
-                    // 頂点の各要素を取得
-                    aiVector3D& position = mesh->mVertices[vertexIndex];
-                    aiVector3D& normal = mesh->mNormals[vertexIndex];
-                    aiVector3D& texcoord = mesh->mTextureCoords[0][vertexIndex];
-                    // 1頂点分のデータを構築してModelDateに追加していく
-                    VertexData vertex;
-                    vertex.position = { -position.x,position.y,position.z,1.0f };// 位置のx成分を反転
-                    vertex.normal = { -normal.x,normal.y,normal.z };// 法線のx成分を反転
-                    vertex.texcoord = { texcoord.x,texcoord.y };// テクスチャ座標のy成分を反転
-                    // aiProcess_MakeLeftHandedはz*=-1で、右手->左手に変換するので手動で対処
-                    vertex.position.x *= -1.0f;
-                    vertex.normal.x *= -1.0f;
-                    modelData.vertices.push_back(vertex);
-                }
-            }
+            // 全メッシュを共通関数で処理
+            ProcessMesh(scene->mMeshes[meshIndex], modelData.vertices, true);
         }
 
         // 4. Materialの解析
@@ -153,54 +160,38 @@ namespace MyEngine {
 
     Node Model::ReadNode(aiNode* node) {
         Node result;
-        aiMatrix4x4 aiLocalMatrix = node->mTransformation; // nodeのlocalMatrixを取得
+        // ローカル変換行列取得（Assimpは列ベクトルなので転置）
+        aiMatrix4x4 aiLocalMatrix = node->mTransformation;
         aiLocalMatrix.Transpose(); // 列ベクトル形式を行ベクトル形式に転置
         result.localMatrix.m[0][0] = aiLocalMatrix[0][0]; result.localMatrix.m[0][1] = aiLocalMatrix[0][1]; result.localMatrix.m[0][2] = aiLocalMatrix[0][2]; result.localMatrix.m[0][3] = aiLocalMatrix[0][3];
         result.localMatrix.m[1][0] = aiLocalMatrix[1][0]; result.localMatrix.m[1][1] = aiLocalMatrix[1][1]; result.localMatrix.m[1][2] = aiLocalMatrix[1][2]; result.localMatrix.m[1][3] = aiLocalMatrix[1][3];
         result.localMatrix.m[2][0] = aiLocalMatrix[2][0]; result.localMatrix.m[2][1] = aiLocalMatrix[2][1]; result.localMatrix.m[2][2] = aiLocalMatrix[2][2]; result.localMatrix.m[2][3] = aiLocalMatrix[2][3];
         result.localMatrix.m[3][0] = aiLocalMatrix[3][0]; result.localMatrix.m[3][1] = aiLocalMatrix[3][1]; result.localMatrix.m[3][2] = aiLocalMatrix[3][2]; result.localMatrix.m[3][3] = aiLocalMatrix[3][3];
         result.name = node->mName.C_Str(); // Node名を格納
-        result.children.resize(node->mNumChildren); // 子供の数だけ確保
+        result.children.resize(node->mNumChildren); // 子ノード数だけ確保
+        // 再帰的に子ノードを読み込む
         for (uint32_t childIndex = 0; childIndex < node->mNumChildren; ++childIndex) {
-            // 再帰的に読んで階層構造を作っていく
             result.children[childIndex] = ReadNode(node->mChildren[childIndex]);
         }
         return result;
     }
 
     glTFModelData Model::LoadModelFile(const std::string& directoryPath, const std::string& filename) {
+        // 1. 中で必要となる変数の宣言
         glTFModelData modelData; // 構築するModelDate
+        // 2. Assimpでの読み込み
         Assimp::Importer importer;
-        std::string filePath = directoryPath + "/" + filename;
+        std::string filePath = directoryPath + "/" + filename; // ファイルを開く
         const aiScene* scene = importer.ReadFile(filePath.c_str(), aiProcess_FlipWindingOrder | aiProcess_FlipUVs);
         assert(scene->HasMeshes()); // メッシュがないのは対応しない
-        // meshを解析する
+         
+        // 3. Meshを解析する
         for (uint32_t meshIndex = 0; meshIndex < scene->mNumMeshes; ++meshIndex) {
-            aiMesh* mesh = scene->mMeshes[meshIndex];
-            assert(mesh->HasNormals()); // 法線がないMeshは今回は非対応
-            assert(mesh->HasTextureCoords(0)); // TexcoordがないMeshは今回は非対応
-            // ここからMeshの中身(Face)の解析を行っていく
-            for (uint32_t faceIndex = 0; faceIndex < mesh->mNumFaces; ++faceIndex) {
-                aiFace face = mesh->mFaces[faceIndex];
-                //  ここからFaceの中身(Vertex)の解析を行っていく
-
-                for (uint32_t element = 0; element < face.mNumIndices; ++element) {
-                    uint32_t vertexIndex = face.mIndices[element];
-                    aiVector3D& position = mesh->mVertices[vertexIndex];
-                    aiVector3D& normal = mesh->mNormals[vertexIndex];
-                    aiVector3D& texcoord = mesh->mTextureCoords[0][vertexIndex];
-                    VertexData vertex;
-                    vertex.position = { position.x,position.y,position.z,1.0f };
-                    vertex.normal = { normal.x,normal.y,normal.z };
-                    vertex.texcoord = { texcoord.x,texcoord.y };
-                    // aiProcess_MakeLeftHandedはz*=-1で、右手->左手に変化するので手動で対処
-                    vertex.position.x *= -1.0f;
-                    vertex.normal.x *= -1.0f;
-                    modelData.vertices.push_back(vertex);
-                }
-            }
+            // 全メッシュを共通関数で処理
+            ProcessMesh(scene->mMeshes[meshIndex], modelData.vertices, true);
         }
-
+        
+        // 4. Materialの解析
         for (uint32_t materialIndex = 0; materialIndex < scene->mNumMaterials; ++materialIndex) {
             aiMaterial* material = scene->mMaterials[materialIndex];
             if (material->GetTextureCount(aiTextureType_DIFFUSE) != 0) {
@@ -210,7 +201,9 @@ namespace MyEngine {
             }
         }
 
+        // 5. ノード階層構造を取得
         modelData.rootNode = ReadNode(scene->mRootNode);
+        // 6. ModelDateを返す
         return modelData;
     }
 }

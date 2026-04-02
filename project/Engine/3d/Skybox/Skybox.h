@@ -56,7 +56,7 @@ namespace MyEngine {
 		// モデルデータ
 		skyModelDate modelData;
 		// バッファリソース
-		Microsoft::WRL::ComPtr <ID3D12Resource> vertexResoruce;
+		Microsoft::WRL::ComPtr <ID3D12Resource> vertexResource;
 		Microsoft::WRL::ComPtr <ID3D12Resource> materialResource;
 		Microsoft::WRL::ComPtr <ID3D12Resource> transformationMatrixResource;
 		Microsoft::WRL::ComPtr<ID3D12Resource> cameraResource;

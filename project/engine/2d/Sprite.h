@@ -72,7 +72,7 @@ namespace MyEngine {
 		// 使用するファイル
 		std::string textureFilePath_;
 		// バッファリソース
-		Microsoft::WRL::ComPtr <ID3D12Resource> vertexResoruce;
+		Microsoft::WRL::ComPtr <ID3D12Resource> vertexResource;
 		Microsoft::WRL::ComPtr <ID3D12Resource> indexResource;
 		Microsoft::WRL::ComPtr <ID3D12Resource> materialResource;
 		Microsoft::WRL::ComPtr <ID3D12Resource> transformationMatrixResource;

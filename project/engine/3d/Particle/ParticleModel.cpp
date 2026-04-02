@@ -61,16 +61,16 @@ namespace MyEngine {
 
     void ParticleModel::CreateVertexBuffer() {
         // 関数化したResouceで作成
-        vertexResoruce = CreateBufferResource(dxCommon_->GetDevice(), sizeof(VertexData) * modelData.vertices.size());
+        vertexResource = CreateBufferResource(dxCommon_->GetDevice(), sizeof(VertexData) * modelData.vertices.size());
         //頂点バッファビューを作成する
         // リソースの先頭のアドレスから使う
-        vertexBufferView.BufferLocation = vertexResoruce->GetGPUVirtualAddress();
+        vertexBufferView.BufferLocation = vertexResource->GetGPUVirtualAddress();
         // 使用するリソースのサイズはの頂点のサイズ
         vertexBufferView.SizeInBytes = UINT(sizeof(VertexData) * modelData.vertices.size());
         // 1頂点当たりのサイズ
         vertexBufferView.StrideInBytes = sizeof(VertexData);
         // 頂点リソースにデータを書き込むためのアドレスを取得
-        vertexResoruce->Map(0, nullptr, reinterpret_cast<void**>(&vertexData));
+        vertexResource->Map(0, nullptr, reinterpret_cast<void**>(&vertexData));
     }
 
     void ParticleModel::VertexDataModel() {

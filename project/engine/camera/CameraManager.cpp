@@ -44,7 +44,8 @@ namespace MyEngine {
 
     // 更新処理
     void CameraManager::Update() {
-    
+        mainCamera_->Update();
+
     }
 
     // アクティブカメラを取得

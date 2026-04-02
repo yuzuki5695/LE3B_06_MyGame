@@ -30,17 +30,17 @@ namespace MyEngine {
 
 	void Sprite::VertexDatacreation() {
 		// 頂点リソースを作る
-		vertexResoruce = CreateBufferResource(spriteCommon_->GetDxCommon()->GetDevice(), sizeof(VertexData) * 4);
+		vertexResource = CreateBufferResource(spriteCommon_->GetDxCommon()->GetDevice(), sizeof(VertexData) * 4);
 		// 頂点バッファビューを作成する
 		// リソースの先頭のアドレスから使う
-		vertexBufferView.BufferLocation = vertexResoruce->GetGPUVirtualAddress();
+		vertexBufferView.BufferLocation = vertexResource->GetGPUVirtualAddress();
 		// 使用するリソースのサイズは4つ分のサイズ
 		vertexBufferView.SizeInBytes = sizeof(VertexData) * 4;
 		// 1頂点当たりのサイズ
 		vertexBufferView.StrideInBytes = sizeof(VertexData);
 		// 頂点リソースにデータを書き込む
 		// 書き込むためのアドレスを取得
-		vertexResoruce->Map(0, nullptr, reinterpret_cast<void**>(&vertexData));
+		vertexResource->Map(0, nullptr, reinterpret_cast<void**>(&vertexData));
 
 		// 頂点リソースを作る
 		indexResource = CreateBufferResource(spriteCommon_->GetDxCommon()->GetDevice(), sizeof(uint32_t) * 6);
@@ -62,7 +62,7 @@ namespace MyEngine {
 		// 今回は白
 		materialData->color = { 1.0f, 1.0f, 1.0f, 1.0f };
 		// SpriteはLightingしないでfalseを設定する
-		materialData->endbleLighting = false;
+		materialData->enableLighting = false;
 		// 単位行列を書き込んでおく
 		materialData->uvTransform = MakeIdentity4x4();
 	}

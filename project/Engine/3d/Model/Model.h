@@ -11,17 +11,25 @@
 #include <ModelData.h>
 
 namespace MyEngine {
+	/// <summary>
+	/// ノード構造（主にglTF用）
+	/// 親子関係を持つトランスフォーム階層を表す
+	/// </summary>
 	struct Node {
-		Matrix4x4 localMatrix;
-		std::string name;
-		std::vector<Node> children;
+		Matrix4x4 localMatrix;          // ローカル変換行列
+		std::string name;               // ノード名
+		std::vector<Node> children;     // 子ノード
+	};
+	/// <summary>
+	/// glTF専用のモデルデータ
+	/// ノード階層（スケルトン的構造）を含む
+	/// </summary>
+	struct glTFModelData {
+		std::vector<VertexData> vertices; // 頂点データ
+		MaterialData material;            // マテリアル情報
+		Node rootNode;                    // ルートノード（階層の起点）
 	};
 
-	struct glTFModelData {
-		std::vector<VertexData> vertices;
-		MaterialData material;
-		Node rootNode;
-	};
 	/// <summary>
 	/// 3Dモデルの形状データを管理するクラス
 	/// .objや.gltfファイルの読み込み、頂点バッファの保持を行う。
@@ -33,7 +41,7 @@ namespace MyEngine {
 		/// ファイル拡張子を判別して適切なローダーを呼び出す。
 		/// </summary>
 		/// <param name="modelCommon">モデル共通設定クラス</param>
-		/// <param name="directorypath">ファイルが格納されているディレクトリ</param>
+		/// <param name="directory path">ファイルが格納されているディレクトリ</param>
 		/// <param name="filename">ファイル名（拡張子含む）</param>
 		void Initialize(ModelCommon* modelCommon, const std::string& directorypath, const std::string& filename);
 
@@ -41,6 +49,15 @@ namespace MyEngine {
 		/// モデルの描画処理
 		/// </summary>
 		void Draw();
+
+		/// <summary>
+		/// AssimpのaiMeshをエンジン用頂点配列に変換する共通処理
+		/// LoadObjFile / LoadModelFile の両方から使用される
+		/// </summary>
+		/// <param name="mesh">Assimpのメッシュ</param>
+		/// <param name="vertices">出力先頂点配列</param>
+		/// <param name="flipX">左手系変換（X反転）を行うか</param>
+		static void ProcessMesh(aiMesh* mesh, std::vector<VertexData>& vertices, bool flipX);
 
 		/// <summary>
 		/// .mtl（マテリアルテンプレート）ファイルの読み取り
@@ -83,7 +100,7 @@ namespace MyEngine {
 		// Objファイルのデータ
 		ModelData modelData;
 		// バッファリソース
-		Microsoft::WRL::ComPtr <ID3D12Resource> vertexResoruce;
+		Microsoft::WRL::ComPtr <ID3D12Resource> vertexResource;
 		// バッファリソースの使い道を補足するバッファビュー
 		D3D12_VERTEX_BUFFER_VIEW vertexBufferView;
 		// バッファリソース内のデータを指すポインタ

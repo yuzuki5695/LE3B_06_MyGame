@@ -89,15 +89,15 @@ namespace MyEngine {
         // 頂点数更新
         vertexCount = static_cast<uint32_t>(modelData.vertices.size());
         // 頂点バッファ用リソース作成
-        vertexResoruce = CreateBufferResource(skyboxCommon->GetDxCommon()->GetDevice(), sizeof(VertexShaderInput) * vertexCount);
+        vertexResource = CreateBufferResource(skyboxCommon->GetDxCommon()->GetDevice(), sizeof(VertexShaderInput) * vertexCount);
         // 頂点バッファビューの設定
-        vertexBufferView.BufferLocation = vertexResoruce->GetGPUVirtualAddress();
+        vertexBufferView.BufferLocation = vertexResource->GetGPUVirtualAddress();
         vertexBufferView.SizeInBytes = sizeof(VertexShaderInput) * vertexCount;
         vertexBufferView.StrideInBytes = sizeof(VertexShaderInput);
         // GPUバッファに書き込み（Map/Unmap）
-        vertexResoruce->Map(0, nullptr, reinterpret_cast<void**>(&vertexData));
+        vertexResource->Map(0, nullptr, reinterpret_cast<void**>(&vertexData));
         memcpy(vertexData, modelData.vertices.data(), sizeof(VertexShaderInput) * vertexCount);
-        vertexResoruce->Unmap(0, nullptr);
+        vertexResource->Unmap(0, nullptr);
     }
 
     void Skybox::MaterialGenerate() {
