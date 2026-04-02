@@ -1,5 +1,6 @@
 #include "MyGame.h"
 #include <SceneFactory.h>
+#include <SceneName.h>
 
 namespace MyEngine {
     void MyGame::Finalize() {
@@ -13,13 +14,8 @@ namespace MyEngine {
         // シーンファクトリを生成し、マネージャにセット
         sceneFactory_ = std::make_unique<SceneFactory>();
         SceneManager::GetInstance()->SetSceneFactory(sceneFactory_.get());
-        // シーンマネージャに最初のシーンをセットした
-
-        // TITLE              タイトル
-        // GAMEPLAY           ゲームプレイ
-        // GAMECLEAR          ゲームクリア
-        // GAMEOVER           ゲームオーバー
-        SceneManager::GetInstance()->ChangeScene("TITLE");
+        // シーンマネージャに最初のシーンをセット
+        SceneManager::GetInstance()->ChangeScene(SceneName::TITLE);
     }
 
     void MyGame::Update() {

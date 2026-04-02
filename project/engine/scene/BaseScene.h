@@ -22,12 +22,12 @@ namespace MyEngine {
 		virtual void Draw() = 0;
 	private:
 		// シーンマネージャ（借りてくる）
-		SceneManager* sceneManeger_ = nullptr;
+		SceneManager* sceneManager_ = nullptr;
 		// シーン名
 		std::string sceneName_;
 	public:// メンバ関数
-		virtual void SetSceneManeger(SceneManager* sceneManeger) { sceneManeger_ = sceneManeger; }
-		SceneManager* GetSceneManeger() { return sceneManeger_; }
+		virtual void SetSceneManager(SceneManager* sceneManeger) { sceneManager_ = sceneManeger; }
+		SceneManager* GetSceneManager() { return sceneManager_; }
 		void SetSceneName(const std::string& name) { sceneName_ = name; }
 		const std::string& GetSceneName() const { return sceneName_; }
 	};

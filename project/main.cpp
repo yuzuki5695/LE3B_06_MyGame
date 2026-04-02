@@ -1,4 +1,4 @@
-#include "MyGame.h"
+#include <MyGame.h>
 #include <TimeSystem.h>
 
 using namespace MyEngine;

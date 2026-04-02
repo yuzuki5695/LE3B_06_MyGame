@@ -249,9 +249,6 @@
     <ClCompile Include="engine\base\Framework.cpp">
       <Filter>ソース ファイル\engine\base</Filter>
     </ClCompile>
-    <ClCompile Include="engine\scene\BaseScene.cpp">
-      <Filter>ソース ファイル\engine\scene</Filter>
-    </ClCompile>
     <ClCompile Include="engine\scene\SceneManager.cpp">
       <Filter>ソース ファイル\engine\scene</Filter>
     </ClCompile>
@@ -655,6 +652,9 @@
     </ClInclude>
     <ClInclude Include="Engine\3d\Particle\RandomParameter.h">
       <Filter>ヘッダー ファイル\engine\3d\Particle</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\scene\SceneName.h">
+      <Filter>ヘッダー ファイル\engine\scene</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

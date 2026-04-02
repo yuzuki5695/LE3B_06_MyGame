@@ -7,6 +7,14 @@
 namespace MyEngine {
 	// シーン管理
 	class SceneManager {
+	public: // メンバ関数
+		// シーンマネージャの状態
+		enum class State {
+			Idle,        // 通常実行中
+			FadeOut,     // シーン終了演出中
+			Change,      // シーン差し替え実行
+			FadeIn       // 次のシーン開始演出中
+		};
 	private:
 		static std::unique_ptr<SceneManager> instance;
 
@@ -24,7 +32,8 @@ namespace MyEngine {
 		void Update();
 		// 描画
 		void Draw();
-	private: // メンバ変数
+	private: // メンバ変数	
+		//State state_ = State::Idle; // 現在の状態
 		// 今のシーン(実行中シーン)
 		std::unique_ptr<BaseScene> scene_ = nullptr;
 		// 次のシーン

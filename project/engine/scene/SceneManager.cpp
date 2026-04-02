@@ -28,7 +28,6 @@ namespace MyEngine {
 	void SceneManager::Update() {
 		// TODO:シーンの切り替え機構
 
-
 		// 次のシーンの予約があるなら
 		if (nextScene_) {
 			// 旧シーンの終了
@@ -40,12 +39,9 @@ namespace MyEngine {
 			scene_ = std::move(nextScene_); // 所有権を移動
 			nextScene_ = nullptr;
 			// シーンマネージャをセット 
-			scene_->SetSceneManeger(this);
+			scene_->SetSceneManager(this);
 			// 次のシーンを初期化する
 			scene_->Initialize();
-
-			// ---- シーン変更通知をカメラへ ----
-			//CameraManager::GetInstance()->NotifySceneChangedByName(scene_->GetSceneName());
 		}
 
 		// 実行中シーンを更新する
@@ -57,10 +53,8 @@ namespace MyEngine {
 	}
 
 	void SceneManager::ChangeScene(const std::string& sceneName) {
-		assert(sceneFactory_);
-		assert(nextScene_ == nullptr);
-
-		//次シーン生成
+		assert(sceneFactory_ && nextScene_ == nullptr);
+		// 次のシーン生成
 		nextScene_ = std::unique_ptr<BaseScene>(sceneFactory_->CreateScene(sceneName));
 	}
 }

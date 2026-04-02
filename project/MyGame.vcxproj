@@ -160,7 +160,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="engine\base\ImGuiManager.cpp" />
     <ClCompile Include="engine\io\Input.cpp" />
     <ClCompile Include="engine\base\Utility\Logger.cpp" />
-    <ClCompile Include="engine\scene\BaseScene.cpp" />
     <ClCompile Include="engine\scene\SceneFactory.cpp" />
     <ClCompile Include="application\scene\GameClearScene.cpp" />
     <ClCompile Include="engine\base\DirectXCommon\FenceManager.cpp" />
@@ -264,6 +263,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="engine\base\DirectXCommon\ViewportManager.h" />
     <ClInclude Include="engine\base\DirectXCommon\FPSController.h" />
     <ClInclude Include="engine\base\DirectXCommon\SwapChainManager.h" />
+    <ClInclude Include="Engine\scene\SceneName.h" />
     <ClInclude Include="engine\time\TimeSystem.h" />
   </ItemGroup>
   <ItemGroup>
