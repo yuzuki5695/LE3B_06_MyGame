@@ -94,26 +94,14 @@
     <Filter Include="リソース ファイル\shaders\Sprite">
       <UniqueIdentifier>{f7712655-1155-484d-8058-4ee95a16f0af}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ソース ファイル\engine\base\ViewManager">
-      <UniqueIdentifier>{bdba6ee3-ac54-4ce6-bbdd-7970e376e45a}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ソース ファイル\engine\base\Utility">
       <UniqueIdentifier>{8e33345e-5a44-4927-a1ae-28fa0b2998a3}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ソース ファイル\engine\base\DirectXCommon">
-      <UniqueIdentifier>{941116ce-1a37-4eda-b488-cde40d6909f7}</UniqueIdentifier>
     </Filter>
     <Filter Include="ソース ファイル\engine\resource">
       <UniqueIdentifier>{aa126d1c-d076-4dc5-9995-7d217c2d8e3a}</UniqueIdentifier>
     </Filter>
     <Filter Include="ヘッダー ファイル\engine\base\Utility">
       <UniqueIdentifier>{959b4794-2a7c-4e7d-9f24-be5df888e02f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ヘッダー ファイル\engine\base\ViewManager">
-      <UniqueIdentifier>{c3078c87-a168-474e-90ed-134b67d9c0df}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ヘッダー ファイル\engine\base\DirectXCommon">
-      <UniqueIdentifier>{8c15bfd4-5c05-46ae-9dc2-b16cb2ea4795}</UniqueIdentifier>
     </Filter>
     <Filter Include="ヘッダー ファイル\engine\resource">
       <UniqueIdentifier>{75b8f15d-9509-4d2a-9929-73b792609711}</UniqueIdentifier>
@@ -217,6 +205,36 @@
     <Filter Include="ヘッダー ファイル\engine\3d\Model">
       <UniqueIdentifier>{fe7ce3e2-b37c-45b1-a86d-c6cc02d6b66e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ソース ファイル\engine\base\DirectX">
+      <UniqueIdentifier>{973e2b87-8047-4310-979b-3c8afa879316}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\engine\base\DirectX\Core">
+      <UniqueIdentifier>{6a4e0df5-fc59-4682-9d02-527e7bfa0e24}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\engine\base\DirectX">
+      <UniqueIdentifier>{c5ce21e6-f462-4e1c-b149-27a78a20c1f9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\engine\base\DirectX\Core">
+      <UniqueIdentifier>{8087cd6c-bc9c-43b9-8b53-220064ea698e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\engine\base\DirectX\Descriptors">
+      <UniqueIdentifier>{5526f512-cccf-42ea-8ee2-e658a81a09bb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\engine\base\DirectX\Descriptors">
+      <UniqueIdentifier>{0be67c3c-afed-4da3-a2c0-a1f60ad47774}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\engine\base\DirectX\Pipeline">
+      <UniqueIdentifier>{d00eb14b-6d35-416f-b27a-02d817d727cc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\engine\base\DirectX\Pipeline">
+      <UniqueIdentifier>{7aaf43a2-1dab-4514-a6bd-8af4a54c8156}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\engine\base\DirectX\Screen">
+      <UniqueIdentifier>{3840fb27-1021-40bc-9885-61728136cc27}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\engine\base\DirectX\Screen">
+      <UniqueIdentifier>{6ff2ebd1-b3bf-4640-816c-36ce54cd7061}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -231,12 +249,6 @@
     <ClCompile Include="engine\io\Input.cpp">
       <Filter>ソース ファイル\engine\io</Filter>
     </ClCompile>
-    <ClCompile Include="engine\base\WinApp.cpp">
-      <Filter>ソース ファイル\engine\base</Filter>
-    </ClCompile>
-    <ClCompile Include="engine\base\ImGuiManager.cpp">
-      <Filter>ソース ファイル\engine\base</Filter>
-    </ClCompile>
     <ClCompile Include="engine\audio\SoundLoader.cpp">
       <Filter>ソース ファイル\engine\audio</Filter>
     </ClCompile>
@@ -245,9 +257,6 @@
     </ClCompile>
     <ClCompile Include="engine\scene\MyGame.cpp">
       <Filter>ソース ファイル\engine\scene</Filter>
-    </ClCompile>
-    <ClCompile Include="engine\base\Framework.cpp">
-      <Filter>ソース ファイル\engine\base</Filter>
     </ClCompile>
     <ClCompile Include="engine\scene\SceneManager.cpp">
       <Filter>ソース ファイル\engine\scene</Filter>
@@ -279,47 +288,14 @@
     <ClCompile Include="engine\camera\Camera.cpp">
       <Filter>ソース ファイル\engine\camera</Filter>
     </ClCompile>
-    <ClCompile Include="engine\base\CopylmageCommon.cpp">
-      <Filter>ソース ファイル\engine\base</Filter>
-    </ClCompile>
     <ClCompile Include="application\scene\GameClearScene.cpp">
       <Filter>ソース ファイル\application\scene</Filter>
-    </ClCompile>
-    <ClCompile Include="engine\base\ViewManager\DsvManager.cpp">
-      <Filter>ソース ファイル\engine\base\ViewManager</Filter>
-    </ClCompile>
-    <ClCompile Include="engine\base\ViewManager\RtvManager.cpp">
-      <Filter>ソース ファイル\engine\base\ViewManager</Filter>
-    </ClCompile>
-    <ClCompile Include="engine\base\ViewManager\SrvManager.cpp">
-      <Filter>ソース ファイル\engine\base\ViewManager</Filter>
     </ClCompile>
     <ClCompile Include="engine\base\Utility\Logger.cpp">
       <Filter>ソース ファイル\engine\base\Utility</Filter>
     </ClCompile>
     <ClCompile Include="engine\base\Utility\StringUtility.cpp">
       <Filter>ソース ファイル\engine\base\Utility</Filter>
-    </ClCompile>
-    <ClCompile Include="engine\base\DirectXCommon\FPSController.cpp">
-      <Filter>ソース ファイル\engine\base\DirectXCommon</Filter>
-    </ClCompile>
-    <ClCompile Include="engine\base\DirectXCommon\DirectXCommon.cpp">
-      <Filter>ソース ファイル\engine\base\DirectXCommon</Filter>
-    </ClCompile>
-    <ClCompile Include="engine\base\DirectXCommon\FenceManager.cpp">
-      <Filter>ソース ファイル\engine\base\DirectXCommon</Filter>
-    </ClCompile>
-    <ClCompile Include="engine\base\DirectXCommon\ShaderCompiler.cpp">
-      <Filter>ソース ファイル\engine\base\DirectXCommon</Filter>
-    </ClCompile>
-    <ClCompile Include="engine\base\DirectXCommon\DescriptorUtils.cpp">
-      <Filter>ソース ファイル\engine\base\DirectXCommon</Filter>
-    </ClCompile>
-    <ClCompile Include="engine\base\DirectXCommon\ViewportManager.cpp">
-      <Filter>ソース ファイル\engine\base\DirectXCommon</Filter>
-    </ClCompile>
-    <ClCompile Include="engine\base\DirectXCommon\SwapChainManager.cpp">
-      <Filter>ソース ファイル\engine\base\DirectXCommon</Filter>
     </ClCompile>
     <ClCompile Include="engine\resource\TextureManager.cpp">
       <Filter>ソース ファイル\engine\resource</Filter>
@@ -399,6 +375,48 @@
     <ClCompile Include="Engine\3d\Skybox\SkyboxCommon.cpp">
       <Filter>ソース ファイル\engine\3d\Skybox</Filter>
     </ClCompile>
+    <ClCompile Include="Engine\base\DirectX\Core\DirectXCommon.cpp">
+      <Filter>ソース ファイル\engine\base\DirectX\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\base\DirectX\Core\FenceManager.cpp">
+      <Filter>ソース ファイル\engine\base\DirectX\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\base\DirectX\Core\FPSController.cpp">
+      <Filter>ソース ファイル\engine\base\DirectX\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\base\DirectX\Core\SwapChainManager.cpp">
+      <Filter>ソース ファイル\engine\base\DirectX\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\base\DirectX\Descriptors\DsvManager.cpp">
+      <Filter>ソース ファイル\engine\base\DirectX\Descriptors</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\base\DirectX\Descriptors\RtvManager.cpp">
+      <Filter>ソース ファイル\engine\base\DirectX\Descriptors</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\base\DirectX\Descriptors\SrvManager.cpp">
+      <Filter>ソース ファイル\engine\base\DirectX\Descriptors</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\base\DirectX\Descriptors\DescriptorUtils.cpp">
+      <Filter>ソース ファイル\engine\base\DirectX\Descriptors</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\base\DirectX\Pipeline\ShaderCompiler.cpp">
+      <Filter>ソース ファイル\engine\base\DirectX\Pipeline</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\base\DirectX\Screen\ViewportManager.cpp">
+      <Filter>ソース ファイル\engine\base\DirectX\Screen</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\base\CopylmageCommon.cpp">
+      <Filter>ソース ファイル\engine\base</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\base\Framework.cpp">
+      <Filter>ソース ファイル\engine\base</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\base\ImGuiManager.cpp">
+      <Filter>ソース ファイル\engine\base</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\base\WinApp.cpp">
+      <Filter>ソース ファイル\engine\base</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="engine\2d\Sprite.h">
@@ -410,12 +428,6 @@
     <ClInclude Include="engine\io\Input.h">
       <Filter>ヘッダー ファイル\engine\io</Filter>
     </ClInclude>
-    <ClInclude Include="engine\base\WinApp.h">
-      <Filter>ヘッダー ファイル\engine\base</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\base\ImGuiManager.h">
-      <Filter>ヘッダー ファイル\engine\base</Filter>
-    </ClInclude>
     <ClInclude Include="engine\audio\SoundLoader.h">
       <Filter>ヘッダー ファイル\engine\audio</Filter>
     </ClInclude>
@@ -424,9 +436,6 @@
     </ClInclude>
     <ClInclude Include="engine\scene\MyGame.h">
       <Filter>ヘッダー ファイル\engine\scene</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\base\Framework.h">
-      <Filter>ヘッダー ファイル\engine\base</Filter>
     </ClInclude>
     <ClInclude Include="engine\scene\BaseScene.h">
       <Filter>ヘッダー ファイル\engine\scene</Filter>
@@ -461,36 +470,6 @@
     <ClInclude Include="engine\io\Controller.h">
       <Filter>ヘッダー ファイル\engine\io</Filter>
     </ClInclude>
-    <ClInclude Include="engine\base\CopylmageCommon.h">
-      <Filter>ヘッダー ファイル\engine\base</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\base\DirectXCommon\DirectXCommon.h">
-      <Filter>ヘッダー ファイル\engine\base\DirectXCommon</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\base\DirectXCommon\DescriptorUtils.h">
-      <Filter>ヘッダー ファイル\engine\base\DirectXCommon</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\base\ViewManager\DsvManager.h">
-      <Filter>ヘッダー ファイル\engine\base\ViewManager</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\base\DirectXCommon\FPSController.h">
-      <Filter>ヘッダー ファイル\engine\base\DirectXCommon</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\base\DirectXCommon\FenceManager.h">
-      <Filter>ヘッダー ファイル\engine\base\DirectXCommon</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\base\ViewManager\RtvManager.h">
-      <Filter>ヘッダー ファイル\engine\base\ViewManager</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\base\ViewManager\SrvManager.h">
-      <Filter>ヘッダー ファイル\engine\base\ViewManager</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\base\DirectXCommon\ViewportManager.h">
-      <Filter>ヘッダー ファイル\engine\base\DirectXCommon</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\base\DirectXCommon\SwapChainManager.h">
-      <Filter>ヘッダー ファイル\engine\base\DirectXCommon</Filter>
-    </ClInclude>
     <ClInclude Include="engine\base\Utility\StringUtility.h">
       <Filter>ヘッダー ファイル\engine\base\Utility</Filter>
     </ClInclude>
@@ -520,9 +499,6 @@
     </ClInclude>
     <ClInclude Include="engine\math\Light\SpotLight.h">
       <Filter>ヘッダー ファイル\engine\math\Light</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\base\DirectXCommon\ShaderCompiler.h">
-      <Filter>ヘッダー ファイル\engine\base\DirectXCommon</Filter>
     </ClInclude>
     <ClInclude Include="engine\camera\CameraTypes.h">
       <Filter>ヘッダー ファイル\engine\camera</Filter>
@@ -655,6 +631,48 @@
     </ClInclude>
     <ClInclude Include="Engine\scene\SceneName.h">
       <Filter>ヘッダー ファイル\engine\scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\base\DirectX\Core\DirectXCommon.h">
+      <Filter>ヘッダー ファイル\engine\base\DirectX\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\base\DirectX\Core\FenceManager.h">
+      <Filter>ヘッダー ファイル\engine\base\DirectX\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\base\DirectX\Core\FPSController.h">
+      <Filter>ヘッダー ファイル\engine\base\DirectX\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\base\DirectX\Core\SwapChainManager.h">
+      <Filter>ヘッダー ファイル\engine\base\DirectX\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\base\DirectX\Descriptors\SrvManager.h">
+      <Filter>ヘッダー ファイル\engine\base\DirectX\Descriptors</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\base\DirectX\Descriptors\RtvManager.h">
+      <Filter>ヘッダー ファイル\engine\base\DirectX\Descriptors</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\base\DirectX\Descriptors\DsvManager.h">
+      <Filter>ヘッダー ファイル\engine\base\DirectX\Descriptors</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\base\DirectX\Descriptors\DescriptorUtils.h">
+      <Filter>ヘッダー ファイル\engine\base\DirectX\Descriptors</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\base\DirectX\Pipeline\ShaderCompiler.h">
+      <Filter>ヘッダー ファイル\engine\base\DirectX\Pipeline</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\base\DirectX\Screen\ViewportManager.h">
+      <Filter>ヘッダー ファイル\engine\base\DirectX\Screen</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\base\ImGuiManager.h">
+      <Filter>ヘッダー ファイル\engine\base</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\base\WinApp.h">
+      <Filter>ヘッダー ファイル\engine\base</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\base\CopylmageCommon.h">
+      <Filter>ヘッダー ファイル\engine\base</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\base\Framework.h">
+      <Filter>ヘッダー ファイル\engine\base</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

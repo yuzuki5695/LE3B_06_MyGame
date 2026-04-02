@@ -64,7 +64,7 @@
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)engine\2d;$(ProjectDir)engine\3d;$(ProjectDir)engine\audio;$(ProjectDir)engine\base;$(ProjectDir)engine\io;$(ProjectDir)engine\math;$(ProjectDir)engine\scene;$(ProjectDir)engine\3d\Particle;$(ProjectDir)engine\camera;$(ProjectDir)engine\base\DirectXCommon;$(ProjectDir)engine\base\Utility;$(ProjectDir)engine\base\ViewManager;$(ProjectDir)engine\math\Light;$(ProjectDir)engine\resource;$(ProjectDir)externals\nlohmann;$(ProjectDir)externals\assimp\include;$(ProjectDir)engine\editor;$(ProjectDir)engine\editor\core;$(ProjectDir)engine\editor\console;$(ProjectDir)engine\editor\layout;$(ProjectDir)engine\editor\windows;$(ProjectDir)engine\time;$(ProjectDir)engine\editor\layout\editormenubar;$(ProjectDir)application\scene;$(ProjectDir)engine\math\Base;$(ProjectDir)engine\math\Geometry;$(ProjectDir)engine\math\Transform;$(ProjectDir)engine\math\Functions;$(ProjectDir)engine\3d\Model;$(ProjectDir)engine\3d\Object;$(ProjectDir)engine\3d\Skybox</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)engine\2d;$(ProjectDir)engine\3d;$(ProjectDir)engine\audio;$(ProjectDir)engine\base;$(ProjectDir)engine\io;$(ProjectDir)engine\math;$(ProjectDir)engine\scene;$(ProjectDir)engine\3d\Particle;$(ProjectDir)engine\camera;$(ProjectDir)engine\base\DirectX;$(ProjectDir)engine\base\Utility;$(ProjectDir)engine\base\DirectX\Core;$(ProjectDir)engine\math\Light;$(ProjectDir)engine\resource;$(ProjectDir)externals\nlohmann;$(ProjectDir)externals\assimp\include;$(ProjectDir)engine\editor;$(ProjectDir)engine\editor\core;$(ProjectDir)engine\editor\console;$(ProjectDir)engine\editor\layout;$(ProjectDir)engine\editor\windows;$(ProjectDir)engine\time;$(ProjectDir)engine\editor\layout\editormenubar;$(ProjectDir)application\scene;$(ProjectDir)engine\math\Base;$(ProjectDir)engine\math\Geometry;$(ProjectDir)engine\math\Transform;$(ProjectDir)engine\math\Functions;$(ProjectDir)engine\3d\Model;$(ProjectDir)engine\3d\Object;$(ProjectDir)engine\3d\Skybox;$(ProjectDir)engine\base\DirectX\Descriptors;$(ProjectDir)engine\base\DirectX\Pipeline;$(ProjectDir)engine\base\DirectX\Screen</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
     </ClCompile>
     <Link>
@@ -96,7 +96,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)engine\2d;$(ProjectDir)engine\3d;$(ProjectDir)engine\audio;$(ProjectDir)engine\base;$(ProjectDir)engine\io;$(ProjectDir)engine\math;$(ProjectDir)engine\scene;$(ProjectDir)engine\3d\Particle;$(ProjectDir)engine\camera;$(ProjectDir)engine\base\DirectXCommon;$(ProjectDir)engine\base\Utility;$(ProjectDir)engine\base\ViewManager;$(ProjectDir)engine\math\Light;$(ProjectDir)engine\resource;$(ProjectDir)externals\nlohmann;$(ProjectDir)externals\assimp\include;$(ProjectDir)engine\editor;$(ProjectDir)engine\editor\core;$(ProjectDir)engine\editor\console;$(ProjectDir)engine\editor\layout;$(ProjectDir)engine\editor\windows;$(ProjectDir)engine\time;$(ProjectDir)engine\editor\layout\editormenubar;$(ProjectDir)application\scene;$(ProjectDir)engine\math\Base;$(ProjectDir)engine\math\Geometry;$(ProjectDir)engine\math\Transform;$(ProjectDir)engine\math\Functions;$(ProjectDir)engine\3d\Model;$(ProjectDir)engine\3d\Object;$(ProjectDir)engine\3d\Skybox</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)engine\2d;$(ProjectDir)engine\3d;$(ProjectDir)engine\audio;$(ProjectDir)engine\base;$(ProjectDir)engine\io;$(ProjectDir)engine\math;$(ProjectDir)engine\scene;$(ProjectDir)engine\3d\Particle;$(ProjectDir)engine\camera;$(ProjectDir)engine\base\DirectX;$(ProjectDir)engine\base\Utility;$(ProjectDir)engine\base\DirectX\Core;$(ProjectDir)engine\math\Light;$(ProjectDir)engine\resource;$(ProjectDir)externals\nlohmann;$(ProjectDir)externals\assimp\include;$(ProjectDir)engine\editor;$(ProjectDir)engine\editor\core;$(ProjectDir)engine\editor\console;$(ProjectDir)engine\editor\layout;$(ProjectDir)engine\editor\windows;$(ProjectDir)engine\time;$(ProjectDir)engine\editor\layout\editormenubar;$(ProjectDir)application\scene;$(ProjectDir)engine\math\Base;$(ProjectDir)engine\math\Geometry;$(ProjectDir)engine\math\Transform;$(ProjectDir)engine\math\Functions;$(ProjectDir)engine\3d\Model;$(ProjectDir)engine\3d\Object;$(ProjectDir)engine\3d\Skybox;$(ProjectDir)engine\base\DirectX\Descriptors;$(ProjectDir)engine\base\DirectX\Pipeline;$(ProjectDir)engine\base\DirectX\Screen</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -127,6 +127,20 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="Engine\3d\Object\Object3dCommon.cpp" />
     <ClCompile Include="Engine\3d\Skybox\Skybox.cpp" />
     <ClCompile Include="Engine\3d\Skybox\SkyboxCommon.cpp" />
+    <ClCompile Include="Engine\base\CopylmageCommon.cpp" />
+    <ClCompile Include="Engine\base\DirectX\Core\DirectXCommon.cpp" />
+    <ClCompile Include="Engine\base\DirectX\Core\FenceManager.cpp" />
+    <ClCompile Include="Engine\base\DirectX\Core\FPSController.cpp" />
+    <ClCompile Include="Engine\base\DirectX\Core\SwapChainManager.cpp" />
+    <ClCompile Include="Engine\base\DirectX\Descriptors\DescriptorUtils.cpp" />
+    <ClCompile Include="Engine\base\DirectX\Descriptors\DsvManager.cpp" />
+    <ClCompile Include="Engine\base\DirectX\Descriptors\RtvManager.cpp" />
+    <ClCompile Include="Engine\base\DirectX\Descriptors\SrvManager.cpp" />
+    <ClCompile Include="Engine\base\DirectX\Pipeline\ShaderCompiler.cpp" />
+    <ClCompile Include="Engine\base\DirectX\Screen\ViewportManager.cpp" />
+    <ClCompile Include="Engine\base\Framework.cpp" />
+    <ClCompile Include="Engine\base\ImGuiManager.cpp" />
+    <ClCompile Include="Engine\base\WinApp.cpp" />
     <ClCompile Include="engine\editor\console\EditorConsole.cpp" />
     <ClCompile Include="engine\editor\console\MessageService.cpp" />
     <ClCompile Include="engine\editor\core\EditorManager.cpp" />
@@ -135,12 +149,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="engine\editor\layout\editormenubar\ObjectMenu.cpp" />
     <ClCompile Include="engine\editor\layout\editormenubar\SettingsMenu.cpp" />
     <ClCompile Include="engine\editor\windows\ConsoleWindow.cpp" />
-    <ClCompile Include="engine\base\ViewManager\DsvManager.cpp" />
-    <ClCompile Include="engine\base\ViewManager\RtvManager.cpp" />
     <ClCompile Include="engine\io\Controller.cpp" />
-    <ClCompile Include="engine\base\DirectXCommon\DescriptorUtils.cpp" />
-    <ClCompile Include="engine\base\CopylmageCommon.cpp" />
-    <ClCompile Include="engine\base\DirectXCommon\ShaderCompiler.cpp" />
     <ClCompile Include="engine\camera\CameraManager.cpp" />
     <ClCompile Include="engine\3d\Particle\ParticleCommon.cpp" />
     <ClCompile Include="engine\3d\Particle\ParticleEmitter.cpp" />
@@ -155,15 +164,10 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="Engine\math\Geometry\Collision.cpp" />
     <ClCompile Include="Engine\math\Geometry\PrimitiveGenerator.cpp" />
     <ClCompile Include="engine\resource\D3DResourceLeakChecker.cpp" />
-    <ClCompile Include="engine\base\DirectXCommon\DirectXCommon.cpp" />
-    <ClCompile Include="engine\base\Framework.cpp" />
-    <ClCompile Include="engine\base\ImGuiManager.cpp" />
     <ClCompile Include="engine\io\Input.cpp" />
     <ClCompile Include="engine\base\Utility\Logger.cpp" />
     <ClCompile Include="engine\scene\SceneFactory.cpp" />
     <ClCompile Include="application\scene\GameClearScene.cpp" />
-    <ClCompile Include="engine\base\DirectXCommon\FenceManager.cpp" />
-    <ClCompile Include="engine\base\DirectXCommon\FPSController.cpp" />
     <ClCompile Include="engine\time\TimeSystem.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="engine\resource\ModelManager.cpp" />
@@ -171,13 +175,9 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="engine\2d\SpriteCommon.cpp" />
     <ClCompile Include="engine\base\Utility\StringUtility.cpp" />
     <ClCompile Include="engine\resource\TextureManager.cpp" />
-    <ClCompile Include="engine\base\WinApp.cpp" />
-    <ClCompile Include="engine\base\ViewManager\SrvManager.cpp" />
     <ClCompile Include="engine\scene\MyGame.cpp" />
     <ClCompile Include="engine\scene\SceneManager.cpp" />
     <ClCompile Include="engine\resource\ResourceFactory.cpp" />
-    <ClCompile Include="engine\base\DirectXCommon\ViewportManager.cpp" />
-    <ClCompile Include="engine\base\DirectXCommon\SwapChainManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="application\scene\GameClearScene.h" />
@@ -195,6 +195,20 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="Engine\3d\Particle\RandomParameter.h" />
     <ClInclude Include="Engine\3d\Skybox\Skybox.h" />
     <ClInclude Include="Engine\3d\Skybox\SkyboxCommon.h" />
+    <ClInclude Include="Engine\base\CopylmageCommon.h" />
+    <ClInclude Include="Engine\base\DirectX\Core\DirectXCommon.h" />
+    <ClInclude Include="Engine\base\DirectX\Core\FenceManager.h" />
+    <ClInclude Include="Engine\base\DirectX\Core\FPSController.h" />
+    <ClInclude Include="Engine\base\DirectX\Core\SwapChainManager.h" />
+    <ClInclude Include="Engine\base\DirectX\Descriptors\DescriptorUtils.h" />
+    <ClInclude Include="Engine\base\DirectX\Descriptors\DsvManager.h" />
+    <ClInclude Include="Engine\base\DirectX\Descriptors\RtvManager.h" />
+    <ClInclude Include="Engine\base\DirectX\Descriptors\SrvManager.h" />
+    <ClInclude Include="Engine\base\DirectX\Pipeline\ShaderCompiler.h" />
+    <ClInclude Include="Engine\base\DirectX\Screen\ViewportManager.h" />
+    <ClInclude Include="Engine\base\Framework.h" />
+    <ClInclude Include="Engine\base\ImGuiManager.h" />
+    <ClInclude Include="Engine\base\WinApp.h" />
     <ClInclude Include="engine\editor\console\EditorConsole.h" />
     <ClInclude Include="engine\editor\console\EditorConsoleTypes.h" />
     <ClInclude Include="engine\editor\console\MessageService.h" />
@@ -210,12 +224,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="engine\editor\windows\ConsoleWindow.h" />
     <ClInclude Include="engine\camera\CameraTransform.h" />
     <ClInclude Include="engine\camera\CameraTypes.h" />
-    <ClInclude Include="engine\base\ViewManager\DsvManager.h" />
-    <ClInclude Include="engine\base\ViewManager\RtvManager.h" />
     <ClInclude Include="engine\io\Controller.h" />
-    <ClInclude Include="engine\base\DirectXCommon\DescriptorUtils.h" />
-    <ClInclude Include="engine\base\CopylmageCommon.h" />
-    <ClInclude Include="engine\base\DirectXCommon\ShaderCompiler.h" />
     <ClInclude Include="engine\camera\CameraManager.h" />
     <ClInclude Include="engine\3d\Particle\ParticleCommon.h" />
     <ClInclude Include="engine\3d\Particle\ParticleEmitter.h" />
@@ -240,9 +249,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="engine\math\Light\PointLight.h" />
     <ClInclude Include="engine\math\Light\SpotLight.h" />
     <ClInclude Include="engine\resource\D3DResourceLeakChecker.h" />
-    <ClInclude Include="engine\base\DirectXCommon\DirectXCommon.h" />
-    <ClInclude Include="engine\base\Framework.h" />
-    <ClInclude Include="engine\base\ImGuiManager.h" />
     <ClInclude Include="engine\io\Input.h" />
     <ClInclude Include="engine\base\Utility\Logger.h" />
     <ClInclude Include="engine\resource\ModelManager.h" />
@@ -251,18 +257,12 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="engine\2d\SpriteCommon.h" />
     <ClInclude Include="engine\base\Utility\StringUtility.h" />
     <ClInclude Include="engine\resource\TextureManager.h" />
-    <ClInclude Include="engine\base\WinApp.h" />
-    <ClInclude Include="engine\base\ViewManager\SrvManager.h" />
     <ClInclude Include="engine\scene\AbstractSceneFactory.h" />
     <ClInclude Include="engine\scene\BaseScene.h" />
     <ClInclude Include="engine\scene\MyGame.h" />
     <ClInclude Include="engine\scene\SceneFactory.h" />
     <ClInclude Include="engine\scene\SceneManager.h" />
     <ClInclude Include="engine\resource\ResourceFactory.h" />
-    <ClInclude Include="engine\base\DirectXCommon\FenceManager.h" />
-    <ClInclude Include="engine\base\DirectXCommon\ViewportManager.h" />
-    <ClInclude Include="engine\base\DirectXCommon\FPSController.h" />
-    <ClInclude Include="engine\base\DirectXCommon\SwapChainManager.h" />
     <ClInclude Include="Engine\scene\SceneName.h" />
     <ClInclude Include="engine\time\TimeSystem.h" />
   </ItemGroup>
