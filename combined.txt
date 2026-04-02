@@ -286,27 +286,26 @@
     └──     └── json.hpp
     ├── main.cpp
     └── subproject/
-        └── Tools/
-            └── AssetGenerator/
-                ├── AssetGenerator.vcxproj
-                ├── AssetGenerator.vcxproj.filters
-                ├── engine/
-                └── ├── assetpipeline/
-                └── └── ├── AssetPipeline.cpp
-                └── └── └── AssetPipeline.h
-                └── ├── exporter/
-                └── └── ├── HeaderGenerator.cpp
-                └── └── ├── HeaderGenerator.h
-                └── └── ├── JsonExporter.cpp
-                └── └── └── JsonExporter.h
-                └── ├── math/
-                └── └── └── LoadResourceID.h
-                └── └── scanner/
-                └──     ├── PathManager.cpp
-                └──     ├── PathManager.h
-                └──     ├── ResourceScanner.cpp
-                └──     └── ResourceScanner.h
-                └── main.cpp
+        └── AssetGenerator/
+            ├── AssetGenerator.vcxproj
+            ├── AssetGenerator.vcxproj.filters
+            ├── engine/
+            └── ├── assetpipeline/
+            └── └── ├── AssetPipeline.cpp
+            └── └── └── AssetPipeline.h
+            └── ├── exporter/
+            └── └── ├── HeaderGenerator.cpp
+            └── └── ├── HeaderGenerator.h
+            └── └── ├── JsonExporter.cpp
+            └── └── └── JsonExporter.h
+            └── ├── math/
+            └── └── └── LoadResourceID.h
+            └── └── scanner/
+            └──     ├── PathManager.cpp
+            └──     ├── PathManager.h
+            └──     ├── ResourceScanner.cpp
+            └──     └── ResourceScanner.h
+            └── main.cpp
 ================================================================================
 
 
@@ -375,18 +374,18 @@ namespace MyEngine {
     void Model::VertexDatacreation() {
 
         // 関数化したResouceで作成
-        vertexResoruce = CreateBufferResource(modelCommon->GetDxCommon()->GetDevice(), sizeof(VertexData) * modelData.vertices.size());
+        vertexResource = CreateBufferResource(modelCommon->GetDxCommon()->GetDevice(), sizeof(VertexData) * modelData.vertices.size());
 
         //頂点バッファビューを作成する
         // リソースの先頭のアドレスから使う
-        vertexBufferView.BufferLocation = vertexResoruce->GetGPUVirtualAddress();
+        vertexBufferView.BufferLocation = vertexResource->GetGPUVirtualAddress();
         // 使用するリソースのサイズはの頂点のサイズ
         vertexBufferView.SizeInBytes = UINT(sizeof(VertexData) * modelData.vertices.size());
         // 1頂点当たりのサイズ
         vertexBufferView.StrideInBytes = sizeof(VertexData);
 
         // 頂点リソースにデータを書き込むためのアドレスを取得
-        vertexResoruce->Map(0, nullptr, reinterpret_cast<void**>(&vertexData));
+        vertexResource->Map(0, nullptr, reinterpret_cast<void**>(&vertexData));
         // 頂点データをリソースにコピー
         std::memcpy(vertexData, modelData.vertices.data(), sizeof(VertexData) * modelData.vertices.size());
     }
@@ -413,6 +412,36 @@ namespace MyEngine {
         }
         return materialDate;
     }
+    
+    void  Model::ProcessMesh(aiMesh* mesh, std::vector<VertexData>& vertices, bool flipX) {
+        assert(mesh->HasNormals());          // 法線がないMeshは今回は非対応
+        assert(mesh->HasTextureCoords(0));;  // TexcoordがないMeshは今回は非対応
+        // Meshの中身(Face)を解析していく
+        for (uint32_t faceIndex = 0; faceIndex < mesh->mNumFaces; ++faceIndex) {
+            aiFace& face = mesh->mFaces[faceIndex];
+            assert(face.mNumIndices == 3);// 三角形のみサポート
+            // Faceの中身(Vertex)を解析していく
+            for (uint32_t i = 0; i < face.mNumIndices; ++i) {
+                uint32_t vertexIndex = face.mIndices[i];
+                // 頂点の各要素を取得
+                aiVector3D& position = mesh->mVertices[vertexIndex];
+                aiVector3D& normal = mesh->mNormals[vertexIndex];
+                aiVector3D& texcoord = mesh->mTextureCoords[0][vertexIndex];
+                // 1頂点分のデータを構築してModelDateに追加していく
+                VertexData vertex{};
+                vertex.position = { -position.x,position.y,position.z,1.0f }; // 位置のx成分を反転
+                vertex.normal = { -normal.x,normal.y,normal.z };              // 法線のx成分を反転 
+                vertex.texcoord = { texcoord.x,texcoord.y };                  // テクスチャ座標のy成分を反転
+                // 左手系対応
+                if (flipX) {
+                    // aiProcess_MakeLeftHandedはz*=-1で、右手->左手に変換するので手動で対処
+                    vertex.position.x *= -1.0f;
+                    vertex.normal.x *= -1.0f;
+                }
+                vertices.push_back(vertex);
+            }
+        }
+    }
 
     ModelData Model::LoadObjFile(const std::string& directoryPath, const std::string& filename) {
         // 1. 中で必要となる変数の宣言
@@ -425,31 +454,8 @@ namespace MyEngine {
 
         // 3. Meshを解析する
         for (size_t meshIndex = 0; meshIndex < scene->mNumMeshes; ++meshIndex) {
-            aiMesh* mesh = scene->mMeshes[meshIndex];
-            assert(mesh->HasNormals()); // 法線がないMeshは今回は非対応
-            assert(mesh->HasTextureCoords(0)); // TexcoordがないMeshは今回は非対応
-            // Meshの中身(Face)を解析していく
-            for (size_t faceIndex = 0; faceIndex < mesh->mNumFaces; ++faceIndex) {
-                aiFace& face = mesh->mFaces[faceIndex];
-                assert(face.mNumIndices == 3); // 三角形のみサポート
-                // Faceの中身(Vertex)を解析していく
-                for (size_t elememt = 0; elememt < face.mNumIndices; ++elememt) {
-                    uint32_t vertexIndex = face.mIndices[elememt];
-                    // 頂点の各要素を取得
-                    aiVector3D& position = mesh->mVertices[vertexIndex];
-                    aiVector3D& normal = mesh->mNormals[vertexIndex];
-                    aiVector3D& texcoord = mesh->mTextureCoords[0][vertexIndex];
-                    // 1頂点分のデータを構築してModelDateに追加していく
-                    VertexData vertex;
-                    vertex.position = { -position.x,position.y,position.z,1.0f };// 位置のx成分を反転
-                    vertex.normal = { -normal.x,normal.y,normal.z };// 法線のx成分を反転
-                    vertex.texcoord = { texcoord.x,texcoord.y };// テクスチャ座標のy成分を反転
-                    // aiProcess_MakeLeftHandedはz*=-1で、右手->左手に変換するので手動で対処
-                    vertex.position.x *= -1.0f;
-                    vertex.normal.x *= -1.0f;
-                    modelData.vertices.push_back(vertex);
-                }
-            }
+            // 全メッシュを共通関数で処理
+            ProcessMesh(scene->mMeshes[meshIndex], modelData.vertices, true);
         }
 
         // 4. Materialの解析
@@ -468,54 +474,38 @@ namespace MyEngine {
 
     Node Model::ReadNode(aiNode* node) {
         Node result;
-        aiMatrix4x4 aiLocalMatrix = node->mTransformation; // nodeのlocalMatrixを取得
+        // ローカル変換行列取得（Assimpは列ベクトルなので転置）
+        aiMatrix4x4 aiLocalMatrix = node->mTransformation;
         aiLocalMatrix.Transpose(); // 列ベクトル形式を行ベクトル形式に転置
         result.localMatrix.m[0][0] = aiLocalMatrix[0][0]; result.localMatrix.m[0][1] = aiLocalMatrix[0][1]; result.localMatrix.m[0][2] = aiLocalMatrix[0][2]; result.localMatrix.m[0][3] = aiLocalMatrix[0][3];
         result.localMatrix.m[1][0] = aiLocalMatrix[1][0]; result.localMatrix.m[1][1] = aiLocalMatrix[1][1]; result.localMatrix.m[1][2] = aiLocalMatrix[1][2]; result.localMatrix.m[1][3] = aiLocalMatrix[1][3];
         result.localMatrix.m[2][0] = aiLocalMatrix[2][0]; result.localMatrix.m[2][1] = aiLocalMatrix[2][1]; result.localMatrix.m[2][2] = aiLocalMatrix[2][2]; result.localMatrix.m[2][3] = aiLocalMatrix[2][3];
         result.localMatrix.m[3][0] = aiLocalMatrix[3][0]; result.localMatrix.m[3][1] = aiLocalMatrix[3][1]; result.localMatrix.m[3][2] = aiLocalMatrix[3][2]; result.localMatrix.m[3][3] = aiLocalMatrix[3][3];
         result.name = node->mName.C_Str(); // Node名を格納
-        result.children.resize(node->mNumChildren); // 子供の数だけ確保
+        result.children.resize(node->mNumChildren); // 子ノード数だけ確保
+        // 再帰的に子ノードを読み込む
         for (uint32_t childIndex = 0; childIndex < node->mNumChildren; ++childIndex) {
-            // 再帰的に読んで階層構造を作っていく
             result.children[childIndex] = ReadNode(node->mChildren[childIndex]);
         }
         return result;
     }
 
     glTFModelData Model::LoadModelFile(const std::string& directoryPath, const std::string& filename) {
+        // 1. 中で必要となる変数の宣言
         glTFModelData modelData; // 構築するModelDate
+        // 2. Assimpでの読み込み
         Assimp::Importer importer;
-        std::string filePath = directoryPath + "/" + filename;
+        std::string filePath = directoryPath + "/" + filename; // ファイルを開く
         const aiScene* scene = importer.ReadFile(filePath.c_str(), aiProcess_FlipWindingOrder | aiProcess_FlipUVs);
         assert(scene->HasMeshes()); // メッシュがないのは対応しない
-        // meshを解析する
+         
+        // 3. Meshを解析する
         for (uint32_t meshIndex = 0; meshIndex < scene->mNumMeshes; ++meshIndex) {
-            aiMesh* mesh = scene->mMeshes[meshIndex];
-            assert(mesh->HasNormals()); // 法線がないMeshは今回は非対応
-            assert(mesh->HasTextureCoords(0)); // TexcoordがないMeshは今回は非対応
-            // ここからMeshの中身(Face)の解析を行っていく
-            for (uint32_t faceIndex = 0; faceIndex < mesh->mNumFaces; ++faceIndex) {
-                aiFace face = mesh->mFaces[faceIndex];
-                //  ここからFaceの中身(Vertex)の解析を行っていく
-
-                for (uint32_t element = 0; element < face.mNumIndices; ++element) {
-                    uint32_t vertexIndex = face.mIndices[element];
-                    aiVector3D& position = mesh->mVertices[vertexIndex];
-                    aiVector3D& normal = mesh->mNormals[vertexIndex];
-                    aiVector3D& texcoord = mesh->mTextureCoords[0][vertexIndex];
-                    VertexData vertex;
-                    vertex.position = { position.x,position.y,position.z,1.0f };
-                    vertex.normal = { normal.x,normal.y,normal.z };
-                    vertex.texcoord = { texcoord.x,texcoord.y };
-                    // aiProcess_MakeLeftHandedはz*=-1で、右手->左手に変化するので手動で対処
-                    vertex.position.x *= -1.0f;
-                    vertex.normal.x *= -1.0f;
-                    modelData.vertices.push_back(vertex);
-                }
-            }
+            // 全メッシュを共通関数で処理
+            ProcessMesh(scene->mMeshes[meshIndex], modelData.vertices, true);
         }
-
+        
+        // 4. Materialの解析
         for (uint32_t materialIndex = 0; materialIndex < scene->mNumMaterials; ++materialIndex) {
             aiMaterial* material = scene->mMaterials[materialIndex];
             if (material->GetTextureCount(aiTextureType_DIFFUSE) != 0) {
@@ -525,7 +515,9 @@ namespace MyEngine {
             }
         }
 
+        // 5. ノード階層構造を取得
         modelData.rootNode = ReadNode(scene->mRootNode);
+        // 6. ModelDateを返す
         return modelData;
     }
 }
@@ -546,17 +538,25 @@ File Path: project/Engine/3d/Model/Model.h
 #include <ModelData.h>
 
 namespace MyEngine {
+	/// <summary>
+	/// ノード構造（主にglTF用）
+	/// 親子関係を持つトランスフォーム階層を表す
+	/// </summary>
 	struct Node {
-		Matrix4x4 localMatrix;
-		std::string name;
-		std::vector<Node> children;
+		Matrix4x4 localMatrix;          // ローカル変換行列
+		std::string name;               // ノード名
+		std::vector<Node> children;     // 子ノード
+	};
+	/// <summary>
+	/// glTF専用のモデルデータ
+	/// ノード階層（スケルトン的構造）を含む
+	/// </summary>
+	struct glTFModelData {
+		std::vector<VertexData> vertices; // 頂点データ
+		MaterialData material;            // マテリアル情報
+		Node rootNode;                    // ルートノード（階層の起点）
 	};
 
-	struct glTFModelData {
-		std::vector<VertexData> vertices;
-		MaterialData material;
-		Node rootNode;
-	};
 	/// <summary>
 	/// 3Dモデルの形状データを管理するクラス
 	/// .objや.gltfファイルの読み込み、頂点バッファの保持を行う。
@@ -568,7 +568,7 @@ namespace MyEngine {
 		/// ファイル拡張子を判別して適切なローダーを呼び出す。
 		/// </summary>
 		/// <param name="modelCommon">モデル共通設定クラス</param>
-		/// <param name="directorypath">ファイルが格納されているディレクトリ</param>
+		/// <param name="directory path">ファイルが格納されているディレクトリ</param>
 		/// <param name="filename">ファイル名（拡張子含む）</param>
 		void Initialize(ModelCommon* modelCommon, const std::string& directorypath, const std::string& filename);
 
@@ -576,6 +576,15 @@ namespace MyEngine {
 		/// モデルの描画処理
 		/// </summary>
 		void Draw();
+
+		/// <summary>
+		/// AssimpのaiMeshをエンジン用頂点配列に変換する共通処理
+		/// LoadObjFile / LoadModelFile の両方から使用される
+		/// </summary>
+		/// <param name="mesh">Assimpのメッシュ</param>
+		/// <param name="vertices">出力先頂点配列</param>
+		/// <param name="flipX">左手系変換（X反転）を行うか</param>
+		static void ProcessMesh(aiMesh* mesh, std::vector<VertexData>& vertices, bool flipX);
 
 		/// <summary>
 		/// .mtl（マテリアルテンプレート）ファイルの読み取り
@@ -618,7 +627,7 @@ namespace MyEngine {
 		// Objファイルのデータ
 		ModelData modelData;
 		// バッファリソース
-		Microsoft::WRL::ComPtr <ID3D12Resource> vertexResoruce;
+		Microsoft::WRL::ComPtr <ID3D12Resource> vertexResource;
 		// バッファリソースの使い道を補足するバッファビュー
 		D3D12_VERTEX_BUFFER_VIEW vertexBufferView;
 		// バッファリソース内のデータを指すポインタ
@@ -1778,15 +1787,15 @@ namespace MyEngine {
         // 頂点数更新
         vertexCount = static_cast<uint32_t>(modelData.vertices.size());
         // 頂点バッファ用リソース作成
-        vertexResoruce = CreateBufferResource(skyboxCommon->GetDxCommon()->GetDevice(), sizeof(VertexShaderInput) * vertexCount);
+        vertexResource = CreateBufferResource(skyboxCommon->GetDxCommon()->GetDevice(), sizeof(VertexShaderInput) * vertexCount);
         // 頂点バッファビューの設定
-        vertexBufferView.BufferLocation = vertexResoruce->GetGPUVirtualAddress();
+        vertexBufferView.BufferLocation = vertexResource->GetGPUVirtualAddress();
         vertexBufferView.SizeInBytes = sizeof(VertexShaderInput) * vertexCount;
         vertexBufferView.StrideInBytes = sizeof(VertexShaderInput);
         // GPUバッファに書き込み（Map/Unmap）
-        vertexResoruce->Map(0, nullptr, reinterpret_cast<void**>(&vertexData));
+        vertexResource->Map(0, nullptr, reinterpret_cast<void**>(&vertexData));
         memcpy(vertexData, modelData.vertices.data(), sizeof(VertexShaderInput) * vertexCount);
-        vertexResoruce->Unmap(0, nullptr);
+        vertexResource->Unmap(0, nullptr);
     }
 
     void Skybox::MaterialGenerate() {
@@ -1952,7 +1961,7 @@ namespace MyEngine {
 		// モデルデータ
 		skyModelDate modelData;
 		// バッファリソース
-		Microsoft::WRL::ComPtr <ID3D12Resource> vertexResoruce;
+		Microsoft::WRL::ComPtr <ID3D12Resource> vertexResource;
 		Microsoft::WRL::ComPtr <ID3D12Resource> materialResource;
 		Microsoft::WRL::ComPtr <ID3D12Resource> transformationMatrixResource;
 		Microsoft::WRL::ComPtr<ID3D12Resource> cameraResource;
@@ -6280,8 +6289,16 @@ void GamePlayScene::Finalize() {
 
 void GamePlayScene::Initialize() {
     // カメラマネージャの初期化
-    CameraManager::GetInstance()->Initialize(CameraTransform({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }));
-  //  CameraManager::GetInstance()->SetTypeview(ViewCameraType::Main);
+    CameraManager::GetInstance()->Initialize(CameraTransform({ 0.0f, 0.0f, -30.0f }, { 0.0f, 0.0f, 0.0f }));
+
+
+    TextureManager::GetInstance()->LoadTexture("Textures/Ui/Complete.png");
+    Sprite_ = Sprite::Create("Textures/Ui/Complete.png", Vector2{ 50.0f, 100.0f }, 0.0f, Vector2{ 400.0f,150.0f });
+
+    ModelManager::GetInstance()->LoadModel("Models/Character/Player/Player.obj");
+    player_ = Object3d::Create("Models/Character/Player/Player.obj", { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,10.0f} });
+
+
 
 }
 
@@ -6290,24 +6307,24 @@ void GamePlayScene::Update() {
 
     CameraManager::GetInstance()->Update();
 #pragma region 全てのObject3d個々の更新処理
-    //// 終了しない限り更新処理
-    //particles_->Update();
+   
+
+    player_->Update();
+
+
 #pragma endregion 全てのObject3d個々の更新処理
 
 #pragma region 全てのSprite個々の更新処理
-
+    Sprite_->Update();
 #pragma endregion 全てのSprite個々の更新処理
 
 #pragma region  ImGuiの更新処理開始
 #ifdef USE_IMGUI 
-//    ImGui::Begin("=== GamePlayScene Debug ===");
 
 #endif // USE_IMGUI
 #pragma endregion ImGuiの更新処理終了 
 }
-///====================================================
-/// 描画処理
-///====================================================
+
 void GamePlayScene::Draw() {
 #pragma region 全てのObject3d個々の描画処理
     // 箱オブジェクトの描画準備。3Dオブジェクトの描画に共通のグラフィックスコマンドを積む
@@ -6315,7 +6332,9 @@ void GamePlayScene::Draw() {
  //   Box_->Draw();
     // 3Dオブジェクトの描画準備。3Dオブジェクトの描画に共通のグラフィックスコマンドを積む
     Object3dCommon::GetInstance()->Commondrawing();
-
+   
+    
+    player_->Draw();
 
     // パーティクルの描画準備。パーティクルの描画に共通のグラフィックスコマンドを積む 
  ///   ParticleCommon::GetInstance()->Commondrawing();
@@ -6325,6 +6344,8 @@ void GamePlayScene::Draw() {
 #pragma region 全てのSprite個々の描画処理
     // Spriteの描画準備。Spriteの描画に共通のグラフィックスコマンドを積む
     SpriteCommon::GetInstance()->Commondrawing();
+
+    Sprite_->Draw();
 
 #pragma endregion 全てのSprite個々の描画処理
 }
@@ -6336,6 +6357,8 @@ File Path: project/application/scene/GamePlayScene.h
 ============================================================
 #pragma once
 #include <BaseScene.h>
+#include <Object3d.h>
+#include<Sprite.h>
 
 /// <summary>
 /// 実際のゲームプレイを行うシーン。
@@ -6359,6 +6382,10 @@ public: // メンバ関数
     /// </summary>
     void Draw() override;
 private: // メンバ変数
+    
+    std::unique_ptr <MyEngine::Sprite> Sprite_;
+
+    std::unique_ptr <MyEngine::Object3d> player_;
 
 };
 
@@ -6457,17 +6484,17 @@ namespace MyEngine {
 
 	void Sprite::VertexDatacreation() {
 		// 頂点リソースを作る
-		vertexResoruce = CreateBufferResource(spriteCommon_->GetDxCommon()->GetDevice(), sizeof(VertexData) * 4);
+		vertexResource = CreateBufferResource(spriteCommon_->GetDxCommon()->GetDevice(), sizeof(VertexData) * 4);
 		// 頂点バッファビューを作成する
 		// リソースの先頭のアドレスから使う
-		vertexBufferView.BufferLocation = vertexResoruce->GetGPUVirtualAddress();
+		vertexBufferView.BufferLocation = vertexResource->GetGPUVirtualAddress();
 		// 使用するリソースのサイズは4つ分のサイズ
 		vertexBufferView.SizeInBytes = sizeof(VertexData) * 4;
 		// 1頂点当たりのサイズ
 		vertexBufferView.StrideInBytes = sizeof(VertexData);
 		// 頂点リソースにデータを書き込む
 		// 書き込むためのアドレスを取得
-		vertexResoruce->Map(0, nullptr, reinterpret_cast<void**>(&vertexData));
+		vertexResource->Map(0, nullptr, reinterpret_cast<void**>(&vertexData));
 
 		// 頂点リソースを作る
 		indexResource = CreateBufferResource(spriteCommon_->GetDxCommon()->GetDevice(), sizeof(uint32_t) * 6);
@@ -6489,7 +6516,7 @@ namespace MyEngine {
 		// 今回は白
 		materialData->color = { 1.0f, 1.0f, 1.0f, 1.0f };
 		// SpriteはLightingしないでfalseを設定する
-		materialData->endbleLighting = false;
+		materialData->enableLighting = false;
 		// 単位行列を書き込んでおく
 		materialData->uvTransform = MakeIdentity4x4();
 	}
@@ -6770,7 +6797,7 @@ namespace MyEngine {
 		// 使用するファイル
 		std::string textureFilePath_;
 		// バッファリソース
-		Microsoft::WRL::ComPtr <ID3D12Resource> vertexResoruce;
+		Microsoft::WRL::ComPtr <ID3D12Resource> vertexResource;
 		Microsoft::WRL::ComPtr <ID3D12Resource> indexResource;
 		Microsoft::WRL::ComPtr <ID3D12Resource> materialResource;
 		Microsoft::WRL::ComPtr <ID3D12Resource> transformationMatrixResource;
@@ -8077,16 +8104,16 @@ namespace MyEngine {
 
     void ParticleModel::CreateVertexBuffer() {
         // 関数化したResouceで作成
-        vertexResoruce = CreateBufferResource(dxCommon_->GetDevice(), sizeof(VertexData) * modelData.vertices.size());
+        vertexResource = CreateBufferResource(dxCommon_->GetDevice(), sizeof(VertexData) * modelData.vertices.size());
         //頂点バッファビューを作成する
         // リソースの先頭のアドレスから使う
-        vertexBufferView.BufferLocation = vertexResoruce->GetGPUVirtualAddress();
+        vertexBufferView.BufferLocation = vertexResource->GetGPUVirtualAddress();
         // 使用するリソースのサイズはの頂点のサイズ
         vertexBufferView.SizeInBytes = UINT(sizeof(VertexData) * modelData.vertices.size());
         // 1頂点当たりのサイズ
         vertexBufferView.StrideInBytes = sizeof(VertexData);
         // 頂点リソースにデータを書き込むためのアドレスを取得
-        vertexResoruce->Map(0, nullptr, reinterpret_cast<void**>(&vertexData));
+        vertexResource->Map(0, nullptr, reinterpret_cast<void**>(&vertexData));
     }
 
     void ParticleModel::VertexDataModel() {
@@ -8341,7 +8368,7 @@ namespace MyEngine {
 		// Objファイルのデータ
 		ModelData modelData;
 		// バッファリソース
-		Microsoft::WRL::ComPtr <ID3D12Resource> vertexResoruce;
+		Microsoft::WRL::ComPtr <ID3D12Resource> vertexResource;
 		Microsoft::WRL::ComPtr<ID3D12Resource> materialResource;;
 		// バッファリソース内のデータを指すポインタ
 		VertexData* vertexData = nullptr;
@@ -9775,7 +9802,8 @@ namespace MyEngine {
 
     // 更新処理
     void CameraManager::Update() {
-    
+        mainCamera_->Update();
+
     }
 
     // アクティブカメラを取得
@@ -12133,7 +12161,7 @@ namespace MyEngine {
         sceneFactory_ = std::make_unique<SceneFactory>();
         SceneManager::GetInstance()->SetSceneFactory(sceneFactory_.get());
         // シーンマネージャに最初のシーンをセット
-        SceneManager::GetInstance()->ChangeScene(SceneName::TITLE);
+        SceneManager::GetInstance()->ChangeScene(SceneName::GAMEPLAY);
     }
 
     void MyGame::Update() {
@@ -61500,7 +61528,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 
 ============================================================
-File Path: project/subproject/Tools/AssetGenerator/AssetGenerator.vcxproj
+File Path: project/subproject/AssetGenerator/AssetGenerator.vcxproj
 ============================================================
 <?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
@@ -61686,7 +61714,7 @@ File Path: project/subproject/Tools/AssetGenerator/AssetGenerator.vcxproj
 </Project>
 
 ============================================================
-File Path: project/subproject/Tools/AssetGenerator/AssetGenerator.vcxproj.filters
+File Path: project/subproject/AssetGenerator/AssetGenerator.vcxproj.filters
 ============================================================
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
@@ -61771,7 +61799,7 @@ File Path: project/subproject/Tools/AssetGenerator/AssetGenerator.vcxproj.filter
 </Project>
 
 ============================================================
-File Path: project/subproject/Tools/AssetGenerator/engine/assetpipeline/AssetPipeline.cpp
+File Path: project/subproject/AssetGenerator/engine/assetpipeline/AssetPipeline.cpp
 ============================================================
 #include "AssetPipeline.h"
 #include <PathManager.h>
@@ -61854,7 +61882,7 @@ void AssetPipeline::Finalize() {
 }
 
 ============================================================
-File Path: project/subproject/Tools/AssetGenerator/engine/assetpipeline/AssetPipeline.h
+File Path: project/subproject/AssetGenerator/engine/assetpipeline/AssetPipeline.h
 ============================================================
 #pragma once
 #include <memory>
@@ -61895,7 +61923,7 @@ private: // プライベートメンバ関数
 };
 
 ============================================================
-File Path: project/subproject/Tools/AssetGenerator/engine/exporter/HeaderGenerator.cpp
+File Path: project/subproject/AssetGenerator/engine/exporter/HeaderGenerator.cpp
 ============================================================
 #include "HeaderGenerator.h"
 #include "ResourceScanner.h"
@@ -61985,7 +62013,7 @@ void HeaderGenerator::Generate(const std::filesystem::path& outputPath, const st
 }
 
 ============================================================
-File Path: project/subproject/Tools/AssetGenerator/engine/exporter/HeaderGenerator.h
+File Path: project/subproject/AssetGenerator/engine/exporter/HeaderGenerator.h
 ============================================================
 #pragma once
 #include <filesystem>
@@ -62011,7 +62039,7 @@ private: // プライベートメンバ関数
 };
 
 ============================================================
-File Path: project/subproject/Tools/AssetGenerator/engine/exporter/JsonExporter.cpp
+File Path: project/subproject/AssetGenerator/engine/exporter/JsonExporter.cpp
 ============================================================
 #include "JsonExporter.h"
 #include <ResourceScanner.h>
@@ -62097,7 +62125,7 @@ void JsonExporter::Export(const std::filesystem::path& path, const std::string& 
 }
 
 ============================================================
-File Path: project/subproject/Tools/AssetGenerator/engine/exporter/JsonExporter.h
+File Path: project/subproject/AssetGenerator/engine/exporter/JsonExporter.h
 ============================================================
 #pragma once
 #include <filesystem>
@@ -62134,7 +62162,7 @@ public: // メンバ関数
 };
 
 ============================================================
-File Path: project/subproject/Tools/AssetGenerator/engine/math/LoadResourceID.h
+File Path: project/subproject/AssetGenerator/engine/math/LoadResourceID.h
 ============================================================
 #pragma once
 
@@ -62216,7 +62244,7 @@ namespace LoadResourceID {
 
 
 ============================================================
-File Path: project/subproject/Tools/AssetGenerator/engine/scanner/PathManager.cpp
+File Path: project/subproject/AssetGenerator/engine/scanner/PathManager.cpp
 ============================================================
 #include "PathManager.h"
 #include <Windows.h>
@@ -62266,7 +62294,7 @@ std::filesystem::path PathManager::SearchRecursive(std::filesystem::path current
 }
 
 ============================================================
-File Path: project/subproject/Tools/AssetGenerator/engine/scanner/PathManager.h
+File Path: project/subproject/AssetGenerator/engine/scanner/PathManager.h
 ============================================================
 #pragma once
 #include <filesystem>
@@ -62299,7 +62327,7 @@ private: // プライベートメンバ関数
 };
 
 ============================================================
-File Path: project/subproject/Tools/AssetGenerator/engine/scanner/ResourceScanner.cpp
+File Path: project/subproject/AssetGenerator/engine/scanner/ResourceScanner.cpp
 ============================================================
 #include "ResourceScanner.h"
 
@@ -62342,7 +62370,7 @@ std::vector<AssetEntry> ResourceScanner::Scan(const fs::path& root, const std::w
 }
 
 ============================================================
-File Path: project/subproject/Tools/AssetGenerator/engine/scanner/ResourceScanner.h
+File Path: project/subproject/AssetGenerator/engine/scanner/ResourceScanner.h
 ============================================================
 #pragma once
 #include <filesystem>
@@ -62373,7 +62401,7 @@ public: // メンバ関数
 };
 
 ============================================================
-File Path: project/subproject/Tools/AssetGenerator/main.cpp
+File Path: project/subproject/AssetGenerator/main.cpp
 ============================================================
 #include <AssetPipeline.h>
 #include <iostream>
