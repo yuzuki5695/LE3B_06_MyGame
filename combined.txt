@@ -24,6 +24,32 @@
     └── └──     ├── Skybox.h
     └── └──     ├── SkyboxCommon.cpp
     └── └──     └── SkyboxCommon.h
+    └── ├── base/
+    └── └── └── DirectX/
+    └── └──     ├── Core/
+    └── └──     └── ├── DirectXCommon.cpp
+    └── └──     └── ├── DirectXCommon.h
+    └── └──     └── ├── FPSController.cpp
+    └── └──     └── ├── FPSController.h
+    └── └──     └── ├── FenceManager.cpp
+    └── └──     └── ├── FenceManager.h
+    └── └──     └── ├── SwapChainManager.cpp
+    └── └──     └── └── SwapChainManager.h
+    └── └──     ├── Descriptors/
+    └── └──     └── ├── DescriptorUtils.cpp
+    └── └──     └── ├── DescriptorUtils.h
+    └── └──     └── ├── DsvManager.cpp
+    └── └──     └── ├── DsvManager.h
+    └── └──     └── ├── RtvManager.cpp
+    └── └──     └── ├── RtvManager.h
+    └── └──     └── ├── SrvManager.cpp
+    └── └──     └── └── SrvManager.h
+    └── └──     ├── Pipeline/
+    └── └──     └── ├── ShaderCompiler.cpp
+    └── └──     └── └── ShaderCompiler.h
+    └── └──     └── Screen/
+    └── └──         ├── ViewportManager.cpp
+    └── └──         └── ViewportManager.h
     └── ├── math/
     └── └── ├── Base/
     └── └── └── ├── Matrix3x3.h
@@ -86,21 +112,6 @@
     └── ├── base/
     └── └── ├── CopylmageCommon.cpp
     └── └── ├── CopylmageCommon.h
-    └── └── ├── DirectXCommon/
-    └── └── └── ├── DescriptorUtils.cpp
-    └── └── └── ├── DescriptorUtils.h
-    └── └── └── ├── DirectXCommon.cpp
-    └── └── └── ├── DirectXCommon.h
-    └── └── └── ├── FPSController.cpp
-    └── └── └── ├── FPSController.h
-    └── └── └── ├── FenceManager.cpp
-    └── └── └── ├── FenceManager.h
-    └── └── └── ├── ShaderCompiler.cpp
-    └── └── └── ├── ShaderCompiler.h
-    └── └── └── ├── SwapChainManager.cpp
-    └── └── └── ├── SwapChainManager.h
-    └── └── └── ├── ViewportManager.cpp
-    └── └── └── └── ViewportManager.h
     └── └── ├── Framework.cpp
     └── └── ├── Framework.h
     └── └── ├── ImGuiManager.cpp
@@ -110,13 +121,6 @@
     └── └── └── ├── Logger.h
     └── └── └── ├── StringUtility.cpp
     └── └── └── └── StringUtility.h
-    └── └── ├── ViewManager/
-    └── └── └── ├── DsvManager.cpp
-    └── └── └── ├── DsvManager.h
-    └── └── └── ├── RtvManager.cpp
-    └── └── └── ├── RtvManager.h
-    └── └── └── ├── SrvManager.cpp
-    └── └── └── └── SrvManager.h
     └── └── ├── WinApp.cpp
     └── └── └── WinApp.h
     └── ├── camera/
@@ -646,13 +650,18 @@ namespace MyEngine {
 	// 3Dモデル共通部
 	class ModelCommon {
 	public: // メンバ関数
-		// 初期化
+		/// <summary>
+		/// モデル共通部の初期化
+		/// </summary>
+		/// <param name="dxCommon">DirectXの基本機能（Device/CommandList等）を管理するクラスのポインタ</param>
+		/// <remarks>
+		/// 内部でグラフィックスパイプラインの生成や、デフォルトテクスチャの読み込み等を行う
+		/// </remarks>
 		void Initialize(DirectXCommon* dxCommon);
-
-	private:
+	private: // メンバ変数
 		// ポインタ
 		DirectXCommon* dxCommon_;
-	public:
+	public: // アクセッサ
 		// getter
 		DirectXCommon* GetDxCommon() { return  dxCommon_; }
 	};
@@ -686,10 +695,10 @@ namespace MyEngine {
     /// </summary>
     struct Material final {
         Vector4 color;
-        int32_t endbleLighting;
+        int32_t enableLighting;
         float padding[3];
         Matrix4x4 uvTransform;
-        float shinimess;
+        float shininess;
     };
 
     /// <summary>
@@ -730,20 +739,6 @@ namespace MyEngine {
 
     using namespace MatrixVector;
     using namespace ResourceFactory;
-
-    Vector3 Object3d::GetWorldPosition() const {
-        Matrix4x4 worldMatrix = MatrixVector::MakeAffineMatrix(
-            transform_.scale, transform_.rotate, transform_.translate
-        );
-
-        Vector3 worldPos = {
-            worldMatrix.m[3][0],
-            worldMatrix.m[3][1],
-            worldMatrix.m[3][2]
-        };
-
-        return worldPos;
-    }
 
     void Object3d::Initialize(Object3dCommon* object3dCommon) {
         // NULL検出
@@ -807,11 +802,11 @@ namespace MyEngine {
         // マテリアルデータの初期値を書き込む
         materialData->color = { 1.0f, 1.0f, 1.0f, 1.0f };
         // SpriteはLightingしないでfalseを設定する
-        materialData->endbleLighting = true;
+        materialData->enableLighting = true;
         // 単位行列を書き込んでおく
         materialData->uvTransform = MakeIdentity4x4();
         // 光沢度を書き込む
-        materialData->shinimess = 70;
+        materialData->shininess = 70;
     }
 
     void Object3d::TransformationMatrixGenerate() {
@@ -859,7 +854,18 @@ namespace MyEngine {
         object3d->SetMaterialColor({ 1.0f, 1.0f, 1.0f, 1.0f });
         // 座標をセット
         object3d->transform_ = transform;
+		// ワールド座標を初期化
+        object3d->worldMatrix_ = MakeAftineMatrix(object3d->transform_.scale, object3d->transform_.rotate, object3d->transform_.translate);
         return object3d;
+    }
+    
+    const Vector3& Object3d::GetWorldPosition() const {
+        static Vector3 worldPos;
+        worldPos.x = worldMatrix_.m[3][0];
+        worldPos.y = worldMatrix_.m[3][1];
+        worldPos.z = worldMatrix_.m[3][2];
+
+        return worldPos;
     }
 
     void Object3d::DrawImGui(const std::string& name) {
@@ -922,7 +928,7 @@ namespace MyEngine {
                     reinterpret_cast<float*>(&materialData->color));
 
                 ImGui::DragFloat("Shininess",
-                    &materialData->shinimess,
+                    &materialData->shininess,
                     0.1f, 0.0f, 256.0f);
 
                 ImGui::TreePop();
@@ -951,28 +957,40 @@ namespace MyEngine {
 	//  3Dオブジェクト
 	class Object3d {
 	public: // メンバ関数
-		struct CameraForGPU
-		{
+		struct CameraForGPU {
 			Vector3 worldPosition;
 		};
-
 	public: // メンバ関数
-		// 初期化
+		/// <summary>
+		/// 3Dオブジェクトの初期化
+		/// </summary>	
+		/// <param name="object3dCommon">3Dオブジェクト共通管理クラスのポインタ</param>	
+		/// <remarks>
+		/// インスタンスごとの定数バッファ生成や、座標情報の初期化を行います。
+		/// </remarks>
 		void Initialize(Object3dCommon* object3dCommon);
-		// 更新処理
+		/// <summary>	
+		/// 更新処理
+		/// </summary>
 		void Update();
-		// 描画処理
+		/// <summary>
+		/// 描画処理
+		/// </summary>
 		void Draw();
-
-		// 3Dobject作成関数
+		/// <summary>
+		/// 3Dオブジェクトのインスタンスを生成・初期化する
+		/// </summary>
+		/// <param name="filePath">モデルファイルのパス（Resourcesフォルダからの相対パス）</param>
+		/// <param name="transform">初期状態のトランスフォーム設定（座標、回転、スケール）</param>
+		/// <returns>生成されたObject3dのユニークポインタ。失敗した場合はnullptrを返す。</returns>
+		/// <remarks>
+		/// モデルの読み込み、定数バッファの生成、およびトランスフォームの初期設定を内部で一括して行います。
+		/// </remarks>
 		static std::unique_ptr<Object3d> Create(std::string filePath, Transform transform);
 
 		// imgui
 		void DrawImGui(const std::string& name);
-
-		Vector3 GetWorldPosition() const;
-
-	private:
+	private: // 内部関数
 		// リソース
 		// マテリアル
 		void MaterialGenerate();
@@ -980,7 +998,7 @@ namespace MyEngine {
 		void TransformationMatrixGenerate();
 		// カメラリソース
 		void CameraForGPUGenerate();
-	private:
+	private: // メンバ変数
 		// ポインタ
 		Object3dCommon* object3dCommon = nullptr;
 		Model* model = nullptr;
@@ -993,8 +1011,10 @@ namespace MyEngine {
 		Material* materialData = nullptr;
 		TransformationMatrix* transformationMatrixData = nullptr;
 		CameraForGPU* cameraForGPUData = nullptr;
-
-		Transform transform_;
+		/// ローカル座標系でのTransform
+		Transform transform_;	
+		/// ワールド座標座標
+		Matrix4x4 worldMatrix_;
 	public:
 		// getter	
 		Model* GetModel() const { return model; }
@@ -1002,6 +1022,7 @@ namespace MyEngine {
 		const Vector3& GetScale() const { return transform_.scale; }
 		const Vector3& GetRotate() const { return transform_.rotate; }
 		const Vector3& GetTranslate() const { return transform_.translate; }
+		const Vector3& GetWorldPosition() const;
 
 		// setter
 		void SetModel(const std::string& filePath);
@@ -1009,8 +1030,6 @@ namespace MyEngine {
 		void SetRotate(const Vector3& rotate) { this->transform_.rotate = rotate; }
 		void SetTranslate(const Vector3& translate) { this->transform_.translate = translate; }
 		void SetCamera(Camera* camera) { this->camera = camera; }
-
-
 		void SetMaterialColor(const Vector4& color);
 	};
 }
@@ -2209,6 +2228,1245 @@ namespace MyEngine {
 		// getter
 		DirectXCommon* GetDxCommon() const { return  dxCommon_; }
 		Camera* GetDefaultCamera() const { return defaultCamera; }
+	};
+}
+
+============================================================
+File Path: project/Engine/base/DirectX/Core/DirectXCommon.cpp
+============================================================
+#include "DirectXCommon.h"
+#include <cassert>
+#include <format>
+#include <thread>
+#include <Logger.h>
+#include <StringUtility.h>
+#include <DescriptorUtils.h>
+#include <ResourceFactory.h>
+#pragma comment(lib,"d3d12.lib")
+#pragma comment(lib,"dxgi.lib")
+
+using namespace Microsoft::WRL;
+using namespace MyEngine::DescriptorUtils;
+using namespace MyEngine::ResourceFactory;
+
+namespace MyEngine {
+    DirectXCommon::~DirectXCommon() { viewport_.reset(); }
+
+    void DirectXCommon::Initialize(WinApp* winApp) {
+        // NULL検出
+        assert(winApp);
+        // メンバ変数に記録
+        this->winApp_ = winApp;
+        // ポインタ生成 
+        viewport_ = std::make_unique<ViewportManager>();
+        fence_ = std::make_unique<FenceManager>();
+        fpscontroller_ = std::make_unique<FPSController>();
+        swapchain_ = std::make_unique<SwapChainManager>();
+        // 初期化関数
+        fpscontroller_->Initialize();                                                     // FPS固定の初期化
+        DebugInitialize();	                                                              // デバイスの初期化
+        CommandInitialize();	                                                          // コマンド関連の初期化
+        swapchain_->Initialize(winApp_->Gethwnd(), commandQueue, dxgiFactory, // スワップチェーンの生成
+            WinApp::kClientWidth, WinApp::kClientHeight);
+        CreateDepthStencilGenerate();	                                                  // 深度バッファの生成
+        fence_->Initialize(device);                                                       // フェンスの初期化
+        viewport_->Initialize(WinApp::kClientWidth, WinApp::kClientHeight);                // ビューポート・ シザリング矩形の初期化
+    }
+
+    void DirectXCommon::DebugInitialize() {
+
+        HRESULT hr;
+
+        ///---------------------------------------------------------------------///
+        ///-----------------------デバックレイヤーをオン----------------------------///
+        ///---------------------------------------------------------------------///
+#ifdef _DEBUG
+        ComPtr <ID3D12Debug1> debugController = nullptr;
+
+        if (SUCCEEDED(D3D12GetDebugInterface(IID_PPV_ARGS(&debugController)))) {
+            //デバッグレイヤーを有効化
+            debugController->EnableDebugLayer();
+            //さらにGPU側でもチェックを行えるようにする
+            debugController->SetEnableGPUBasedValidation(TRUE);
+        }
+#endif // _DEBUG
+
+        ///---------------------------------------------------------------------///
+        ///----------------------IDXGIのファクトリー生成---------------------------///
+        ///---------------------------------------------------------------------///
+
+        // HRESULTはWindows系のエラーコードであり、
+        // 関数が成功したかどうかをSUCCEEDEDマクロで判定できる
+        hr = CreateDXGIFactory(IID_PPV_ARGS(&dxgiFactory));
+        //初期化の根本的な部分でエラーが出た場合はプログラムが間違っているか、どうにもできない場合が
+        //多いのでassertにする
+        assert(SUCCEEDED(hr));
+
+        ///---------------------------------------------------------------------///
+        ///--------------------------アダプターの列挙------------------------------///
+        ///---------------------------------------------------------------------///
+        //仕様するアダプター用の変数。最初にnullptrを入れておく
+        ComPtr <IDXGIAdapter4> useAdapter = nullptr;
+        //良い順にアダプターを頼む
+        for (UINT i = 0; dxgiFactory->EnumAdapterByGpuPreference(i,
+            DXGI_GPU_PREFERENCE_HIGH_PERFORMANCE, IID_PPV_ARGS(&useAdapter)) !=
+            DXGI_ERROR_NOT_FOUND; ++i) {
+            //アダプターの情報を取得する
+            DXGI_ADAPTER_DESC3 adapterDesc{};
+            hr = useAdapter->GetDesc3(&adapterDesc);
+            assert(SUCCEEDED(hr));//取得できないのは一大事
+            //ソフトウェアアダプターでなければ採用
+            if (!(adapterDesc.Flags & DXGI_ADAPTER_FLAG3_SOFTWARE)) {
+                //採用したアダプタの情報をログに出力。wstringの方なので注意
+                Logger::Log(StringUtility::ConvertString(std::format(L"Use Adapater:{}\n", adapterDesc.Description)));
+                break;
+            }
+            useAdapter = nullptr;//ソフトウェアアダプタの場合は見なかったことにする
+        }
+        //適切なアダプタが見つからないので起動できない
+        assert(useAdapter != nullptr);
+
+        ///---------------------------------------------------------------------///
+        ///---------------------------デバイスの生成------------------------------///
+        ///---------------------------------------------------------------------///
+
+        //機能レベルとログ出力用の文字列
+        D3D_FEATURE_LEVEL featureLevels[] = {
+          D3D_FEATURE_LEVEL_12_2,D3D_FEATURE_LEVEL_12_1,D3D_FEATURE_LEVEL_12_0
+        };
+        const char* featureLevelStrings[] = { "12.2","12.1","12.0" };
+        //高い順に生成できるか試す
+        for (size_t i = 0; i < _countof(featureLevels); ++i) {
+            //採用したアダプターでデバイスを生成
+            hr = D3D12CreateDevice(useAdapter.Get(), featureLevels[i], IID_PPV_ARGS(&device));
+            //指定した機能レベルでデバイスが生成できたか確認
+            if (SUCCEEDED(hr)) {
+                //生成できたのでログ出力を行ってループを抜ける
+                Logger::Log(std::format("FeatureLevel : {}\n", featureLevelStrings[i]));
+                break;
+            }
+        }
+        //デバイスの生成がうまくいかなかったので起動できない
+        assert(device != nullptr);
+        Logger::Log("Complete create D3D12Device!!!\n");//初期化完了のログを出す
+
+        ///---------------------------------------------------------------------///
+        ///-------------------------エラー時にブレ―ク-----------------------------///
+        ///--------------------------------------------------------------------///
+#ifdef _DEBUG
+        ComPtr<ID3D12InfoQueue> infoQueue = nullptr;
+        if (SUCCEEDED(device->QueryInterface(IID_PPV_ARGS(&infoQueue)))) {
+            //ヤバイエラー時に止まる
+            infoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_CORRUPTION, true);
+            //エラー時に止まる
+            infoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_ERROR, true);
+            //警告時に止まる
+            infoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_WARNING, true);
+            //抑制するメッセージのID
+            D3D12_MESSAGE_ID denyIds[] = {
+                //Windows11でのDXGIデバッグレイヤーとDX12デバッグレイヤーの相互作用バグによるエラーメッセージ
+                //https://stackoverflow.com/questions/69805245/directx-12-application-is-crashing-in-windows-11
+                D3D12_MESSAGE_ID_RESOURCE_BARRIER_MISMATCHING_COMMAND_LIST_TYPE
+            };
+            //抑制するレベル
+            D3D12_MESSAGE_SEVERITY severities[] = { D3D12_MESSAGE_SEVERITY_INFO };
+            D3D12_INFO_QUEUE_FILTER filter{};
+            filter.DenyList.NumIDs = _countof(denyIds);
+            filter.DenyList.pIDList = denyIds;
+            filter.DenyList.NumSeverities = _countof(severities);
+            filter.DenyList.pSeverityList = severities;
+            //指定したメッセージの表示を抑制
+            infoQueue->PushStorageFilter(&filter);
+        }
+#endif
+    }
+
+    void DirectXCommon::CommandInitialize() {
+
+        HRESULT hr;
+        ///---------------------------------------------------------------------///
+        ///------------------------コマンドキューを生成する-------------------------///
+        ///---------------------------------------------------------------------///
+        D3D12_COMMAND_QUEUE_DESC commandQueueDesc{};
+        hr = device->CreateCommandQueue(&commandQueueDesc, IID_PPV_ARGS(&commandQueue));
+        //コマンドキューの生成がうまくいかなかったので起動できない
+        assert(SUCCEEDED(hr));
+
+        ///---------------------------------------------------------------------///
+        ///---------------------コマンドアロケータを生成する-------------------------///
+        ///---------------------------------------------------------------------///
+        //コマンドアロケーターを生成する
+        hr = device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&commandAllocator));
+        //コマンドアロケータの生成がうまくいかなかったので起動できない
+        assert(SUCCEEDED(hr));
+
+        ///---------------------------------------------------------------------///
+        ///------------------------コマンドリストを生成する-------------------------///
+        ///---------------------------------------------------------------------///
+        //コマンドリストを生成する
+        hr = device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, commandAllocator.Get(), nullptr, IID_PPV_ARGS(&commandList));
+        //コマンドリストの生成がうまくいかなかったので起動できない
+        assert(SUCCEEDED(hr));
+    }
+
+    void DirectXCommon::CreateDepthStencilGenerate() {
+
+        // 生成するResourceの設定
+        D3D12_RESOURCE_DESC resourceDesc{};
+        resourceDesc.Width = WinApp::kClientWidth; // Textureの幅
+        resourceDesc.Height = WinApp::kClientHeight; // Textureの高さ
+        resourceDesc.MipLevels = 1; // mipmapの数
+        resourceDesc.DepthOrArraySize = 1; // 奥行　or 配列のTexture配列数
+        resourceDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT; // DepthStencilとして利用可能なフォーマット
+        resourceDesc.SampleDesc.Count = 1; // サンプリングカウント 1固定
+        resourceDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D; // 2次元
+        resourceDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL; // DepthStencilとして使う通知
+
+        // 利用Heapの設定
+        D3D12_HEAP_PROPERTIES heapProperies{};
+        heapProperies.Type = D3D12_HEAP_TYPE_DEFAULT; // VRAW上に作る
+
+        // 深度値のクリア設定
+        D3D12_CLEAR_VALUE depthClearValue{};
+        depthClearValue.DepthStencil.Depth = 1.0f; // 1.0f (最大値)でクリア
+        depthClearValue.Format = DXGI_FORMAT_D24_UNORM_S8_UINT; // フォーマット。 Resourceと合わせる
+
+        //3. Resourceを生成する
+        HRESULT hr = device->CreateCommittedResource(
+            &heapProperies, //Heapの設定
+            D3D12_HEAP_FLAG_NONE, //Heapの特殊な設定。特になし。
+            &resourceDesc, //Resourceの設定
+            D3D12_RESOURCE_STATE_DEPTH_WRITE, //深度値を書き込む状態にしておく
+            &depthClearValue, //Clear最適値
+            IID_PPV_ARGS(&depthbufferresource)); //作成するResourceポインタへのポインタ
+        assert(SUCCEEDED(hr));
+    }
+
+    void DirectXCommon::PreDrawRenderTexture(D3D12_CPU_DESCRIPTOR_HANDLE RtvHandles, Microsoft::WRL::ComPtr <ID3D12DescriptorHeap> DsvDescriptorHeap, const Vector4 color) {
+        // 描画先 = rtvHandles[2]（中間テクスチャ）
+        D3D12_CPU_DESCRIPTOR_HANDLE rtHandle = RtvHandles;
+
+        dsvHandle = DsvDescriptorHeap->GetCPUDescriptorHandleForHeapStart();
+        commandList->OMSetRenderTargets(1, &rtHandle, false, &dsvHandle);
+
+        // カスタムRenderTarget用で設定した値を使って画面全体をクリアする
+        float clearColor[] = { color.x, color.y, color.z, color.w };
+        commandList->ClearRenderTargetView(rtHandle, clearColor, 0, nullptr);
+        commandList->ClearDepthStencilView(dsvHandle, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
+        commandList->RSSetViewports(1, &viewport_->GetViewport());
+        commandList->RSSetScissorRects(1, &viewport_->GetScissorRect());
+    }
+
+    void DirectXCommon::PreDraw(D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle, Microsoft::WRL::ComPtr <ID3D12DescriptorHeap> DsvDescriptorHeap) {
+        // ここから書き込むバックバッファのインデックスを取得
+        UINT backBufferIndex = swapchain_->GetSwapChain()->GetCurrentBackBufferIndex();
+        // 今回のバリアはTransition
+        barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+        // Noneにしておく
+        barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
+        // バリアを張る対象のリソース。現在のバックバッファに対して行う
+        barrier.Transition.pResource = swapchain_->GetBuffer(backBufferIndex).Get();
+        // 遷移前のResourceState
+        barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_PRESENT;
+        // 遷移後のResourceState
+        barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_RENDER_TARGET;
+        // TransitionBarrierを張る
+        commandList->ResourceBarrier(1, &barrier);
+        // 描画先のRTVとDSVを設定する
+        dsvHandle = DsvDescriptorHeap->GetCPUDescriptorHandleForHeapStart();
+        // 描画先のRTVを指定する
+        commandList->OMSetRenderTargets(1, &rtvHandle, false, &dsvHandle);
+        // 指定した色で画面全体をクリアする
+        float clearColor[] = { 0.1f,0.25f,0.5f,1.0f };//青っぽい色。RGBAの順
+        commandList->ClearRenderTargetView(rtvHandle, clearColor, 0, nullptr);
+        commandList->RSSetViewports(1, &viewport_->GetViewport());
+        commandList->RSSetScissorRects(1, &viewport_->GetScissorRect());
+        // 指定した深度で画面全体をクリアする
+        commandList->ClearDepthStencilView(dsvHandle, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
+    }
+
+    void DirectXCommon::PostDraw() {
+        HRESULT hr;
+        // バックバッファの番号を取得
+        UINT bbIndex = swapchain_->GetSwapChain()->GetCurrentBackBufferIndex();
+        // 画面に描く処理はすべて終わり、画面に移すので、状態を遷移
+        // 今回はRenderTargetからPresentにする
+        // PostDraw 内で再設定が必要（PreDrawとは別フレームなので）：
+        barrier.Transition.pResource = swapchain_->GetBuffer(bbIndex).Get();
+        barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_RENDER_TARGET;
+        barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_PRESENT;
+        // TransitionBarrierを張る
+        commandList->ResourceBarrier(1, &barrier);
+        // コマンドリストの内容を確定させる。全てのコマンドを積んでからCloseすること
+        hr = commandList->Close();
+        assert(SUCCEEDED(hr));
+        if (FAILED(hr)) {
+            OutputDebugStringA("commandList->Close() failed!\n");
+            // hr を調べる
+        }
+        // GPUにコマンドリストのリストの実行を行わせる
+        ID3D12CommandList* commandLists[] = { commandList.Get() };
+        commandQueue->ExecuteCommandLists(1, commandLists);
+        // GPUとOSに画面の交換を行うように通知する
+        swapchain_->GetSwapChain()->Present(1, 0);
+
+        // 描画後のFence
+        fence_->SignalAndWait(commandQueue);
+
+        //  FPS固定
+        fpscontroller_->Update();
+
+        // 次のフレーム用のコマンドリストを準備
+        hr = commandAllocator->Reset();
+        assert(SUCCEEDED(hr));
+        hr = commandList->Reset(commandAllocator.Get(), nullptr);
+        assert(SUCCEEDED(hr));
+    }
+
+    ComPtr <ID3D12DescriptorHeap> DirectXCommon::CreateDescriptorHeap(D3D12_DESCRIPTOR_HEAP_TYPE heapType, UINT numDescriptors, bool shaderVisible) {
+        //ディスクリプタヒープの生成
+        ComPtr <ID3D12DescriptorHeap> descriptorHeap = nullptr;
+        D3D12_DESCRIPTOR_HEAP_DESC descriptorHeapDesc{};
+        descriptorHeapDesc.Type = heapType;
+        descriptorHeapDesc.NumDescriptors = numDescriptors;
+        descriptorHeapDesc.Flags = shaderVisible ? D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE : D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
+        HRESULT hr = device->CreateDescriptorHeap(&descriptorHeapDesc, IID_PPV_ARGS(&descriptorHeap));
+        //ディスクリプタヒープが作れなかったので起動できない
+        assert(SUCCEEDED(hr));
+        return descriptorHeap;
+    }
+}
+
+============================================================
+File Path: project/Engine/base/DirectX/Core/DirectXCommon.h
+============================================================
+#pragma once
+#include <d3d12.h>
+#include <dxgi1_6.h>
+#include <wrl.h>
+#include <array>
+#include <dxcapi.h>
+#include <chrono>
+#include <WinApp.h>
+#include <Vector4.h>
+#include <ViewportManager.h>
+#include <FenceManager.h>
+#include <FPSController.h>
+#include <SwapChainManager.h>
+#include "externals/DirectXTex/DirectXTex.h"
+#pragma comment(lib,"dxcompiler.lib")
+
+namespace MyEngine {
+	// Directx基盤
+	class DirectXCommon {
+	public: // メンバ関数
+
+		// デストラクタ
+		~DirectXCommon();
+		// 初期化
+		void Initialize(WinApp* winApp);
+		// 描画前処理
+		void PreDraw(D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle, Microsoft::WRL::ComPtr <ID3D12DescriptorHeap> DsvDescriptorHeap);
+		// 描画後処理
+		void PostDraw();
+
+		/// <summary>
+		/// レンダーテクスチャのテクスチャリソースの生成
+		/// </summary>
+		void PreDrawRenderTexture(D3D12_CPU_DESCRIPTOR_HANDLE RtvHandles, Microsoft::WRL::ComPtr <ID3D12DescriptorHeap> DsvDescriptorHeap, const Vector4 color);
+
+		/// <summary>
+		/// デスクリプタヒープを生成する
+		/// </summary>
+		Microsoft::WRL::ComPtr <ID3D12DescriptorHeap> CreateDescriptorHeap(D3D12_DESCRIPTOR_HEAP_TYPE heapType, UINT numDescriptors, bool shaderVisible);
+
+	private: // プライベートメンバ関数
+		// デバイスの初期化
+		void DebugInitialize();
+		// コマンド関連の初期化
+		void CommandInitialize();
+		// 深度バッファの生成
+		void CreateDepthStencilGenerate();
+	private: // メンバ変数
+		// ポインタ
+		WinApp* winApp_ = nullptr;
+		std::unique_ptr<ViewportManager> viewport_;
+		std::unique_ptr<FenceManager> fence_;
+		std::unique_ptr<FPSController> fpscontroller_;
+		std::unique_ptr<SwapChainManager> swapchain_;
+		Microsoft::WRL::ComPtr <ID3D12Device> device;	                                  // Devicex12デバイス
+		Microsoft::WRL::ComPtr <IDXGIFactory7> dxgiFactory;		                          // DXGIファクトリ
+		Microsoft::WRL::ComPtr <ID3D12CommandAllocator> commandAllocator = nullptr;	      // コマンドアロケータ
+		Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> commandList;		              // コマンドリスト
+		Microsoft::WRL::ComPtr <ID3D12CommandQueue> commandQueue;			              // コマンドキュー
+		Microsoft::WRL::ComPtr<ID3D12Resource> depthbufferresource;			              // 深度バッファ
+		// TransitionBarrierの設定
+		D3D12_RESOURCE_BARRIER barrier{};
+		// 描画先のRTVとDSVを設定する
+		D3D12_CPU_DESCRIPTOR_HANDLE dsvHandle;
+	public:
+		// getter
+		Microsoft::WRL::ComPtr <ID3D12Device> GetDevice() { return device; }
+		Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> GetCommandList() const { return commandList.Get(); }
+		// スワップチェーンリソースの数を取得
+		SwapChainManager* GetSwapChain() { return swapchain_.get(); }
+	};
+}
+
+============================================================
+File Path: project/Engine/base/DirectX/Core/FPSController.cpp
+============================================================
+#include "FPSController.h"
+#include <thread>
+
+namespace MyEngine {
+    const float FPSController::kTargetFPS = 60.0f;                 // 60FPS固定
+    const float FPSController::kCheckFPS = 65.0f;                  // チェック用FPS（これ以上速い場合はスリープする）
+    const int64_t FPSController::kMicroSecondsPerSecond = 1000000; // 1秒あたりのマイクロ秒
+
+    void FPSController::Initialize() {
+        // 現在時刻を基準時間として記録
+        reference_ = std::chrono::steady_clock::now();
+    }
+
+    void FPSController::Update() {
+        // 現在時刻を取得
+        std::chrono::steady_clock::time_point now = std::chrono::steady_clock::now();
+
+        // 前フレームからの経過時間を取得（マイクロ秒）
+        std::chrono::microseconds elapsed =
+            std::chrono::duration_cast<std::chrono::microseconds>(now - reference_);
+
+        // まだ1フレーム分の時間が経過していない場合
+        if (elapsed < kMinCheckTime) {
+
+            // 1フレーム時間に達するまで待機
+            while (std::chrono::steady_clock::now() - reference_ < kMinTime) {
+
+                // CPU負荷軽減のため1μsスリープ
+                std::this_thread::sleep_for(std::chrono::microseconds(1));
+            }
+        }
+
+        // 次フレーム用に現在時刻を更新
+        reference_ = std::chrono::steady_clock::now();
+    }
+
+    // 1フレームの最小時間（60FPS → 約16666μs）
+    const std::chrono::microseconds FPSController::kMinTime(
+        static_cast<int64_t>(kMicroSecondsPerSecond / kTargetFPS)
+    );
+
+    // スリープに入るかどうかの判定用時間（少し短め）
+    const std::chrono::microseconds FPSController::kMinCheckTime(
+        static_cast<int64_t>(kMicroSecondsPerSecond / kCheckFPS)
+    );
+}
+
+============================================================
+File Path: project/Engine/base/DirectX/Core/FPSController.h
+============================================================
+#pragma once
+#include <chrono>
+
+namespace MyEngine {
+	// ========================================
+	// FPS固定処理クラス
+	// ========================================
+	class FPSController {
+	public: // メンバ関数
+		/// <summary>
+		/// FPS固定初期化(現在時刻を基準にする）
+		/// </summary>
+		void Initialize();
+		//  FPS固定更新
+		void Update();
+	private: // メンバ変数
+		// 前フレームの記録時間
+		std::chrono::steady_clock::time_point reference_;
+		static const float kTargetFPS;                 // 目標FPS
+		static const float kCheckFPS;                  // チェック用FPS
+		static const int64_t kMicroSecondsPerSecond;   // 1秒 = 1000000μs
+
+		static const std::chrono::microseconds kMinTime;       // 1フレーム時間
+		static const std::chrono::microseconds kMinCheckTime;  // チェック用時間
+	};
+}
+
+============================================================
+File Path: project/Engine/base/DirectX/Core/FenceManager.cpp
+============================================================
+#include "FenceManager.h"
+#include <cassert>
+
+using namespace Microsoft::WRL;
+
+namespace MyEngine {
+    FenceManager::~FenceManager() {
+        if (fenceEvent_) {
+            // Win32APIの開放
+            CloseHandle(fenceEvent_);
+            fenceEvent_ = nullptr;
+        }
+    }
+
+    void FenceManager::Initialize(ComPtr <ID3D12Device>& device) {
+        // フェンスの初期化	  
+        HRESULT hr;
+        //初期値0でFenceを作る
+        hr = device->CreateFence(fenceVal_, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&fence_));
+        assert(SUCCEEDED(hr));
+        //FenceのSignalを待つためのイベントを作成する
+        assert(fenceEvent_ != nullptr);
+    }
+
+
+    void FenceManager::SignalAndWait(ComPtr <ID3D12CommandQueue>& commandQueue) {
+        // Fenceの値の更新
+        fenceVal_++;
+        // GPUがここまでたどり着いたときに、Fenceの値に代入するようにSignalを送る
+        commandQueue->Signal(fence_.Get(), fenceVal_);
+        // Fenceの値が指定したSignal値にたどり着いているか確認する
+        // GetCompletedValueの初期値はFence作成時に渡した初期値
+        if (fence_->GetCompletedValue() < fenceVal_) {
+
+            // 指定したSignalにたどりついていないので、たどり着くまで待つようにイベントを設定する
+            fence_->SetEventOnCompletion(fenceVal_, fenceEvent_);
+            //イベントを待つ
+            WaitForSingleObject(fenceEvent_, INFINITE);
+        }
+    }
+}
+
+============================================================
+File Path: project/Engine/base/DirectX/Core/FenceManager.h
+============================================================
+#pragma once
+#include <d3d12.h>
+#include <dxgi1_6.h>
+#include <wrl.h>
+
+namespace MyEngine {
+	// フェンスマネージャ
+	class FenceManager {
+	public: // メンバ関数
+		~FenceManager();
+		/// <summary>
+		/// 初期化
+		/// </summary>
+		void Initialize(Microsoft::WRL::ComPtr <ID3D12Device>& device);
+		// 描画後のFenceの値    
+		void SignalAndWait(Microsoft::WRL::ComPtr <ID3D12CommandQueue>& commandQueue);
+	private: // メンバ変数
+		// フェンスの生成
+		Microsoft::WRL::ComPtr <ID3D12Fence> fence_ = nullptr;
+		// 初期値0でFenceを作る
+		UINT64 fenceVal_ = 0;
+		//FenceのSignalを待つためのイベントを作成する
+		HANDLE fenceEvent_ = CreateEvent(NULL, FALSE, FALSE, NULL);
+	public: // getter
+		const Microsoft::WRL::ComPtr <ID3D12Fence>& GetFence() const { return fence_; }
+		const HANDLE& GetfenceEvent() const { return fenceEvent_; }
+	};
+}
+
+============================================================
+File Path: project/Engine/base/DirectX/Core/SwapChainManager.cpp
+============================================================
+#include "SwapChainManager.h"
+#include <cassert>
+
+using namespace Microsoft::WRL;
+
+namespace MyEngine {
+    void SwapChainManager::Initialize(HWND hwnd, ComPtr<ID3D12CommandQueue>& commandQueue, ComPtr<IDXGIFactory7>& dxgiFactory, uint32_t width, uint32_t height) {
+        ///---------------------------------------------------------------------///
+        ///--------------SwapChain(スワップチェーン)を設定する----------------------///
+        ///---------------------------------------------------------------------///
+        DXGI_SWAP_CHAIN_DESC1 swapChainDesc{};
+        swapChainDesc.Width = width;//画面の幅。ウィンドウのクライアント領域を同じものにしておく
+        swapChainDesc.Height = height;//画面の高さ。ウィンドウのクライアント領域を同じものにしておく
+        swapChainDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;//色の形式
+        swapChainDesc.SampleDesc.Count = 1;//マルチサンプルしない
+        swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;//描画のターゲットとして利用する
+        swapChainDesc.BufferCount = 2;//ダブルバッファ
+        swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;//モニタに移したら、中身居を破棄
+
+        ///---------------------------------------------------------------------///
+        ///--------------SwapChain(スワップチェーン)を生成する----------------------///
+        ///---------------------------------------------------------------------///
+        HRESULT hr = dxgiFactory->CreateSwapChainForHwnd(commandQueue.Get(), hwnd, &swapChainDesc, nullptr, nullptr, reinterpret_cast<IDXGISwapChain1**>(swapChain_.GetAddressOf()));
+        assert(SUCCEEDED(hr));
+
+        // バックバッファの取得
+        // SwapChainからResourceを引っ張ってくる
+        for (int i = 0; i < 2; ++i) {
+            hr = swapChain_->GetBuffer(i, IID_PPV_ARGS(&resources_[i]));
+            //上手く取得できなければ起動できない
+            assert(SUCCEEDED(hr));
+        }
+    }
+}
+
+============================================================
+File Path: project/Engine/base/DirectX/Core/SwapChainManager.h
+============================================================
+#pragma once
+#include <wrl.h>
+#include <dxgi1_6.h>
+#include <d3d12.h>
+#include <cstdint>
+#include <array>
+
+namespace MyEngine {
+    class SwapChainManager {
+    public: // メンバ関数
+        void Initialize(
+            HWND hwnd,
+            Microsoft::WRL::ComPtr<ID3D12CommandQueue>& commandQueue,
+            Microsoft::WRL::ComPtr<IDXGIFactory7>& dxgiFactory,
+            uint32_t width,
+            uint32_t height
+        );
+    private: // メンバ変数
+        // SwapChain(スワップチェーン)
+        Microsoft::WRL::ComPtr <IDXGISwapChain4> swapChain_;
+        // スワップチェーンリソース
+        std::array<Microsoft::WRL::ComPtr<ID3D12Resource>, 2> resources_;
+    public: // getter
+        Microsoft::WRL::ComPtr<IDXGISwapChain4> GetSwapChain() const { return swapChain_; }
+        // リソース配列ごと取得したい場合（参照 or ポインタ）
+        const std::array<Microsoft::WRL::ComPtr<ID3D12Resource>, 2>& GetResources() const { return resources_; }
+        Microsoft::WRL::ComPtr<ID3D12Resource> GetBuffer(uint32_t index) const { return resources_[index]; }
+    };
+}
+
+============================================================
+File Path: project/Engine/base/DirectX/Descriptors/DescriptorUtils.cpp
+============================================================
+#include "DescriptorUtils.h"
+
+namespace MyEngine {
+    namespace DescriptorUtils {
+
+        D3D12_CPU_DESCRIPTOR_HANDLE GetCPUDescriptorHandle(Microsoft::WRL::ComPtr <ID3D12DescriptorHeap>& descriptorHeap, uint32_t descriptorsize, uint32_t index) {
+
+            D3D12_CPU_DESCRIPTOR_HANDLE handleCPU = descriptorHeap->GetCPUDescriptorHandleForHeapStart();
+            handleCPU.ptr += (descriptorsize * index);
+            return handleCPU;
+        }
+
+        D3D12_GPU_DESCRIPTOR_HANDLE GetGPUDescriptorHandle(Microsoft::WRL::ComPtr <ID3D12DescriptorHeap>& descriptorHeap, uint32_t descriptorsize, uint32_t index) {
+            D3D12_GPU_DESCRIPTOR_HANDLE handleGPU = descriptorHeap->GetGPUDescriptorHandleForHeapStart();
+            handleGPU.ptr += (descriptorsize * index);
+            return handleGPU;
+        }
+    }
+}
+
+============================================================
+File Path: project/Engine/base/DirectX/Descriptors/DescriptorUtils.h
+============================================================
+#pragma once
+#include <d3d12.h>
+#include <wrl.h>
+#include <cstdint>
+
+namespace MyEngine {
+	namespace DescriptorUtils {
+		/// <summary>
+		/// 指定番号のCPUディスクリプタハンドルを取得する
+		/// </summary>
+		D3D12_CPU_DESCRIPTOR_HANDLE GetCPUDescriptorHandle(Microsoft::WRL::ComPtr <ID3D12DescriptorHeap>& descriptorHeap, uint32_t descriptorsize, uint32_t index);
+
+		/// <summary>
+		/// 指定番号のGPUディスクリプタハンドルの取得をする
+		/// </summary>
+		D3D12_GPU_DESCRIPTOR_HANDLE GetGPUDescriptorHandle(Microsoft::WRL::ComPtr<ID3D12DescriptorHeap>& descriptorHeap, uint32_t descriptorsize, uint32_t index);
+	};
+}
+
+============================================================
+File Path: project/Engine/base/DirectX/Descriptors/DsvManager.cpp
+============================================================
+#include "DsvManager.h"
+#include <ResourceFactory.h>
+#include <DescriptorUtils.h>
+
+using namespace MyEngine::ResourceFactory;
+using namespace MyEngine::DescriptorUtils;
+
+namespace MyEngine {
+    void DsvManager::Initialize(DirectXCommon* directXCommon) {
+        assert(directXCommon);
+        // 引数で受け取ってメンバ変数に記録する 
+        this->dxCommon_ = directXCommon;
+
+        // DSV用のヒープでディスクリプタの数は1。DSVはshader内で触るものではないので、ShaderVisibleはfalse
+        dsvDescriptorHeap = dxCommon_->CreateDescriptorHeap(D3D12_DESCRIPTOR_HEAP_TYPE_DSV, 1, false);
+        // DescriptorSizeを取得する
+        descriptorsizeDSV = dxCommon_->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
+
+        //------------------深度ステルスビューの初期化---------------------//
+        /*------------------------------------------------------------*/
+        /*--------------------------DSVの設定--------------------------*/
+        /*------------------------------------------------------------*/
+        // DepthStencilTextureをウインドウのサイズで作成
+        depthStencilResource = CreateDepthStencilTextureResource(dxCommon_->GetDevice(), WinApp::kClientWidth, WinApp::kClientHeight);
+
+        // DSVの設定
+        D3D12_DEPTH_STENCIL_VIEW_DESC dsvDesc{};
+        dsvDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;//Format。基本的にはResource合わせる
+        dsvDesc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D; //2dTexture 
+        // DSVDescの先頭にDSVを作る
+        dxCommon_->GetDevice()->CreateDepthStencilView(depthStencilResource.Get(), &dsvDesc, dsvDescriptorHeap->GetCPUDescriptorHandleForHeapStart());
+
+        // DepthStencilStateの設定
+        // Depthの機能を有効化する
+        depthStencilDesc.DepthEnable = true;
+        // 書き込みする
+        depthStencilDesc.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ALL;
+        // 書き込みしない
+        //depthStencilDesc.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ZERO;
+        // 比較関数はLessEqual。つまり、近ければ描画される
+        depthStencilDesc.DepthFunc = D3D12_COMPARISON_FUNC_LESS_EQUAL;
+    }
+}
+
+============================================================
+File Path: project/Engine/base/DirectX/Descriptors/DsvManager.h
+============================================================
+#pragma once
+#include <DirectXCommon.h>
+
+namespace MyEngine {
+	class DsvManager {
+	public: // メンバ関数
+
+		// 初期化
+		void Initialize(DirectXCommon* directXCommon);
+
+
+		Microsoft::WRL::ComPtr <ID3D12DescriptorHeap> GetDsvDescriptorHeap() const { return dsvDescriptorHeap; }
+
+		D3D12_DEPTH_STENCIL_DESC GetDepthStencilDesc() const { return depthStencilDesc; }
+		void SetDepthStencilDesc(D3D12_DEPTH_STENCIL_DESC StencilDesc) { depthStencilDesc = StencilDesc; }
+
+	private: // メンバ変数		
+		// ポインタ
+		DirectXCommon* dxCommon_ = nullptr;
+		// ディスクリプタ
+		Microsoft::WRL::ComPtr <ID3D12DescriptorHeap> dsvDescriptorHeap;	// DSV用のヒープでディスクリプタ
+		// 各DescriptorSizeを取得する
+		uint32_t descriptorsizeDSV;	 // DSV用
+		// DepthStencilTextureをウインドウのサイズ
+		Microsoft::WRL::ComPtr <ID3D12Resource> depthStencilResource;
+		// DepthStencilStateの設定
+		D3D12_DEPTH_STENCIL_DESC depthStencilDesc{};
+	};
+}
+
+============================================================
+File Path: project/Engine/base/DirectX/Descriptors/RtvManager.cpp
+============================================================
+#include "RtvManager.h"
+#include <ResourceFactory.h>
+#include <DescriptorUtils.h>
+
+using namespace MyEngine::ResourceFactory;
+using namespace MyEngine::DescriptorUtils;
+
+namespace MyEngine {
+    void RtvManager::Initialize(DirectXCommon* directXCommon) {
+        assert(directXCommon);
+        // 引数で受け取ってメンバ変数に記録する 
+        this->dxCommon_ = directXCommon;
+        // RTV用のヒープでディスクリプタの数は2。RTVはshader内で触るものではないので、ShaderVisibleはfalse
+        descriptorHeap = dxCommon_->CreateDescriptorHeap(D3D12_DESCRIPTOR_HEAP_TYPE_RTV, 3, false);
+        // DescriptorSizeを取得する
+        descriptorSize = dxCommon_->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
+
+        /*--------------------------------------------------------------------------------*/
+        /*--------------------------レンダーターゲットビューの初期化---------------------------*/
+        /*--------------------------------------------------------------------------------*/
+
+        // カスタムRenderTarget用のリソース作成
+        kRenderTargetClearValue = { 0.1f,0.25f,0.5f,1.0f };
+        // [2]にrenderTexture を作る
+        renderTextureResource = CreateRenderTextureResource(
+            dxCommon_->GetDevice().Get(),
+            WinApp::kClientWidth,
+            WinApp::kClientHeight,
+            DXGI_FORMAT_R8G8B8A8_UNORM_SRGB,
+            kRenderTargetClearValue
+        );
+
+        /*-----------------------------------------------------------*/
+        /*--------------------------RTVの設定--------------------------*/
+        /*------------------------------------------------------------*/
+
+        //RTVの設定
+        rtvDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;//出力結果をSRGB2変換して書き込む
+        rtvDesc.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2D;//2Dテクスチャとして読み込む
+        //ディスクリプタの先頭を取得する
+        D3D12_CPU_DESCRIPTOR_HANDLE rtvStartHandle = GetCPUDescriptorHandle(descriptorHeap, descriptorSize, 0);
+
+        for (uint32_t i = 0; i < rtvHandlenum; ++i) {
+            rtvHandles[i] = rtvStartHandle;
+
+            ID3D12Resource* target = nullptr;
+            if (i < 2) {
+                target = dxCommon_->GetSwapChain()->GetBuffer(i).Get(); // 0, 1 は swapChain
+            } else {
+                target = renderTextureResource.Get(); // 2 は renderTexture
+            }
+
+            dxCommon_->GetDevice()->CreateRenderTargetView(target, &rtvDesc, rtvHandles[i]);
+            rtvStartHandle.ptr += descriptorSize;
+        }
+    }
+
+    void RtvManager::PreDrawRenderTexture() {
+        // バリア: SRV → RenderTarget
+        if (renderTextureState != RenderTextureState::RenderTarget) {
+            TransitionResource(
+                renderTextureResource.Get(),
+                D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
+                D3D12_RESOURCE_STATE_RENDER_TARGET);
+            renderTextureState = RenderTextureState::RenderTarget;
+        }
+    }
+
+    void RtvManager::PostDrawRenderTexture() {
+        // もし現在のテクスチャの状態が PixelShaderResource（シェーダーリソースビュー）でない場合、
+        if (renderTextureState != RenderTextureState::PixelShaderResource) {
+            TransitionResource(renderTextureResource.Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
+            renderTextureState = RenderTextureState::PixelShaderResource;  // 現在の状態を記録しておく。
+        }
+    }
+
+
+    void RtvManager::TransitionResource(ID3D12Resource* resource, D3D12_RESOURCE_STATES beforeState, D3D12_RESOURCE_STATES afterState) {
+        // バリアの設定
+        D3D12_RESOURCE_BARRIER barrier{};
+        barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;                      // 今回のバリアはTransition
+        barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;                           // Noneにしておく 
+        barrier.Transition.pResource = resource;                                    // バリアを張る対象のリソース。
+        barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;   // 全サブリソースに対してバリアを張る
+        barrier.Transition.StateBefore = beforeState;                               // 遷移前のResourceState
+        barrier.Transition.StateAfter = afterState;                                 // TransitionBarrierを張る
+        // コマンドリストにバリアを追加
+        dxCommon_->GetCommandList()->ResourceBarrier(1, &barrier);
+    }
+}
+
+============================================================
+File Path: project/Engine/base/DirectX/Descriptors/RtvManager.h
+============================================================
+#pragma once
+#include <DirectXCommon.h>
+
+namespace MyEngine {
+	// レンダーテクスチャの状態変異
+	enum class RenderTextureState {
+		RenderTarget,             // 現在、描画先（RTV）として使用中
+		PixelShaderResource       // 現在、SRVとしてシェーダから読み込み可能
+	};
+
+	class RtvManager {
+	public: // メンバ関数
+
+		// 初期化
+		void Initialize(DirectXCommon* directXCommon);
+
+		/// <summary>
+		/// レンダーテクスチャのテクスチャリソースの生成
+		/// </summary>
+		void PreDrawRenderTexture();
+
+		/// <summary>
+		/// レンダーテクスチャの描画後処理
+		/// </summary>
+		void PostDrawRenderTexture();
+
+		// RTVのハンドル取得（インデックス指定）
+		D3D12_CPU_DESCRIPTOR_HANDLE GetRtvHandle(uint32_t index) const { return rtvHandles[index]; }
+
+		// リソースの状態を遷移
+		void TransitionResource(ID3D12Resource* resource, D3D12_RESOURCE_STATES beforeState, D3D12_RESOURCE_STATES afterState);
+
+	private: // メンバ変数
+		// ポインタ
+		DirectXCommon* dxCommon_ = nullptr;
+		// RTV用デスクリプタヒープ
+		Microsoft::WRL::ComPtr <ID3D12DescriptorHeap> descriptorHeap;
+		// RTV用のデスクリプタサイズ
+		uint32_t descriptorSize;
+		//RTVの設定
+		D3D12_RENDER_TARGET_VIEW_DESC rtvDesc{};
+		//ディスクリプタの先頭を取得する
+		D3D12_CPU_DESCRIPTOR_HANDLE rtvStartHandle;
+		//RTVを2つ作るのでディスクリプタハンドルを2つ用意
+		const uint32_t rtvHandlenum = 3;
+		D3D12_CPU_DESCRIPTOR_HANDLE rtvHandles[3];
+		// オフスクリーン用のレンダーテクスチャ		
+		// レンダーテクスチャの状態変異
+		RenderTextureState renderTextureState = RenderTextureState::RenderTarget; // 初期状態はRenderTarget
+		Microsoft::WRL::ComPtr<ID3D12Resource> renderTextureResource;              // カスタムRenderTarget用のリソース
+		Vector4 kRenderTargetClearValue{};                                         // カスタムRenderTargetのリソースカラー
+		uint32_t srvIndexRenderTexture;                                            // レンダーテクスチャのSRVインデックス
+	public:
+		// ディスクリプタヒープ取得
+		Microsoft::WRL::ComPtr <ID3D12DescriptorHeap>  GetHeap() const { return descriptorHeap; }
+		Microsoft::WRL::ComPtr <ID3D12Resource> GetrenderTextureResource() const { return renderTextureResource; }
+		const Vector4 GetkRenderTargetClearValue() const { return kRenderTargetClearValue; }
+	};
+}
+
+============================================================
+File Path: project/Engine/base/DirectX/Descriptors/SrvManager.cpp
+============================================================
+#include "SrvManager.h"
+
+using namespace Microsoft::WRL;
+
+namespace MyEngine {
+	const uint32_t 	SrvManager::kMaxSRVCount = 512;
+
+	void SrvManager::Initialize(DirectXCommon* directXCommon) {
+		// 引数で受け取ってメンバ変数に記録する
+		this->directXCommon = directXCommon;
+
+		// SRV用のヒープでディスクリプタの数は128.RTVはshader内で触るものなので、ShaderVisibleはtrue
+		descriptorHeap = directXCommon->CreateDescriptorHeap(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, kMaxSRVCount, true);
+		descriptorSize = directXCommon->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	}
+
+	uint32_t SrvManager::Allocate() {
+		// NULL検出
+		assert(useIndex < kMaxSRVCount);
+		// return する番号を一旦記録しておく
+		int index = useIndex;
+		// 次回のために番号を1進める
+		useIndex++;
+		// 上で記録した番号をreturn
+		return index;
+	};
+
+	D3D12_CPU_DESCRIPTOR_HANDLE SrvManager::GetCPUDescriptorHandle(uint32_t index)
+	{
+		D3D12_CPU_DESCRIPTOR_HANDLE handleCPU = descriptorHeap->GetCPUDescriptorHandleForHeapStart();
+		handleCPU.ptr += (descriptorSize * index);
+		return handleCPU;
+	}
+
+	D3D12_GPU_DESCRIPTOR_HANDLE SrvManager::GetGPUDescriptorHandle(uint32_t index)
+	{
+		D3D12_GPU_DESCRIPTOR_HANDLE handleGPU = descriptorHeap->GetGPUDescriptorHandleForHeapStart();
+		handleGPU.ptr += (descriptorSize * index);
+		return handleGPU;
+	}
+
+	void SrvManager::CreateSRVforTexture2D(uint32_t srvIndex, ComPtr<ID3D12Resource> pResource, DXGI_FORMAT Format, UINT MipLevels, bool isCubemap) {
+		// SRVの設定
+		D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc{};
+		srvDesc.Format = Format;
+		srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+		if (isCubemap) { // metadataからCubemapかどうかを取得
+			srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURECUBE;
+			srvDesc.TextureCube.MostDetailedMip = 0; // unionがTextureCudeになったが、内部パラメータの意味はTexture2dと変わらない
+			srvDesc.TextureCube.MipLevels = UINT_MAX;
+			srvDesc.TextureCube.ResourceMinLODClamp = 0.0f;
+		} else {
+			// 今まで通り2d,textureの設定を行う
+			srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;  //2Dテクスチャ
+			srvDesc.Texture2D.MipLevels = UINT(MipLevels);
+		}
+		// SRVの生成
+		directXCommon->GetDevice()->CreateShaderResourceView(pResource.Get(), &srvDesc, GetCPUDescriptorHandle(srvIndex));
+	}
+
+	void SrvManager::CreateSRVforStructuredBuffer(uint32_t srvIndex, ComPtr<ID3D12Resource> pResource, UINT numElements, UINT structureByteStride) {
+		// SRVの設定
+		D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc{};
+		srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+		srvDesc.ViewDimension = D3D12_SRV_DIMENSION_BUFFER;  // バッファ
+		srvDesc.Buffer.NumElements = numElements;
+		srvDesc.Buffer.StructureByteStride = UINT(structureByteStride);
+		// SRVの生成
+		directXCommon->GetDevice()->CreateShaderResourceView(pResource.Get(), &srvDesc, GetCPUDescriptorHandle(srvIndex));
+	}
+
+	uint32_t  SrvManager::CreateSRVForRenderTexture(ComPtr<ID3D12Resource> resource) {
+		uint32_t index = Allocate();
+		// SRVの設定
+		D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc{};
+		srvDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
+		srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+		srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+		srvDesc.Texture2D.MipLevels = 1;
+		// SRVの生成
+		directXCommon->GetDevice()->CreateShaderResourceView(resource.Get(), &srvDesc, GetCPUDescriptorHandle(index));
+		return index; // 作ったSRVのインデックスを返す！
+	}
+
+	void SrvManager::PreDraw() {
+		// 描画用のDescriptorHeapの設定
+		ID3D12DescriptorHeap* descriptorHeaps[] = { descriptorHeap.Get() };
+		directXCommon->GetCommandList()->SetDescriptorHeaps(1, descriptorHeaps);
+	}
+
+	void SrvManager::SetGraphicsRootDescriptorTable(UINT RootParameterIndex, uint32_t srvIndex) {
+		directXCommon->GetCommandList()->SetGraphicsRootDescriptorTable(RootParameterIndex, GetGPUDescriptorHandle(srvIndex));
+	}
+
+	bool SrvManager::TextureDataCheck() {
+		if (useIndex < kMaxSRVCount) {
+			return true;
+		}
+		// 確保しているテクスチャより大きい場合はエラー
+		return false;
+	}
+}
+
+============================================================
+File Path: project/Engine/base/DirectX/Descriptors/SrvManager.h
+============================================================
+#pragma once
+#include <DirectXCommon.h>
+
+namespace MyEngine {
+	class SrvManager {
+	public: // メンバ関数
+
+		// 最大SRV数(最大テクスチャ枚数)
+		static const uint32_t kMaxSRVCount;
+
+		// 初期化
+		void Initialize(DirectXCommon* directXCommon);
+		// SRVマネージャーの確保
+		uint32_t Allocate();
+		// 描画前のDescriptorHeapの設定
+		void PreDraw();
+
+		/// <summary>
+		/// 指定番号のCPUディスクリプタハンドルを取得する
+		/// </summary>
+		D3D12_CPU_DESCRIPTOR_HANDLE GetCPUDescriptorHandle(uint32_t index);
+		/// <summary>
+		/// 指定番号のGPUディスクリプタハンドルの取得をする
+		/// </summary>
+		D3D12_GPU_DESCRIPTOR_HANDLE GetGPUDescriptorHandle(uint32_t index);
+
+		// SRV生成 (テクスチャ)
+		void CreateSRVforTexture2D(uint32_t srvIndex, Microsoft::WRL::ComPtr <ID3D12Resource> pResource, DXGI_FORMAT Format, UINT MipLevels, bool isCubemap);
+		// SRV生成 (Structured Buffer用)
+		void CreateSRVforStructuredBuffer(uint32_t srvIndex, Microsoft::WRL::ComPtr <ID3D12Resource> pResource, UINT numElements, UINT structureByteStride);
+		// SRV生成(レンダーテクスチャ)
+		uint32_t  CreateSRVForRenderTexture(Microsoft::WRL::ComPtr <ID3D12Resource> resource);
+
+		// 描画のセット
+		void SetGraphicsRootDescriptorTable(UINT RootParameterIndex, uint32_t srvIndex);
+
+		// テクスチャの確保が可能かチェック
+		bool TextureDataCheck();
+
+	private: // メンバ変数
+		// ポインタ
+		DirectXCommon* directXCommon = nullptr;
+		// SRV用デスクリプタヒープ
+		Microsoft::WRL::ComPtr <ID3D12DescriptorHeap> descriptorHeap;
+		// SRV用のデスクリプタサイズ
+		uint32_t descriptorSize;
+		// 次に使用するSRVインデックス
+		uint32_t useIndex = 0;
+	public:
+		// getter
+		Microsoft::WRL::ComPtr <ID3D12DescriptorHeap> GetDescriptorHeap() { return descriptorHeap; }
+	};
+}
+
+============================================================
+File Path: project/Engine/base/DirectX/Pipeline/ShaderCompiler.cpp
+============================================================
+#include "ShaderCompiler.h"
+#include <Logger.h>
+#include <StringUtility.h>
+#include <format>
+#include <cassert>
+
+namespace MyEngine {
+
+    using namespace Microsoft::WRL;
+
+    // 静的メンバ変数の定義
+    std::unique_ptr<ShaderCompiler> ShaderCompiler::instance = nullptr;
+
+    // シングルトンインスタンスの取得
+    ShaderCompiler* ShaderCompiler::GetInstance() {
+        if (!instance) {
+            instance = std::make_unique<ShaderCompiler>();
+        }
+        return instance.get();
+    }
+
+    // 終了
+    void ShaderCompiler::Finalize() {
+        instance.reset();  // `delete` 不要
+    }
+
+    void ShaderCompiler::Initialize() {
+        // DXCコンパイラの生成
+        HRESULT hr;
+
+        // dxCompilerを初期化
+        hr = DxcCreateInstance(CLSID_DxcUtils, IID_PPV_ARGS(&dxcUtils));
+        assert(SUCCEEDED(hr));
+        hr = DxcCreateInstance(CLSID_DxcCompiler, IID_PPV_ARGS(&dxcCompiler));
+        assert(SUCCEEDED(hr));
+        //現時点でincludeはしないが、includeに対応するための設定を行っていく
+        hr = dxcUtils->CreateDefaultIncludeHandler(&includeHandler);
+        assert(SUCCEEDED(hr));
+    }
+
+    ComPtr <IDxcBlob> ShaderCompiler::CompileShader(const std::wstring& filePath, const wchar_t* profile) {
+        //1.hlslファイルを読む
+        //これからシェーダーをコンパイルする旨をログに出す
+        Logger::Log(StringUtility::ConvertString(std::format(L"Begin CompileShader,path:{},profile:{}\n", filePath, profile)));
+        Microsoft::WRL::ComPtr <IDxcBlobEncoding> shaderSource = nullptr;
+        HRESULT hr = dxcUtils->LoadFile(filePath.c_str(), nullptr, &shaderSource);
+        //読めなかったら止める
+        assert(SUCCEEDED(hr));
+
+        //読み込んだファイルの内容を設定する
+        DxcBuffer shaderSourceBuffer;
+        shaderSourceBuffer.Ptr = shaderSource->GetBufferPointer();
+        shaderSourceBuffer.Size = shaderSource->GetBufferSize();
+        shaderSourceBuffer.Encoding = DXC_CP_UTF8;//UTF8のコードであることを通知
+
+        //2.Compileする
+        LPCWSTR arguments[] =
+        {
+
+             filePath.c_str(),
+             L"-E",L"main",
+             L"-T",profile,
+             L"-Zi",L"-Qembed_debug",
+             L"-Od",
+             L"-Zpr",
+        };
+        //実際にshaderをコンパイルする
+        ComPtr <IDxcResult> shaderResult = nullptr;
+        hr = dxcCompiler->Compile(
+            &shaderSourceBuffer,
+            arguments,
+            _countof(arguments),
+            includeHandler.Get(),
+            IID_PPV_ARGS(&shaderResult)
+        );
+        assert(SUCCEEDED(hr));
+
+        //警告・エラーが出てたらログを出して止める
+        ComPtr <IDxcBlobUtf8> shaderError = nullptr;
+        shaderResult->GetOutput(DXC_OUT_ERRORS, IID_PPV_ARGS(&shaderError), nullptr);
+        if (shaderError != nullptr && shaderError->GetStringLength() != 0) {
+            Logger::Log(shaderError->GetStringPointer());
+            assert(false);
+        }
+        //コンパイル結果から実行用のバイナリ部分を取得
+        Microsoft::WRL::ComPtr <IDxcBlob> shaderBlob = nullptr;
+        hr = shaderResult->GetOutput(DXC_OUT_OBJECT, IID_PPV_ARGS(&shaderBlob), nullptr);
+        assert(SUCCEEDED(hr));
+        //成功したログを出す
+        Logger::Log(StringUtility::ConvertString(std::format(L"Compile Succeeded,path:{},profile:{}\n", filePath, profile)));
+        //実行用のバイナリを返却
+        return shaderBlob;
+    }
+}
+
+============================================================
+File Path: project/Engine/base/DirectX/Pipeline/ShaderCompiler.h
+============================================================
+#pragma once
+#include <DirectXCommon.h>
+
+namespace MyEngine {
+	// シェーダーコンパイル
+	class ShaderCompiler {
+	private:
+		static std::unique_ptr<ShaderCompiler> instance;
+
+		ShaderCompiler(ShaderCompiler&) = delete;
+		ShaderCompiler& operator=(ShaderCompiler&) = delete;
+	public: // メンバ関数
+		ShaderCompiler() = default;
+		~ShaderCompiler() = default;
+
+		// シングルトンインスタンスの取得
+		static ShaderCompiler* GetInstance();
+		// 終了
+		void Finalize();
+		// 初期化
+		void Initialize();
+
+		// コンパイルシェーダー
+		Microsoft::WRL::ComPtr <IDxcBlob> CompileShader(const std::wstring& filePath, const wchar_t* profile);
+	private: // メンバ変数
+		// DXCコンパイラの初期化
+		Microsoft::WRL::ComPtr <IDxcUtils> dxcUtils = nullptr;
+		Microsoft::WRL::ComPtr <IDxcCompiler3> dxcCompiler = nullptr;
+		Microsoft::WRL::ComPtr <IDxcIncludeHandler> includeHandler = nullptr;
+	};
+}
+
+============================================================
+File Path: project/Engine/base/DirectX/Screen/ViewportManager.cpp
+============================================================
+#include "ViewportManager.h"
+
+namespace MyEngine {
+    void ViewportManager::Initialize(uint32_t width, uint32_t height) {
+        // ビューポートの初期化
+        //クライアント領域のサイズと一緒にして画面全体に表示
+        viewport_.Width = static_cast<float>(width);
+        viewport_.Height = static_cast<float>(height);
+        viewport_.TopLeftX = 0;
+        viewport_.TopLeftY = 0;
+        viewport_.MinDepth = 0.0f;
+        viewport_.MaxDepth = 1.0f;
+
+        // シザリング矩形
+        // 基本的にビューポートと同じ矩形が構成されるようにする
+        scissorRect_.left = 0;
+        scissorRect_.right = static_cast<LONG>(width);
+        scissorRect_.top = 0;
+        scissorRect_.bottom = static_cast<LONG>(height);
+    }
+}
+
+============================================================
+File Path: project/Engine/base/DirectX/Screen/ViewportManager.h
+============================================================
+#pragma once
+#include <d3d12.h>
+#include <cstdint>
+
+namespace MyEngine {
+	// ビューポート・シザー管理
+	class ViewportManager {
+	public: // メンバ関数
+		/// <summary>
+		/// 初期化
+		/// </summary>
+		void Initialize(uint32_t width, uint32_t height);
+	private: // メンバ変数
+		// ビューポート
+		D3D12_VIEWPORT viewport_{};
+		// シザー短形
+		D3D12_RECT scissorRect_{};
+	public: // getter
+		const D3D12_VIEWPORT& GetViewport() const { return viewport_; }
+		const D3D12_RECT& GetScissorRect() const { return scissorRect_; }
 	};
 }
 
@@ -3846,7 +5104,7 @@ File Path: project/MyGame.vcxproj
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)engine\2d;$(ProjectDir)engine\3d;$(ProjectDir)engine\audio;$(ProjectDir)engine\base;$(ProjectDir)engine\io;$(ProjectDir)engine\math;$(ProjectDir)engine\scene;$(ProjectDir)engine\3d\Particle;$(ProjectDir)engine\camera;$(ProjectDir)engine\base\DirectXCommon;$(ProjectDir)engine\base\Utility;$(ProjectDir)engine\base\ViewManager;$(ProjectDir)engine\math\Light;$(ProjectDir)engine\resource;$(ProjectDir)externals\nlohmann;$(ProjectDir)externals\assimp\include;$(ProjectDir)engine\editor;$(ProjectDir)engine\editor\core;$(ProjectDir)engine\editor\console;$(ProjectDir)engine\editor\layout;$(ProjectDir)engine\editor\windows;$(ProjectDir)engine\time;$(ProjectDir)engine\editor\layout\editormenubar;$(ProjectDir)application\scene;$(ProjectDir)engine\math\Base;$(ProjectDir)engine\math\Geometry;$(ProjectDir)engine\math\Transform;$(ProjectDir)engine\math\Functions;$(ProjectDir)engine\3d\Model;$(ProjectDir)engine\3d\Object;$(ProjectDir)engine\3d\Skybox</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)engine\2d;$(ProjectDir)engine\3d;$(ProjectDir)engine\audio;$(ProjectDir)engine\base;$(ProjectDir)engine\io;$(ProjectDir)engine\math;$(ProjectDir)engine\scene;$(ProjectDir)engine\3d\Particle;$(ProjectDir)engine\camera;$(ProjectDir)engine\base\DirectX;$(ProjectDir)engine\base\Utility;$(ProjectDir)engine\base\DirectX\Core;$(ProjectDir)engine\math\Light;$(ProjectDir)engine\resource;$(ProjectDir)externals\nlohmann;$(ProjectDir)externals\assimp\include;$(ProjectDir)engine\editor;$(ProjectDir)engine\editor\core;$(ProjectDir)engine\editor\console;$(ProjectDir)engine\editor\layout;$(ProjectDir)engine\editor\windows;$(ProjectDir)engine\time;$(ProjectDir)engine\editor\layout\editormenubar;$(ProjectDir)application\scene;$(ProjectDir)engine\math\Base;$(ProjectDir)engine\math\Geometry;$(ProjectDir)engine\math\Transform;$(ProjectDir)engine\math\Functions;$(ProjectDir)engine\3d\Model;$(ProjectDir)engine\3d\Object;$(ProjectDir)engine\3d\Skybox;$(ProjectDir)engine\base\DirectX\Descriptors;$(ProjectDir)engine\base\DirectX\Pipeline;$(ProjectDir)engine\base\DirectX\Screen</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
     </ClCompile>
     <Link>
@@ -3878,7 +5136,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)engine\2d;$(ProjectDir)engine\3d;$(ProjectDir)engine\audio;$(ProjectDir)engine\base;$(ProjectDir)engine\io;$(ProjectDir)engine\math;$(ProjectDir)engine\scene;$(ProjectDir)engine\3d\Particle;$(ProjectDir)engine\camera;$(ProjectDir)engine\base\DirectXCommon;$(ProjectDir)engine\base\Utility;$(ProjectDir)engine\base\ViewManager;$(ProjectDir)engine\math\Light;$(ProjectDir)engine\resource;$(ProjectDir)externals\nlohmann;$(ProjectDir)externals\assimp\include;$(ProjectDir)engine\editor;$(ProjectDir)engine\editor\core;$(ProjectDir)engine\editor\console;$(ProjectDir)engine\editor\layout;$(ProjectDir)engine\editor\windows;$(ProjectDir)engine\time;$(ProjectDir)engine\editor\layout\editormenubar;$(ProjectDir)application\scene;$(ProjectDir)engine\math\Base;$(ProjectDir)engine\math\Geometry;$(ProjectDir)engine\math\Transform;$(ProjectDir)engine\math\Functions;$(ProjectDir)engine\3d\Model;$(ProjectDir)engine\3d\Object;$(ProjectDir)engine\3d\Skybox</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)engine\2d;$(ProjectDir)engine\3d;$(ProjectDir)engine\audio;$(ProjectDir)engine\base;$(ProjectDir)engine\io;$(ProjectDir)engine\math;$(ProjectDir)engine\scene;$(ProjectDir)engine\3d\Particle;$(ProjectDir)engine\camera;$(ProjectDir)engine\base\DirectX;$(ProjectDir)engine\base\Utility;$(ProjectDir)engine\base\DirectX\Core;$(ProjectDir)engine\math\Light;$(ProjectDir)engine\resource;$(ProjectDir)externals\nlohmann;$(ProjectDir)externals\assimp\include;$(ProjectDir)engine\editor;$(ProjectDir)engine\editor\core;$(ProjectDir)engine\editor\console;$(ProjectDir)engine\editor\layout;$(ProjectDir)engine\editor\windows;$(ProjectDir)engine\time;$(ProjectDir)engine\editor\layout\editormenubar;$(ProjectDir)application\scene;$(ProjectDir)engine\math\Base;$(ProjectDir)engine\math\Geometry;$(ProjectDir)engine\math\Transform;$(ProjectDir)engine\math\Functions;$(ProjectDir)engine\3d\Model;$(ProjectDir)engine\3d\Object;$(ProjectDir)engine\3d\Skybox;$(ProjectDir)engine\base\DirectX\Descriptors;$(ProjectDir)engine\base\DirectX\Pipeline;$(ProjectDir)engine\base\DirectX\Screen</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -3909,6 +5167,20 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="Engine\3d\Object\Object3dCommon.cpp" />
     <ClCompile Include="Engine\3d\Skybox\Skybox.cpp" />
     <ClCompile Include="Engine\3d\Skybox\SkyboxCommon.cpp" />
+    <ClCompile Include="Engine\base\CopylmageCommon.cpp" />
+    <ClCompile Include="Engine\base\DirectX\Core\DirectXCommon.cpp" />
+    <ClCompile Include="Engine\base\DirectX\Core\FenceManager.cpp" />
+    <ClCompile Include="Engine\base\DirectX\Core\FPSController.cpp" />
+    <ClCompile Include="Engine\base\DirectX\Core\SwapChainManager.cpp" />
+    <ClCompile Include="Engine\base\DirectX\Descriptors\DescriptorUtils.cpp" />
+    <ClCompile Include="Engine\base\DirectX\Descriptors\DsvManager.cpp" />
+    <ClCompile Include="Engine\base\DirectX\Descriptors\RtvManager.cpp" />
+    <ClCompile Include="Engine\base\DirectX\Descriptors\SrvManager.cpp" />
+    <ClCompile Include="Engine\base\DirectX\Pipeline\ShaderCompiler.cpp" />
+    <ClCompile Include="Engine\base\DirectX\Screen\ViewportManager.cpp" />
+    <ClCompile Include="Engine\base\Framework.cpp" />
+    <ClCompile Include="Engine\base\ImGuiManager.cpp" />
+    <ClCompile Include="Engine\base\WinApp.cpp" />
     <ClCompile Include="engine\editor\console\EditorConsole.cpp" />
     <ClCompile Include="engine\editor\console\MessageService.cpp" />
     <ClCompile Include="engine\editor\core\EditorManager.cpp" />
@@ -3917,12 +5189,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="engine\editor\layout\editormenubar\ObjectMenu.cpp" />
     <ClCompile Include="engine\editor\layout\editormenubar\SettingsMenu.cpp" />
     <ClCompile Include="engine\editor\windows\ConsoleWindow.cpp" />
-    <ClCompile Include="engine\base\ViewManager\DsvManager.cpp" />
-    <ClCompile Include="engine\base\ViewManager\RtvManager.cpp" />
     <ClCompile Include="engine\io\Controller.cpp" />
-    <ClCompile Include="engine\base\DirectXCommon\DescriptorUtils.cpp" />
-    <ClCompile Include="engine\base\CopylmageCommon.cpp" />
-    <ClCompile Include="engine\base\DirectXCommon\ShaderCompiler.cpp" />
     <ClCompile Include="engine\camera\CameraManager.cpp" />
     <ClCompile Include="engine\3d\Particle\ParticleCommon.cpp" />
     <ClCompile Include="engine\3d\Particle\ParticleEmitter.cpp" />
@@ -3937,15 +5204,10 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="Engine\math\Geometry\Collision.cpp" />
     <ClCompile Include="Engine\math\Geometry\PrimitiveGenerator.cpp" />
     <ClCompile Include="engine\resource\D3DResourceLeakChecker.cpp" />
-    <ClCompile Include="engine\base\DirectXCommon\DirectXCommon.cpp" />
-    <ClCompile Include="engine\base\Framework.cpp" />
-    <ClCompile Include="engine\base\ImGuiManager.cpp" />
     <ClCompile Include="engine\io\Input.cpp" />
     <ClCompile Include="engine\base\Utility\Logger.cpp" />
     <ClCompile Include="engine\scene\SceneFactory.cpp" />
     <ClCompile Include="application\scene\GameClearScene.cpp" />
-    <ClCompile Include="engine\base\DirectXCommon\FenceManager.cpp" />
-    <ClCompile Include="engine\base\DirectXCommon\FPSController.cpp" />
     <ClCompile Include="engine\time\TimeSystem.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="engine\resource\ModelManager.cpp" />
@@ -3953,13 +5215,9 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="engine\2d\SpriteCommon.cpp" />
     <ClCompile Include="engine\base\Utility\StringUtility.cpp" />
     <ClCompile Include="engine\resource\TextureManager.cpp" />
-    <ClCompile Include="engine\base\WinApp.cpp" />
-    <ClCompile Include="engine\base\ViewManager\SrvManager.cpp" />
     <ClCompile Include="engine\scene\MyGame.cpp" />
     <ClCompile Include="engine\scene\SceneManager.cpp" />
     <ClCompile Include="engine\resource\ResourceFactory.cpp" />
-    <ClCompile Include="engine\base\DirectXCommon\ViewportManager.cpp" />
-    <ClCompile Include="engine\base\DirectXCommon\SwapChainManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="application\scene\GameClearScene.h" />
@@ -3977,6 +5235,20 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="Engine\3d\Particle\RandomParameter.h" />
     <ClInclude Include="Engine\3d\Skybox\Skybox.h" />
     <ClInclude Include="Engine\3d\Skybox\SkyboxCommon.h" />
+    <ClInclude Include="Engine\base\CopylmageCommon.h" />
+    <ClInclude Include="Engine\base\DirectX\Core\DirectXCommon.h" />
+    <ClInclude Include="Engine\base\DirectX\Core\FenceManager.h" />
+    <ClInclude Include="Engine\base\DirectX\Core\FPSController.h" />
+    <ClInclude Include="Engine\base\DirectX\Core\SwapChainManager.h" />
+    <ClInclude Include="Engine\base\DirectX\Descriptors\DescriptorUtils.h" />
+    <ClInclude Include="Engine\base\DirectX\Descriptors\DsvManager.h" />
+    <ClInclude Include="Engine\base\DirectX\Descriptors\RtvManager.h" />
+    <ClInclude Include="Engine\base\DirectX\Descriptors\SrvManager.h" />
+    <ClInclude Include="Engine\base\DirectX\Pipeline\ShaderCompiler.h" />
+    <ClInclude Include="Engine\base\DirectX\Screen\ViewportManager.h" />
+    <ClInclude Include="Engine\base\Framework.h" />
+    <ClInclude Include="Engine\base\ImGuiManager.h" />
+    <ClInclude Include="Engine\base\WinApp.h" />
     <ClInclude Include="engine\editor\console\EditorConsole.h" />
     <ClInclude Include="engine\editor\console\EditorConsoleTypes.h" />
     <ClInclude Include="engine\editor\console\MessageService.h" />
@@ -3992,12 +5264,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="engine\editor\windows\ConsoleWindow.h" />
     <ClInclude Include="engine\camera\CameraTransform.h" />
     <ClInclude Include="engine\camera\CameraTypes.h" />
-    <ClInclude Include="engine\base\ViewManager\DsvManager.h" />
-    <ClInclude Include="engine\base\ViewManager\RtvManager.h" />
     <ClInclude Include="engine\io\Controller.h" />
-    <ClInclude Include="engine\base\DirectXCommon\DescriptorUtils.h" />
-    <ClInclude Include="engine\base\CopylmageCommon.h" />
-    <ClInclude Include="engine\base\DirectXCommon\ShaderCompiler.h" />
     <ClInclude Include="engine\camera\CameraManager.h" />
     <ClInclude Include="engine\3d\Particle\ParticleCommon.h" />
     <ClInclude Include="engine\3d\Particle\ParticleEmitter.h" />
@@ -4022,9 +5289,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="engine\math\Light\PointLight.h" />
     <ClInclude Include="engine\math\Light\SpotLight.h" />
     <ClInclude Include="engine\resource\D3DResourceLeakChecker.h" />
-    <ClInclude Include="engine\base\DirectXCommon\DirectXCommon.h" />
-    <ClInclude Include="engine\base\Framework.h" />
-    <ClInclude Include="engine\base\ImGuiManager.h" />
     <ClInclude Include="engine\io\Input.h" />
     <ClInclude Include="engine\base\Utility\Logger.h" />
     <ClInclude Include="engine\resource\ModelManager.h" />
@@ -4033,18 +5297,12 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="engine\2d\SpriteCommon.h" />
     <ClInclude Include="engine\base\Utility\StringUtility.h" />
     <ClInclude Include="engine\resource\TextureManager.h" />
-    <ClInclude Include="engine\base\WinApp.h" />
-    <ClInclude Include="engine\base\ViewManager\SrvManager.h" />
     <ClInclude Include="engine\scene\AbstractSceneFactory.h" />
     <ClInclude Include="engine\scene\BaseScene.h" />
     <ClInclude Include="engine\scene\MyGame.h" />
     <ClInclude Include="engine\scene\SceneFactory.h" />
     <ClInclude Include="engine\scene\SceneManager.h" />
     <ClInclude Include="engine\resource\ResourceFactory.h" />
-    <ClInclude Include="engine\base\DirectXCommon\FenceManager.h" />
-    <ClInclude Include="engine\base\DirectXCommon\ViewportManager.h" />
-    <ClInclude Include="engine\base\DirectXCommon\FPSController.h" />
-    <ClInclude Include="engine\base\DirectXCommon\SwapChainManager.h" />
     <ClInclude Include="Engine\scene\SceneName.h" />
     <ClInclude Include="engine\time\TimeSystem.h" />
   </ItemGroup>
@@ -4236,26 +5494,14 @@ File Path: project/MyGame.vcxproj.filters
     <Filter Include="リソース ファイル\shaders\Sprite">
       <UniqueIdentifier>{f7712655-1155-484d-8058-4ee95a16f0af}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ソース ファイル\engine\base\ViewManager">
-      <UniqueIdentifier>{bdba6ee3-ac54-4ce6-bbdd-7970e376e45a}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ソース ファイル\engine\base\Utility">
       <UniqueIdentifier>{8e33345e-5a44-4927-a1ae-28fa0b2998a3}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ソース ファイル\engine\base\DirectXCommon">
-      <UniqueIdentifier>{941116ce-1a37-4eda-b488-cde40d6909f7}</UniqueIdentifier>
     </Filter>
     <Filter Include="ソース ファイル\engine\resource">
       <UniqueIdentifier>{aa126d1c-d076-4dc5-9995-7d217c2d8e3a}</UniqueIdentifier>
     </Filter>
     <Filter Include="ヘッダー ファイル\engine\base\Utility">
       <UniqueIdentifier>{959b4794-2a7c-4e7d-9f24-be5df888e02f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ヘッダー ファイル\engine\base\ViewManager">
-      <UniqueIdentifier>{c3078c87-a168-474e-90ed-134b67d9c0df}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ヘッダー ファイル\engine\base\DirectXCommon">
-      <UniqueIdentifier>{8c15bfd4-5c05-46ae-9dc2-b16cb2ea4795}</UniqueIdentifier>
     </Filter>
     <Filter Include="ヘッダー ファイル\engine\resource">
       <UniqueIdentifier>{75b8f15d-9509-4d2a-9929-73b792609711}</UniqueIdentifier>
@@ -4359,6 +5605,36 @@ File Path: project/MyGame.vcxproj.filters
     <Filter Include="ヘッダー ファイル\engine\3d\Model">
       <UniqueIdentifier>{fe7ce3e2-b37c-45b1-a86d-c6cc02d6b66e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ソース ファイル\engine\base\DirectX">
+      <UniqueIdentifier>{973e2b87-8047-4310-979b-3c8afa879316}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\engine\base\DirectX\Core">
+      <UniqueIdentifier>{6a4e0df5-fc59-4682-9d02-527e7bfa0e24}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\engine\base\DirectX">
+      <UniqueIdentifier>{c5ce21e6-f462-4e1c-b149-27a78a20c1f9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\engine\base\DirectX\Core">
+      <UniqueIdentifier>{8087cd6c-bc9c-43b9-8b53-220064ea698e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\engine\base\DirectX\Descriptors">
+      <UniqueIdentifier>{5526f512-cccf-42ea-8ee2-e658a81a09bb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\engine\base\DirectX\Descriptors">
+      <UniqueIdentifier>{0be67c3c-afed-4da3-a2c0-a1f60ad47774}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\engine\base\DirectX\Pipeline">
+      <UniqueIdentifier>{d00eb14b-6d35-416f-b27a-02d817d727cc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\engine\base\DirectX\Pipeline">
+      <UniqueIdentifier>{7aaf43a2-1dab-4514-a6bd-8af4a54c8156}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\engine\base\DirectX\Screen">
+      <UniqueIdentifier>{3840fb27-1021-40bc-9885-61728136cc27}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\engine\base\DirectX\Screen">
+      <UniqueIdentifier>{6ff2ebd1-b3bf-4640-816c-36ce54cd7061}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -4373,12 +5649,6 @@ File Path: project/MyGame.vcxproj.filters
     <ClCompile Include="engine\io\Input.cpp">
       <Filter>ソース ファイル\engine\io</Filter>
     </ClCompile>
-    <ClCompile Include="engine\base\WinApp.cpp">
-      <Filter>ソース ファイル\engine\base</Filter>
-    </ClCompile>
-    <ClCompile Include="engine\base\ImGuiManager.cpp">
-      <Filter>ソース ファイル\engine\base</Filter>
-    </ClCompile>
     <ClCompile Include="engine\audio\SoundLoader.cpp">
       <Filter>ソース ファイル\engine\audio</Filter>
     </ClCompile>
@@ -4387,9 +5657,6 @@ File Path: project/MyGame.vcxproj.filters
     </ClCompile>
     <ClCompile Include="engine\scene\MyGame.cpp">
       <Filter>ソース ファイル\engine\scene</Filter>
-    </ClCompile>
-    <ClCompile Include="engine\base\Framework.cpp">
-      <Filter>ソース ファイル\engine\base</Filter>
     </ClCompile>
     <ClCompile Include="engine\scene\SceneManager.cpp">
       <Filter>ソース ファイル\engine\scene</Filter>
@@ -4421,47 +5688,14 @@ File Path: project/MyGame.vcxproj.filters
     <ClCompile Include="engine\camera\Camera.cpp">
       <Filter>ソース ファイル\engine\camera</Filter>
     </ClCompile>
-    <ClCompile Include="engine\base\CopylmageCommon.cpp">
-      <Filter>ソース ファイル\engine\base</Filter>
-    </ClCompile>
     <ClCompile Include="application\scene\GameClearScene.cpp">
       <Filter>ソース ファイル\application\scene</Filter>
-    </ClCompile>
-    <ClCompile Include="engine\base\ViewManager\DsvManager.cpp">
-      <Filter>ソース ファイル\engine\base\ViewManager</Filter>
-    </ClCompile>
-    <ClCompile Include="engine\base\ViewManager\RtvManager.cpp">
-      <Filter>ソース ファイル\engine\base\ViewManager</Filter>
-    </ClCompile>
-    <ClCompile Include="engine\base\ViewManager\SrvManager.cpp">
-      <Filter>ソース ファイル\engine\base\ViewManager</Filter>
     </ClCompile>
     <ClCompile Include="engine\base\Utility\Logger.cpp">
       <Filter>ソース ファイル\engine\base\Utility</Filter>
     </ClCompile>
     <ClCompile Include="engine\base\Utility\StringUtility.cpp">
       <Filter>ソース ファイル\engine\base\Utility</Filter>
-    </ClCompile>
-    <ClCompile Include="engine\base\DirectXCommon\FPSController.cpp">
-      <Filter>ソース ファイル\engine\base\DirectXCommon</Filter>
-    </ClCompile>
-    <ClCompile Include="engine\base\DirectXCommon\DirectXCommon.cpp">
-      <Filter>ソース ファイル\engine\base\DirectXCommon</Filter>
-    </ClCompile>
-    <ClCompile Include="engine\base\DirectXCommon\FenceManager.cpp">
-      <Filter>ソース ファイル\engine\base\DirectXCommon</Filter>
-    </ClCompile>
-    <ClCompile Include="engine\base\DirectXCommon\ShaderCompiler.cpp">
-      <Filter>ソース ファイル\engine\base\DirectXCommon</Filter>
-    </ClCompile>
-    <ClCompile Include="engine\base\DirectXCommon\DescriptorUtils.cpp">
-      <Filter>ソース ファイル\engine\base\DirectXCommon</Filter>
-    </ClCompile>
-    <ClCompile Include="engine\base\DirectXCommon\ViewportManager.cpp">
-      <Filter>ソース ファイル\engine\base\DirectXCommon</Filter>
-    </ClCompile>
-    <ClCompile Include="engine\base\DirectXCommon\SwapChainManager.cpp">
-      <Filter>ソース ファイル\engine\base\DirectXCommon</Filter>
     </ClCompile>
     <ClCompile Include="engine\resource\TextureManager.cpp">
       <Filter>ソース ファイル\engine\resource</Filter>
@@ -4541,6 +5775,48 @@ File Path: project/MyGame.vcxproj.filters
     <ClCompile Include="Engine\3d\Skybox\SkyboxCommon.cpp">
       <Filter>ソース ファイル\engine\3d\Skybox</Filter>
     </ClCompile>
+    <ClCompile Include="Engine\base\DirectX\Core\DirectXCommon.cpp">
+      <Filter>ソース ファイル\engine\base\DirectX\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\base\DirectX\Core\FenceManager.cpp">
+      <Filter>ソース ファイル\engine\base\DirectX\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\base\DirectX\Core\FPSController.cpp">
+      <Filter>ソース ファイル\engine\base\DirectX\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\base\DirectX\Core\SwapChainManager.cpp">
+      <Filter>ソース ファイル\engine\base\DirectX\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\base\DirectX\Descriptors\DsvManager.cpp">
+      <Filter>ソース ファイル\engine\base\DirectX\Descriptors</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\base\DirectX\Descriptors\RtvManager.cpp">
+      <Filter>ソース ファイル\engine\base\DirectX\Descriptors</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\base\DirectX\Descriptors\SrvManager.cpp">
+      <Filter>ソース ファイル\engine\base\DirectX\Descriptors</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\base\DirectX\Descriptors\DescriptorUtils.cpp">
+      <Filter>ソース ファイル\engine\base\DirectX\Descriptors</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\base\DirectX\Pipeline\ShaderCompiler.cpp">
+      <Filter>ソース ファイル\engine\base\DirectX\Pipeline</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\base\DirectX\Screen\ViewportManager.cpp">
+      <Filter>ソース ファイル\engine\base\DirectX\Screen</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\base\CopylmageCommon.cpp">
+      <Filter>ソース ファイル\engine\base</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\base\Framework.cpp">
+      <Filter>ソース ファイル\engine\base</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\base\ImGuiManager.cpp">
+      <Filter>ソース ファイル\engine\base</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\base\WinApp.cpp">
+      <Filter>ソース ファイル\engine\base</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="engine\2d\Sprite.h">
@@ -4552,12 +5828,6 @@ File Path: project/MyGame.vcxproj.filters
     <ClInclude Include="engine\io\Input.h">
       <Filter>ヘッダー ファイル\engine\io</Filter>
     </ClInclude>
-    <ClInclude Include="engine\base\WinApp.h">
-      <Filter>ヘッダー ファイル\engine\base</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\base\ImGuiManager.h">
-      <Filter>ヘッダー ファイル\engine\base</Filter>
-    </ClInclude>
     <ClInclude Include="engine\audio\SoundLoader.h">
       <Filter>ヘッダー ファイル\engine\audio</Filter>
     </ClInclude>
@@ -4566,9 +5836,6 @@ File Path: project/MyGame.vcxproj.filters
     </ClInclude>
     <ClInclude Include="engine\scene\MyGame.h">
       <Filter>ヘッダー ファイル\engine\scene</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\base\Framework.h">
-      <Filter>ヘッダー ファイル\engine\base</Filter>
     </ClInclude>
     <ClInclude Include="engine\scene\BaseScene.h">
       <Filter>ヘッダー ファイル\engine\scene</Filter>
@@ -4603,36 +5870,6 @@ File Path: project/MyGame.vcxproj.filters
     <ClInclude Include="engine\io\Controller.h">
       <Filter>ヘッダー ファイル\engine\io</Filter>
     </ClInclude>
-    <ClInclude Include="engine\base\CopylmageCommon.h">
-      <Filter>ヘッダー ファイル\engine\base</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\base\DirectXCommon\DirectXCommon.h">
-      <Filter>ヘッダー ファイル\engine\base\DirectXCommon</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\base\DirectXCommon\DescriptorUtils.h">
-      <Filter>ヘッダー ファイル\engine\base\DirectXCommon</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\base\ViewManager\DsvManager.h">
-      <Filter>ヘッダー ファイル\engine\base\ViewManager</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\base\DirectXCommon\FPSController.h">
-      <Filter>ヘッダー ファイル\engine\base\DirectXCommon</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\base\DirectXCommon\FenceManager.h">
-      <Filter>ヘッダー ファイル\engine\base\DirectXCommon</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\base\ViewManager\RtvManager.h">
-      <Filter>ヘッダー ファイル\engine\base\ViewManager</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\base\ViewManager\SrvManager.h">
-      <Filter>ヘッダー ファイル\engine\base\ViewManager</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\base\DirectXCommon\ViewportManager.h">
-      <Filter>ヘッダー ファイル\engine\base\DirectXCommon</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\base\DirectXCommon\SwapChainManager.h">
-      <Filter>ヘッダー ファイル\engine\base\DirectXCommon</Filter>
-    </ClInclude>
     <ClInclude Include="engine\base\Utility\StringUtility.h">
       <Filter>ヘッダー ファイル\engine\base\Utility</Filter>
     </ClInclude>
@@ -4662,9 +5899,6 @@ File Path: project/MyGame.vcxproj.filters
     </ClInclude>
     <ClInclude Include="engine\math\Light\SpotLight.h">
       <Filter>ヘッダー ファイル\engine\math\Light</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\base\DirectXCommon\ShaderCompiler.h">
-      <Filter>ヘッダー ファイル\engine\base\DirectXCommon</Filter>
     </ClInclude>
     <ClInclude Include="engine\camera\CameraTypes.h">
       <Filter>ヘッダー ファイル\engine\camera</Filter>
@@ -4797,6 +6031,48 @@ File Path: project/MyGame.vcxproj.filters
     </ClInclude>
     <ClInclude Include="Engine\scene\SceneName.h">
       <Filter>ヘッダー ファイル\engine\scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\base\DirectX\Core\DirectXCommon.h">
+      <Filter>ヘッダー ファイル\engine\base\DirectX\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\base\DirectX\Core\FenceManager.h">
+      <Filter>ヘッダー ファイル\engine\base\DirectX\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\base\DirectX\Core\FPSController.h">
+      <Filter>ヘッダー ファイル\engine\base\DirectX\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\base\DirectX\Core\SwapChainManager.h">
+      <Filter>ヘッダー ファイル\engine\base\DirectX\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\base\DirectX\Descriptors\SrvManager.h">
+      <Filter>ヘッダー ファイル\engine\base\DirectX\Descriptors</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\base\DirectX\Descriptors\RtvManager.h">
+      <Filter>ヘッダー ファイル\engine\base\DirectX\Descriptors</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\base\DirectX\Descriptors\DsvManager.h">
+      <Filter>ヘッダー ファイル\engine\base\DirectX\Descriptors</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\base\DirectX\Descriptors\DescriptorUtils.h">
+      <Filter>ヘッダー ファイル\engine\base\DirectX\Descriptors</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\base\DirectX\Pipeline\ShaderCompiler.h">
+      <Filter>ヘッダー ファイル\engine\base\DirectX\Pipeline</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\base\DirectX\Screen\ViewportManager.h">
+      <Filter>ヘッダー ファイル\engine\base\DirectX\Screen</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\base\ImGuiManager.h">
+      <Filter>ヘッダー ファイル\engine\base</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\base\WinApp.h">
+      <Filter>ヘッダー ファイル\engine\base</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\base\CopylmageCommon.h">
+      <Filter>ヘッダー ファイル\engine\base</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\base\Framework.h">
+      <Filter>ヘッダー ファイル\engine\base</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -6889,7 +8165,7 @@ namespace MyEngine {
         materialResource->Map(0, nullptr, reinterpret_cast<void**>(&materialData));
         // マテリアルデータの初期値を書き込む
         materialData->color = { 1.0f, 1.0f, 1.0f, 1.0f };
-        materialData->endbleLighting = true;
+        materialData->enableLighting = true;
         materialData->uvTransform = MakeIdentity4x4();
     }
 
@@ -7662,845 +8938,6 @@ namespace MyEngine {
 }
 
 ============================================================
-File Path: project/engine/base/DirectXCommon/DescriptorUtils.cpp
-============================================================
-#include "DescriptorUtils.h"
-
-namespace MyEngine {
-    namespace DescriptorUtils {
-
-        D3D12_CPU_DESCRIPTOR_HANDLE GetCPUDescriptorHandle(Microsoft::WRL::ComPtr <ID3D12DescriptorHeap>& descriptorHeap, uint32_t descriptorsize, uint32_t index) {
-
-            D3D12_CPU_DESCRIPTOR_HANDLE handleCPU = descriptorHeap->GetCPUDescriptorHandleForHeapStart();
-            handleCPU.ptr += (descriptorsize * index);
-            return handleCPU;
-        }
-
-        D3D12_GPU_DESCRIPTOR_HANDLE GetGPUDescriptorHandle(Microsoft::WRL::ComPtr <ID3D12DescriptorHeap>& descriptorHeap, uint32_t descriptorsize, uint32_t index) {
-            D3D12_GPU_DESCRIPTOR_HANDLE handleGPU = descriptorHeap->GetGPUDescriptorHandleForHeapStart();
-            handleGPU.ptr += (descriptorsize * index);
-            return handleGPU;
-        }
-    }
-}
-
-============================================================
-File Path: project/engine/base/DirectXCommon/DescriptorUtils.h
-============================================================
-#pragma once
-#include <d3d12.h>
-#include <wrl.h>
-#include <cstdint>
-
-namespace MyEngine {
-	namespace DescriptorUtils {
-		/// <summary>
-		/// 指定番号のCPUディスクリプタハンドルを取得する
-		/// </summary>
-		D3D12_CPU_DESCRIPTOR_HANDLE GetCPUDescriptorHandle(Microsoft::WRL::ComPtr <ID3D12DescriptorHeap>& descriptorHeap, uint32_t descriptorsize, uint32_t index);
-
-		/// <summary>
-		/// 指定番号のGPUディスクリプタハンドルの取得をする
-		/// </summary>
-		D3D12_GPU_DESCRIPTOR_HANDLE GetGPUDescriptorHandle(Microsoft::WRL::ComPtr<ID3D12DescriptorHeap>& descriptorHeap, uint32_t descriptorsize, uint32_t index);
-	};
-}
-
-============================================================
-File Path: project/engine/base/DirectXCommon/DirectXCommon.cpp
-============================================================
-#include "DirectXCommon.h"
-#include <cassert>
-#include <format>
-#include <thread>
-#include <Logger.h>
-#include <StringUtility.h>
-#include <DescriptorUtils.h>
-#include <ResourceFactory.h>
-#pragma comment(lib,"d3d12.lib")
-#pragma comment(lib,"dxgi.lib")
-
-using namespace Microsoft::WRL;
-using namespace MyEngine::DescriptorUtils;
-using namespace MyEngine::ResourceFactory;
-
-namespace MyEngine {
-    DirectXCommon::~DirectXCommon() { viewport_.reset(); }
-
-    void DirectXCommon::Initialize(WinApp* winApp) {
-        // NULL検出
-        assert(winApp);
-        // メンバ変数に記録
-        this->winApp_ = winApp;
-        // ポインタ生成 
-        viewport_ = std::make_unique<ViewportManager>();
-        fence_ = std::make_unique<FenceManager>();
-        fpscontroller_ = std::make_unique<FPSController>();
-        swapchain_ = std::make_unique<SwapChainManager>();
-        // 初期化関数
-        fpscontroller_->Initialize();                                                     // FPS固定の初期化
-        DebugInitialize();	                                                              // デバイスの初期化
-        CommandInitialize();	                                                          // コマンド関連の初期化
-        swapchain_->Initialize(winApp_->Gethwnd(), commandQueue, dxgiFactory, // スワップチェーンの生成
-            WinApp::kClientWidth, WinApp::kClientHeight);
-        CreateDepthStencilGenerate();	                                                  // 深度バッファの生成
-        fence_->Initialize(device);                                                       // フェンスの初期化
-        viewport_->Initialize(WinApp::kClientWidth, WinApp::kClientHeight);                // ビューポート・ シザリング矩形の初期化
-    }
-
-    void DirectXCommon::DebugInitialize() {
-
-        HRESULT hr;
-
-        ///---------------------------------------------------------------------///
-        ///-----------------------デバックレイヤーをオン----------------------------///
-        ///---------------------------------------------------------------------///
-#ifdef _DEBUG
-        ComPtr <ID3D12Debug1> debugController = nullptr;
-
-        if (SUCCEEDED(D3D12GetDebugInterface(IID_PPV_ARGS(&debugController)))) {
-            //デバッグレイヤーを有効化
-            debugController->EnableDebugLayer();
-            //さらにGPU側でもチェックを行えるようにする
-            debugController->SetEnableGPUBasedValidation(TRUE);
-        }
-#endif // _DEBUG
-
-        ///---------------------------------------------------------------------///
-        ///----------------------IDXGIのファクトリー生成---------------------------///
-        ///---------------------------------------------------------------------///
-
-        // HRESULTはWindows系のエラーコードであり、
-        // 関数が成功したかどうかをSUCCEEDEDマクロで判定できる
-        hr = CreateDXGIFactory(IID_PPV_ARGS(&dxgiFactory));
-        //初期化の根本的な部分でエラーが出た場合はプログラムが間違っているか、どうにもできない場合が
-        //多いのでassertにする
-        assert(SUCCEEDED(hr));
-
-        ///---------------------------------------------------------------------///
-        ///--------------------------アダプターの列挙------------------------------///
-        ///---------------------------------------------------------------------///
-        //仕様するアダプター用の変数。最初にnullptrを入れておく
-        ComPtr <IDXGIAdapter4> useAdapter = nullptr;
-        //良い順にアダプターを頼む
-        for (UINT i = 0; dxgiFactory->EnumAdapterByGpuPreference(i,
-            DXGI_GPU_PREFERENCE_HIGH_PERFORMANCE, IID_PPV_ARGS(&useAdapter)) !=
-            DXGI_ERROR_NOT_FOUND; ++i) {
-            //アダプターの情報を取得する
-            DXGI_ADAPTER_DESC3 adapterDesc{};
-            hr = useAdapter->GetDesc3(&adapterDesc);
-            assert(SUCCEEDED(hr));//取得できないのは一大事
-            //ソフトウェアアダプターでなければ採用
-            if (!(adapterDesc.Flags & DXGI_ADAPTER_FLAG3_SOFTWARE)) {
-                //採用したアダプタの情報をログに出力。wstringの方なので注意
-                Logger::Log(StringUtility::ConvertString(std::format(L"Use Adapater:{}\n", adapterDesc.Description)));
-                break;
-            }
-            useAdapter = nullptr;//ソフトウェアアダプタの場合は見なかったことにする
-        }
-        //適切なアダプタが見つからないので起動できない
-        assert(useAdapter != nullptr);
-
-        ///---------------------------------------------------------------------///
-        ///---------------------------デバイスの生成------------------------------///
-        ///---------------------------------------------------------------------///
-
-        //機能レベルとログ出力用の文字列
-        D3D_FEATURE_LEVEL featureLevels[] = {
-          D3D_FEATURE_LEVEL_12_2,D3D_FEATURE_LEVEL_12_1,D3D_FEATURE_LEVEL_12_0
-        };
-        const char* featureLevelStrings[] = { "12.2","12.1","12.0" };
-        //高い順に生成できるか試す
-        for (size_t i = 0; i < _countof(featureLevels); ++i) {
-            //採用したアダプターでデバイスを生成
-            hr = D3D12CreateDevice(useAdapter.Get(), featureLevels[i], IID_PPV_ARGS(&device));
-            //指定した機能レベルでデバイスが生成できたか確認
-            if (SUCCEEDED(hr)) {
-                //生成できたのでログ出力を行ってループを抜ける
-                Logger::Log(std::format("FeatureLevel : {}\n", featureLevelStrings[i]));
-                break;
-            }
-        }
-        //デバイスの生成がうまくいかなかったので起動できない
-        assert(device != nullptr);
-        Logger::Log("Complete create D3D12Device!!!\n");//初期化完了のログを出す
-
-        ///---------------------------------------------------------------------///
-        ///-------------------------エラー時にブレ―ク-----------------------------///
-        ///--------------------------------------------------------------------///
-#ifdef _DEBUG
-        ComPtr<ID3D12InfoQueue> infoQueue = nullptr;
-        if (SUCCEEDED(device->QueryInterface(IID_PPV_ARGS(&infoQueue)))) {
-            //ヤバイエラー時に止まる
-            infoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_CORRUPTION, true);
-            //エラー時に止まる
-            infoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_ERROR, true);
-            //警告時に止まる
-            infoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_WARNING, true);
-            //抑制するメッセージのID
-            D3D12_MESSAGE_ID denyIds[] = {
-                //Windows11でのDXGIデバッグレイヤーとDX12デバッグレイヤーの相互作用バグによるエラーメッセージ
-                //https://stackoverflow.com/questions/69805245/directx-12-application-is-crashing-in-windows-11
-                D3D12_MESSAGE_ID_RESOURCE_BARRIER_MISMATCHING_COMMAND_LIST_TYPE
-            };
-            //抑制するレベル
-            D3D12_MESSAGE_SEVERITY severities[] = { D3D12_MESSAGE_SEVERITY_INFO };
-            D3D12_INFO_QUEUE_FILTER filter{};
-            filter.DenyList.NumIDs = _countof(denyIds);
-            filter.DenyList.pIDList = denyIds;
-            filter.DenyList.NumSeverities = _countof(severities);
-            filter.DenyList.pSeverityList = severities;
-            //指定したメッセージの表示を抑制
-            infoQueue->PushStorageFilter(&filter);
-        }
-#endif
-    }
-
-    void DirectXCommon::CommandInitialize() {
-
-        HRESULT hr;
-        ///---------------------------------------------------------------------///
-        ///------------------------コマンドキューを生成する-------------------------///
-        ///---------------------------------------------------------------------///
-        D3D12_COMMAND_QUEUE_DESC commandQueueDesc{};
-        hr = device->CreateCommandQueue(&commandQueueDesc, IID_PPV_ARGS(&commandQueue));
-        //コマンドキューの生成がうまくいかなかったので起動できない
-        assert(SUCCEEDED(hr));
-
-        ///---------------------------------------------------------------------///
-        ///---------------------コマンドアロケータを生成する-------------------------///
-        ///---------------------------------------------------------------------///
-        //コマンドアロケーターを生成する
-        hr = device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&commandAllocator));
-        //コマンドアロケータの生成がうまくいかなかったので起動できない
-        assert(SUCCEEDED(hr));
-
-        ///---------------------------------------------------------------------///
-        ///------------------------コマンドリストを生成する-------------------------///
-        ///---------------------------------------------------------------------///
-        //コマンドリストを生成する
-        hr = device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, commandAllocator.Get(), nullptr, IID_PPV_ARGS(&commandList));
-        //コマンドリストの生成がうまくいかなかったので起動できない
-        assert(SUCCEEDED(hr));
-    }
-
-    void DirectXCommon::CreateDepthStencilGenerate() {
-
-        // 生成するResourceの設定
-        D3D12_RESOURCE_DESC resourceDesc{};
-        resourceDesc.Width = WinApp::kClientWidth; // Textureの幅
-        resourceDesc.Height = WinApp::kClientHeight; // Textureの高さ
-        resourceDesc.MipLevels = 1; // mipmapの数
-        resourceDesc.DepthOrArraySize = 1; // 奥行　or 配列のTexture配列数
-        resourceDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT; // DepthStencilとして利用可能なフォーマット
-        resourceDesc.SampleDesc.Count = 1; // サンプリングカウント 1固定
-        resourceDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D; // 2次元
-        resourceDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL; // DepthStencilとして使う通知
-
-        // 利用Heapの設定
-        D3D12_HEAP_PROPERTIES heapProperies{};
-        heapProperies.Type = D3D12_HEAP_TYPE_DEFAULT; // VRAW上に作る
-
-        // 深度値のクリア設定
-        D3D12_CLEAR_VALUE depthClearValue{};
-        depthClearValue.DepthStencil.Depth = 1.0f; // 1.0f (最大値)でクリア
-        depthClearValue.Format = DXGI_FORMAT_D24_UNORM_S8_UINT; // フォーマット。 Resourceと合わせる
-
-        //3. Resourceを生成する
-        HRESULT hr = device->CreateCommittedResource(
-            &heapProperies, //Heapの設定
-            D3D12_HEAP_FLAG_NONE, //Heapの特殊な設定。特になし。
-            &resourceDesc, //Resourceの設定
-            D3D12_RESOURCE_STATE_DEPTH_WRITE, //深度値を書き込む状態にしておく
-            &depthClearValue, //Clear最適値
-            IID_PPV_ARGS(&depthbufferresource)); //作成するResourceポインタへのポインタ
-        assert(SUCCEEDED(hr));
-    }
-
-    void DirectXCommon::PreDrawRenderTexture(D3D12_CPU_DESCRIPTOR_HANDLE RtvHandles, Microsoft::WRL::ComPtr <ID3D12DescriptorHeap> DsvDescriptorHeap, const Vector4 color) {
-        // 描画先 = rtvHandles[2]（中間テクスチャ）
-        D3D12_CPU_DESCRIPTOR_HANDLE rtHandle = RtvHandles;
-
-        dsvHandle = DsvDescriptorHeap->GetCPUDescriptorHandleForHeapStart();
-        commandList->OMSetRenderTargets(1, &rtHandle, false, &dsvHandle);
-
-        // カスタムRenderTarget用で設定した値を使って画面全体をクリアする
-        float clearColor[] = { color.x, color.y, color.z, color.w };
-        commandList->ClearRenderTargetView(rtHandle, clearColor, 0, nullptr);
-        commandList->ClearDepthStencilView(dsvHandle, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
-        commandList->RSSetViewports(1, &viewport_->GetViewport());
-        commandList->RSSetScissorRects(1, &viewport_->GetScissorRect());
-    }
-
-    void DirectXCommon::PreDraw(D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle, Microsoft::WRL::ComPtr <ID3D12DescriptorHeap> DsvDescriptorHeap) {
-        // ここから書き込むバックバッファのインデックスを取得
-        UINT backBufferIndex = swapchain_->GetSwapChain()->GetCurrentBackBufferIndex();
-        // 今回のバリアはTransition
-        barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
-        // Noneにしておく
-        barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
-        // バリアを張る対象のリソース。現在のバックバッファに対して行う
-        barrier.Transition.pResource = swapchain_->GetBuffer(backBufferIndex).Get();
-        // 遷移前のResourceState
-        barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_PRESENT;
-        // 遷移後のResourceState
-        barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_RENDER_TARGET;
-        // TransitionBarrierを張る
-        commandList->ResourceBarrier(1, &barrier);
-        // 描画先のRTVとDSVを設定する
-        dsvHandle = DsvDescriptorHeap->GetCPUDescriptorHandleForHeapStart();
-        // 描画先のRTVを指定する
-        commandList->OMSetRenderTargets(1, &rtvHandle, false, &dsvHandle);
-        // 指定した色で画面全体をクリアする
-        float clearColor[] = { 0.1f,0.25f,0.5f,1.0f };//青っぽい色。RGBAの順
-        commandList->ClearRenderTargetView(rtvHandle, clearColor, 0, nullptr);
-        commandList->RSSetViewports(1, &viewport_->GetViewport());
-        commandList->RSSetScissorRects(1, &viewport_->GetScissorRect());
-        // 指定した深度で画面全体をクリアする
-        commandList->ClearDepthStencilView(dsvHandle, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
-    }
-
-    void DirectXCommon::PostDraw() {
-        HRESULT hr;
-        // バックバッファの番号を取得
-        UINT bbIndex = swapchain_->GetSwapChain()->GetCurrentBackBufferIndex();
-        // 画面に描く処理はすべて終わり、画面に移すので、状態を遷移
-        // 今回はRenderTargetからPresentにする
-        // PostDraw 内で再設定が必要（PreDrawとは別フレームなので）：
-        barrier.Transition.pResource = swapchain_->GetBuffer(bbIndex).Get();
-        barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_RENDER_TARGET;
-        barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_PRESENT;
-        // TransitionBarrierを張る
-        commandList->ResourceBarrier(1, &barrier);
-        // コマンドリストの内容を確定させる。全てのコマンドを積んでからCloseすること
-        hr = commandList->Close();
-        assert(SUCCEEDED(hr));
-        if (FAILED(hr)) {
-            OutputDebugStringA("commandList->Close() failed!\n");
-            // hr を調べる
-        }
-        // GPUにコマンドリストのリストの実行を行わせる
-        ID3D12CommandList* commandLists[] = { commandList.Get() };
-        commandQueue->ExecuteCommandLists(1, commandLists);
-        // GPUとOSに画面の交換を行うように通知する
-        swapchain_->GetSwapChain()->Present(1, 0);
-
-        // 描画後のFence
-        fence_->SignalAndWait(commandQueue);
-
-        //  FPS固定
-        fpscontroller_->Update();
-
-        // 次のフレーム用のコマンドリストを準備
-        hr = commandAllocator->Reset();
-        assert(SUCCEEDED(hr));
-        hr = commandList->Reset(commandAllocator.Get(), nullptr);
-        assert(SUCCEEDED(hr));
-    }
-
-    ComPtr <ID3D12DescriptorHeap> DirectXCommon::CreateDescriptorHeap(D3D12_DESCRIPTOR_HEAP_TYPE heapType, UINT numDescriptors, bool shaderVisible) {
-        //ディスクリプタヒープの生成
-        ComPtr <ID3D12DescriptorHeap> descriptorHeap = nullptr;
-        D3D12_DESCRIPTOR_HEAP_DESC descriptorHeapDesc{};
-        descriptorHeapDesc.Type = heapType;
-        descriptorHeapDesc.NumDescriptors = numDescriptors;
-        descriptorHeapDesc.Flags = shaderVisible ? D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE : D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
-        HRESULT hr = device->CreateDescriptorHeap(&descriptorHeapDesc, IID_PPV_ARGS(&descriptorHeap));
-        //ディスクリプタヒープが作れなかったので起動できない
-        assert(SUCCEEDED(hr));
-        return descriptorHeap;
-    }
-}
-
-============================================================
-File Path: project/engine/base/DirectXCommon/DirectXCommon.h
-============================================================
-#pragma once
-#include <d3d12.h>
-#include <dxgi1_6.h>
-#include <wrl.h>
-#include <array>
-#include <dxcapi.h>
-#include <chrono>
-#include <WinApp.h>
-#include <Vector4.h>
-#include <ViewportManager.h>
-#include <FenceManager.h>
-#include <FPSController.h>
-#include <SwapChainManager.h>
-#include "externals/DirectXTex/DirectXTex.h"
-#pragma comment(lib,"dxcompiler.lib")
-
-namespace MyEngine {
-	// Directx基盤
-	class DirectXCommon {
-	public: // メンバ関数
-
-		// デストラクタ
-		~DirectXCommon();
-		// 初期化
-		void Initialize(WinApp* winApp);
-		// 描画前処理
-		void PreDraw(D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle, Microsoft::WRL::ComPtr <ID3D12DescriptorHeap> DsvDescriptorHeap);
-		// 描画後処理
-		void PostDraw();
-
-		/// <summary>
-		/// レンダーテクスチャのテクスチャリソースの生成
-		/// </summary>
-		void PreDrawRenderTexture(D3D12_CPU_DESCRIPTOR_HANDLE RtvHandles, Microsoft::WRL::ComPtr <ID3D12DescriptorHeap> DsvDescriptorHeap, const Vector4 color);
-
-		/// <summary>
-		/// デスクリプタヒープを生成する
-		/// </summary>
-		Microsoft::WRL::ComPtr <ID3D12DescriptorHeap> CreateDescriptorHeap(D3D12_DESCRIPTOR_HEAP_TYPE heapType, UINT numDescriptors, bool shaderVisible);
-
-	private: // プライベートメンバ関数
-		// デバイスの初期化
-		void DebugInitialize();
-		// コマンド関連の初期化
-		void CommandInitialize();
-		// 深度バッファの生成
-		void CreateDepthStencilGenerate();
-	private: // メンバ変数
-		// ポインタ
-		WinApp* winApp_ = nullptr;
-		std::unique_ptr<ViewportManager> viewport_;
-		std::unique_ptr<FenceManager> fence_;
-		std::unique_ptr<FPSController> fpscontroller_;
-		std::unique_ptr<SwapChainManager> swapchain_;
-		Microsoft::WRL::ComPtr <ID3D12Device> device;	                                  // Devicex12デバイス
-		Microsoft::WRL::ComPtr <IDXGIFactory7> dxgiFactory;		                          // DXGIファクトリ
-		Microsoft::WRL::ComPtr <ID3D12CommandAllocator> commandAllocator = nullptr;	      // コマンドアロケータ
-		Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> commandList;		              // コマンドリスト
-		Microsoft::WRL::ComPtr <ID3D12CommandQueue> commandQueue;			              // コマンドキュー
-		Microsoft::WRL::ComPtr<ID3D12Resource> depthbufferresource;			              // 深度バッファ
-		// TransitionBarrierの設定
-		D3D12_RESOURCE_BARRIER barrier{};
-		// 描画先のRTVとDSVを設定する
-		D3D12_CPU_DESCRIPTOR_HANDLE dsvHandle;
-	public:
-		// getter
-		Microsoft::WRL::ComPtr <ID3D12Device> GetDevice() { return device; }
-		Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> GetCommandList() const { return commandList.Get(); }
-		// スワップチェーンリソースの数を取得
-		SwapChainManager* GetSwapChain() { return swapchain_.get(); }
-	};
-}
-
-============================================================
-File Path: project/engine/base/DirectXCommon/FPSController.cpp
-============================================================
-#include "FPSController.h"
-#include <thread>
-
-namespace MyEngine {
-    const float FPSController::kTargetFPS = 60.0f;                 // 60FPS固定
-    const float FPSController::kCheckFPS = 65.0f;                  // チェック用FPS（これ以上速い場合はスリープする）
-    const int64_t FPSController::kMicroSecondsPerSecond = 1000000; // 1秒あたりのマイクロ秒
-
-    void FPSController::Initialize() {
-        // 現在時刻を基準時間として記録
-        reference_ = std::chrono::steady_clock::now();
-    }
-
-    void FPSController::Update() {
-        // 現在時刻を取得
-        std::chrono::steady_clock::time_point now = std::chrono::steady_clock::now();
-
-        // 前フレームからの経過時間を取得（マイクロ秒）
-        std::chrono::microseconds elapsed =
-            std::chrono::duration_cast<std::chrono::microseconds>(now - reference_);
-
-        // まだ1フレーム分の時間が経過していない場合
-        if (elapsed < kMinCheckTime) {
-
-            // 1フレーム時間に達するまで待機
-            while (std::chrono::steady_clock::now() - reference_ < kMinTime) {
-
-                // CPU負荷軽減のため1μsスリープ
-                std::this_thread::sleep_for(std::chrono::microseconds(1));
-            }
-        }
-
-        // 次フレーム用に現在時刻を更新
-        reference_ = std::chrono::steady_clock::now();
-    }
-
-    // 1フレームの最小時間（60FPS → 約16666μs）
-    const std::chrono::microseconds FPSController::kMinTime(
-        static_cast<int64_t>(kMicroSecondsPerSecond / kTargetFPS)
-    );
-
-    // スリープに入るかどうかの判定用時間（少し短め）
-    const std::chrono::microseconds FPSController::kMinCheckTime(
-        static_cast<int64_t>(kMicroSecondsPerSecond / kCheckFPS)
-    );
-}
-
-============================================================
-File Path: project/engine/base/DirectXCommon/FPSController.h
-============================================================
-#pragma once
-#include <chrono>
-
-namespace MyEngine {
-	// ========================================
-	// FPS固定処理クラス
-	// ========================================
-	class FPSController {
-	public: // メンバ関数
-		/// <summary>
-		/// FPS固定初期化(現在時刻を基準にする）
-		/// </summary>
-		void Initialize();
-		//  FPS固定更新
-		void Update();
-	private: // メンバ変数
-		// 前フレームの記録時間
-		std::chrono::steady_clock::time_point reference_;
-		static const float kTargetFPS;                 // 目標FPS
-		static const float kCheckFPS;                  // チェック用FPS
-		static const int64_t kMicroSecondsPerSecond;   // 1秒 = 1000000μs
-
-		static const std::chrono::microseconds kMinTime;       // 1フレーム時間
-		static const std::chrono::microseconds kMinCheckTime;  // チェック用時間
-	};
-}
-
-============================================================
-File Path: project/engine/base/DirectXCommon/FenceManager.cpp
-============================================================
-#include "FenceManager.h"
-#include <cassert>
-
-using namespace Microsoft::WRL;
-
-namespace MyEngine {
-    FenceManager::~FenceManager() {
-        if (fenceEvent_) {
-            // Win32APIの開放
-            CloseHandle(fenceEvent_);
-            fenceEvent_ = nullptr;
-        }
-    }
-
-    void FenceManager::Initialize(ComPtr <ID3D12Device>& device) {
-        // フェンスの初期化	  
-        HRESULT hr;
-        //初期値0でFenceを作る
-        hr = device->CreateFence(fenceVal_, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&fence_));
-        assert(SUCCEEDED(hr));
-        //FenceのSignalを待つためのイベントを作成する
-        assert(fenceEvent_ != nullptr);
-    }
-
-
-    void FenceManager::SignalAndWait(ComPtr <ID3D12CommandQueue>& commandQueue) {
-        // Fenceの値の更新
-        fenceVal_++;
-        // GPUがここまでたどり着いたときに、Fenceの値に代入するようにSignalを送る
-        commandQueue->Signal(fence_.Get(), fenceVal_);
-        // Fenceの値が指定したSignal値にたどり着いているか確認する
-        // GetCompletedValueの初期値はFence作成時に渡した初期値
-        if (fence_->GetCompletedValue() < fenceVal_) {
-
-            // 指定したSignalにたどりついていないので、たどり着くまで待つようにイベントを設定する
-            fence_->SetEventOnCompletion(fenceVal_, fenceEvent_);
-            //イベントを待つ
-            WaitForSingleObject(fenceEvent_, INFINITE);
-        }
-    }
-}
-
-============================================================
-File Path: project/engine/base/DirectXCommon/FenceManager.h
-============================================================
-#pragma once
-#include <d3d12.h>
-#include <dxgi1_6.h>
-#include <wrl.h>
-
-namespace MyEngine {
-	// フェンスマネージャ
-	class FenceManager {
-	public: // メンバ関数
-		~FenceManager();
-		/// <summary>
-		/// 初期化
-		/// </summary>
-		void Initialize(Microsoft::WRL::ComPtr <ID3D12Device>& device);
-		// 描画後のFenceの値    
-		void SignalAndWait(Microsoft::WRL::ComPtr <ID3D12CommandQueue>& commandQueue);
-	private: // メンバ変数
-		// フェンスの生成
-		Microsoft::WRL::ComPtr <ID3D12Fence> fence_ = nullptr;
-		// 初期値0でFenceを作る
-		UINT64 fenceVal_ = 0;
-		//FenceのSignalを待つためのイベントを作成する
-		HANDLE fenceEvent_ = CreateEvent(NULL, FALSE, FALSE, NULL);
-	public: // getter
-		const Microsoft::WRL::ComPtr <ID3D12Fence>& GetFence() const { return fence_; }
-		const HANDLE& GetfenceEvent() const { return fenceEvent_; }
-	};
-}
-
-============================================================
-File Path: project/engine/base/DirectXCommon/ShaderCompiler.cpp
-============================================================
-#include "ShaderCompiler.h"
-#include <Logger.h>
-#include <StringUtility.h>
-#include <format>
-#include <cassert>
-
-namespace MyEngine {
-
-    using namespace Microsoft::WRL;
-
-    // 静的メンバ変数の定義
-    std::unique_ptr<ShaderCompiler> ShaderCompiler::instance = nullptr;
-
-    // シングルトンインスタンスの取得
-    ShaderCompiler* ShaderCompiler::GetInstance() {
-        if (!instance) {
-            instance = std::make_unique<ShaderCompiler>();
-        }
-        return instance.get();
-    }
-
-    // 終了
-    void ShaderCompiler::Finalize() {
-        instance.reset();  // `delete` 不要
-    }
-
-    void ShaderCompiler::Initialize() {
-        // DXCコンパイラの生成
-        HRESULT hr;
-
-        // dxCompilerを初期化
-        hr = DxcCreateInstance(CLSID_DxcUtils, IID_PPV_ARGS(&dxcUtils));
-        assert(SUCCEEDED(hr));
-        hr = DxcCreateInstance(CLSID_DxcCompiler, IID_PPV_ARGS(&dxcCompiler));
-        assert(SUCCEEDED(hr));
-        //現時点でincludeはしないが、includeに対応するための設定を行っていく
-        hr = dxcUtils->CreateDefaultIncludeHandler(&includeHandler);
-        assert(SUCCEEDED(hr));
-    }
-
-    ComPtr <IDxcBlob> ShaderCompiler::CompileShader(const std::wstring& filePath, const wchar_t* profile) {
-        //1.hlslファイルを読む
-        //これからシェーダーをコンパイルする旨をログに出す
-        Logger::Log(StringUtility::ConvertString(std::format(L"Begin CompileShader,path:{},profile:{}\n", filePath, profile)));
-        Microsoft::WRL::ComPtr <IDxcBlobEncoding> shaderSource = nullptr;
-        HRESULT hr = dxcUtils->LoadFile(filePath.c_str(), nullptr, &shaderSource);
-        //読めなかったら止める
-        assert(SUCCEEDED(hr));
-
-        //読み込んだファイルの内容を設定する
-        DxcBuffer shaderSourceBuffer;
-        shaderSourceBuffer.Ptr = shaderSource->GetBufferPointer();
-        shaderSourceBuffer.Size = shaderSource->GetBufferSize();
-        shaderSourceBuffer.Encoding = DXC_CP_UTF8;//UTF8のコードであることを通知
-
-        //2.Compileする
-        LPCWSTR arguments[] =
-        {
-
-             filePath.c_str(),
-             L"-E",L"main",
-             L"-T",profile,
-             L"-Zi",L"-Qembed_debug",
-             L"-Od",
-             L"-Zpr",
-        };
-        //実際にshaderをコンパイルする
-        ComPtr <IDxcResult> shaderResult = nullptr;
-        hr = dxcCompiler->Compile(
-            &shaderSourceBuffer,
-            arguments,
-            _countof(arguments),
-            includeHandler.Get(),
-            IID_PPV_ARGS(&shaderResult)
-        );
-        assert(SUCCEEDED(hr));
-
-        //警告・エラーが出てたらログを出して止める
-        ComPtr <IDxcBlobUtf8> shaderError = nullptr;
-        shaderResult->GetOutput(DXC_OUT_ERRORS, IID_PPV_ARGS(&shaderError), nullptr);
-        if (shaderError != nullptr && shaderError->GetStringLength() != 0) {
-            Logger::Log(shaderError->GetStringPointer());
-            assert(false);
-        }
-        //コンパイル結果から実行用のバイナリ部分を取得
-        Microsoft::WRL::ComPtr <IDxcBlob> shaderBlob = nullptr;
-        hr = shaderResult->GetOutput(DXC_OUT_OBJECT, IID_PPV_ARGS(&shaderBlob), nullptr);
-        assert(SUCCEEDED(hr));
-        //成功したログを出す
-        Logger::Log(StringUtility::ConvertString(std::format(L"Compile Succeeded,path:{},profile:{}\n", filePath, profile)));
-        //実行用のバイナリを返却
-        return shaderBlob;
-    }
-}
-
-============================================================
-File Path: project/engine/base/DirectXCommon/ShaderCompiler.h
-============================================================
-#pragma once
-#include <DirectXCommon.h>
-
-namespace MyEngine {
-	// シェーダーコンパイル
-	class ShaderCompiler {
-	private:
-		static std::unique_ptr<ShaderCompiler> instance;
-
-		ShaderCompiler(ShaderCompiler&) = delete;
-		ShaderCompiler& operator=(ShaderCompiler&) = delete;
-	public: // メンバ関数
-		ShaderCompiler() = default;
-		~ShaderCompiler() = default;
-
-		// シングルトンインスタンスの取得
-		static ShaderCompiler* GetInstance();
-		// 終了
-		void Finalize();
-		// 初期化
-		void Initialize();
-
-		// コンパイルシェーダー
-		Microsoft::WRL::ComPtr <IDxcBlob> CompileShader(const std::wstring& filePath, const wchar_t* profile);
-	private: // メンバ変数
-		// DXCコンパイラの初期化
-		Microsoft::WRL::ComPtr <IDxcUtils> dxcUtils = nullptr;
-		Microsoft::WRL::ComPtr <IDxcCompiler3> dxcCompiler = nullptr;
-		Microsoft::WRL::ComPtr <IDxcIncludeHandler> includeHandler = nullptr;
-	};
-}
-
-============================================================
-File Path: project/engine/base/DirectXCommon/SwapChainManager.cpp
-============================================================
-#include "SwapChainManager.h"
-#include <cassert>
-
-using namespace Microsoft::WRL;
-
-namespace MyEngine {
-    void SwapChainManager::Initialize(HWND hwnd, ComPtr<ID3D12CommandQueue>& commandQueue, ComPtr<IDXGIFactory7>& dxgiFactory, uint32_t width, uint32_t height) {
-        ///---------------------------------------------------------------------///
-        ///--------------SwapChain(スワップチェーン)を設定する----------------------///
-        ///---------------------------------------------------------------------///
-        DXGI_SWAP_CHAIN_DESC1 swapChainDesc{};
-        swapChainDesc.Width = width;//画面の幅。ウィンドウのクライアント領域を同じものにしておく
-        swapChainDesc.Height = height;//画面の高さ。ウィンドウのクライアント領域を同じものにしておく
-        swapChainDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;//色の形式
-        swapChainDesc.SampleDesc.Count = 1;//マルチサンプルしない
-        swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;//描画のターゲットとして利用する
-        swapChainDesc.BufferCount = 2;//ダブルバッファ
-        swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;//モニタに移したら、中身居を破棄
-
-        ///---------------------------------------------------------------------///
-        ///--------------SwapChain(スワップチェーン)を生成する----------------------///
-        ///---------------------------------------------------------------------///
-        HRESULT hr = dxgiFactory->CreateSwapChainForHwnd(commandQueue.Get(), hwnd, &swapChainDesc, nullptr, nullptr, reinterpret_cast<IDXGISwapChain1**>(swapChain_.GetAddressOf()));
-        assert(SUCCEEDED(hr));
-
-        // バックバッファの取得
-        // SwapChainからResourceを引っ張ってくる
-        for (int i = 0; i < 2; ++i) {
-            hr = swapChain_->GetBuffer(i, IID_PPV_ARGS(&resources_[i]));
-            //上手く取得できなければ起動できない
-            assert(SUCCEEDED(hr));
-        }
-    }
-}
-
-============================================================
-File Path: project/engine/base/DirectXCommon/SwapChainManager.h
-============================================================
-#pragma once
-#include <wrl.h>
-#include <dxgi1_6.h>
-#include <d3d12.h>
-#include <cstdint>
-#include <array>
-
-namespace MyEngine {
-    class SwapChainManager {
-    public: // メンバ関数
-        void Initialize(
-            HWND hwnd,
-            Microsoft::WRL::ComPtr<ID3D12CommandQueue>& commandQueue,
-            Microsoft::WRL::ComPtr<IDXGIFactory7>& dxgiFactory,
-            uint32_t width,
-            uint32_t height
-        );
-    private: // メンバ変数
-        // SwapChain(スワップチェーン)
-        Microsoft::WRL::ComPtr <IDXGISwapChain4> swapChain_;
-        // スワップチェーンリソース
-        std::array<Microsoft::WRL::ComPtr<ID3D12Resource>, 2> resources_;
-    public: // getter
-        Microsoft::WRL::ComPtr<IDXGISwapChain4> GetSwapChain() const { return swapChain_; }
-        // リソース配列ごと取得したい場合（参照 or ポインタ）
-        const std::array<Microsoft::WRL::ComPtr<ID3D12Resource>, 2>& GetResources() const { return resources_; }
-        Microsoft::WRL::ComPtr<ID3D12Resource> GetBuffer(uint32_t index) const { return resources_[index]; }
-    };
-}
-
-============================================================
-File Path: project/engine/base/DirectXCommon/ViewportManager.cpp
-============================================================
-#include "ViewportManager.h"
-
-namespace MyEngine {
-    void ViewportManager::Initialize(uint32_t width, uint32_t height) {
-        // ビューポートの初期化
-        //クライアント領域のサイズと一緒にして画面全体に表示
-        viewport_.Width = static_cast<float>(width);
-        viewport_.Height = static_cast<float>(height);
-        viewport_.TopLeftX = 0;
-        viewport_.TopLeftY = 0;
-        viewport_.MinDepth = 0.0f;
-        viewport_.MaxDepth = 1.0f;
-
-        // シザリング矩形
-        // 基本的にビューポートと同じ矩形が構成されるようにする
-        scissorRect_.left = 0;
-        scissorRect_.right = static_cast<LONG>(width);
-        scissorRect_.top = 0;
-        scissorRect_.bottom = static_cast<LONG>(height);
-    }
-}
-
-============================================================
-File Path: project/engine/base/DirectXCommon/ViewportManager.h
-============================================================
-#pragma once
-#include <d3d12.h>
-#include <cstdint>
-
-namespace MyEngine {
-	// ビューポート・シザー管理
-	class ViewportManager {
-	public: // メンバ関数
-		/// <summary>
-		/// 初期化
-		/// </summary>
-		void Initialize(uint32_t width, uint32_t height);
-	private: // メンバ変数
-		// ビューポート
-		D3D12_VIEWPORT viewport_{};
-		// シザー短形
-		D3D12_RECT scissorRect_{};
-	public: // getter
-		const D3D12_VIEWPORT& GetViewport() const { return viewport_; }
-		const D3D12_RECT& GetScissorRect() const { return scissorRect_; }
-	};
-}
-
-============================================================
 File Path: project/engine/base/Framework.cpp
 ============================================================
 #include "Framework.h"
@@ -9041,406 +9478,6 @@ namespace MyEngine {
 }
 
 ============================================================
-File Path: project/engine/base/ViewManager/DsvManager.cpp
-============================================================
-#include "DsvManager.h"
-#include <ResourceFactory.h>
-#include <DescriptorUtils.h>
-
-using namespace MyEngine::ResourceFactory;
-using namespace MyEngine::DescriptorUtils;
-
-namespace MyEngine {
-    void DsvManager::Initialize(DirectXCommon* directXCommon) {
-        assert(directXCommon);
-        // 引数で受け取ってメンバ変数に記録する 
-        this->dxCommon_ = directXCommon;
-
-        // DSV用のヒープでディスクリプタの数は1。DSVはshader内で触るものではないので、ShaderVisibleはfalse
-        dsvDescriptorHeap = dxCommon_->CreateDescriptorHeap(D3D12_DESCRIPTOR_HEAP_TYPE_DSV, 1, false);
-        // DescriptorSizeを取得する
-        descriptorsizeDSV = dxCommon_->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
-
-        //------------------深度ステルスビューの初期化---------------------//
-        /*------------------------------------------------------------*/
-        /*--------------------------DSVの設定--------------------------*/
-        /*------------------------------------------------------------*/
-        // DepthStencilTextureをウインドウのサイズで作成
-        depthStencilResource = CreateDepthStencilTextureResource(dxCommon_->GetDevice(), WinApp::kClientWidth, WinApp::kClientHeight);
-
-        // DSVの設定
-        D3D12_DEPTH_STENCIL_VIEW_DESC dsvDesc{};
-        dsvDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;//Format。基本的にはResource合わせる
-        dsvDesc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D; //2dTexture 
-        // DSVDescの先頭にDSVを作る
-        dxCommon_->GetDevice()->CreateDepthStencilView(depthStencilResource.Get(), &dsvDesc, dsvDescriptorHeap->GetCPUDescriptorHandleForHeapStart());
-
-        // DepthStencilStateの設定
-        // Depthの機能を有効化する
-        depthStencilDesc.DepthEnable = true;
-        // 書き込みする
-        depthStencilDesc.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ALL;
-        // 書き込みしない
-        //depthStencilDesc.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ZERO;
-        // 比較関数はLessEqual。つまり、近ければ描画される
-        depthStencilDesc.DepthFunc = D3D12_COMPARISON_FUNC_LESS_EQUAL;
-    }
-}
-
-============================================================
-File Path: project/engine/base/ViewManager/DsvManager.h
-============================================================
-#pragma once
-#include <DirectXCommon.h>
-
-namespace MyEngine {
-	class DsvManager {
-	public: // メンバ関数
-
-		// 初期化
-		void Initialize(DirectXCommon* directXCommon);
-
-
-		Microsoft::WRL::ComPtr <ID3D12DescriptorHeap> GetDsvDescriptorHeap() const { return dsvDescriptorHeap; }
-
-		D3D12_DEPTH_STENCIL_DESC GetDepthStencilDesc() const { return depthStencilDesc; }
-		void SetDepthStencilDesc(D3D12_DEPTH_STENCIL_DESC StencilDesc) { depthStencilDesc = StencilDesc; }
-
-	private: // メンバ変数		
-		// ポインタ
-		DirectXCommon* dxCommon_ = nullptr;
-		// ディスクリプタ
-		Microsoft::WRL::ComPtr <ID3D12DescriptorHeap> dsvDescriptorHeap;	// DSV用のヒープでディスクリプタ
-		// 各DescriptorSizeを取得する
-		uint32_t descriptorsizeDSV;	 // DSV用
-		// DepthStencilTextureをウインドウのサイズ
-		Microsoft::WRL::ComPtr <ID3D12Resource> depthStencilResource;
-		// DepthStencilStateの設定
-		D3D12_DEPTH_STENCIL_DESC depthStencilDesc{};
-	};
-}
-
-============================================================
-File Path: project/engine/base/ViewManager/RtvManager.cpp
-============================================================
-#include "RtvManager.h"
-#include <ResourceFactory.h>
-#include <DescriptorUtils.h>
-
-using namespace MyEngine::ResourceFactory;
-using namespace MyEngine::DescriptorUtils;
-
-namespace MyEngine {
-    void RtvManager::Initialize(DirectXCommon* directXCommon) {
-        assert(directXCommon);
-        // 引数で受け取ってメンバ変数に記録する 
-        this->dxCommon_ = directXCommon;
-        // RTV用のヒープでディスクリプタの数は2。RTVはshader内で触るものではないので、ShaderVisibleはfalse
-        descriptorHeap = dxCommon_->CreateDescriptorHeap(D3D12_DESCRIPTOR_HEAP_TYPE_RTV, 3, false);
-        // DescriptorSizeを取得する
-        descriptorSize = dxCommon_->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
-
-        /*--------------------------------------------------------------------------------*/
-        /*--------------------------レンダーターゲットビューの初期化---------------------------*/
-        /*--------------------------------------------------------------------------------*/
-
-        // カスタムRenderTarget用のリソース作成
-        kRenderTargetClearValue = { 0.1f,0.25f,0.5f,1.0f };
-        // [2]にrenderTexture を作る
-        renderTextureResource = CreateRenderTextureResource(
-            dxCommon_->GetDevice().Get(),
-            WinApp::kClientWidth,
-            WinApp::kClientHeight,
-            DXGI_FORMAT_R8G8B8A8_UNORM_SRGB,
-            kRenderTargetClearValue
-        );
-
-        /*-----------------------------------------------------------*/
-        /*--------------------------RTVの設定--------------------------*/
-        /*------------------------------------------------------------*/
-
-        //RTVの設定
-        rtvDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;//出力結果をSRGB2変換して書き込む
-        rtvDesc.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2D;//2Dテクスチャとして読み込む
-        //ディスクリプタの先頭を取得する
-        D3D12_CPU_DESCRIPTOR_HANDLE rtvStartHandle = GetCPUDescriptorHandle(descriptorHeap, descriptorSize, 0);
-
-        for (uint32_t i = 0; i < rtvHandlenum; ++i) {
-            rtvHandles[i] = rtvStartHandle;
-
-            ID3D12Resource* target = nullptr;
-            if (i < 2) {
-                target = dxCommon_->GetSwapChain()->GetBuffer(i).Get(); // 0, 1 は swapChain
-            } else {
-                target = renderTextureResource.Get(); // 2 は renderTexture
-            }
-
-            dxCommon_->GetDevice()->CreateRenderTargetView(target, &rtvDesc, rtvHandles[i]);
-            rtvStartHandle.ptr += descriptorSize;
-        }
-    }
-
-    void RtvManager::PreDrawRenderTexture() {
-        // バリア: SRV → RenderTarget
-        if (renderTextureState != RenderTextureState::RenderTarget) {
-            TransitionResource(
-                renderTextureResource.Get(),
-                D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
-                D3D12_RESOURCE_STATE_RENDER_TARGET);
-            renderTextureState = RenderTextureState::RenderTarget;
-        }
-    }
-
-    void RtvManager::PostDrawRenderTexture() {
-        // もし現在のテクスチャの状態が PixelShaderResource（シェーダーリソースビュー）でない場合、
-        if (renderTextureState != RenderTextureState::PixelShaderResource) {
-            TransitionResource(renderTextureResource.Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
-            renderTextureState = RenderTextureState::PixelShaderResource;  // 現在の状態を記録しておく。
-        }
-    }
-
-
-    void RtvManager::TransitionResource(ID3D12Resource* resource, D3D12_RESOURCE_STATES beforeState, D3D12_RESOURCE_STATES afterState) {
-        // バリアの設定
-        D3D12_RESOURCE_BARRIER barrier{};
-        barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;                      // 今回のバリアはTransition
-        barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;                           // Noneにしておく 
-        barrier.Transition.pResource = resource;                                    // バリアを張る対象のリソース。
-        barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;   // 全サブリソースに対してバリアを張る
-        barrier.Transition.StateBefore = beforeState;                               // 遷移前のResourceState
-        barrier.Transition.StateAfter = afterState;                                 // TransitionBarrierを張る
-        // コマンドリストにバリアを追加
-        dxCommon_->GetCommandList()->ResourceBarrier(1, &barrier);
-    }
-}
-
-============================================================
-File Path: project/engine/base/ViewManager/RtvManager.h
-============================================================
-#pragma once
-#include <DirectXCommon.h>
-
-namespace MyEngine {
-	// レンダーテクスチャの状態変異
-	enum class RenderTextureState {
-		RenderTarget,             // 現在、描画先（RTV）として使用中
-		PixelShaderResource       // 現在、SRVとしてシェーダから読み込み可能
-	};
-
-	class RtvManager {
-	public: // メンバ関数
-
-		// 初期化
-		void Initialize(DirectXCommon* directXCommon);
-
-		/// <summary>
-		/// レンダーテクスチャのテクスチャリソースの生成
-		/// </summary>
-		void PreDrawRenderTexture();
-
-		/// <summary>
-		/// レンダーテクスチャの描画後処理
-		/// </summary>
-		void PostDrawRenderTexture();
-
-		// RTVのハンドル取得（インデックス指定）
-		D3D12_CPU_DESCRIPTOR_HANDLE GetRtvHandle(uint32_t index) const { return rtvHandles[index]; }
-
-		// リソースの状態を遷移
-		void TransitionResource(ID3D12Resource* resource, D3D12_RESOURCE_STATES beforeState, D3D12_RESOURCE_STATES afterState);
-
-	private: // メンバ変数
-		// ポインタ
-		DirectXCommon* dxCommon_ = nullptr;
-		// RTV用デスクリプタヒープ
-		Microsoft::WRL::ComPtr <ID3D12DescriptorHeap> descriptorHeap;
-		// RTV用のデスクリプタサイズ
-		uint32_t descriptorSize;
-		//RTVの設定
-		D3D12_RENDER_TARGET_VIEW_DESC rtvDesc{};
-		//ディスクリプタの先頭を取得する
-		D3D12_CPU_DESCRIPTOR_HANDLE rtvStartHandle;
-		//RTVを2つ作るのでディスクリプタハンドルを2つ用意
-		const uint32_t rtvHandlenum = 3;
-		D3D12_CPU_DESCRIPTOR_HANDLE rtvHandles[3];
-		// オフスクリーン用のレンダーテクスチャ		
-		// レンダーテクスチャの状態変異
-		RenderTextureState renderTextureState = RenderTextureState::RenderTarget; // 初期状態はRenderTarget
-		Microsoft::WRL::ComPtr<ID3D12Resource> renderTextureResource;              // カスタムRenderTarget用のリソース
-		Vector4 kRenderTargetClearValue{};                                         // カスタムRenderTargetのリソースカラー
-		uint32_t srvIndexRenderTexture;                                            // レンダーテクスチャのSRVインデックス
-	public:
-		// ディスクリプタヒープ取得
-		Microsoft::WRL::ComPtr <ID3D12DescriptorHeap>  GetHeap() const { return descriptorHeap; }
-		Microsoft::WRL::ComPtr <ID3D12Resource> GetrenderTextureResource() const { return renderTextureResource; }
-		const Vector4 GetkRenderTargetClearValue() const { return kRenderTargetClearValue; }
-	};
-}
-
-============================================================
-File Path: project/engine/base/ViewManager/SrvManager.cpp
-============================================================
-#include "SrvManager.h"
-
-using namespace Microsoft::WRL;
-
-namespace MyEngine {
-	const uint32_t 	SrvManager::kMaxSRVCount = 512;
-
-	void SrvManager::Initialize(DirectXCommon* directXCommon) {
-		// 引数で受け取ってメンバ変数に記録する
-		this->directXCommon = directXCommon;
-
-		// SRV用のヒープでディスクリプタの数は128.RTVはshader内で触るものなので、ShaderVisibleはtrue
-		descriptorHeap = directXCommon->CreateDescriptorHeap(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, kMaxSRVCount, true);
-		descriptorSize = directXCommon->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-	}
-
-	uint32_t SrvManager::Allocate() {
-		// NULL検出
-		assert(useIndex < kMaxSRVCount);
-		// return する番号を一旦記録しておく
-		int index = useIndex;
-		// 次回のために番号を1進める
-		useIndex++;
-		// 上で記録した番号をreturn
-		return index;
-	};
-
-	D3D12_CPU_DESCRIPTOR_HANDLE SrvManager::GetCPUDescriptorHandle(uint32_t index)
-	{
-		D3D12_CPU_DESCRIPTOR_HANDLE handleCPU = descriptorHeap->GetCPUDescriptorHandleForHeapStart();
-		handleCPU.ptr += (descriptorSize * index);
-		return handleCPU;
-	}
-
-	D3D12_GPU_DESCRIPTOR_HANDLE SrvManager::GetGPUDescriptorHandle(uint32_t index)
-	{
-		D3D12_GPU_DESCRIPTOR_HANDLE handleGPU = descriptorHeap->GetGPUDescriptorHandleForHeapStart();
-		handleGPU.ptr += (descriptorSize * index);
-		return handleGPU;
-	}
-
-	void SrvManager::CreateSRVforTexture2D(uint32_t srvIndex, ComPtr<ID3D12Resource> pResource, DXGI_FORMAT Format, UINT MipLevels, bool isCubemap) {
-		// SRVの設定
-		D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc{};
-		srvDesc.Format = Format;
-		srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-		if (isCubemap) { // metadataからCubemapかどうかを取得
-			srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURECUBE;
-			srvDesc.TextureCube.MostDetailedMip = 0; // unionがTextureCudeになったが、内部パラメータの意味はTexture2dと変わらない
-			srvDesc.TextureCube.MipLevels = UINT_MAX;
-			srvDesc.TextureCube.ResourceMinLODClamp = 0.0f;
-		} else {
-			// 今まで通り2d,textureの設定を行う
-			srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;  //2Dテクスチャ
-			srvDesc.Texture2D.MipLevels = UINT(MipLevels);
-		}
-		// SRVの生成
-		directXCommon->GetDevice()->CreateShaderResourceView(pResource.Get(), &srvDesc, GetCPUDescriptorHandle(srvIndex));
-	}
-
-	void SrvManager::CreateSRVforStructuredBuffer(uint32_t srvIndex, ComPtr<ID3D12Resource> pResource, UINT numElements, UINT structureByteStride) {
-		// SRVの設定
-		D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc{};
-		srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-		srvDesc.ViewDimension = D3D12_SRV_DIMENSION_BUFFER;  // バッファ
-		srvDesc.Buffer.NumElements = numElements;
-		srvDesc.Buffer.StructureByteStride = UINT(structureByteStride);
-		// SRVの生成
-		directXCommon->GetDevice()->CreateShaderResourceView(pResource.Get(), &srvDesc, GetCPUDescriptorHandle(srvIndex));
-	}
-
-	uint32_t  SrvManager::CreateSRVForRenderTexture(ComPtr<ID3D12Resource> resource) {
-		uint32_t index = Allocate();
-		// SRVの設定
-		D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc{};
-		srvDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
-		srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-		srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
-		srvDesc.Texture2D.MipLevels = 1;
-		// SRVの生成
-		directXCommon->GetDevice()->CreateShaderResourceView(resource.Get(), &srvDesc, GetCPUDescriptorHandle(index));
-		return index; // 作ったSRVのインデックスを返す！
-	}
-
-	void SrvManager::PreDraw() {
-		// 描画用のDescriptorHeapの設定
-		ID3D12DescriptorHeap* descriptorHeaps[] = { descriptorHeap.Get() };
-		directXCommon->GetCommandList()->SetDescriptorHeaps(1, descriptorHeaps);
-	}
-
-	void SrvManager::SetGraphicsRootDescriptorTable(UINT RootParameterIndex, uint32_t srvIndex) {
-		directXCommon->GetCommandList()->SetGraphicsRootDescriptorTable(RootParameterIndex, GetGPUDescriptorHandle(srvIndex));
-	}
-
-	bool SrvManager::TextureDataCheck() {
-		if (useIndex < kMaxSRVCount) {
-			return true;
-		}
-		// 確保しているテクスチャより大きい場合はエラー
-		return false;
-	}
-}
-
-============================================================
-File Path: project/engine/base/ViewManager/SrvManager.h
-============================================================
-#pragma once
-#include <DirectXCommon.h>
-
-namespace MyEngine {
-	class SrvManager {
-	public: // メンバ関数
-
-		// 最大SRV数(最大テクスチャ枚数)
-		static const uint32_t kMaxSRVCount;
-
-		// 初期化
-		void Initialize(DirectXCommon* directXCommon);
-		// SRVマネージャーの確保
-		uint32_t Allocate();
-		// 描画前のDescriptorHeapの設定
-		void PreDraw();
-
-		/// <summary>
-		/// 指定番号のCPUディスクリプタハンドルを取得する
-		/// </summary>
-		D3D12_CPU_DESCRIPTOR_HANDLE GetCPUDescriptorHandle(uint32_t index);
-		/// <summary>
-		/// 指定番号のGPUディスクリプタハンドルの取得をする
-		/// </summary>
-		D3D12_GPU_DESCRIPTOR_HANDLE GetGPUDescriptorHandle(uint32_t index);
-
-		// SRV生成 (テクスチャ)
-		void CreateSRVforTexture2D(uint32_t srvIndex, Microsoft::WRL::ComPtr <ID3D12Resource> pResource, DXGI_FORMAT Format, UINT MipLevels, bool isCubemap);
-		// SRV生成 (Structured Buffer用)
-		void CreateSRVforStructuredBuffer(uint32_t srvIndex, Microsoft::WRL::ComPtr <ID3D12Resource> pResource, UINT numElements, UINT structureByteStride);
-		// SRV生成(レンダーテクスチャ)
-		uint32_t  CreateSRVForRenderTexture(Microsoft::WRL::ComPtr <ID3D12Resource> resource);
-
-		// 描画のセット
-		void SetGraphicsRootDescriptorTable(UINT RootParameterIndex, uint32_t srvIndex);
-
-		// テクスチャの確保が可能かチェック
-		bool TextureDataCheck();
-
-	private: // メンバ変数
-		// ポインタ
-		DirectXCommon* directXCommon = nullptr;
-		// SRV用デスクリプタヒープ
-		Microsoft::WRL::ComPtr <ID3D12DescriptorHeap> descriptorHeap;
-		// SRV用のデスクリプタサイズ
-		uint32_t descriptorSize;
-		// 次に使用するSRVインデックス
-		uint32_t useIndex = 0;
-	public:
-		// getter
-		Microsoft::WRL::ComPtr <ID3D12DescriptorHeap> GetDescriptorHeap() { return descriptorHeap; }
-	};
-}
-
-============================================================
 File Path: project/engine/base/WinApp.cpp
 ============================================================
 #include "WinApp.h"
@@ -9738,53 +9775,11 @@ namespace MyEngine {
 
     // 更新処理
     void CameraManager::Update() {
-        // シーンカメラが変わったら一度だけTransformとサブカメラを反映
-        //if (sceneCameraJustChanged_) {
-        //    // 前のサブカメラを破棄
-        //    subCamerasMap_.clear();
-        //    // 新しいシーンに切り替えるときのみムーブ
-        //    if (currentSceneCamera_) { RegisterSubCameras(std::move(currentSceneCamera_->MoveSubCameras()), "SubCamera"); }
-        //    sceneCameraJustChanged_ = false;
-        //}
-
-        //// 現在のシーンカメラの更新
-        //if (currentSceneCamera_) { currentSceneCamera_->Update(); }
-
-        //// メインカメラに値を反映
-        //if (mainCamera_ && currentSceneCamera_) {
-        //    maintrans_ = currentSceneCamera_->GetMainTransform();
-        //    mainCamera_->SetTranslate(maintrans_.translate);
-        //    mainCamera_->SetRotate(maintrans_.rotate);
-        //    mainCamera_->Update();
-        //}
-
-        //// サブカメラ更新
-        //for (std::pair<const std::string, std::unique_ptr<Camera>>& subcameras : subCamerasMap_) {
-        //    subcameras.second->Update();
-        //}
-        //// アクティブ登録
-        //SetActiveCamera();
+    
     }
 
     // アクティブカメラを取得
     Camera* CameraManager::GetActiveCamera() {
-        //// Transition中は常にメインカメラを返す
-        //if (currentMode_ == CameraMode::Transition) {
-        //    return mainCamera_.get();
-        //}
-
-        //switch (Typeview_) {
-        //case ViewCameraType::Main:
-        //    return mainCamera_.get();
-        //case ViewCameraType::Sub:
-        //    if (!activeSubCameraName_.empty() && subCamerasMap_.count(activeSubCameraName_)) {
-        //        return subCamerasMap_[activeSubCameraName_].get();
-        //    }
-        //    else if (!subCamerasMap_.empty()) {
-        //        return subCamerasMap_.begin()->second.get(); // 最初のサブカメラ
-        //    }
-        //    break;
-        //}
         return mainCamera_.get();
     }
 }
@@ -9820,18 +9815,6 @@ namespace MyEngine {
         /// 更新処理
         /// </summary> 
         void Update();
-        //// ImGui描画   
-        //void DrawImGui();
-        //// カメラモード設定
-        //void SetCameraMode(CameraMode mode);
-        //// サブカメラを一括登録
-        //void RegisterSubCameras(std::vector<std::unique_ptr<Camera>>&& cameras, const std::string& prefix);
-        //// シーンマネージャーから現在のシ―ンを判定する
-        //void NotifySceneChangedByName(const std::string& sceneName);
-        //// 各シーン用カメラの切替
-        ////void OnSceneChanged(SceneCameraType type);
-
-
     private: // メンバ変数
         CameraTypes::ViewCameraType Typeview_;                                                  // 使用するカメラのタイプ  
         CameraTypes::SceneCameraType activeSceneCameraType_;                                    // カメラがどこのシーンにあるか
@@ -9851,35 +9834,6 @@ namespace MyEngine {
     public: // メンバ関数
         // 現在アクティブなカメラ
         Camera* GetActiveCamera();
-        //// アクティブカメラを更新し、共通リソースに設定する
-        //void SetActiveCamera();
-
-        //ViewCameraType GetTypeview() const { return Typeview_; }
-        //void SetTypeview(ViewCameraType type) { Typeview_ = type; }
-        //CameraMode GetMode() const { return currentMode_; }
-        //void SetMode(CameraMode mode) { currentMode_ = mode; }
-
-        //SceneCameraType GetActiveSceneCamera() const{ return activeSceneCameraType_; }
-
-        //CameraSwitchType GetSwitchType() const { return switchType_; }
-        //void SetSwitchType(CameraSwitchType type) { switchType_ = type; }
-
-        //Camera* GetMainCamera() const {
-        //    return mainCamera_.get();
-        //}
-
-        //const CameraTransform& GetMainCameraTransform() const {
-        //    return maintrans_;
-        //}
-
-        //Camera* GetSubCamera(const std::string& name) {
-        //    auto it = subCamerasMap_.find(name);
-        //    if (it != subCamerasMap_.end()) {
-        //        return it->second.get();
-        //    }
-        //    return nullptr;
-        //}
-
     };
 }
 
@@ -12360,15 +12314,7 @@ File Path: project/engine/scene/SceneManager.h
 namespace MyEngine {
 	// シーン管理
 	class SceneManager {
-	public: // メンバ関数
-		// シーンマネージャの状態
-		enum class State {
-			Idle,        // 通常実行中
-			FadeOut,     // シーン終了演出中
-			Change,      // シーン差し替え実行
-			FadeIn       // 次のシーン開始演出中
-		};
-	private:
+	private: // シングルトンインスタンス
 		static std::unique_ptr<SceneManager> instance;
 
 		SceneManager(SceneManager&) = delete;
@@ -12386,15 +12332,12 @@ namespace MyEngine {
 		// 描画
 		void Draw();
 	private: // メンバ変数	
-		//State state_ = State::Idle; // 現在の状態
 		// 今のシーン(実行中シーン)
 		std::unique_ptr<BaseScene> scene_ = nullptr;
 		// 次のシーン
 		std::unique_ptr<BaseScene> nextScene_ = nullptr;
 		// シーンファクトリー(借りてくる)
 		AbstractSceneFactory* sceneFactory_ = nullptr;
-		// シーン到達フラグのマップ
-		std::unordered_map<std::string, bool> sceneReachedFlags_;
 	public:
 		/// <summary>
 		/// 次シーン予約
@@ -12403,43 +12346,8 @@ namespace MyEngine {
 		void ChangeScene(const std::string& sceneName);
 		// シーンファクトリーにsetter
 		void SetSceneFactory(AbstractSceneFactory* SceneFactory) { sceneFactory_ = SceneFactory; }
-		// シーン到達フラグを設定
-		void SetSceneReached(const std::string& sceneName, bool reached = true) {
-			sceneReachedFlags_[sceneName] = reached;
-		}
-
-		// シーンに一度でも到達したか？
-		bool HasReachedScene(const std::string& sceneName) const {
-			auto it = sceneReachedFlags_.find(sceneName);
-			return it != sceneReachedFlags_.end() && it->second;
-		}
-
-		// 現在のシーンを取得する getter
-		BaseScene* GetCurrentScene() const {
-			return scene_.get();
-		}
-		/// <summary>
-		/// 現在のシーン名が指定した名前と一致するか判定する
-		/// </summary>
-		/// <param name="sceneName">比較したいシーン名</param>
-		/// <returns>一致していればtrue</returns>
-		bool IsCurrentScene(const std::string& sceneName) const {
-			// 現在のシーンが存在し、かつ名前が一致しているか
-			if (scene_) {
-				return scene_->GetSceneName() == sceneName;
-			}
-			return false;
-		}
-		// 現在のシーンが「到達済み」フラグを持っているか？
-		bool IsCurrentSceneReached() const {
-			if (!scene_) { return false; }
-
-			// BaseScene 側でシーン名を持っている前提
-			const std::string& currentSceneName = scene_->GetSceneName();
-
-			auto it = sceneReachedFlags_.find(currentSceneName);
-			return it != sceneReachedFlags_.end() && it->second;
-		}
+		// 現在のシーンを取得する
+		BaseScene* GetCurrentScene() const { return scene_.get(); }
 	};
 }
 
