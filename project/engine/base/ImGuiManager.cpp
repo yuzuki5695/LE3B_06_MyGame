@@ -1,113 +1,114 @@
 #include "ImGuiManager.h"
-#include<WinApp.h>
-#include<DirectXCommon.h>
+#include <WinApp.h>
+#include <DirectXCommon.h>
 
-// 名前空間
 using namespace Microsoft::WRL;
 
-// 定数の定義
-const std::string ImGuiManager::kFontPath = "Resources/Fonts/Debug/NotoSansJP-VF.ttf";
-const float ImGuiManager::kDefaultFontSize = 15.0f;
+namespace MyEngine {
+	// 定数の定義
+	const std::string ImGuiManager::kFontPath = "Resources/Fonts/Debug/NotoSansJP-VF.ttf";
+	const float ImGuiManager::kDefaultFontSize = 15.0f;
 
-ImGuiManager* ImGuiManager::instance = nullptr;
+	ImGuiManager* ImGuiManager::instance = nullptr;
 
-ImGuiManager* ImGuiManager::GetInstance() {
-	if (instance == nullptr) {
-		instance = new ImGuiManager;
+	ImGuiManager* ImGuiManager::GetInstance() {
+		if (instance == nullptr) {
+			instance = new ImGuiManager;
+		}
+		return instance;
 	}
-	return instance;
-}
 
-void ImGuiManager::Finalize() {
+	void ImGuiManager::Finalize() {
 #ifdef USE_IMGUI
-	// ImGuiの終了処理。後始末
-	ImGui_ImplDX12_Shutdown();
-	ImGui_ImplWin32_Shutdown();
-	ImGui::DestroyContext();
+		// ImGuiの終了処理。後始末
+		ImGui_ImplDX12_Shutdown();
+		ImGui_ImplWin32_Shutdown();
+		ImGui::DestroyContext();
 #endif // USE_IMGUI
-	delete instance;
-	instance = nullptr;
-}
+		delete instance;
+		instance = nullptr;
+	}
 
-void ImGuiManager::Initialize([[maybe_unused]] WinApp* winApp, [[maybe_unused]] DirectXCommon* DxCommon, [[maybe_unused]] SrvManager* srvManager) {
+	void ImGuiManager::Initialize([[maybe_unused]] WinApp* winApp, [[maybe_unused]] DirectXCommon* DxCommon, [[maybe_unused]] SrvManager* srvManager) {
 #ifdef USE_IMGUI
-	// 引数で受け取ってメンバ変数に記録する
-	this->winApp_ = winApp;
-	this->DxCommon_ = DxCommon;
-	this->srvManager_ = srvManager;
+		// 引数で受け取ってメンバ変数に記録する
+		this->winApp_ = winApp;
+		this->DxCommon_ = DxCommon;
+		this->srvManager_ = srvManager;
 
-	// ImGuiのコンテキストを生成
-	ImGui::CreateContext();
+		// ImGuiのコンテキストを生成
+		ImGui::CreateContext();
 
-	// iniファイルを作らないように設定
-	ImGuiIO& io = ImGui::GetIO();
-	io.IniFilename = nullptr; // 設定ファイルの自動保存を無効化
-    io.ConfigFlags |= ImGuiConfigFlags_DockingEnable; // ドッキング機能を有効化
+		// iniファイルを作らないように設定
+		ImGuiIO& io = ImGui::GetIO();
+		io.IniFilename = nullptr; // 設定ファイルの自動保存を無効化
+		io.ConfigFlags |= ImGuiConfigFlags_DockingEnable; // ドッキング機能を有効化
 
-	// ImGuiのスタイルを設定
-	ImGui::StyleColorsDark();
-	// フォントのセットアップ
-    SetupFonts();
+		// ImGuiのスタイルを設定
+		ImGui::StyleColorsDark();
+		// フォントのセットアップ
+		SetupFonts();
 
-	// インデックスを確保
-	imguiindex = srvManager_->Allocate();
-	ImGuiHandleCPU = srvManager_->GetCPUDescriptorHandle(imguiindex);
-	ImGuiHandleGPU = srvManager_->GetGPUDescriptorHandle(imguiindex);
+		// インデックスを確保
+		imguiindex = srvManager_->Allocate();
+		ImGuiHandleCPU = srvManager_->GetCPUDescriptorHandle(imguiindex);
+		ImGuiHandleGPU = srvManager_->GetGPUDescriptorHandle(imguiindex);
 
-	// Win32用初期化
-	ImGui_ImplWin32_Init(winApp_->Gethwnd());
-	// DirectX12用初期化
-	ImGui_ImplDX12_Init(
-		DxCommon_->GetDevice().Get(),
-		static_cast<int>(DxCommon_->GetSwapChain()->GetResources().size()),
-		DXGI_FORMAT_R8G8B8A8_UNORM_SRGB,
-		srvManager_->GetDescriptorHeap().Get(),
-		ImGuiHandleCPU,
-		ImGuiHandleGPU
-	);
-	// フォントテクスチャなどのデバイスオブジェクトを作成
-	ImGui_ImplDX12_CreateDeviceObjects();
+		// Win32用初期化
+		ImGui_ImplWin32_Init(winApp_->Gethwnd());
+		// DirectX12用初期化
+		ImGui_ImplDX12_Init(
+			DxCommon_->GetDevice().Get(),
+			static_cast<int>(DxCommon_->GetSwapChain()->GetResources().size()),
+			DXGI_FORMAT_R8G8B8A8_UNORM_SRGB,
+			srvManager_->GetDescriptorHeap().Get(),
+			ImGuiHandleCPU,
+			ImGuiHandleGPU
+		);
+		// フォントテクスチャなどのデバイスオブジェクトを作成
+		ImGui_ImplDX12_CreateDeviceObjects();
 #endif // USE_IMGUI
-}
+	}
 
-void ImGuiManager::Begin() {
+	void ImGuiManager::Begin() {
 #ifdef USE_IMGUI
-	// ImGuiフレーム開始
-	ImGui_ImplDX12_NewFrame();
-	ImGui_ImplWin32_NewFrame();
-	ImGui::NewFrame();
+		// ImGuiフレーム開始
+		ImGui_ImplDX12_NewFrame();
+		ImGui_ImplWin32_NewFrame();
+		ImGui::NewFrame();
 #endif // USE_IMGUI
-}
+	}
 
-void ImGuiManager::End() {
+	void ImGuiManager::End() {
 #ifdef USE_IMGUI
-	// 描画前準備
-	ImGui::Render();
+		// 描画前準備
+		ImGui::Render();
 #endif // USE_IMGUI
-}
+	}
 
-void ImGuiManager::Draw() {
+	void ImGuiManager::Draw() {
 #ifdef USE_IMGUI
-	ComPtr<ID3D12GraphicsCommandList> commandList = DxCommon_->GetCommandList();
-	// デスクリプタヒープの配列をセットするコマンド
-	ComPtr<ID3D12DescriptorHeap> ppheaps[] = { srvManager_->GetDescriptorHeap().Get() };
-	commandList->SetDescriptorHeaps(_countof(ppheaps), ppheaps->GetAddressOf());
-	// 描画コマンドを発行
-	ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), commandList.Get());
+		ComPtr<ID3D12GraphicsCommandList> commandList = DxCommon_->GetCommandList();
+		// デスクリプタヒープの配列をセットするコマンド
+		ComPtr<ID3D12DescriptorHeap> ppheaps[] = { srvManager_->GetDescriptorHeap().Get() };
+		commandList->SetDescriptorHeaps(_countof(ppheaps), ppheaps->GetAddressOf());
+		// 描画コマンドを発行
+		ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), commandList.Get());
 #endif // USE_IMGUI
-}
+	}
 
-void ImGuiManager::SetupFonts() {
+	void ImGuiManager::SetupFonts() {
 #ifdef USE_IMGUI
-	ImGuiIO& io = ImGui::GetIO();
-	// フォントの読み込み(今回は日本語フォントを使用)
-	ImFont* font = io.Fonts->AddFontFromFileTTF(
-		kFontPath.c_str(),
-		kDefaultFontSize,
-		nullptr,
-		io.Fonts->GetGlyphRangesJapanese()
-	);
-	// フォントのビルド
-	io.Fonts->Build();
+		ImGuiIO& io = ImGui::GetIO();
+		// フォントの読み込み(今回は日本語フォントを使用)
+		ImFont* font = io.Fonts->AddFontFromFileTTF(
+			kFontPath.c_str(),
+			kDefaultFontSize,
+			nullptr,
+			io.Fonts->GetGlyphRangesJapanese()
+		);
+		// フォントのビルド
+		io.Fonts->Build();
 #endif // USE_IMGUI
+	}
 }

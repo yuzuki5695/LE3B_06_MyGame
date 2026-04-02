@@ -1,36 +1,34 @@
 #include "MyGame.h"
-#include<SceneFactory.h>
+#include <SceneFactory.h>
+#include <SceneName.h>
 
-void MyGame::Finalize() {
-    // 基底クラスの終了処理
-    Framework::Finalize();
-}
+namespace MyEngine {
+    void MyGame::Finalize() {
+        // 基底クラスの終了処理
+        Framework::Finalize();
+    }
 
-void MyGame::Initialize() {
-    // 基底クラスの初期化処理
-    Framework::Initialize();
-    // シーンファクトリを生成し、マネージャにセット
-    sceneFactory_ = std::make_unique<SceneFactory>();
-    SceneManager::GetInstance()->SetSceneFactory(sceneFactory_.get());
-    // シーンマネージャに最初のシーンをセットした
+    void MyGame::Initialize() {
+        // 基底クラスの初期化処理
+        Framework::Initialize();
+        // シーンファクトリを生成し、マネージャにセット
+        sceneFactory_ = std::make_unique<SceneFactory>();
+        SceneManager::GetInstance()->SetSceneFactory(sceneFactory_.get());
+        // シーンマネージャに最初のシーンをセット
+        SceneManager::GetInstance()->ChangeScene(SceneName::GAMEPLAY);
+    }
 
-    // TITLE              タイトル
-	// GAMEPLAY           ゲームプレイ
-	// GAMECLEAR          ゲームクリア
-    // GAMEOVER           ゲームオーバー
-    SceneManager::GetInstance()->ChangeScene("GAMEPLAY");
-}
+    void MyGame::Update() {
+        // 基底クラスの更新処理
+        Framework::Update();
+    }
 
-void MyGame::Update() {
-    // 基底クラスの更新処理
-    Framework::Update();
-}
-
-void MyGame::Draw() {
-    // 描画処理
-    Framework::Draw(); 
-    // デバックテキスト描画
-    ImGuiManager::GetInstance()->Draw();
-    // 描画後処理
-    Framework::GetDirectXCommon()->PostDraw();
+    void MyGame::Draw() {
+        // 描画処理
+        Framework::Draw();
+        // デバックテキスト描画
+        ImGuiManager::GetInstance()->Draw();
+        // 描画後処理
+        Framework::GetDirectXCommon()->PostDraw();
+    }
 }

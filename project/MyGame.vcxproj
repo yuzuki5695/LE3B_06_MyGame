@@ -16,6 +16,7 @@
     <ProjectGuid>{4a4dc1f5-7c46-444e-98e4-c58c3fb34d6b}</ProjectGuid>
     <RootNamespace>MyGame</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ProjectName>MyGame</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
@@ -63,7 +64,7 @@
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)engine\2d;$(ProjectDir)engine\3d;$(ProjectDir)engine\audio;$(ProjectDir)engine\base;$(ProjectDir)engine\io;$(ProjectDir)engine\math;$(ProjectDir)engine\scene;$(ProjectDir)engine\3d\Particle;$(ProjectDir)engine\camera;$(ProjectDir)engine\base\DirectXCommon;$(ProjectDir)engine\base\Utility;$(ProjectDir)engine\base\ViewManager;$(ProjectDir)engine\math\Light;$(ProjectDir)engine\math\Matrix;$(ProjectDir)engine\math\Model;$(ProjectDir)engine\math\Vector;$(ProjectDir)engine\resource;$(ProjectDir)externals\nlohmann;$(ProjectDir)application\scene;$(ProjectDir)application\character;$(ProjectDir)application\character\player;$(ProjectDir)application\bullet;$(ProjectDir)application\loader;$(ProjectDir)application\camera;$(ProjectDir)application\character\enemy;$(ProjectDir)externals\assimp\include;$(ProjectDir)engine\math\collision;$(ProjectDir)application\collision;$(ProjectDir)application\fade;$(ProjectDir)application\event;$(ProjectDir)application\stage;$(ProjectDir)engine\math\Easing;$(ProjectDir)application\particle;$(ProjectDir)engine\math\ParticleData;$(ProjectDir)application\resource;$(ProjectDir)application\pause;$(ProjectDir)engine\editor;$(ProjectDir)engine\editor\core;$(ProjectDir)engine\editor\console;$(ProjectDir)engine\editor\layout;$(ProjectDir)engine\editor\windows;$(ProjectDir)engine\time;$(ProjectDir)engine\editor\layout\editormenubar;$(ProjectDir)application\motion\2d;$(ProjectDir)application\ui</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)engine\2d;$(ProjectDir)engine\3d;$(ProjectDir)engine\audio;$(ProjectDir)engine\base;$(ProjectDir)engine\io;$(ProjectDir)engine\math;$(ProjectDir)engine\scene;$(ProjectDir)engine\3d\Particle;$(ProjectDir)engine\camera;$(ProjectDir)engine\base\DirectX;$(ProjectDir)engine\base\Utility;$(ProjectDir)engine\base\DirectX\Core;$(ProjectDir)engine\math\Light;$(ProjectDir)engine\resource;$(ProjectDir)externals\nlohmann;$(ProjectDir)externals\assimp\include;$(ProjectDir)engine\editor;$(ProjectDir)engine\editor\core;$(ProjectDir)engine\editor\console;$(ProjectDir)engine\editor\layout;$(ProjectDir)engine\editor\windows;$(ProjectDir)engine\time;$(ProjectDir)engine\editor\layout\editormenubar;$(ProjectDir)application\scene;$(ProjectDir)engine\math\Base;$(ProjectDir)engine\math\Geometry;$(ProjectDir)engine\math\Transform;$(ProjectDir)engine\math\Functions;$(ProjectDir)engine\3d\Model;$(ProjectDir)engine\3d\Object;$(ProjectDir)engine\3d\Skybox;$(ProjectDir)engine\base\DirectX\Descriptors;$(ProjectDir)engine\base\DirectX\Pipeline;$(ProjectDir)engine\base\DirectX\Screen</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
     </ClCompile>
     <Link>
@@ -79,8 +80,8 @@
 copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dxil.dll"</Command>
     </PostBuildEvent>
     <PreBuildEvent>
-      <Command>"$(SolutionDir)..\generated\outputs\$(Configuration)\AssetGenerator.exe" "$(ProjectDir)Resources"
-</Command>
+      <Command>
+      </Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -95,7 +96,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)engine\2d;$(ProjectDir)engine\3d;$(ProjectDir)engine\audio;$(ProjectDir)engine\base;$(ProjectDir)engine\io;$(ProjectDir)engine\math;$(ProjectDir)engine\scene;$(ProjectDir)engine\3d\Particle;$(ProjectDir)engine\camera;$(ProjectDir)engine\base\DirectXCommon;$(ProjectDir)engine\base\Utility;$(ProjectDir)engine\base\ViewManager;$(ProjectDir)engine\math\Light;$(ProjectDir)engine\math\Matrix;$(ProjectDir)engine\math\Model;$(ProjectDir)engine\math\Vector;$(ProjectDir)engine\resource;$(ProjectDir)externals\nlohmann;$(ProjectDir)application\scene;$(ProjectDir)application\character;$(ProjectDir)application\character\player;$(ProjectDir)application\bullet;$(ProjectDir)application\loader;$(ProjectDir)application\camera;$(ProjectDir)application\character\enemy;$(ProjectDir)externals\assimp\include;$(ProjectDir)engine\math\collision;$(ProjectDir)application\collision;$(ProjectDir)application\fade;$(ProjectDir)application\event;$(ProjectDir)application\stage;$(ProjectDir)engine\math\Easing;$(ProjectDir)application\particle;$(ProjectDir)engine\math\ParticleData;$(ProjectDir)application\resource;$(ProjectDir)application\pause;$(ProjectDir)engine\editor;$(ProjectDir)engine\editor\core;$(ProjectDir)engine\editor\console;$(ProjectDir)engine\editor\layout;$(ProjectDir)engine\editor\windows;$(ProjectDir)engine\time;$(ProjectDir)engine\editor\layout\editormenubar;$(ProjectDir)application\motion\2d;$(ProjectDir)application\ui</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)engine\2d;$(ProjectDir)engine\3d;$(ProjectDir)engine\audio;$(ProjectDir)engine\base;$(ProjectDir)engine\io;$(ProjectDir)engine\math;$(ProjectDir)engine\scene;$(ProjectDir)engine\3d\Particle;$(ProjectDir)engine\camera;$(ProjectDir)engine\base\DirectX;$(ProjectDir)engine\base\Utility;$(ProjectDir)engine\base\DirectX\Core;$(ProjectDir)engine\math\Light;$(ProjectDir)engine\resource;$(ProjectDir)externals\nlohmann;$(ProjectDir)externals\assimp\include;$(ProjectDir)engine\editor;$(ProjectDir)engine\editor\core;$(ProjectDir)engine\editor\console;$(ProjectDir)engine\editor\layout;$(ProjectDir)engine\editor\windows;$(ProjectDir)engine\time;$(ProjectDir)engine\editor\layout\editormenubar;$(ProjectDir)application\scene;$(ProjectDir)engine\math\Base;$(ProjectDir)engine\math\Geometry;$(ProjectDir)engine\math\Transform;$(ProjectDir)engine\math\Functions;$(ProjectDir)engine\3d\Model;$(ProjectDir)engine\3d\Object;$(ProjectDir)engine\3d\Skybox;$(ProjectDir)engine\base\DirectX\Descriptors;$(ProjectDir)engine\base\DirectX\Pipeline;$(ProjectDir)engine\base\DirectX\Screen</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -112,42 +113,34 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
 copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dxil.dll"</Command>
     </PostBuildEvent>
     <PreBuildEvent>
-      <Command>"$(SolutionDir)..\generated\outputs\$(Configuration)\AssetGenerator.exe" "$(ProjectDir)Resources"
-</Command>
+      <Command>
+      </Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="application\bullet\BulletManager.cpp" />
-    <ClCompile Include="application\bullet\EnemyBullet.cpp" />
-    <ClCompile Include="application\bullet\PlayerBullet.cpp" />
-    <ClCompile Include="application\camera\GameClearCamera.cpp" />
-    <ClCompile Include="application\camera\GameOverCamera.cpp" />
-    <ClCompile Include="application\camera\GamePlayCamera.cpp" />
-    <ClCompile Include="application\character\enemy\Enemy.cpp" />
-    <ClCompile Include="application\character\enemy\EnemySpawner.cpp" />
-    <ClCompile Include="application\character\player\Player.cpp" />
-    <ClCompile Include="application\character\player\PlayerDash.cpp" />
-    <ClCompile Include="application\character\player\PlayerDeath.cpp" />
-    <ClCompile Include="application\character\player\PlayerMove.cpp" />
-    <ClCompile Include="application\character\player\PlayerReticle.cpp" />
-    <ClCompile Include="application\character\player\PlayerWeapon.cpp" />
-    <ClCompile Include="application\collision\CollisionManager.cpp" />
-    <ClCompile Include="application\fade\FadeManager.cpp" />
-    <ClCompile Include="application\loader\CharacterLoader.cpp" />
-    <ClCompile Include="application\loader\CurveJsonLoader.cpp" />
-    <ClCompile Include="application\loader\EnemyLoader.cpp" />
-    <ClCompile Include="application\particle\DefaultParticleEmitter.cpp" />
-    <ClCompile Include="application\particle\GameClearparticle.cpp" />
-    <ClCompile Include="application\particle\GameOverparticle.cpp" />
-    <ClCompile Include="application\particle\GamePlayparticle.cpp" />
-    <ClCompile Include="application\particle\Titleparticle.cpp" />
-    <ClCompile Include="application\pause\Pausemenu.cpp" />
     <ClCompile Include="application\scene\GameOverScene.cpp" />
     <ClCompile Include="application\scene\GamePlayScene.cpp" />
     <ClCompile Include="application\scene\TitleScene.cpp" />
-    <ClCompile Include="application\ui\GamePlayUI.cpp" />
-    <ClCompile Include="application\ui\TitleUI.cpp" />
-    <ClCompile Include="application\ui\UIManager.cpp" />
+    <ClCompile Include="Engine\3d\Model\Model.cpp" />
+    <ClCompile Include="Engine\3d\Model\ModelCommon.cpp" />
+    <ClCompile Include="Engine\3d\Object\Object3d.cpp" />
+    <ClCompile Include="Engine\3d\Object\Object3dCommon.cpp" />
+    <ClCompile Include="Engine\3d\Skybox\Skybox.cpp" />
+    <ClCompile Include="Engine\3d\Skybox\SkyboxCommon.cpp" />
+    <ClCompile Include="Engine\base\CopylmageCommon.cpp" />
+    <ClCompile Include="Engine\base\DirectX\Core\DirectXCommon.cpp" />
+    <ClCompile Include="Engine\base\DirectX\Core\FenceManager.cpp" />
+    <ClCompile Include="Engine\base\DirectX\Core\FPSController.cpp" />
+    <ClCompile Include="Engine\base\DirectX\Core\SwapChainManager.cpp" />
+    <ClCompile Include="Engine\base\DirectX\Descriptors\DescriptorUtils.cpp" />
+    <ClCompile Include="Engine\base\DirectX\Descriptors\DsvManager.cpp" />
+    <ClCompile Include="Engine\base\DirectX\Descriptors\RtvManager.cpp" />
+    <ClCompile Include="Engine\base\DirectX\Descriptors\SrvManager.cpp" />
+    <ClCompile Include="Engine\base\DirectX\Pipeline\ShaderCompiler.cpp" />
+    <ClCompile Include="Engine\base\DirectX\Screen\ViewportManager.cpp" />
+    <ClCompile Include="Engine\base\Framework.cpp" />
+    <ClCompile Include="Engine\base\ImGuiManager.cpp" />
+    <ClCompile Include="Engine\base\WinApp.cpp" />
     <ClCompile Include="engine\editor\console\EditorConsole.cpp" />
     <ClCompile Include="engine\editor\console\MessageService.cpp" />
     <ClCompile Include="engine\editor\core\EditorManager.cpp" />
@@ -156,16 +149,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="engine\editor\layout\editormenubar\ObjectMenu.cpp" />
     <ClCompile Include="engine\editor\layout\editormenubar\SettingsMenu.cpp" />
     <ClCompile Include="engine\editor\windows\ConsoleWindow.cpp" />
-    <ClCompile Include="engine\math\Collision\Collision.cpp" />
-    <ClCompile Include="engine\math\Easing\Easing.cpp" />
-    <ClCompile Include="engine\3d\Skybox.cpp" />
-    <ClCompile Include="engine\3d\SkyboxCommon.cpp" />
-    <ClCompile Include="engine\base\ViewManager\DsvManager.cpp" />
-    <ClCompile Include="engine\base\ViewManager\RtvManager.cpp" />
     <ClCompile Include="engine\io\Controller.cpp" />
-    <ClCompile Include="engine\base\DirectXCommon\DescriptorUtils.cpp" />
-    <ClCompile Include="engine\base\CopylmageCommon.cpp" />
-    <ClCompile Include="engine\base\DirectXCommon\ShaderCompiler.cpp" />
     <ClCompile Include="engine\camera\CameraManager.cpp" />
     <ClCompile Include="engine\3d\Particle\ParticleCommon.cpp" />
     <ClCompile Include="engine\3d\Particle\ParticleEmitter.cpp" />
@@ -174,78 +158,57 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="engine\audio\SoundLoader.cpp" />
     <ClCompile Include="engine\audio\SoundPlayer.cpp" />
     <ClCompile Include="engine\camera\Camera.cpp" />
-    <ClCompile Include="engine\math\MathUtil.cpp" />
+    <ClCompile Include="Engine\math\Functions\Easing.cpp" />
+    <ClCompile Include="Engine\math\Functions\MathUtil.cpp" />
+    <ClCompile Include="Engine\math\Functions\MatrixVector.cpp" />
+    <ClCompile Include="Engine\math\Geometry\Collision.cpp" />
+    <ClCompile Include="Engine\math\Geometry\PrimitiveGenerator.cpp" />
     <ClCompile Include="engine\resource\D3DResourceLeakChecker.cpp" />
-    <ClCompile Include="engine\base\DirectXCommon\DirectXCommon.cpp" />
-    <ClCompile Include="engine\base\Framework.cpp" />
-    <ClCompile Include="engine\base\ImGuiManager.cpp" />
     <ClCompile Include="engine\io\Input.cpp" />
     <ClCompile Include="engine\base\Utility\Logger.cpp" />
-    <ClCompile Include="engine\math\PrimitiveGenerator.cpp" />
-    <ClCompile Include="engine\scene\BaseScene.cpp" />
     <ClCompile Include="engine\scene\SceneFactory.cpp" />
     <ClCompile Include="application\scene\GameClearScene.cpp" />
-    <ClCompile Include="engine\base\DirectXCommon\FenceManager.cpp" />
-    <ClCompile Include="engine\base\DirectXCommon\FPSController.cpp" />
-    <ClCompile Include="application\event\EventManager.cpp" />
     <ClCompile Include="engine\time\TimeSystem.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="engine\math\MatrixVector.cpp" />
-    <ClCompile Include="engine\3d\Model.cpp" />
-    <ClCompile Include="engine\3d\ModelCommon.cpp" />
     <ClCompile Include="engine\resource\ModelManager.cpp" />
-    <ClCompile Include="engine\3d\Object3d.cpp" />
-    <ClCompile Include="engine\3d\Object3dCommon.cpp" />
     <ClCompile Include="engine\2d\Sprite.cpp" />
     <ClCompile Include="engine\2d\SpriteCommon.cpp" />
     <ClCompile Include="engine\base\Utility\StringUtility.cpp" />
     <ClCompile Include="engine\resource\TextureManager.cpp" />
-    <ClCompile Include="engine\base\WinApp.cpp" />
-    <ClCompile Include="engine\base\ViewManager\SrvManager.cpp" />
     <ClCompile Include="engine\scene\MyGame.cpp" />
     <ClCompile Include="engine\scene\SceneManager.cpp" />
     <ClCompile Include="engine\resource\ResourceFactory.cpp" />
-    <ClCompile Include="engine\base\DirectXCommon\ViewportManager.cpp" />
-    <ClCompile Include="engine\base\DirectXCommon\SwapChainManager.cpp" />
-    <ClCompile Include="application\stage\StageManager.cpp" />
-    <ClCompile Include="application\camera\TitleCamera.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="application\bullet\BaseBullet.h" />
-    <ClInclude Include="application\bullet\BulletManager.h" />
-    <ClInclude Include="application\bullet\EnemyBullet.h" />
-    <ClInclude Include="application\bullet\PlayerBullet.h" />
-    <ClInclude Include="application\camera\GameClearCamera.h" />
-    <ClInclude Include="application\camera\GameOverCamera.h" />
-    <ClInclude Include="application\camera\GamePlayCamera.h" />
-    <ClInclude Include="application\camera\SceneCameraBase.h" />
-    <ClInclude Include="application\character\BaseCharacter.h" />
-    <ClInclude Include="application\character\enemy\Enemy.h" />
-    <ClInclude Include="application\character\enemy\EnemySpawner.h" />
-    <ClInclude Include="application\character\player\Player.h" />
-    <ClInclude Include="application\character\player\PlayerDash.h" />
-    <ClInclude Include="application\character\player\PlayerDeath.h" />
-    <ClInclude Include="application\character\player\PlayerMove.h" />
-    <ClInclude Include="application\character\player\PlayerReticle.h" />
-    <ClInclude Include="application\character\player\PlayerWeapon.h" />
-    <ClInclude Include="application\collision\CollisionManager.h" />
-    <ClInclude Include="application\fade\FadeManager.h" />
-    <ClInclude Include="application\loader\CharacterLoader.h" />
-    <ClInclude Include="application\loader\CurveJsonLoader.h" />
-    <ClInclude Include="application\loader\EnemyLoader.h" />
-    <ClInclude Include="application\particle\BaseEmitter.h" />
-    <ClInclude Include="application\particle\DefaultParticleEmitter.h" />
-    <ClInclude Include="application\particle\FollowEmitter.h" />
-    <ClInclude Include="application\particle\GameClearparticle.h" />
-    <ClInclude Include="application\particle\GameOverparticle.h" />
-    <ClInclude Include="application\particle\GamePlayparticle.h" />
-    <ClInclude Include="application\particle\Titleparticle.h" />
-    <ClInclude Include="application\pause\Pausemenu.h" />
+    <ClInclude Include="application\scene\GameClearScene.h" />
     <ClInclude Include="application\scene\GameOverScene.h" />
-    <ClInclude Include="application\ui\BaseUI.h" />
-    <ClInclude Include="application\ui\GamePlayUI.h" />
-    <ClInclude Include="application\ui\TitleUI.h" />
-    <ClInclude Include="application\ui\UIManager.h" />
+    <ClInclude Include="application\scene\GamePlayScene.h" />
+    <ClInclude Include="application\scene\TitleScene.h" />
+    <ClInclude Include="Engine\3d\Model\Model.h" />
+    <ClInclude Include="Engine\3d\Model\ModelCommon.h" />
+    <ClInclude Include="Engine\3d\Model\ModelData.h" />
+    <ClInclude Include="Engine\3d\Object\Object3d.h" />
+    <ClInclude Include="Engine\3d\Object\Object3dCommon.h" />
+    <ClInclude Include="Engine\3d\Particle\ParticleData.h" />
+    <ClInclude Include="Engine\3d\Particle\ParticleGroup.h" />
+    <ClInclude Include="Engine\3d\Particle\ParticleRandomData.h" />
+    <ClInclude Include="Engine\3d\Particle\RandomParameter.h" />
+    <ClInclude Include="Engine\3d\Skybox\Skybox.h" />
+    <ClInclude Include="Engine\3d\Skybox\SkyboxCommon.h" />
+    <ClInclude Include="Engine\base\CopylmageCommon.h" />
+    <ClInclude Include="Engine\base\DirectX\Core\DirectXCommon.h" />
+    <ClInclude Include="Engine\base\DirectX\Core\FenceManager.h" />
+    <ClInclude Include="Engine\base\DirectX\Core\FPSController.h" />
+    <ClInclude Include="Engine\base\DirectX\Core\SwapChainManager.h" />
+    <ClInclude Include="Engine\base\DirectX\Descriptors\DescriptorUtils.h" />
+    <ClInclude Include="Engine\base\DirectX\Descriptors\DsvManager.h" />
+    <ClInclude Include="Engine\base\DirectX\Descriptors\RtvManager.h" />
+    <ClInclude Include="Engine\base\DirectX\Descriptors\SrvManager.h" />
+    <ClInclude Include="Engine\base\DirectX\Pipeline\ShaderCompiler.h" />
+    <ClInclude Include="Engine\base\DirectX\Screen\ViewportManager.h" />
+    <ClInclude Include="Engine\base\Framework.h" />
+    <ClInclude Include="Engine\base\ImGuiManager.h" />
+    <ClInclude Include="Engine\base\WinApp.h" />
     <ClInclude Include="engine\editor\console\EditorConsole.h" />
     <ClInclude Include="engine\editor\console\EditorConsoleTypes.h" />
     <ClInclude Include="engine\editor\console\MessageService.h" />
@@ -253,26 +216,15 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="engine\editor\core\EditorEntityRegistry.h" />
     <ClInclude Include="engine\editor\core\EditorTypes.h" />
     <ClInclude Include="engine\editor\core\IEditorWindow.h" />
-    <ClInclude Include="engine\editor\InspectorWindow.h" />
     <ClInclude Include="engine\editor\layout\EditorLayout.h" />
     <ClInclude Include="engine\editor\layout\editormenubar\EditorMenuBar.h" />
     <ClInclude Include="engine\editor\layout\editormenubar\IMenuComponent.h" />
     <ClInclude Include="engine\editor\layout\editormenubar\ObjectMenu.h" />
     <ClInclude Include="engine\editor\layout\editormenubar\SettingsMenu.h" />
     <ClInclude Include="engine\editor\windows\ConsoleWindow.h" />
-    <ClInclude Include="engine\math\Collision\Collision.h" />
-    <ClInclude Include="engine\math\Collision\OBB.h" />
-    <ClInclude Include="engine\math\Easing\Easing.h" />
     <ClInclude Include="engine\camera\CameraTransform.h" />
     <ClInclude Include="engine\camera\CameraTypes.h" />
-    <ClInclude Include="engine\3d\Skybox.h" />
-    <ClInclude Include="engine\3d\SkyboxCommon.h" />
-    <ClInclude Include="engine\base\ViewManager\DsvManager.h" />
-    <ClInclude Include="engine\base\ViewManager\RtvManager.h" />
     <ClInclude Include="engine\io\Controller.h" />
-    <ClInclude Include="engine\base\DirectXCommon\DescriptorUtils.h" />
-    <ClInclude Include="engine\base\CopylmageCommon.h" />
-    <ClInclude Include="engine\base\DirectXCommon\ShaderCompiler.h" />
     <ClInclude Include="engine\camera\CameraManager.h" />
     <ClInclude Include="engine\3d\Particle\ParticleCommon.h" />
     <ClInclude Include="engine\3d\Particle\ParticleEmitter.h" />
@@ -281,65 +233,37 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="engine\audio\SoundLoader.h" />
     <ClInclude Include="engine\audio\SoundPlayer.h" />
     <ClInclude Include="engine\camera\Camera.h" />
+    <ClInclude Include="Engine\math\Base\Matrix3x3.h" />
+    <ClInclude Include="Engine\math\Base\Matrix4x4.h" />
+    <ClInclude Include="Engine\math\Base\Quaternion.h" />
+    <ClInclude Include="Engine\math\Base\Vector2.h" />
+    <ClInclude Include="Engine\math\Base\Vector3.h" />
+    <ClInclude Include="Engine\math\Base\Vector4.h" />
+    <ClInclude Include="Engine\math\Functions\Easing.h" />
+    <ClInclude Include="Engine\math\Functions\MathUtil.h" />
+    <ClInclude Include="Engine\math\Functions\MatrixVector.h" />
+    <ClInclude Include="Engine\math\Geometry\Collision.h" />
+    <ClInclude Include="Engine\math\Geometry\OBB.h" />
+    <ClInclude Include="Engine\math\Geometry\PrimitiveGenerator.h" />
     <ClInclude Include="engine\math\Light\DirectionalLight.h" />
     <ClInclude Include="engine\math\Light\PointLight.h" />
     <ClInclude Include="engine\math\Light\SpotLight.h" />
-    <ClInclude Include="engine\math\MathUtil.h" />
-    <ClInclude Include="engine\math\Matrix\Matrix3x3.h" />
-    <ClInclude Include="engine\math\Matrix\Matrix4x4.h" />
-    <ClInclude Include="engine\math\Matrix\TransformationMatrix.h" />
-    <ClInclude Include="engine\math\Model\Material.h" />
-    <ClInclude Include="engine\math\Model\MaterialDate.h" />
-    <ClInclude Include="engine\math\Model\ModelDate.h" />
-    <ClInclude Include="engine\math\Model\Vertex.h" />
-    <ClInclude Include="engine\math\ParticleData\InstanceData.h" />
-    <ClInclude Include="engine\math\ParticleData\Particle.h" />
-    <ClInclude Include="engine\math\ParticleData\ParticleGroup.h" />
-    <ClInclude Include="engine\math\ParticleData\ParticleRandomData.h" />
-    <ClInclude Include="engine\math\ParticleData\RandomParameter.h" />
-    <ClInclude Include="engine\math\ParticleData\Velocity.h" />
-    <ClInclude Include="engine\math\Quaternion.h" />
-    <ClInclude Include="engine\math\Vector\Transform.h" />
-    <ClInclude Include="engine\math\Vector\Vector2.h" />
-    <ClInclude Include="engine\math\Vector\Vector3.h" />
-    <ClInclude Include="engine\math\Vector\Vector4.h" />
     <ClInclude Include="engine\resource\D3DResourceLeakChecker.h" />
-    <ClInclude Include="engine\base\DirectXCommon\DirectXCommon.h" />
-    <ClInclude Include="engine\base\Framework.h" />
-    <ClInclude Include="engine\base\ImGuiManager.h" />
     <ClInclude Include="engine\io\Input.h" />
     <ClInclude Include="engine\base\Utility\Logger.h" />
-    <ClInclude Include="engine\math\MatrixVector.h" />
-    <ClInclude Include="engine\3d\Model.h" />
-    <ClInclude Include="engine\3d\ModelCommon.h" />
     <ClInclude Include="engine\resource\ModelManager.h" />
-    <ClInclude Include="engine\3d\Object3d.h" />
-    <ClInclude Include="engine\3d\Object3dCommon.h" />
     <ClInclude Include="engine\resource\ResourceObject.h" />
     <ClInclude Include="engine\2d\Sprite.h" />
     <ClInclude Include="engine\2d\SpriteCommon.h" />
     <ClInclude Include="engine\base\Utility\StringUtility.h" />
     <ClInclude Include="engine\resource\TextureManager.h" />
-    <ClInclude Include="engine\math\PrimitiveGenerator.h" />
-    <ClInclude Include="engine\base\WinApp.h" />
-    <ClInclude Include="engine\base\ViewManager\SrvManager.h" />
     <ClInclude Include="engine\scene\AbstractSceneFactory.h" />
     <ClInclude Include="engine\scene\BaseScene.h" />
-    <ClInclude Include="application\scene\GamePlayScene.h" />
     <ClInclude Include="engine\scene\MyGame.h" />
     <ClInclude Include="engine\scene\SceneFactory.h" />
-    <ClInclude Include="application\scene\TitleScene.h" />
     <ClInclude Include="engine\scene\SceneManager.h" />
-    <ClInclude Include="application\scene\GameClearScene.h" />
     <ClInclude Include="engine\resource\ResourceFactory.h" />
-    <ClInclude Include="engine\base\DirectXCommon\FenceManager.h" />
-    <ClInclude Include="engine\base\DirectXCommon\ViewportManager.h" />
-    <ClInclude Include="engine\base\DirectXCommon\FPSController.h" />
-    <ClInclude Include="engine\base\DirectXCommon\SwapChainManager.h" />
-    <ClInclude Include="application\camera\GameCamera.h" />
-    <ClInclude Include="application\event\EventManager.h" />
-    <ClInclude Include="application\stage\StageManager.h" />
-    <ClInclude Include="application\camera\TitleCamera.h" />
+    <ClInclude Include="Engine\scene\SceneName.h" />
     <ClInclude Include="engine\time\TimeSystem.h" />
   </ItemGroup>
   <ItemGroup>
@@ -349,14 +273,11 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ProjectReference Include="externals\imgui\imgui.vcxproj">
       <Project>{12ce02d8-a771-4844-aacc-f20bf9af9aea}</Project>
     </ProjectReference>
-    <ProjectReference Include="Tools\AssetGenerator\AssetGenerator.vcxproj">
-      <Project>{b309d80a-b650-41b2-a3a8-c6afc14bc2db}</Project>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\Data\Enemy\enemy.json" />
     <None Include="Resources\Data\Languages\Localization.json" />
-    <None Include="Resources\levels\bezier.json" />
-    <None Include="Resources\levels\untitled.json" />
+    <None Include="Resources\Data\Player\player.json" />
     <None Include="Resources\shaders\Fullscreen\Fullscreen.hlsli" />
     <None Include="Resources\shaders\Object3d\Object3d.hlsli" />
     <None Include="Resources\shaders\Particle\Particle.hlsli" />

@@ -1,20 +1,12 @@
 #pragma once
 #include <BaseScene.h>
-#include <Sprite.h>
-#include <Object3d.h>
-#include <ParticleEmitter.h>
-#include <SoundPlayer.h>
-#include <Skybox.h>
-#include <FadeManager.h>
-#include <Titleparticle.h>
-#include <Player.h>
 
 /// <summary>
 /// タイトルシーン
 /// タイトル画面を管理するシーン。
 /// UI 表示、タイトル演出用モデル、パーティクル、フェード制御を担当する。
 /// </summary>
-class TitleScene : public BaseScene {
+class TitleScene : public MyEngine::BaseScene {
 public: // メンバ関数
     /// <summary>
     /// 初期化処理
@@ -32,69 +24,5 @@ public: // メンバ関数
     /// 描画処理
     /// </summary>
     void Draw() override;
-    /// <summary>
-    /// フェードイン開始および更新処理
-    /// </summary>
-    void UpdateFadeIn();
-    /// <summary>
-    /// 入力に応じたフェードアウト開始処理
-    /// </summary>
-    void UpdateFadeOut();
-    /// <summary>
-    /// フェード完了後のシーン遷移処理
-    /// </summary>
-    void UpdateSceneTransition();
-    /// <summary>
-    /// タイトル画面用プレイヤー演出更新
-    /// ・横方向イージング移動
-    /// ・上下の浮遊アニメーション
-    /// </summary>
-    void UpdateTitlePlayerMotion();
-
-    void EditorEntities();
-
 private: // メンバ変数
-
-    std::unique_ptr <Player> player_;
-    // 背景オブジェクト 
-    std::unique_ptr <Skybox> skybox_ = nullptr;
-    // 演出用モデル
-    Transform playertransform_{};
-    // 移動制御
-    float timer;
-    float moveDuration;
-    bool moveFinished;
-    // 移動範囲設定 
-    float titleStartX_;
-    float titleEndX_;
-    // フェード制御        
-    float time = 0.0f;          // 経過時間 
-    bool hasCheckedFade_ = false; // フェード処理済みかどうか
-
-    std::unique_ptr <Titleparticle> particle_;
-
-
-    static constexpr float kTitleMoveDuration = 240.0f;
-    static constexpr float kFloatSpeed = 0.03f;
-    static constexpr float kFloatAmplitude = 2.3f;
-
-    // フェード演出用
-    bool isPlayerBoost_ = false;
-    float playerSpeedX_ = 0.0f;
-    float playerAccelX_ = 0.15f;   // 加速量
-    float playerMaxSpeedX_ = 5.0f; // 上限（任意）
-
-
-
-    // ===== イージング用 =====
-    float playerMoveTimer_;
-    float playerMoveDuration_;   // 2秒
-    float playerStartZ_;
-    float playerTargetZ_;
-    bool  isPlayerZMoving_;
-
-    // ===== フェード前演出 =====
-    bool isPreFadeFollow_ = false;
-    float preFadeTimer_ = 0.0f;
-    float preFadeDuration_ = 1.0f;
 };

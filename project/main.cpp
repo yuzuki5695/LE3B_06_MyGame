@@ -1,5 +1,7 @@
-#include "MyGame.h"
+#include <MyGame.h>
 #include <TimeSystem.h>
+
+using namespace MyEngine;
 
 //Windowsアプリでのエントリーポイント(main関数)
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) { 
