@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include <json.hpp>
+#include <set>
 
 namespace AssetGen {
     /// <summary>
@@ -61,5 +62,6 @@ namespace AssetGen {
         void ParseRecursive(const nlohmann::json& j, const std::string& category, std::vector<std::string> hierarchy);
     private: // メンバ変数
         std::vector<AssetDefinition> assets_; /// 読み込まれたアセット定義のリスト
+        std::set<std::string> definedFullIds; // 重複チェック用
     };
 }

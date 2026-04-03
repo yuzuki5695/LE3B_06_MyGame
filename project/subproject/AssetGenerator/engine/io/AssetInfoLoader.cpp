@@ -39,6 +39,7 @@ bool AssetInfoLoader::Load(const fs::path& jsonPath) {
 
 void AssetInfoLoader::Clear() {
     assets_.clear();
+    definedFullIds.clear();
 }
 
 bool AssetInfoLoader::LoadGeneratedJson(const fs::path& jsonPath) {
@@ -63,13 +64,12 @@ bool AssetInfoLoader::LoadGeneratedJson(const fs::path& jsonPath) {
     return true;
 }
 
-void AssetInfoLoader::ParseRecursive(const nlohmann::json& j, const std::string& category, std::vector<std::string> hierarchy) { 
-        static std::set<std::string> definedFullIds;
-
-        if (j.is_array()) {
-            // 配列の場合：ファイルパスのリスト
-            for (const std::string& filePath : j) {
-                std::filesystem::path p(filePath);
+void AssetInfoLoader::ParseRecursive(const nlohmann::json& j, const std::string& category, std::vector<std::string> hierarchy) {
+    if (j.is_array()) {
+        for (const auto& item : j) {
+            if (item.is_string()) {
+                std::string filePath = item.get<std::string>();
+                fs::path p(filePath);
                 std::string ext = p.extension().string();
 
                 /// <summary>
@@ -79,37 +79,35 @@ void AssetInfoLoader::ParseRecursive(const nlohmann::json& j, const std::string&
                 if (category == "Textures" && ext != ".png") continue;
                 if (category == "Audio" && ext != ".wav") continue;
 
+                // 名前空間の重複を防ぐ
+                std::vector<std::string> idHierarchy = hierarchy;
+                if (!idHierarchy.empty() && idHierarchy[0] == category) {
+                    idHierarchy.erase(idHierarchy.begin());
+                }
+
                 AssetDefinition asset;
                 asset.category = category;
-                asset.path = filePath;
-                asset.subFolders = hierarchy;          // フォルダ階層を保持
-                asset.id = p.stem().string();          // ファイル名からID生成
+                asset.path = filePath; // パスはそのまま "Textures/..." を使う
+                asset.subFolders = idHierarchy; // 名前空間用にはカテゴリを除いた階層を渡す
+                asset.id = p.stem().string();
 
-                /// <summary>
-                /// 重複チェック用キーを生成（カテゴリ + 階層 + ID）
-                /// </summary>
+                // 重複チェック用キーも新しい階層で生成
                 std::string uniqueKey = category;
-                for (const auto& folder : hierarchy) uniqueKey += "::" + folder;
+                for (const auto& folder : idHierarchy) uniqueKey += "::" + folder;
                 uniqueKey += "::" + asset.id;
 
                 if (definedFullIds.contains(uniqueKey)) {
-                    std::cout << "Warning: Duplicate ID skipped -> " << uniqueKey << std::endl;
                     continue;
                 }
                 definedFullIds.insert(uniqueKey);
-
                 assets_.push_back(asset);
             }
-        } else if (j.is_object()) {
-            // オブジェクトの場合：サブフォルダ
-            for (auto it = j.begin(); it != j.end(); ++it) {
-                std::vector<std::string> nextHierarchy = hierarchy;
-
-                // フォルダ名を階層に追加
-                nextHierarchy.push_back(it.key());
-
-                // 再帰的に探索
-                ParseRecursive(it.value(), category, nextHierarchy);
-            }
+        }
+    } else if (j.is_object()) {
+        for (auto it = j.begin(); it != j.end(); ++it) {
+            std::vector<std::string> nextHierarchy = hierarchy;
+            nextHierarchy.push_back(it.key());
+            ParseRecursive(it.value(), category, nextHierarchy);
         }
     }
+}

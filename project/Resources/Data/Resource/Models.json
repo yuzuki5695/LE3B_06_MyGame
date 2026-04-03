@@ -1,77 +1,79 @@
 {
     "Models": {
-        "Bullet": {
-            "EnemyBullet": [
-                "Bullet/EnemyBullet/EnemyBullet.mtl",
-                "Bullet/EnemyBullet/EnemyBullet.obj",
-                "Bullet/EnemyBullet/EnemyBullet.png"
-            ],
-            "PlayerBullet": [
-                "Bullet/PlayerBullet/PlayerBullet.mtl",
-                "Bullet/PlayerBullet/PlayerBullet.obj",
-                "Bullet/PlayerBullet/PlayerBullet.png"
-            ]
-        },
-        "Character": {
-            "Enemy": [
-                "Character/Enemy/Enemy.mtl",
-                "Character/Enemy/Enemy.obj",
-                "Character/Enemy/Enemy.png"
-            ],
-            "Player": [
-                "Character/Player/Player.mtl",
-                "Character/Player/Player.obj",
-                "Character/Player/Player.png"
-            ],
-            "parts_01": [
-                "Character/parts_01/parts_01.mtl",
-                "Character/parts_01/parts_01.obj",
-                "Character/parts_01/parts_01.png"
-            ],
-            "parts_02": [
-                "Character/parts_02/parts_02.mtl",
-                "Character/parts_02/parts_02.obj",
-                "Character/parts_02/parts_02.png"
-            ],
-            "parts_03": [
-                "Character/parts_03/parts_03.mtl",
-                "Character/parts_03/parts_03.obj",
-                "Character/parts_03/parts_03.png"
-            ],
-            "parts_04": [
-                "Character/parts_04/parts_04.mtl",
-                "Character/parts_04/parts_04.obj",
-                "Character/parts_04/parts_04.png"
-            ]
-        },
-        "Object": {
-            "Goal": [
-                "Object/Goal/goal.mtl",
-                "Object/Goal/goal.obj",
-                "Object/Goal/goal.png"
-            ],
-            "Tile": [
-                "Object/Tile/Tile.mtl",
-                "Object/Tile/Tile.obj",
-                "Object/Tile/Tile.png"
-            ]
-        },
-        "Particles": {
-            "Particle": [
-                "Particles/Particle/Particle.mtl",
-                "Particles/Particle/Particle.obj",
-                "Particles/Particle/Particle.png"
-            ],
-            "Particle_02": [
-                "Particles/Particle_02/Particle_02.mtl",
-                "Particles/Particle_02/Particle_02.obj",
-                "Particles/Particle_02/Particle_02.png"
-            ],
-            "Shockwave": [
-                "Particles/Shockwave/Shockwave.mtl",
-                "Particles/Shockwave/Shockwave.obj",
-                "Particles/Shockwave/Shockwave.png"
-            ]
+        "Models": {
+            "Bullet": {
+                "EnemyBullet": [
+                    "Models/Bullet/EnemyBullet/EnemyBullet.mtl",
+                    "Models/Bullet/EnemyBullet/EnemyBullet.obj",
+                    "Models/Bullet/EnemyBullet/EnemyBullet.png"
+                ],
+                "PlayerBullet": [
+                    "Models/Bullet/PlayerBullet/PlayerBullet.mtl",
+                    "Models/Bullet/PlayerBullet/PlayerBullet.obj",
+                    "Models/Bullet/PlayerBullet/PlayerBullet.png"
+                ]
+            },
+            "Character": {
+                "Enemy": [
+                    "Models/Character/Enemy/Enemy.mtl",
+                    "Models/Character/Enemy/Enemy.obj",
+                    "Models/Character/Enemy/Enemy.png"
+                ],
+                "Player": [
+                    "Models/Character/Player/Player.mtl",
+                    "Models/Character/Player/Player.obj",
+                    "Models/Character/Player/Player.png"
+                ],
+                "parts_01": [
+                    "Models/Character/parts_01/parts_01.mtl",
+                    "Models/Character/parts_01/parts_01.obj",
+                    "Models/Character/parts_01/parts_01.png"
+                ],
+                "parts_02": [
+                    "Models/Character/parts_02/parts_02.mtl",
+                    "Models/Character/parts_02/parts_02.obj",
+                    "Models/Character/parts_02/parts_02.png"
+                ],
+                "parts_03": [
+                    "Models/Character/parts_03/parts_03.mtl",
+                    "Models/Character/parts_03/parts_03.obj",
+                    "Models/Character/parts_03/parts_03.png"
+                ],
+                "parts_04": [
+                    "Models/Character/parts_04/parts_04.mtl",
+                    "Models/Character/parts_04/parts_04.obj",
+                    "Models/Character/parts_04/parts_04.png"
+                ]
+            },
+            "Object": {
+                "Goal": [
+                    "Models/Object/Goal/goal.mtl",
+                    "Models/Object/Goal/goal.obj",
+                    "Models/Object/Goal/goal.png"
+                ],
+                "Tile": [
+                    "Models/Object/Tile/Tile.mtl",
+                    "Models/Object/Tile/Tile.obj",
+                    "Models/Object/Tile/Tile.png"
+                ]
+            },
+            "Particles": {
+                "Particle": [
+                    "Models/Particles/Particle/Particle.mtl",
+                    "Models/Particles/Particle/Particle.obj",
+                    "Models/Particles/Particle/Particle.png"
+                ],
+                "Particle_02": [
+                    "Models/Particles/Particle_02/Particle_02.mtl",
+                    "Models/Particles/Particle_02/Particle_02.obj",
+                    "Models/Particles/Particle_02/Particle_02.png"
+                ],
+                "Shockwave": [
+                    "Models/Particles/Shockwave/Shockwave.mtl",
+                    "Models/Particles/Shockwave/Shockwave.obj",
+                    "Models/Particles/Shockwave/Shockwave.png"
+                ]
+            }
         }
     }
 }

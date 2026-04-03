@@ -36,19 +36,24 @@ void ResourceMapper::UpdateSingle(const fs::path& targetDirectory, const std::ve
     // ② ツリー構築
     // ========================================
     ResourceNode rootNode;
+    
+    // スキャン対象フォルダ名（例: "Textures" や "Models"）を取得
+    std::wstring categoryName = targetDirectory.filename().wstring();
 
     for (const AssetEntry& asset : assets) {
-
-        fs::path path(asset.path);
+        // --- 修正ポイント：パスの先頭にカテゴリ名を追加 ---
+        // asset.path は "Event/start.png" 
+        // 修正後 fullPathWithCategory は "Textures/Event/start.png"
+        fs::path fullPathWithCategory = fs::path(categoryName) / asset.path;
 
         // パス分割
         std::vector<std::wstring> parts;
-        for (const fs::path& part : path) {
+        for (const auto& part : fullPathWithCategory) {
             parts.push_back(part.wstring());
         }
 
-        // ツリーに登録
-        rootNode.AddFile(parts, asset.path);
+        // ツリーに登録（修正したパスを渡す）
+        rootNode.AddFile(parts, fullPathWithCategory.wstring());
     }
 
     // ========================================

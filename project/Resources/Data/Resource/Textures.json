@@ -1,68 +1,70 @@
 {
     "Textures": {
-        "Event": [
-            "Event/start.png",
-            "Event/Startevent_01.png",
-            "Event/Startevent_02.png",
-            "Event/start_mission.png"
-        ],
-        "Operationui": [
-            "Operationui/A.png",
-            "Operationui/ArrowDown.png",
-            "Operationui/ArrowDown_RED.png",
-            "Operationui/ArrowLeft.png",
-            "Operationui/ArrowLeft_RED.png",
-            "Operationui/ArrowRight.png",
-            "Operationui/ArrowRight_RED.png",
-            "Operationui/ArrowUp.png",
-            "Operationui/ArrowUp_RED.png",
-            "Operationui/A_RED.png",
-            "Operationui/D.png",
-            "Operationui/D_RED.png",
-            "Operationui/S.png",
-            "Operationui/SHIFT.png",
-            "Operationui/SHIFT_RED.png",
-            "Operationui/SPACEKey.png",
-            "Operationui/SPACEKey_RED.png",
-            "Operationui/S_RED.png",
-            "Operationui/W.png",
-            "Operationui/W_RED.png"
-        ],
-        "Pausemenu": [
-            "Pausemenu/Arrow.png",
-            "Pausemenu/command_01.png",
-            "Pausemenu/command_02.png",
-            "Pausemenu/command_11.png",
-            "Pausemenu/command_12.png",
-            "Pausemenu/menu_01.png",
-            "Pausemenu/menu_02.png",
-            "Pausemenu/menu_03.png",
-            "Pausemenu/menu_04.png",
-            "Pausemenu/PauseMenuPanel.png",
-            "Pausemenu/Poseicon.png",
-            "Pausemenu/Poseicon_red.png"
-        ],
-        "Ui": [
-            "Ui/Complete.png",
-            "Ui/Gage.png",
-            "Ui/Gameover.png",
-            "Ui/Mission.png",
-            "Ui/Player_ui.png",
-            "Ui/Target.png",
-            "Ui/titile_01.png",
-            "Ui/titile_02.png",
-            "Ui/titile_03.png",
-            "Ui/titile_04.png",
-            "Ui/titile_05.png",
-            "Ui/titile_06.png",
-            "Ui/titile_07.png",
-            "Ui/Title.png",
-            "Ui/UI_01.png",
-            "Ui/UI_02.png"
-        ],
-        "fade": [
-            "fade/Black.png",
-            "fade/white.png"
-        ]
+        "Textures": {
+            "Event": [
+                "Textures/Event/start.png",
+                "Textures/Event/Startevent_01.png",
+                "Textures/Event/Startevent_02.png",
+                "Textures/Event/start_mission.png"
+            ],
+            "Operationui": [
+                "Textures/Operationui/A.png",
+                "Textures/Operationui/ArrowDown.png",
+                "Textures/Operationui/ArrowDown_RED.png",
+                "Textures/Operationui/ArrowLeft.png",
+                "Textures/Operationui/ArrowLeft_RED.png",
+                "Textures/Operationui/ArrowRight.png",
+                "Textures/Operationui/ArrowRight_RED.png",
+                "Textures/Operationui/ArrowUp.png",
+                "Textures/Operationui/ArrowUp_RED.png",
+                "Textures/Operationui/A_RED.png",
+                "Textures/Operationui/D.png",
+                "Textures/Operationui/D_RED.png",
+                "Textures/Operationui/S.png",
+                "Textures/Operationui/SHIFT.png",
+                "Textures/Operationui/SHIFT_RED.png",
+                "Textures/Operationui/SPACEKey.png",
+                "Textures/Operationui/SPACEKey_RED.png",
+                "Textures/Operationui/S_RED.png",
+                "Textures/Operationui/W.png",
+                "Textures/Operationui/W_RED.png"
+            ],
+            "Pausemenu": [
+                "Textures/Pausemenu/Arrow.png",
+                "Textures/Pausemenu/command_01.png",
+                "Textures/Pausemenu/command_02.png",
+                "Textures/Pausemenu/command_11.png",
+                "Textures/Pausemenu/command_12.png",
+                "Textures/Pausemenu/menu_01.png",
+                "Textures/Pausemenu/menu_02.png",
+                "Textures/Pausemenu/menu_03.png",
+                "Textures/Pausemenu/menu_04.png",
+                "Textures/Pausemenu/PauseMenuPanel.png",
+                "Textures/Pausemenu/Poseicon.png",
+                "Textures/Pausemenu/Poseicon_red.png"
+            ],
+            "Ui": [
+                "Textures/Ui/Complete.png",
+                "Textures/Ui/Gage.png",
+                "Textures/Ui/Gameover.png",
+                "Textures/Ui/Mission.png",
+                "Textures/Ui/Player_ui.png",
+                "Textures/Ui/Target.png",
+                "Textures/Ui/titile_01.png",
+                "Textures/Ui/titile_02.png",
+                "Textures/Ui/titile_03.png",
+                "Textures/Ui/titile_04.png",
+                "Textures/Ui/titile_05.png",
+                "Textures/Ui/titile_06.png",
+                "Textures/Ui/titile_07.png",
+                "Textures/Ui/Title.png",
+                "Textures/Ui/UI_01.png",
+                "Textures/Ui/UI_02.png"
+            ],
+            "fade": [
+                "Textures/fade/Black.png",
+                "Textures/fade/white.png"
+            ]
+        }
     }
 }

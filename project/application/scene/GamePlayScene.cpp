@@ -6,7 +6,12 @@
 #include <Object3dCommon.h>
 #include <CameraManager.h>
 
+// AssetGeneratorからインクルード
+#include <subproject/AssetGenerator/engine/generator/LoadResourceID.h>
+
 using namespace MyEngine;
+using namespace AssetGen;
+using namespace AssetGen::LoadResourceID::Models;
 
 void GamePlayScene::Finalize() {
 }
@@ -19,10 +24,9 @@ void GamePlayScene::Initialize() {
     TextureManager::GetInstance()->LoadTexture("Textures/Ui/Complete.png");
     Sprite_ = Sprite::Create("Textures/Ui/Complete.png", Vector2{ 50.0f, 100.0f }, 0.0f, Vector2{ 400.0f,150.0f });
 
-    ModelManager::GetInstance()->LoadModel("Models/Character/Player/Player.obj");
-    player_ = Object3d::Create("Models/Character/Player/Player.obj", { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,10.0f} });
-
-
+   //ModelManager::GetInstance()->LoadModel("Models/Character/Player/Player.obj");
+    ModelManager::GetInstance()->LoadModel(Character::Player);
+    player_ = Object3d::Create(Character::Player, { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,10.0f} });
 
 }
 

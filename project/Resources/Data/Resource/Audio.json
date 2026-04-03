@@ -1,5 +1,7 @@
 {
-    "Audio": [
-        "Alarm01.wav"
-    ]
+    "Audio": {
+        "Audio": [
+            "Audio/Alarm01.wav"
+        ]
+    }
 }
