@@ -161,17 +161,23 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="engine\AssetGenerator.cpp" />
+    <ClCompile Include="engine\CodeGenerator.cpp" />
     <ClCompile Include="engine\core\ResourceMapper.cpp" />
     <ClCompile Include="engine\core\ResourceNode.cpp" />
+    <ClCompile Include="engine\io\AssetInfoLoader.cpp" />
     <ClCompile Include="engine\io\RuleLoader.cpp" />
     <ClCompile Include="engine\scanner\Scanner.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="engine\AssetGenerator.h" />
+    <ClInclude Include="engine\CodeGenerator.h" />
     <ClInclude Include="engine\core\ResourceMapper.h" />
     <ClInclude Include="engine\core\ResourceNode.h" />
+    <ClInclude Include="engine\io\AssetInfoLoader.h" />
+    <ClInclude Include="engine\io\BaseLoader.h" />
     <ClInclude Include="engine\io\RuleLoader.h" />
+    <ClInclude Include="engine\scanner\Scanner.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -31,9 +31,6 @@
     <Filter Include="ヘッダー ファイル\engine\scanner">
       <UniqueIdentifier>{1e01f44b-7981-4150-a3e7-646ede88a062}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ヘッダー ファイル\engine\generated">
-      <UniqueIdentifier>{9b1ed82c-60d2-4143-86ef-f1710479e78e}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ヘッダー ファイル\engine\io">
       <UniqueIdentifier>{a19d6110-0a27-4188-9523-736474d01bea}</UniqueIdentifier>
     </Filter>
@@ -60,6 +57,12 @@
     <ClCompile Include="engine\io\RuleLoader.cpp">
       <Filter>ソース ファイル\engine\io</Filter>
     </ClCompile>
+    <ClCompile Include="engine\io\AssetInfoLoader.cpp">
+      <Filter>ソース ファイル\engine\io</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\CodeGenerator.cpp">
+      <Filter>ソース ファイル\engine</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="engine\AssetGenerator.h">
@@ -73,6 +76,18 @@
     </ClInclude>
     <ClInclude Include="engine\io\RuleLoader.h">
       <Filter>ヘッダー ファイル\engine\io</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\scanner\Scanner.h">
+      <Filter>ヘッダー ファイル\engine\scanner</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\io\BaseLoader.h">
+      <Filter>ヘッダー ファイル\engine\io</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\io\AssetInfoLoader.h">
+      <Filter>ヘッダー ファイル\engine\io</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\CodeGenerator.h">
+      <Filter>ソース ファイル\engine</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
