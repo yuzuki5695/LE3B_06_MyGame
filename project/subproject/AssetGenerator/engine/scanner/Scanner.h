@@ -4,12 +4,6 @@
 #include <string>
 #include <functional>
 
-struct ExportRule {
-    std::filesystem::path targetDir;           // スキャン対象
-    std::vector<std::wstring> extensions;      // 対象拡張子
-    std::filesystem::path outputPath;          // 出力ファイル
-};
-
 /// <summary>
 /// アセットの情報を保持する構造体
 /// Resources フォルダ内のファイル・ディレクトリの情報を1件分保持する
@@ -22,20 +16,41 @@ struct AssetEntry {
 };
 
 /// <summary>
-/// Resources ディレクトリを走査し、アセット情報を取得するクラス
+/// ディレクトリを走査してアセット情報を収集するクラス
+/// 
+/// 【責務】
+/// ・ファイルシステムの走査
+/// ・AssetEntryの生成
+/// ・簡単なフィルタ（拡張子など）
+/// 
 /// ファイル収集のみを責務とし、分類や出力は行わない
 /// </summary>
 class Scanner {
 public: // メンバ関数
+    /// <summary>
+    /// 指定ディレクトリ以下を再帰的に走査し、
+    /// 各ファイル・ディレクトリの情報をコールバックで返す
+    /// 
+    /// 最も汎用的な関数で、他の関数はこれを利用する
+    /// </summary>
+    /// <param name="rootDirectory">スキャン開始ディレクトリ</param>
+    /// <param name="onAssetFound">各アセットに対して実行される処理</param>
+    void ResourceScan(const std::filesystem::path& rootDirectory, const std::function<void(const AssetEntry&)> onAssetFound);
 
     /// <summary>
-    /// 指定ディレクトリ以下を再帰的に走査し、各ファイル情報をコールバックで返す
+    /// 指定ディレクトリ以下の全アセットを収集する
+    /// フィルタなし
     /// </summary>
-    /// <param name="root">スキャン開始ディレクトリ（通常はResources）</param>
-    /// <param name="func">各アセットに対して実行される処理</param>
-    void ResourceScan(const std::filesystem::path& root, std::function<void(const AssetEntry&)> func);
+    /// <param name="rootDirectory">走査開始ディレクトリ</param>
+    /// <param name="outEntries">取得したアセット一覧の出力先</param>
+    void ScanAll(const std::filesystem::path& rootDirectory, std::vector<AssetEntry>& outEntries);
 
-    void ScanAll(const std::filesystem::path& root, std::vector<AssetEntry>& out);
-
-    void ScanByExtension(const std::filesystem::path& root, const std::wstring& ext, std::vector<AssetEntry>& out);
+    /// <summary>
+    /// 指定拡張子のファイルのみを収集する
+    /// ディレクトリは除外される
+    /// </summary>
+    /// <param name="rootDirectory">走査開始ディレクトリ</param>
+    /// <param name="extension">対象拡張子（例: L".png"）</param>
+    /// <param name="outEntries">取得結果の格納先</param>
+    void ScanByExtension(const std::filesystem::path& rootDirectory, const std::wstring& extension, std::vector<AssetEntry>& outEntries);
 };

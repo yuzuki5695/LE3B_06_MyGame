@@ -1,0 +1,19 @@
+{
+  "rules": [
+    {
+      "dir": "Audio",
+      "ext": [ ".wav" ],
+      "output": "Audio.json"
+    },
+    {
+      "dir": "Textures",
+      "ext": [ ".png" ],
+      "output": "Textures.json"
+    },
+    {
+      "dir": "Models",
+      "ext": [ ".obj", ".mtl", ".png" ],
+      "output": "Models.json"
+    }
+  ]
+}

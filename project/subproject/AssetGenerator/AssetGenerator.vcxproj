@@ -165,6 +165,7 @@
     <ClCompile Include="engine\exporter\JsonExporter.cpp" />
     <ClCompile Include="engine\ResourceMapper.cpp" />
     <ClCompile Include="engine\ResourceNode.cpp" />
+    <ClCompile Include="engine\RuleLoader.cpp" />
     <ClCompile Include="engine\scanner\PathManager.cpp" />
     <ClCompile Include="engine\scanner\Scanner.cpp" />
     <ClCompile Include="main.cpp" />
@@ -177,6 +178,7 @@
     <ClInclude Include="engine\math\LoadResourceID.h" />
     <ClInclude Include="engine\ResourceMapper.h" />
     <ClInclude Include="engine\ResourceNode.h" />
+    <ClInclude Include="engine\RuleLoader.h" />
     <ClInclude Include="engine\scanner\PathManager.h" />
     <ClInclude Include="engine\scanner\Scanner.h" />
   </ItemGroup>

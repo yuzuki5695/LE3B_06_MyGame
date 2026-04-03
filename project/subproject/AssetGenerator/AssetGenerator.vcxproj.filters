@@ -60,6 +60,9 @@
     <ClCompile Include="engine\ResourceMapper.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
+    <ClCompile Include="engine\RuleLoader.cpp">
+      <Filter>ソース ファイル\scanner</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="engine\math\LoadResourceID.h">
@@ -88,6 +91,9 @@
     </ClInclude>
     <ClInclude Include="engine\ResourceMapper.h">
       <Filter>ソース ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\RuleLoader.h">
+      <Filter>ソース ファイル\scanner</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
