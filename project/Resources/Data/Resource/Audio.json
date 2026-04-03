@@ -1,7 +1,5 @@
 {
-    "resources": {
-        "files": [
-            "Alarm01.wav"
-        ]
-    }
+    "Audio": [
+        "Alarm01.wav"
+    ]
 }

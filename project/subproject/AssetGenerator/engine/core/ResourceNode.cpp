@@ -35,7 +35,7 @@ nlohmann::json ResourceNode::serialize() const {
             normalizedFiles.push_back(NormalizePath(f));
         }
 
-        j["files"] = normalizedFiles;
+        j = normalizedFiles;
     }
 
     return j;

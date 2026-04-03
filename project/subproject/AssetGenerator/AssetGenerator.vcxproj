@@ -113,7 +113,7 @@
       <LanguageStandard>stdcpp20</LanguageStandard>
       <TreatWarningAsError>true</TreatWarningAsError>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(ProjectDir)engine;$(ProjectDir)..\..\externals\nlohmann;$(ProjectDir)engine\assetpipeline;$(ProjectDir)engine\exporter;$(ProjectDir)engine\scanner;$(ProjectDir)engine\generated;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)engine;$(ProjectDir)..\..\externals\nlohmann;$(ProjectDir)engine\core;$(ProjectDir)engine\io;$(ProjectDir)engine\scanner;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
@@ -139,7 +139,7 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(ProjectDir)engine;$(ProjectDir)..\..\externals\nlohmann;$(ProjectDir)engine\assetpipeline;$(ProjectDir)engine\exporter;$(ProjectDir)engine\scanner;$(ProjectDir)engine\generated;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)engine;$(ProjectDir)..\..\externals\nlohmann;$(ProjectDir)engine\core;$(ProjectDir)engine\io;$(ProjectDir)engine\scanner;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
@@ -160,27 +160,18 @@
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="engine\assetpipeline\AssetPipeline.cpp" />
-    <ClCompile Include="engine\exporter\HeaderGenerator.cpp" />
-    <ClCompile Include="engine\exporter\JsonExporter.cpp" />
-    <ClCompile Include="engine\ResourceMapper.cpp" />
-    <ClCompile Include="engine\ResourceNode.cpp" />
-    <ClCompile Include="engine\RuleLoader.cpp" />
-    <ClCompile Include="engine\scanner\PathManager.cpp" />
+    <ClCompile Include="engine\AssetGenerator.cpp" />
+    <ClCompile Include="engine\core\ResourceMapper.cpp" />
+    <ClCompile Include="engine\core\ResourceNode.cpp" />
+    <ClCompile Include="engine\io\RuleLoader.cpp" />
     <ClCompile Include="engine\scanner\Scanner.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="engine\assetpipeline\AssetPipeline.h" />
-    <ClInclude Include="engine\exporter\HeaderGenerator.h" />
-    <ClInclude Include="engine\exporter\JsonExporter.h" />
-    <ClInclude Include="engine\generated\ResourceID.h" />
-    <ClInclude Include="engine\math\LoadResourceID.h" />
-    <ClInclude Include="engine\ResourceMapper.h" />
-    <ClInclude Include="engine\ResourceNode.h" />
-    <ClInclude Include="engine\RuleLoader.h" />
-    <ClInclude Include="engine\scanner\PathManager.h" />
-    <ClInclude Include="engine\scanner\Scanner.h" />
+    <ClInclude Include="engine\AssetGenerator.h" />
+    <ClInclude Include="engine\core\ResourceMapper.h" />
+    <ClInclude Include="engine\core\ResourceNode.h" />
+    <ClInclude Include="engine\io\RuleLoader.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

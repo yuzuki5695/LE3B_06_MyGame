@@ -53,7 +53,8 @@ void ResourceMapper::UpdateSingle(const fs::path& targetDirectory, const std::ve
     // ③ JSON生成
     // ========================================
     nlohmann::json json;
-    json["resources"] = rootNode.serialize();
+    std::string key = targetDirectory.filename().string();
+    json[key] = rootNode.serialize();
 
     // ========================================
     // ④ 保存（差分チェック付き）
