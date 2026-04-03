@@ -51,8 +51,14 @@
     <ClCompile Include="engine\scanner\PathManager.cpp">
       <Filter>ソース ファイル\scanner</Filter>
     </ClCompile>
-    <ClCompile Include="engine\scanner\ResourceScanner.cpp">
+    <ClCompile Include="engine\scanner\Scanner.cpp">
       <Filter>ソース ファイル\scanner</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\ResourceNode.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\ResourceMapper.cpp">
+      <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -71,11 +77,17 @@
     <ClInclude Include="engine\scanner\PathManager.h">
       <Filter>ヘッダー ファイル\scanner</Filter>
     </ClInclude>
-    <ClInclude Include="engine\scanner\ResourceScanner.h">
-      <Filter>ヘッダー ファイル\scanner</Filter>
-    </ClInclude>
     <ClInclude Include="engine\generated\ResourceID.h">
       <Filter>ヘッダー ファイル\generated</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\scanner\Scanner.h">
+      <Filter>ヘッダー ファイル\scanner</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\ResourceNode.h">
+      <Filter>ソース ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\ResourceMapper.h">
+      <Filter>ソース ファイル</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

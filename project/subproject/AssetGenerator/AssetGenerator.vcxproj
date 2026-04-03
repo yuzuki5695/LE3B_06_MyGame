@@ -152,7 +152,7 @@
     </Link>
     <PostBuildEvent>
       <Command>
-</Command>
+      </Command>
     </PostBuildEvent>
     <PreBuildEvent>
       <Command>
@@ -163,8 +163,10 @@
     <ClCompile Include="engine\assetpipeline\AssetPipeline.cpp" />
     <ClCompile Include="engine\exporter\HeaderGenerator.cpp" />
     <ClCompile Include="engine\exporter\JsonExporter.cpp" />
+    <ClCompile Include="engine\ResourceMapper.cpp" />
+    <ClCompile Include="engine\ResourceNode.cpp" />
     <ClCompile Include="engine\scanner\PathManager.cpp" />
-    <ClCompile Include="engine\scanner\ResourceScanner.cpp" />
+    <ClCompile Include="engine\scanner\Scanner.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -173,8 +175,10 @@
     <ClInclude Include="engine\exporter\JsonExporter.h" />
     <ClInclude Include="engine\generated\ResourceID.h" />
     <ClInclude Include="engine\math\LoadResourceID.h" />
+    <ClInclude Include="engine\ResourceMapper.h" />
+    <ClInclude Include="engine\ResourceNode.h" />
     <ClInclude Include="engine\scanner\PathManager.h" />
-    <ClInclude Include="engine\scanner\ResourceScanner.h" />
+    <ClInclude Include="engine\scanner\Scanner.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

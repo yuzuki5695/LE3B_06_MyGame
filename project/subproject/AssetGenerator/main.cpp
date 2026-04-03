@@ -1,68 +1,48 @@
+#include "ResourceMapper.h"
 #include <iostream>
 #include <filesystem>
-#include <fstream>
 
 namespace fs = std::filesystem;
 
-// ファイル全体を文字列として読む関数
-std::string ReadAllText(const fs::path& path) {
-    std::ifstream ifs(path);
-    if (!ifs) return "";
-
-    std::stringstream buffer;
-    buffer << ifs.rdbuf();
-    return buffer.str();
-}
-
 int main(int argc, char* argv[]) {
-
-    // 実行ファイルのカレントディレクトリ
+    // 1. パスの設定
+    // 実行環境に合わせてリソースのルートと出力先を定義します
     fs::path current = fs::current_path();
 
-    // 出力先のフォルダ
-    fs::path resourcePath = current / "../../Resources/Data/Resource";
+    // スキャン対象のルートディレクトリ
+    fs::path resourceRoot = current / "../../Resources";
 
-    // 引数があれば上書き
+    // JSONの出力先ディレクトリ
+    fs::path outputDir = current / "../../Resources/Data/Resource";
+
+    // コマンドライン引数がある場合は出力先を上書き
     if (argc > 1) {
-        resourcePath = fs::path(argv[1]);
+        outputDir = fs::path(argv[1]);
     }
 
-    // 出力先の名称
-    fs::path outputPath = resourcePath / "Test.json";
+    // 最終的な出力ファイルパス
+    fs::path outputPath = outputDir / "TextureList.json";
 
-    // ディレクトリが無ければ作る
-    fs::create_directories(outputPath.parent_path());
+    try {
+        // 2. ResourceMapperのインスタンス化
+        // 責務を分離したことで、main側は「どこをスキャンしてどこに出すか」を伝えるだけになります
+        ResourceMapper mapper(resourceRoot, outputPath);
 
-    std::string newJson = R"({
-    "name": "Player",
-    "hp": 100,
-    "atk": 50
-})";
+        // 3. 実行
+        std::cout << "スキャン開始: " << resourceRoot.string() << std::endl;
 
-    // 既存ファイルがあれば読む
-    std::string oldJson;
-    if (fs::exists(outputPath)) {
-        oldJson = ReadAllText(outputPath);
+        mapper.UpdateSingle(resourceRoot / "Audio", { L".wav" }, outputDir / "Audio.json");
+        mapper.UpdateSingle(resourceRoot / "Textures", { L".png" }, outputDir / "Textures.json");
+        mapper.UpdateSingle(resourceRoot / "Models", { L".mtl", L".obj", L".png" }, outputDir / "Models.json");
+ 
+        // 完了メッセージなどはMapper側、もしくは成功後にここで出す
+        std::cout << "処理が完了しました。" << std::endl;
+
     }
-
-    // 同じならスキップ
-    if (oldJson == newJson) {
-        std::cout << "変更なしのためスキップ: " << outputPath << std::endl;
-        return 0;
-    }
-
-    // 書き込み
-    std::ofstream ofs(outputPath);
-    if (!ofs) {
-        std::cerr << "ファイル作成失敗: " << outputPath << std::endl;
+    catch (const std::exception& e) {
+        std::cerr << "エラーが発生しました: " << e.what() << std::endl;
         return 1;
     }
-
-    ofs << newJson;
-    ofs.close();
-
-    std::cout << "更新しました: " << outputPath << std::endl;
-    std::cout << "出力成功: " << outputPath << std::endl;
 
     return 0;
 }

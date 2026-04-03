@@ -1,0 +1,78 @@
+{
+    "resources": {
+        "Event": {
+            "files": [
+                "Event/start.png",
+                "Event/Startevent_01.png",
+                "Event/Startevent_02.png",
+                "Event/start_mission.png"
+            ]
+        },
+        "Operationui": {
+            "files": [
+                "Operationui/A.png",
+                "Operationui/ArrowDown.png",
+                "Operationui/ArrowDown_RED.png",
+                "Operationui/ArrowLeft.png",
+                "Operationui/ArrowLeft_RED.png",
+                "Operationui/ArrowRight.png",
+                "Operationui/ArrowRight_RED.png",
+                "Operationui/ArrowUp.png",
+                "Operationui/ArrowUp_RED.png",
+                "Operationui/A_RED.png",
+                "Operationui/D.png",
+                "Operationui/D_RED.png",
+                "Operationui/S.png",
+                "Operationui/SHIFT.png",
+                "Operationui/SHIFT_RED.png",
+                "Operationui/SPACEKey.png",
+                "Operationui/SPACEKey_RED.png",
+                "Operationui/S_RED.png",
+                "Operationui/W.png",
+                "Operationui/W_RED.png"
+            ]
+        },
+        "Pausemenu": {
+            "files": [
+                "Pausemenu/Arrow.png",
+                "Pausemenu/command_01.png",
+                "Pausemenu/command_02.png",
+                "Pausemenu/command_11.png",
+                "Pausemenu/command_12.png",
+                "Pausemenu/menu_01.png",
+                "Pausemenu/menu_02.png",
+                "Pausemenu/menu_03.png",
+                "Pausemenu/menu_04.png",
+                "Pausemenu/PauseMenuPanel.png",
+                "Pausemenu/Poseicon.png",
+                "Pausemenu/Poseicon_red.png"
+            ]
+        },
+        "Ui": {
+            "files": [
+                "Ui/Complete.png",
+                "Ui/Gage.png",
+                "Ui/Gameover.png",
+                "Ui/Mission.png",
+                "Ui/Player_ui.png",
+                "Ui/Target.png",
+                "Ui/titile_01.png",
+                "Ui/titile_02.png",
+                "Ui/titile_03.png",
+                "Ui/titile_04.png",
+                "Ui/titile_05.png",
+                "Ui/titile_06.png",
+                "Ui/titile_07.png",
+                "Ui/Title.png",
+                "Ui/UI_01.png",
+                "Ui/UI_02.png"
+            ]
+        },
+        "fade": {
+            "files": [
+                "fade/Black.png",
+                "fade/white.png"
+            ]
+        }
+    }
+}
