@@ -4,6 +4,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 17.9.34728.123
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MyGame", "MyGame.vcxproj", "{4A4DC1F5-7C46-444E-98E4-C58C3FB34D6B}"
+	ProjectSection(ProjectDependencies) = postProject
+		{B309D80A-B650-41B2-A3A8-C6AFC14BC2DB} = {B309D80A-B650-41B2-A3A8-C6AFC14BC2DB}
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ソリューション項目", "ソリューション項目", "{2D81CB0D-CFB9-4F7C-B8D2-23D695132381}"
 	ProjectSection(SolutionItems) = preProject
@@ -23,6 +26,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "nlohmann", "nlohmann", "{8C
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "mainproject", "mainproject", "{DDB4EF12-CC4E-5E88-E6FC-71A802F4DE97}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "subproject", "subproject", "{7D744986-9624-4759-BE3C-015F471DA6BB}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AssetGenerator", "subproject\AssetGenerator\AssetGenerator.vcxproj", "{B309D80A-B650-41B2-A3A8-C6AFC14BC2DB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -41,6 +48,10 @@ Global
 		{12CE02D8-A771-4844-AACC-F20BF9AF9AEA}.Debug|x64.Build.0 = Debug|x64
 		{12CE02D8-A771-4844-AACC-F20BF9AF9AEA}.Release|x64.ActiveCfg = Release|x64
 		{12CE02D8-A771-4844-AACC-F20BF9AF9AEA}.Release|x64.Build.0 = Release|x64
+		{B309D80A-B650-41B2-A3A8-C6AFC14BC2DB}.Debug|x64.ActiveCfg = Debug|x64
+		{B309D80A-B650-41B2-A3A8-C6AFC14BC2DB}.Debug|x64.Build.0 = Debug|x64
+		{B309D80A-B650-41B2-A3A8-C6AFC14BC2DB}.Release|x64.ActiveCfg = Release|x64
+		{B309D80A-B650-41B2-A3A8-C6AFC14BC2DB}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -52,6 +63,8 @@ Global
 		{12CE02D8-A771-4844-AACC-F20BF9AF9AEA} = {4A63E22E-7540-41F2-9CCE-A12C1045B36F}
 		{8C65D930-4562-4893-8A17-EF5B1E8733EC} = {4A63E22E-7540-41F2-9CCE-A12C1045B36F}
 		{DDB4EF12-CC4E-5E88-E6FC-71A802F4DE97} = {2D81CB0D-CFB9-4F7C-B8D2-23D695132381}
+		{7D744986-9624-4759-BE3C-015F471DA6BB} = {2D81CB0D-CFB9-4F7C-B8D2-23D695132381}
+		{B309D80A-B650-41B2-A3A8-C6AFC14BC2DB} = {7D744986-9624-4759-BE3C-015F471DA6BB}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {8C5D745E-2C27-4496-86DB-7F78854F6A8A}

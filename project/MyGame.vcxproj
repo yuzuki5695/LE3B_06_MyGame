@@ -80,8 +80,7 @@
 copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dxil.dll"</Command>
     </PostBuildEvent>
     <PreBuildEvent>
-      <Command>
-      </Command>
+      <Command>"$(SolutionDir)..\generated\outputs\$(Configuration)\AssetGenerator.exe" "$(SolutionDir).. "</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -113,8 +112,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
 copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dxil.dll"</Command>
     </PostBuildEvent>
     <PreBuildEvent>
-      <Command>
-      </Command>
+      <Command>"$(SolutionDir)..\generated\outputs\$(Configuration)\AssetGenerator.exe" "$(SolutionDir).. "</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -278,6 +276,10 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <None Include="Resources\Data\Enemy\enemy.json" />
     <None Include="Resources\Data\Languages\Localization.json" />
     <None Include="Resources\Data\Player\player.json" />
+    <None Include="Resources\Data\Resource\Audio.json" />
+    <None Include="Resources\Data\Resource\Models.json" />
+    <None Include="Resources\Data\Resource\Rules.json" />
+    <None Include="Resources\Data\Resource\Textures.json" />
     <None Include="Resources\shaders\Fullscreen\Fullscreen.hlsli" />
     <None Include="Resources\shaders\Object3d\Object3d.hlsli" />
     <None Include="Resources\shaders\Particle\Particle.hlsli" />

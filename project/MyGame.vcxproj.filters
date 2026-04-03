@@ -235,6 +235,9 @@
     <Filter Include="ソース ファイル\engine\base\DirectX\Screen">
       <UniqueIdentifier>{6ff2ebd1-b3bf-4640-816c-36ce54cd7061}</UniqueIdentifier>
     </Filter>
+    <Filter Include="リソース ファイル\Data\Resource">
+      <UniqueIdentifier>{67d1f02b-d42e-46f9-8d4a-637cad66cc54}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -749,6 +752,18 @@
     </None>
     <None Include="Resources\Data\Enemy\enemy.json">
       <Filter>リソース ファイル\Data\Enemy</Filter>
+    </None>
+    <None Include="Resources\Data\Resource\Audio.json">
+      <Filter>リソース ファイル\Data\Resource</Filter>
+    </None>
+    <None Include="Resources\Data\Resource\Models.json">
+      <Filter>リソース ファイル\Data\Resource</Filter>
+    </None>
+    <None Include="Resources\Data\Resource\Rules.json">
+      <Filter>リソース ファイル\Data\Resource</Filter>
+    </None>
+    <None Include="Resources\Data\Resource\Textures.json">
+      <Filter>リソース ファイル\Data\Resource</Filter>
     </None>
   </ItemGroup>
 </Project>

@@ -3,6 +3,7 @@
 #include <RuleLoader.h>
 #include <iostream>
 #include <CodeGenerator.h>
+#include <clocale>
 
 using namespace AssetGen;
 
@@ -22,24 +23,44 @@ void AssetGenerator::Run(int argc, char* argv[]) {
 }
 
 void AssetGenerator::Initialize(int argc, char* argv[]) {
-    // 実行ファイルの場所を基準に基準パスを設定
-    fs::path current = fs::current_path();
+    std::setlocale(LC_ALL, "japanese");
 
-    // TODO: 将来的には引数(argv)からこれらのパスを変更できるように検討
-    resourceRoot_      = current / "../../Resources";
-    outputDir_         = current / "../../Resources/Data/Resource";
-    rulesJsonPath_     = outputDir_ / "Rules.json";
-    assetInfoPath_     = current / "engine/generator";
+    fs::path rootPath;
 
+    if (argc > 1) {
+        // ビルド前イベントから渡された "$(SolutionDir)..\"
+        rootPath = fs::absolute(argv[1]).lexically_normal();
+    } else {
+        // VS等での直接実行デバッグ用 (generated/outputs/Debug から 3つ遡る)
+        rootPath = fs::absolute(fs::current_path() / "../../../").lexically_normal();
+    }
+
+    rootPath = fs::absolute(rootPath).lexically_normal();
+
+    std::cout << "[AssetGenerator] Root: " << rootPath.string() << std::endl;
+
+    // 1. リソース（データの入出力）
+    resourceRoot_ = rootPath / "Resources";
+    outputDir_ = resourceRoot_ / "Data/Resource";
+    rulesJsonPath_ = outputDir_ / "Rules.json";
+    assetInfoPath_ = rootPath / "subproject/AssetGenerator/engine/generator";
+
+    // 念のため、書き出し先のフォルダが存在するかチェックし、なければ作る
+    if (!fs::exists(assetInfoPath_)) {
+        fs::create_directories(assetInfoPath_);
+    }
     // 各機能コンポーネントをインスタンス化
-    ruleLoader_  = std::make_unique<RuleLoader>(resourceRoot_, outputDir_);
+    ruleLoader_ = std::make_unique<RuleLoader>(resourceRoot_, outputDir_);
     assetLoader_ = std::make_unique<AssetInfoLoader>();
 }
 
 void AssetGenerator::Execute() {
     // 1. ルール設定の読み込み
     // どのフォルダをスキャンし、どのJSONに出力するかを決定する
-    if (!ruleLoader_->Load(rulesJsonPath_)) return;
+    if (!ruleLoader_->Load(rulesJsonPath_)) {
+        std::cerr << "エラー: Rules.json の読み込みに失敗しました。パス: " << rulesJsonPath_ << std::endl;
+        return;
+    }
 
     // 2. ディレクトリ走査と中間JSONの更新
     // 物理ファイルの状態を確認し、Textures.json 等を最新状態にする
