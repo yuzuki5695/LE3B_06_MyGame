@@ -5,7 +5,7 @@
 #include <SpriteCommon.h>
 #include <Object3dCommon.h>
 #include <CameraManager.h>
-
+#include <Input.h>
 // AssetGeneratorからインクルード
 #include <subproject/AssetGenerator/engine/generator/LoadResourceID.h>
 
@@ -31,9 +31,13 @@ void GamePlayScene::Initialize() {
 }
 
 void GamePlayScene::Update() {       
-    // ---------------------------
-
     CameraManager::GetInstance()->Update();
+
+    if (Input::GetInstance()->Triggrkey(DIK_RETURN)) {
+    
+
+    }
+
 #pragma region 全てのObject3d個々の更新処理
    
 
