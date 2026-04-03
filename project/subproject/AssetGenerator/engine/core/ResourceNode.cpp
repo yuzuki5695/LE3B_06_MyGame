@@ -2,6 +2,8 @@
 #include <algorithm>
 #include <Windows.h>
 
+using namespace AssetGen;
+
 void ResourceNode::AddFile(const std::vector<std::wstring>& pathParts, const std::wstring& fullPath) {
     ResourceNode* current = this;
     // パスを順に辿る

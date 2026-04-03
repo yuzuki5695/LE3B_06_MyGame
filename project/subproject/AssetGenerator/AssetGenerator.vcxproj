@@ -113,7 +113,7 @@
       <LanguageStandard>stdcpp20</LanguageStandard>
       <TreatWarningAsError>true</TreatWarningAsError>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(ProjectDir)engine;$(ProjectDir)..\..\externals\nlohmann;$(ProjectDir)engine\core;$(ProjectDir)engine\io;$(ProjectDir)engine\scanner;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)engine;$(ProjectDir)..\..\externals\nlohmann;$(ProjectDir)engine\core;$(ProjectDir)engine\io;$(ProjectDir)engine\scanner;$(ProjectDir)engine\generator;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
@@ -139,7 +139,7 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(ProjectDir)engine;$(ProjectDir)..\..\externals\nlohmann;$(ProjectDir)engine\core;$(ProjectDir)engine\io;$(ProjectDir)engine\scanner;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)engine;$(ProjectDir)..\..\externals\nlohmann;$(ProjectDir)engine\core;$(ProjectDir)engine\io;$(ProjectDir)engine\scanner;$(ProjectDir)engine\generator;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
@@ -161,9 +161,9 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="engine\AssetGenerator.cpp" />
-    <ClCompile Include="engine\CodeGenerator.cpp" />
     <ClCompile Include="engine\core\ResourceMapper.cpp" />
     <ClCompile Include="engine\core\ResourceNode.cpp" />
+    <ClCompile Include="engine\generator\CodeGenerator.cpp" />
     <ClCompile Include="engine\io\AssetInfoLoader.cpp" />
     <ClCompile Include="engine\io\RuleLoader.cpp" />
     <ClCompile Include="engine\scanner\Scanner.cpp" />
@@ -171,9 +171,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="engine\AssetGenerator.h" />
-    <ClInclude Include="engine\CodeGenerator.h" />
     <ClInclude Include="engine\core\ResourceMapper.h" />
     <ClInclude Include="engine\core\ResourceNode.h" />
+    <ClInclude Include="engine\generator\CodeGenerator.h" />
     <ClInclude Include="engine\io\AssetInfoLoader.h" />
     <ClInclude Include="engine\io\BaseLoader.h" />
     <ClInclude Include="engine\io\RuleLoader.h" />

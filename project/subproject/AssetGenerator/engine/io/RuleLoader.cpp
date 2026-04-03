@@ -2,6 +2,8 @@
 #include <fstream>
 #include <json.hpp>
 
+using namespace AssetGen;
+
 namespace fs = std::filesystem;
 
 RuleLoader::RuleLoader(const fs::path& resourceRoot, const fs::path& outputDir)

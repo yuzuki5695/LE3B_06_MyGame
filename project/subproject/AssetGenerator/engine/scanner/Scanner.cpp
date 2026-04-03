@@ -1,5 +1,7 @@
 #include "Scanner.h"
 
+using namespace AssetGen;
+
 namespace fs = std::filesystem;
 
 void Scanner::ResourceScan(const fs::path& rootDirectory, const std::function<void(const AssetEntry&)> onAssetFound) {

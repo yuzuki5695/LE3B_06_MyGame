@@ -4,6 +4,8 @@
 #include <iostream>
 #include <unordered_set>
 
+using namespace AssetGen;
+
 namespace fs = std::filesystem;
 
 ResourceMapper::ResourceMapper(const fs::path& resourceRoot, const fs::path& defaultOutputPath) : resourceRoot(resourceRoot), outputPath(defaultOutputPath) {}

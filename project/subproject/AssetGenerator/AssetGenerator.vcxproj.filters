@@ -37,6 +37,12 @@
     <Filter Include="ヘッダー ファイル\engine\core">
       <UniqueIdentifier>{622b36e6-c56a-4d82-a1d8-b456f7257377}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ソース ファイル\engine\generator">
+      <UniqueIdentifier>{e7cbc383-d09d-4e6b-9472-0e196fef6156}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\engine\generator">
+      <UniqueIdentifier>{b73f704c-7d43-4a33-870e-d8dd812c5939}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -60,14 +66,11 @@
     <ClCompile Include="engine\io\AssetInfoLoader.cpp">
       <Filter>ソース ファイル\engine\io</Filter>
     </ClCompile>
-    <ClCompile Include="engine\CodeGenerator.cpp">
-      <Filter>ソース ファイル\engine</Filter>
+    <ClCompile Include="engine\generator\CodeGenerator.cpp">
+      <Filter>ソース ファイル\engine\generator</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="engine\AssetGenerator.h">
-      <Filter>ヘッダー ファイル\engine</Filter>
-    </ClInclude>
     <ClInclude Include="engine\core\ResourceMapper.h">
       <Filter>ヘッダー ファイル\engine\core</Filter>
     </ClInclude>
@@ -86,8 +89,11 @@
     <ClInclude Include="engine\io\AssetInfoLoader.h">
       <Filter>ヘッダー ファイル\engine\io</Filter>
     </ClInclude>
-    <ClInclude Include="engine\CodeGenerator.h">
-      <Filter>ソース ファイル\engine</Filter>
+    <ClInclude Include="engine\AssetGenerator.h">
+      <Filter>ヘッダー ファイル\engine</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\generator\CodeGenerator.h">
+      <Filter>ヘッダー ファイル\engine\generator</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
