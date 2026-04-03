@@ -297,7 +297,14 @@
             └── └── ├── ResourceMapper.h
             └── └── ├── ResourceNode.cpp
             └── └── └── ResourceNode.h
+            └── ├── generator/
+            └── └── ├── CodeGenerator.cpp
+            └── └── ├── CodeGenerator.h
+            └── └── └── LoadResourceID.h
             └── ├── io/
+            └── └── ├── AssetInfoLoader.cpp
+            └── └── ├── AssetInfoLoader.h
+            └── └── ├── BaseLoader.h
             └── └── ├── RuleLoader.cpp
             └── └── └── RuleLoader.h
             └── └── scanner/
@@ -5127,8 +5134,7 @@ File Path: project/MyGame.vcxproj
 copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dxil.dll"</Command>
     </PostBuildEvent>
     <PreBuildEvent>
-      <Command>
-      </Command>
+      <Command>"$(SolutionDir)..\generated\outputs\$(Configuration)\AssetGenerator.exe" "$(SolutionDir).. "</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -5160,8 +5166,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
 copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dxil.dll"</Command>
     </PostBuildEvent>
     <PreBuildEvent>
-      <Command>
-      </Command>
+      <Command>"$(SolutionDir)..\generated\outputs\$(Configuration)\AssetGenerator.exe" "$(SolutionDir).. "</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -5325,6 +5330,10 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <None Include="Resources\Data\Enemy\enemy.json" />
     <None Include="Resources\Data\Languages\Localization.json" />
     <None Include="Resources\Data\Player\player.json" />
+    <None Include="Resources\Data\Resource\Audio.json" />
+    <None Include="Resources\Data\Resource\Models.json" />
+    <None Include="Resources\Data\Resource\Rules.json" />
+    <None Include="Resources\Data\Resource\Textures.json" />
     <None Include="Resources\shaders\Fullscreen\Fullscreen.hlsli" />
     <None Include="Resources\shaders\Object3d\Object3d.hlsli" />
     <None Include="Resources\shaders\Particle\Particle.hlsli" />
@@ -5641,6 +5650,9 @@ File Path: project/MyGame.vcxproj.filters
     </Filter>
     <Filter Include="ソース ファイル\engine\base\DirectX\Screen">
       <UniqueIdentifier>{6ff2ebd1-b3bf-4640-816c-36ce54cd7061}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="リソース ファイル\Data\Resource">
+      <UniqueIdentifier>{67d1f02b-d42e-46f9-8d4a-637cad66cc54}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -6157,6 +6169,18 @@ File Path: project/MyGame.vcxproj.filters
     <None Include="Resources\Data\Enemy\enemy.json">
       <Filter>リソース ファイル\Data\Enemy</Filter>
     </None>
+    <None Include="Resources\Data\Resource\Audio.json">
+      <Filter>リソース ファイル\Data\Resource</Filter>
+    </None>
+    <None Include="Resources\Data\Resource\Models.json">
+      <Filter>リソース ファイル\Data\Resource</Filter>
+    </None>
+    <None Include="Resources\Data\Resource\Rules.json">
+      <Filter>リソース ファイル\Data\Resource</Filter>
+    </None>
+    <None Include="Resources\Data\Resource\Textures.json">
+      <Filter>リソース ファイル\Data\Resource</Filter>
+    </None>
   </ItemGroup>
 </Project>
 
@@ -6280,7 +6304,12 @@ File Path: project/application/scene/GamePlayScene.cpp
 #include <Object3dCommon.h>
 #include <CameraManager.h>
 
+// AssetGeneratorからインクルード
+#include <subproject/AssetGenerator/engine/generator/LoadResourceID.h>
+
 using namespace MyEngine;
+using namespace AssetGen;
+using namespace AssetGen::LoadResourceID::Models;
 
 void GamePlayScene::Finalize() {
 }
@@ -6293,10 +6322,9 @@ void GamePlayScene::Initialize() {
     TextureManager::GetInstance()->LoadTexture("Textures/Ui/Complete.png");
     Sprite_ = Sprite::Create("Textures/Ui/Complete.png", Vector2{ 50.0f, 100.0f }, 0.0f, Vector2{ 400.0f,150.0f });
 
-    ModelManager::GetInstance()->LoadModel("Models/Character/Player/Player.obj");
-    player_ = Object3d::Create("Models/Character/Player/Player.obj", { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,10.0f} });
-
-
+   //ModelManager::GetInstance()->LoadModel("Models/Character/Player/Player.obj");
+    ModelManager::GetInstance()->LoadModel(Character::Player);
+    player_ = Object3d::Create(Character::Player, { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,10.0f} });
 
 }
 
@@ -12151,6 +12179,7 @@ namespace MyEngine {
         // 基底クラスの終了処理
         Framework::Finalize();
     }
+
 
     void MyGame::Initialize() {
         // 基底クラスの初期化処理
@@ -61643,7 +61672,7 @@ File Path: project/subproject/AssetGenerator/AssetGenerator.vcxproj
       <LanguageStandard>stdcpp20</LanguageStandard>
       <TreatWarningAsError>true</TreatWarningAsError>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(ProjectDir)engine;$(ProjectDir)..\..\externals\nlohmann;$(ProjectDir)engine\core;$(ProjectDir)engine\io;$(ProjectDir)engine\scanner;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)engine;$(ProjectDir)..\..\externals\nlohmann;$(ProjectDir)engine\core;$(ProjectDir)engine\io;$(ProjectDir)engine\scanner;$(ProjectDir)engine\generator;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
@@ -61669,7 +61698,7 @@ File Path: project/subproject/AssetGenerator/AssetGenerator.vcxproj
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(ProjectDir)engine;$(ProjectDir)..\..\externals\nlohmann;$(ProjectDir)engine\core;$(ProjectDir)engine\io;$(ProjectDir)engine\scanner;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)engine;$(ProjectDir)..\..\externals\nlohmann;$(ProjectDir)engine\core;$(ProjectDir)engine\io;$(ProjectDir)engine\scanner;$(ProjectDir)engine\generator;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
@@ -61693,6 +61722,8 @@ File Path: project/subproject/AssetGenerator/AssetGenerator.vcxproj
     <ClCompile Include="engine\AssetGenerator.cpp" />
     <ClCompile Include="engine\core\ResourceMapper.cpp" />
     <ClCompile Include="engine\core\ResourceNode.cpp" />
+    <ClCompile Include="engine\generator\CodeGenerator.cpp" />
+    <ClCompile Include="engine\io\AssetInfoLoader.cpp" />
     <ClCompile Include="engine\io\RuleLoader.cpp" />
     <ClCompile Include="engine\scanner\Scanner.cpp" />
     <ClCompile Include="main.cpp" />
@@ -61701,7 +61732,11 @@ File Path: project/subproject/AssetGenerator/AssetGenerator.vcxproj
     <ClInclude Include="engine\AssetGenerator.h" />
     <ClInclude Include="engine\core\ResourceMapper.h" />
     <ClInclude Include="engine\core\ResourceNode.h" />
+    <ClInclude Include="engine\generator\CodeGenerator.h" />
+    <ClInclude Include="engine\io\AssetInfoLoader.h" />
+    <ClInclude Include="engine\io\BaseLoader.h" />
     <ClInclude Include="engine\io\RuleLoader.h" />
+    <ClInclude Include="engine\scanner\Scanner.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
@@ -61744,14 +61779,17 @@ File Path: project/subproject/AssetGenerator/AssetGenerator.vcxproj.filters
     <Filter Include="ヘッダー ファイル\engine\scanner">
       <UniqueIdentifier>{1e01f44b-7981-4150-a3e7-646ede88a062}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ヘッダー ファイル\engine\generated">
-      <UniqueIdentifier>{9b1ed82c-60d2-4143-86ef-f1710479e78e}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ヘッダー ファイル\engine\io">
       <UniqueIdentifier>{a19d6110-0a27-4188-9523-736474d01bea}</UniqueIdentifier>
     </Filter>
     <Filter Include="ヘッダー ファイル\engine\core">
       <UniqueIdentifier>{622b36e6-c56a-4d82-a1d8-b456f7257377}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\engine\generator">
+      <UniqueIdentifier>{e7cbc383-d09d-4e6b-9472-0e196fef6156}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\engine\generator">
+      <UniqueIdentifier>{b73f704c-7d43-4a33-870e-d8dd812c5939}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -61773,11 +61811,14 @@ File Path: project/subproject/AssetGenerator/AssetGenerator.vcxproj.filters
     <ClCompile Include="engine\io\RuleLoader.cpp">
       <Filter>ソース ファイル\engine\io</Filter>
     </ClCompile>
+    <ClCompile Include="engine\io\AssetInfoLoader.cpp">
+      <Filter>ソース ファイル\engine\io</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\generator\CodeGenerator.cpp">
+      <Filter>ソース ファイル\engine\generator</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="engine\AssetGenerator.h">
-      <Filter>ヘッダー ファイル\engine</Filter>
-    </ClInclude>
     <ClInclude Include="engine\core\ResourceMapper.h">
       <Filter>ヘッダー ファイル\engine\core</Filter>
     </ClInclude>
@@ -61786,6 +61827,21 @@ File Path: project/subproject/AssetGenerator/AssetGenerator.vcxproj.filters
     </ClInclude>
     <ClInclude Include="engine\io\RuleLoader.h">
       <Filter>ヘッダー ファイル\engine\io</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\scanner\Scanner.h">
+      <Filter>ヘッダー ファイル\engine\scanner</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\io\BaseLoader.h">
+      <Filter>ヘッダー ファイル\engine\io</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\io\AssetInfoLoader.h">
+      <Filter>ヘッダー ファイル\engine\io</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\AssetGenerator.h">
+      <Filter>ヘッダー ファイル\engine</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\generator\CodeGenerator.h">
+      <Filter>ヘッダー ファイル\engine\generator</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
@@ -61797,44 +61853,85 @@ File Path: project/subproject/AssetGenerator/engine/AssetGenerator.cpp
 #include <ResourceMapper.h>
 #include <RuleLoader.h>
 #include <iostream>
+#include <CodeGenerator.h>
+#include <clocale>
+
+using namespace AssetGen;
 
 namespace fs = std::filesystem;
 
 void AssetGenerator::Run(int argc, char* argv[]) {
     try {
+        // 例外をキャッチできるように一連の流れを実行
         Initialize(argc, argv);
         Execute();
         Finalize();
     }
     catch (const std::exception& e) {
+        // 実行中に発生したエラーを標準エラー出力に表示
         std::cerr << "エラー: " << e.what() << std::endl;
     }
 }
 
 void AssetGenerator::Initialize(int argc, char* argv[]) {
-    fs::path current = fs::current_path();
+    std::setlocale(LC_ALL, "japanese");
 
-    resourceRoot_ = current / "../../Resources";
-    outputDir_    = current / "../../Resources/Data/Resource";
-    rulesJsonPath_ = outputDir_ / "Rules.json";
+    fs::path rootPath;
 
     if (argc > 1) {
-        outputDir_ = fs::path(argv[1]);
+        // ビルド前イベントから渡された "$(SolutionDir)..\"
+        rootPath = fs::absolute(argv[1]).lexically_normal();
+    } else {
+        // VS等での直接実行デバッグ用 (generated/outputs/Debug から 3つ遡る)
+        rootPath = fs::absolute(fs::current_path() / "../../../").lexically_normal();
     }
 
-    std::cout << "ルール読み込み中: " << rulesJsonPath_.string() << std::endl;
+    rootPath = fs::absolute(rootPath).lexically_normal();
 
-    rules_ = RuleLoader::LoadFromJson(
-        rulesJsonPath_,
-        resourceRoot_,
-        outputDir_);
+    std::cout << "[AssetGenerator] Root: " << rootPath.string() << std::endl;
+
+    // 1. リソース（データの入出力）
+    resourceRoot_ = rootPath / "Resources";
+    outputDir_ = resourceRoot_ / "Data/Resource";
+    rulesJsonPath_ = outputDir_ / "Rules.json";
+    assetInfoPath_ = rootPath / "subproject/AssetGenerator/engine/generator";
+
+    // 念のため、書き出し先のフォルダが存在するかチェックし、なければ作る
+    if (!fs::exists(assetInfoPath_)) {
+        fs::create_directories(assetInfoPath_);
+    }
+    // 各機能コンポーネントをインスタンス化
+    ruleLoader_ = std::make_unique<RuleLoader>(resourceRoot_, outputDir_);
+    assetLoader_ = std::make_unique<AssetInfoLoader>();
 }
 
 void AssetGenerator::Execute() {
-    std::cout << "スキャン開始: " << resourceRoot_.string() << std::endl;
+    // 1. ルール設定の読み込み
+    // どのフォルダをスキャンし、どのJSONに出力するかを決定する
+    if (!ruleLoader_->Load(rulesJsonPath_)) {
+        std::cerr << "エラー: Rules.json の読み込みに失敗しました。パス: " << rulesJsonPath_ << std::endl;
+        return;
+    }
 
+    // 2. ディレクトリ走査と中間JSONの更新
+    // 物理ファイルの状態を確認し、Textures.json 等を最新状態にする
     ResourceMapper mapper(resourceRoot_, outputDir_);
-    mapper.UpdateByRules(rules_);
+    mapper.UpdateByRules(ruleLoader_->GetRules());
+
+    // 3. ID定義の集計
+    // 手順2で生成・更新された各JSONを巡回し、プログラムで使用するIDリストをメモリ上に構築する
+    assetLoader_->Clear(); // 既存のリストをクリア
+    for (const auto& rule : ruleLoader_->GetRules()) {
+        // ルールに基づき、出力されたJSONファイル（例：Models.json）を特定
+        fs::path generatedJsonPath = outputDir_ / rule.output;
+
+        // 階層構造を持つJSONを解析し、AssetDefinitionとして蓄積
+        assetLoader_->LoadGeneratedJson(generatedJsonPath);
+    }
+
+    // 4. C++コード（ヘッダファイル）の自動生成
+    // 全てのアセット情報から、プログラムで利用するID定数群を出力する
+    CodeGenerator::GenerateResourceIDHeader(assetLoader_->GetAssets(), assetInfoPath_ / "LoadResourceID.h");
 }
 
 void AssetGenerator::Finalize() {
@@ -61848,23 +61945,49 @@ File Path: project/subproject/AssetGenerator/engine/AssetGenerator.h
 #include <filesystem>
 #include <vector>
 #include <RuleLoader.h>
+#include <AssetInfoLoader.h>
 
-class AssetGenerator {
-public:
-    void Run(int argc, char* argv[]);
+namespace AssetGen {
+    /// <summary>
+    /// アセット生成プロセスの全体を制御するメインクラス
+    /// </summary>
+    class AssetGenerator {
+	public: // メンバ関数    
+        /// <summary>
+        /// プログラムのエントリポイントから呼び出される実行関数
+        /// </summary>
+        /// <param name="argc">コマンドライン引数の数</param>
+        /// <param name="argv">コマンドライン引数の配列</param>
+        void Run(int argc, char* argv[]);
+	private: // 内部関数
+        /// <summary>
+        /// パスの設定や各ローダーの初期化を行う
+        /// </summary>
+        void Initialize(int argc, char* argv[]);
 
-private:
-    void Initialize(int argc, char* argv[]);
-    void Execute();
-    void Finalize();
+        /// <summary>
+        /// ルールの読み込み、スキャン、コード生成のメインロジックを実行する
+        /// </summary>
+        void Execute();
 
-private:
-    std::filesystem::path resourceRoot_;
-    std::filesystem::path outputDir_;
-    std::filesystem::path rulesJsonPath_;
+        /// <summary>
+        /// 終了メッセージの表示などの後処理を行う
+        /// </summary>
+        void Finalize();
+	private: // メンバ変数
+        // --- パス関連 ---
+        std::filesystem::path resourceRoot_;      ///< 素材ファイルが存在するルートディレクトリ
+        std::filesystem::path outputDir_;         ///< JSONやヘッダファイルを出力するディレクトリ
+        std::filesystem::path rulesJsonPath_;     ///< スキャンルールが記述されたJSONのパス
+		std::filesystem::path assetInfoPath_; ///< アセットヘッダー情報の出力先のパス
+        
+        // --- ロジック・データ保持 ---
+        std::unique_ptr<RuleLoader> ruleLoader_;      ///< rules.jsonの読み込み管理
+        std::unique_ptr<AssetInfoLoader> assetLoader_; ///< 生成されたJSON群からのID情報読み込み管理
 
-    std::vector<ExportRule> rules_;
-};
+        std::vector<ExportRule> rules_;               ///< 適用されるルールのリスト
+    };
+}
 
 ============================================================
 File Path: project/subproject/AssetGenerator/engine/core/ResourceMapper.cpp
@@ -61874,6 +61997,8 @@ File Path: project/subproject/AssetGenerator/engine/core/ResourceMapper.cpp
 #include <sstream>
 #include <iostream>
 #include <unordered_set>
+
+using namespace AssetGen;
 
 namespace fs = std::filesystem;
 
@@ -61905,19 +62030,24 @@ void ResourceMapper::UpdateSingle(const fs::path& targetDirectory, const std::ve
     // ② ツリー構築
     // ========================================
     ResourceNode rootNode;
+    
+    // スキャン対象フォルダ名（例: "Textures" や "Models"）を取得
+    std::wstring categoryName = targetDirectory.filename().wstring();
 
     for (const AssetEntry& asset : assets) {
-
-        fs::path path(asset.path);
+        // --- 修正ポイント：パスの先頭にカテゴリ名を追加 ---
+        // asset.path は "Event/start.png" 
+        // 修正後 fullPathWithCategory は "Textures/Event/start.png"
+        fs::path fullPathWithCategory = fs::path(categoryName) / asset.path;
 
         // パス分割
         std::vector<std::wstring> parts;
-        for (const fs::path& part : path) {
+        for (const auto& part : fullPathWithCategory) {
             parts.push_back(part.wstring());
         }
 
-        // ツリーに登録
-        rootNode.AddFile(parts, asset.path);
+        // ツリーに登録（修正したパスを渡す）
+        rootNode.AddFile(parts, fullPathWithCategory.wstring());
     }
 
     // ========================================
@@ -61975,70 +62105,72 @@ void ResourceMapper::UpdateByRules(const std::vector<ExportRule>& rules) {
 File Path: project/subproject/AssetGenerator/engine/core/ResourceMapper.h
 ============================================================
 #pragma once
-#include "Scanner.h"
-#include "ResourceNode.h"
+#include <Scanner.h>
+#include <ResourceNode.h>
 #include <RuleLoader.h>
 
-/// <summary>
-/// リソース処理の全体フローを管理するクラス（司令塔）
-/// 
-/// 【役割】
-/// ・ルールに従って処理を実行する
-/// ・各処理（スキャン / フィルタ / 構造化 / 出力）を順に呼び出す
-/// 
-/// 【責務】
-/// ・処理の流れの制御（オーケストレーション）
-/// 
-/// 【責務外】
-/// ・個別処理の詳細実装（Scanner / ResourceNodeなどに委譲）
-/// 
-/// 【処理フロー】
-/// Scanner → フィルタ → ResourceNode → JSON → 保存
-/// </summary>
-class ResourceMapper {
-public: // メンバ関数
-
+namespace AssetGen {
     /// <summary>
-    /// コンストラクタ
-    /// </summary>
-    /// <param name="resourceRoot">Resourcesフォルダのルート</param>
-    /// <param name="defaultOutputPath">デフォルト出力先</param>
-    ResourceMapper(const std::filesystem::path& resourceRoot, const std::filesystem::path& defaultOutputPath);
-    
-    /// <summary>
-    /// 単一ルールに基づいてリソースを処理する
+    /// リソース処理の全体フローを管理するクラス（司令塔）
     /// 
-    /// 【処理内容】
-    /// ・対象ディレクトリをスキャン
-    /// ・拡張子でフィルタ
-    /// ・ツリー構造を構築
-    /// ・JSONに変換
-    /// ・差分があれば保存
+    /// 【役割】
+    /// ・ルールに従って処理を実行する
+    /// ・各処理（スキャン / フィルタ / 構造化 / 出力）を順に呼び出す
+    /// 
+    /// 【責務】
+    /// ・処理の流れの制御（オーケストレーション）
+    /// 
+    /// 【責務外】
+    /// ・個別処理の詳細実装（Scanner / ResourceNodeなどに委譲）
+    /// 
+    /// 【処理フロー】
+    /// Scanner → フィルタ → ResourceNode → JSON → 保存
     /// </summary>
-    void UpdateSingle(const std::filesystem::path& targetDir, const std::vector<std::wstring>& extensions, const std::filesystem::path& outputPath);
+    class ResourceMapper {
+    public: // メンバ関数
 
-    /// <summary>
-    /// 複数ルールを順番に処理する
-    /// </summary>
-    void UpdateByRules(const std::vector<ExportRule>& rules);
+        /// <summary>
+        /// コンストラクタ
+        /// </summary>
+        /// <param name="resourceRoot">Resourcesフォルダのルート</param>
+        /// <param name="defaultOutputPath">デフォルト出力先</param>
+        ResourceMapper(const std::filesystem::path& resourceRoot, const std::filesystem::path& defaultOutputPath);
 
-private: // 内部関数
-    /// <summary>
-    /// 内容に変更があった場合のみファイルを保存する
-    /// </summary>
-    /// <param name="content">書き込む文字列</param>
-    /// <param name="path">出力先ファイルパス</param>
-    void SaveIfChanged(const std::string& content, const std::filesystem::path& path);
+        /// <summary>
+        /// 単一ルールに基づいてリソースを処理する
+        /// 
+        /// 【処理内容】
+        /// ・対象ディレクトリをスキャン
+        /// ・拡張子でフィルタ
+        /// ・ツリー構造を構築
+        /// ・JSONに変換
+        /// ・差分があれば保存
+        /// </summary>
+        void UpdateSingle(const std::filesystem::path& targetDir, const std::vector<std::wstring>& extensions, const std::filesystem::path& outputPath);
 
-    /// <summary>
-    /// ファイルをすべて読み込む
-    /// </summary>
-    /// <param name="path">読み込むファイルパス</param>
-    std::string ReadAllText(const std::filesystem::path& path);
-private: // メンバ変数
-    std::filesystem::path resourceRoot; /// Resourcesフォルダ
-    std::filesystem::path outputPath;   /// 出力先JSONファイル
-};
+        /// <summary>
+        /// 複数ルールを順番に処理する
+        /// </summary>
+        void UpdateByRules(const std::vector<ExportRule>& rules);
+
+    private: // 内部関数
+        /// <summary>
+        /// 内容に変更があった場合のみファイルを保存する
+        /// </summary>
+        /// <param name="content">書き込む文字列</param>
+        /// <param name="path">出力先ファイルパス</param>
+        void SaveIfChanged(const std::string& content, const std::filesystem::path& path);
+
+        /// <summary>
+        /// ファイルをすべて読み込む
+        /// </summary>
+        /// <param name="path">読み込むファイルパス</param>
+        std::string ReadAllText(const std::filesystem::path& path);
+    private: // メンバ変数
+        std::filesystem::path resourceRoot; /// Resourcesフォルダ
+        std::filesystem::path outputPath;   /// 出力先JSONファイル
+    };
+}
 
 ============================================================
 File Path: project/subproject/AssetGenerator/engine/core/ResourceNode.cpp
@@ -62046,6 +62178,8 @@ File Path: project/subproject/AssetGenerator/engine/core/ResourceNode.cpp
 #include "ResourceNode.h"
 #include <algorithm>
 #include <Windows.h>
+
+using namespace AssetGen;
 
 void ResourceNode::AddFile(const std::vector<std::wstring>& pathParts, const std::wstring& fullPath) {
     ResourceNode* current = this;
@@ -62132,130 +62266,627 @@ File Path: project/subproject/AssetGenerator/engine/core/ResourceNode.h
 #include <string>
 #include <json.hpp>
 
-/// <summary>
-/// リソースの階層構造（ディレクトリツリー）を表現するノードクラス
-/// 
-/// 【役割】
-/// ・ディレクトリ構造をツリーとして保持する
-/// ・ファイルを階層ごとに分類する
-/// ・JSON形式へ変換する
-/// 
-/// 【構造】
-/// ・children : サブディレクトリ（名前 → 子ノード）
-/// ・files    : このディレクトリ直下にあるファイル一覧
-/// 【注意】
-/// ・パスはUTF-8に変換され、'\\' は '/' に正規化される
-/// ・ディレクトリ名がJSONキーになる
-/// </summary>
-class ResourceNode {
-public: // メンバ関数
+namespace AssetGen {
     /// <summary>
-    /// ファイルパスをツリー構造に追加する
+    /// リソースの階層構造（ディレクトリツリー）を表現するノードクラス
+    /// 
+    /// 【役割】
+    /// ・ディレクトリ構造をツリーとして保持する
+    /// ・ファイルを階層ごとに分類する
+    /// ・JSON形式へ変換する
+    /// 
+    /// 【構造】
+    /// ・children : サブディレクトリ（名前 → 子ノード）
+    /// ・files    : このディレクトリ直下にあるファイル一覧
+    /// 【注意】
+    /// ・パスはUTF-8に変換され、'\\' は '/' に正規化される
+    /// ・ディレクトリ名がJSONキーになる
     /// </summary>
-    /// <param name="pathParts">パスを分割した要素配列</param>
-    /// <param name="fullPath">フルパス（相対パス）</param>
-    void AddFile(const std::vector<std::wstring>& pathParts, const std::wstring& fullPath);
+    class ResourceNode {
+    public: // メンバ関数
+        /// <summary>
+        /// ファイルパスをツリー構造に追加する
+        /// </summary>
+        /// <param name="pathParts">パスを分割した要素配列</param>
+        /// <param name="fullPath">フルパス（相対パス）</param>
+        void AddFile(const std::vector<std::wstring>& pathParts, const std::wstring& fullPath);
+
+        /// <summary>
+        /// 現在のノード以下をJSON形式に変換する
+        /// </summary>
+        nlohmann::json serialize() const;
+    private: // 内部関数
+        /// <summary>
+        /// パス文字列をJSON出力用に正規化する
+        /// wstringをUTF-8文字列へ変換し、パス表記を正規化する
+        /// 【用途】
+        /// ・JSON出力時の文字コード統一
+        /// ・Windows依存の '\\' を排除する
+        /// </summary>
+        /// <param name="wstr">変換対象のUTF-16文字列</param>
+        /// <returns>UTF-8に変換された文字列</returns>
+        static std::string NormalizePath(const std::wstring& wstr);
+    private: // メンバ変数
+        /// <summary>
+        /// 子ディレクトリ一覧（ディレクトリ名 → ノード）
+        /// </summary>
+        std::map<std::wstring, ResourceNode> children;
+        /// <summary>
+        /// このディレクトリ直下のファイル一覧（フルパス）
+        /// </summary>
+        std::vector<std::wstring> files;
+    };
+}
+
+============================================================
+File Path: project/subproject/AssetGenerator/engine/generator/CodeGenerator.cpp
+============================================================
+#include "CodeGenerator.h"
+#include <fstream>
+#include <iostream>
+#include <map>
+#include <string>
+
+using namespace AssetGen;
+
+void CodeGenerator::GenerateResourceIDHeader(const std::vector<AssetDefinition>& assets, const std::filesystem::path& outputPath) {
+    if (assets.empty()) return;
+
+    std::ofstream ofs(outputPath);
+    if (!ofs) {
+        std::cerr << "Failed to create header file: " << outputPath.string() << std::endl;
+        return;
+    }
+
+    // 1. ツリー構築
+    auto categoryTrees = BuildCategoryTrees(assets);
+
+    // 2. 書き出し
+    WriteHeader(ofs, categoryTrees);
+
+    std::cout << "Generated: " << outputPath.string() << std::endl;
+}
+
+std::map<std::string, CodeGenerator::Node> CodeGenerator::BuildCategoryTrees(const std::vector<AssetDefinition>& assets) {
+    std::map<std::string, Node> categoryTrees;
+
+    for (const auto& asset : assets) {
+        Node* node = &categoryTrees[asset.category];
+
+        // 1階層目のみnamespace化
+        if (!asset.subFolders.empty()) {
+            node = &node->children[asset.subFolders[0]];
+        }
+
+        node->assets.push_back(&asset);
+    }
+
+    return categoryTrees;
+}
+
+void CodeGenerator::WriteNode(std::ofstream& ofs, const Node& node, int indent) {
+    std::string indentStr(indent * 4, ' ');
+
+    // アセット出力
+    for (const auto* asset : node.assets) {
+        ofs << indentStr
+            << "constexpr const char* " << asset->id
+            << " = \"" << asset->path << "\";\n";
+    }
+
+    // 子namespace
+    for (const auto& [name, child] : node.children) {
+        ofs << indentStr << "namespace " << name << " {\n";
+
+        WriteNode(ofs, child, indent + 1);
+
+        ofs << indentStr << "} // namespace " << name << "\n";
+    }
+}
+
+void CodeGenerator::WriteHeader(std::ofstream& ofs, const std::map<std::string, Node>& categoryTrees) {
+    ofs << "#pragma once\n\n";
+    // 出力されるヘッダーも AssetGen 名前空間で囲む 
+    ofs << "namespace AssetGen {\n";
+    ofs << "namespace LoadResourceID {\n";
+
+    for (const auto& [category, tree] : categoryTrees) {
+        ofs << "    namespace " << category << " {\n";
+
+        WriteNode(ofs, tree, 2);
+
+        ofs << "    } // namespace " << category << "\n";
+    }
+
+    ofs << "} // namespace LoadResourceID\n";
+    ofs << "} // namespace AssetGen\n";
+}
+
+============================================================
+File Path: project/subproject/AssetGenerator/engine/generator/CodeGenerator.h
+============================================================
+#pragma once
+#include <string>
+#include <vector>
+#include <filesystem>
+#include <AssetInfoLoader.h>
+
+namespace AssetGen {
+    /// <summary>
+    /// C++コード（ヘッダファイル）の自動生成を担当するクラス
+    /// </summary>
+    class CodeGenerator {
+	public: // メンバ関数
+
+        struct Node {
+            std::map<std::string, Node> children;
+            std::vector<const AssetDefinition*> assets;
+        };
+
+        /// <summary>
+        /// AssetInfoLoaderのデータから LoadResourceID.h を生成する
+        /// </summary>
+        /// <param name="assets">生成元となるアセット定義リスト</param>
+        /// <param name="outputPath">出力するヘッダのパス</param>
+        static void GenerateResourceIDHeader(const std::vector<AssetDefinition>& assets, const std::filesystem::path& outputPath);
+
+        /// <summary>
+        /// AssetDefinition のリストからカテゴリごとのツリー構造を構築する
+        /// </summary>
+        static std::map<std::string, Node> BuildCategoryTrees(const std::vector<AssetDefinition>& assets);
+
+        /// <summary>
+        /// ノードを再帰的に走査して namespace とアセット定義を書き出す
+        /// </summary>
+        static void WriteNode(std::ofstream& ofs, const Node& node, int indent);
+
+        /// <summary>
+        /// ヘッダファイルの本体を書き出す
+        /// </summary>
+        static void WriteHeader(std::ofstream& ofs, const std::map<std::string, Node>& categoryTrees);
+    };
+}
+
+============================================================
+File Path: project/subproject/AssetGenerator/engine/generator/LoadResourceID.h
+============================================================
+#pragma once
+
+namespace AssetGen {
+namespace LoadResourceID {
+    namespace Audio {
+        constexpr const char* Alarm01 = "Audio/Alarm01.wav";
+    } // namespace Audio
+    namespace Models {
+        namespace Bullet {
+            constexpr const char* EnemyBullet = "Models/Bullet/EnemyBullet/EnemyBullet.obj";
+            constexpr const char* PlayerBullet = "Models/Bullet/PlayerBullet/PlayerBullet.obj";
+        } // namespace Bullet
+        namespace Character {
+            constexpr const char* Enemy = "Models/Character/Enemy/Enemy.obj";
+            constexpr const char* Player = "Models/Character/Player/Player.obj";
+            constexpr const char* parts_01 = "Models/Character/parts_01/parts_01.obj";
+            constexpr const char* parts_02 = "Models/Character/parts_02/parts_02.obj";
+            constexpr const char* parts_03 = "Models/Character/parts_03/parts_03.obj";
+            constexpr const char* parts_04 = "Models/Character/parts_04/parts_04.obj";
+        } // namespace Character
+        namespace Object {
+            constexpr const char* goal = "Models/Object/Goal/goal.obj";
+            constexpr const char* Tile = "Models/Object/Tile/Tile.obj";
+        } // namespace Object
+        namespace Particles {
+            constexpr const char* Particle = "Models/Particles/Particle/Particle.obj";
+            constexpr const char* Particle_02 = "Models/Particles/Particle_02/Particle_02.obj";
+            constexpr const char* Shockwave = "Models/Particles/Shockwave/Shockwave.obj";
+        } // namespace Particles
+    } // namespace Models
+    namespace Textures {
+        namespace Event {
+            constexpr const char* start = "Textures/Event/start.png";
+            constexpr const char* Startevent_01 = "Textures/Event/Startevent_01.png";
+            constexpr const char* Startevent_02 = "Textures/Event/Startevent_02.png";
+            constexpr const char* start_mission = "Textures/Event/start_mission.png";
+        } // namespace Event
+        namespace Operationui {
+            constexpr const char* A = "Textures/Operationui/A.png";
+            constexpr const char* ArrowDown = "Textures/Operationui/ArrowDown.png";
+            constexpr const char* ArrowDown_RED = "Textures/Operationui/ArrowDown_RED.png";
+            constexpr const char* ArrowLeft = "Textures/Operationui/ArrowLeft.png";
+            constexpr const char* ArrowLeft_RED = "Textures/Operationui/ArrowLeft_RED.png";
+            constexpr const char* ArrowRight = "Textures/Operationui/ArrowRight.png";
+            constexpr const char* ArrowRight_RED = "Textures/Operationui/ArrowRight_RED.png";
+            constexpr const char* ArrowUp = "Textures/Operationui/ArrowUp.png";
+            constexpr const char* ArrowUp_RED = "Textures/Operationui/ArrowUp_RED.png";
+            constexpr const char* A_RED = "Textures/Operationui/A_RED.png";
+            constexpr const char* D = "Textures/Operationui/D.png";
+            constexpr const char* D_RED = "Textures/Operationui/D_RED.png";
+            constexpr const char* S = "Textures/Operationui/S.png";
+            constexpr const char* SHIFT = "Textures/Operationui/SHIFT.png";
+            constexpr const char* SHIFT_RED = "Textures/Operationui/SHIFT_RED.png";
+            constexpr const char* SPACEKey = "Textures/Operationui/SPACEKey.png";
+            constexpr const char* SPACEKey_RED = "Textures/Operationui/SPACEKey_RED.png";
+            constexpr const char* S_RED = "Textures/Operationui/S_RED.png";
+            constexpr const char* W = "Textures/Operationui/W.png";
+            constexpr const char* W_RED = "Textures/Operationui/W_RED.png";
+        } // namespace Operationui
+        namespace Pausemenu {
+            constexpr const char* Arrow = "Textures/Pausemenu/Arrow.png";
+            constexpr const char* command_01 = "Textures/Pausemenu/command_01.png";
+            constexpr const char* command_02 = "Textures/Pausemenu/command_02.png";
+            constexpr const char* command_11 = "Textures/Pausemenu/command_11.png";
+            constexpr const char* command_12 = "Textures/Pausemenu/command_12.png";
+            constexpr const char* menu_01 = "Textures/Pausemenu/menu_01.png";
+            constexpr const char* menu_02 = "Textures/Pausemenu/menu_02.png";
+            constexpr const char* menu_03 = "Textures/Pausemenu/menu_03.png";
+            constexpr const char* menu_04 = "Textures/Pausemenu/menu_04.png";
+            constexpr const char* PauseMenuPanel = "Textures/Pausemenu/PauseMenuPanel.png";
+            constexpr const char* Poseicon = "Textures/Pausemenu/Poseicon.png";
+            constexpr const char* Poseicon_red = "Textures/Pausemenu/Poseicon_red.png";
+        } // namespace Pausemenu
+        namespace Ui {
+            constexpr const char* Complete = "Textures/Ui/Complete.png";
+            constexpr const char* Gage = "Textures/Ui/Gage.png";
+            constexpr const char* Gameover = "Textures/Ui/Gameover.png";
+            constexpr const char* Mission = "Textures/Ui/Mission.png";
+            constexpr const char* Player_ui = "Textures/Ui/Player_ui.png";
+            constexpr const char* Target = "Textures/Ui/Target.png";
+            constexpr const char* titile_01 = "Textures/Ui/titile_01.png";
+            constexpr const char* titile_02 = "Textures/Ui/titile_02.png";
+            constexpr const char* titile_03 = "Textures/Ui/titile_03.png";
+            constexpr const char* titile_04 = "Textures/Ui/titile_04.png";
+            constexpr const char* titile_05 = "Textures/Ui/titile_05.png";
+            constexpr const char* titile_06 = "Textures/Ui/titile_06.png";
+            constexpr const char* titile_07 = "Textures/Ui/titile_07.png";
+            constexpr const char* Title = "Textures/Ui/Title.png";
+            constexpr const char* UI_01 = "Textures/Ui/UI_01.png";
+            constexpr const char* UI_02 = "Textures/Ui/UI_02.png";
+        } // namespace Ui
+        namespace fade {
+            constexpr const char* Black = "Textures/fade/Black.png";
+            constexpr const char* white = "Textures/fade/white.png";
+        } // namespace fade
+    } // namespace Textures
+} // namespace LoadResourceID
+} // namespace AssetGen
+
+
+============================================================
+File Path: project/subproject/AssetGenerator/engine/io/AssetInfoLoader.cpp
+============================================================
+#include "AssetInfoLoader.h"
+#include <fstream>
+#include <json.hpp>
+#include <iostream>
+#include <set>
+
+using namespace AssetGen;
+
+namespace fs = std::filesystem;
+
+bool AssetInfoLoader::Load(const fs::path& jsonPath) {
+    Clear();
+
+    std::ifstream ifs(jsonPath);
+    if (!ifs) {
+        return false;
+    }
+
+    try {
+        nlohmann::json j;
+        ifs >> j;
+        for (const nlohmann::json& item : j["assets"]) {
+            AssetDefinition asset;
+            asset.category = item.value("category", "General");
+            asset.id       = item.value("id", "");
+            asset.path     = item.value("path", "");
+
+            if (!asset.id.empty()) {
+                assets_.push_back(asset);
+            }
+        }
+    }
+    catch (...) {
+        return false;
+    }
+
+    return true;
+}
+
+void AssetInfoLoader::Clear() {
+    assets_.clear();
+    definedFullIds.clear();
+}
+
+bool AssetInfoLoader::LoadGeneratedJson(const fs::path& jsonPath) {
+    std::ifstream ifs(jsonPath);
+    if (!ifs) return false;
+
+    try {
+        nlohmann::json j;
+        ifs >> j;
+
+        // JSONのルートキー（"Textures", "Models" など）をカテゴリとして扱う
+        for (auto it = j.begin(); it != j.end(); ++it) {
+            std::string category = it.key();
+
+            // 再帰的にJSONを解析してアセットを抽出
+            ParseRecursive(it.value(), category, {});
+        }
+    }
+    catch (...) {
+        return false;
+    }
+    return true;
+}
+
+void AssetInfoLoader::ParseRecursive(const nlohmann::json& j, const std::string& category, std::vector<std::string> hierarchy) {
+    if (j.is_array()) {
+        for (const auto& item : j) {
+            if (item.is_string()) {
+                std::string filePath = item.get<std::string>();
+                fs::path p(filePath);
+                std::string ext = p.extension().string();
+
+                /// <summary>
+                /// カテゴリごとに対象拡張子を制限
+                /// </summary>
+                if (category == "Models" && ext != ".obj") continue;
+                if (category == "Textures" && ext != ".png") continue;
+                if (category == "Audio" && ext != ".wav") continue;
+
+                // 名前空間の重複を防ぐ
+                std::vector<std::string> idHierarchy = hierarchy;
+                if (!idHierarchy.empty() && idHierarchy[0] == category) {
+                    idHierarchy.erase(idHierarchy.begin());
+                }
+
+                AssetDefinition asset;
+                asset.category = category;
+                asset.path = filePath; // パスはそのまま "Textures/..." を使う
+                asset.subFolders = idHierarchy; // 名前空間用にはカテゴリを除いた階層を渡す
+                asset.id = p.stem().string();
+
+                // 重複チェック用キーも新しい階層で生成
+                std::string uniqueKey = category;
+                for (const auto& folder : idHierarchy) uniqueKey += "::" + folder;
+                uniqueKey += "::" + asset.id;
+
+                if (definedFullIds.contains(uniqueKey)) {
+                    continue;
+                }
+                definedFullIds.insert(uniqueKey);
+                assets_.push_back(asset);
+            }
+        }
+    } else if (j.is_object()) {
+        for (auto it = j.begin(); it != j.end(); ++it) {
+            std::vector<std::string> nextHierarchy = hierarchy;
+            nextHierarchy.push_back(it.key());
+            ParseRecursive(it.value(), category, nextHierarchy);
+        }
+    }
+}
+
+============================================================
+File Path: project/subproject/AssetGenerator/engine/io/AssetInfoLoader.h
+============================================================
+#pragma once
+#include <BaseLoader.h>
+#include <unordered_map>
+#include <string>
+#include <vector>
+#include <json.hpp>
+#include <set>
+
+namespace AssetGen {
+    /// <summary>
+    /// リソースの個別の定義情報を表す構造体
+    /// </summary>
+    struct AssetDefinition {
+        std::string id;                         ///< 生成されるID名（例: "EnemyBullet"）
+        std::string path;                       ///< ファイルパス（例: "Bullet/EnemyBullet/EnemyBullet.obj"）
+        std::string category;                   ///< ルートカテゴリ（例: "Models", "Textures"）
+        std::vector<std::string> subFolders;    ///< 中間フォルダ階層（例: {"Bullet", "EnemyBullet"}）
+    };
 
     /// <summary>
-    /// 現在のノード以下をJSON形式に変換する
+    /// アセット定義JSON（IDとパスの対応情報）を読み込むローダー
+    /// また、生成済みJSON（Textures.json等）から自動的にアセット情報を構築する
     /// </summary>
-    nlohmann::json serialize() const;
-private: // 内部関数
+    class AssetInfoLoader : public BaseLoader {
+    public: // メンバ関数
+        /// <summary>
+        /// デフォルトコンストラクタ
+        /// </summary>
+        AssetInfoLoader() = default;
+
+        /// <summary>
+        /// アセット定義JSONを読み込む
+        /// </summary>
+        /// <param name="jsonPath">読み込むJSONのパス</param>
+        /// <returns>成功したらtrue</returns>
+        bool Load(const std::filesystem::path& jsonPath) override;
+
+        /// <summary>
+        /// 保持しているアセット情報をクリアする
+        /// </summary>
+        void Clear() override;
+
+        /// <summary>
+        /// 読み込んだアセット定義の一覧を取得する
+        /// </summary>
+        /// <returns>AssetDefinition の配列への const 参照</returns>
+        const std::vector<AssetDefinition>& GetAssets() const { return assets_; }
+
+        /// <summary>
+        /// 生成済みの各リソースJSONを読み込み、アセット定義を蓄積する
+        /// </summary>
+        /// <param name=\"jsonPath\">Textures.json などのパス</param>
+        /// <returns>成功したらtrue</returns>
+        bool LoadGeneratedJson(const std::filesystem::path& jsonPath);
+    private: // 内部関数
+        /// <summary>
+        /// JSONの階層構造を再帰的に解析し、アセット情報を抽出する内部関数
+        /// </summary>
+        /// <param name="j">解析対象のJSONノード</param>
+        /// <param name="category">現在のカテゴリ（Textures / Models など）</param>
+        /// <param name="hierarchy">現在までのフォルダ階層</param>
+        void ParseRecursive(const nlohmann::json& j, const std::string& category, std::vector<std::string> hierarchy);
+    private: // メンバ変数
+        std::vector<AssetDefinition> assets_; /// 読み込まれたアセット定義のリスト
+        std::set<std::string> definedFullIds; // 重複チェック用
+    };
+}
+
+============================================================
+File Path: project/subproject/AssetGenerator/engine/io/BaseLoader.h
+============================================================
+#pragma once
+#include <string>
+#include <vector>
+#include <filesystem>
+
+namespace AssetGen {
     /// <summary>
-    /// パス文字列をJSON出力用に正規化する
-    /// wstringをUTF-8文字列へ変換し、パス表記を正規化する
-    /// 【用途】
-    /// ・JSON出力時の文字コード統一
-    /// ・Windows依存の '\\' を排除する
+    /// 全てのローダーの基底となる抽象クラス
     /// </summary>
-    /// <param name="wstr">変換対象のUTF-16文字列</param>
-    /// <returns>UTF-8に変換された文字列</returns>
-    static std::string NormalizePath(const std::wstring& wstr);
-private: // メンバ変数
-    /// <summary>
-    /// 子ディレクトリ一覧（ディレクトリ名 → ノード）
-    /// </summary>
-    std::map<std::wstring, ResourceNode> children;
-    /// <summary>
-    /// このディレクトリ直下のファイル一覧（フルパス）
-    /// </summary>
-    std::vector<std::wstring> files;
-};
+    class BaseLoader {
+    public: // メンバ関数 
+        /// <summary>
+        /// 仮想デストラクタ
+        /// </summary>
+        virtual ~BaseLoader() = default;
+
+        /// <summary>
+        /// ファイルを読み込み、内部データに変換する
+        /// </summary>
+        /// <param name="filePath">読み込むファイルのパス</param>
+        /// <returns>成功したらtrue</returns>
+        virtual bool Load(const std::filesystem::path& filePath) = 0;
+
+        /// <summary>
+        /// 読み込み後のデータをクリアする
+        /// </summary>
+        virtual void Clear() = 0;
+    };
+}
 
 ============================================================
 File Path: project/subproject/AssetGenerator/engine/io/RuleLoader.cpp
 ============================================================
 #include "RuleLoader.h"
 #include <fstream>
-#include <stdexcept>
 #include <json.hpp>
+
+using namespace AssetGen;
 
 namespace fs = std::filesystem;
 
-std::vector<ExportRule> RuleLoader::LoadFromJson(const fs::path& jsonPath, const fs::path& resourceRoot, const fs::path& outputDir) {
-    std::vector<ExportRule> rules;
+RuleLoader::RuleLoader(const fs::path& resourceRoot, const fs::path& outputDir)
+    : resourceRoot_(resourceRoot), outputDir_(outputDir) {}
+
+bool RuleLoader::Load(const fs::path& jsonPath) {
+    Clear();
 
     std::ifstream ifs(jsonPath);
     if (!ifs) {
-        throw std::runtime_error("rules.json が開けない");
+        return false; // ファイルが開けない場合は失敗を返す
     }
 
-    nlohmann::json j;
-    ifs >> j;
+    try {
+        nlohmann::json j;
+        ifs >> j;
 
-    for (const nlohmann::json& item : j["rules"]) {
+        for (const nlohmann::json& item : j["rules"]) {
+            ExportRule rule;
 
-        ExportRule rule;
+            // ディレクトリの絶対パスを構築
+            std::string dir = item["dir"];
+            rule.dir = resourceRoot_ / dir;
 
-        // ディレクトリ
-        std::string dir = item["dir"];
-        rule.dir = resourceRoot / dir;
+            // 出力先の絶対パスを構築
+            std::string output = item["output"];
+            rule.output = outputDir_ / output;
 
-        // 出力
-        std::string output = item["output"];
-        rule.output = outputDir / output;
+            // 拡張子の変換 (std::string -> std::wstring)
+            for (const nlohmann::json& ext : item["ext"]) {
+                std::string e = ext;
+                rule.extensions.push_back(std::wstring(e.begin(), e.end()));
+            }
 
-        // 拡張子
-        for (const nlohmann::json& ext : item["ext"]) {
-            std::string e = ext;
-            rule.extensions.push_back(
-                std::wstring(e.begin(), e.end())
-            );
+            rules_.push_back(rule);
         }
-
-        rules.push_back(rule);
+    }
+    catch (...) {
+        // パースエラー等が発生した場合
+        return false;
     }
 
-    return rules;
+    return true;
+}
+
+void RuleLoader::Clear() {
+    rules_.clear();
 }
 
 ============================================================
 File Path: project/subproject/AssetGenerator/engine/io/RuleLoader.h
 ============================================================
 #pragma once
-#include <filesystem>
+#include <BaseLoader.h>
 #include <vector>
-#include <string>
 
-struct ExportRule {
-    std::filesystem::path dir;                 // スキャン対象
-    std::vector<std::wstring> extensions;      // 拡張子
-    std::filesystem::path output;              // 出力先
-};
-
-class RuleLoader {
-public: // メンバ関数
+namespace AssetGen {
     /// <summary>
-    /// rules.json を読み込み、ExportRuleの配列に変換する
+    /// アセットの書き出しルールを表す構造体
     /// </summary>
-    static std::vector<ExportRule> LoadFromJson(const std::filesystem::path& jsonPath, const std::filesystem::path& resourceRoot, const std::filesystem::path& outputDir);
+    struct ExportRule {
+        std::filesystem::path dir;                  ///< スキャン対象ディレクトリ
+        std::vector<std::wstring> extensions;       ///< 対象の拡張子
+        std::filesystem::path output;               ///< 出力先ディレクトリ
+    };
+    /// <summary>
+    /// rules.json を読み込み、ExportRuleとして保持するローダー
+    /// </summary>
+    class RuleLoader : public BaseLoader {
+    public: // メンバ関数
+        /// <summary>
+        /// コンストラクタ
+        /// </summary>
+        /// <param name="resourceRoot">リソースのルートディレクトリ</param>
+        /// <param name="outputDir">出力先ディレクトリ</param>
+        RuleLoader(const std::filesystem::path& resourceRoot, const std::filesystem::path& outputDir);
 
-};
+        /// <summary>
+        /// rules.json を読み込み、ExportRule の配列に変換する
+        /// </summary>
+        /// <param name="jsonPath">rules.json のパス</param>
+        /// <returns>読み込み成功なら true、失敗なら false</returns>
+        bool Load(const std::filesystem::path& jsonPath) override;
+
+        /// <summary>
+        /// 保持しているルールを破棄する
+        /// </summary>
+        void Clear() override;
+
+        /// <summary>
+        /// 読み込んだルールの一覧を取得する
+        /// </summary>
+        /// <returns>ExportRule の配列への const 参照</returns>
+        const std::vector<ExportRule>& GetRules() const { return rules_; }
+    private: // メンバ変数
+        std::vector<ExportRule> rules_;                ///< 読み込んだルールのリスト
+        std::filesystem::path resourceRoot_;           ///< リソースルートのパス
+        std::filesystem::path outputDir_;              ///< 出力先ディレクトリのパス
+    };
+}
 
 ============================================================
 File Path: project/subproject/AssetGenerator/engine/scanner/Scanner.cpp
 ============================================================
 #include "Scanner.h"
+
+using namespace AssetGen;
 
 namespace fs = std::filesystem;
 
@@ -62308,64 +62939,70 @@ File Path: project/subproject/AssetGenerator/engine/scanner/Scanner.h
 #include <string>
 #include <functional>
 
-/// <summary>
-/// アセットの情報を保持する構造体
-/// Resources フォルダ内のファイル・ディレクトリの情報を1件分保持する
-/// </summary>
-struct AssetEntry {
-    std::wstring path;      /// Resources からの相対パス
-    std::wstring fileName;  /// ファイル名（拡張子込み）
-    bool isDirectory;       /// ディレクトリかどうか
-    std::wstring extension; /// 拡張子（例: .png）
-};
-
-/// <summary>
-/// ディレクトリを走査してアセット情報を収集するクラス
-/// 
-/// 【責務】
-/// ・ファイルシステムの走査
-/// ・AssetEntryの生成
-/// ・簡単なフィルタ（拡張子など）
-/// 
-/// ファイル収集のみを責務とし、分類や出力は行わない
-/// </summary>
-class Scanner {
-public: // メンバ関数
+namespace AssetGen {
     /// <summary>
-    /// 指定ディレクトリ以下を再帰的に走査し、
-    /// 各ファイル・ディレクトリの情報をコールバックで返す
+    /// アセットの情報を保持する構造体
+    /// Resources フォルダ内のファイル・ディレクトリの情報を1件分保持する
+    /// </summary>
+    struct AssetEntry {
+        std::wstring path;      /// Resources からの相対パス
+        std::wstring fileName;  /// ファイル名（拡張子込み）
+        bool isDirectory;       /// ディレクトリかどうか
+        std::wstring extension; /// 拡張子（例: .png）
+    };
+
+    /// <summary>
+    /// ディレクトリを走査してアセット情報を収集するクラス
     /// 
-    /// 最も汎用的な関数で、他の関数はこれを利用する
+    /// 【責務】
+    /// ・ファイルシステムの走査
+    /// ・AssetEntryの生成
+    /// ・簡単なフィルタ（拡張子など）
+    /// 
+    /// ファイル収集のみを責務とし、分類や出力は行わない
     /// </summary>
-    /// <param name="rootDirectory">スキャン開始ディレクトリ</param>
-    /// <param name="onAssetFound">各アセットに対して実行される処理</param>
-    void ResourceScan(const std::filesystem::path& rootDirectory, const std::function<void(const AssetEntry&)> onAssetFound);
+    class Scanner {
+    public: // メンバ関数
+        /// <summary>
+        /// 指定ディレクトリ以下を再帰的に走査し、
+        /// 各ファイル・ディレクトリの情報をコールバックで返す
+        /// 
+        /// 最も汎用的な関数で、他の関数はこれを利用する
+        /// </summary>
+        /// <param name="rootDirectory">スキャン開始ディレクトリ</param>
+        /// <param name="onAssetFound">各アセットに対して実行される処理</param>
+        void ResourceScan(const std::filesystem::path& rootDirectory, const std::function<void(const AssetEntry&)> onAssetFound);
 
-    /// <summary>
-    /// 指定ディレクトリ以下の全アセットを収集する
-    /// フィルタなし
-    /// </summary>
-    /// <param name="rootDirectory">走査開始ディレクトリ</param>
-    /// <param name="outEntries">取得したアセット一覧の出力先</param>
-    void ScanAll(const std::filesystem::path& rootDirectory, std::vector<AssetEntry>& outEntries);
+        /// <summary>
+        /// 指定ディレクトリ以下の全アセットを収集する
+        /// フィルタなし
+        /// </summary>
+        /// <param name="rootDirectory">走査開始ディレクトリ</param>
+        /// <param name="outEntries">取得したアセット一覧の出力先</param>
+        void ScanAll(const std::filesystem::path& rootDirectory, std::vector<AssetEntry>& outEntries);
 
-    /// <summary>
-    /// 指定拡張子のファイルのみを収集する
-    /// ディレクトリは除外される
-    /// </summary>
-    /// <param name="rootDirectory">走査開始ディレクトリ</param>
-    /// <param name="extension">対象拡張子（例: L".png"）</param>
-    /// <param name="outEntries">取得結果の格納先</param>
-    void ScanByExtension(const std::filesystem::path& rootDirectory, const std::wstring& extension, std::vector<AssetEntry>& outEntries);
-};
+        /// <summary>
+        /// 指定拡張子のファイルのみを収集する
+        /// ディレクトリは除外される
+        /// </summary>
+        /// <param name="rootDirectory">走査開始ディレクトリ</param>
+        /// <param name="extension">対象拡張子（例: L".png"）</param>
+        /// <param name="outEntries">取得結果の格納先</param>
+        void ScanByExtension(const std::filesystem::path& rootDirectory, const std::wstring& extension, std::vector<AssetEntry>& outEntries);
+    };
+}
 
 ============================================================
 File Path: project/subproject/AssetGenerator/main.cpp
 ============================================================
 #include <AssetGenerator.h>
 
+using namespace AssetGen;
+
 int main(int argc, char* argv[]) {
-    AssetGenerator app;
-    app.Run(argc, argv);
+    // ジェネレーターの生成
+    AssetGenerator app; 
+    // 一連の処理を実行
+    app.Run(argc, argv); 
     return 0;
 }
