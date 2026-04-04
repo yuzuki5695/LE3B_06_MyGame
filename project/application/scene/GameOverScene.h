@@ -1,29 +1,31 @@
 #pragma once
 #include<BaseScene.h>
 
-/// <summary>
-/// ゲームオーバーシーン
-/// </summary>
-class GameOverScene : public MyEngine::BaseScene
-{
-public: // メンバ関数
+namespace MyGame {
     /// <summary>
-    /// 初期化処理
+    /// ゲームオーバーシーン
     /// </summary>
-    void Initialize() override;
-    /// <summary>
-    /// 終了処理
-    /// </summary>
-    void Finalize() override;
-    /// <summary>
-    /// 毎フレーム更新処理
-    /// </summary>
-    void Update() override;
-    /// <summary>
-    /// 描画処理
-    /// </summary>
-    void Draw() override;
+    class GameOverScene : public MyEngine::BaseScene
+    {
+    public: // メンバ関数
+        /// <summary>
+        /// 初期化処理
+        /// </summary>
+        void Initialize() override;
+        /// <summary>
+        /// 終了処理
+        /// </summary>
+        void Finalize() override;
+        /// <summary>
+        /// 毎フレーム更新処理
+        /// </summary>
+        void Update() override;
+        /// <summary>
+        /// 描画処理
+        /// </summary>
+        void Draw() override;
 
-private: // メンバ変数      
+    private: // メンバ変数      
 
-};
+    };
+}

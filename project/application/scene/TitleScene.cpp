@@ -5,20 +5,22 @@
 
 using namespace MyEngine;
 
-void TitleScene::Finalize() {
+namespace MyGame {
+	void TitleScene::Finalize() {
 
-}
-
-void TitleScene::Initialize() {
-
-}
-
-void TitleScene::Update() {
-	if (Input::GetInstance()->Triggrkey(DIK_RETURN)) {
-		SceneManager::GetInstance()->ChangeScene(SceneName::TITLE);
 	}
-}
 
-void TitleScene::Draw() {
+	void TitleScene::Initialize() {
 
+	}
+
+	void TitleScene::Update() {
+		if (Input::GetInstance()->Triggrkey(DIK_RETURN)) {
+			SceneManager::GetInstance()->ChangeScene(SceneName::TITLE);
+		}
+	}
+
+	void TitleScene::Draw() {
+
+	}
 }

@@ -238,6 +238,18 @@
     <Filter Include="リソース ファイル\Data\Resource">
       <UniqueIdentifier>{67d1f02b-d42e-46f9-8d4a-637cad66cc54}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ヘッダー ファイル\application\character">
+      <UniqueIdentifier>{4b5c8f73-b437-41c6-99e6-1df36e8965ff}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\application\character\player">
+      <UniqueIdentifier>{3f470bac-b2ee-47ca-a831-facec4754022}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\application\character">
+      <UniqueIdentifier>{75a5939a-6bd2-443c-a802-7617081d4359}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\application\character\player">
+      <UniqueIdentifier>{1f35f015-2e48-4ca3-97f4-8f2d85c5f5be}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -419,6 +431,9 @@
     </ClCompile>
     <ClCompile Include="Engine\base\WinApp.cpp">
       <Filter>ソース ファイル\engine\base</Filter>
+    </ClCompile>
+    <ClCompile Include="application\character\player\Player.cpp">
+      <Filter>ソース ファイル\application\character\player</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -676,6 +691,12 @@
     </ClInclude>
     <ClInclude Include="Engine\base\Framework.h">
       <Filter>ヘッダー ファイル\engine\base</Filter>
+    </ClInclude>
+    <ClInclude Include="application\character\BaseCharacter.h">
+      <Filter>ヘッダー ファイル\application\character</Filter>
+    </ClInclude>
+    <ClInclude Include="application\character\player\Player.h">
+      <Filter>ヘッダー ファイル\application\character\player</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

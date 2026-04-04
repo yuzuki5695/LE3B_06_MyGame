@@ -3,18 +3,20 @@
 using namespace MyEngine;
 
 
-void GameClearScene::Finalize() {
+namespace MyGame {
+	void GameClearScene::Finalize() {
 
-}
+	}
 
-void GameClearScene::Initialize() {
+	void GameClearScene::Initialize() {
 
-}
+	}
 
-void GameClearScene::Update() { 
+	void GameClearScene::Update() {
 
-}
+	}
 
-void GameClearScene::Draw() {
+	void GameClearScene::Draw() {
 
+	}
 }

@@ -1,33 +1,35 @@
 #pragma once
 #include <BaseScene.h>
-#include <Object3d.h>
-#include<Sprite.h>
+#include <Sprite.h>
+#include <Player.h>
 
-/// <summary>
-/// 実際のゲームプレイを行うシーン。
-/// </summary>
-class GamePlayScene : public MyEngine::BaseScene {
-public: // メンバ関数
+namespace MyGame {
     /// <summary>
-    /// 初期化処理
+    /// 実際のゲームプレイを行うシーン。
     /// </summary>
-    void Initialize() override;
-    /// <summary>
-    /// 終了処理
-    /// </summary>
-    void Finalize() override;
-    /// <summary>
-    /// 毎フレーム更新処理
-    /// </summary>
-    void Update() override;
-    /// <summary>
-    /// 描画処理
-    /// </summary>
-    void Draw() override;
-private: // メンバ変数
-    
-    std::unique_ptr <MyEngine::Sprite> Sprite_;
+    class GamePlayScene : public MyEngine::BaseScene {
+    public: // メンバ関数
+        /// <summary>
+        /// 初期化処理
+        /// </summary>
+        void Initialize() override;
+        /// <summary>
+        /// 終了処理
+        /// </summary>
+        void Finalize() override;
+        /// <summary>
+        /// 毎フレーム更新処理
+        /// </summary>
+        void Update() override;
+        /// <summary>
+        /// 描画処理
+        /// </summary>
+        void Draw() override;
+    private: // メンバ変数
 
-    std::unique_ptr <MyEngine::Object3d> player_;
+        std::unique_ptr <MyEngine::Sprite> Sprite_;
 
-};
+        std::unique_ptr <Player> player_;
+
+    };
+}

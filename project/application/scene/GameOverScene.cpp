@@ -2,16 +2,18 @@
 
 using namespace MyEngine;
 
-void GameOverScene::Finalize() {
+namespace MyGame {
+	void GameOverScene::Finalize() {
 
-}
+	}
 
-void GameOverScene::Initialize() {
+	void GameOverScene::Initialize() {
 
-}
+	}
 
-void GameOverScene::Update() {
-}
+	void GameOverScene::Update() {
+	}
 
-void GameOverScene::Draw() {
+	void GameOverScene::Draw() {
+	}
 }
