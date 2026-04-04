@@ -8,7 +8,6 @@ namespace MyEngine {
         Framework::Finalize();
     }
 
-
     void MyGame::Initialize() {
         // 基底クラスの初期化処理
         Framework::Initialize();

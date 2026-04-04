@@ -3,9 +3,12 @@
 #include <TitleScene.h>
 #include <GamePlayScene.h>
 #include <GameClearScene.h>
-#include <GameOverScene.h>
+#include <GameOverScene.h>	
+
+using namespace MyGame;
 
 namespace MyEngine {
+
 	// コンストラクタで各シーンを登録
 	SceneFactory::SceneFactory() { RegisterScenes(); }
 
