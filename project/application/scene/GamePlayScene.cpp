@@ -13,7 +13,6 @@
 
 using namespace MyEngine;
 using namespace AssetGen;
-using namespace AssetGen::LoadResourceID::Models;
 using namespace AssetGen::LoadResourceID::Textures;
 
 namespace MyGame {
@@ -29,7 +28,6 @@ namespace MyGame {
 
         Sprite_ = Sprite::Create(Ui::Complete, Vector2{ 50.0f, 100.0f }, 0.0f, Vector2{ 400.0f,150.0f });
 
-
         player_ = std::make_unique<Player>();
         player_->Initialize();
 
@@ -38,9 +36,9 @@ namespace MyGame {
     void GamePlayScene::Update() {
         CameraManager::GetInstance()->Update();
 
-        if (Input::GetInstance()->Triggrkey(DIK_RETURN)) {
+        //if (Input::GetInstance()->Triggrkey(DIK_RETURN)) {
 
-        }
+        //}
 
 #pragma region 全てのObject3d個々の更新処理
 

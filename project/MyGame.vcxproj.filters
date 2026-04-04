@@ -250,6 +250,12 @@
     <Filter Include="ソース ファイル\application\character\player">
       <UniqueIdentifier>{1f35f015-2e48-4ca3-97f4-8f2d85c5f5be}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ソース ファイル\application\character\state">
+      <UniqueIdentifier>{267fb7c0-c679-4d0f-91c1-5bebd318f26f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\application\character\state">
+      <UniqueIdentifier>{650a1dc9-f3bf-432c-9235-cc71b825c87a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -433,6 +439,15 @@
       <Filter>ソース ファイル\engine\base</Filter>
     </ClCompile>
     <ClCompile Include="application\character\player\Player.cpp">
+      <Filter>ソース ファイル\application\character\player</Filter>
+    </ClCompile>
+    <ClCompile Include="application\character\state\CharacterState.cpp">
+      <Filter>ソース ファイル\application\character\state</Filter>
+    </ClCompile>
+    <ClCompile Include="application\character\state\PlayerState.cpp">
+      <Filter>ソース ファイル\application\character\state</Filter>
+    </ClCompile>
+    <ClCompile Include="application\character\player\PlayerMove.cpp">
       <Filter>ソース ファイル\application\character\player</Filter>
     </ClCompile>
   </ItemGroup>
@@ -692,11 +707,23 @@
     <ClInclude Include="Engine\base\Framework.h">
       <Filter>ヘッダー ファイル\engine\base</Filter>
     </ClInclude>
+    <ClInclude Include="application\character\player\Player.h">
+      <Filter>ヘッダー ファイル\application\character\player</Filter>
+    </ClInclude>
+    <ClInclude Include="application\character\state\CharacterState.h">
+      <Filter>ヘッダー ファイル\application\character\state</Filter>
+    </ClInclude>
+    <ClInclude Include="application\character\state\ICharacterState.h">
+      <Filter>ヘッダー ファイル\application\character\state</Filter>
+    </ClInclude>
     <ClInclude Include="application\character\BaseCharacter.h">
       <Filter>ヘッダー ファイル\application\character</Filter>
     </ClInclude>
-    <ClInclude Include="application\character\player\Player.h">
-      <Filter>ヘッダー ファイル\application\character\player</Filter>
+    <ClInclude Include="application\character\state\PlayerState.h">
+      <Filter>ソース ファイル\application\character\state</Filter>
+    </ClInclude>
+    <ClInclude Include="application\character\player\PlayerMove.h">
+      <Filter>ソース ファイル\application\character\player</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

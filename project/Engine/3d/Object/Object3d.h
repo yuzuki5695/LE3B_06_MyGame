@@ -75,8 +75,11 @@ namespace MyEngine {
 		const Transform& GetTransform() const { return transform_; }
 		const Vector3& GetScale() const { return transform_.scale; }
 		const Vector3& GetRotate() const { return transform_.rotate; }
-		const Vector3& GetTranslate() const { return transform_.translate; }
 		const Vector3& GetWorldPosition() const;
+		// 読み取り専用
+		const Vector3& GetTranslate() const { return transform_.translate; }
+		// 書き込み用
+		Transform& GetTransform() { return transform_; }
 
 		// setter
 		void SetModel(const std::string& filePath);
