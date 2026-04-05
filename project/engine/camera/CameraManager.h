@@ -1,10 +1,15 @@
 #pragma once
 #include <Object3d.h>
-#include <CameraTransform.h>
-#include <CameraTypes.h>
+#include <CameraDefs.h>
+#include <CameraManager.h>
+#include <GamePlayCamera.h>
+#include <CameraSet.h>
+#include <TitleCamera.h>
 
-namespace MyEngine {
-    // カメラマネージャ
+namespace MyEngine {   
+    /// <summary>     
+    /// カメラマネージャクラス  
+    /// </summary>
     class CameraManager {
     private:
         static std::unique_ptr<CameraManager> instance;
@@ -21,29 +26,45 @@ namespace MyEngine {
         /// <summary>
         /// 初期化処理
         /// </summary>
-        void Initialize(CameraTransform Transform);
+        /// <param name="transform">初期カメラ姿勢</param>
+        void Initialize(const Transform& Transform);
         /// <summary>
         /// 更新処理
         /// </summary> 
         void Update();
+        /// <summary>
+        /// 現在の挙動をセットする
+        /// </summary>
+        /// <param name="behavior">差し替える挙動の所有権</param>
+        void SetSceneBehavior(std::unique_ptr<MyGame::ISceneCameraBehavior> behavior);
+        /// <summary>
+        /// 全挙動をレジストリに登録する（初期化時に呼ぶ）
+        /// </summary>
+        void RegisterCamera();
+        /// <summary>
+        /// シーン名に基づいて挙動を切り替える
+        /// </summary>
+        /// <param name="sceneName">切り替え先のシーン名</param>
+        void OnSceneChanged(const std::string& sceneName);
     private: // メンバ変数
-        CameraTypes::ViewCameraType Typeview_;                                                  // 使用するカメラのタイプ  
-        CameraTypes::SceneCameraType activeSceneCameraType_;                                    // カメラがどこのシーンにあるか
-        CameraTypes::CameraMode currentMode_;                                                   // カメラの状態 
-        CameraTypes::CameraSwitchType switchType_ = CameraTypes::CameraSwitchType::Instant;                  // カメラの切替方法
-        std::unique_ptr<Camera> mainCamera_;                                       //　メインカメラ(基本1つ)
-        CameraTransform maintrans_;                                                // カメラの座標
-        std::unordered_map<std::string, std::unique_ptr<Camera>> subCamerasMap_;   // サブカメラ(複数の設置に対応できる)
-        std::string activeSubCameraName_;                                          // 登録したサブカメラの名前
-        Camera* activeCamera_ = nullptr;                                           // アクティブ中のカメラ
+        // カメラのデータセット（
+        CameraSet camera_;
+        CameraDefs::StateData stateData_;
+        // 現在適用中の挙動ロジック
+        std::unique_ptr<MyGame::ISceneCameraBehavior> currentBehavior_;
+        // レジストリ
+        std::unordered_map<std::string, std::function<std::unique_ptr<MyGame::ISceneCameraBehavior>()>> cameraRegistry_;
 
-        // 前回のシーンカメラタイプ
-        CameraTypes::SceneCameraType lastSceneCameraType_ = CameraTypes::SceneCameraType::Title;
-        // シーン切替直後Update時に一度だけ各シーン用カメラの情報を反映
-        bool sceneCameraJustChanged_ = false;
+    public: // アクセッサ
+        // getter
+        Camera* GetActiveCamera() const { return camera_.GetActive(); }
 
-    public: // メンバ関数
-        // 現在アクティブなカメラ
-        Camera* GetActiveCamera();
+        // setter
+        CameraSet& GetCameraSet() { return camera_; }
+    
+    
+        void SetCameraState(const CameraDefs::StateData& data) { stateData_ = data; }
+
+        const CameraDefs::StateData& GetCameraState() const { return stateData_; }
     };
 }

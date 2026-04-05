@@ -15,7 +15,7 @@ Player::~Player() {}
 void Player::Initialize() {
     // 3Dオブジェクト生成
     ModelManager::GetInstance()->LoadModel(Character::Player);
-    object_ = Object3d::Create(Character::Player, { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,10.0f} });
+    object_ = Object3d::Create(Character::Player, Transform{ {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,00.0f} });
 
     // コンポーネントの生成
     moveComponent_ = std::make_unique<PlayerMove>();

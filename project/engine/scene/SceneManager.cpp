@@ -42,6 +42,8 @@ namespace MyEngine {
 			scene_->SetSceneManager(this);
 			// 次のシーンを初期化する
 			scene_->Initialize();
+			// カメラマネージャクラスにシーン切り替えを通知する
+			CameraManager::GetInstance()->OnSceneChanged(scene_->GetSceneName());
 		}
 
 		// 実行中シーンを更新する

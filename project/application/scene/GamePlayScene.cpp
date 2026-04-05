@@ -20,7 +20,7 @@ namespace MyGame {
 
     void GamePlayScene::Initialize() {
         // カメラマネージャの初期化
-        CameraManager::GetInstance()->Initialize(CameraTransform({ 0.0f, 0.0f, -30.0f }, { 0.0f, 0.0f, 0.0f }));
+        CameraManager::GetInstance()->Initialize(Transform({ 1.0f, 1.0f, 1.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, -50.0f }));
 
 
         TextureManager::GetInstance()->LoadTexture(Ui::Complete);
@@ -30,15 +30,10 @@ namespace MyGame {
 
         player_ = std::make_unique<Player>();
         player_->Initialize();
-
     }
 
     void GamePlayScene::Update() {
         CameraManager::GetInstance()->Update();
-
-        //if (Input::GetInstance()->Triggrkey(DIK_RETURN)) {
-
-        //}
 
 #pragma region 全てのObject3d個々の更新処理
 

@@ -256,6 +256,12 @@
     <Filter Include="ヘッダー ファイル\application\character\state">
       <UniqueIdentifier>{650a1dc9-f3bf-432c-9235-cc71b825c87a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ソース ファイル\application\camera">
+      <UniqueIdentifier>{ab4ddb27-84c5-40bf-8a8e-04638eb4d81c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\application\camera">
+      <UniqueIdentifier>{bc97a33e-e555-4ded-8642-024a4d841075}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -450,6 +456,12 @@
     <ClCompile Include="application\character\player\PlayerMove.cpp">
       <Filter>ソース ファイル\application\character\player</Filter>
     </ClCompile>
+    <ClCompile Include="application\camera\GamePlayCamera.cpp">
+      <Filter>ソース ファイル\application\camera</Filter>
+    </ClCompile>
+    <ClCompile Include="application\camera\TitleCamera.cpp">
+      <Filter>ソース ファイル\application\camera</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="engine\2d\Sprite.h">
@@ -533,10 +545,7 @@
     <ClInclude Include="engine\math\Light\SpotLight.h">
       <Filter>ヘッダー ファイル\engine\math\Light</Filter>
     </ClInclude>
-    <ClInclude Include="engine\camera\CameraTypes.h">
-      <Filter>ヘッダー ファイル\engine\camera</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\camera\CameraTransform.h">
+    <ClInclude Include="engine\camera\CameraDefs.h">
       <Filter>ヘッダー ファイル\engine\camera</Filter>
     </ClInclude>
     <ClInclude Include="engine\time\TimeSystem.h">
@@ -719,11 +728,23 @@
     <ClInclude Include="application\character\BaseCharacter.h">
       <Filter>ヘッダー ファイル\application\character</Filter>
     </ClInclude>
-    <ClInclude Include="application\character\state\PlayerState.h">
-      <Filter>ソース ファイル\application\character\state</Filter>
-    </ClInclude>
     <ClInclude Include="application\character\player\PlayerMove.h">
-      <Filter>ソース ファイル\application\character\player</Filter>
+      <Filter>ヘッダー ファイル\application\character\player</Filter>
+    </ClInclude>
+    <ClInclude Include="application\character\state\PlayerState.h">
+      <Filter>ヘッダー ファイル\application\character\state</Filter>
+    </ClInclude>
+    <ClInclude Include="application\camera\ISceneCameraBehavior.h">
+      <Filter>ヘッダー ファイル\application\camera</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\camera\CameraSet.h">
+      <Filter>ヘッダー ファイル\engine\camera</Filter>
+    </ClInclude>
+    <ClInclude Include="application\camera\TitleCamera.h">
+      <Filter>ヘッダー ファイル\application\camera</Filter>
+    </ClInclude>
+    <ClInclude Include="application\camera\GamePlayCamera.h">
+      <Filter>ヘッダー ファイル\application\camera</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
