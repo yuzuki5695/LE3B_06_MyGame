@@ -8,10 +8,9 @@ namespace MyGame {
     /// ベジェ曲線の1点分の制御情報を保持する構造体
     /// </summary>
     struct BezierPoint {
-        MyEngine::Vector3 handleLeft;
-        MyEngine::Vector3 controlPoint;
-        MyEngine::Vector3 handleRight;
-        bool passed = true;  // ← この制御点を通過したか
+        std::string name;               // 制御点の名前
+        MyEngine::Vector3 controlPoint; // 実際に通る点
+        bool passed = false;          // この制御点を通過したかどうかのフラグ
     };
 
     /// <summary>
@@ -24,6 +23,6 @@ namespace MyGame {
         /// </summary>
         /// <param name="filePath">JSONファイルのパス</param>
         /// <returns>BezierPointの配列</returns>s
-        std::vector<BezierPoint> LoadBezierFromJSON(const std::string& filePath);
+        std::vector<std::vector<BezierPoint>> LoadBezierFromJSON(const std::string& filePath);
     };
 }

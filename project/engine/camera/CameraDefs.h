@@ -30,7 +30,7 @@ namespace MyEngine {
             CameraState state = CameraState::Default;
             CameraTransitionType transition = CameraTransitionType::Instant;
             float transitionTime = 0.0f;
-            Object3d* target;
+            Object3d* target = nullptr;
         };
     }
 }

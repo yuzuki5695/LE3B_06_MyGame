@@ -42,5 +42,6 @@ namespace MyEngine {
 		void SetNearClip(const float& nearClip) { this->nearClip = nearClip; }
 		void Setfarclip(const float& farclip) { this->farclip = farclip; }
 		void SetForward() const;
+		void SetLookAt(const Vector3& eye, const Vector3& target, const Vector3& up);
 	};
 }

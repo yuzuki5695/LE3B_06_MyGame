@@ -1,5 +1,6 @@
 #pragma once
 #include <Camera.h>
+#include <Object3d.h>
 
 namespace MyGame {
 
@@ -21,5 +22,8 @@ namespace MyGame {
         /// </summary>
         /// <param name="camera">操作対象のカメラポインタ</param>
         virtual void Update(MyEngine::Camera* camera) = 0;
+
+
+        virtual void SetTarget(MyEngine::Object3d* target) {}
     };
 }

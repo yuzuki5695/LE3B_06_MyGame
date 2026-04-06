@@ -54,4 +54,44 @@ namespace MyEngine {
 
 		return forward;
 	}
+
+	void Camera::SetLookAt(const Vector3& eye, const Vector3& target, const Vector3& up) {
+		// forward
+		Vector3 forward = Normalize(target - eye);
+
+		// right
+		Vector3 right = Normalize(Cross(up, forward));
+
+		// up（再計算）
+		Vector3 newUp = Cross(forward, right);
+
+		// ワールド行列を直接作る（回転＋位置）
+		worldMatrix.m[0][0] = right.x;
+		worldMatrix.m[1][0] = right.y;
+		worldMatrix.m[2][0] = right.z;
+
+		worldMatrix.m[0][1] = newUp.x;
+		worldMatrix.m[1][1] = newUp.y;
+		worldMatrix.m[2][1] = newUp.z;
+
+		worldMatrix.m[0][2] = forward.x;
+		worldMatrix.m[1][2] = forward.y;
+		worldMatrix.m[2][2] = forward.z;
+
+		worldMatrix.m[3][0] = eye.x;
+		worldMatrix.m[3][1] = eye.y;
+		worldMatrix.m[3][2] = eye.z;
+
+		// スケール固定
+		worldMatrix.m[0][3] = 0.0f;
+		worldMatrix.m[1][3] = 0.0f;
+		worldMatrix.m[2][3] = 0.0f;
+		worldMatrix.m[3][3] = 1.0f;
+
+		// view更新
+		viewMatrix = Inverse(worldMatrix);
+
+		// VP更新
+		ViewProjectionMatrix = Multiply(viewMatrix, projectionMatrix);
+	}
 }

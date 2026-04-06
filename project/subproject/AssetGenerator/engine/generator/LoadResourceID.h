@@ -93,6 +93,10 @@ namespace LoadResourceID {
             constexpr const char* Black = "Textures/fade/Black.png";
             constexpr const char* white = "Textures/fade/white.png";
         } // namespace fade
+        namespace stage {
+            constexpr const char* CubemapBox = "Textures/stage/CubemapBox.dds";
+            constexpr const char* rostock_laage_airport_4k = "Textures/stage/rostock_laage_airport_4k.dds";
+        } // namespace stage
     } // namespace Textures
 } // namespace LoadResourceID
 } // namespace AssetGen

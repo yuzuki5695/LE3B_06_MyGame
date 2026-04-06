@@ -2,14 +2,16 @@
 #include <BaseCharacter.h>
 #include <Input.h>
 #include <Player.h>
+#include <CameraManager.h>
 
 using namespace MyEngine;
 using namespace MyGame;
 
 void PlayerStateIdle::Update(BaseCharacter& character) {
     if (Input::GetInstance()->Triggrkey(DIK_RETURN)) {
-        character.ChangeState(std::make_unique<PlayerStateMove>());
+     //   character.ChangeState(std::make_unique<PlayerStateMove>());
     }
+    CameraManager::GetInstance()->SetTarget(character.GetObject3d());
 }
 
 void PlayerStateMove::Update(BaseCharacter& character) {

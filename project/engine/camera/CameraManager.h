@@ -58,13 +58,12 @@ namespace MyEngine {
     public: // アクセッサ
         // getter
         Camera* GetActiveCamera() const { return camera_.GetActive(); }
+        CameraSet& GetCameraSet() { return camera_; }
+        const CameraDefs::StateData& GetCameraState() const { return stateData_; }
+        Object3d* GetTarget() { return stateData_.target; }
 
         // setter
-        CameraSet& GetCameraSet() { return camera_; }
-    
-    
         void SetCameraState(const CameraDefs::StateData& data) { stateData_ = data; }
-
-        const CameraDefs::StateData& GetCameraState() const { return stateData_; }
+        void SetTarget(Object3d* target) { stateData_.target = target; SetCameraState(stateData_); }
     };
 }

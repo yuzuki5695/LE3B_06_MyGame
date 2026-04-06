@@ -3,8 +3,8 @@
 #include <MatrixVector.h>
 
 namespace MyEngine {
- 
-    using namespace MatrixVector;
+
+    using namespace MatrixVector;    
     
     namespace MathUtil {
         ///====================================================

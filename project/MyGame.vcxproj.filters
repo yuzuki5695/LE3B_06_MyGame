@@ -268,6 +268,12 @@
     <Filter Include="ヘッダー ファイル\application\loader">
       <UniqueIdentifier>{def146b5-05b7-451f-853e-04e07d62465a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ソース ファイル\application\stage">
+      <UniqueIdentifier>{f9120b3f-2416-4e25-ab20-d2469012e601}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\application\stage">
+      <UniqueIdentifier>{78234b8e-9fb9-4cf9-a560-c2a1e302f903}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -469,6 +475,15 @@
       <Filter>ソース ファイル\application\camera</Filter>
     </ClCompile>
     <ClCompile Include="application\loader\CurveJsonLoader.cpp">
+      <Filter>ソース ファイル\application\loader</Filter>
+    </ClCompile>
+    <ClCompile Include="application\camera\RailCameraController.cpp">
+      <Filter>ソース ファイル\application\camera</Filter>
+    </ClCompile>
+    <ClCompile Include="application\stage\StageManager.cpp">
+      <Filter>ヘッダー ファイル\application\stage</Filter>
+    </ClCompile>
+    <ClCompile Include="application\loader\CharacterLoader.cpp">
       <Filter>ソース ファイル\application\loader</Filter>
     </ClCompile>
   </ItemGroup>
@@ -756,6 +771,15 @@
       <Filter>ヘッダー ファイル\application\camera</Filter>
     </ClInclude>
     <ClInclude Include="application\loader\CurveJsonLoader.h">
+      <Filter>ヘッダー ファイル\application\loader</Filter>
+    </ClInclude>
+    <ClInclude Include="application\camera\RailCameraController.h">
+      <Filter>ソース ファイル\application\camera</Filter>
+    </ClInclude>
+    <ClInclude Include="application\stage\StageManager.h">
+      <Filter>ヘッダー ファイル\application\stage</Filter>
+    </ClInclude>
+    <ClInclude Include="application\loader\CharacterLoader.h">
       <Filter>ヘッダー ファイル\application\loader</Filter>
     </ClInclude>
   </ItemGroup>

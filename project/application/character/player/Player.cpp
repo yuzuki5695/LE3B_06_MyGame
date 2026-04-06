@@ -2,7 +2,7 @@
 #include <ModelManager.h>
 #include <Input.h>
 #include <PlayerState.h>
-
+#include <CameraManager.h>
 // AssetGeneratorからインクルード
 #include <subproject/AssetGenerator/engine/generator/LoadResourceID.h>
 

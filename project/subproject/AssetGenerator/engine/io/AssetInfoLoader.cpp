@@ -76,7 +76,7 @@ void AssetInfoLoader::ParseRecursive(const nlohmann::json& j, const std::string&
                 /// カテゴリごとに対象拡張子を制限
                 /// </summary>
                 if (category == "Models" && ext != ".obj") continue;
-                if (category == "Textures" && ext != ".png") continue;
+                if (category == "Textures" && ext != ".png" && ext != ".dds") continue;
                 if (category == "Audio" && ext != ".wav") continue;
 
                 // 名前空間の重複を防ぐ
