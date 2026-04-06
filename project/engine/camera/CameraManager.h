@@ -5,8 +5,9 @@
 #include <GamePlayCamera.h>
 #include <CameraSet.h>
 #include <TitleCamera.h>
+#include <Player.h>
 
-namespace MyEngine {   
+namespace MyEngine {
     /// <summary>     
     /// カメラマネージャクラス  
     /// </summary>
@@ -55,15 +56,19 @@ namespace MyEngine {
         // レジストリ
         std::unordered_map<std::string, std::function<std::unique_ptr<MyGame::ISceneCameraBehavior>()>> cameraRegistry_;
 
+        MyGame::Player* player_ = nullptr;
+
     public: // アクセッサ
         // getter
         Camera* GetActiveCamera() const { return camera_.GetActive(); }
         CameraSet& GetCameraSet() { return camera_; }
         const CameraDefs::StateData& GetCameraState() const { return stateData_; }
         Object3d* GetTarget() { return stateData_.target; }
+        MyGame::Player* GetPlayer() { return player_; }
 
         // setter
         void SetCameraState(const CameraDefs::StateData& data) { stateData_ = data; }
         void SetTarget(Object3d* target) { stateData_.target = target; SetCameraState(stateData_); }
+        void SetPlayer(MyGame::Player* player) { player_ = player; }
     };
 }

@@ -6,6 +6,7 @@
 #ifdef min
 #undef min
 #endif
+#include <Player.h>
 #ifdef max
 #undef max
 #endif
@@ -39,15 +40,19 @@ namespace MyGame {
             UpdateBezier(camera);
             camera->SetTranslate(bezierPos_);
 
-            auto target = CameraManager::GetInstance()->GetTarget();
+            Object3d* target = CameraManager::GetInstance()->GetTarget();
             if (target) {
                 Vector3 camPos = camera->GetTranslate();
-                Vector3 forward = camera->GetForward();
-                // カメラの前に指定距離だけオブジェクトを配置
-                Vector3 distance = { 0.0f,-3.0f,50.0f };
-                Vector3 objectPos = camPos + distance;
-                // 反映
-                target->SetTranslate(objectPos);
+                // プレイヤーの相対移動を取得 
+                Transform& transform = target->GetTransform();
+                // 基本位置（カメラ前）
+                Vector3 basePos = camPos + Vector3{ 0.0f, -3.0f, 30.0f };
+                // Playerからoffset取得
+                Player* player = CameraManager::GetInstance()->GetPlayer();
+                Vector3 offset = player->GetMoveComponent()->GetRelativePos();
+                // 相対移動を加算
+                Vector3 finalPos = basePos + offset;
+                target->SetTranslate(finalPos);
             }
         }
     }

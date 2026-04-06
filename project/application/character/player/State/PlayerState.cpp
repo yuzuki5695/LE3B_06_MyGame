@@ -8,15 +8,16 @@ using namespace MyEngine;
 using namespace MyGame;
 
 void PlayerStateIdle::Update(BaseCharacter& character) {
-    if (Input::GetInstance()->Triggrkey(DIK_RETURN)) {
-     //   character.ChangeState(std::make_unique<PlayerStateMove>());
-    }
+    //if (Input::GetInstance()->Triggrkey(DIK_RETURN)) {
+        character.ChangeState(std::make_unique<PlayerStateMove>());
+    //}
     CameraManager::GetInstance()->SetTarget(character.GetObject3d());
 }
 
 void PlayerStateMove::Update(BaseCharacter& character) {
+    CameraManager::GetInstance()->SetTarget(character.GetObject3d());
+    
     // BaseCharacterをPlayerにキャスト
-    // (実行時に型が確定している場合は static_cast を使用)
     Player* player = static_cast<Player*>(&character);
     
     // 1. 移動に必要なコンポーネントとTransformを取得
@@ -24,8 +25,8 @@ void PlayerStateMove::Update(BaseCharacter& character) {
     Object3d* object = player->GetObject3d();
 
     if (move && object) {
-        // 2. 移動処理の実行 [#Tag:Functions]
-        move->Update(object->GetTransform(), 0.1f);
+        // 2. 移動処理の実行
+        move->Update(object->GetTransform(), 0.17f);
     }
 }
 

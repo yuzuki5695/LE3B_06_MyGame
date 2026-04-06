@@ -250,12 +250,6 @@
     <Filter Include="ソース ファイル\application\character\player">
       <UniqueIdentifier>{1f35f015-2e48-4ca3-97f4-8f2d85c5f5be}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ソース ファイル\application\character\state">
-      <UniqueIdentifier>{267fb7c0-c679-4d0f-91c1-5bebd318f26f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ヘッダー ファイル\application\character\state">
-      <UniqueIdentifier>{650a1dc9-f3bf-432c-9235-cc71b825c87a}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ソース ファイル\application\camera">
       <UniqueIdentifier>{ab4ddb27-84c5-40bf-8a8e-04638eb4d81c}</UniqueIdentifier>
     </Filter>
@@ -273,6 +267,24 @@
     </Filter>
     <Filter Include="ヘッダー ファイル\application\stage">
       <UniqueIdentifier>{78234b8e-9fb9-4cf9-a560-c2a1e302f903}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\application\character\player\component">
+      <UniqueIdentifier>{f1514230-bfac-493f-a432-f79baa720490}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\application\character\player\component">
+      <UniqueIdentifier>{69c0f148-b2b6-4f37-beea-d2f0d8fd5533}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\application\character\player\state">
+      <UniqueIdentifier>{2fdf9cbb-c2d5-4d35-a5d8-8eb6c98868d0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\application\character\basestate">
+      <UniqueIdentifier>{650a1dc9-f3bf-432c-9235-cc71b825c87a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\application\character\basestate">
+      <UniqueIdentifier>{267fb7c0-c679-4d0f-91c1-5bebd318f26f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\application\character\player\state">
+      <UniqueIdentifier>{5bdb69e4-01f5-4daf-9094-631d99b3292a}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -459,15 +471,6 @@
     <ClCompile Include="application\character\player\Player.cpp">
       <Filter>ソース ファイル\application\character\player</Filter>
     </ClCompile>
-    <ClCompile Include="application\character\state\CharacterState.cpp">
-      <Filter>ソース ファイル\application\character\state</Filter>
-    </ClCompile>
-    <ClCompile Include="application\character\state\PlayerState.cpp">
-      <Filter>ソース ファイル\application\character\state</Filter>
-    </ClCompile>
-    <ClCompile Include="application\character\player\PlayerMove.cpp">
-      <Filter>ソース ファイル\application\character\player</Filter>
-    </ClCompile>
     <ClCompile Include="application\camera\GamePlayCamera.cpp">
       <Filter>ソース ファイル\application\camera</Filter>
     </ClCompile>
@@ -480,11 +483,23 @@
     <ClCompile Include="application\camera\RailCameraController.cpp">
       <Filter>ソース ファイル\application\camera</Filter>
     </ClCompile>
-    <ClCompile Include="application\stage\StageManager.cpp">
-      <Filter>ヘッダー ファイル\application\stage</Filter>
-    </ClCompile>
     <ClCompile Include="application\loader\CharacterLoader.cpp">
       <Filter>ソース ファイル\application\loader</Filter>
+    </ClCompile>
+    <ClCompile Include="application\stage\StageManager.cpp">
+      <Filter>ソース ファイル\application\stage</Filter>
+    </ClCompile>
+    <ClCompile Include="application\loader\PlayerDataLoader.cpp">
+      <Filter>ソース ファイル\application\loader</Filter>
+    </ClCompile>
+    <ClCompile Include="application\character\player\Component\PlayerMove.cpp">
+      <Filter>ソース ファイル\application\character\player\component</Filter>
+    </ClCompile>
+    <ClCompile Include="application\character\basestate\CharacterState.cpp">
+      <Filter>ソース ファイル\application\character\basestate</Filter>
+    </ClCompile>
+    <ClCompile Include="application\character\player\State\PlayerState.cpp">
+      <Filter>ソース ファイル\application\character\player\state</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -743,20 +758,8 @@
     <ClInclude Include="application\character\player\Player.h">
       <Filter>ヘッダー ファイル\application\character\player</Filter>
     </ClInclude>
-    <ClInclude Include="application\character\state\CharacterState.h">
-      <Filter>ヘッダー ファイル\application\character\state</Filter>
-    </ClInclude>
-    <ClInclude Include="application\character\state\ICharacterState.h">
-      <Filter>ヘッダー ファイル\application\character\state</Filter>
-    </ClInclude>
     <ClInclude Include="application\character\BaseCharacter.h">
       <Filter>ヘッダー ファイル\application\character</Filter>
-    </ClInclude>
-    <ClInclude Include="application\character\player\PlayerMove.h">
-      <Filter>ヘッダー ファイル\application\character\player</Filter>
-    </ClInclude>
-    <ClInclude Include="application\character\state\PlayerState.h">
-      <Filter>ヘッダー ファイル\application\character\state</Filter>
     </ClInclude>
     <ClInclude Include="application\camera\ISceneCameraBehavior.h">
       <Filter>ヘッダー ファイル\application\camera</Filter>
@@ -773,14 +776,35 @@
     <ClInclude Include="application\loader\CurveJsonLoader.h">
       <Filter>ヘッダー ファイル\application\loader</Filter>
     </ClInclude>
-    <ClInclude Include="application\camera\RailCameraController.h">
-      <Filter>ソース ファイル\application\camera</Filter>
-    </ClInclude>
     <ClInclude Include="application\stage\StageManager.h">
       <Filter>ヘッダー ファイル\application\stage</Filter>
     </ClInclude>
     <ClInclude Include="application\loader\CharacterLoader.h">
       <Filter>ヘッダー ファイル\application\loader</Filter>
+    </ClInclude>
+    <ClInclude Include="application\character\player\PlayerData.h">
+      <Filter>ヘッダー ファイル\application\character\player</Filter>
+    </ClInclude>
+    <ClInclude Include="application\character\BaseData.h">
+      <Filter>ヘッダー ファイル\application\character</Filter>
+    </ClInclude>
+    <ClInclude Include="application\camera\RailCameraController.h">
+      <Filter>ヘッダー ファイル\application\camera</Filter>
+    </ClInclude>
+    <ClInclude Include="application\loader\PlayerDataLoader.h">
+      <Filter>ヘッダー ファイル\application\loader</Filter>
+    </ClInclude>
+    <ClInclude Include="application\character\player\Component\PlayerMove.h">
+      <Filter>ヘッダー ファイル\application\character\player\component</Filter>
+    </ClInclude>
+    <ClInclude Include="application\character\player\State\PlayerState.h">
+      <Filter>ヘッダー ファイル\application\character\player\state</Filter>
+    </ClInclude>
+    <ClInclude Include="application\character\basestate\CharacterState.h">
+      <Filter>ヘッダー ファイル\application\character\basestate</Filter>
+    </ClInclude>
+    <ClInclude Include="application\character\basestate\ICharacterState.h">
+      <Filter>ヘッダー ファイル\application\character\basestate</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

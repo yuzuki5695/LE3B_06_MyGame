@@ -32,6 +32,7 @@ namespace MyGame {
 
         player_ = std::make_unique<Player>();
         player_->Initialize();
+        CameraManager::GetInstance()->SetPlayer(player_.get());
 
         // ステージマネージャの初期化
         StageManager::GetInstance()->Initialize();

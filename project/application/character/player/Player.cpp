@@ -3,6 +3,7 @@
 #include <Input.h>
 #include <PlayerState.h>
 #include <CameraManager.h>
+#include <PlayerDataLoader.h>
 // AssetGeneratorからインクルード
 #include <subproject/AssetGenerator/engine/generator/LoadResourceID.h>
 
@@ -15,7 +16,9 @@ Player::~Player() {}
 void Player::Initialize() {
     // 3Dオブジェクト生成
     ModelManager::GetInstance()->LoadModel(Character::Player);
-    object_ = Object3d::Create(Character::Player, Transform{ {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,00.0f} });
+    data_ = PlayerDataLoader::Load("player");
+
+    object_ = Object3d::Create(Character::Player, data_.transform);
 
     // コンポーネントの生成
     moveComponent_ = std::make_unique<PlayerMove>();
