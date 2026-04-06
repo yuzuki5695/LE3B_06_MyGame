@@ -20,7 +20,7 @@ namespace MyGame {
         MyEngine::Vector3 CatmullRom(const MyEngine::Vector3& p0, const MyEngine::Vector3& p1, const MyEngine::Vector3& p2, const MyEngine::Vector3& p3, float t);
 
         void UpdateBezier(MyEngine::Camera* camera);
-        //void UpdateCameraRotation(MyEngine::Camera* camera);
+
 
     private: // メンバ変数
         std::unique_ptr<CurveJsonLoader> Jsondata_ = nullptr;         // ベジェ制御点を読み込むローダー 
