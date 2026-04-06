@@ -3,6 +3,12 @@
 #include <MathUtil.h>
 #include <MatrixVector.h>
 #include <Easing.h>
+#ifdef min
+#undef min
+#endif
+#ifdef max
+#undef max
+#endif
 
 using namespace MyEngine;
 using namespace MathUtil;
@@ -22,9 +28,6 @@ namespace MyGame {
 
         // カメラマネージャに状態をセット
         CameraManager::GetInstance()->SetCameraState(data);
-
-        //  deltaTime_ = 1.0f / 60.0f;
-
     }
 
     void GamePlayCamera::Update(Camera* camera) {
@@ -34,17 +37,15 @@ namespace MyGame {
         if (CameraManager::GetInstance()->GetCameraState().state == CameraDefs::CameraState::Follow) {
 
             UpdateBezier(camera);
-            // 🔥 追加：回転更新
-            //UpdateCameraRotation(camera);
             camera->SetTranslate(bezierPos_);
 
             auto target = CameraManager::GetInstance()->GetTarget();
             if (target) {
                 Vector3 camPos = camera->GetTranslate();
                 Vector3 forward = camera->GetForward();
-                // カメラの前に10ユニット置く
-                float distance = 30.0f;
-                Vector3 objectPos = camPos + forward * distance;
+                // カメラの前に指定距離だけオブジェクトを配置
+                Vector3 distance = { 0.0f,-3.0f,50.0f };
+                Vector3 objectPos = camPos + distance;
                 // 反映
                 target->SetTranslate(objectPos);
             }
@@ -52,82 +53,134 @@ namespace MyGame {
     }
 
     void GamePlayCamera::UpdateBezier(Camera* camera) {
-        // データチェック
         if (bezierPoints.empty()) return;
 
-        const std::vector<BezierPoint>& curve = bezierPoints[currentCurve_];
+        const auto& curve = bezierPoints[0];
 
-        // 最低2点必要
-        if (curve.size() < 2) return;
+        // 最低4点必要
+        if (curve.size() < 4) return;
 
-        // 範囲チェック（最後まで行ったら止める）
-        if (currentSegment_ >= static_cast<int>(curve.size()) - 1) {
-            return;
+        // 範囲外防止
+        if (currentIndex_ >= curve.size() - 2) {
+            return; // end到達
         }
 
-        // 今の2点
-        const MyEngine::Vector3& p0 = curve[currentSegment_].controlPoint;
-        const MyEngine::Vector3& p1 = curve[currentSegment_ + 1].controlPoint;
+        // Catmull-Rom用の4点
+        int i = currentIndex_;
 
-        // 補間
-        bezierPos_ = Lerp(p0, p1, t_);
+        const Vector3& p0 = curve[std::max(i - 1, 0)].controlPoint;
+        const Vector3& p1 = curve[i].controlPoint;
+        const Vector3& p2 = curve[i + 1].controlPoint;
+        const Vector3& p3 = curve[std::min(i + 2, (int)curve.size() - 1)].controlPoint;
 
-        // カメラに適用
-        camera->SetTranslate(bezierPos_);
+        // 現在位置
+        bezierPos_ = CatmullRom(p0, p1, p2, p3, t_);
 
-        // 進行
-        t_ += speed_;
+        // ★ 未来位置（ここ重要）
+        float lookAheadT = t_ + 0.05f;
 
-        // 次の区間へ
+        int nextIndex = i;
+        if (lookAheadT >= 1.0f) {
+            lookAheadT -= 1.0f;
+            nextIndex = std::min(i + 1, (int)curve.size() - 2);
+        }
+
+        const Vector3& np0 = curve[std::max(nextIndex - 1, 0)].controlPoint;
+        const Vector3& np1 = curve[nextIndex].controlPoint;
+        const Vector3& np2 = curve[nextIndex + 1].controlPoint;
+        const Vector3& np3 = curve[std::min(nextIndex + 2, (int)curve.size() - 1)].controlPoint;
+
+        Vector3 lookPos = CatmullRom(np0, np1, np2, np3, lookAheadT);
+
+        // ★ 向き設定
+        Vector3 up = { 0.0f, 1.0f, 0.0f };
+        camera->SetLookAt(bezierPos_, lookPos, up);
+        
+        // t更新
+        t_ += speed * 0.01f;
+
+        // 区間終了
         if (t_ >= 1.0f) {
             t_ = 0.0f;
-            currentSegment_++;
+            currentIndex_++;
+            // 到達フラグ（今は全true扱い）
+            // curve[currentIndex_].passed = true;
         }
     }
 
-    void GamePlayCamera::UpdateCameraRotation(Camera* camera) {
+    //    const std::vector<BezierPoint>& curve = bezierPoints[currentCurve_];
 
-        if (bezierPoints.empty()) return;
+    //    // 最低2点必要
+    //    if (curve.size() < 2) return;
 
-        const std::vector<BezierPoint>& curve = bezierPoints[currentCurve_];
-        if (curve.size() < 2) return;
+    //    // 範囲チェック（最後まで行ったら止める）
+    //    if (currentSegment_ >= static_cast<int>(curve.size()) - 1) {
+    //        return;
+    //    }
 
-        Vector3 targetForward;
+    //    // 今の2点
+    //    const MyEngine::Vector3& p0 = curve[currentSegment_].controlPoint;
+    //    const MyEngine::Vector3& p1 = curve[currentSegment_ + 1].controlPoint;
 
-        if (currentSegment_ < static_cast<int>(curve.size()) - 1) {
+    //    // 補間
+    //    bezierPos_ = Lerp(p0, p1, t_);
 
-            Vector3 next = curve[currentSegment_ + 1].controlPoint;
+    //    // カメラに適用
+    //    camera->SetTranslate(bezierPos_);
 
-            Vector3 next2 = (currentSegment_ + 2 < static_cast<int>(curve.size()))
-                ? curve[currentSegment_ + 2].controlPoint
-                : next;
+    //    // 進行
+    //    t_ += speed_;
 
-            targetForward = Normalize(
-                (next - bezierPos_) * 0.7f +
-                (next2 - next) * 0.3f
-            );
-        } else {
-            targetForward = prevForward;
-        }
+    //    // 次の区間へ
+    //    if (t_ >= 1.0f) {
+    //        t_ = 0.0f;
+    //        currentSegment_++;
+    //    }
+    //}
 
-        float dot = std::clamp(Dot(prevForward, targetForward), -1.0f, 1.0f);
-        float angle = acosf(dot);
+    //void GamePlayCamera::UpdateCameraRotation(Camera* camera) {
 
-        float smooth = std::clamp(angle * 0.1f, 0.02f, 0.15f);
+    //    if (bezierPoints.empty()) return;
 
-        Vector3 newForward = Slerp(prevForward, targetForward, smooth);
-        newForward = Normalize(newForward);
+    //    const std::vector<BezierPoint>& curve = bezierPoints[currentCurve_];
+    //    if (curve.size() < 2) return;
 
-        prevForward = newForward;
-        forward_ = newForward;
+    //    Vector3 targetForward;
 
-        // 🔥 ここが重要
-        Vector3 eye = bezierPos_;
-        Vector3 target = eye + forward_;
-        Vector3 up = { 0,1,0 };
+    //    if (currentSegment_ < static_cast<int>(curve.size()) - 1) {
 
-        camera->SetLookAt(eye, target, up);
-    }
+    //        Vector3 next = curve[currentSegment_ + 1].controlPoint;
+
+    //        Vector3 next2 = (currentSegment_ + 2 < static_cast<int>(curve.size()))
+    //            ? curve[currentSegment_ + 2].controlPoint
+    //            : next;
+
+    //        targetForward = Normalize(
+    //            (next - bezierPos_) * 0.7f +
+    //            (next2 - next) * 0.3f
+    //        );
+    //    } else {
+    //        targetForward = prevForward;
+    //    }
+
+    //    float dot = std::clamp(Dot(prevForward, targetForward), -1.0f, 1.0f);
+    //    float angle = acosf(dot);
+
+    //    float smooth = std::clamp(angle * 0.1f, 0.02f, 0.15f);
+
+    //    Vector3 newForward = Slerp(prevForward, targetForward, smooth);
+    //    newForward = Normalize(newForward);
+
+    //    prevForward = newForward;
+    //    forward_ = newForward;
+
+    //    // 🔥 ここが重要
+    //    Vector3 eye = bezierPos_;
+    //    Vector3 target = eye + forward_;
+    //    Vector3 up = { 0,1,0 };
+
+    //    camera->SetLookAt(eye, target, up);
+    //}
 
     //void GamePlayCamera::UpdateBezierMovement() {
     //    // 現在のセグメント start / end
@@ -185,15 +238,15 @@ namespace MyGame {
     //    prevPos_ = bezierPos_;
     //}
 
-    //Vector3 GamePlayCamera::CatmullRom(const Vector3& p0, const Vector3& p1, const Vector3& p2, const Vector3& p3, float t) {
-    //    float t2 = t * t;
-    //    float t3 = t2 * t;
+    Vector3 GamePlayCamera::CatmullRom(const Vector3& p0, const Vector3& p1, const Vector3& p2, const Vector3& p3, float t) {
+        float t2 = t * t;
+        float t3 = t2 * t;
 
-    //    return 0.5f * (
-    //        (2.0f * p1) +
-    //        (-p0 + p2) * t +
-    //        (2.0f * p0 - 5.0f * p1 + 4.0f * p2 - p3) * t2 +
-    //        (-p0 + 3.0f * p1 - 3.0f * p2 + p3) * t3
-    //        );
-    //}
+        return 0.5f * (
+            (2.0f * p1) +
+            (-p0 + p2) * t +
+            (2.0f * p0 - 5.0f * p1 + 4.0f * p2 - p3) * t2 +
+            (-p0 + 3.0f * p1 - 3.0f * p2 + p3) * t3
+            );
+    }
 }

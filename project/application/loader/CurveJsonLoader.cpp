@@ -16,7 +16,7 @@ namespace MyGame {
         // ファイルを開く
         std::ifstream file(filePath);
         if (!file.is_open()) {
-            throw std::runtime_error("JSONファイルを開けませんでした");
+            throw std::runtime_error("Failed to open JSON: " + filePath);
         }
 
         // JSONデータを読み込む
@@ -50,37 +50,22 @@ namespace MyGame {
                     }
 
                     // control_point を読み込む
-                    if (pointData.contains("control_point")) {
+                    if (pointData.contains("control_point") &&
+                        pointData["control_point"].is_array() &&
+                        pointData["control_point"].size() == 3) {
                         pt.controlPoint = {
                             pointData["control_point"][0].get<float>(),
                             pointData["control_point"][1].get<float>(),
                             pointData["control_point"][2].get<float>()
                         };
                     }
-
-                    //// handle_left を読み込む
-                    //if (pointData.contains("handle_left")) {
-                    //    pt.handleLeft = {
-                    //        pointData["handle_left"][0].get<float>(),
-                    //        pointData["handle_left"][1].get<float>(),
-                    //        pointData["handle_left"][2].get<float>()
-                    //    };
-                    //}
-
-                    //// handle_right を読み込む
-                    //if (pointData.contains("handle_right")) {
-                    //    pt.handleRight = {
-                    //        pointData["handle_right"][0].get<float>(),
-                    //        pointData["handle_right"][1].get<float>(),
-                    //        pointData["handle_right"][2].get<float>()
-                    //    };
-                    //}
-
                     // カーブに追加
                     oneCurve.push_back(pt);
                 }
                 // カーブ単位で追加
-                curves.push_back(oneCurve);
+                if (!oneCurve.empty()) {
+                    curves.push_back(oneCurve);
+                }
             }
         }
         return curves;
