@@ -7,7 +7,7 @@
     },
     {
       "dir": "Textures",
-      "ext": [ ".png" ],
+      "ext": [ ".png", ".dds" ],
       "output": "Textures.json"
     },
     {

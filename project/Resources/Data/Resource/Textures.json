@@ -64,6 +64,10 @@
             "fade": [
                 "Textures/fade/Black.png",
                 "Textures/fade/white.png"
+            ],
+            "stage": [
+                "Textures/stage/CubemapBox.dds",
+                "Textures/stage/rostock_laage_airport_4k.dds"
             ]
         }
     }
