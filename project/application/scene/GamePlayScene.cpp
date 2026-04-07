@@ -9,7 +9,7 @@
 #include <CameraManager.h>
 #include <Input.h>
 #include <StageManager.h>
-
+#include <BulletManager.h>
 // AssetGeneratorからインクルード
 #include <subproject/AssetGenerator/engine/generator/LoadResourceID.h>
 
@@ -18,7 +18,12 @@ using namespace AssetGen;
 using namespace AssetGen::LoadResourceID::Textures;
 
 namespace MyGame {
-    void GamePlayScene::Finalize() {}
+
+    void GamePlayScene::Finalize() {
+        BulletManager::GetInstance()->Finalize();  // 弾マネージャの終了処理
+        StageManager::GetInstance()->Finalize();  // ステージマネージャの終了処理
+        CameraManager::GetInstance()->Finalize(); // カメラマネージャの終了処理
+    }
 
     void GamePlayScene::Initialize() {
         // カメラマネージャの初期化
@@ -46,7 +51,8 @@ namespace MyGame {
 
 
         player_->Update();
-
+                
+        BulletManager::GetInstance()->Update();
         // ステージマネージャの更新
         StageManager::GetInstance()->Update();
 #pragma endregion 全てのObject3d個々の更新処理
@@ -72,7 +78,8 @@ namespace MyGame {
 
         player_->Draw();
 
-
+        // 弾の描画
+        BulletManager::GetInstance()->Draw();
         // ステージマネージャの描画
         StageManager::GetInstance()->Draw();
         // パーティクルの描画準備。パーティクルの描画に共通のグラフィックスコマンドを積む 

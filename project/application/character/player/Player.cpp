@@ -24,17 +24,18 @@ void Player::Initialize() {
 
     object_ = Object3d::Create(Character::Player, data_.transform);
     targettransform_ = { {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 30.0f} };
-    
+
     target_ = Object3d::Create(Character::Player, targettransform_);
 
     // レティクル初期化
     targetreticle_ = Sprite::Create(Ui::Target, Vector2{ 640.0f, 360.0f }, 0.0f, Vector2{ 100.0f, 100.0f });
     targetreticle_->SetTextureSize(Vector2{ 512.0f, 512.0f });
     targetreticle_->SetAnchorPoint(Vector2{ 0.5f, 0.5f }); // 中心基準
- 
+
     // コンポーネントの生成
     move_ = std::make_unique<PlayerMove>();
     reticle_ = std::make_unique<PlayerReticle>();
+    attack_ = std::make_unique<PlayerAttack>();
     // 初期ステートをセットする
     ChangeState(std::make_unique<PlayerStateIdle>());
 }

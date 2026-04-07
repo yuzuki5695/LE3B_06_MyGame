@@ -1,0 +1,48 @@
+#include "PlayerBullet.h"
+#include <ModelManager.h>
+// AssetGeneratorからインクルード
+#include <subproject/AssetGenerator/engine/generator/LoadResourceID.h>
+
+using namespace MyEngine;
+using namespace AssetGen::LoadResourceID::Models;
+
+namespace MyGame {
+
+    void PlayerBullet::Initialize(const MyEngine::Transform& transform, const MyEngine::Vector3& vel){
+        // 基底の初期化
+        BaseBullet::Initialize(transform, vel);
+
+        // オブジェクト生成
+        ModelManager::GetInstance()->LoadModel(Bullet::PlayerBullet);
+        bullet = Object3d::Create(Bullet::PlayerBullet, transform_);
+
+        // 初期位置設定
+        bullet->SetTranslate(transform_.translate);
+    }
+
+    void PlayerBullet::Update() {
+        // =============================
+        // ① 移動処理
+        // =============================
+        transform_.translate += velocity_;
+
+        // =============================
+        // ② Objectに反映
+        // =============================
+        if (bullet) {
+            bullet->SetTranslate(transform_.translate);
+            bullet->Update();
+        }
+
+        // =============================
+        // ③ 寿命処理
+        // =============================
+        UpdateLifeTime(1.0f / 60.0f); // 仮で60FPS固定
+    }
+
+    void PlayerBullet::Draw() {
+        if (bullet) {
+            bullet->Draw();
+        }
+    }
+}

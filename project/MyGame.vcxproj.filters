@@ -286,6 +286,15 @@
     <Filter Include="ソース ファイル\application\character\player\state">
       <UniqueIdentifier>{5bdb69e4-01f5-4daf-9094-631d99b3292a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ヘッダー ファイル\engine\math\transform">
+      <UniqueIdentifier>{66bfb22d-7951-4506-9255-a6787c4b1fdd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\application\character\bullet">
+      <UniqueIdentifier>{c8c27fac-f4bb-416d-9efc-35a7642f8e5c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\application\character\bullet">
+      <UniqueIdentifier>{deed6ee6-8a5e-42f6-a5a4-63b542fea32f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -480,9 +489,6 @@
     <ClCompile Include="application\loader\CurveJsonLoader.cpp">
       <Filter>ソース ファイル\application\loader</Filter>
     </ClCompile>
-    <ClCompile Include="application\camera\RailCameraController.cpp">
-      <Filter>ソース ファイル\application\camera</Filter>
-    </ClCompile>
     <ClCompile Include="application\loader\CharacterLoader.cpp">
       <Filter>ソース ファイル\application\loader</Filter>
     </ClCompile>
@@ -500,6 +506,18 @@
     </ClCompile>
     <ClCompile Include="application\character\player\State\PlayerState.cpp">
       <Filter>ソース ファイル\application\character\player\state</Filter>
+    </ClCompile>
+    <ClCompile Include="application\character\player\Component\PlayerReticle.cpp">
+      <Filter>ソース ファイル\application\character\player\component</Filter>
+    </ClCompile>
+    <ClCompile Include="application\character\bullet\player\PlayerBullet.cpp">
+      <Filter>ソース ファイル\application\character\bullet</Filter>
+    </ClCompile>
+    <ClCompile Include="application\character\bullet\BulletManager.cpp">
+      <Filter>ソース ファイル\application\character\bullet</Filter>
+    </ClCompile>
+    <ClCompile Include="application\character\player\Component\PlayerAttack.cpp">
+      <Filter>ソース ファイル\application\character\player\component</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -788,9 +806,6 @@
     <ClInclude Include="application\character\BaseData.h">
       <Filter>ヘッダー ファイル\application\character</Filter>
     </ClInclude>
-    <ClInclude Include="application\camera\RailCameraController.h">
-      <Filter>ヘッダー ファイル\application\camera</Filter>
-    </ClInclude>
     <ClInclude Include="application\loader\PlayerDataLoader.h">
       <Filter>ヘッダー ファイル\application\loader</Filter>
     </ClInclude>
@@ -805,6 +820,27 @@
     </ClInclude>
     <ClInclude Include="application\character\basestate\ICharacterState.h">
       <Filter>ヘッダー ファイル\application\character\basestate</Filter>
+    </ClInclude>
+    <ClInclude Include="application\character\player\Component\PlayerReticle.h">
+      <Filter>ソース ファイル\application\character\player\component</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\math\Transform\Transform.h">
+      <Filter>ヘッダー ファイル\engine\math\transform</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\math\Transform\TransformationMatrix.h">
+      <Filter>ヘッダー ファイル\engine\math\transform</Filter>
+    </ClInclude>
+    <ClInclude Include="application\character\bullet\BaseBullet.h">
+      <Filter>ヘッダー ファイル\application\character\bullet</Filter>
+    </ClInclude>
+    <ClInclude Include="application\character\bullet\player\PlayerBullet.h">
+      <Filter>ソース ファイル\application\character\bullet</Filter>
+    </ClInclude>
+    <ClInclude Include="application\character\bullet\BulletManager.h">
+      <Filter>ソース ファイル\application\character\bullet</Filter>
+    </ClInclude>
+    <ClInclude Include="application\character\player\Component\PlayerAttack.h">
+      <Filter>ソース ファイル\application\character\player\component</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

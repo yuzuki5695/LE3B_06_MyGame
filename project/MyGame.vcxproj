@@ -64,7 +64,7 @@
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)engine\2d;$(ProjectDir)engine\3d;$(ProjectDir)engine\audio;$(ProjectDir)engine\base;$(ProjectDir)engine\io;$(ProjectDir)engine\math;$(ProjectDir)engine\scene;$(ProjectDir)engine\3d\Particle;$(ProjectDir)engine\camera;$(ProjectDir)engine\base\DirectX;$(ProjectDir)engine\base\Utility;$(ProjectDir)engine\base\DirectX\Core;$(ProjectDir)engine\math\Light;$(ProjectDir)engine\resource;$(ProjectDir)externals\nlohmann;$(ProjectDir)externals\assimp\include;$(ProjectDir)engine\editor;$(ProjectDir)engine\editor\core;$(ProjectDir)engine\editor\console;$(ProjectDir)engine\editor\layout;$(ProjectDir)engine\editor\windows;$(ProjectDir)engine\time;$(ProjectDir)engine\editor\layout\editormenubar;$(ProjectDir)engine\math\Base;$(ProjectDir)engine\math\Geometry;$(ProjectDir)engine\math\Transform;$(ProjectDir)engine\math\Functions;$(ProjectDir)engine\3d\Model;$(ProjectDir)engine\3d\Object;$(ProjectDir)engine\3d\Skybox;$(ProjectDir)engine\base\DirectX\Descriptors;$(ProjectDir)engine\base\DirectX\Pipeline;$(ProjectDir)engine\base\DirectX\Screen;$(ProjectDir)application\scene;$(ProjectDir)application;$(ProjectDir)application\character;$(ProjectDir)application\character\player;$(ProjectDir)application\character\basestate;$(ProjectDir)application\camera;$(ProjectDir)application\loader;$(ProjectDir)application\stage;$(ProjectDir)application\character\player\Component;$(ProjectDir)application\character\player\State</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)engine\2d;$(ProjectDir)engine\3d;$(ProjectDir)engine\audio;$(ProjectDir)engine\base;$(ProjectDir)engine\io;$(ProjectDir)engine\math;$(ProjectDir)engine\scene;$(ProjectDir)engine\3d\Particle;$(ProjectDir)engine\camera;$(ProjectDir)engine\base\DirectX;$(ProjectDir)engine\base\Utility;$(ProjectDir)engine\base\DirectX\Core;$(ProjectDir)engine\math\Light;$(ProjectDir)engine\resource;$(ProjectDir)externals\nlohmann;$(ProjectDir)externals\assimp\include;$(ProjectDir)engine\editor;$(ProjectDir)engine\editor\core;$(ProjectDir)engine\editor\console;$(ProjectDir)engine\editor\layout;$(ProjectDir)engine\editor\windows;$(ProjectDir)engine\time;$(ProjectDir)engine\editor\layout\editormenubar;$(ProjectDir)engine\math\Base;$(ProjectDir)engine\math\Geometry;$(ProjectDir)engine\math\Transform;$(ProjectDir)engine\math\Functions;$(ProjectDir)engine\3d\Model;$(ProjectDir)engine\3d\Object;$(ProjectDir)engine\3d\Skybox;$(ProjectDir)engine\base\DirectX\Descriptors;$(ProjectDir)engine\base\DirectX\Pipeline;$(ProjectDir)engine\base\DirectX\Screen;$(ProjectDir)application\scene;$(ProjectDir)application;$(ProjectDir)application\character;$(ProjectDir)application\character\player;$(ProjectDir)application\character\basestate;$(ProjectDir)application\camera;$(ProjectDir)application\loader;$(ProjectDir)application\stage;$(ProjectDir)application\character\player\Component;$(ProjectDir)application\character\player\State;$(ProjectDir)application\character\bullet;$(ProjectDir)application\character\bullet\player</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
     </ClCompile>
     <Link>
@@ -95,7 +95,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)engine\2d;$(ProjectDir)engine\3d;$(ProjectDir)engine\audio;$(ProjectDir)engine\base;$(ProjectDir)engine\io;$(ProjectDir)engine\math;$(ProjectDir)engine\scene;$(ProjectDir)engine\3d\Particle;$(ProjectDir)engine\camera;$(ProjectDir)engine\base\DirectX;$(ProjectDir)engine\base\Utility;$(ProjectDir)engine\base\DirectX\Core;$(ProjectDir)engine\math\Light;$(ProjectDir)engine\resource;$(ProjectDir)externals\nlohmann;$(ProjectDir)externals\assimp\include;$(ProjectDir)engine\editor;$(ProjectDir)engine\editor\core;$(ProjectDir)engine\editor\console;$(ProjectDir)engine\editor\layout;$(ProjectDir)engine\editor\windows;$(ProjectDir)engine\time;$(ProjectDir)engine\editor\layout\editormenubar;$(ProjectDir)engine\math\Base;$(ProjectDir)engine\math\Geometry;$(ProjectDir)engine\math\Transform;$(ProjectDir)engine\math\Functions;$(ProjectDir)engine\3d\Model;$(ProjectDir)engine\3d\Object;$(ProjectDir)engine\3d\Skybox;$(ProjectDir)engine\base\DirectX\Descriptors;$(ProjectDir)engine\base\DirectX\Pipeline;$(ProjectDir)engine\base\DirectX\Screen;$(ProjectDir)application\scene;$(ProjectDir)application;$(ProjectDir)application\character;$(ProjectDir)application\character\player;$(ProjectDir)application\character\basestate;$(ProjectDir)application\camera;$(ProjectDir)application\loader;$(ProjectDir)application\stage;$(ProjectDir)application\character\player\Component;$(ProjectDir)application\character\player\State</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)engine\2d;$(ProjectDir)engine\3d;$(ProjectDir)engine\audio;$(ProjectDir)engine\base;$(ProjectDir)engine\io;$(ProjectDir)engine\math;$(ProjectDir)engine\scene;$(ProjectDir)engine\3d\Particle;$(ProjectDir)engine\camera;$(ProjectDir)engine\base\DirectX;$(ProjectDir)engine\base\Utility;$(ProjectDir)engine\base\DirectX\Core;$(ProjectDir)engine\math\Light;$(ProjectDir)engine\resource;$(ProjectDir)externals\nlohmann;$(ProjectDir)externals\assimp\include;$(ProjectDir)engine\editor;$(ProjectDir)engine\editor\core;$(ProjectDir)engine\editor\console;$(ProjectDir)engine\editor\layout;$(ProjectDir)engine\editor\windows;$(ProjectDir)engine\time;$(ProjectDir)engine\editor\layout\editormenubar;$(ProjectDir)engine\math\Base;$(ProjectDir)engine\math\Geometry;$(ProjectDir)engine\math\Transform;$(ProjectDir)engine\math\Functions;$(ProjectDir)engine\3d\Model;$(ProjectDir)engine\3d\Object;$(ProjectDir)engine\3d\Skybox;$(ProjectDir)engine\base\DirectX\Descriptors;$(ProjectDir)engine\base\DirectX\Pipeline;$(ProjectDir)engine\base\DirectX\Screen;$(ProjectDir)application\scene;$(ProjectDir)application;$(ProjectDir)application\character;$(ProjectDir)application\character\player;$(ProjectDir)application\character\basestate;$(ProjectDir)application\camera;$(ProjectDir)application\loader;$(ProjectDir)application\stage;$(ProjectDir)application\character\player\Component;$(ProjectDir)application\character\player\State;$(ProjectDir)application\character\bullet;$(ProjectDir)application\character\bullet\player</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -117,10 +117,13 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="application\camera\GamePlayCamera.cpp" />
-    <ClCompile Include="application\camera\RailCameraController.cpp" />
     <ClCompile Include="application\camera\TitleCamera.cpp" />
     <ClCompile Include="application\character\basestate\CharacterState.cpp" />
+    <ClCompile Include="application\character\bullet\BulletManager.cpp" />
+    <ClCompile Include="application\character\bullet\player\PlayerBullet.cpp" />
+    <ClCompile Include="application\character\player\Component\PlayerAttack.cpp" />
     <ClCompile Include="application\character\player\Component\PlayerMove.cpp" />
+    <ClCompile Include="application\character\player\Component\PlayerReticle.cpp" />
     <ClCompile Include="application\character\player\Player.cpp" />
     <ClCompile Include="application\character\player\State\PlayerState.cpp" />
     <ClCompile Include="application\loader\CharacterLoader.cpp" />
@@ -191,13 +194,17 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
   <ItemGroup>
     <ClInclude Include="application\camera\GamePlayCamera.h" />
     <ClInclude Include="application\camera\ISceneCameraBehavior.h" />
-    <ClInclude Include="application\camera\RailCameraController.h" />
     <ClInclude Include="application\camera\TitleCamera.h" />
     <ClInclude Include="application\character\BaseCharacter.h" />
     <ClInclude Include="application\character\BaseData.h" />
     <ClInclude Include="application\character\basestate\CharacterState.h" />
     <ClInclude Include="application\character\basestate\ICharacterState.h" />
+    <ClInclude Include="application\character\bullet\BaseBullet.h" />
+    <ClInclude Include="application\character\bullet\BulletManager.h" />
+    <ClInclude Include="application\character\bullet\player\PlayerBullet.h" />
+    <ClInclude Include="application\character\player\Component\PlayerAttack.h" />
     <ClInclude Include="application\character\player\Component\PlayerMove.h" />
+    <ClInclude Include="application\character\player\Component\PlayerReticle.h" />
     <ClInclude Include="application\character\player\Player.h" />
     <ClInclude Include="application\character\player\PlayerData.h" />
     <ClInclude Include="application\character\player\State\PlayerState.h" />
@@ -273,6 +280,8 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="engine\math\Light\DirectionalLight.h" />
     <ClInclude Include="engine\math\Light\PointLight.h" />
     <ClInclude Include="engine\math\Light\SpotLight.h" />
+    <ClInclude Include="engine\math\Transform\Transform.h" />
+    <ClInclude Include="engine\math\Transform\TransformationMatrix.h" />
     <ClInclude Include="engine\resource\D3DResourceLeakChecker.h" />
     <ClInclude Include="engine\io\Input.h" />
     <ClInclude Include="engine\base\Utility\Logger.h" />

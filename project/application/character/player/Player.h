@@ -4,6 +4,7 @@
 #include <PlayerMove.h>
 #include <PlayerData.h>
 #include <PlayerReticle.h>
+#include <PlayerAttack.h>
 
 namespace MyGame {
 	/// <summary>
@@ -33,7 +34,8 @@ namespace MyGame {
 		PlayerData data_; // プレイヤーのデータ構造体
 		// 各種コンポーネント
 		std::unique_ptr<PlayerMove> move_; // 移動ロジックの保持
-		std::unique_ptr<PlayerReticle> reticle_; // 移動ロジックの保持
+		std::unique_ptr<PlayerReticle> reticle_; // レティクルロジックの保持
+		std::unique_ptr<PlayerAttack> attack_; // 攻撃ロジックの保持
 
 		std::unique_ptr <MyEngine::Sprite> targetreticle_; // レティクル用スプライト
 		std::unique_ptr <MyEngine::Object3d> target_; // ターゲット用3Dオブジェクト
@@ -41,6 +43,7 @@ namespace MyGame {
 	public:
 		PlayerMove* GetMove() { return move_.get(); }
 		PlayerReticle* GetReticle() { return reticle_.get(); }
+		PlayerAttack* GetAttack() { return attack_.get(); }
 
 		MyEngine::Sprite* GetSprite() { return targetreticle_.get(); }
 		MyEngine::Object3d* GetTarget() { return target_.get(); }

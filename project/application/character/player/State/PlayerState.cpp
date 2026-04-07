@@ -23,11 +23,15 @@ void PlayerStateMove::Update(BaseCharacter& character) {
     // 必要なコンポーネント
     PlayerMove* move = player->GetMove();
     PlayerReticle* reticle = player->GetReticle();
+    PlayerAttack* attack = player->GetAttack();
     Object3d* object = player->GetObject3d();
     Sprite* sprite = player->GetSprite();     
     Object3d* target = player->GetTarget();
 
     if (move && object) {
+
+
+
         // 2. 移動処理の実行
         move->Update(object->GetTransform(), 0.17f);
 
@@ -42,6 +46,11 @@ void PlayerStateMove::Update(BaseCharacter& character) {
 
         // ④ 3Dターゲットに反映
         target->SetTranslate(worldPos);
+        target->Update(); // 行列を確定させる
+        
+        if (attack && object) {
+            attack->Update(object->GetTransform(), target);
+        }
     }
 }
 

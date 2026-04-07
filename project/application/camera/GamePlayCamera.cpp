@@ -49,7 +49,7 @@ namespace MyGame {
                 Vector3 basePos = camPos + Vector3{ 0.0f, -3.0f, 30.0f };
                 // Playerからoffset取得
                 Player* player = CameraManager::GetInstance()->GetPlayer();
-                Vector3 offset = player->GetMoveComponent()->GetRelativePos();
+                Vector3 offset = player->GetMove()->GetRelativePos();
                 // 相対移動を加算
                 Vector3 finalPos = basePos + offset;
                 target->SetTranslate(finalPos);
