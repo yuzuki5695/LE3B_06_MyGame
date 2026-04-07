@@ -19,14 +19,29 @@ void PlayerStateMove::Update(BaseCharacter& character) {
     
     // BaseCharacterをPlayerにキャスト
     Player* player = static_cast<Player*>(&character);
-    
-    // 1. 移動に必要なコンポーネントとTransformを取得
-    PlayerMove* move = player->GetMoveComponent();
+
+    // 必要なコンポーネント
+    PlayerMove* move = player->GetMove();
+    PlayerReticle* reticle = player->GetReticle();
     Object3d* object = player->GetObject3d();
+    Sprite* sprite = player->GetSprite();     
+    Object3d* target = player->GetTarget();
 
     if (move && object) {
         // 2. 移動処理の実行
         move->Update(object->GetTransform(), 0.17f);
+
+        // ① 入力でレティクル移動
+        reticle->UpdateInput();
+
+        // ② スプライト位置更新
+        sprite->SetPosition(reticle->GetScreenPos());
+
+        // ③ ワールド座標に変換
+        Vector3 worldPos = reticle->ScreenToWorld(reticle->GetScreenPos(), CameraManager::GetInstance()->GetActiveCamera());
+
+        // ④ 3Dターゲットに反映
+        target->SetTranslate(worldPos);
     }
 }
 

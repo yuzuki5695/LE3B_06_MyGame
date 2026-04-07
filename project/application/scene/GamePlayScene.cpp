@@ -83,6 +83,8 @@ namespace MyGame {
 #pragma region 全てのSprite個々の描画処理 
         // Spriteの描画準備。Spriteの描画に共通のグラフィックスコマンドを積む
         SpriteCommon::GetInstance()->Commondrawing();
+        
+        player_->DrawSprite();
 
         Sprite_->Draw();
 
