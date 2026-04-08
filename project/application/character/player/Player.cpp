@@ -45,6 +45,7 @@ void Player::Update() {
     state_.Update(*this);
 
     targetreticle_->Update();
+    target_->Update();
     object_->Update();
 }
 

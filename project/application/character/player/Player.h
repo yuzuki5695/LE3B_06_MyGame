@@ -39,12 +39,15 @@ namespace MyGame {
 
 		std::unique_ptr <MyEngine::Sprite> targetreticle_; // レティクル用スプライト
 		std::unique_ptr <MyEngine::Object3d> target_; // ターゲット用3Dオブジェクト
-		MyEngine::Transform targettransform_;
+		MyEngine::Transform targettransform_; 
+		MyEngine::Vector3 aimWorldPos_; // 
 	public:
 		PlayerMove* GetMove() { return move_.get(); }
 		PlayerReticle* GetReticle() { return reticle_.get(); }
-		PlayerAttack* GetAttack() { return attack_.get(); }
+		PlayerAttack* GetAttack() { return attack_.get(); }    
+		const MyEngine::Vector3& GetAimWorldPos() const { return aimWorldPos_; }
 
+		void SetAimWorldPos(const MyEngine::Vector3& pos) { aimWorldPos_ = pos; }
 		MyEngine::Sprite* GetSprite() { return targetreticle_.get(); }
 		MyEngine::Object3d* GetTarget() { return target_.get(); }
 	};

@@ -58,7 +58,7 @@ namespace MyGame {
             farPos.z - nearPos.z
             });
 
-        // 適当な距離（例：前方100）
+        // 適当な距離
         return Vector3{ nearPos.x, nearPos.y, nearPos.z } + rayDir * kForwardDistance;
     }
 }

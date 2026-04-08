@@ -821,9 +821,6 @@
     <ClInclude Include="application\character\basestate\ICharacterState.h">
       <Filter>ヘッダー ファイル\application\character\basestate</Filter>
     </ClInclude>
-    <ClInclude Include="application\character\player\Component\PlayerReticle.h">
-      <Filter>ソース ファイル\application\character\player\component</Filter>
-    </ClInclude>
     <ClInclude Include="engine\math\Transform\Transform.h">
       <Filter>ヘッダー ファイル\engine\math\transform</Filter>
     </ClInclude>
@@ -833,14 +830,17 @@
     <ClInclude Include="application\character\bullet\BaseBullet.h">
       <Filter>ヘッダー ファイル\application\character\bullet</Filter>
     </ClInclude>
-    <ClInclude Include="application\character\bullet\player\PlayerBullet.h">
-      <Filter>ソース ファイル\application\character\bullet</Filter>
-    </ClInclude>
-    <ClInclude Include="application\character\bullet\BulletManager.h">
-      <Filter>ソース ファイル\application\character\bullet</Filter>
+    <ClInclude Include="application\character\player\Component\PlayerReticle.h">
+      <Filter>ヘッダー ファイル\application\character\player\component</Filter>
     </ClInclude>
     <ClInclude Include="application\character\player\Component\PlayerAttack.h">
-      <Filter>ソース ファイル\application\character\player\component</Filter>
+      <Filter>ヘッダー ファイル\application\character\player\component</Filter>
+    </ClInclude>
+    <ClInclude Include="application\character\bullet\BulletManager.h">
+      <Filter>ヘッダー ファイル\application\character\bullet</Filter>
+    </ClInclude>
+    <ClInclude Include="application\character\bullet\player\PlayerBullet.h">
+      <Filter>ヘッダー ファイル\application\character\bullet</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

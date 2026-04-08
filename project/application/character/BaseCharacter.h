@@ -47,7 +47,7 @@ namespace MyGame {
             // 内部のステート管理クラスに処理を委譲
             state_.ChangeState(*this, std::move(nextState));
         }
-	protected: // メンバ変数
+    protected: // メンバ変数
         /// <summary>
         /// 3Dオブジェクト本体
         /// モデルやトランスフォーム情報を保持
@@ -64,6 +64,6 @@ namespace MyGame {
         CharacterState state_;
     public: // アクセッサ
         // getter
-        MyEngine::Object3d* GetObject3d() const { return object_.get(); }
+        MyEngine::Object3d* GetObject3d() const { return object_.get(); }   
     };
 }

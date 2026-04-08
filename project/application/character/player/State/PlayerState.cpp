@@ -30,8 +30,6 @@ void PlayerStateMove::Update(BaseCharacter& character) {
 
     if (move && object) {
 
-
-
         // 2. 移動処理の実行
         move->Update(object->GetTransform(), 0.17f);
 
@@ -44,13 +42,11 @@ void PlayerStateMove::Update(BaseCharacter& character) {
         // ③ ワールド座標に変換
         Vector3 worldPos = reticle->ScreenToWorld(reticle->GetScreenPos(), CameraManager::GetInstance()->GetActiveCamera());
 
-        // ④ 3Dターゲットに反映
-        target->SetTranslate(worldPos);
-        target->Update(); // 行列を確定させる
+        player->SetAimWorldPos(worldPos);
+        target->SetTranslate(player->GetAimWorldPos());
         
-        if (attack && object) {
-            attack->Update(object->GetTransform(), target);
-        }
+        attack->Update(object->GetTransform(), player->GetAimWorldPos());
+        
     }
 }
 

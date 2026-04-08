@@ -8,9 +8,9 @@ using namespace AssetGen::LoadResourceID::Models;
 
 namespace MyGame {
 
-    void PlayerBullet::Initialize(const MyEngine::Transform& transform, const MyEngine::Vector3& vel){
+    void PlayerBullet::Initialize(const MyEngine::Transform& transform, const MyEngine::Vector3& velocity){
         // 基底の初期化
-        BaseBullet::Initialize(transform, vel);
+        BaseBullet::Initialize(transform, velocity);
 
         // オブジェクト生成
         ModelManager::GetInstance()->LoadModel(Bullet::PlayerBullet);

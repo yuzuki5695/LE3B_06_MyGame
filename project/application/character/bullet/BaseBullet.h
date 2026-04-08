@@ -20,7 +20,7 @@ namespace MyGame {
         /// </summary>
         /// <param name="pos"></param>
         /// <param name="vel"></param>
-        virtual void Initialize(const MyEngine::Transform& transform, const MyEngine::Vector3& vel) { transform_ = transform; velocity_ = vel; };
+        virtual void Initialize(const MyEngine::Transform& transform, const MyEngine::Vector3& velocity) { transform_ = transform; velocity_ = velocity; };
         /// <summary>
         /// 更新処理
         /// </summary>
