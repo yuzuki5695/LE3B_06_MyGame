@@ -10,6 +10,7 @@
 #include <Input.h>
 #include <StageManager.h>
 #include <BulletManager.h>
+#include <UIManager.h>
 // AssetGeneratorからインクルード
 #include <subproject/AssetGenerator/engine/generator/LoadResourceID.h>
 
@@ -20,20 +21,18 @@ using namespace AssetGen::LoadResourceID::Textures;
 namespace MyGame {
 
     void GamePlayScene::Finalize() {
-        BulletManager::GetInstance()->Finalize();  // 弾マネージャの終了処理
+        BulletManager::GetInstance()->Finalize(); // 弾マネージャの終了処理
         StageManager::GetInstance()->Finalize();  // ステージマネージャの終了処理
         CameraManager::GetInstance()->Finalize(); // カメラマネージャの終了処理
+        UIManager::GetInstance()->Finalize();     // 
     }
 
     void GamePlayScene::Initialize() {
         // カメラマネージャの初期化
-        CameraManager::GetInstance()->Initialize(Transform({ 1.0f, 1.0f, 1.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, -50.0f }));
+        CameraManager::GetInstance()->Initialize(Transform({ 1.0f, 1.0f, 1.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, -10.0f }));
 
+        UIManager::GetInstance()->Initialize();
 
-        TextureManager::GetInstance()->LoadTexture(Ui::Complete);
-        TextureManager::GetInstance()->LoadTexture(Ui::Mission);
-
-        Sprite_ = Sprite::Create(Ui::Complete, Vector2{ 50.0f, 100.0f }, 0.0f, Vector2{ 400.0f,150.0f });
 
         player_ = std::make_unique<Player>();
         player_->Initialize();
@@ -59,9 +58,7 @@ namespace MyGame {
 
 #pragma region 全てのSprite個々の更新処理
 
-
-        Sprite_->Update();
-
+        UIManager::GetInstance()->Update();
 
 #pragma endregion 全てのSprite個々の更新処理
     }
@@ -93,7 +90,7 @@ namespace MyGame {
         
         player_->DrawSprite();
 
-        Sprite_->Draw();
+        UIManager::GetInstance()->Draw();
 
 #pragma endregion 全てのSprite個々の描画処理
     }

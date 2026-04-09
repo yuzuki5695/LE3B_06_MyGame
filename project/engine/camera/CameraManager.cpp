@@ -66,7 +66,7 @@ namespace MyEngine {
 
         // 移行直後の初期化を実行
         if (currentBehavior_) {
-            currentBehavior_->Initialize(camera_.GetActive());
+            currentBehavior_->Initialize(camera_.GetActive()); 
         }
     }
 

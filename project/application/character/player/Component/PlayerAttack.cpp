@@ -24,20 +24,17 @@ namespace MyGame {
         // =============================
         if (Input::GetInstance()->Pushkey(DIK_SPACE) && timer_ <= 0.0f) {
             Camera* activecamera = CameraManager::GetInstance()->GetActiveCamera();
+            Vector3 camPos = activecamera->GetTranslate();
+            Vector3 rayDir = Normalize(aimWorldPos - camPos);
+            Vector3 playerPos = playerTransform.translate;
 
-            // プレイヤー位置（発射位置）
-            Vector3 startPos = activecamera->GetTranslate();
+            // レイに投影
+            float t = Dot(playerPos - camPos, rayDir);
+            Vector3 startPos = camPos + rayDir * t;
 
-            // レティクル位置（照準）
-            Vector3 aimPos = aimWorldPos;
-                 
-            // 方向ベクトル
-            Vector3 direction = Normalize(aimPos - startPos);
+            float speed = 15.0f;
+            Vector3 velocity = rayDir * speed;
 
-            // 速度設定
-            float speed = 10.0f;
-            Vector3 velocity = direction * speed;
-        
             Transform bulletTransform;
             bulletTransform.scale = { 1.0f,1.0f,1.0f };
             bulletTransform.rotate = { 0.0f,0.0f,0.0f };

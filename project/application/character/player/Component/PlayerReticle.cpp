@@ -57,8 +57,10 @@ namespace MyGame {
             farPos.y - nearPos.y,
             farPos.z - nearPos.z
             });
+        
+        Vector3 camPos = camera->GetTranslate();
 
         // 適当な距離
-        return Vector3{ nearPos.x, nearPos.y, nearPos.z } + rayDir * kForwardDistance;
+        return camPos + rayDir * kForwardDistance;
     }
 }

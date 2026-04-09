@@ -26,9 +26,6 @@ namespace MyGame {
         /// </summary>
         void Draw() override;
     private: // メンバ変数
-
-        std::unique_ptr <MyEngine::Sprite> Sprite_;
-
         std::unique_ptr <Player> player_;
 
     };

@@ -295,6 +295,30 @@
     <Filter Include="ヘッダー ファイル\application\character\bullet">
       <UniqueIdentifier>{deed6ee6-8a5e-42f6-a5a4-63b542fea32f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ソース ファイル\application\ui">
+      <UniqueIdentifier>{e08e9922-18e9-46bc-acc6-f0ef995a4f02}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\application\ui">
+      <UniqueIdentifier>{d1cb4687-0979-4b4f-8ccf-87f436b261eb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\application\ui\core">
+      <UniqueIdentifier>{7f74c1d4-bb20-436a-be10-8a132fea6a07}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\application\ui\core">
+      <UniqueIdentifier>{a4e23f67-8893-4d71-8707-e4493f82be65}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\application\ui\scene">
+      <UniqueIdentifier>{e1880891-c843-4391-a59a-f04b42239005}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\application\ui\scene">
+      <UniqueIdentifier>{d86ce9a1-81a7-422d-af0a-a9f3df56ef98}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\application\ui\scene\pause">
+      <UniqueIdentifier>{dde1d27f-8215-48d6-a73f-6466cc6828f2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\application\ui\scene\pause">
+      <UniqueIdentifier>{96ae2b5c-7320-4bb8-aee9-8f9d1d9317df}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -518,6 +542,12 @@
     </ClCompile>
     <ClCompile Include="application\character\player\Component\PlayerAttack.cpp">
       <Filter>ソース ファイル\application\character\player\component</Filter>
+    </ClCompile>
+    <ClCompile Include="application\ui\core\UIManager.cpp">
+      <Filter>ソース ファイル\application\ui\core</Filter>
+    </ClCompile>
+    <ClCompile Include="application\ui\scene\GamePlayUI.cpp">
+      <Filter>ソース ファイル\application\ui\scene</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -841,6 +871,15 @@
     </ClInclude>
     <ClInclude Include="application\character\bullet\player\PlayerBullet.h">
       <Filter>ヘッダー ファイル\application\character\bullet</Filter>
+    </ClInclude>
+    <ClInclude Include="application\ui\core\BaseUI.h">
+      <Filter>ヘッダー ファイル\application\ui\core</Filter>
+    </ClInclude>
+    <ClInclude Include="application\ui\core\UIManager.h">
+      <Filter>ヘッダー ファイル\application\ui\core</Filter>
+    </ClInclude>
+    <ClInclude Include="application\ui\scene\GamePlayUI.h">
+      <Filter>ヘッダー ファイル\application\ui\scene</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
