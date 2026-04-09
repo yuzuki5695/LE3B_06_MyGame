@@ -25,5 +25,8 @@ namespace MyGame {
 
 
         virtual void SetTarget(MyEngine::Object3d* target) {}
+
+        // 進捗率(0.0~1.0)を返す仮想関数。デフォルトは0を返す
+        virtual float GetProgress() const { return 0.0f; }
     };
 }

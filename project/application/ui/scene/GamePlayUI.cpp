@@ -56,11 +56,13 @@ namespace MyGame {
     }
 
     void GamePlayUI::Update() {
+        UpdateStageProgressUI();
+
         gage_->Update();
         player_ui_->Update();
      
         for (std::unique_ptr<Sprite>& ui : uis_) {
-            ui->Update();
+           // ui->Update();
         }
     }
 
@@ -71,44 +73,21 @@ namespace MyGame {
         player_ui_->Draw();
 
         for (std::unique_ptr<Sprite>& ui : uis_) {
-            ui->Draw();
+        //    ui->Draw();
         }
-    }
-    void GamePlayUI::StartStageProgressUI() {
-        if (uiProgressStarted_) return;
-        //uiStartRailLength_ = CameraManager::GetInstance()->GetGameplayCamera()->GetCurrentRailLength();
-
-        uiProgressStarted_ = true;
     }
 
     void GamePlayUI::UpdateStageProgressUI() {
-        /*       if (!uiProgressStarted_ || uiProgressFinished_) return;
+        // マネージャ経由で「今のカメラ挙動」から進捗を直接もらう
+        float progress = CameraManager::GetInstance()->GetCameraProgress();
+        progress = std::clamp(progress, 0.0f, 1.0f);
+        constexpr float gageX = 380.0f;
+        constexpr float gageWidth = 500.0f;
+        constexpr float playerWidth = 25.0f;
 
-               Camera* cam = CameraManager::GetInstance()->GetGameplayCamera();
-
-               float current = cam->GetCurrentRailLength();
-               float total = cam->GetTotalRailLength();
-
-               float uiTotalLength = total - uiStartRailLength_;
-               if (uiTotalLength <= 0.0001f) return;
-
-               float progress = (current - uiStartRailLength_) / uiTotalLength;
-
-               if (progress >= 1.0f) {
-                   progress = 1.0f;
-                   uiProgressFinished_ = true;
-               }
-
-               progress = std::clamp(progress, 0.0f, 1.0f);
-
-               constexpr float gageX = 380.0f;
-               constexpr float gageWidth = 500.0f;
-               constexpr float playerWidth = 25.0f;
-
-               float movableWidth = gageWidth - playerWidth;
-               float uiX = gageX + progress * movableWidth;
-
-               player_ui_->SetPosition(Vector2{ uiX, 12.3f });*/
+        float movableWidth = gageWidth - playerWidth;
+        float uiX = gageX + progress * movableWidth;
+        player_ui_->SetPosition(Vector2{ uiX, 12.3f });
     }
 
     void GamePlayUI::CreateWASDUI(const Vector2& baseCenter, const Vector2& size, float keySpacing, float groupSpacing) {

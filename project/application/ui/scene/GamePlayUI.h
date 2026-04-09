@@ -14,7 +14,6 @@ namespace MyGame {
         void Draw() override;
         // アニメーション開始トリガー
      //   void StartControlUIAnimation();
-        void StartStageProgressUI();
         void SetPlayer(Player* player) { player_ = player; }
     private: // プレイベートメンバ関数
         void UpdateStageProgressUI();
@@ -33,7 +32,7 @@ namespace MyGame {
 
         std::unique_ptr <MyEngine::Sprite> gage_;
         std::unique_ptr <MyEngine::Sprite> player_ui_;
-        float uiStartRailLength_ = 0.0f;
+    
         bool uiProgressStarted_ = false;
         bool uiProgressFinished_ = false;
     };
