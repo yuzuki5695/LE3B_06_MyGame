@@ -325,6 +325,9 @@
     <Filter Include="ヘッダー ファイル\application\ui\fade">
       <UniqueIdentifier>{ce8bf20a-141d-4b59-ae15-5a296abeb31b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ヘッダー ファイル\application\ui\fade\effects">
+      <UniqueIdentifier>{0c63bd7a-2ebf-465a-8ee7-c4a372980ec5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -899,14 +902,14 @@
     <ClInclude Include="application\ui\effect\fade\IFadeEffect.h">
       <Filter>ヘッダー ファイル\application\ui\fade</Filter>
     </ClInclude>
-    <ClInclude Include="application\ui\effect\fade\NormalFade.h">
-      <Filter>ヘッダー ファイル\application\ui\fade</Filter>
+    <ClInclude Include="application\ui\effect\fade\effects\ExplodeFade.h">
+      <Filter>ヘッダー ファイル\application\ui\fade\effects</Filter>
     </ClInclude>
-    <ClInclude Include="application\ui\effect\fade\SlideFade.h">
-      <Filter>ヘッダー ファイル\application\ui\fade</Filter>
+    <ClInclude Include="application\ui\effect\fade\effects\NormalFade.h">
+      <Filter>ヘッダー ファイル\application\ui\fade\effects</Filter>
     </ClInclude>
-    <ClInclude Include="application\ui\effect\fade\ExplodeFade.h">
-      <Filter>ヘッダー ファイル\application\ui\fade</Filter>
+    <ClInclude Include="application\ui\effect\fade\effects\SlideFade.h">
+      <Filter>ヘッダー ファイル\application\ui\fade\effects</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -48,7 +48,7 @@ namespace MyEngine {
         /// <param name="sceneName">切り替え先のシーン名</param>
         void OnSceneChanged(const std::string& sceneName);
     private: // メンバ変数
-        // カメラのデータセット（
+        // カメラのデータセット
         CameraSet camera_;
         CameraDefs::StateData stateData_;
         // 現在適用中の挙動ロジック

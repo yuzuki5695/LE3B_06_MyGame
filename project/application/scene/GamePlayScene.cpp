@@ -12,9 +12,11 @@
 #include <BulletManager.h>
 #include <UIManager.h>
 #include <FadeManager.h>
+#include <GamePlayUI.h>
+#include <SceneName.h>
 // AssetGeneratorからインクルード
 #include <subproject/AssetGenerator/engine/generator/LoadResourceID.h>
-#include <GamePlayUI.h>
+
 
 using namespace MyEngine;
 using namespace AssetGen;
@@ -26,7 +28,7 @@ namespace MyGame {
         BulletManager::GetInstance()->Finalize(); // 弾マネージャの終了処理
         StageManager::GetInstance()->Finalize();  // ステージマネージャの終了処理
         CameraManager::GetInstance()->Finalize(); // カメラマネージャの終了処理
-		UIManager::GetInstance()->Finalize();     // UIマネージャの終了処理 
+        UIManager::GetInstance()->Finalize();     // UIマネージャの終了処理 
 		FadeManager::GetInstance()->Finalize();   // フェードマネージャの終了処理
     }
 
@@ -48,8 +50,7 @@ namespace MyGame {
         }
         // UIマネージャの初期化
         UIManager::GetInstance()->Initialize();
-        FadeManager::GetInstance()->Initialize();
-        FadeManager::GetInstance()->StartFade(FadeType::None, FadeStyle::SilhouetteExplode, 1.0f);
+        FadeManager::GetInstance()->StartFade(FadeType::FadeIn, FadeStyle::SilhouetteExplode, 1.0f);
     }
 
     void GamePlayScene::Update() {
@@ -58,8 +59,12 @@ namespace MyGame {
 
 #pragma region 全てのObject3d個々の更新処理
 
+        if (Input::GetInstance()->Triggrkey(DIK_SPACE) ){
+           // FadeManager::GetInstance()->SceneChangeFade(SceneName::TITLE, FadeStyle::SilhouetteExplode, 1.0f);
+        }
+
 		// プレイヤーの更新
-        player_->Update();             
+        player_->Update();
 		// 弾の更新
         BulletManager::GetInstance()->Update();
         // ステージマネージャの更新
