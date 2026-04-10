@@ -893,6 +893,15 @@
     <ClInclude Include="application\ui\effect\fade\FadeManager.h">
       <Filter>ヘッダー ファイル\application\ui\fade</Filter>
     </ClInclude>
+    <ClInclude Include="application\ui\effect\fade\FadeTypes.h">
+      <Filter>ヘッダー ファイル\application\ui\fade</Filter>
+    </ClInclude>
+    <ClInclude Include="application\ui\effect\fade\IFadeEffect.h">
+      <Filter>ヘッダー ファイル\application\ui\fade</Filter>
+    </ClInclude>
+    <ClInclude Include="application\ui\effect\fade\NormalFade.h">
+      <Filter>ヘッダー ファイル\application\ui\fade</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Resources\shaders\Sprite\Sprite.PS.hlsl">

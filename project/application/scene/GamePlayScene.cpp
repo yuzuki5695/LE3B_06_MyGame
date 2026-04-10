@@ -11,6 +11,7 @@
 #include <StageManager.h>
 #include <BulletManager.h>
 #include <UIManager.h>
+#include <FadeManager.h>
 // AssetGeneratorからインクルード
 #include <subproject/AssetGenerator/engine/generator/LoadResourceID.h>
 #include <GamePlayUI.h>
@@ -25,7 +26,8 @@ namespace MyGame {
         BulletManager::GetInstance()->Finalize(); // 弾マネージャの終了処理
         StageManager::GetInstance()->Finalize();  // ステージマネージャの終了処理
         CameraManager::GetInstance()->Finalize(); // カメラマネージャの終了処理
-        UIManager::GetInstance()->Finalize();     // 
+		UIManager::GetInstance()->Finalize();     // UIマネージャの終了処理 
+		FadeManager::GetInstance()->Finalize();   // フェードマネージャの終了処理
     }
 
     void GamePlayScene::Initialize() {
@@ -44,8 +46,10 @@ namespace MyGame {
         if (gameplayUI) {
             gameplayUI->SetPlayer(player_.get());
         }
-		// UIマネージャの初期化
+        // UIマネージャの初期化
         UIManager::GetInstance()->Initialize();
+        FadeManager::GetInstance()->Initialize();
+        FadeManager::GetInstance()->StartFade(FadeType::None, FadeStyle::Normal, 1.0f);
     }
 
     void GamePlayScene::Update() {
@@ -54,17 +58,19 @@ namespace MyGame {
 
 #pragma region 全てのObject3d個々の更新処理
 
-
-        player_->Update();
-                
+		// プレイヤーの更新
+        player_->Update();             
+		// 弾の更新
         BulletManager::GetInstance()->Update();
         // ステージマネージャの更新
         StageManager::GetInstance()->Update();
 #pragma endregion 全てのObject3d個々の更新処理
 
 #pragma region 全てのSprite個々の更新処理
-
+		// UIマネージャの更新
         UIManager::GetInstance()->Update();
+		// フェードマネージャの更新
+        FadeManager::GetInstance()->Update();
 
 #pragma endregion 全てのSprite個々の更新処理
     }
@@ -78,7 +84,7 @@ namespace MyGame {
         // 3Dオブジェクトの描画準備。3Dオブジェクトの描画に共通のグラフィックスコマンドを積む
         Object3dCommon::GetInstance()->Commondrawing();
 
-
+		// プレイヤーの描画
         player_->Draw();
 
         // 弾の描画
@@ -93,11 +99,12 @@ namespace MyGame {
 #pragma region 全てのSprite個々の描画処理 
         // Spriteの描画準備。Spriteの描画に共通のグラフィックスコマンドを積む
         SpriteCommon::GetInstance()->Commondrawing();
-        
+		// プレイヤーのスプライト描画
         player_->DrawSprite();
-
+		// UIマネージャの描画
         UIManager::GetInstance()->Draw();
-
+		// フェードの描画
+        FadeManager::GetInstance()->Draw();
 #pragma endregion 全てのSprite個々の描画処理
     }
 }
