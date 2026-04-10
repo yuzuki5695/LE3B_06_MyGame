@@ -1,12 +1,14 @@
 #include "FadeManager.h"
-#include <NormalFade.h>
+#include <algorithm>
 #ifdef min
 #undef min
 #endif
-#include <algorithm>
 #ifdef max
 #undef max
 #endif
+#include <NormalFade.h>
+#include <SlideFade.h>
+#include <ExplodeFade.h>
 
 namespace MyGame {
     // シングルトン用インスタンス
@@ -45,10 +47,10 @@ namespace MyGame {
             effect_ = std::make_unique<NormalFade>();
             break;
         case FadeStyle::SilhouetteSlide:
-            // effect_ = std::make_unique<SlideFade>();
+             effect_ = std::make_unique<SlideFade>();
             break;
         case FadeStyle::SilhouetteExplode:
-            //effect_ = std::make_unique<ExplodeFade>();
+            effect_ = std::make_unique<ExplodeFade>();
             break;
         }
 

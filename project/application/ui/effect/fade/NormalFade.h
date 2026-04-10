@@ -6,7 +6,7 @@
 
 namespace MyGame {
     class NormalFade : public IFadeEffect {
-    private:
+	private:
         std::unique_ptr<MyEngine::Sprite> sprite_;
 
     public:

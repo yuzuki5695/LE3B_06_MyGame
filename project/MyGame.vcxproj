@@ -221,10 +221,12 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\stage\StageManager.h" />
     <ClInclude Include="application\ui\core\BaseUI.h" />
     <ClInclude Include="application\ui\core\UIManager.h" />
+    <ClInclude Include="application\ui\effect\fade\ExplodeFade.h" />
     <ClInclude Include="application\ui\effect\fade\FadeManager.h" />
     <ClInclude Include="application\ui\effect\fade\FadeTypes.h" />
     <ClInclude Include="application\ui\effect\fade\IFadeEffect.h" />
     <ClInclude Include="application\ui\effect\fade\NormalFade.h" />
+    <ClInclude Include="application\ui\effect\fade\SlideFade.h" />
     <ClInclude Include="application\ui\scene\GamePlayUI.h" />
     <ClInclude Include="Engine\3d\Model\Model.h" />
     <ClInclude Include="Engine\3d\Model\ModelCommon.h" />

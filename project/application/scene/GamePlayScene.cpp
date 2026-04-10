@@ -49,7 +49,7 @@ namespace MyGame {
         // UIマネージャの初期化
         UIManager::GetInstance()->Initialize();
         FadeManager::GetInstance()->Initialize();
-        FadeManager::GetInstance()->StartFade(FadeType::None, FadeStyle::Normal, 1.0f);
+        FadeManager::GetInstance()->StartFade(FadeType::None, FadeStyle::SilhouetteExplode, 1.0f);
     }
 
     void GamePlayScene::Update() {

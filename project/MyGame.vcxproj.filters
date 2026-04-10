@@ -902,6 +902,12 @@
     <ClInclude Include="application\ui\effect\fade\NormalFade.h">
       <Filter>ヘッダー ファイル\application\ui\fade</Filter>
     </ClInclude>
+    <ClInclude Include="application\ui\effect\fade\SlideFade.h">
+      <Filter>ヘッダー ファイル\application\ui\fade</Filter>
+    </ClInclude>
+    <ClInclude Include="application\ui\effect\fade\ExplodeFade.h">
+      <Filter>ヘッダー ファイル\application\ui\fade</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Resources\shaders\Sprite\Sprite.PS.hlsl">
