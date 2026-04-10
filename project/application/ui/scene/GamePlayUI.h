@@ -21,7 +21,7 @@ namespace MyGame {
         void CreateWASDUI(const MyEngine::Vector2& baseCenter, const  MyEngine::Vector2& size, float keySpacing, float groupSpacing);
         // 更新処理の細分化
         void UpdateControlUI();
-        //void UpdateControlUIAnimation();
+        void UpdateControlUIAnimation();
     private: // メンバ変数
         std::vector<std::unique_ptr<MyEngine::Sprite>> uis_;
         std::vector<MyEngine::Vector2> uiOriginalSizes_;

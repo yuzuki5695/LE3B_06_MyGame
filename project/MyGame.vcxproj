@@ -134,6 +134,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="application\scene\TitleScene.cpp" />
     <ClCompile Include="application\stage\StageManager.cpp" />
     <ClCompile Include="application\ui\core\UIManager.cpp" />
+    <ClCompile Include="application\ui\effect\fade\FadeManager.cpp" />
     <ClCompile Include="application\ui\scene\GamePlayUI.cpp" />
     <ClCompile Include="Engine\3d\Model\Model.cpp" />
     <ClCompile Include="Engine\3d\Model\ModelCommon.cpp" />
@@ -220,6 +221,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\stage\StageManager.h" />
     <ClInclude Include="application\ui\core\BaseUI.h" />
     <ClInclude Include="application\ui\core\UIManager.h" />
+    <ClInclude Include="application\ui\effect\fade\FadeManager.h" />
     <ClInclude Include="application\ui\scene\GamePlayUI.h" />
     <ClInclude Include="Engine\3d\Model\Model.h" />
     <ClInclude Include="Engine\3d\Model\ModelCommon.h" />

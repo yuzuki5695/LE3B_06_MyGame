@@ -319,6 +319,12 @@
     <Filter Include="ヘッダー ファイル\application\ui\scene\pause">
       <UniqueIdentifier>{96ae2b5c-7320-4bb8-aee9-8f9d1d9317df}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ソース ファイル\application\ui\fade">
+      <UniqueIdentifier>{58a614e6-87e6-4fad-ac4d-e17a6f116a40}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\application\ui\fade">
+      <UniqueIdentifier>{ce8bf20a-141d-4b59-ae15-5a296abeb31b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -548,6 +554,9 @@
     </ClCompile>
     <ClCompile Include="application\ui\scene\GamePlayUI.cpp">
       <Filter>ソース ファイル\application\ui\scene</Filter>
+    </ClCompile>
+    <ClCompile Include="application\ui\effect\fade\FadeManager.cpp">
+      <Filter>ソース ファイル\application\ui\fade</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -880,6 +889,9 @@
     </ClInclude>
     <ClInclude Include="application\ui\scene\GamePlayUI.h">
       <Filter>ヘッダー ファイル\application\ui\scene</Filter>
+    </ClInclude>
+    <ClInclude Include="application\ui\effect\fade\FadeManager.h">
+      <Filter>ヘッダー ファイル\application\ui\fade</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -13,6 +13,7 @@
 #include <UIManager.h>
 // AssetGeneratorからインクルード
 #include <subproject/AssetGenerator/engine/generator/LoadResourceID.h>
+#include <GamePlayUI.h>
 
 using namespace MyEngine;
 using namespace AssetGen;
@@ -31,15 +32,20 @@ namespace MyGame {
         // カメラマネージャの初期化
         CameraManager::GetInstance()->Initialize(Transform({ 1.0f, 1.0f, 1.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, -10.0f }));
 
-        UIManager::GetInstance()->Initialize();
-
-
         player_ = std::make_unique<Player>();
         player_->Initialize();
         CameraManager::GetInstance()->SetPlayer(player_.get());
 
+
         // ステージマネージャの初期化
         StageManager::GetInstance()->Initialize();
+
+        GamePlayUI* gameplayUI = UIManager::GetInstance()->GetUI<GamePlayUI>();
+        if (gameplayUI) {
+            gameplayUI->SetPlayer(player_.get());
+        }
+		// UIマネージャの初期化
+        UIManager::GetInstance()->Initialize();
     }
 
     void GamePlayScene::Update() {

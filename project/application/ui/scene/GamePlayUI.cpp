@@ -1,12 +1,20 @@
 #include "GamePlayUI.h"
 #include <TextureManager.h>
-// AssetGeneratorからインクルード
-#include <subproject/AssetGenerator/engine/generator/LoadResourceID.h>
 #include <Input.h>
 #include <CameraManager.h>
+#include <Easing.h>
+#ifdef min
+#undef min
+#endif
+#ifdef max
+#undef max
+#endif
+// AssetGeneratorからインクルード
+#include <subproject/AssetGenerator/engine/generator/LoadResourceID.h>
 
 using namespace MyEngine;
 using namespace AssetGen::LoadResourceID::Textures;
+using namespace Easing;
 
 namespace MyGame {
     void GamePlayUI::Initialize() {
@@ -50,7 +58,7 @@ namespace MyGame {
             ui->SetSize({ 0.0f, 0.0f });
         }
 
-        isAnimating_ = false;
+        isAnimating_ = true;
         timer_ = 0.0f;
         duration_ = 0.5f;
     }
@@ -60,9 +68,11 @@ namespace MyGame {
 
         gage_->Update();
         player_ui_->Update();
-     
+
+        UpdateControlUIAnimation();
+        UpdateControlUI();
         for (std::unique_ptr<Sprite>& ui : uis_) {
-           // ui->Update();
+            ui->Update();
         }
     }
 
@@ -73,7 +83,7 @@ namespace MyGame {
         player_ui_->Draw();
 
         for (std::unique_ptr<Sprite>& ui : uis_) {
-        //    ui->Draw();
+            ui->Draw();
         }
     }
 
@@ -150,40 +160,56 @@ namespace MyGame {
 
     void GamePlayUI::UpdateControlUI() {
         Input* input = Input::GetInstance();
-        //if (EventManager::GetInstance()->IsFinished()) {
-        //    // === WASD ===
-        //    uis_[0]->SetTexture(input->Pushkey(DIK_W) ? Operationui::W_RED : Operationui::W);
-        //    uis_[1]->SetTexture(input->Pushkey(DIK_A) ? Operationui::A_RED : Operationui::A);
-        //    uis_[2]->SetTexture(input->Pushkey(DIK_S) ? Operationui::S_RED : Operationui::S);
-        //    uis_[3]->SetTexture(input->Pushkey(DIK_D) ? Operationui::D_RED : Operationui::D);
+        // === WASD ===
+        uis_[0]->SetTexture(input->Pushkey(DIK_W) ? Operationui::W_RED : Operationui::W);
+        uis_[1]->SetTexture(input->Pushkey(DIK_A) ? Operationui::A_RED : Operationui::A);
+        uis_[2]->SetTexture(input->Pushkey(DIK_S) ? Operationui::S_RED : Operationui::S);
+        uis_[3]->SetTexture(input->Pushkey(DIK_D) ? Operationui::D_RED : Operationui::D);
 
-        //    // === Arrow ===
-        //    uis_[4]->SetTexture(input->Pushkey(DIK_UP) ? Operationui::ArrowUp_RED : Operationui::ArrowUp);
-        //    uis_[5]->SetTexture(input->Pushkey(DIK_RIGHT) ? Operationui::ArrowRight_RED : Operationui::ArrowRight);
-        //    uis_[6]->SetTexture(input->Pushkey(DIK_DOWN) ? Operationui::ArrowDown_RED : Operationui::ArrowDown);
-        //    uis_[7]->SetTexture(input->Pushkey(DIK_LEFT) ? Operationui::ArrowLeft_RED : Operationui::ArrowLeft);
+        // === Arrow ===
+        uis_[4]->SetTexture(input->Pushkey(DIK_UP) ? Operationui::ArrowUp_RED : Operationui::ArrowUp);
+        uis_[5]->SetTexture(input->Pushkey(DIK_RIGHT) ? Operationui::ArrowRight_RED : Operationui::ArrowRight);
+        uis_[6]->SetTexture(input->Pushkey(DIK_DOWN) ? Operationui::ArrowDown_RED : Operationui::ArrowDown);
+        uis_[7]->SetTexture(input->Pushkey(DIK_LEFT) ? Operationui::ArrowLeft_RED : Operationui::ArrowLeft);
 
-        //    // === SPACE / SHIFT ===
-        //    uis_[8]->SetTexture(input->Pushkey(DIK_SPACE) ? Operationui::SPACEKey_RED : Operationui::SPACEKey);
-        //    //        uis_[9]->SetTexture(input->Pushkey(DIK_LSHIFT) ? Operationui::SHIFT_RED : Operationui::SHIFT);
+        // === SPACE / SHIFT ===
+        uis_[8]->SetTexture(input->Pushkey(DIK_SPACE) ? Operationui::SPACEKey_RED : Operationui::SPACEKey);
 
-        //            // プレイヤーからDashクラスの情報を取得できる前提
-        //    if (player_) {
-        //        // CanDash() は「ダッシュ中でない 且つ クールタイム終了(<=0)」を返してくれる
-        //        bool canDash = player_->GetDash()->CanDash();
+        if (!player_) return;
+        bool canDash = player_->GetMove()->GetDashing();
 
-        //        if (!canDash) {
-        //            // 【クールタイム中 または ダッシュ演出中】
-        //            // キー入力に関係なく、強制的に「赤（使用不可/リキャスト中）」を表示
-        //            uis_[9]->SetTexture(Operationui::SHIFT_RED);
-        //            uis_[9]->SetColor({ 0.3f, 0.3f, 0.3f, 1.0f });
-        //        } else {
-        //            // 【ダッシュ準備完了】
-        //            uis_[9]->SetColor({ 1.0f, 1.0f, 1.0f, 1.0f });
-        //            // 通常時：SHIFT（白など）、押している間：SHIFT_RED（赤）
-        //            uis_[9]->SetTexture(input->Pushkey(DIK_LSHIFT) ? Operationui::SHIFT_RED : Operationui::SHIFT);
-        //        }
-        //    }
-        //}
+        if (!canDash) {
+            // 【クールタイム中 または ダッシュ演出中】
+            // キー入力に関係なく、強制的に「赤（使用不可/リキャスト中）」を表示
+            uis_[9]->SetTexture(Operationui::SHIFT_RED);
+            uis_[9]->SetColor({ 0.3f, 0.3f, 0.3f, 1.0f });
+        } else {
+            // 【ダッシュ準備完了】
+            uis_[9]->SetColor({ 1.0f, 1.0f, 1.0f, 1.0f });
+            // 通常時：SHIFT（白など）、押している間：SHIFT_RED（赤）
+            uis_[9]->SetTexture(input->Pushkey(DIK_LSHIFT) ? Operationui::SHIFT_RED : Operationui::SHIFT);
+        }
     }
+
+    
+    void GamePlayUI::UpdateControlUIAnimation() {
+        if (!isAnimating_) return;
+
+        timer_ += 1.0f / 60.0f;
+        float t = std::min(timer_ / duration_, 1.0f);
+        float ease = EaseOutBack(t);
+        if (t >= 1.0f) {
+            t = 1.0f;
+            isAnimating_ = false;
+        }
+
+        for (size_t i = 0; i < uis_.size(); ++i) {
+            float w = Lerp(0.0f, uiOriginalSizes_[i].x, ease);
+            float h = Lerp(0.0f, uiOriginalSizes_[i].y, ease);
+            uis_[i]->SetSize({ w, h });
+        }
+
+        if (t >= 1.0f) isAnimating_ = false;
+    }
+
 }

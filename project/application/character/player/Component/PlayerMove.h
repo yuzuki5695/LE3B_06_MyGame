@@ -43,5 +43,6 @@ namespace MyGame {
 
     public:
         const MyEngine::Vector3& GetRelativePos() const { return relativePos_; }
+        const bool& GetDashing() const { return isDashing_; }
     };
 }
