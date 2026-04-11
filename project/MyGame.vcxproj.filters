@@ -603,6 +603,9 @@
     <ClCompile Include="application\character\enemy\state\EnemyState.cpp">
       <Filter>ソース ファイル\application\character\enemy\state</Filter>
     </ClCompile>
+    <ClCompile Include="application\character\enemy\EnemySpawner.cpp">
+      <Filter>ソース ファイル\application\character\enemy</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="engine\2d\Sprite.h">
@@ -970,6 +973,9 @@
     </ClInclude>
     <ClInclude Include="application\character\enemy\Enemy.h">
       <Filter>ヘッダー ファイル\application\character\enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="application\character\enemy\EnemySpawner.h">
+      <Filter>ソース ファイル\application\character\enemy</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

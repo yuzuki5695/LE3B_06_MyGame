@@ -122,6 +122,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="application\character\bullet\BulletManager.cpp" />
     <ClCompile Include="application\character\bullet\player\PlayerBullet.cpp" />
     <ClCompile Include="application\character\enemy\Enemy.cpp" />
+    <ClCompile Include="application\character\enemy\EnemySpawner.cpp" />
     <ClCompile Include="application\character\enemy\state\EnemyState.cpp" />
     <ClCompile Include="application\character\player\Component\PlayerAttack.cpp" />
     <ClCompile Include="application\character\player\Component\PlayerMove.cpp" />
@@ -210,6 +211,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\character\bullet\BulletManager.h" />
     <ClInclude Include="application\character\bullet\player\PlayerBullet.h" />
     <ClInclude Include="application\character\enemy\Enemy.h" />
+    <ClInclude Include="application\character\enemy\EnemySpawner.h" />
     <ClInclude Include="application\character\enemy\state\EnemyState.h" />
     <ClInclude Include="application\character\player\Component\PlayerAttack.h" />
     <ClInclude Include="application\character\player\Component\PlayerMove.h" />
