@@ -340,6 +340,24 @@
     <Filter Include="ヘッダー ファイル\application\event\events">
       <UniqueIdentifier>{a2847793-7a47-4891-9eda-151abbd5ed6b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ソース ファイル\application\character\enemy">
+      <UniqueIdentifier>{6d2ebea2-d3dc-4a0a-9c39-3854b9d085de}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\application\character\enemy">
+      <UniqueIdentifier>{739f3c13-18b6-476e-879f-2fde424d73ca}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\application\character\enemy\state">
+      <UniqueIdentifier>{6d94b9cb-96ee-4526-b7ec-ce6afec336ba}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\application\character\enemy\state">
+      <UniqueIdentifier>{57fe5f60-6f9d-44b0-ab63-0a1df7c193c5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\application\character\enemy\component">
+      <UniqueIdentifier>{61879419-1938-46bf-9a6b-528d1c6d651e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\application\character\enemy\component">
+      <UniqueIdentifier>{18f2c5c4-0141-4785-b141-ac5711b02f69}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -578,6 +596,12 @@
     </ClCompile>
     <ClCompile Include="application\event\events\StartEvent.cpp">
       <Filter>ソース ファイル\application\event\events</Filter>
+    </ClCompile>
+    <ClCompile Include="application\character\enemy\Enemy.cpp">
+      <Filter>ソース ファイル\application\character\enemy</Filter>
+    </ClCompile>
+    <ClCompile Include="application\character\enemy\state\EnemyState.cpp">
+      <Filter>ソース ファイル\application\character\enemy\state</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -940,6 +964,12 @@
     </ClInclude>
     <ClInclude Include="application\event\EventTypes.h">
       <Filter>ヘッダー ファイル\application\event</Filter>
+    </ClInclude>
+    <ClInclude Include="application\character\enemy\state\EnemyState.h">
+      <Filter>ヘッダー ファイル\application\character\enemy\state</Filter>
+    </ClInclude>
+    <ClInclude Include="application\character\enemy\Enemy.h">
+      <Filter>ヘッダー ファイル\application\character\enemy</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

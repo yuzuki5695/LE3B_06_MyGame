@@ -7,6 +7,7 @@
 using namespace MyEngine;
 
 namespace MyGame {
+
     void PlayerStateIdle::Update(BaseCharacter& character) {
         //if (Input::GetInstance()->Triggrkey(DIK_RETURN)) {
         character.ChangeState(std::make_unique<PlayerStateMove>());

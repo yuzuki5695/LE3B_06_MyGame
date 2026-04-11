@@ -52,15 +52,21 @@ namespace MyGame {
         // UIマネージャの初期化
         UIManager::GetInstance()->Initialize();
         FadeManager::GetInstance()->StartFade(FadeType::FadeIn, FadeStyle::SilhouetteExplode, 1.0f);
+    
+        isGameStartEventDone_ = false;
     }
 
     void GamePlayScene::Update() {
         // カメラマネージャの更新
         CameraManager::GetInstance()->Update();
 
-#pragma region 全てのObject3d個々の更新処理
-                    
-        EventManager::GetInstance()->EventStart(Event::EventState::GameStart);
+#pragma region 全てのObject3d個々の更新処理       
+		//  ゲーム開始前のイベント処理
+        if (!isGameStartEventDone_) {
+            // ゲーム開始イベントの開始
+            EventManager::GetInstance()->EventStart(Event::EventState::GameStart);
+            isGameStartEventDone_ = true;
+        }
 
         if (Input::GetInstance()->Triggrkey(DIK_SPACE)) {
 

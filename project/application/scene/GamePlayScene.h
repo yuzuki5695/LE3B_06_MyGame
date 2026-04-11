@@ -2,6 +2,7 @@
 #include <BaseScene.h>
 #include <Sprite.h>
 #include <Player.h>
+#include <Enemy.h>
 
 namespace MyGame {
     /// <summary>
@@ -26,9 +27,10 @@ namespace MyGame {
         /// </summary>
         void Draw() override;
     private: // メンバ変数
-        std::unique_ptr <Player> player_;
+        std::unique_ptr <Player> player_; 
+        std::unique_ptr <Enemy> enemy_;
 
-
+        bool isGameStartEventDone_;
 
 
     };
