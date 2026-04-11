@@ -14,6 +14,7 @@
 #include <FadeManager.h>
 #include <GamePlayUI.h>
 #include <SceneName.h>
+#include <EventManager.h>
 // AssetGeneratorからインクルード
 #include <subproject/AssetGenerator/engine/generator/LoadResourceID.h>
 
@@ -29,7 +30,7 @@ namespace MyGame {
         StageManager::GetInstance()->Finalize();  // ステージマネージャの終了処理
         CameraManager::GetInstance()->Finalize(); // カメラマネージャの終了処理
         UIManager::GetInstance()->Finalize();     // UIマネージャの終了処理 
-		FadeManager::GetInstance()->Finalize();   // フェードマネージャの終了処理
+        FadeManager::GetInstance()->Finalize();   // フェードマネージャの終了処理
     }
 
     void GamePlayScene::Initialize() {
@@ -54,27 +55,33 @@ namespace MyGame {
     }
 
     void GamePlayScene::Update() {
-		// カメラマネージャの更新
+        // カメラマネージャの更新
         CameraManager::GetInstance()->Update();
 
 #pragma region 全てのObject3d個々の更新処理
+                    
+        EventManager::GetInstance()->EventStart(Event::EventState::GameStart);
 
-        if (Input::GetInstance()->Triggrkey(DIK_SPACE) ){
-           // FadeManager::GetInstance()->SceneChangeFade(SceneName::TITLE, FadeStyle::SilhouetteExplode, 1.0f);
+        if (Input::GetInstance()->Triggrkey(DIK_SPACE)) {
+
+            // フェードアウト
+            // FadeManager::GetInstance()->SceneChangeFade(SceneName::TITLE, FadeStyle::SilhouetteExplode, 1.0f);
         }
 
-		// プレイヤーの更新
+        // プレイヤーの更新
         player_->Update();
-		// 弾の更新
+        // 弾の更新
         BulletManager::GetInstance()->Update();
         // ステージマネージャの更新
         StageManager::GetInstance()->Update();
+        // イベントマネージャの更新
+        EventManager::GetInstance()->Update();
 #pragma endregion 全てのObject3d個々の更新処理
 
 #pragma region 全てのSprite個々の更新処理
-		// UIマネージャの更新
+        // UIマネージャの更新
         UIManager::GetInstance()->Update();
-		// フェードマネージャの更新
+        // フェードマネージャの更新
         FadeManager::GetInstance()->Update();
 
 #pragma endregion 全てのSprite個々の更新処理
@@ -84,12 +91,12 @@ namespace MyGame {
 #pragma region 全てのObject3d個々の描画処理
         // 箱オブジェクトの描画準備。3Dオブジェクトの描画に共通のグラフィックスコマンドを積む
         SkyboxCommon::GetInstance()->Commondrawing();
-         // ステージマネージャの描画
+        // ステージマネージャの描画
         StageManager::GetInstance()->DDSDraw();
         // 3Dオブジェクトの描画準備。3Dオブジェクトの描画に共通のグラフィックスコマンドを積む
         Object3dCommon::GetInstance()->Commondrawing();
 
-		// プレイヤーの描画
+        // プレイヤーの描画
         player_->Draw();
 
         // 弾の描画
@@ -104,12 +111,14 @@ namespace MyGame {
 #pragma region 全てのSprite個々の描画処理 
         // Spriteの描画準備。Spriteの描画に共通のグラフィックスコマンドを積む
         SpriteCommon::GetInstance()->Commondrawing();
-		// プレイヤーのスプライト描画
+        // プレイヤーのスプライト描画
         player_->DrawSprite();
-		// UIマネージャの描画
+        // UIマネージャの描画
         UIManager::GetInstance()->Draw();
-		// フェードの描画
+        // フェードマネージャの描画
         FadeManager::GetInstance()->Draw();
+        // イベントマネージャの描画
+        EventManager::GetInstance()->Draw2D();
 #pragma endregion 全てのSprite個々の描画処理
     }
 }

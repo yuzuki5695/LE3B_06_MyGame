@@ -1,0 +1,56 @@
+#include "EventManager.h"
+
+namespace MyGame {
+
+    // シングルトン用インスタンス
+    EventManager* EventManager::instance = nullptr;
+
+    ///====================================================
+    /// シングルトンインスタンスの取得
+    ///====================================================
+    EventManager* EventManager::GetInstance() {
+        // まだインスタンスが生成されていなければ作成
+        if (instance == nullptr) {
+            instance = new EventManager;
+        }
+        return instance;
+    }
+
+    ///====================================================
+    /// 終了処理
+    ///====================================================
+    void EventManager::Finalize() {
+        // インスタンスを削除してnullptrに戻す
+        delete instance;
+        instance = nullptr;
+    }
+
+    void EventManager::EventStart(Event::EventState state) {
+        switch (state) {
+        case Event::EventState::GameStart:
+            currentEvent_ = std::make_unique<StartEvent>();
+            currentEvent_->Initialize();
+            break;
+        }
+    }
+
+    void EventManager::Update() {
+        if (currentEvent_) {
+            currentEvent_->Update();
+
+            if (currentEvent_->IsFinished()) {
+                currentEvent_.reset();
+            }
+        }
+    }
+
+    void EventManager::Draw2D() {
+        if (currentEvent_) {
+            currentEvent_->Draw2D();
+        }
+    }
+
+    bool EventManager::IsActive() const {
+        return currentEvent_ != nullptr;
+    }
+}

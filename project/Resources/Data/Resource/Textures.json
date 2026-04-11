@@ -2,6 +2,7 @@
     "Textures": {
         "Textures": {
             "Event": [
+                "Textures/Event/Black.png",
                 "Textures/Event/start.png",
                 "Textures/Event/Startevent_01.png",
                 "Textures/Event/Startevent_02.png",

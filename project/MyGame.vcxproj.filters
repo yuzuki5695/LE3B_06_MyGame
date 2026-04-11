@@ -328,6 +328,18 @@
     <Filter Include="ヘッダー ファイル\application\ui\fade\effects">
       <UniqueIdentifier>{0c63bd7a-2ebf-465a-8ee7-c4a372980ec5}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ソース ファイル\application\event">
+      <UniqueIdentifier>{2d6c4a74-c7ad-4ecd-ae60-02a84e8a4910}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\application\event\events">
+      <UniqueIdentifier>{9d980f9f-13ae-47a4-9019-09162de5854f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\application\event">
+      <UniqueIdentifier>{d0976a4d-9829-4c26-8937-af5b52d1d923}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\application\event\events">
+      <UniqueIdentifier>{a2847793-7a47-4891-9eda-151abbd5ed6b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -560,6 +572,12 @@
     </ClCompile>
     <ClCompile Include="application\ui\effect\fade\FadeManager.cpp">
       <Filter>ソース ファイル\application\ui\fade</Filter>
+    </ClCompile>
+    <ClCompile Include="application\event\EventManager.cpp">
+      <Filter>ソース ファイル\application\event</Filter>
+    </ClCompile>
+    <ClCompile Include="application\event\events\StartEvent.cpp">
+      <Filter>ソース ファイル\application\event\events</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -910,6 +928,18 @@
     </ClInclude>
     <ClInclude Include="application\ui\effect\fade\effects\SlideFade.h">
       <Filter>ヘッダー ファイル\application\ui\fade\effects</Filter>
+    </ClInclude>
+    <ClInclude Include="application\event\events\StartEvent.h">
+      <Filter>ヘッダー ファイル\application\event\events</Filter>
+    </ClInclude>
+    <ClInclude Include="application\event\EventManager.h">
+      <Filter>ヘッダー ファイル\application\event</Filter>
+    </ClInclude>
+    <ClInclude Include="application\event\IEvent.h">
+      <Filter>ヘッダー ファイル\application\event</Filter>
+    </ClInclude>
+    <ClInclude Include="application\event\EventTypes.h">
+      <Filter>ヘッダー ファイル\application\event</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

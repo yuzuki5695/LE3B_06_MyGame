@@ -28,5 +28,8 @@ namespace MyGame {
     private: // メンバ変数
         std::unique_ptr <Player> player_;
 
+
+
+
     };
 }

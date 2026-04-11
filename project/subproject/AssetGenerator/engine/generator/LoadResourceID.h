@@ -30,6 +30,7 @@ namespace LoadResourceID {
     } // namespace Models
     namespace Textures {
         namespace Event {
+            constexpr const char* Black = "Textures/Event/Black.png";
             constexpr const char* start = "Textures/Event/start.png";
             constexpr const char* Startevent_01 = "Textures/Event/Startevent_01.png";
             constexpr const char* Startevent_02 = "Textures/Event/Startevent_02.png";
