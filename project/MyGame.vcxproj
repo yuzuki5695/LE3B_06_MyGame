@@ -116,6 +116,8 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="application\camera\GameClearCamera.cpp" />
+    <ClCompile Include="application\camera\GameOverCamera.cpp" />
     <ClCompile Include="application\camera\GamePlayCamera.cpp" />
     <ClCompile Include="application\camera\TitleCamera.cpp" />
     <ClCompile Include="application\character\basestate\CharacterState.cpp" />
@@ -200,6 +202,8 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="engine\resource\ResourceFactory.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="application\camera\GameClearCamera.h" />
+    <ClInclude Include="application\camera\GameOverCamera.h" />
     <ClInclude Include="application\camera\GamePlayCamera.h" />
     <ClInclude Include="application\camera\ISceneCameraBehavior.h" />
     <ClInclude Include="application\camera\TitleCamera.h" />

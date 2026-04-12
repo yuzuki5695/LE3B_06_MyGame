@@ -606,6 +606,12 @@
     <ClCompile Include="application\character\enemy\EnemySpawner.cpp">
       <Filter>ソース ファイル\application\character\enemy</Filter>
     </ClCompile>
+    <ClCompile Include="application\camera\GameOverCamera.cpp">
+      <Filter>ソース ファイル\application\camera</Filter>
+    </ClCompile>
+    <ClCompile Include="application\camera\GameClearCamera.cpp">
+      <Filter>ソース ファイル\application\camera</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="engine\2d\Sprite.h">
@@ -976,6 +982,12 @@
     </ClInclude>
     <ClInclude Include="application\character\enemy\EnemySpawner.h">
       <Filter>ソース ファイル\application\character\enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="application\camera\GameClearCamera.h">
+      <Filter>ヘッダー ファイル\application\camera</Filter>
+    </ClInclude>
+    <ClInclude Include="application\camera\GameOverCamera.h">
+      <Filter>ヘッダー ファイル\application\camera</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
