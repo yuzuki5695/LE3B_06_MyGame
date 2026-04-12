@@ -3,6 +3,7 @@
 #include <Sprite.h>
 #include <Player.h>
 #include <Enemy.h>
+#include <EnemySpawner.h>
 
 namespace MyGame {
     /// <summary>
@@ -27,8 +28,9 @@ namespace MyGame {
         /// </summary>
         void Draw() override;
     private: // メンバ変数
-        std::unique_ptr <Player> player_; 
-        std::unique_ptr <Enemy> enemy_;
+        std::unique_ptr <Player> player_;
+        std::unique_ptr<EnemySpawner> enemySpawner_;
+        std::vector<std::unique_ptr<Enemy>> enemies_;
 
         bool isGameStartEventDone_;
 

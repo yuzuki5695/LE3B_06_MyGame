@@ -5,6 +5,8 @@
 #include <GamePlayCamera.h>
 #include <CameraSet.h>
 #include <TitleCamera.h>
+#include <GameOverCamera.h>
+#include <GameClearCamera.h>
 #include <Player.h>
 
 namespace MyEngine {
@@ -66,6 +68,10 @@ namespace MyEngine {
         Object3d* GetTarget() { return stateData_.target; }
         MyGame::Player* GetPlayer() { return player_; }
         float GetCameraProgress() const { return currentBehavior_ ? currentBehavior_->GetProgress() : 0.0f; }
+        MyGame::GamePlayCamera* GetGameplayCamera() { return dynamic_cast<MyGame::GamePlayCamera*>(currentBehavior_.get()); }
+        MyGame::GameOverCamera* GetGameOverCamera() { return dynamic_cast<MyGame::GameOverCamera*>(currentBehavior_.get()); }         
+        MyGame::GameClearCamera* GetGameClearCamera() { return dynamic_cast<MyGame::GameClearCamera*>(currentBehavior_.get()); }
+
         // setter
         void SetCameraState(const CameraDefs::StateData& data) { stateData_ = data; }
         void SetTarget(Object3d* target) { stateData_.target = target; SetCameraState(stateData_); }

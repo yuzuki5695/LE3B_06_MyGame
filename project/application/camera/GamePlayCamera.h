@@ -33,7 +33,7 @@ namespace MyGame {
         float speed = 0.3f;                             // 移動速度
         RailInfo railInfo_;
         float distance_ = 0.0f;   // 現在の移動距離
-
+        MyEngine::Vector3 forward_{};
         int currentIndex_ = 0;   // 今いる区間（p1）
         float t_ = 0.0f;        // 区間内の進行度
 
@@ -41,6 +41,9 @@ namespace MyGame {
         float GetProgress() const override {
             if (railInfo_.totalLength <= 0.0f) return 0.0f;
             return distance_ / railInfo_.totalLength;
+        }
+        MyEngine::Vector3 GetForward() const {
+            return forward_;
         }
     };
 }

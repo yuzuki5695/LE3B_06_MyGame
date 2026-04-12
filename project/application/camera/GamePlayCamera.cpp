@@ -91,6 +91,9 @@ namespace MyGame {
 
         Vector3 lookPos = GetCatmullRomPoint(curve, lookIndex, lookT);
 
+        // 前方向ベクトルを計算
+        forward_ = Normalize(lookPos - bezierPos_);
+
         camera->SetLookAt(bezierPos_, lookPos, { 0.0f, 1.0f, 0.0f });
     }
 

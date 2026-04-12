@@ -41,6 +41,18 @@ namespace MyGame {
         player_->Initialize();
         CameraManager::GetInstance()->SetPlayer(player_.get());
 
+        // 敵生成
+        const int kEnemyMax = 300;
+        for (int i = 0; i < kEnemyMax; i++) {
+            auto enemy = std::make_unique<Enemy>();
+            enemy->Initialize();
+            enemies_.push_back(std::move(enemy));
+        }
+
+        // Spawner生成
+        enemySpawner_ = std::make_unique<EnemySpawner>();
+        enemySpawner_->SetEnemies(&enemies_);
+		enemySpawner_->SetPlayer(player_.get());
 
         // ステージマネージャの初期化
         StageManager::GetInstance()->Initialize();
@@ -52,7 +64,7 @@ namespace MyGame {
         // UIマネージャの初期化
         UIManager::GetInstance()->Initialize();
         FadeManager::GetInstance()->StartFade(FadeType::FadeIn, FadeStyle::SilhouetteExplode, 1.0f);
-    
+
         isGameStartEventDone_ = false;
     }
 
@@ -61,7 +73,7 @@ namespace MyGame {
         CameraManager::GetInstance()->Update();
 
 #pragma region 全てのObject3d個々の更新処理       
-		//  ゲーム開始前のイベント処理
+        //  ゲーム開始前のイベント処理
         if (!isGameStartEventDone_) {
             // ゲーム開始イベントの開始
             EventManager::GetInstance()->EventStart(Event::EventState::GameStart);
@@ -72,6 +84,13 @@ namespace MyGame {
 
             // フェードアウト
             // FadeManager::GetInstance()->SceneChangeFade(SceneName::TITLE, FadeStyle::SilhouetteExplode, 1.0f);
+        }
+        // 敵スポーン
+        enemySpawner_->Update();
+
+        // 敵更新
+        for (auto& enemy : enemies_) {
+            enemy->Update();
         }
 
         // プレイヤーの更新
@@ -119,6 +138,11 @@ namespace MyGame {
         SpriteCommon::GetInstance()->Commondrawing();
         // プレイヤーのスプライト描画
         player_->DrawSprite();
+
+        for (auto& enemy : enemies_) {
+            enemy->Draw();
+        }
+
         // UIマネージャの描画
         UIManager::GetInstance()->Draw();
         // フェードマネージャの描画

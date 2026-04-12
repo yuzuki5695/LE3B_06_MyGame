@@ -51,7 +51,7 @@ namespace MyGame {
 
         skybox_ = Skybox::Create(stage::CubemapBox, Transform{ { 1000.0f, 1000.0f, 1000.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 100.0f } });
 
-        grass = Object3d::Create(Object::Tile, Transform({ 1000.0f, 1.0f, 1000.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, -20.0f, 0.0f }));
+        grass = Object3d::Create(Object::Tile, Transform({ 1000.0f, 1.0f, 1000.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, -120.0f, 0.0f }));
 
     }
 

@@ -16,7 +16,7 @@ namespace MyGame {
     void Enemy::Initialize() {
         ModelManager::GetInstance()->LoadModel(Character::Enemy);
 
-        object_ = Object3d::Create(Character::Enemy, Transform{ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 00.0f });
+        object_ = Object3d::Create(Character::Enemy, Transform{ { 1.0f, 1.0f, 1.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f } });
 
         // 初期ステートをセットする
         ChangeState(std::make_unique<EnemyIdle>());

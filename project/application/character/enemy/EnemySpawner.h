@@ -2,7 +2,7 @@
 #include <Player.h>
 #include <CameraManager.h>
 #include <Enemy.h>
-
+#include <random>
 
 //
 ///// <summary>
@@ -18,16 +18,25 @@
 namespace MyGame {
     class EnemySpawner {
     public:
-     //   void Initialize(Player* player, CameraManager* camera, std::vector<std::unique_ptr<Enemy>>* enemies);
+           void Update();
+           
+           void SpawnEnemies(int count);
 
-       // void Update();
+           void SetEnemies(std::vector<std::unique_ptr<Enemy>>* enemies) {
+               enemies_ = enemies;
+           }
+           void SetPlayer(Player* player) { player_ = player; }
+    private:
+        float spawnInterval_ = 3.0f;   // 何秒ごと
+        float spawnTimer_ = 0.0f;
+        int spawnCount_ = 3;           // 1回で出す数
+        std::vector<std::unique_ptr<Enemy>>* enemies_ = nullptr;
+            
+        std::mt19937 randomEngine;               // 乱数生成器
 
-    private:
-        //void EnemySpawn();
-    private:
-        //Player* player_ = nullptr;
+        Player* player_ = nullptr;
         //CameraManager* cameraManager_ = nullptr;
-        //std::vector<std::unique_ptr<Enemy>>* enemies_ = nullptr;
+
         //std::vector<EnemySpawnTrigger> spawnTriggers_;
 
 

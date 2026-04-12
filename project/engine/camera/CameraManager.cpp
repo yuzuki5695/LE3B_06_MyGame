@@ -85,5 +85,7 @@ namespace MyEngine {
         // 各シーンの登録
         cameraRegistry_[SceneName::TITLE] = [] {return std::make_unique<MyGame::TitleCamera>(); };
         cameraRegistry_[SceneName::GAMEPLAY] = [] {return std::make_unique<MyGame::GamePlayCamera>(); };
+        cameraRegistry_[SceneName::GAMEOVER] = [] {return std::make_unique<MyGame::GameOverCamera>(); };
+        cameraRegistry_[SceneName::GAMECLEAR] = [] {return std::make_unique<MyGame::GameClearCamera>(); };
     }
 }
