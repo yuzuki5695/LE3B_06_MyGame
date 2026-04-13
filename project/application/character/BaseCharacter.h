@@ -59,11 +59,17 @@ namespace MyGame {
         /// </summary>
         bool isAlive_ = true;
         /// <summary>
+        /// アクティブフラグ
+        /// </summary>
+        bool isActive_ = false;
+        /// <summary>
         /// ステートの本体
         /// </summary>
         CharacterState state_;
     public: // アクセッサ
         // getter
-        MyEngine::Object3d* GetObject3d() const { return object_.get(); }   
+        MyEngine::Object3d* GetObject3d() const { return object_.get(); }
+        bool IsActive() const { return isActive_; }
+        void SetActive(bool flag) { isActive_ = flag; }
     };
 }

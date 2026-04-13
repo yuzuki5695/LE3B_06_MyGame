@@ -38,7 +38,7 @@ namespace MyGame {
         int spawned = 0;
 
         for (auto& enemy : *enemies_) {
-            if (enemy->IsAlive() && spawned < count) {
+            if (!enemy->IsActive() && spawned < count) {
 
                 // ランダム値生成
                 float randX = distX(randomEngine);
@@ -46,11 +46,9 @@ namespace MyGame {
                 float randZ = distz(randomEngine);
 
                 Vector3 spawnPos = playerPos + forward * randZ + right * randX + up * randY;
-
+                enemy->SetActive(true);
                 enemy->GetObject3d()->SetTranslate(spawnPos);
-
-                enemy->ChangeState(std::make_unique<EnemyAlive>());
-
+                enemy->ChangeState(std::make_unique<EnemyIdle>());
                 spawned++;
             }
         }

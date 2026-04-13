@@ -15,6 +15,7 @@
 #include <GamePlayUI.h>
 #include <SceneName.h>
 #include <EventManager.h>
+#include <CollisionManager.h>
 // AssetGeneratorからインクルード
 #include <subproject/AssetGenerator/engine/generator/LoadResourceID.h>
 
@@ -85,6 +86,9 @@ namespace MyGame {
             // フェードアウト
             // FadeManager::GetInstance()->SceneChangeFade(SceneName::TITLE, FadeStyle::SilhouetteExplode, 1.0f);
         }
+
+
+
         // 敵スポーン
         enemySpawner_->Update();
 
@@ -101,6 +105,21 @@ namespace MyGame {
         StageManager::GetInstance()->Update();
         // イベントマネージャの更新
         EventManager::GetInstance()->Update();
+
+        CollisionManager::GetInstance()->CheckAllCollisions();
+
+        enemies_.erase(
+            std::remove_if(enemies_.begin(), enemies_.end(),
+                [](std::unique_ptr<Enemy>& enemy) {
+                    if (!enemy->IsAlive()) {
+                        enemy->Finalize(); // ←ここで安全に消す
+                        return true;
+                    }
+                    return false;
+                }),
+            enemies_.end()
+        );
+
 #pragma endregion 全てのObject3d個々の更新処理
 
 #pragma region 全てのSprite個々の更新処理

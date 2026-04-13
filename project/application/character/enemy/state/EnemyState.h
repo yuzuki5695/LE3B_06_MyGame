@@ -6,6 +6,9 @@ namespace MyGame {
     class EnemyIdle : public ICharacterState {
     public:
         void Update(BaseCharacter& character) override;
+    private:
+        float timer_ = 0.0f;
+        float duration_ = 1.0f; // 出現時間
     };
 
     // 生きている状態

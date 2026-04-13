@@ -358,6 +358,12 @@
     <Filter Include="ヘッダー ファイル\application\character\enemy\component">
       <UniqueIdentifier>{18f2c5c4-0141-4785-b141-ac5711b02f69}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ヘッダー ファイル\application\collision">
+      <UniqueIdentifier>{c82d4f17-883c-49fb-b1dd-aac9ca88eb36}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\application\collision">
+      <UniqueIdentifier>{6e9e9c14-5122-492b-b39e-3a28944d57ff}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -611,6 +617,9 @@
     </ClCompile>
     <ClCompile Include="application\camera\GameClearCamera.cpp">
       <Filter>ソース ファイル\application\camera</Filter>
+    </ClCompile>
+    <ClCompile Include="application\collision\CollisionManager.cpp">
+      <Filter>ソース ファイル\application\collision</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -980,14 +989,35 @@
     <ClInclude Include="application\character\enemy\Enemy.h">
       <Filter>ヘッダー ファイル\application\character\enemy</Filter>
     </ClInclude>
-    <ClInclude Include="application\character\enemy\EnemySpawner.h">
-      <Filter>ソース ファイル\application\character\enemy</Filter>
-    </ClInclude>
     <ClInclude Include="application\camera\GameClearCamera.h">
       <Filter>ヘッダー ファイル\application\camera</Filter>
     </ClInclude>
     <ClInclude Include="application\camera\GameOverCamera.h">
       <Filter>ヘッダー ファイル\application\camera</Filter>
+    </ClInclude>
+    <ClInclude Include="application\character\enemy\EnemySpawner.h">
+      <Filter>ヘッダー ファイル\application\character\enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="application\collision\Collider.h">
+      <Filter>ヘッダー ファイル\application\collision</Filter>
+    </ClInclude>
+    <ClInclude Include="application\collision\CollisionComponent.h">
+      <Filter>ヘッダー ファイル\application\collision</Filter>
+    </ClInclude>
+    <ClInclude Include="application\collision\OBBCollider.h">
+      <Filter>ヘッダー ファイル\application\collision</Filter>
+    </ClInclude>
+    <ClInclude Include="application\collision\CollisionUtils.h">
+      <Filter>ヘッダー ファイル\application\collision</Filter>
+    </ClInclude>
+    <ClInclude Include="application\collision\CollisionConfig.h">
+      <Filter>ヘッダー ファイル\application\collision</Filter>
+    </ClInclude>
+    <ClInclude Include="application\collision\CollisionManager.h">
+      <Filter>ヘッダー ファイル\application\collision</Filter>
+    </ClInclude>
+    <ClInclude Include="application\collision\EnemyCollider.h">
+      <Filter>ヘッダー ファイル\application\collision</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -1,5 +1,7 @@
 #include "PlayerBullet.h"
 #include <ModelManager.h>
+#include <CollisionManager.h>
+#include <CollisionConfig.h>
 // AssetGeneratorからインクルード
 #include <subproject/AssetGenerator/engine/generator/LoadResourceID.h>
 
@@ -8,13 +10,26 @@ using namespace AssetGen::LoadResourceID::Models;
 
 namespace MyGame {
 
-    void PlayerBullet::Initialize(const MyEngine::Transform& transform, const MyEngine::Vector3& velocity){
+    void PlayerBullet::Finalize() {
+        if (collider_) {
+            CollisionManager::GetInstance()->RemoveCollider(collider_.get());
+        }
+    }
+
+    void PlayerBullet::Initialize(const MyEngine::Transform& transform, const MyEngine::Vector3& velocity) {
         // 基底の初期化
         BaseBullet::Initialize(transform, velocity);
 
         // オブジェクト生成
         ModelManager::GetInstance()->LoadModel(Bullet::PlayerBullet);
         bullet = Object3d::Create(Bullet::PlayerBullet, transform_);
+        // 🔥 これが抜けてた
+        collider_ = std::make_unique<OBBCollider>(bullet.get());
+        // 当たり判定を設定
+        collider_->SetCollisionAttribute(CollisionConfig::kGroupPlayerBullet);
+        collider_->SetCollisionMask(CollisionConfig::kGroupEnemy);
+        // 登録
+        CollisionManager::GetInstance()->AddCollider(collider_.get());
 
         // 初期位置設定
         bullet->SetTranslate(transform_.translate);
@@ -43,6 +58,12 @@ namespace MyGame {
     void PlayerBullet::Draw() {
         if (bullet) {
             bullet->Draw();
+        }
+    }
+
+    void PlayerBullet::OnCollision(Collider* other) {
+        if (other->GetCollisionAttribute() == CollisionConfig::kGroupEnemy) {
+            SetInactive();
         }
     }
 }

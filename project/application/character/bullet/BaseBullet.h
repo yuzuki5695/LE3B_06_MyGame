@@ -15,6 +15,7 @@ namespace MyGame {
         /// デストラクタ
         /// </summary> 
         virtual ~BaseBullet() = default;
+        virtual void Finalize() {}
         /// <summary>
         /// 初期化処理
         /// </summary>

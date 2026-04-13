@@ -1,5 +1,6 @@
 #pragma once
 #include <BaseCharacter.h>
+#include <CollisionComponent.h>
 
 namespace MyGame {
 	/// <summary>
@@ -9,6 +10,7 @@ namespace MyGame {
 	public:// メンバ関数
 		// デストラクタ
 		~Enemy() override;
+		void Finalize();
 		/// <summary>
 		/// 初期化処理 
 		/// </summary>
@@ -21,7 +23,13 @@ namespace MyGame {
 		/// 描画処理
 		/// </summary>
 		void Draw() override;
-	private: // メンバ変数
 
+		/// <summary>
+		/// 衝突時の通知を受け取る
+		/// </summary>
+		void OnCollision(Collider* other);
+
+	private: // メンバ変数
+		CollisionComponent collision_;
 	};
 }

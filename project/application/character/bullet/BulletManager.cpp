@@ -33,9 +33,17 @@ namespace MyGame {
             bullet->Update();
         }
 
-        // 非アクティブ削除（超重要）
-        bullets_.erase(std::remove_if(bullets_.begin(), bullets_.end(), [](const std::unique_ptr<BaseBullet>& bullet)
-            {return !bullet->IsActive(); }),
+        // 非アクティブ削除
+        bullets_.erase(
+            std::remove_if(bullets_.begin(), bullets_.end(),
+                [](std::unique_ptr<BaseBullet>& bullet)
+                {
+                    if (!bullet->IsActive()) {
+                        bullet->Finalize();
+                        return true;
+                    }
+                    return false;
+                }),
             bullets_.end()
         );
     }
