@@ -78,23 +78,40 @@ namespace MyGame {
         // ④ 座標取得
         bezierPos_ = GetCatmullRomPoint(curve, currentIndex_, t_);
 
-        float lookDistance = distance_ + 20.0f; // ← 好きに調整
+        // 制御点取得
+        auto GetPoint = [&](int i) -> const Vector3& {
+            i = std::clamp(i, 0, (int)curve.size() - 1);
+            return curve[i].controlPoint;
+            };
 
-        // 範囲制限
-        lookDistance = std::min(lookDistance, railInfo_.totalLength);
+        const Vector3& p0 = GetPoint(currentIndex_ - 1);
+        const Vector3& p1 = GetPoint(currentIndex_);
+        const Vector3& p2 = GetPoint(currentIndex_ + 1);
+        const Vector3& p3 = GetPoint(currentIndex_ + 2);
 
-        // 距離→変換
-        int lookIndex;
-        float lookT;
+        // 接線取得
+        Vector3 tangent = CatmullRomTangent(p0, p1, p2, p3, t_);
+        Vector3 targetForward = Normalize(tangent);
 
-        ConvertDistanceToSegmentInternal(lookDistance, lookIndex, lookT);
+        float futureT = t_ + 0.1f;
+        futureT = std::min(futureT, 1.0f);
 
-        Vector3 lookPos = GetCatmullRomPoint(curve, lookIndex, lookT);
+        Vector3 futurePos = GetCatmullRomPoint(curve, currentIndex_, futureT);
+        Vector3 futureForward = Normalize(futurePos - bezierPos_);
 
-        // 前方向ベクトルを計算
-        forward_ = Normalize(lookPos - bezierPos_);
+        targetForward = Normalize(Lerp(targetForward, futureForward, 0.3f));
+     
+        // 角度計算
+        float dot = std::clamp(Dot(forward_, targetForward), -1.0f, 1.0f);
+        float angle = acosf(dot);
 
-        camera->SetLookAt(bezierPos_, lookPos, { 0.0f, 1.0f, 0.0f });
+        // 角度ベース補間係数
+        float smooth = std::clamp(angle * 0.1f, 0.02f, 0.2f);
+
+        // Slerp補間
+        forward_ = Normalize(Slerp(forward_, targetForward, smooth));
+
+        camera->SetLookAt(bezierPos_, bezierPos_ + forward_, { 0.0f, 1.0f, 0.0f });
     }
 
     Vector3 GamePlayCamera::CatmullRom(const Vector3& p0, const Vector3& p1, const Vector3& p2, const Vector3& p3, float t) {
@@ -141,6 +158,17 @@ namespace MyGame {
 
         return length;
     }
+    
+    Vector3 GamePlayCamera::CatmullRomTangent(const Vector3& p0, const Vector3& p1, const Vector3& p2, const Vector3& p3, float t) {
+        float t2 = t * t;
+
+        return 0.5f * (
+            (-p0 + p2) +
+            2.0f * (2.0f * p0 - 5.0f * p1 + 4.0f * p2 - p3) * t +
+            3.0f * (-p0 + 3.0f * p1 - 3.0f * p2 + p3) * t2
+            );
+    }
+
     Vector3 GamePlayCamera::GetCatmullRomPoint(const std::vector<BezierPoint>& curve, int index, float t) {
         auto GetPoint = [&](int i) -> const Vector3& {
             i = std::clamp(i, 0, (int)curve.size() - 1);

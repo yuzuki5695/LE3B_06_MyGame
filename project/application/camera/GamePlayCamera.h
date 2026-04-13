@@ -19,6 +19,8 @@ namespace MyGame {
         void BuildRailInfo(const std::vector<BezierPoint>& curve);
         float CalculateSegmentLength(const std::vector<BezierPoint>& curve, int index);
         MyEngine::Vector3 GetCatmullRomPoint(const std::vector<BezierPoint>& curve, int index, float t);
+        MyEngine::Vector3 CatmullRomTangent(const MyEngine::Vector3& p0, const MyEngine::Vector3& p1, const MyEngine::Vector3& p2, const MyEngine::Vector3& p3, float t);
+
 
         MyEngine::Vector3 CatmullRom(const MyEngine::Vector3& p0, const MyEngine::Vector3& p1, const MyEngine::Vector3& p2, const MyEngine::Vector3& p3, float t);
 

@@ -142,6 +142,10 @@ namespace MyGame {
 
         // プレイヤーの描画
         player_->Draw();
+        
+        for (auto& enemy : enemies_) {
+            enemy->Draw();
+        }
 
         // 弾の描画
         BulletManager::GetInstance()->Draw();
@@ -157,10 +161,6 @@ namespace MyGame {
         SpriteCommon::GetInstance()->Commondrawing();
         // プレイヤーのスプライト描画
         player_->DrawSprite();
-
-        for (auto& enemy : enemies_) {
-            enemy->Draw();
-        }
 
         // UIマネージャの描画
         UIManager::GetInstance()->Draw();
