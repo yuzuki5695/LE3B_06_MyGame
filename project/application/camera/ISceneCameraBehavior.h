@@ -23,9 +23,7 @@ namespace MyGame {
         /// <param name="camera">操作対象のカメラポインタ</param>
         virtual void Update(MyEngine::Camera* camera) = 0;
 
-
         virtual void SetTarget(MyEngine::Object3d* target) {}
-
         // 進捗率(0.0~1.0)を返す仮想関数。デフォルトは0を返す
         virtual float GetProgress() const { return 0.0f; }
     };

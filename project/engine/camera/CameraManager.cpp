@@ -53,8 +53,8 @@ namespace MyEngine {
         }
 
         // マネージャ側の管理用Transformに最新情報を同期
-        camera_.transform.translate = camera_.activeCamera->GetTranslate();
-        camera_.transform.rotate = camera_.activeCamera->GetRotate();
+        camera_.activeCamera->SetTranslate(camera_.activeCamera->GetTranslate());
+        camera_.activeCamera->SetRotate(camera_.activeCamera->GetRotate());
 
         // 最終的な行列の計算
         camera_.activeCamera->Update();

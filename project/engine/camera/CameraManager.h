@@ -59,22 +59,28 @@ namespace MyEngine {
         std::unordered_map<std::string, std::function<std::unique_ptr<MyGame::ISceneCameraBehavior>()>> cameraRegistry_;
 
         MyGame::Player* player_ = nullptr;
+        MyEngine::Object3d* target_ = nullptr;
 
     public: // アクセッサ
         // getter
         Camera* GetActiveCamera() const { return camera_.GetActive(); }
         CameraSet& GetCameraSet() { return camera_; }
         const CameraDefs::StateData& GetCameraState() const { return stateData_; }
-        Object3d* GetTarget() { return stateData_.target; }
+        //Object3d* GetTarget() { return stateData_.target; }
         MyGame::Player* GetPlayer() { return player_; }
         float GetCameraProgress() const { return currentBehavior_ ? currentBehavior_->GetProgress() : 0.0f; }
+        MyGame::TitleCamera* GetTitleCamera() { return dynamic_cast<MyGame::TitleCamera*>(currentBehavior_.get()); }
         MyGame::GamePlayCamera* GetGameplayCamera() { return dynamic_cast<MyGame::GamePlayCamera*>(currentBehavior_.get()); }
-        MyGame::GameOverCamera* GetGameOverCamera() { return dynamic_cast<MyGame::GameOverCamera*>(currentBehavior_.get()); }         
+        MyGame::GameOverCamera* GetGameOverCamera() { return dynamic_cast<MyGame::GameOverCamera*>(currentBehavior_.get()); }
         MyGame::GameClearCamera* GetGameClearCamera() { return dynamic_cast<MyGame::GameClearCamera*>(currentBehavior_.get()); }
-
+        bool IsGameplayCamera() const { return dynamic_cast<MyGame::GamePlayCamera*>(currentBehavior_.get()) != nullptr; }
         // setter
         void SetCameraState(const CameraDefs::StateData& data) { stateData_ = data; }
-        void SetTarget(Object3d* target) { stateData_.target = target; SetCameraState(stateData_); }
+        //void SetTarget(Object3d* target) { stateData_.target = target; SetCameraState(stateData_); }
         void SetPlayer(MyGame::Player* player) { player_ = player; }
+
+
+        void SetTarget(MyEngine::Object3d* target) { target_ = target; }
+        MyEngine::Object3d* GetTarget() const { return target_; }
     };
 }

@@ -1,5 +1,6 @@
 #pragma once
 #include <BaseScene.h>
+#include <Player.h>
 
 namespace MyGame {
     /// <summary>
@@ -26,5 +27,13 @@ namespace MyGame {
         /// </summary>
         void Draw() override;
     private: // メンバ変数
+        std::unique_ptr <Player> player_;
+
+
+        MyEngine::Vector3 playeroffset_;
+        bool isMoving_ = true;
+
+
+
     };
 }

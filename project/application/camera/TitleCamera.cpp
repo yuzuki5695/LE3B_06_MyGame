@@ -1,48 +1,68 @@
 #include "TitleCamera.h"
 #include <CameraManager.h>
+#include <MatrixVector.h>
 
 using namespace MyEngine;
+using namespace MatrixVector;
 
 namespace MyGame {
 
-    void TitleCamera::Initialize(MyEngine::Camera* camera) {
+    void TitleCamera::Initialize(Camera* camera) {
         if (!camera) return;
-
-        //camera->SetRotate({ 0.0f, 0.0f, 0.0f });
-        //camera->SetTranslate({ 0.0f, 0.0f, -50.0f });
-
-        //auto camMgr = CameraManager::GetInstance();
-
-        //// メインカメラの位置取得
-        //MyEngine::Vector3 mainPos = camera->GetTranslate();
-
-        //// サブカメラ生成
-        //std::unique_ptr<MyEngine::Camera> subCam = std::make_unique<MyEngine::Camera>();
-
-        //// Zを -50 離す
-        //MyEngine::Vector3 subPos = mainPos;
-        //subPos.z -= 50.0f;
-
-        //subCam->SetTranslate(subPos);
-        //subCam->SetRotate(camera->GetRotate());
-
-        //// 登録
-        //camMgr->GetCameraSet().AddSubCamera("Sub1", std::move(subCam));
-
-        //// 有効化
-        //camMgr->GetCameraSet().SetActiveSubCamera("Sub1");
+        CameraDefs::StateData data;
+        data.type = CameraDefs::CameraType::Main;
+        data.state = CameraDefs::CameraState::Default;
+        // カメラマネージャに状態をセット
+        CameraManager::GetInstance()->SetCameraState(data);
+        offset_ = { 3.0f, 0.0f, 0.0f };
+        camera->SetTranslate(offset_);
     }
-    
-    void TitleCamera::Update(MyEngine::Camera* camera) {
-        CameraSet& camSet = CameraManager::GetInstance()->GetCameraSet();
+
+    void TitleCamera::Update(Camera* camera) {
         if (!camera) return;
 
+
+
+        CameraSet& camSet = CameraManager::GetInstance()->GetCameraSet();
         // サブカメラ中なら何もしない
         if (camSet.IsUsingSubCamera()) {
             return;
         }
-    
-    
-    
+
+        // 常にプレイヤーを見る
+       // UpdateLookAt(camera);
+    }
+
+    void TitleCamera::UpdateLookAt(Camera* camera) {
+        // CameraManagerにセットされているターゲットを取得
+        Object3d* target = CameraManager::GetInstance()->GetTarget();
+        if (!target) return;
+
+        Vector3 targetPos = target->GetWorldPosition();
+
+        // 🔥 カメラ位置をターゲット基準にする
+        Vector3 camPos = targetPos + offset_;
+        camera->SetTranslate(camPos);
+
+        // ターゲットへの方向ベクトル
+        Vector3 dir = targetPos - camPos;
+
+        // 距離が近すぎると計算が破綻するのでチェック
+        if (Length(dir) > 0.001f) {
+            dir = Normalize(dir);
+
+            // 方向から角度（Yaw, Pitch）を計算
+            float targetYaw = atan2f(dir.x, dir.z);
+            float targetPitch = -asinf(dir.y);
+
+            Vector3 rot = camera->GetRotate();
+
+            // 線形補間で滑らかに回転させる
+            rot.x = LerpAngle(rot.x, targetPitch, 0.1f);
+            rot.y = LerpAngle(rot.y, targetYaw, 0.1f);
+            rot.z = 0.0f;
+
+             camera->SetRotate(rot);
+        }
     }
 }

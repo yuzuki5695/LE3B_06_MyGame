@@ -3,16 +3,18 @@
 #include <Input.h>
 #include <Player.h>
 #include <CameraManager.h>
+#include <SceneManager.h>
+#include <SceneName.h>
 
 using namespace MyEngine;
 
 namespace MyGame {
 
     void PlayerStateIdle::Update(BaseCharacter& character) {
-        //if (Input::GetInstance()->Triggrkey(DIK_RETURN)) {
-        character.ChangeState(std::make_unique<PlayerStateMove>());
-        //}
-        CameraManager::GetInstance()->SetTarget(character.GetObject3d());
+        Player& player = static_cast<Player&>(character);
+        if (CameraManager::GetInstance()->IsGameplayCamera()) {
+            character.ChangeState(std::make_unique<PlayerStateMove>());
+        }
     }
 
     void PlayerStateMove::Update(BaseCharacter& character) {
