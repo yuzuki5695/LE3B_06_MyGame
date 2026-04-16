@@ -36,11 +36,11 @@ namespace MyGame {
 
     void GamePlayScene::Initialize() {
         // カメラマネージャの初期化
-        CameraManager::GetInstance()->Initialize(Transform({ 1.0f, 1.0f, 1.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, -10.0f }));
+        CameraManager::GetInstance()->Initialize(SceneName::TITLE);
 
         player_ = std::make_unique<Player>();
         player_->Initialize();
-        CameraManager::GetInstance()->SetPlayer(player_.get());
+       // CameraManager::GetInstance()->SetPlayer(player_.get());
 
         // 敵生成
         const int kEnemyMax = 300;

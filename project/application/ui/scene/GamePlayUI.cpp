@@ -64,7 +64,7 @@ namespace MyGame {
     }
 
     void GamePlayUI::Update() {
-        UpdateStageProgressUI();
+        ///UpdateStageProgressUI();
 
         gage_->Update();
         player_ui_->Update();
@@ -88,16 +88,16 @@ namespace MyGame {
     }
 
     void GamePlayUI::UpdateStageProgressUI() {
-        // マネージャ経由で「今のカメラ挙動」から進捗を直接もらう
-        float progress = CameraManager::GetInstance()->GetCameraProgress();
-        progress = std::clamp(progress, 0.0f, 1.0f);
-        constexpr float gageX = 380.0f;
-        constexpr float gageWidth = 500.0f;
-        constexpr float playerWidth = 25.0f;
+        //// マネージャ経由で「今のカメラ挙動」から進捗を直接もらう
+        //float progress = CameraManager::GetInstance()->GetCameraProgress();
+        //progress = std::clamp(progress, 0.0f, 1.0f);
+        //constexpr float gageX = 380.0f;
+        //constexpr float gageWidth = 500.0f;
+        //constexpr float playerWidth = 25.0f;
 
-        float movableWidth = gageWidth - playerWidth;
-        float uiX = gageX + progress * movableWidth;
-        player_ui_->SetPosition(Vector2{ uiX, 12.3f });
+        //float movableWidth = gageWidth - playerWidth;
+        //float uiX = gageX + progress * movableWidth;
+        //player_ui_->SetPosition(Vector2{ uiX, 12.3f });
     }
 
     void GamePlayUI::CreateWASDUI(const Vector2& baseCenter, const Vector2& size, float keySpacing, float groupSpacing) {

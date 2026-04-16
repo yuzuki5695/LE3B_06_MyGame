@@ -4,6 +4,7 @@
 #include <SpriteCommon.h>
 #include <Object3dCommon.h>
 #include <ParticleCommon.h>
+#include <SceneName.h>
 
 using namespace MyEngine;
 
@@ -13,7 +14,7 @@ namespace MyGame {
 	}
 
 	void GameClearScene::Initialize() {		
-		CameraManager::GetInstance()->Initialize(Transform({ 1.0f, 1.0f, 1.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, -50.0f }));
+        CameraManager::GetInstance()->Initialize(SceneName::TITLE);
 
 	}
 

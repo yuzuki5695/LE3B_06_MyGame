@@ -23,14 +23,15 @@ namespace MyGame {
 	}
 
 	void TitleScene::Initialize() {
-		CameraManager::GetInstance()->Initialize(Transform({ 1.0f, 1.0f, 1.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }));
+		CameraManager::GetInstance()->Initialize(SceneName::TITLE);
 
 		// プレイヤ―の生成、初期化
 		player_ = std::make_unique<Player>();
 		player_->Initialize();
-		CameraManager::GetInstance()->SetTarget(player_->GetObject3d());
 		playeroffset_ = { 0.0f,0.0f,-100.0f };	
 		player_->GetObject3d()->SetTranslate(playeroffset_);
+		// カメラのターゲットにプレイヤーをセット
+		CameraManager::GetInstance()->GetCurrentBehaviorAs<TitleCamera>()->SetTarget(&player_->GetObject3d()->GetTransform());
 
 		// ステージマネージャの初期化
 		StageManager::GetInstance()->Initialize();
@@ -39,7 +40,6 @@ namespace MyGame {
 	}
 
 	void TitleScene::Update() {
-
 
 		if (Input::GetInstance()->Triggrkey(DIK_RETURN)) {
 			//FadeManager::GetInstance()->SceneChangeFade(SceneName::GAMEPLAY, FadeStyle::SilhouetteExplode, 1.0f);
@@ -51,11 +51,12 @@ namespace MyGame {
 
 		// 移動処理
 		if (isMoving_) {
-			playeroffset_.z += 0.5f; // 速度（調整OK）
+			playeroffset_.z += 1.0f; // 速度（調整OK）
 
 			if (playeroffset_.z >= 100.0f) {
 				playeroffset_.z = 100.0f;
 				isMoving_ = false; // 停止
+				CameraManager::GetInstance()->GetCurrentBehaviorAs<TitleCamera>()->StartIntroMove();
 			}
 		}
 

@@ -1,13 +1,11 @@
 #pragma once
 #include <Object3d.h>
-#include <CameraDefs.h>
-#include <CameraManager.h>
-#include <GamePlayCamera.h>
-#include <CameraSet.h>
+#include <ISceneCameraBehavior.h>
+#include <Player.h>
 #include <TitleCamera.h>
+#include <GamePlayCamera.h>
 #include <GameOverCamera.h>
 #include <GameClearCamera.h>
-#include <Player.h>
 
 namespace MyEngine {
     /// <summary>     
@@ -29,8 +27,7 @@ namespace MyEngine {
         /// <summary>
         /// 初期化処理
         /// </summary>
-        /// <param name="transform">初期カメラ姿勢</param>
-        void Initialize(const Transform& Transform);
+        void Initialize(const std::string& sceneName);
         /// <summary>
         /// 更新処理
         /// </summary> 
@@ -40,47 +37,37 @@ namespace MyEngine {
         /// </summary>
         /// <param name="behavior">差し替える挙動の所有権</param>
         void SetSceneBehavior(std::unique_ptr<MyGame::ISceneCameraBehavior> behavior);
-        /// <summary>
-        /// 全挙動をレジストリに登録する（初期化時に呼ぶ）
-        /// </summary>
+
+        // シーンごとに必要な「特定の挙動」を取得したい場合、
+        // テンプレートを使うとキャスト処理を汎用化できます
+        template <typename T>
+        T* GetCurrentBehaviorAs() { return dynamic_cast<T*>(currentBehavior_.get()); }
+        
+	private: // 内部関数
+		// 各シーンカメラの登録
         void RegisterCamera();
-        /// <summary>
-        /// シーン名に基づいて挙動を切り替える
-        /// </summary>
-        /// <param name="sceneName">切り替え先のシーン名</param>
+		// シーン切り替え時の初期化処理
         void OnSceneChanged(const std::string& sceneName);
     private: // メンバ変数
         // カメラのデータセット
         CameraSet camera_;
-        CameraDefs::StateData stateData_;
         // 現在適用中の挙動ロジック
         std::unique_ptr<MyGame::ISceneCameraBehavior> currentBehavior_;
         // レジストリ
         std::unordered_map<std::string, std::function<std::unique_ptr<MyGame::ISceneCameraBehavior>()>> cameraRegistry_;
-
-        MyGame::Player* player_ = nullptr;
-        MyEngine::Object3d* target_ = nullptr;
-
     public: // アクセッサ
         // getter
-        Camera* GetActiveCamera() const { return camera_.GetActive(); }
+        Camera* GetActiveCamera() const { return camera_.activeCamera; }
         CameraSet& GetCameraSet() { return camera_; }
-        const CameraDefs::StateData& GetCameraState() const { return stateData_; }
-        //Object3d* GetTarget() { return stateData_.target; }
-        MyGame::Player* GetPlayer() { return player_; }
-        float GetCameraProgress() const { return currentBehavior_ ? currentBehavior_->GetProgress() : 0.0f; }
-        MyGame::TitleCamera* GetTitleCamera() { return dynamic_cast<MyGame::TitleCamera*>(currentBehavior_.get()); }
-        MyGame::GamePlayCamera* GetGameplayCamera() { return dynamic_cast<MyGame::GamePlayCamera*>(currentBehavior_.get()); }
-        MyGame::GameOverCamera* GetGameOverCamera() { return dynamic_cast<MyGame::GameOverCamera*>(currentBehavior_.get()); }
-        MyGame::GameClearCamera* GetGameClearCamera() { return dynamic_cast<MyGame::GameClearCamera*>(currentBehavior_.get()); }
-        bool IsGameplayCamera() const { return dynamic_cast<MyGame::GamePlayCamera*>(currentBehavior_.get()) != nullptr; }
+        const CameraDefs::StateData& GetCameraState() const { return currentBehavior_->GetStateData(); }
+
         // setter
-        void SetCameraState(const CameraDefs::StateData& data) { stateData_ = data; }
-        //void SetTarget(Object3d* target) { stateData_.target = target; SetCameraState(stateData_); }
-        void SetPlayer(MyGame::Player* player) { player_ = player; }
-
-
-        void SetTarget(MyEngine::Object3d* target) { target_ = target; }
-        MyEngine::Object3d* GetTarget() const { return target_; }
+        void SetMainCamera() { camera_.activeCamera = camera_.mainCamera.get(); }
+        void SetActiveSubCamera(const std::string& name) {
+            auto it = camera_.subCameras.find(name);
+            if (it != camera_.subCameras.end()) {
+                camera_.activeCamera = it->second.get();
+            }
+        }
     };
 }

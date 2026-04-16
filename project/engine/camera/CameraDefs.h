@@ -8,7 +8,6 @@ namespace MyEngine {
         enum class CameraType {
             Main,       // メインカメラ
             Sub,        // サブカメラ
-            Debug       // デバッグ用
         };
         // カメラの状態
         enum class CameraState {
@@ -16,7 +15,7 @@ namespace MyEngine {
             Follow,     // 追従
 			LockOn,     // 対象をロックオン
             Fixed,      // 固定
-            Debug       // デバッグ操作
+			Move,  // 移動
         };
         // 切り替え時の移動方法
         enum class CameraTransitionType {
@@ -29,8 +28,6 @@ namespace MyEngine {
             CameraType type = CameraType::Main;
             CameraState state = CameraState::Default;
             CameraTransitionType transition = CameraTransitionType::Instant;
-            float transitionTime = 0.0f;
-            Object3d* target = nullptr;
         };
     }
 }

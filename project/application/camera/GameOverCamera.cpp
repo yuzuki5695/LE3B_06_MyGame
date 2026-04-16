@@ -6,7 +6,7 @@ using namespace MyEngine;
 namespace MyGame {
 
     void GameOverCamera::Initialize(MyEngine::Camera* camera) {
-        if (!camera) return;
+       // if (!camera) return;
 
         //camera->SetRotate({ 0.0f, 0.0f, 0.0f });
         //camera->SetTranslate({ 0.0f, 0.0f, -50.0f });
@@ -34,13 +34,13 @@ namespace MyGame {
     }
     
     void GameOverCamera::Update(MyEngine::Camera* camera) {
-        CameraSet& camSet = CameraManager::GetInstance()->GetCameraSet();
-        if (!camera) return;
+        //CameraSet& camSet = CameraManager::GetInstance()->GetCameraSet();
+        //if (!camera) return;
 
-        // サブカメラ中なら何もしない
-        if (camSet.IsUsingSubCamera()) {
-            return;
-        }
+        //// サブカメラ中なら何もしない
+        //if (camSet.IsUsingSubCamera()) {
+        //    return;
+        //}
     
     
     

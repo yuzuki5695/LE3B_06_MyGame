@@ -1,6 +1,8 @@
 #pragma once
 #include <Camera.h>
 #include <Object3d.h>
+#include <CameraDefs.h>
+#include <CameraSet.h>
 
 namespace MyGame {
 
@@ -23,8 +25,18 @@ namespace MyGame {
         /// <param name="camera">操作対象のカメラポインタ</param>
         virtual void Update(MyEngine::Camera* camera) = 0;
 
-        virtual void SetTarget(MyEngine::Object3d* target) {}
+        // 対象のオブジェクトをセットする関数
+        virtual void SetTarget(MyEngine::Transform* transform) { targettransform_ = transform; }
+
         // 進捗率(0.0~1.0)を返す仮想関数。デフォルトは0を返す
         virtual float GetProgress() const { return 0.0f; }
+    protected:
+		// 対象のオブジェクトのTransform
+        MyEngine::Transform* targettransform_{};
+        // カメラの状態データ
+        MyEngine::CameraDefs::StateData stateData_;
+    public:
+		// getter
+        const MyEngine::CameraDefs::StateData& GetStateData() const { return stateData_; }
     };
 }

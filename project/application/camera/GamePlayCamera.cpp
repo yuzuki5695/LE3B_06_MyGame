@@ -28,7 +28,7 @@ namespace MyGame {
         bezierPoints = Jsondata_->LoadBezierFromJSON("Resources/levels/bezier.json");
 
         // カメラマネージャに状態をセット
-        CameraManager::GetInstance()->SetCameraState(data);
+     //   CameraManager::GetInstance()->SetCameraState(data);
 
 
         BuildRailInfo(bezierPoints[0]);
@@ -43,20 +43,20 @@ namespace MyGame {
             UpdateBezier(camera);
             camera->SetTranslate(bezierPos_);
 
-            Object3d* target = CameraManager::GetInstance()->GetTarget();
-            if (target) {
-                Vector3 camPos = camera->GetTranslate();
-                // プレイヤーの相対移動を取得 
-                Transform& transform = target->GetTransform();
-                // 基本位置（カメラ前）
-                Vector3 basePos = camPos + Vector3{ 0.0f, -3.0f, 30.0f };
-                // Playerからoffset取得
-                Player* player = CameraManager::GetInstance()->GetPlayer();
-                Vector3 offset = player->GetMove()->GetRelativePos();
-                // 相対移動を加算
-                Vector3 finalPos = basePos + offset;
-                target->SetTranslate(finalPos);
-            }
+            //Object3d* target = CameraManager::GetInstance()->GetTarget();
+            //if (target) {
+            //    Vector3 camPos = camera->GetTranslate();
+            //    // プレイヤーの相対移動を取得 
+            //    Transform& transform = target->GetTransform();
+            //    // 基本位置（カメラ前）
+            //    Vector3 basePos = camPos + Vector3{ 0.0f, -3.0f, 30.0f };
+            //    // Playerからoffset取得
+            //    Player* player = CameraManager::GetInstance()->GetPlayer();
+            //    Vector3 offset = player->GetMove()->GetRelativePos();
+            //    // 相対移動を加算
+            //    Vector3 finalPos = basePos + offset;
+            //    target->SetTranslate(finalPos);
+            //}
         }
     }
 

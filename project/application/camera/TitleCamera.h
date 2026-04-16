@@ -8,14 +8,9 @@ namespace MyGame {
 
         void Initialize(MyEngine::Camera* camera)override;
         void Update(MyEngine::Camera* camera) override;
-        
+
         void UpdateLookAt(MyEngine::Camera* camera);
-          
-        //// 角度の線形補間（ラジアン値で補間、ラップアラウンド対応）
-        //static float LerpAngle(float a, float b, float t) {
-        //    float diff = fmodf(b - a + 3.14159265f, 2.0f * 3.14159265f) - 3.14159265f;
-        //    return a + diff * t;
-        //}
+
         float LerpAngle(float a, float b, float t) {
             float diff = b - a;
 
@@ -24,7 +19,21 @@ namespace MyGame {
 
             return a + diff * t;
         }
+
+        void StartIntroMove();
+        
+        void UpdateMove(MyEngine::Camera* camera);
+
     private:
         MyEngine::Vector3 offset_;
+
+        MyEngine::Vector3 introTargetPos_;
+        bool isIntroTargetLocked_ = false;
+
+        float followTightness_ = 0.05f;
+
+        float offsetX_ = 15.0f;
+        float offsetY_ = 1.0f;
+        float offsetZ_ = -30.0f;
     };
 }

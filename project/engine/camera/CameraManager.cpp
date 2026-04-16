@@ -4,9 +4,9 @@
 #include <MatrixVector.h>
 #include <SceneName.h>
 
-namespace MyEngine {
+using namespace MyGame;
 
-    using namespace MyGame;
+namespace MyEngine {
 
     using namespace MatrixVector;
     using namespace CameraDefs;
@@ -31,43 +31,55 @@ namespace MyEngine {
         instance.reset();  // `delete` 不要
     }
 
-    void CameraManager::Initialize(const Transform& Transform) {
-        // メインカメラの生成と初期姿勢の反映
+    void CameraManager::Initialize(const std::string& sceneName) {
+        // メインカメラの生成と初期化
         camera_.mainCamera = std::make_unique<Camera>();
-        camera_.mainCamera->SetTranslate(Transform.translate);
-        camera_.mainCamera->SetRotate(Transform.rotate);
-        camera_.activeCamera = camera_.mainCamera.get(); // 初期状態ではメインカメラを操作対象とする
-
-        // 利用可能なシーンカメラクラスの登録
+        // デフォルトはメインカメラをアクティブにしておく
+        camera_.activeCamera = camera_.mainCamera.get();
+        // 各シーンごとのカメラクラス挙動の登録
         RegisterCamera();
+        // 各シーンカメラの初期化処理を呼び出す
+        OnSceneChanged(sceneName);
     }
-
+ 
     void CameraManager::Update() {
-        if (!camera_.activeCamera) {
-            return; // アクティブカメラが存在しない場合は更新処理をスキップ
-        }
-        
-        // 現在の挙動をアクティブカメラに適用
+        if (!camera_.activeCamera) return;
+
+        // 現在の挙動を更新させる
         if (currentBehavior_) {
             currentBehavior_->Update(camera_.activeCamera);
         }
 
-        // マネージャ側の管理用Transformに最新情報を同期
-        camera_.activeCamera->SetTranslate(camera_.activeCamera->GetTranslate());
-        camera_.activeCamera->SetRotate(camera_.activeCamera->GetRotate());
+		// メインカメラの更新
+        if (camera_.mainCamera) {
+            camera_.mainCamera->Update();
+        }
 
-        // 最終的な行列の計算
-        camera_.activeCamera->Update();
+		// サブカメラ群の更新
+        for (auto& [name, cam] : camera_.subCameras) {
+            if (cam) {
+                cam->Update();
+            }
+        }
     }
 
     void CameraManager::SetSceneBehavior(std::unique_ptr<MyGame::ISceneCameraBehavior> behavior) {
         // 古い挙動を所有権ごと破棄し、新しい挙動へ移行
         currentBehavior_ = std::move(behavior);
-
         // 移行直後の初期化を実行
         if (currentBehavior_) {
-            currentBehavior_->Initialize(camera_.GetActive()); 
+            currentBehavior_->Initialize(camera_.activeCamera);
         }
+    }
+    
+    void CameraManager::RegisterCamera() {
+        // 二重登録防止
+        if (!cameraRegistry_.empty()) return;
+        // 各シーンの登録
+        cameraRegistry_[SceneName::TITLE] = [] {return std::make_unique<MyGame::TitleCamera>(); };
+        cameraRegistry_[SceneName::GAMEPLAY] = [] {return std::make_unique<MyGame::GamePlayCamera>(); };
+        cameraRegistry_[SceneName::GAMEOVER] = [] {return std::make_unique<MyGame::GameOverCamera>(); };
+        cameraRegistry_[SceneName::GAMECLEAR] = [] {return std::make_unique<MyGame::GameClearCamera>(); };
     }
 
     void CameraManager::OnSceneChanged(const std::string& sceneName) {
@@ -77,15 +89,5 @@ namespace MyEngine {
             // 生成関数を呼び出して新しい挙動をセット
             SetSceneBehavior(it->second());
         }
-    }
-
-    void CameraManager::RegisterCamera() {
-        // 二重登録防止
-        if (!cameraRegistry_.empty()) return;
-        // 各シーンの登録
-        cameraRegistry_[SceneName::TITLE] = [] {return std::make_unique<MyGame::TitleCamera>(); };
-        cameraRegistry_[SceneName::GAMEPLAY] = [] {return std::make_unique<MyGame::GamePlayCamera>(); };
-        cameraRegistry_[SceneName::GAMEOVER] = [] {return std::make_unique<MyGame::GameOverCamera>(); };
-        cameraRegistry_[SceneName::GAMECLEAR] = [] {return std::make_unique<MyGame::GameClearCamera>(); };
     }
 }
