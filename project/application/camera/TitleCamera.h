@@ -2,13 +2,25 @@
 #include <ISceneCameraBehavior.h>
 
 namespace MyGame {
-
+    /// <summary>
+	/// タイトルシーン用カメラクラス
+    /// </summary>
     class TitleCamera : public ISceneCameraBehavior {
-    public:
-
+	public: // メンバ関数
+        /// <summary>
+		/// 初期化処理
+        /// </summary>
+        /// <param name="camera"></param>
         void Initialize(MyEngine::Camera* camera)override;
+        /// <summary>
+		/// 更新処理 
+        /// </summary>
+        /// <param name="camera"></param>
         void Update(MyEngine::Camera* camera) override;
-
+        /// <summary>
+		/// 注視状態の更新
+        /// </summary>
+        /// <param name="camera"></param>
         void UpdateLookAt(MyEngine::Camera* camera);
 
         float LerpAngle(float a, float b, float t) {
@@ -25,15 +37,14 @@ namespace MyGame {
         void UpdateMove(MyEngine::Camera* camera);
 
     private:
-        MyEngine::Vector3 offset_;
+        MyEngine::Vector3 transform_;
 
-        MyEngine::Vector3 introTargetPos_;
         bool isIntroTargetLocked_ = false;
 
         float followTightness_ = 0.05f;
 
-        float offsetX_ = 15.0f;
-        float offsetY_ = 1.0f;
-        float offsetZ_ = -30.0f;
+        float offsetX_ = 8.0f;
+        float offsetY_ = -1.0f;
+        float offsetZ_ = -20.0f;
     };
 }

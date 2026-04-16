@@ -14,8 +14,8 @@ namespace MyGame {
         stateData_.type = CameraType::Main;
         stateData_.state = CameraState::LockOn;
 
-        offset_ = { 5.0f, -3.0f, 0.0f };
-        camera->SetTranslate(offset_);
+        transform_ = { 5.0f, -3.0f, 0.0f };
+        camera->SetTranslate(transform_);
     }
 
     void TitleCamera::Update(Camera* camera) {
@@ -33,9 +33,8 @@ namespace MyGame {
 
                 break;
             case CameraState::Move:
-                
-                UpdateMove(camera);
-             
+				// 移動状態の更新
+                UpdateMove(camera);             
                 break;
             default:
                 break;
@@ -60,7 +59,7 @@ namespace MyGame {
             float targetYaw = atan2f(dir.x, dir.z);
             float targetPitch = -asinf(dir.y);
 
-            // 🔥 補間係数（小さいほどゆっくり）
+            // 補間係数（小さいほどゆっくり）
             float rotTightness = 0.1f;
 
             camrot.x = LerpAngle(camrot.x, targetPitch, rotTightness);
@@ -79,15 +78,15 @@ namespace MyGame {
         if (!targettransform_) return;
 
         // ---------------------------
-        // 🔥 1回だけ目標固定
+        // 1回だけ目標固定
         // ---------------------------
         if (!isIntroTargetLocked_) {
 
             Vector3 playerPos = targettransform_->translate;
 
-            introTargetPos_.x = playerPos.x + offsetX_;
-            introTargetPos_.y = playerPos.y + offsetY_;
-            introTargetPos_.z = playerPos.z + offsetZ_;
+            transform_.x = playerPos.x + offsetX_;
+            transform_.y = playerPos.y + offsetY_;
+            transform_.z = playerPos.z + offsetZ_;
 
             isIntroTargetLocked_ = true;
         }
@@ -96,27 +95,24 @@ namespace MyGame {
         // 補間移動
         // ---------------------------
         Vector3 camPos = camera->GetTranslate();
-        camPos = Lerp(camPos, introTargetPos_, followTightness_);
+        camPos = Lerp(camPos, transform_, followTightness_);
         camera->SetTranslate(camPos);
-
-        // 移動中はまだ注視
-        UpdateLookAt(camera);
 
         // ---------------------------
         // 到達判定
         // ---------------------------
-        float distance = Length(introTargetPos_ - camPos);
+        float distance = Length(transform_ - camPos);
 
         if (distance < 0.1f) {
 
             // ピタ止め
-            camera->SetTranslate(introTargetPos_);
+            camera->SetTranslate(transform_);
 
-            // 🔥 注視解除
+            // 注視解除
             targettransform_ = nullptr;
 
-            // 🔥 状態遷移
+            // 状態遷移
             stateData_.state = CameraState::Default;
-        }
+        } 
     }
 }

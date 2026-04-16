@@ -31,12 +31,14 @@ namespace MyGame {
         // 進捗率(0.0~1.0)を返す仮想関数。デフォルトは0を返す
         virtual float GetProgress() const { return 0.0f; }
     protected:
-		// 対象のオブジェクトのTransform
+		// 対象のオブジェクト用のTransform
         MyEngine::Transform* targettransform_{};
         // カメラの状態データ
         MyEngine::CameraDefs::StateData stateData_;
     public:
 		// getter
         const MyEngine::CameraDefs::StateData& GetStateData() const { return stateData_; }
+        // setter
+        void SetCameraState(const MyEngine::CameraDefs::CameraState& state) { stateData_.state = state; }
     };
 }

@@ -11,8 +11,10 @@
 #include <Input.h>
 #include <FadeManager.h>
 #include <StageManager.h>
+#include <Easing.h>
 
 using namespace MyEngine;
+using namespace Easing;
 
 namespace MyGame {
 
@@ -50,17 +52,7 @@ namespace MyGame {
 		CameraManager::GetInstance()->Update();
 
 		// 移動処理
-		if (isMoving_) {
-			playeroffset_.z += 1.0f; // 速度（調整OK）
-
-			if (playeroffset_.z >= 100.0f) {
-				playeroffset_.z = 100.0f;
-				isMoving_ = false; // 停止
-				CameraManager::GetInstance()->GetCurrentBehaviorAs<TitleCamera>()->StartIntroMove();
-			}
-		}
-
-		player_->GetObject3d()->SetTranslate(playeroffset_);
+		PlayerMotion();	
 		// プレイヤ―の更新
 		player_->Update();
 
@@ -101,5 +93,33 @@ namespace MyGame {
 		// フェードの描画
 		FadeManager::GetInstance()->Draw();
 #pragma endregion 全てのSprite個々の描画処理
+	}
+
+	void TitleScene::PlayerMotion() {
+
+		if (isMoving_) {
+			moveTimer_ += 1.0f / 60.0f;
+			float t = moveTimer_ / moveDuration_;
+			t = std::clamp(t, 0.0f, 1.0f);
+			float easeT = EaseOutCubic(t);
+			playeroffset_.z = Lerp(startZ_, targetZ_, easeT);
+			// 到達
+			if (t >= 1.0f) {
+				playeroffset_.z = targetZ_;
+				isMoving_ = false;
+				// 🔥 カメラ移動トリガー
+				if (!isCameraTriggered_) {
+					CameraManager::GetInstance()->GetCurrentBehaviorAs<TitleCamera>()->StartIntroMove();
+					isCameraTriggered_ = true;
+				}
+			}
+		}
+
+		if (isCameraTriggered_) {
+			floatTime_ += floatSpeed_ * (1.0f / 60.0f);
+			playeroffset_.y = sinf(floatTime_) * floatAmplitude_;
+		}
+	
+		player_->GetObject3d()->SetTranslate(playeroffset_);
 	}
 }

@@ -26,6 +26,9 @@ namespace MyGame {
         /// 描画処理
         /// </summary>
         void Draw() override;
+
+        void PlayerMotion();
+
     private: // メンバ変数
         std::unique_ptr <Player> player_;
 
@@ -34,6 +37,17 @@ namespace MyGame {
         bool isMoving_ = true;
 
 
+        float moveTimer_ = 0.0f;
+        float moveDuration_ = 2.0f; // 秒
 
+        float startZ_ = -100.0f;
+        float targetZ_ = 100.0f;
+
+        float floatTime_ = 0.0f;
+        float floatSpeed_ = 2.0f;
+        float floatAmplitude_ = 2.0f;
+
+        bool isCameraTriggered_ = false;
+    
     };
 }
