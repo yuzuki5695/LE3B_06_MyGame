@@ -13,6 +13,7 @@
 #include <StageManager.h>
 #include <Easing.h>
 #include <UIManager.h>
+#include <TitleUI.h>
 
 using namespace MyEngine;
 using namespace Easing;
@@ -113,8 +114,10 @@ namespace MyGame {
 			if (t >= 1.0f) {
 				playeroffset_.z = targetZ_;
 				isMoving_ = false;
-				// 🔥 カメラ移動トリガー
+				// カメラ移動トリガー
 				if (!isCameraTriggered_) {
+					TitleUI* titleUI = UIManager::GetInstance()->GetUI<TitleUI>();
+					titleUI->Start();
 					CameraManager::GetInstance()->GetCurrentBehaviorAs<TitleCamera>()->StartIntroMove();
 					isCameraTriggered_ = true;
 				}
