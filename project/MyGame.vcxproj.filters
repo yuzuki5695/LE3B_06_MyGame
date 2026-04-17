@@ -621,6 +621,9 @@
     <ClCompile Include="application\collision\CollisionManager.cpp">
       <Filter>ソース ファイル\application\collision</Filter>
     </ClCompile>
+    <ClCompile Include="application\ui\scene\TitleUI.cpp">
+      <Filter>ソース ファイル\application\ui\scene</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="engine\2d\Sprite.h">
@@ -1018,6 +1021,9 @@
     </ClInclude>
     <ClInclude Include="application\collision\EnemyCollider.h">
       <Filter>ヘッダー ファイル\application\collision</Filter>
+    </ClInclude>
+    <ClInclude Include="application\ui\scene\TitleUI.h">
+      <Filter>ソース ファイル\application\ui\scene</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

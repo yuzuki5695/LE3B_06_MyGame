@@ -43,7 +43,7 @@ namespace MyGame {
 
         float followTightness_ = 0.05f;
 
-        float offsetX_ = 8.0f;
+        float offsetX_ = 6.0f;
         float offsetY_ = -1.0f;
         float offsetZ_ = -20.0f;
     };

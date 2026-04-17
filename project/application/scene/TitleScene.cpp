@@ -12,6 +12,7 @@
 #include <FadeManager.h>
 #include <StageManager.h>
 #include <Easing.h>
+#include <UIManager.h>
 
 using namespace MyEngine;
 using namespace Easing;
@@ -30,13 +31,15 @@ namespace MyGame {
 		// プレイヤ―の生成、初期化
 		player_ = std::make_unique<Player>();
 		player_->Initialize();
-		playeroffset_ = { 0.0f,0.0f,-100.0f };	
+		playeroffset_ = { 0.0f,0.0f,-100.0f };
 		player_->GetObject3d()->SetTranslate(playeroffset_);
 		// カメラのターゲットにプレイヤーをセット
 		CameraManager::GetInstance()->GetCurrentBehaviorAs<TitleCamera>()->SetTarget(&player_->GetObject3d()->GetTransform());
 
 		// ステージマネージャの初期化
 		StageManager::GetInstance()->Initialize();
+		// UIマネージャの初期化
+		UIManager::GetInstance()->Initialize();
 		// フェードマネージャの初期化
 		FadeManager::GetInstance()->StartFade(FadeType::FadeIn, FadeStyle::SilhouetteSlide, 1.0f);
 	}
@@ -58,8 +61,9 @@ namespace MyGame {
 
 #pragma endregion 全てのObject3d個々の更新処理
 
-#pragma region 全てのSprite個々の更新処理
-
+#pragma region 全てのSprite個々の更新処理		
+        // UIマネージャの更新
+        UIManager::GetInstance()->Update();
 
 		// ステージマネージャの更新
 		StageManager::GetInstance()->Update();
@@ -90,6 +94,8 @@ namespace MyGame {
 #pragma region 全てのSprite個々の描画処理 
 		// Spriteの描画準備。Spriteの描画に共通のグラフィックスコマンドを積む
 		SpriteCommon::GetInstance()->Commondrawing();
+		// UIマネージャの描画
+		UIManager::GetInstance()->Draw();
 		// フェードの描画
 		FadeManager::GetInstance()->Draw();
 #pragma endregion 全てのSprite個々の描画処理

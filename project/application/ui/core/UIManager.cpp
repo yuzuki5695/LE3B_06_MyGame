@@ -2,7 +2,7 @@
 #include <SceneManager.h>
 #include <SceneName.h>
 #include <GamePlayUI.h>
-//#include <TitleUI.h>
+#include <TitleUI.h>
 
 using namespace MyEngine;
 
@@ -34,7 +34,7 @@ namespace MyGame {
 
         // シーン名に紐付いたUIクラスをインスタンス化
         if (currentScene == SceneName::TITLE) {
-            //AddUI(SceneName::TITLE, std::make_unique<TitleUI>());
+            AddUI(SceneName::TITLE, std::make_unique<TitleUI>());
         } else if (currentScene == SceneName::GAMEPLAY) {
             AddUI( SceneName::GAMEPLAY, std::make_unique<GamePlayUI>());
         }
