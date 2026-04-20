@@ -2,21 +2,27 @@
 #include <ICharacterState.h>
 
 namespace MyGame {
-    // 待機状態
+    /// <summary>
+	/// プレイヤーの待機状態クラス
+    /// </summary>
     class PlayerStateIdle : public ICharacterState {
-    public:
+	public: // メンバ関数
         void Update(BaseCharacter& character) override;
     };
 
-    // 移動状態
+    /// <summary>
+	/// プレイヤーの移動状態クラス
+    /// </summary>
     class PlayerStateMove : public ICharacterState {
-    public:
+	public: // メンバ関数
         void Update(BaseCharacter& character) override;
     };
-
-    // 死亡状態
+ 
+    /// <summary>
+	/// プレイヤーの死亡状態クラス
+    /// </summary>
     class PlayerStateDead : public ICharacterState {
-    public:
+	public: // メンバ関数
         void Update(BaseCharacter& character) override;
     };
 }

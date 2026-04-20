@@ -38,6 +38,8 @@ void Player::Initialize() {
     move_ = std::make_unique<PlayerMove>();
     reticle_ = std::make_unique<PlayerReticle>();
     attack_ = std::make_unique<PlayerAttack>();
+	death_ = std::make_unique<PlayerDeath>();
+    death_->Initialize();
     // 初期ステートをセットする
     ChangeState(std::make_unique<PlayerStateIdle>());
 }

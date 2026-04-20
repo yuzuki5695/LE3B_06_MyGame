@@ -83,13 +83,12 @@ namespace MyGame {
             isGameStartEventDone_ = true;
         }
            
-        if (Input::GetInstance()->Triggrkey(DIK_SPACE)) {
-            // フェードアウト
-            // FadeManager::GetInstance()->SceneChangeFade(SceneName::TITLE, FadeStyle::SilhouetteExplode, 1.0f);
+        if (Input::GetInstance()->Triggrkey(DIK_RETURN)) {
+            // フェードアウト            
+            // FadeManager::GetInstance()->SceneChangeFade(SceneName::GAMECLEAR, FadeStyle::SilhouetteExplode, 1.0f);
             CameraManager::GetInstance()->GetCurrentBehaviorAs<GamePlayCamera>()->SetCameraState(CameraState::LockOn);
             player_->ChangeState(std::make_unique<PlayerStateDead>());
         }
-
 
         // 敵スポーン
 //        enemySpawner_->Update();

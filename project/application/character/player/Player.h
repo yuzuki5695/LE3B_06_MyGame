@@ -5,6 +5,7 @@
 #include <PlayerData.h>
 #include <PlayerReticle.h>
 #include <PlayerAttack.h>
+#include <PlayerDeath.h>
 
 namespace MyGame {
 	/// <summary>
@@ -30,21 +31,24 @@ namespace MyGame {
 		/// 2Dスプライトの描画処理
 		/// </summary>	
 		void DrawSprite();
-	private:
+	private: // メンバ変数
 		PlayerData data_; // プレイヤーのデータ構造体
 		// 各種コンポーネント
-		std::unique_ptr<PlayerMove> move_; // 移動ロジックの保持
+		std::unique_ptr<PlayerMove> move_;       // 移動ロジックの保持
 		std::unique_ptr<PlayerReticle> reticle_; // レティクルロジックの保持
-		std::unique_ptr<PlayerAttack> attack_; // 攻撃ロジックの保持
+		std::unique_ptr<PlayerAttack> attack_;   // 攻撃ロジックの保持
+		std::unique_ptr<PlayerDeath> death_;     // 死亡演出ロジックの保持
 
 		std::unique_ptr <MyEngine::Sprite> targetreticle_; // レティクル用スプライト
 		std::unique_ptr <MyEngine::Object3d> target_; // ターゲット用3Dオブジェクト
 		MyEngine::Transform targettransform_; 
 		MyEngine::Vector3 aimWorldPos_; // 
-	public:
+	public: // アクセッサ
+		// getter
 		PlayerMove* GetMove() { return move_.get(); }
 		PlayerReticle* GetReticle() { return reticle_.get(); }
 		PlayerAttack* GetAttack() { return attack_.get(); }    
+		PlayerDeath* GetDeath() { return death_.get(); }    
 		const MyEngine::Vector3& GetAimWorldPos() const { return aimWorldPos_; }
 
 		void SetAimWorldPos(const MyEngine::Vector3& pos) { aimWorldPos_ = pos; }

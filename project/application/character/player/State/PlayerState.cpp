@@ -39,8 +39,11 @@ namespace MyGame {
 
     void PlayerStateDead::Update(BaseCharacter& character) {
         Player* player = static_cast<Player*>(&character);
+        PlayerDeath* death = player->GetDeath();
+        Object3d* object = player->GetObject3d();
+        death->Update(object->GetTransform().rotate, object->GetTransform().translate, object);
         player->SetActive(false);
-        
+
         //    character.Destroy();
     }
 }

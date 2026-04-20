@@ -645,6 +645,9 @@
     <ClCompile Include="application\math\Spline.cpp">
       <Filter>ソース ファイル\application\math</Filter>
     </ClCompile>
+    <ClCompile Include="application\character\player\Component\PlayerDeath.cpp">
+      <Filter>ソース ファイル\application\character\player\component</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="engine\2d\Sprite.h">
@@ -1054,6 +1057,9 @@
     </ClInclude>
     <ClInclude Include="application\rail\RailPath.h">
       <Filter>ヘッダー ファイル\application\rail</Filter>
+    </ClInclude>
+    <ClInclude Include="application\character\player\Component\PlayerDeath.h">
+      <Filter>ヘッダー ファイル\application\character\player\component</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
