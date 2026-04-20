@@ -15,28 +15,23 @@ namespace MyEngine {
         std::string activeSubCameraName;                                         /// 現在選択中のサブカメラ名 
 		Camera* activeCamera = nullptr;                                          /// 現在有効なカメラのポインタ
 
-        ///// <summary>
-        //// サブカメラ登録
-        ///// </summary>
-        //void AddSubCamera(const std::string& name, std::unique_ptr<Camera> cam) { subCameras[name] = std::move(cam); }
+        /// <summary>
+        // サブカメラ登録
+        /// </summary>
+        void AddSubCamera(const std::string& name, std::unique_ptr<Camera> cam) { subCameras[name] = std::move(cam); }
 
-        //// サブカメラを有効化
-        //void SetActiveSubCamera(const std::string& name) {
-        //    auto it = subCameras.find(name);
-        //    if (it != subCameras.end()) {
-        //        activeSubCameraName = name;
-        //    }
-        //}
+        // サブカメラを有効化
+        void SetActiveSubCamera(const std::string& name) {
+            auto it = subCameras.find(name);
+            if (it != subCameras.end()) {
+                activeSubCameraName = name;
+            }
+        }
 
         //// メインに戻す
         //void SetMainCamera() {
         //    activeSubCameraName.clear();
         //    activeCamera = mainCamera.get();
-        //}
-
-        //// サブカメラ中か判定
-        //bool IsUsingSubCamera() const {
-        //    return !activeSubCameraName.empty();
         //}
     };
 }

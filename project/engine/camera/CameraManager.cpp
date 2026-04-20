@@ -45,25 +45,13 @@ namespace MyEngine {
     void CameraManager::Update() {
         if (!camera_.activeCamera) return;
 
-        // 現在の挙動を更新させる
+        // 現在のシーンカメラの挙動を更新
         if (currentBehavior_) {
             currentBehavior_->Update(camera_.activeCamera);
-            camera_.activeCamera->Update();
         }
-
-		// メインカメラの更新
-        if (camera_.mainCamera) {
-            camera_.mainCamera->Update();
-        }
-
-		//// サブカメラ群の更新
-  //      for (auto& [name, cam] : camera_.subCameras) {
-  //          if (cam) {
-  //              cam->Update();
-  //          }
-  //      }
+        // アクティブ中のカメラの更新
+        camera_.activeCamera->Update();
     }
-
     
     void CameraManager::RegisterCamera() {
         // 二重登録防止

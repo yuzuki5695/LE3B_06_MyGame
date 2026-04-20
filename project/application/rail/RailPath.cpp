@@ -54,7 +54,7 @@ namespace MyGame {
         return length;
     }
 
-    Vector3 GetPoint(const std::vector<BezierPoint>& curve, int index, float t) {
+    Vector3 RailPath::GetPoint(const std::vector<BezierPoint>& curve, int index, float t) {
         auto Get = [&](int i) -> const Vector3& {
             i = std::clamp(i, 0, (int)curve.size() - 1);
             return curve[i].controlPoint;

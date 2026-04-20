@@ -57,12 +57,12 @@ namespace MyGame {
 
     void StageManager::Update() {
 #ifdef _DEBUG
-        if (showDebugObjects_) {
-            // 各オブジェクトの更新
-            for (auto& obj : debugObjects_) {
-                obj->Update();
-            }
-        }
+        //if (showDebugObjects_) {
+        //    // 各オブジェクトの更新
+        //    for (auto& obj : debugObjects_) {
+        //        obj->Update();
+        //    }
+        //}
 #endif
 
         //if (SceneManager::GetInstance()->GetCurrentScene(SceneName::TITLE)) {
@@ -84,12 +84,12 @@ namespace MyGame {
 
     void StageManager::Draw() {
 #ifdef _DEBUG
-        if (showDebugObjects_) {
-            // 各オブジェクトの描画
-            for (auto& obj : debugObjects_) {
-                obj->Draw();
-            }
-        }
+        //if (showDebugObjects_) {
+        //    // 各オブジェクトの描画
+        //    for (auto& obj : debugObjects_) {
+        //        obj->Draw();
+        //    }
+        //}
 #endif
         //if (SceneManager::GetInstance()->IsCurrentScene("GAMEPLAY")) {
         //    grass->Draw();

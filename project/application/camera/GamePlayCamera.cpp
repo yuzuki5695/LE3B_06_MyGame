@@ -23,12 +23,17 @@ namespace MyGame {
         // カメラのステートを設定
         stateData_.type = CameraType::Main;
         stateData_.state = CameraState::Follow;
-
+        // ベジェカーブのJSONデータ読み込み
         Jsondata_ = std::make_unique<CurveJsonLoader>();
+		// ベジェ制御点の読み込み
         bezierPoints = Jsondata_->LoadBezierFromJSON("Resources/levels/bezier.json");
-
-        const auto& curve = bezierPoints[0]; 
-        railPath_.Build(curve);        // 距離計算
+        // サブカメラ生成
+        std::unique_ptr<MyEngine::Camera> subCam = std::make_unique<MyEngine::Camera>(); 
+        // サブカメラ登録
+        CameraManager::GetInstance()->GetCameraSet().AddSubCamera("Sub", std::move(subCam));
+		// ベジェ曲線の初期化
+        const auto& curve = bezierPoints[0];
+		railPath_.Build(curve);        // 距離計算用
         railSampler_.SetCurve(curve);  // 座標取得用
     }
 
@@ -41,7 +46,7 @@ namespace MyGame {
             camera->SetTranslate(bezierPos_);
             Vector3 camPos = camera->GetTranslate();
             // プレイヤーの相対移動を取得 
-            transform = &target_->GetTransform();
+            transform = &player_->GetObject3d()->GetTransform();
             // 基本位置（カメラ前）
             Vector3 basePos = camPos + Vector3{ 0.0f, -3.0f, 30.0f };
             // Playerからoffset取得
@@ -51,13 +56,13 @@ namespace MyGame {
             player_->GetObject3d()->SetTranslate(finalPos);
 
             break;
-
         case CameraState::LockOn:
-            // 基本位置
-            Vector3 cameraPos = camera->GetTranslate() + Vector3{ 0.0f, 0.0f, 10.0f };
-            player_->GetObject3d()->SetTranslate(cameraPos);
+            stateData_.type = CameraType::Sub;
+            CameraManager::GetInstance()->SetActiveSubCamera("Sub");
+			// サブカメラの更新
+            UpdateSubCamera();
             break;
-        } 
+        }
     }
 
     void GamePlayCamera::UpdateBezier(Camera* camera) {
@@ -100,5 +105,31 @@ namespace MyGame {
 
         // カメラ適用
         camera->SetLookAt(bezierPos_, bezierPos_ + forward_, { 0,1,0 });
+    }
+
+    void GamePlayCamera::UpdateSubCamera() {
+        Camera* subCam = CameraManager::GetInstance()->GetActiveCamera();
+        if (!subCam || !player_) return;
+
+        Vector3 targetPos = player_->GetObject3d()->GetTranslate();
+
+        // プレイヤー前方に配置
+        Vector3 desiredPos = targetPos + forward_ * 20.0f + Vector3{ 0, 3, 0 };
+
+        // イージング
+        float ease = 0.1f;
+        Vector3 now = subCam->GetTranslate();
+        Vector3 newPos = now + (desiredPos - now) * ease;
+
+        subCam->SetTranslate(newPos);
+
+        // プレイヤーを見る
+        Vector3 dir = targetPos - newPos;
+        if (Length(dir) > 0.0001f) {
+            dir = Normalize(dir);
+            float yaw = atan2f(dir.x, dir.z);
+            float pitch = -asinf(dir.y);
+            subCam->SetRotate({ pitch, yaw, 0.0f });
+        }
     }
 }
