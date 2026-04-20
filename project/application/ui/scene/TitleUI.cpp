@@ -60,26 +60,27 @@ namespace MyGame {
 			}
 			return;
 		}
-		timer_ += 1.0f / 60.0f;
+		timer_ += 1.0f / 60.0f;	
+		float lastEndTime = 0.0f;
+
 		for (auto& ch : titleChars_) {
+			float endTime = ch.delay + kDuration;
+			lastEndTime = std::max(lastEndTime, endTime);
 
 			float localT = std::clamp((timer_ - ch.delay) / kDuration, 0.0f, 1.0f);
-			float easeT = EaseOutCubic(localT);
+			float t = localT;
+
+			if (PlayingOut) {
+				t = 1.0f - localT;
+			}
+
+			float easeT = EaseOutCubic(t);
 
 			UpdateChar(ch, easeT);
 		}
 
-		float lastEndTime = 0.0f;
-
-		for (auto& ch : titleChars_)
-		{
-			float endTime = ch.delay + kDuration;
-			lastEndTime = std::max(lastEndTime, endTime);
-		}
-
-		if (timer_ >= lastEndTime)
-		{
-				isFinished_ = true;
+		if (timer_ >= lastEndTime) {
+			isFinished_ = true;
 		}
 
 		for (auto& Chars : titleChars_) {

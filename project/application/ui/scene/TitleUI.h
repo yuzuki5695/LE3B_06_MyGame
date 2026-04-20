@@ -27,6 +27,16 @@ namespace MyGame {
             isStarted_ = true;
             timer_ = 0.0f; // ←リスタートしたいなら必須
         }
+        
+        void StartReverse() {
+            PlayingOut = true;
+            isFinished_ = false;
+            timer_ = 0.0f;
+        }
+        
+        bool IsFinished() const {
+            return PlayingOut == true && isFinished_ == true;
+        }
 
     private: // メンバ変数
         std::vector<TitleCharUI> titleChars_;
@@ -40,6 +50,9 @@ namespace MyGame {
         bool isFinished_ = false;
         
         bool isStarted_ = false;
+
+        bool PlayingOut = false;
+
 
         //std::vector<std::unique_ptr<MyEngine::Sprite>> uis_;
         //std::vector<MyEngine::Vector2> uiOriginalSizes_;
