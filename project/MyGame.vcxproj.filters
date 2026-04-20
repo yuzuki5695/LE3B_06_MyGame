@@ -364,6 +364,12 @@
     <Filter Include="ソース ファイル\application\collision">
       <UniqueIdentifier>{6e9e9c14-5122-492b-b39e-3a28944d57ff}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ヘッダー ファイル\application\math">
+      <UniqueIdentifier>{a34d5205-3f79-4e82-a458-dde24b16cb7b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\application\rail">
+      <UniqueIdentifier>{7a4b4ca3-20fb-4079-b704-ef333407532c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -623,6 +629,15 @@
     </ClCompile>
     <ClCompile Include="application\ui\scene\TitleUI.cpp">
       <Filter>ソース ファイル\application\ui\scene</Filter>
+    </ClCompile>
+    <ClCompile Include="application\math\Spline.cpp">
+      <Filter>ヘッダー ファイル\application\math</Filter>
+    </ClCompile>
+    <ClCompile Include="application\rail\RailSampler.cpp">
+      <Filter>ヘッダー ファイル\application\rail</Filter>
+    </ClCompile>
+    <ClCompile Include="application\rail\RailPath.cpp">
+      <Filter>ヘッダー ファイル\application\rail</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1024,6 +1039,15 @@
     </ClInclude>
     <ClInclude Include="application\ui\scene\TitleUI.h">
       <Filter>ヘッダー ファイル\application\ui\scene</Filter>
+    </ClInclude>
+    <ClInclude Include="application\math\Spline.h">
+      <Filter>ヘッダー ファイル\application\math</Filter>
+    </ClInclude>
+    <ClInclude Include="application\rail\RailSampler.h">
+      <Filter>ヘッダー ファイル\application\rail</Filter>
+    </ClInclude>
+    <ClInclude Include="application\rail\RailPath.h">
+      <Filter>ヘッダー ファイル\application\rail</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

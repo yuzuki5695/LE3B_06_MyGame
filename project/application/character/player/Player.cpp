@@ -32,6 +32,8 @@ void Player::Initialize() {
     targetreticle_->SetTextureSize(Vector2{ 512.0f, 512.0f });
     targetreticle_->SetAnchorPoint(Vector2{ 0.5f, 0.5f }); // 中心基準
 
+    isActive_ = true;
+
     // コンポーネントの生成
     move_ = std::make_unique<PlayerMove>();
     reticle_ = std::make_unique<PlayerReticle>();
@@ -50,15 +52,13 @@ void Player::Update() {
 }
 
 void Player::Draw() {
-    if (!isAlive_) { return; }
-
     if (object_) {
         object_->Draw();
     }
 }
 
 void Player::DrawSprite() {
-    if (!isAlive_) { return; }
+    if (!isActive_) { return; }
     if (targetreticle_) {
         targetreticle_->Draw();
     }

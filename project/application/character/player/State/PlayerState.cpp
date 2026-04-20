@@ -9,7 +9,6 @@
 using namespace MyEngine;
 
 namespace MyGame {
-
     void PlayerStateIdle::Update(BaseCharacter& character) {
         if (CameraManager::GetInstance()->GetCurrentBehaviorAs <GamePlayCamera>()) {
             character.ChangeState(std::make_unique<PlayerStateMove>());
@@ -39,6 +38,9 @@ namespace MyGame {
     }
 
     void PlayerStateDead::Update(BaseCharacter& character) {
-        character.Destroy();
+        Player* player = static_cast<Player*>(&character);
+        player->SetActive(false);
+        
+        //    character.Destroy();
     }
 }

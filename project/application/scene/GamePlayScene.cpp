@@ -16,10 +16,13 @@
 #include <SceneName.h>
 #include <EventManager.h>
 #include <CollisionManager.h>
+#include <CameraDefs.h>
 // AssetGeneratorからインクルード
 #include <subproject/AssetGenerator/engine/generator/LoadResourceID.h>
+#include <PlayerState.h>
 
 using namespace MyEngine;
+using namespace CameraDefs;
 using namespace AssetGen;
 using namespace AssetGen::LoadResourceID::Textures;
 
@@ -80,10 +83,11 @@ namespace MyGame {
             isGameStartEventDone_ = true;
         }
            
-
         if (Input::GetInstance()->Triggrkey(DIK_SPACE)) {
             // フェードアウト
             // FadeManager::GetInstance()->SceneChangeFade(SceneName::TITLE, FadeStyle::SilhouetteExplode, 1.0f);
+            CameraManager::GetInstance()->GetCurrentBehaviorAs<GamePlayCamera>()->SetCameraState(CameraState::LockOn);
+            player_->ChangeState(std::make_unique<PlayerStateDead>());
         }
 
 
@@ -94,6 +98,7 @@ namespace MyGame {
         //for (auto& enemy : enemies_) {
         //    enemy->Update();
         //}
+        
 
         CameraManager::GetInstance()->GetCurrentBehaviorAs<GamePlayCamera>()->SetTargetObject(player_->GetObject3d());
         CameraManager::GetInstance()->GetCurrentBehaviorAs<GamePlayCamera>()->SetPlayer(player_.get()); 
