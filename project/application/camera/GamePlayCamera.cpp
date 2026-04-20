@@ -12,6 +12,7 @@
 #endif
 
 using namespace MyEngine;
+using namespace CameraDefs;
 using namespace MathUtil;
 using namespace MatrixVector;
 using namespace Easing;
@@ -19,44 +20,40 @@ using namespace Easing;
 namespace MyGame {
 
     void GamePlayCamera::Initialize(Camera* camera) {
-        CameraDefs::StateData data;
-        data.type = CameraDefs::CameraType::Main;
-        //data.state = CameraDefs::CameraState::Default;
-        data.state = CameraDefs::CameraState::Follow;
+		// カメラのステートを設定
+        stateData_.type = CameraType::Main;
+        stateData_.state = CameraState::Follow;
 
         Jsondata_ = std::make_unique<CurveJsonLoader>();
         bezierPoints = Jsondata_->LoadBezierFromJSON("Resources/levels/bezier.json");
-
-        // カメラマネージャに状態をセット
-     //   CameraManager::GetInstance()->SetCameraState(data);
-
 
         BuildRailInfo(bezierPoints[0]);
     }
 
     void GamePlayCamera::Update(Camera* camera) {
-        CameraSet& camSet = CameraManager::GetInstance()->GetCameraSet();
+        CameraState camState = CameraManager::GetInstance()->GetCameraState().state;
         if (!camera) return;
+     
+        //Vector3 Pos = camera->GetTranslate() + Vector3{ 0.0f, 0.0f, 30.0f };
+        //player_->GetObject3d()->SetTranslate(Pos);
 
-        if (CameraManager::GetInstance()->GetCameraState().state == CameraDefs::CameraState::Follow) {
 
+        if (camState == CameraState::Follow) {
             UpdateBezier(camera);
             camera->SetTranslate(bezierPos_);
 
-            //Object3d* target = CameraManager::GetInstance()->GetTarget();
-            //if (target) {
-            //    Vector3 camPos = camera->GetTranslate();
-            //    // プレイヤーの相対移動を取得 
-            //    Transform& transform = target->GetTransform();
-            //    // 基本位置（カメラ前）
-            //    Vector3 basePos = camPos + Vector3{ 0.0f, -3.0f, 30.0f };
-            //    // Playerからoffset取得
-            //    Player* player = CameraManager::GetInstance()->GetPlayer();
-            //    Vector3 offset = player->GetMove()->GetRelativePos();
-            //    // 相対移動を加算
-            //    Vector3 finalPos = basePos + offset;
-            //    target->SetTranslate(finalPos);
-            //}
+            if (target_) {
+                Vector3 camPos = camera->GetTranslate();
+                // プレイヤーの相対移動を取得 
+                Transform& transform = target_->GetTransform();
+                // 基本位置（カメラ前）
+                Vector3 basePos = camPos + Vector3{ 0.0f, -3.0f, 30.0f };
+                // Playerからoffset取得
+                Vector3 offset = player_->GetMove()->GetRelativePos();
+                // 相対移動を加算
+                Vector3 finalPos = basePos + offset;
+                player_->GetObject3d()->SetTranslate(finalPos);
+            }
         }
     }
 

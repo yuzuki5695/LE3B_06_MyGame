@@ -26,13 +26,13 @@ namespace MyGame {
         virtual void Update(MyEngine::Camera* camera) = 0;
 
         // 対象のオブジェクトをセットする関数
-        virtual void SetTarget(MyEngine::Transform* transform) { targettransform_ = transform; }
+        virtual void SetTargetObject(MyEngine::Object3d* target) { target_ = target; }
 
         // 進捗率(0.0~1.0)を返す仮想関数。デフォルトは0を返す
         virtual float GetProgress() const { return 0.0f; }
     protected:
-		// 対象のオブジェクト用のTransform
-        MyEngine::Transform* targettransform_{};
+		// 対象のオブジェクト
+        MyEngine::Object3d* target_{};
         // カメラの状態データ
         MyEngine::CameraDefs::StateData stateData_;
     public:

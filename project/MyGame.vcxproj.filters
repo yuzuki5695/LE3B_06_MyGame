@@ -1023,7 +1023,7 @@
       <Filter>ヘッダー ファイル\application\collision</Filter>
     </ClInclude>
     <ClInclude Include="application\ui\scene\TitleUI.h">
-      <Filter>ソース ファイル\application\ui\scene</Filter>
+      <Filter>ヘッダー ファイル\application\ui\scene</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

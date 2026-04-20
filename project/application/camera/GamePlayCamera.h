@@ -2,6 +2,7 @@
 #include <ISceneCameraBehavior.h>
 #include <CurveJsonLoader.h>
 #include <memory>
+#include <Player.h>
 //#include <RailCameraController.h>
 
 namespace MyGame {
@@ -28,6 +29,10 @@ namespace MyGame {
         void ConvertDistanceToSegment(float distance);
         void ConvertDistanceToSegmentInternal(float distance, int& outIndex, float& outT);
 
+        void SetPlayer(Player* player) {
+            player_ = player;
+        }
+
     private: // メンバ変数
         std::unique_ptr<CurveJsonLoader> Jsondata_ = nullptr;         // ベジェ制御点を読み込むローダー 
         std::vector<std::vector<BezierPoint>> bezierPoints;       // 移動に使う制御点データ
@@ -37,7 +42,9 @@ namespace MyGame {
         float distance_ = 0.0f;   // 現在の移動距離
         MyEngine::Vector3 forward_{};
         int currentIndex_ = 0;   // 今いる区間（p1）
-        float t_ = 0.0f;        // 区間内の進行度
+        float t_ = 0.0f;        // 区間内の進行度 
+        Player* player_ = nullptr;
+
 
     public:
         float GetProgress() const override {

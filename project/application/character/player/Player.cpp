@@ -41,9 +41,9 @@ void Player::Initialize() {
 }
 
 void Player::Update() {
-    // ステートの更新（現在のステートのUpdateが呼ばれる）
+    // ステートの更新
     state_.Update(*this);
-
+    
     targetreticle_->Update();
     target_->Update();
     object_->Update();

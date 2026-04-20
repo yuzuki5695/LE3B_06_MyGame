@@ -48,6 +48,7 @@ namespace MyEngine {
         // 現在の挙動を更新させる
         if (currentBehavior_) {
             currentBehavior_->Update(camera_.activeCamera);
+            camera_.activeCamera->Update();
         }
 
 		// メインカメラの更新
@@ -55,22 +56,14 @@ namespace MyEngine {
             camera_.mainCamera->Update();
         }
 
-		// サブカメラ群の更新
-        for (auto& [name, cam] : camera_.subCameras) {
-            if (cam) {
-                cam->Update();
-            }
-        }
+		//// サブカメラ群の更新
+  //      for (auto& [name, cam] : camera_.subCameras) {
+  //          if (cam) {
+  //              cam->Update();
+  //          }
+  //      }
     }
 
-    void CameraManager::SetSceneBehavior(std::unique_ptr<MyGame::ISceneCameraBehavior> behavior) {
-        // 古い挙動を所有権ごと破棄し、新しい挙動へ移行
-        currentBehavior_ = std::move(behavior);
-        // 移行直後の初期化を実行
-        if (currentBehavior_) {
-            currentBehavior_->Initialize(camera_.activeCamera);
-        }
-    }
     
     void CameraManager::RegisterCamera() {
         // 二重登録防止
@@ -80,6 +73,15 @@ namespace MyEngine {
         cameraRegistry_[SceneName::GAMEPLAY] = [] {return std::make_unique<MyGame::GamePlayCamera>(); };
         cameraRegistry_[SceneName::GAMEOVER] = [] {return std::make_unique<MyGame::GameOverCamera>(); };
         cameraRegistry_[SceneName::GAMECLEAR] = [] {return std::make_unique<MyGame::GameClearCamera>(); };
+    }
+
+    void CameraManager::SetSceneBehavior(std::unique_ptr<MyGame::ISceneCameraBehavior> behavior) {
+        // 古い挙動を所有権ごと破棄し、新しい挙動へ移行
+        currentBehavior_ = std::move(behavior);
+        // 移行直後の初期化を実行
+        if (currentBehavior_) {
+            currentBehavior_->Initialize(camera_.activeCamera);
+        }
     }
 
     void CameraManager::OnSceneChanged(const std::string& sceneName) {

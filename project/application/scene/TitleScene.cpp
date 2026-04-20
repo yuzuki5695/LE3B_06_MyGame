@@ -35,7 +35,7 @@ namespace MyGame {
 		playeroffset_ = { 0.0f,0.0f,-100.0f };
 		player_->GetObject3d()->SetTranslate(playeroffset_);
 		// カメラのターゲットにプレイヤーをセット
-		CameraManager::GetInstance()->GetCurrentBehaviorAs<TitleCamera>()->SetTarget(&player_->GetObject3d()->GetTransform());
+		CameraManager::GetInstance()->GetCurrentBehaviorAs<TitleCamera>()->SetTargetObject(player_->GetObject3d());
 
 		// ステージマネージャの初期化
 		StageManager::GetInstance()->Initialize();
@@ -46,25 +46,22 @@ namespace MyGame {
 	}
 
 	void TitleScene::Update() {
-
-		if (Input::GetInstance()->Triggrkey(DIK_RETURN)) {
-			//FadeManager::GetInstance()->SceneChangeFade(SceneName::GAMEPLAY, FadeStyle::SilhouetteExplode, 1.0f);
-		}
-
 #pragma region 全てのObject3d個々の更新処理				
 		// カメラマネージャの更新
 		CameraManager::GetInstance()->Update();
 
 		// 移動処理
-		PlayerMotion();	
+		PlayerMotion();
+		
+		player_->GetObject3d()->SetTranslate(playeroffset_);
 		// プレイヤ―の更新
 		player_->Update();
 
 #pragma endregion 全てのObject3d個々の更新処理
 
 #pragma region 全てのSprite個々の更新処理		
-        // UIマネージャの更新
-        UIManager::GetInstance()->Update();
+		// UIマネージャの更新
+		UIManager::GetInstance()->Update();
 
 		// ステージマネージャの更新
 		StageManager::GetInstance()->Update();
@@ -103,7 +100,8 @@ namespace MyGame {
 	}
 
 	void TitleScene::PlayerMotion() {
-
+		TitleUI* titleUI = UIManager::GetInstance()->GetUI<TitleUI>();
+		
 		if (isMoving_) {
 			moveTimer_ += 1.0f / 60.0f;
 			float t = moveTimer_ / moveDuration_;
@@ -116,7 +114,6 @@ namespace MyGame {
 				isMoving_ = false;
 				// カメラ移動トリガー
 				if (!isCameraTriggered_) {
-					TitleUI* titleUI = UIManager::GetInstance()->GetUI<TitleUI>();
 					titleUI->Start();
 					CameraManager::GetInstance()->GetCurrentBehaviorAs<TitleCamera>()->StartIntroMove();
 					isCameraTriggered_ = true;
@@ -128,7 +125,25 @@ namespace MyGame {
 			floatTime_ += floatSpeed_ * (1.0f / 60.0f);
 			playeroffset_.y = sinf(floatTime_) * floatAmplitude_;
 		}
-	
-		player_->GetObject3d()->SetTranslate(playeroffset_);
+
+		// =========================
+		// Enterで遷移開始
+		// =========================
+		if (Input::GetInstance()->Triggrkey(DIK_RETURN)) {
+			titleUI->StartReverse();
+		}
+					
+		if (titleUI->IsFinished()) {
+			isCameraTriggered_ = false;
+			FadeManager::GetInstance()->SceneChangeFade(SceneName::GAMEPLAY, FadeStyle::SilhouetteExplode, 1.5f);
+		}
+
+		// =========================
+		// 遷移中の動き（前進） 
+		// =========================
+		if (!isMoving_ && !isCameraTriggered_) {
+			playeroffset_.z += 0.5f;
+			playeroffset_.y += 0.1f;
+		}
 	}
 }

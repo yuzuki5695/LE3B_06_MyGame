@@ -46,10 +46,11 @@ namespace MyGame {
     }
 
     void TitleCamera::UpdateLookAt(Camera* camera) {
+        if (!target_) return;
 
         Vector3 camPos = camera->GetTranslate();
         Vector3 camrot = camera->GetRotate();
-        Vector3 targetPos = targettransform_->translate;
+        Vector3 targetPos = target_->GetTranslate();
         Vector3 dir= targetPos - camPos;
 
         if (Length(dir) > 0.0001f) {
@@ -75,14 +76,14 @@ namespace MyGame {
     }
 
     void TitleCamera::UpdateMove(Camera* camera) {
-        if (!targettransform_) return;
+        if (!target_) return;
 
         // ---------------------------
         // 1回だけ目標固定
         // ---------------------------
         if (!isIntroTargetLocked_) {
 
-            Vector3 playerPos = targettransform_->translate;
+            Vector3 playerPos = target_->GetTranslate();
 
             transform_.x = playerPos.x + offsetX_;
             transform_.y = playerPos.y + offsetY_;
@@ -104,13 +105,8 @@ namespace MyGame {
         float distance = Length(transform_ - camPos);
 
         if (distance < 0.1f) {
-
             // ピタ止め
             camera->SetTranslate(transform_);
-
-            // 注視解除
-            targettransform_ = nullptr;
-
             // 状態遷移
             stateData_.state = CameraState::Default;
         } 
