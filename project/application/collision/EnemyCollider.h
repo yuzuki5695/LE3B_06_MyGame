@@ -12,8 +12,8 @@ namespace MyGame {
 
         // 衝突時に呼ばれる
         void OnCollision(Collider* other) override {
-            // 相手がプレイヤーの弾(kGroupPlayerBullet)かチェック
-            if (other->GetCollisionAttribute() == CollisionConfig::kGroupPlayerBullet) {
+            // 相手がプレイヤーの弾(PlayerBullet)かチェック
+            if (other->GetCollisionAttribute() == CollisionConfig::PlayerBullet) {
                 // Enemy本体に通知し、ステートを変える
                 enemy_->OnCollision(other);
             }

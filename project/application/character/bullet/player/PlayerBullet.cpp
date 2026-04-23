@@ -26,8 +26,8 @@ namespace MyGame {
         // 🔥 これが抜けてた
         collider_ = std::make_unique<OBBCollider>(bullet.get());
         // 当たり判定を設定
-        collider_->SetCollisionAttribute(CollisionConfig::kGroupPlayerBullet);
-        collider_->SetCollisionMask(CollisionConfig::kGroupEnemy);
+        collider_->SetCollisionAttribute(CollisionConfig::PlayerBullet);
+        collider_->SetCollisionMask(CollisionConfig::Enemy);
         // 登録
         CollisionManager::GetInstance()->AddCollider(collider_.get());
 
@@ -62,7 +62,7 @@ namespace MyGame {
     }
 
     void PlayerBullet::OnCollision(Collider* other) {
-        if (other->GetCollisionAttribute() == CollisionConfig::kGroupEnemy) {
+        if (other->GetCollisionAttribute() == CollisionConfig::Enemy) {
             SetInactive();
         }
     }

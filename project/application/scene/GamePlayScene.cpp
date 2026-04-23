@@ -44,18 +44,18 @@ namespace MyGame {
         player_->Initialize();
         CameraManager::GetInstance()->GetCurrentBehaviorAs<GamePlayCamera>()->SetPlayer(player_.get());
 
-  //      // 敵生成
-  //      const int kEnemyMax = 300;
-  //      for (int i = 0; i < kEnemyMax; i++) {
-  //          auto enemy = std::make_unique<Enemy>();
-  //          enemy->Initialize();
-  //          enemies_.push_back(std::move(enemy));
-  //      }
+        // 敵生成
+        const int kEnemyMax = 300;
+        for (int i = 0; i < kEnemyMax; i++) {
+            auto enemy = std::make_unique<Enemy>();
+            enemy->Initialize();
+            enemies_.push_back(std::move(enemy));
+        }
 
-  //      // Spawner生成
-  //      enemySpawner_ = std::make_unique<EnemySpawner>();
-  //      enemySpawner_->SetEnemies(&enemies_);
-		//enemySpawner_->SetPlayer(player_.get());
+        // Spawner生成
+        enemySpawner_ = std::make_unique<EnemySpawner>();
+        enemySpawner_->SetEnemies(&enemies_);
+		enemySpawner_->SetPlayer(player_.get());
 
         // ステージマネージャの初期化
         StageManager::GetInstance()->Initialize();
@@ -91,12 +91,12 @@ namespace MyGame {
         }
 
         // 敵スポーン
-//        enemySpawner_->Update();
+        enemySpawner_->Update();
 
-        //// 敵更新
-        //for (auto& enemy : enemies_) {
-        //    enemy->Update();
-        //}
+        // 敵更新
+        for (auto& enemy : enemies_) {
+            enemy->Update();
+        }
         
 
         CameraManager::GetInstance()->GetCurrentBehaviorAs<GamePlayCamera>()->SetTargetObject(player_->GetObject3d());
@@ -112,17 +112,17 @@ namespace MyGame {
 
         CollisionManager::GetInstance()->CheckAllCollisions();
 
-        //enemies_.erase(
-        //    std::remove_if(enemies_.begin(), enemies_.end(),
-        //        [](std::unique_ptr<Enemy>& enemy) {
-        //            if (!enemy->IsAlive()) {
-        //                enemy->Finalize(); // ←ここで安全に消す
-        //                return true;
-        //            }
-        //            return false;
-        //        }),
-        //    enemies_.end()
-        //);
+        enemies_.erase(
+            std::remove_if(enemies_.begin(), enemies_.end(),
+                [](std::unique_ptr<Enemy>& enemy) {
+                    if (!enemy->IsAlive()) {
+                        enemy->Finalize(); // ←ここで安全に消す
+                        return true;
+                    }
+                    return false;
+                }),
+            enemies_.end()
+        );
 
 #pragma endregion 全てのObject3d個々の更新処理
 
@@ -147,9 +147,9 @@ namespace MyGame {
         // プレイヤーの描画
         player_->Draw();
         
-       // for (auto& enemy : enemies_) {
-       //     enemy->Draw();
-      //  }
+        for (auto& enemy : enemies_) {
+            enemy->Draw();
+        }
 
         // 弾の描画
         BulletManager::GetInstance()->Draw();

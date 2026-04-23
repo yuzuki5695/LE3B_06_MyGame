@@ -28,8 +28,8 @@ namespace MyGame {
         object_ = Object3d::Create(Character::Enemy, Transform{ { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f } });
 
         auto collider = std::make_unique<EnemyCollider>(this, object_.get());
-        collider->SetCollisionAttribute(CollisionConfig::kGroupEnemy);
-        collider->SetCollisionMask(CollisionConfig::kGroupPlayerBullet);
+        collider->SetCollisionAttribute(CollisionConfig::Enemy);
+        collider->SetCollisionMask(CollisionConfig::PlayerBullet);
         collision_.SetCollider(std::move(collider));
         CollisionManager::GetInstance()->AddCollider(collision_.GetCollider());
 
@@ -57,7 +57,7 @@ namespace MyGame {
 
     void Enemy::OnCollision(Collider* other) {
         if (!isAlive_) return;
-        if (other->GetCollisionAttribute() == CollisionConfig::kGroupPlayerBullet) {
+        if (other->GetCollisionAttribute() == CollisionConfig::PlayerBullet) {
             // 死亡ステートへ遷移
             ChangeState(std::make_unique<EnemyDead>());
         }
