@@ -28,8 +28,6 @@ namespace MyGame {
 		// --- 2. 移動の実行と制限 ---
 		relativePos_.x += moveInput.x;
 		relativePos_.y += moveInput.y;
-		transform.translate.x += moveInput.x;
-		transform.translate.y += moveInput.y;
 		ApplyConstraint();
 
 		// 傾き計算

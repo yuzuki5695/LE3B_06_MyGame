@@ -17,7 +17,7 @@ namespace MyGame {
 
     void PlayerStateMove::Update(BaseCharacter& character) {
         // 必要なコンポーネント
-        Player* player = static_cast<Player*>(&character);
+        Player* player = dynamic_cast<Player*>(&character);
         PlayerMove* move = player->GetMove();
         PlayerReticle* reticle = player->GetReticle();
         PlayerAttack* attack = player->GetAttack();

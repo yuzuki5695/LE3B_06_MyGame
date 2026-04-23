@@ -44,17 +44,6 @@ namespace MyGame {
         case CameraState::Follow:
             UpdateBezier(camera);
             camera->SetTranslate(bezierPos_);
-            Vector3 camPos = camera->GetTranslate();
-            // プレイヤーの相対移動を取得 
-            transform = &player_->GetObject3d()->GetTransform();
-            // 基本位置（カメラ前）
-            Vector3 basePos = camPos + Vector3{ 0.0f, -3.0f, 30.0f };
-            // Playerからoffset取得
-            Vector3 offset = player_->GetMove()->GetRelativePos();
-            // 相対移動を加算
-            Vector3 finalPos = basePos + offset;
-            player_->GetObject3d()->SetTranslate(finalPos);
-
             break;
         case CameraState::LockOn:
             stateData_.type = CameraType::Sub;
@@ -102,9 +91,14 @@ namespace MyGame {
         float smooth = std::clamp(angle * 0.1f, 0.02f, 0.2f);
 
         forward_ = Normalize(Slerp(forward_, targetForward, smooth));
-
+        // ワールド上方向
+        Vector3 worldUp = { 0,1,0 };
+        // right = forward × up
+        right_ = Normalize(Cross(worldUp, forward_));
+        // up = right × forward（直交化）
+        up_ = Normalize(Cross(forward_, right_));
         // カメラ適用
-        camera->SetLookAt(bezierPos_, bezierPos_ + forward_, { 0,1,0 });
+        camera->SetLookAt(bezierPos_, bezierPos_ + forward_, { 0, 1, 0 });
     }
 
     void GamePlayCamera::UpdateSubCamera() {

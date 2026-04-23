@@ -44,6 +44,8 @@ namespace MyGame {
         MyEngine::Vector3 forward_{};
         int currentIndex_ = 0;                                        // 今いる区間（p1）
         float t_ = 0.0f;                                              // 区間内の進行度 
+        MyEngine::Vector3 right_{};
+        MyEngine::Vector3 up_{};
     public: // アクセッサ
         // getter
         MyEngine::Vector3 GetForward() const {
@@ -56,7 +58,10 @@ namespace MyGame {
             // 進捗率を計算（distance_ / total）し、0.0f～1.0fの範囲にクランプして返す
             return std::clamp(distance_ / total, 0.0f, 1.0f);
         }
-		// setter
+        MyEngine::Vector3 GetRight()   const { return right_; }
+        MyEngine::Vector3 GetUp()      const { return up_; }
+        MyEngine::Vector3 GetBezierPos() const { return bezierPos_; }
+        // setter
         // Playerをセット
         void SetPlayer(Player* player) { player_ = player; }
     };

@@ -31,6 +31,9 @@ namespace MyGame {
 		/// 2Dスプライトの描画処理
 		/// </summary>	
 		void DrawSprite();
+
+		void SyncWorldTransformByRail();
+
 	private: // メンバ変数
 		PlayerData data_; // プレイヤーのデータ構造体
 		// 各種コンポーネント
