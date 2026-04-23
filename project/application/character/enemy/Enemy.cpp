@@ -33,6 +33,9 @@ namespace MyGame {
         collision_.SetCollider(std::move(collider));
         CollisionManager::GetInstance()->AddCollider(collision_.GetCollider());
 
+        //attack_ = std::make_unique<EnemyAttack>();
+        //attack_->SetOwner(this);
+        //attack_->Initialize();
         // 初期ステートをセットする
         ChangeState(std::make_unique<EnemyIdle>());
     }

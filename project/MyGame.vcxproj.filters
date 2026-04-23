@@ -648,6 +648,12 @@
     <ClCompile Include="application\character\player\Component\PlayerDeath.cpp">
       <Filter>ソース ファイル\application\character\player\component</Filter>
     </ClCompile>
+    <ClCompile Include="application\character\bullet\enemy\EnemyBullet.cpp">
+      <Filter>ソース ファイル\application\character\bullet</Filter>
+    </ClCompile>
+    <ClCompile Include="application\character\enemy\component\EnemyAttack.cpp">
+      <Filter>ソース ファイル\application\character\enemy\component</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="engine\2d\Sprite.h">
@@ -1060,6 +1066,12 @@
     </ClInclude>
     <ClInclude Include="application\character\player\Component\PlayerDeath.h">
       <Filter>ヘッダー ファイル\application\character\player\component</Filter>
+    </ClInclude>
+    <ClInclude Include="application\character\bullet\enemy\EnemyBullet.h">
+      <Filter>ヘッダー ファイル\application\character\bullet</Filter>
+    </ClInclude>
+    <ClInclude Include="application\character\enemy\component\EnemyAttack.h">
+      <Filter>ヘッダー ファイル\application\character\enemy\component</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -1,6 +1,7 @@
 #pragma once
 #include <BaseCharacter.h>
 #include <CollisionComponent.h>
+#include <EnemyAttack.h>
 
 namespace MyGame {
 	/// <summary>
@@ -31,5 +32,13 @@ namespace MyGame {
 
 	private: // メンバ変数
 		CollisionComponent collision_;
+
+		//std::unique_ptr<EnemyAttack> attack_; // 攻撃ロジックの保持
+	public: // アクセッサ
+		// getter
+		//EnemyAttack* GetAttack() { return attack_.get(); }
+
+		MyEngine::Transform* GetTransform() { return &object_->GetTransform(); }
+
 	};
 }

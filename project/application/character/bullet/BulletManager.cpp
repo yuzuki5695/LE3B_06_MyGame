@@ -1,5 +1,6 @@
 #include "BulletManager.h"
 #include <PlayerBullet.h>
+#include <EnemyBullet.h>
 
 using namespace MyEngine;
 
@@ -56,6 +57,12 @@ namespace MyGame {
 
     void BulletManager::SpawnPlayerBullet(const Transform& transform, const Vector3& velocity) {
         auto bullet = std::make_unique<PlayerBullet>();
+        bullet->Initialize(transform, velocity);
+        bullets_.push_back(std::move(bullet));
+    }
+
+    void BulletManager::SpawnEnemyBullet(const MyEngine::Transform& transform, const MyEngine::Vector3& velocity) {
+        auto bullet = std::make_unique<EnemyBullet>();
         bullet->Initialize(transform, velocity);
         bullets_.push_back(std::move(bullet));
     }

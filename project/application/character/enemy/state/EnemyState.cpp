@@ -28,7 +28,20 @@ namespace MyGame {
     }
 
     void EnemyAlive::Update(BaseCharacter& character) {
+        //// 必要なコンポーネント
+        //Enemy* enemy = dynamic_cast<Enemy*>(&character);
+        //EnemyAttack* attack = enemy->GetAttack();
 
+        //// プレイヤー取得
+        //Player* player = enemy->GetPlayer();
+
+        //if (player) {
+        //    attack->Update(
+        //        player->GetObject3d()->GetTransform(),
+        //        player->GetObject3d()->GetTransform().translate
+        //    );
+        //}
+        //attack->Update(enemy->GetObject3d()->GetTransform(), player->GetObject3d()->GetTransform().translate);
     }
 
     void EnemyDead::Update(BaseCharacter& character) {

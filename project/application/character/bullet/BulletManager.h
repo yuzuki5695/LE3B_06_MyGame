@@ -25,6 +25,8 @@ namespace MyGame {
 
         // プレイヤー弾生成
         void SpawnPlayerBullet(const MyEngine::Transform& transform, const MyEngine::Vector3& velocity);
+        // 敵弾生成
+        void SpawnEnemyBullet(const MyEngine::Transform& transform, const MyEngine::Vector3& velocity);
 
     private:
         std::vector<std::unique_ptr<BaseBullet>> bullets_;
