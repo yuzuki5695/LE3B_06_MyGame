@@ -31,6 +31,9 @@ namespace AssetGen {
         /// 終了メッセージの表示などの後処理を行う
         /// </summary>
         void Finalize();
+
+        bool NeedsUpdate(const std::filesystem::path& resourceRoot, const std::filesystem::path& headerPath);
+
 	private: // メンバ変数
         // --- パス関連 ---
         std::filesystem::path resourceRoot_;      ///< 素材ファイルが存在するルートディレクトリ

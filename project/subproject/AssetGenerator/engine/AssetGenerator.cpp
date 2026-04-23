@@ -22,8 +22,26 @@ void AssetGenerator::Run(int argc, char* argv[]) {
     }
 }
 
+bool AssetGenerator::NeedsUpdate(const fs::path& resourceRoot, const fs::path& headerPath) {
+    if (!fs::exists(headerPath)) return true;
+
+    auto lastHeaderUpdate = fs::last_write_time(headerPath);
+
+    // Resourcesフォルダ内を再帰的に見て、一つでもヘッダーより新しいファイルがあれば実行
+    for (const auto& entry : fs::recursive_directory_iterator(resourceRoot)) {
+        if (entry.last_write_time() > lastHeaderUpdate) {
+            return true;
+        }
+    }
+    return false;
+}
+
 void AssetGenerator::Initialize(int argc, char* argv[]) {
     std::setlocale(LC_ALL, "japanese");
+	// 事前に更新が必要かチェックして、不要なら早期リターン
+    if (!NeedsUpdate(resourceRoot_, assetInfoPath_ / "LoadResourceID.h")) {
+        return;
+    }
 
     fs::path rootPath;
 
