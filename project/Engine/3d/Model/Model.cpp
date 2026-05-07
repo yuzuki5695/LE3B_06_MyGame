@@ -6,6 +6,8 @@
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
+#undef max
+#undef min
 
 using namespace MyEngine::MatrixVector;
 using namespace MyEngine::ResourceFactory;
@@ -143,6 +145,23 @@ namespace MyEngine {
             // 全メッシュを共通関数で処理
             ProcessMesh(scene->mMeshes[meshIndex], modelData.vertices, true);
         }
+
+        // AABB計算
+        Vector3 min = { FLT_MAX, FLT_MAX, FLT_MAX };
+        Vector3 max = { -FLT_MAX, -FLT_MAX, -FLT_MAX };
+
+        for (const auto& v : modelData.vertices) {
+            min.x = std::min(min.x, v.position.x);
+            min.y = std::min(min.y, v.position.y);
+            min.z = std::min(min.z, v.position.z);
+
+            max.x = std::max(max.x, v.position.x);
+            max.y = std::max(max.y, v.position.y);
+            max.z = std::max(max.z, v.position.z);
+        }
+
+        modelData.aabb.min = min;
+        modelData.aabb.max = max;
 
         // 4. Materialの解析
         for (size_t materialIndex = 0; materialIndex < scene->mNumMaterials; ++materialIndex) {

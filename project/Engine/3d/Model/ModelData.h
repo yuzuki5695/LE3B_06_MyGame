@@ -37,11 +37,20 @@ namespace MyEngine {
         uint32_t textureindex = 0;
     };
 
+	/// <summary>
+	/// 軸平行境界ボックス (AABB) の構造体
+	/// </summary>
+	struct AABB {
+		Vector3 min;
+		Vector3 max;
+	};
+
     /// <summary>
     /// モデルデータ全体
     /// </summary>
     struct ModelData final {
         std::vector<VertexData> vertices;
         MaterialData material;
+        AABB aabb;
     };
 }

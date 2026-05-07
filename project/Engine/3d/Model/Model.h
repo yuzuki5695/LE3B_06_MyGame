@@ -94,7 +94,7 @@ namespace MyEngine {
 		/// 頂点リソースの作成とデータの転送
 		/// </summary>
 		void VertexDatacreation();
-	private:
+	private: // メンバ変数
 		// ポインタ
 		ModelCommon* modelCommon = nullptr;
 		// Objファイルのデータ
@@ -105,5 +105,9 @@ namespace MyEngine {
 		D3D12_VERTEX_BUFFER_VIEW vertexBufferView;
 		// バッファリソース内のデータを指すポインタ
 		VertexData* vertexData = nullptr;
+	public: // アクセッサ
+		// getter
+		Vector3 GetSize() const { return { modelData.aabb.max - modelData.aabb.min }; }        // AABBのサイズを返す
+		Vector3 GetCenter() const { return (modelData.aabb.min + modelData.aabb.max) * 0.5f; } // AABBの中心を返す
 	};
 }

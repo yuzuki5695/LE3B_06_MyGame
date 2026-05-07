@@ -1034,9 +1034,6 @@
     <ClInclude Include="application\collision\Collider.h">
       <Filter>ヘッダー ファイル\application\collision</Filter>
     </ClInclude>
-    <ClInclude Include="application\collision\CollisionComponent.h">
-      <Filter>ヘッダー ファイル\application\collision</Filter>
-    </ClInclude>
     <ClInclude Include="application\collision\OBBCollider.h">
       <Filter>ヘッダー ファイル\application\collision</Filter>
     </ClInclude>
@@ -1047,9 +1044,6 @@
       <Filter>ヘッダー ファイル\application\collision</Filter>
     </ClInclude>
     <ClInclude Include="application\collision\CollisionManager.h">
-      <Filter>ヘッダー ファイル\application\collision</Filter>
-    </ClInclude>
-    <ClInclude Include="application\collision\EnemyCollider.h">
       <Filter>ヘッダー ファイル\application\collision</Filter>
     </ClInclude>
     <ClInclude Include="application\ui\scene\TitleUI.h">
@@ -1072,6 +1066,9 @@
     </ClInclude>
     <ClInclude Include="application\character\enemy\component\EnemyAttack.h">
       <Filter>ヘッダー ファイル\application\character\enemy\component</Filter>
+    </ClInclude>
+    <ClInclude Include="application\collision\ICollisionReceiver.h">
+      <Filter>ヘッダー ファイル\application\collision</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

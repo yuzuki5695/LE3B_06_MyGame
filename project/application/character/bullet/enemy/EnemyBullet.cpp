@@ -10,10 +10,10 @@ using namespace AssetGen::LoadResourceID::Models;
 
 namespace MyGame {
 
+    using namespace CollisionConfig;
+
     void EnemyBullet::Finalize() {
-        if (collider_) {
-            CollisionManager::GetInstance()->RemoveCollider(collider_.get());
-        }
+
     }
 
     void EnemyBullet::Initialize(const MyEngine::Transform& transform, const MyEngine::Vector3& velocity) {
@@ -54,9 +54,9 @@ namespace MyGame {
         }
     }
 
-    void EnemyBullet::OnCollision(Collider* other) {
+   // void EnemyBullet::OnCollision(Collider* other) {
         //if (other->GetCollisionAttribute() == CollisionConfig::Enemy) {
         //    SetInactive();
         //}
-    }
+   // }
 }

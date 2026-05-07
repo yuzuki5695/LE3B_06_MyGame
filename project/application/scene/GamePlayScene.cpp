@@ -34,6 +34,7 @@ namespace MyGame {
         CameraManager::GetInstance()->Finalize(); // カメラマネージャの終了処理
         UIManager::GetInstance()->Finalize();     // UIマネージャの終了処理 
         FadeManager::GetInstance()->Finalize();   // フェードマネージャの終了処理
+		CollisionManager::GetInstance()->Finalize(); // 衝突マネージャの終了処理
     }
 
     void GamePlayScene::Initialize() {
@@ -97,20 +98,6 @@ namespace MyGame {
         for (auto& enemy : enemies_) {
             enemy->Update();
         }
-        
-
-        CameraManager::GetInstance()->GetCurrentBehaviorAs<GamePlayCamera>()->SetTargetObject(player_->GetObject3d());
-        CameraManager::GetInstance()->GetCurrentBehaviorAs<GamePlayCamera>()->SetPlayer(player_.get()); 
-        // プレイヤーの更新
-        player_->Update();
-        // 弾の更新
-        BulletManager::GetInstance()->Update();
-        // ステージマネージャの更新
-        StageManager::GetInstance()->Update();
-        // イベントマネージャの更新
-        EventManager::GetInstance()->Update();
-
-        CollisionManager::GetInstance()->CheckAllCollisions();
 
         enemies_.erase(
             std::remove_if(enemies_.begin(), enemies_.end(),
@@ -123,6 +110,19 @@ namespace MyGame {
                 }),
             enemies_.end()
         );
+
+        CameraManager::GetInstance()->GetCurrentBehaviorAs<GamePlayCamera>()->SetTargetObject(player_->GetObject3d());
+        CameraManager::GetInstance()->GetCurrentBehaviorAs<GamePlayCamera>()->SetPlayer(player_.get()); 
+        // プレイヤーの更新
+        player_->Update();
+        // 弾の更新
+        BulletManager::GetInstance()->Update();
+        // ステージマネージャの更新
+        StageManager::GetInstance()->Update();
+        // イベントマネージャの更新
+        EventManager::GetInstance()->Update();
+        // 全ての衝突をチェック
+        CollisionManager::GetInstance()->CheckAllCollisions();
 
 #pragma endregion 全てのObject3d個々の更新処理
 

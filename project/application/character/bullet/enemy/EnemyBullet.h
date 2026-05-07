@@ -1,6 +1,6 @@
 #pragma once
 #include <BaseBullet.h>
-#include <OBBCollider.h>
+//#include <OBBCollider.h>
 
 namespace MyGame {
     class EnemyBullet : public BaseBullet {
@@ -11,10 +11,10 @@ namespace MyGame {
         void Draw() override;
 
    
-        void OnCollision(Collider* other);
+     //   void OnCollision(Collider* other);
 
 	private:
-        std::unique_ptr<OBBCollider> collider_;
+       // std::unique_ptr<OBBCollider> collider_;
     };
 
 }

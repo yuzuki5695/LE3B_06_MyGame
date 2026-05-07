@@ -28,6 +28,10 @@ namespace MyGame {
     }
 
     void EnemyAlive::Update(BaseCharacter& character) {
+        // 必要なコンポーネント
+        Enemy* enemy = dynamic_cast<Enemy*>(&character);
+
+
         //// 必要なコンポーネント
         //Enemy* enemy = dynamic_cast<Enemy*>(&character);
         //EnemyAttack* attack = enemy->GetAttack();
@@ -45,6 +49,9 @@ namespace MyGame {
     }
 
     void EnemyDead::Update(BaseCharacter& character) {
-        character.Destroy();
+        if (!destroyed_) {
+            character.Destroy();
+            destroyed_ = true;
+        }
     }
 }
