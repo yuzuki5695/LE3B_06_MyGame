@@ -5,6 +5,7 @@
 #include <CameraManager.h>
 #include <Easing.h>
 #include <Enemy.h>
+#include <CollisionManager.h>
 
 using namespace MyEngine;
 using namespace Easing;
@@ -50,6 +51,8 @@ namespace MyGame {
 
     void EnemyDead::Update(BaseCharacter& character) {
         if (!destroyed_) {
+            // 死んだらマネージャーから削除する
+            CollisionManager::GetInstance()->UnregisterCollider(character.GetCollider());
             character.Destroy();
             destroyed_ = true;
         }

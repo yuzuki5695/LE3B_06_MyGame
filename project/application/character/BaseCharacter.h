@@ -2,6 +2,7 @@
 #include <memory>
 #include <Object3d.h>
 #include <CharacterState.h>
+#include <Collider.h>
 
 namespace MyGame {
     /// <summary>
@@ -47,6 +48,10 @@ namespace MyGame {
             // 内部のステート管理クラスに処理を委譲
             state_.ChangeState(*this, std::move(nextState));
         }
+
+        // 衝突時に呼ばれる関数 (基本は何もしない、必要なら派生クラスでオーバーライド)
+        virtual void OnCollision(Collider* other) {}
+
     protected: // メンバ変数
         /// <summary>
         /// 3Dオブジェクト本体
@@ -66,10 +71,23 @@ namespace MyGame {
         /// ステートの本体
         /// </summary>
         CharacterState state_;
+        // コライダー本体
+        std::unique_ptr<Collider> collider_;
     public: // アクセッサ
         // getter
         MyEngine::Object3d* GetObject3d() const { return object_.get(); }
         bool IsActive() const { return isActive_; }
         void SetActive(bool flag) { isActive_ = flag; }
+
+        Collider* GetCollider() const { return collider_.get(); }
+
+        // 衝突属性の設定を楽にするためのヘルパー
+        void SetCollision(uint32_t attribute, uint32_t mask) {
+            if (!collider_) collider_ = std::make_unique<Collider>();
+            collider_->SetCollisionAttribute(attribute);
+            collider_->SetCollisionMask(mask);
+            // 衝突したら自分のOnCollisionを呼ぶように登録
+            collider_->SetCallback([this](Collider* other) { this->OnCollision(other); });
+        }
     };
 }

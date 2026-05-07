@@ -1,14 +1,12 @@
 #pragma once
 #include <BaseCharacter.h>
-#include <ICollisionReceiver.h>
-#include <OBBCollider.h>
 #include <EnemyAttack.h>
 
 namespace MyGame {
 	/// <summary>
 	/// プレイヤーキャラクタークラス
 	/// </summary>
-	class Enemy : public BaseCharacter, public ICollisionReceiver {
+	class Enemy : public BaseCharacter {
 	public:// メンバ関数
 		// デストラクタ
 		~Enemy() override;
@@ -25,15 +23,9 @@ namespace MyGame {
 		/// 描画処理
 		/// </summary>
 		void Draw() override;
+		
 
-
-	private: // 内部処理
-
-        void OnCollision(Collider* other) override;
-
-	private: // メンバ変数
-
-		std::unique_ptr<OBBCollider> collider_;
+		void OnCollision(Collider* other) override;
 
 		//std::unique_ptr<EnemyAttack> attack_; // 攻撃ロジックの保持
 	public: // アクセッサ

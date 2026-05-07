@@ -258,8 +258,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\collision\CollisionConfig.h" />
     <ClInclude Include="application\collision\CollisionManager.h" />
     <ClInclude Include="application\collision\CollisionUtils.h" />
-    <ClInclude Include="application\collision\ICollisionReceiver.h" />
-    <ClInclude Include="application\collision\OBBCollider.h" />
     <ClInclude Include="application\event\EventManager.h" />
     <ClInclude Include="application\event\events\StartEvent.h" />
     <ClInclude Include="application\event\EventTypes.h" />

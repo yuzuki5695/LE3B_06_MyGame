@@ -1,53 +1,52 @@
 #pragma once
 #include <OBB.h>
 #include <cstdint>
+#include <functional>
 
 namespace MyGame {
-    /// <summary>
-	/// コライダの基底クラス
-    /// </summary>
+
     class Collider {
-    public: // メンバ関数
-        // コンストラクタとデストラクタ
+    public:
+        // 衝突時に呼び出す関数の型定義
+        // 引数にCollider*を渡すことで、相手の属性(Attribute)などを確認できるようにします
+        using CollisionCallback = std::function<void(Collider*)>;
+
+        Collider() = default;
         virtual ~Collider() = default;
-        /// <summary>
-        /// OBBを取得する関数
-        /// </summary>
-        /// <returns></returns>
-        virtual MyEngine::OBB GetOBB() const = 0;
-        /// <summary>
-        /// 衝突したときの処理
-        /// </summary>
-        /// <param name="other"></param>
-        /// <param name="mtv"></param>
-        virtual void OnCollision(Collider* other) {}
-        /// <summary>
-		/// 衝突を通知する関数
-        /// </summary>
-        /// <param name="other"></param>
-        /// <param name="mtv"></param>
-        virtual void DispatchCollision(Collider* other) { OnCollision(other); }
-    protected: // メンバ変数
-        void* owner_ = nullptr;  // コライダーの所有者（例: プレイヤーオブジェクトやステージオブジェクトなど）へのポインタ
-        uint32_t attribute_ = 0; // 衝突属性（例: プレイヤー、敵、アイテムなどをビットフラグで表現）
-        uint32_t mask_ = 0;      // 衝突マスク（どの属性と衝突するかをビットフラグで表現）
-    public: // アクセッサ
-        /// getter
-        
-        /// 所有者の取得・設定関数
-        void* GetOwner() const { return owner_; }
-        /// 衝突属性とマスクの取得・設定関数
+
+        // --- 衝突判定データ (OBB) ---
+        // 毎フレーム、オブジェクトの移動後にセットすることを想定
+        void SetOBB(const MyEngine::OBB& obb) { obb_ = obb; }
+        const MyEngine::OBB& GetOBB() const { return obb_; }
+
+        // --- フィルタリング設定 (CollisionConfigと連携) ---
+        void SetCollisionAttribute(uint32_t attr) { attribute_ = attr; }
         uint32_t GetCollisionAttribute() const { return attribute_; }
-        /// 衝突属性とマスクの取得・設定関数
+
+        void SetCollisionMask(uint32_t mask) { mask_ = mask; }
         uint32_t GetCollisionMask() const { return mask_; }
 
-        /// setter
+        // --- コールバック設定 ---
+        // 衝突した瞬間に呼び出す処理を登録
+        void SetCallback(CollisionCallback callback) { callback_ = callback; }
 
-        /// 所有者の取得・設定関数
-        void SetOwner(void* owner) { owner_ = owner; }
-        /// 衝突属性とマスクの取得・設定関数
-        void SetCollisionAttribute(uint32_t attr) { attribute_ = attr; }
-        /// 衝突属性とマスクの取得・設定関数
-        void SetCollisionMask(uint32_t mask) { mask_ = mask; }
+        // 衝突通知 (CollisionManagerから呼ばれる)
+        void OnCollision(Collider* other) {
+            if (callback_) {
+                callback_(other);
+            }
+        }
+
+    private:
+        // --- 判定形状データ ---
+        MyEngine::OBB obb_;
+
+        // --- フィルタリングデータ ---
+        // 自身の種類
+        uint32_t attribute_ = 0;
+        // 衝突対象のフラグ
+        uint32_t mask_ = 0;
+        // 通知 
+        CollisionCallback callback_ = nullptr;
     };
 }
