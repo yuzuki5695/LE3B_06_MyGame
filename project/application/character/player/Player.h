@@ -46,6 +46,8 @@ namespace MyGame {
 		std::unique_ptr <MyEngine::Object3d> target_; // ターゲット用3Dオブジェクト
 		MyEngine::Transform targettransform_; 
 		MyEngine::Vector3 aimWorldPos_; // 
+		// カメラの位置調整用オフセット
+		MyEngine::Vector3 baseOffset_;
 	public: // アクセッサ
 		// getter
 		PlayerMove* GetMove() { return move_.get(); }

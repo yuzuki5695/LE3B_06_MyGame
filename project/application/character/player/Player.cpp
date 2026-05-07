@@ -5,10 +5,12 @@
 #include <CameraManager.h>
 #include <PlayerDataLoader.h>
 #include <TextureManager.h>
+#include <MatrixVector.h>
 // AssetGeneratorからインクルード
 #include <subproject/AssetGenerator/engine/generator/LoadResourceID.h>
 
 using namespace MyEngine;
+using namespace MatrixVector;
 using namespace AssetGen::LoadResourceID::Models;
 using namespace AssetGen::LoadResourceID::Textures;
 
@@ -22,6 +24,8 @@ namespace MyGame {
         ModelManager::GetInstance()->LoadModel(Character::Player);
 
         data_ = PlayerDataLoader::Load("player");
+ 
+        baseOffset_ = { 0.0f, -3.0f, 30.0f };
 
         object_ = Object3d::Create(Character::Player, data_.transform);
         targettransform_ = { {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 30.0f} };
@@ -71,28 +75,24 @@ namespace MyGame {
 
     void Player::SyncWorldTransformByRail() {
         GamePlayCamera* cam = CameraManager::GetInstance()->GetCurrentBehaviorAs<GamePlayCamera>();
-		Camera* active = CameraManager::GetInstance()->GetActiveCamera();
-        
-        Vector3 camPos = cam->GetBezierPos();
-        Vector3 forward = cam->GetForward();
-        Vector3 right = cam->GetRight();
-        Vector3 up = cam->GetUp();
+        Camera* active = CameraManager::GetInstance()->GetActiveCamera();
 
-        // カメラ基準位置
-        Vector3 baseOffset = { 0.0f, -3.0f, 30.0f };
-        Vector3 baseWorld =
-            right * baseOffset.x +
-            up * baseOffset.y +
-            forward * baseOffset.z;
-        // 2. プレイヤーの入力移動分 (相対座標のXを右方向へ、Yを上方向へ適用)
-        Vector3 moveOffset = (right * move_->GetRelativePos().x) + (up * move_->GetRelativePos().y);
-        // 最終的なワールド座標
-        Vector3 finalPos = camPos + baseWorld + moveOffset;
+        Vector3 camPos = active->GetTranslate();
+
+        // カメラ位置から固定オフセット
+        Vector3 offset = { move_->GetRelativePos().x,move_->GetRelativePos().y + baseOffset_.y,baseOffset_.z };
+
+        Vector3 finalPos = camPos + offset;
+
         object_->SetTranslate(finalPos);
 
-        // 3. 回転の同期
-        // カメラの回転をそのままコピーするのではなく、レールの向きに向かせる
-        // または、旧コードのようにカメラの回転を反映させる
-        object_->SetRotate(active->GetRotate()); // カメラの姿勢に合わせる
+        //Vector3 camRot = active->GetRotate();
+        //Vector3 finalRot{};
+        //// カメラ回転を基準
+        //finalRot.x = camRot.x + move_->GetTiltX();
+        //finalRot.y = camRot.y;
+        //finalRot.z = camRot.z + move_->GetTiltZ() + move_->GetExtraRotationZ();
+
+        //object_->SetRotate(finalRot);
     }
 }

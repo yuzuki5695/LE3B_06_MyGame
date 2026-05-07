@@ -25,21 +25,33 @@ namespace MyGame {
         stateData_.state = CameraState::Follow;
         // ベジェカーブのJSONデータ読み込み
         Jsondata_ = std::make_unique<CurveJsonLoader>();
-		// ベジェ制御点の読み込み
+        // ベジェ制御点の読み込み
         bezierPoints = Jsondata_->LoadBezierFromJSON("Resources/levels/bezier.json");
         // サブカメラ生成
-        std::unique_ptr<MyEngine::Camera> subCam = std::make_unique<MyEngine::Camera>(); 
+        std::unique_ptr<MyEngine::Camera> subCam = std::make_unique<MyEngine::Camera>();
         // サブカメラ登録
         CameraManager::GetInstance()->GetCameraSet().AddSubCamera("Sub", std::move(subCam));
-		// ベジェ曲線の初期化
+        // ベジェ曲線の初期化
         const auto& curve = bezierPoints[0];
-		railPath_.Build(curve);        // 距離計算用
+        railPath_.Build(curve);        // 距離計算用
         railSampler_.SetCurve(curve);  // 座標取得用
+     
+        // 開始地点の座標と方向を強制的に設定する
+        distance_ = 0.0f;
+        railPath_.ConvertDistance(distance_, currentIndex_, t_);
+        bezierPos_ = railSampler_.Sample(currentIndex_, t_);
+        forward_ = Normalize(railSampler_.SampleTangent(currentIndex_, t_));
+
+        // カメラをレールの開始地点に向かせる
+        if (camera) {
+            camera->SetLookAt(bezierPos_, bezierPos_ + forward_, { 0, 1, 0 });
+            camera->Update(); // 行列を確定させる
+        }
     }
 
     void GamePlayCamera::Update(Camera* camera) {
         if (!camera) return;
-        Transform* transform = nullptr;
+
         switch (stateData_.state) {
         case CameraState::Follow:
             UpdateBezier(camera);
