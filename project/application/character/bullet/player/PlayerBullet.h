@@ -10,6 +10,7 @@ namespace MyGame {
         void Update() override;
         void Draw() override;
 
-
+        
+		void OnCollision(Collider* other) override;
     };
 }

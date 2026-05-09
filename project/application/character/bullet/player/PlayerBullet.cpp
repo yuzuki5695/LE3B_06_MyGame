@@ -10,6 +10,7 @@ using namespace AssetGen::LoadResourceID::Models;
 
 namespace MyGame {
 
+    using namespace CollisionConfig;
 
     void PlayerBullet::Finalize() {}
 
@@ -20,6 +21,11 @@ namespace MyGame {
         // オブジェクト生成
         ModelManager::GetInstance()->LoadModel(Bullet::PlayerBullet);
         bullet = Object3d::Create(Bullet::PlayerBullet, transform_);
+        
+        // コライダーの設定
+        SetCollision(Attribute::PlayerBullet, Mask::kPlayerBullet);
+        // マネージャーに登録
+        CollisionManager::GetInstance()->RegisterCollider(collider_.get());
 
         // 初期位置設定
         bullet->SetTranslate(transform_.translate);
@@ -38,6 +44,11 @@ namespace MyGame {
             bullet->SetTranslate(transform_.translate);
             bullet->Update();
         }
+        // コライダーのOBBをObject3dの情報から更新
+        if (collider_) {
+            collider_->SetOBB(CollisionUtils::CreateOBB(bullet.get()));
+        }
+
         // =============================
         // ③ 寿命処理
         // =============================
@@ -51,5 +62,11 @@ namespace MyGame {
         if (bullet) {
             bullet->Draw();
         }
+    }
+    
+    void PlayerBullet::OnCollision(Collider* other) {
+        //if (active_) {
+        //    SetInactive();
+        //}
     }
 }

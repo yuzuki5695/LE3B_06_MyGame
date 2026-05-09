@@ -122,7 +122,7 @@ namespace MyGame {
         // イベントマネージャの更新
         EventManager::GetInstance()->Update();
         // 全ての衝突をチェック
-        CollisionManager::GetInstance()->CheckAllCollisions();
+        //CollisionManager::GetInstance()->CheckAllCollisions();
 
 #pragma endregion 全てのObject3d個々の更新処理
 

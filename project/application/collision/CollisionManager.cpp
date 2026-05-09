@@ -23,29 +23,21 @@ void CollisionManager::Finalize() {
 }
 
 void CollisionManager::CheckAllCollisions() {
-    // 全てのコライダーの組み合わせをチェック
-    auto itA = colliders_.begin();
-    // 2重ループで全ての組み合わせをチェック
-    for (; itA != colliders_.end(); ++itA) {
+    for (auto itA = colliders_.begin(); itA != colliders_.end(); ++itA) {
         Collider* colliderA = *itA;
-        // 内側のループはitAの次の要素から開始して、同じ組み合わせを二度チェックしないようにする
-        auto itB = std::next(itA);
-        for (; itB != colliders_.end(); ++itB) {
+        for (auto itB = std::next(itA); itB != colliders_.end(); ++itB) {
             Collider* colliderB = *itB;
 
-            // 1. フィルタリング：お互いのマスクが相手の属性を含んでいるか
-            if (!(colliderA->GetCollisionMask() & colliderB->GetCollisionAttribute()) &&
-                !(colliderB->GetCollisionMask() & colliderA->GetCollisionAttribute())) {
+            // 修正：両方のビットが立っている時だけ判定
+            bool aCanHitB = colliderA->GetCollisionMask() & colliderB->GetCollisionAttribute();
+            bool bCanHitA = colliderB->GetCollisionMask() & colliderA->GetCollisionAttribute();
+
+            if (!(aCanHitB && bCanHitA)) {
                 continue;
             }
 
-            // 2. 衝突判定
-            OBB obbA = colliderA->GetOBB();
-            OBB obbB = colliderB->GetOBB();
-            
+            // 衝突判定
             if (MyEngine::Collision::IsOBBIntersect(colliderA->GetOBB(), colliderB->GetOBB())) {
-
-                // 3. 衝突通知（Collider内のstd::functionを呼び出す）
                 colliderA->OnCollision(colliderB);
                 colliderB->OnCollision(colliderA);
             }

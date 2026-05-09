@@ -61,10 +61,12 @@ namespace MyGame {
     }
 
     void Enemy::OnCollision(Collider* other) {
-        // 今のステートに衝突を知らせる（ステート側で処理したい場合）
-        // もしくは、ここでダメージ処理をして EnemyDead ステートへ遷移させる
         if (isAlive_) {
             ChangeState(std::make_unique<EnemyDead>());
+            // 判定リストから自分を外す
+            CollisionManager::GetInstance()->UnregisterCollider(collider_.get());
+            // そのあとで自身を破棄・フラグ折る
+            this->isAlive_ = false;
         }
     }
 }
