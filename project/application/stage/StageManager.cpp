@@ -29,41 +29,23 @@ namespace MyGame {
     // 終了
     void StageManager::Finalize() {
         instance.reset();  // `delete` 不要
-        // 地面オブジェクトの解放
-        //grass.reset();
-        // デバッグオブジェクトのクリア
-       // debugObjects_.parts();
-        // その他の3Dオブジェクトもクリア
-     //   object3ds_.parts();
     }
 
     void StageManager::Initialize() {
-        // LevelLoader のインスタンスを生成s
-        //loader_ = new CharacterLoader();
-        //levelData_ = loader_->LoadFile("stage");  // ←ここでロード
-
-
+		// テクスチャとモデルの読み込み
         TextureManager::GetInstance()->LoadTexture(stage::CubemapBox);
         ModelManager::GetInstance()->LoadModel(Object::Tile);
-
-        // オブジェクトの作成
-        // 地面の作成
-
+        ModelManager::GetInstance()->LoadModel(Object::goal);
+        
+		// スカイボックスの生成
         skybox_ = Skybox::Create(stage::CubemapBox, Transform{ { 1000.0f, 1000.0f, 1000.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 100.0f } });
-
+		// 地面の生成
         grass = Object3d::Create(Object::Tile, Transform({ 1000.0f, 1.0f, 1000.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, -120.0f, 0.0f }));
-
+        // クリアゲートの生成
+        clearwall_ = Object3d::Create(Object::goal, Transform({ 1.0f, 1.0f, 1.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }));
     }
 
     void StageManager::Update() {
-#ifdef _DEBUG
-        //if (showDebugObjects_) {
-        //    // 各オブジェクトの更新
-        //    for (auto& obj : debugObjects_) {
-        //        obj->Update();
-        //    }
-        //}
-#endif
 
         //if (SceneManager::GetInstance()->GetCurrentScene(SceneName::TITLE)) {
         //    // Skyboxの回転
@@ -77,32 +59,26 @@ namespace MyGame {
         //    grass->Update();
         //}
 
+        // スカイボックス更新処理
         skybox_->Update();
-
+		// 地面の更新処理
         grass->Update();
+        // クリアゲートの更新処理
+        clearwall_->Update();
     }
 
     void StageManager::Draw() {
-#ifdef _DEBUG
-        //if (showDebugObjects_) {
-        //    // 各オブジェクトの描画
-        //    for (auto& obj : debugObjects_) {
-        //        obj->Draw();
-        //    }
-        //}
-#endif
-        //if (SceneManager::GetInstance()->IsCurrentScene("GAMEPLAY")) {
-        //    grass->Draw();
-        //}
-
+        if (SceneManager::GetInstance()->IsCurrentScene(SceneName::GAMEPLAY)) {
+            // クリアゲートの描画処理
+            clearwall_->Draw();
+        }
+		// 地面の描画処理
         grass->Draw();
+
     }
 
     void StageManager::DDSDraw() {
-        //if (SceneManager::GetInstance()->IsCurrentScene("TITLE")) {
-        //    skybox_->Draw();
-        //}
+		// スカイボックスの描画処理
         skybox_->Draw();
-    
     }
 }

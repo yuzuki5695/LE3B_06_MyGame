@@ -59,7 +59,10 @@ namespace MyGame {
 		enemySpawner_->SetPlayer(player_.get());
 
         // ステージマネージャの初期化
-        StageManager::GetInstance()->Initialize();
+        StageManager::GetInstance()->Initialize(); 
+        StageManager::GetInstance()->SetClearwallTranslate(
+            CameraManager::GetInstance()->GetCurrentBehaviorAs<GamePlayCamera>()->GetRailEndPosition()
+        );
 
         GamePlayUI* gameplayUI = UIManager::GetInstance()->GetUI<GamePlayUI>();
         if (gameplayUI) {

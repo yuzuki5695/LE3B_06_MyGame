@@ -41,5 +41,9 @@ namespace MyEngine {
 		void SetSceneFactory(AbstractSceneFactory* SceneFactory) { sceneFactory_ = SceneFactory; }
 		// 現在のシーンを取得する
 		BaseScene* GetCurrentScene() const { return scene_.get(); }
+		// 現在のシーンか判定
+		bool IsCurrentScene(const std::string& sceneName) const {
+			return scene_ && scene_->GetSceneName() == sceneName;
+		}
 	};
 }

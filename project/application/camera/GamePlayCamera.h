@@ -64,5 +64,12 @@ namespace MyGame {
         // setter
         // Playerをセット
         void SetPlayer(Player* player) { player_ = player; }
+        MyEngine::Vector3 GetRailEndPosition() const {
+            if (bezierPoints.empty()) { return {}; }
+            const auto& curve = bezierPoints[0];
+            if (curve.empty()) { return {}; }
+            // 最後の制御点
+            return curve.back().controlPoint;
+        }
     };
 }

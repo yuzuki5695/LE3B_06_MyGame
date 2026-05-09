@@ -9,7 +9,7 @@ namespace MyGame {
     /// ステージマネージャ
     /// </summary>
     class StageManager {
-    private:
+	private: // シングルトンインスタンス
         static std::unique_ptr<StageManager> instance;
 
         StageManager(StageManager&) = delete;
@@ -21,27 +21,32 @@ namespace MyGame {
         static StageManager* GetInstance();
         // 終了
         void Finalize();
+        /// <summary>
+		/// 初期化
+        /// </summary>
         void Initialize();
+        /// <summary>
+		/// 毎フレーム更新
+        /// </summary>
         void Update();
+        /// <summary>
+		/// 描画
+        /// </summary>
         void Draw();
+        /// <summary>
+		/// DDS描画
+        /// </summary>
         void DDSDraw();
-	private: // メンバ変数
-        //// ポインタ
-        //CharacterLoader* loader_ = nullptr;
-        //// レベルデータ格納用インスタンスを生成
-        //LevelData* levelData_ = nullptr;
-        //// --- 本番オブジェクト ---
-        //std::vector<std::unique_ptr<MyEngine::Object3d>> object3ds_;  // 通常ゲーム用
-        //// --- デバッグ可視化オブジェクト ---
-        //std::vector<std::unique_ptr<MyEngine::Object3d>> debugObjects_; // 制御点・カーブ・カメラ位置など
-        //// --- デバッグ表示フラグ ---
-        //bool showDebugObjects_ = false; // ImGuiで切り替え可能にする
-
+    private: // メンバ変数
         // 地面
         std::unique_ptr <MyEngine::Object3d> grass = nullptr;
-
+		// スカイボックス
         std::unique_ptr<MyEngine::Skybox> skybox_;
-
-
+		// クリアゲート
+        std::unique_ptr <MyEngine::Object3d> clearwall_;    /// クリアゲート
+    public:
+        void SetClearwallTranslate(const MyEngine::Vector3& translate) {
+            if (clearwall_) { clearwall_->SetTranslate(translate); }
+        }
     };
 }
