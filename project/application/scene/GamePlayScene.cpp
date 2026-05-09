@@ -90,8 +90,8 @@ namespace MyGame {
         if (Input::GetInstance()->Triggrkey(DIK_RETURN)) {
             // フェードアウト            
             // FadeManager::GetInstance()->SceneChangeFade(SceneName::GAMECLEAR, FadeStyle::SilhouetteExplode, 1.0f);
-            CameraManager::GetInstance()->GetCurrentBehaviorAs<GamePlayCamera>()->SetCameraState(CameraState::LockOn);
-            player_->ChangeState(std::make_unique<PlayerStateDead>());
+            //CameraManager::GetInstance()->GetCurrentBehaviorAs<GamePlayCamera>()->SetCameraState(CameraState::LockOn);
+            //player_->ChangeState(std::make_unique<PlayerStateDead>());
         }
 
         // 敵スポーン
@@ -126,6 +126,12 @@ namespace MyGame {
         EventManager::GetInstance()->Update();
         // 全ての衝突をチェック
         //CollisionManager::GetInstance()->CheckAllCollisions();
+
+        // ゲームクリアの条件をチェック
+        if (CameraManager::GetInstance()->GetCurrentBehaviorAs<GamePlayCamera>()->GetProgress() >= 1.0f) {
+			// フェードアウト
+            FadeManager::GetInstance()->SceneChangeFade(SceneName::GAMECLEAR, FadeStyle::SilhouetteExplode, 1.5f);
+        }
 
 #pragma endregion 全てのObject3d個々の更新処理
 

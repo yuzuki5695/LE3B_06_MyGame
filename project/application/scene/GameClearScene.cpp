@@ -14,7 +14,7 @@ namespace MyGame {
 	}
 
 	void GameClearScene::Initialize() {		
-        CameraManager::GetInstance()->Initialize(SceneName::TITLE);
+        CameraManager::GetInstance()->Initialize(SceneName::GAMECLEAR);
 
 	}
 
