@@ -28,6 +28,7 @@ namespace MyGame {
         baseOffset_ = { 0.0f, -3.0f, 30.0f };
 
         object_ = Object3d::Create(Character::Player, data_.transform);
+
         targettransform_ = { {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 30.0f} };
 
         target_ = Object3d::Create(Character::Player, targettransform_);
@@ -53,7 +54,7 @@ namespace MyGame {
         // ステートの更新
         state_.Update(*this);
 
-        SyncWorldTransformByRail();
+       // SyncWorldTransformByRail();
 
         targetreticle_->Update();
         target_->Update();

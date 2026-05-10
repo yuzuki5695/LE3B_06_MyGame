@@ -185,21 +185,21 @@ namespace MyEngine {
 	}
 
 	std::unique_ptr<Sprite> Sprite::Create(std::string textureFilePath, Vector2 position, float rotation, Vector2 size) {
-		std::unique_ptr<Sprite> sprite = std::make_unique<Sprite>();
-		sprite->Initialize(SpriteCommon::GetInstance());
+		std::unique_ptr<Sprite> mission_ = std::make_unique<Sprite>();
+		mission_->Initialize(SpriteCommon::GetInstance());
 		// 引数で受け取ってメンバ変数に記録する
-		sprite->textureFilePath_ = "Resources/" + textureFilePath;
+		mission_->textureFilePath_ = "Resources/" + textureFilePath;
 		// 単位行列を書き込んでおく
-		sprite->textureindex = TextureManager::GetInstance()->GetSrvIndex(sprite->textureFilePath_);
-		sprite->position_ = position;
-		sprite->rotation_ = rotation;
-		sprite->size_ = size;
-		sprite->textureSize = size;
+		mission_->textureindex = TextureManager::GetInstance()->GetSrvIndex(mission_->textureFilePath_);
+		mission_->position_ = position;
+		mission_->rotation_ = rotation;
+		mission_->size_ = size;
+		mission_->textureSize = size;
 		// Transformの初期化
-		sprite->transform.translate = { sprite->position_.x,sprite->position_.y,0.0f };
-		sprite->transform.rotate = { 0.0f,0.0f,sprite->rotation_ };
-		sprite->transform.scale = { sprite->size_.x,sprite->size_.y,1.0f };
-		return sprite;
+		mission_->transform.translate = { mission_->position_.x,mission_->position_.y,0.0f };
+		mission_->transform.rotate = { 0.0f,0.0f,mission_->rotation_ };
+		mission_->transform.scale = { mission_->size_.x,mission_->size_.y,1.0f };
+		return mission_;
 	}
 
 	void Sprite::DrawImGui(const std::string& name) {

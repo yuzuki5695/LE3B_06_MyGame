@@ -27,9 +27,9 @@ namespace MyGame {
                     shape.size = { spacingX, spacingY };
                     shape.scale = 0.0f;
 
-                    shape.sprite = MyEngine::Sprite::Create(AssetGen::LoadResourceID::Textures::fade::white, shape.position, 0.0f, shape.size);
-                    shape.sprite->SetAnchorPoint({ 0.5f, 0.5f });
-                    shape.sprite->SetColor({ 0, 0, 0, 0 });
+                    shape.mission_ = MyEngine::Sprite::Create(AssetGen::LoadResourceID::Textures::fade::white, shape.position, 0.0f, shape.size);
+                    shape.mission_->SetAnchorPoint({ 0.5f, 0.5f });
+                    shape.mission_->SetColor({ 0, 0, 0, 0 });
 
                     // 中心からの距離に応じてdelay設定
                     float dx = shape.position.x - center.x;
@@ -75,7 +75,7 @@ namespace MyGame {
 
                     float spread = (1.0f - easedT) * 150.0f;
                     MyEngine::Vector2 movedPos = { pos.x + dir.x * spread, pos.y + dir.y * spread };
-                    s.sprite->SetPosition(movedPos);
+                    s.mission_->SetPosition(movedPos);
 
                     scale = 1.0f - (1.0f - easedT) * 0.2f;
                     alpha = easedT;
@@ -92,7 +92,7 @@ namespace MyGame {
                         color = {
                             colorT, colorT, colorT, 1.0f // 黒→白
                         };
-                        s.sprite->SetPosition(pos);  // 動かない
+                        s.mission_->SetPosition(pos);  // 動かない
                         scale = 1.0f;
                         alpha = 1.0f;
                     }
@@ -106,8 +106,8 @@ namespace MyGame {
                         MyEngine::Vector2 movedPos = { pos.x + dir.x * spread, pos.y + dir.y * spread };
 
                         s.rotation += s.rotationSpeed * easedMoveT;
-                        s.sprite->SetRotation(s.rotation);
-                        s.sprite->SetPosition(movedPos);
+                        s.mission_->SetRotation(s.rotation);
+                        s.mission_->SetPosition(movedPos);
 
                         // スケール・アルファ変化
                         scale = 1.0f + easedMoveT * 0.3f;
@@ -125,15 +125,15 @@ namespace MyGame {
                 // 共通適用
                 // ===============================================
                 s.scale = scale;
-                s.sprite->SetSize(s.size * s.scale);
-                s.sprite->SetColor(color);
-                s.sprite->Update();
+                s.mission_->SetSize(s.size * s.scale);
+                s.mission_->SetColor(color);
+                s.mission_->Update();
             }
         }
 
         void Draw() override {
             for (auto& s : shapes_) {
-                s.sprite->Draw();
+                s.mission_->Draw();
             };
         }
     };

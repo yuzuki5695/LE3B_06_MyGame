@@ -21,7 +21,7 @@ namespace MyGame {
         PlayerMove* move = player->GetMove();
         PlayerReticle* reticle = player->GetReticle();
         PlayerAttack* attack = player->GetAttack();
-        Sprite* sprite = player->GetSprite();
+        Sprite* mission_ = player->GetSprite();
         Object3d* target = player->GetTarget();
 
         // 移動処理の実行
@@ -29,7 +29,7 @@ namespace MyGame {
         // 入力でレティクル移動
         reticle->UpdateInput();
         // スプライト位置更新
-        sprite->SetPosition(reticle->GetScreenPos());
+        mission_->SetPosition(reticle->GetScreenPos());
         // ワールド座標に変換
         Vector3 worldPos = reticle->ScreenToWorld(reticle->GetScreenPos(), CameraManager::GetInstance()->GetActiveCamera());
         player->SetAimWorldPos(worldPos);

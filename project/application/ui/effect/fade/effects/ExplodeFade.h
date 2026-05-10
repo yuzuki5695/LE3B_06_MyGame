@@ -27,9 +27,9 @@ namespace MyGame {
                     shape.size = { spacingX, spacingY };
                     shape.scale = 0.0f;
 
-                    shape.sprite = MyEngine::Sprite::Create(AssetGen::LoadResourceID::Textures::fade::white, shape.position, 0.0f, shape.size);
-                    shape.sprite->SetAnchorPoint({ 0.5f, 0.5f });
-                    shape.sprite->SetColor({ 0, 0, 0, 0 });
+                    shape.mission_ = MyEngine::Sprite::Create(AssetGen::LoadResourceID::Textures::fade::white, shape.position, 0.0f, shape.size);
+                    shape.mission_->SetAnchorPoint({ 0.5f, 0.5f });
+                    shape.mission_->SetColor({ 0, 0, 0, 0 });
 
                     // 中心からの距離に応じてdelay設定
                     float dx = shape.position.x - center.x;
@@ -62,15 +62,15 @@ namespace MyGame {
                 }
 
                 s.scale = scale;
-                s.sprite->SetSize(s.size * s.scale);
-                s.sprite->SetColor({ 0,0,0,alpha });
-                s.sprite->Update();
+                s.mission_->SetSize(s.size * s.scale);
+                s.mission_->SetColor({ 0,0,0,alpha });
+                s.mission_->Update();
             }
         }
 
         void Draw() override {
             for (auto& s : shapes_) {
-                s.sprite->Draw();
+                s.mission_->Draw();
             };
         }
     };

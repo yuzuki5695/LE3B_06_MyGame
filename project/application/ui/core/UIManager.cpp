@@ -3,6 +3,7 @@
 #include <SceneName.h>
 #include <GamePlayUI.h>
 #include <TitleUI.h>
+#include <GameClearUI.h>
 
 using namespace MyEngine;
 
@@ -36,7 +37,9 @@ namespace MyGame {
         if (currentScene == SceneName::TITLE) {
             AddUI(SceneName::TITLE, std::make_unique<TitleUI>());
         } else if (currentScene == SceneName::GAMEPLAY) {
-            AddUI( SceneName::GAMEPLAY, std::make_unique<GamePlayUI>());
+            AddUI(SceneName::GAMEPLAY, std::make_unique<GamePlayUI>());
+        } else if (currentScene == SceneName::GAMECLEAR) {
+            AddUI(SceneName::GAMECLEAR, std::make_unique<GameClearUI>());
         }
 
         // 生成したUIの個別初期化

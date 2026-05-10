@@ -16,7 +16,7 @@ enum class SpriteID  {
 /// スプライトと座標、アルファ値をまとめた構造体
 /// </summary>
 struct SpriteUnit {
-    std::unique_ptr<MyEngine::Sprite> sprite;
+    std::unique_ptr<MyEngine::Sprite> mission_;
     MyEngine::Vector2 position;
     float alpha = 1.0f;
     SpriteID  id;

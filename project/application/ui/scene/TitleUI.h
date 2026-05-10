@@ -9,7 +9,7 @@ namespace MyGame {
     class TitleUI : public BaseUI {
     private:
         struct TitleCharUI {
-            std::unique_ptr<MyEngine::Sprite> sprite;
+            std::unique_ptr<MyEngine::Sprite> mission_;
 
             MyEngine::Vector2 startPos;   // 開始位置
             MyEngine::Vector2 endPos;     // 終了位置

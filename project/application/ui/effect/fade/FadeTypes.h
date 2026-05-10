@@ -23,7 +23,7 @@ namespace MyGame {
     };
  
     struct FadeShape {
-        std::unique_ptr<MyEngine::Sprite> sprite;
+        std::unique_ptr<MyEngine::Sprite> mission_;
         MyEngine::Vector2 position;
         MyEngine::Vector2 size;
         float scale;
