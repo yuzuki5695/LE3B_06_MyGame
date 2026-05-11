@@ -53,8 +53,10 @@ namespace MyGame {
     void Player::Update() {
         // ステートの更新
         state_.Update(*this);
-
-       // SyncWorldTransformByRail();
+        
+        if (CameraManager::GetInstance()->GetCurrentBehaviorAs<GamePlayCamera>()) {
+            SyncWorldTransformByRail();
+        }
 
         targetreticle_->Update();
         target_->Update();
