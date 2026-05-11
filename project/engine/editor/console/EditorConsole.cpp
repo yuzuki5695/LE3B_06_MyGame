@@ -6,7 +6,7 @@
 
 namespace MyEngine {
 
-    using namespace Editor::console;
+    using namespace EditorTypes::console;
 
     // 静的メンバ変数の定義
     std::unique_ptr<EditorConsole> EditorConsole::instance = nullptr;

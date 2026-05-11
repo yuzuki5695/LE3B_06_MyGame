@@ -1,27 +1,43 @@
 #pragma once
 #include <string>
 #include <functional>
+#include <array>
 
 namespace MyEngine {
-    namespace Editor {
-        // 言語設定の列挙体
+    namespace EditorTypes { 
+        /// 言語設定の列挙体
         enum class Language {
             Japanese, // 日本語
             English   // 英語
             // 将来的に追加可能
         };
-
-        /// エディタ上で扱うオブジェクトのカテゴリ分類
-        enum class EditorObjectCategory {
+ 
+        /// エディタオブジェクトカテゴリ
+        enum class ObjectCategory {
             Object3D,  // 3Dオブジェクト
             Object2D,   // 2Dオブジェクト
-            Player,
+            Count
+        };
+
+        /// カテゴリ情報 
+        struct CategoryInfo {
+            ObjectCategory category;
+            const char* translationKey;
+        };
+
+        /// カテゴリ一覧
+        inline constexpr std::array<CategoryInfo,
+            static_cast<size_t>(ObjectCategory::Count)> kCategoryInfos = { {
+                { ObjectCategory::Object3D, "Object.Category3D" },
+                { ObjectCategory::Object2D, "Object.Category2D" }
+            }
         };
 
         /// エディタに登録されるオブジェクトの基本情報
         struct EditorObjectInfo {
             std::string name;                        // エディタ表示用の名前    
-            Editor::EditorObjectCategory category;   // 分類カテゴリ
+            ObjectCategory category;
+
             void* objectPtr = nullptr;               // 任意のオブジェクトポインタを保持(Object3dまたはSprite*)
             // エディタ描画関数
             std::function<void(void*)> drawFunc;

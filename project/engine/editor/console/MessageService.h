@@ -21,7 +21,7 @@ namespace MyEngine {
         static void Load(const std::string& filePath);
         /// <summary>
         /// 文字列キーでメッセージを取得
-        /// 例: GetText("Editor.System.EngineInit", Language::Japanese);
+        /// 例: GetText("EditorTypes.System.EngineInit", Language::Japanese);
         /// </summary>
         /// <param name="key">JSON内のキー（キーの頭Editorを除きドット区切り）</param>
         /// <returns>該当する文字列</returns>
@@ -37,11 +37,11 @@ namespace MyEngine {
         static nlohmann::json data_;                           /// データ本体
         static std::string fullpath;                           /// ファイルのフルパス
         static bool isLoaded_;                                 /// 読み込まれたかどうかの判定フラグ
-        static Editor::Language currentLanguage_;              /// 現在の言語設定
+        static EditorTypes::Language currentLanguage_;              /// 現在の言語設定
     public: // アクセッサ
         // Getter
-        static Editor::Language GetCurrentLanguage() { return currentLanguage_; }    // 現在の言語を取得する関数
+        static EditorTypes::Language GetCurrentLanguage() { return currentLanguage_; }    // 現在の言語を取得する関数
         // Setter
-        static void SetLanguage(Editor::Language lang) { currentLanguage_ = lang; }
+        static void SetLanguage(EditorTypes::Language lang) { currentLanguage_ = lang; }
     };
 }

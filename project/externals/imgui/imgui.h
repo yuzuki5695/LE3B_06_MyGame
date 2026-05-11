@@ -734,7 +734,7 @@ namespace ImGui
     IMGUI_API bool          InputScalar(const char* label, ImGuiDataType data_type, void* p_data, const void* p_step = NULL, const void* p_step_fast = NULL, const char* format = NULL, ImGuiInputTextFlags flags = 0);
     IMGUI_API bool          InputScalarN(const char* label, ImGuiDataType data_type, void* p_data, int components, const void* p_step = NULL, const void* p_step_fast = NULL, const char* format = NULL, ImGuiInputTextFlags flags = 0);
 
-    // Widgets: Color Editor/Picker (tip: the ColorEdit* functions have a little color square that can be left-clicked to open a picker, and right-clicked to open an option menu.)
+    // Widgets: Color EditorTypes/Picker (tip: the ColorEdit* functions have a little color square that can be left-clicked to open a picker, and right-clicked to open an option menu.)
     // - Note that in C++ a 'float v[X]' function argument is the _same_ as 'float* v', the array syntax is just a way to document the number of elements that are expected to be accessible.
     // - You can pass the address of a first float element out of a contiguous structure, e.g. &myvector.x
     IMGUI_API bool          ColorEdit3(const char* label, float col[3], ImGuiColorEditFlags flags = 0);
@@ -4181,7 +4181,7 @@ struct ImGuiPlatformIO
     bool        (*Platform_OpenInShellFn)(ImGuiContext* ctx, const char* path);
     void*       Platform_OpenInShellUserData;
 
-    // Optional: Notify OS Input Method Editor of the screen position of your cursor for text input position (e.g. when using Japanese/Chinese IME on Windows)
+    // Optional: Notify OS Input Method EditorTypes of the screen position of your cursor for text input position (e.g. when using Japanese/Chinese IME on Windows)
     // (default to use native imm32 api on Windows)
     void        (*Platform_SetImeDataFn)(ImGuiContext* ctx, ImGuiViewport* viewport, ImGuiPlatformImeData* data);
     void*       Platform_ImeUserData;
@@ -4283,7 +4283,7 @@ struct ImGuiPlatformMonitor
     ImGuiPlatformMonitor()          { MainPos = MainSize = WorkPos = WorkSize = ImVec2(0, 0); DpiScale = 1.0f; PlatformHandle = NULL; }
 };
 
-// (Optional) Support for IME (Input Method Editor) via the platform_io.Platform_SetImeDataFn() function. Handler is called during EndFrame().
+// (Optional) Support for IME (Input Method EditorTypes) via the platform_io.Platform_SetImeDataFn() function. Handler is called during EndFrame().
 struct ImGuiPlatformImeData
 {
     bool    WantVisible;            // A widget wants the IME to be visible.

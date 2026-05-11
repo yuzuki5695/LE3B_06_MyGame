@@ -5,14 +5,14 @@
 
 namespace MyEngine {
 
-    using namespace Editor;
+    using namespace EditorTypes;
     
     // ファイルから読み込んだデータを格納する変数
     nlohmann::json MessageService::data_;
     // static constをstaticに修正
     std::string MessageService::fullpath;
     bool MessageService::isLoaded_ = false;
-    Editor::Language MessageService::currentLanguage_ = Editor::Language::Japanese;
+    EditorTypes::Language MessageService::currentLanguage_ = EditorTypes::Language::Japanese;
 
     void MessageService::Initialize() {
         // すでにロード済みなら何もしない
@@ -55,7 +55,7 @@ namespace MyEngine {
             return "Language Data Not Loaded";
         try {
             // 入力されたキーの頭に "Editor." を自動で付ける
-            // "Editor + key" とキーを指定できる
+            // "EditorTypes + key" とキーを指定できる
             std::string fullKey = "Editor." + key;
 
             // ドット区切りをJSONポインタ形式に変換

@@ -4,6 +4,8 @@
 #include <EditorConsole.h>
 #include <ConsoleWindow.h>
 #include <externals/imgui/imgui_internal.h>
+#include <EditorEntityRegistry.h>
+#include <ObjectMenu.h>
 
 namespace MyEngine {
     // 静的メンバ変数の定義
@@ -23,12 +25,14 @@ namespace MyEngine {
     }
 
     void EditorManager::Initialize() {
+#ifdef USE_IMGUI
         MessageService::Initialize(); // メッセージサービスの初期化（これで言語データがロードされる）
         // 1. レイアウト管理のインスタンス化
         layout_ = std::make_unique<EditorLayout>();
         layout_->Initialize();
         // 重要：LogWindowを管理リストに追加する
         windows_.push_back(std::make_unique<ConsoleWindow>());
+#endif // USE_IMGUI
     }
 
 
@@ -37,32 +41,46 @@ namespace MyEngine {
         // 1. レイアウト（外枠とドッキング）の描画を委譲 
         // windows_ を渡すことでメニューバーからの表示切り替えも連動します
         layout_->Render(srvmanager, windows_);
-#endif
+#endif // USE_IMGUI
     }
 
-    void EditorManager::ShowMenuBar() {
-
-    }
-
-    void EditorManager::ShowSettingsModal() {
-    }
-
-    void EditorManager::SetLanguage(Editor::Language lang) {
+    void EditorManager::SetLanguage(EditorTypes::Language lang) {
+#ifdef USE_IMGUI
         // マネージャ内の変数を更新
         language_ = lang;
         // MessageService側の静的変数を更新（これで以降の GetText の結果が変わる）
         MessageService::SetLanguage(lang);
-        // ログに出力
-        //Log(Editor::MessageId::LangChanged);
+#endif // USE_IMGUI
     }
 
     // 登録関数
     void EditorManager::AddWindow(std::unique_ptr<IEditorWindow> window) {
+#ifdef USE_IMGUI
         windows_.push_back(std::move(window));
+#endif // USE_IMGUI
     }
 
     // ログ中継
     void EditorManager::Log(const std::string& message) {
+#ifdef USE_IMGUI
         EditorConsole::GetInstance()->AddLog(message);
+#endif // USE_IMGUI
+    }
+
+    void EditorManager::OnSceneChanged() {
+#ifdef USE_IMGUI
+        // 登録オブジェクト削除
+        EditorEntityRegistry::Instance().Clear();
+
+        // 開いているObjectWindow削除
+        if (layout_) {
+
+            ObjectMenu* objectMenu = layout_->GetMenuBar()->GetMenu<ObjectMenu>();
+
+            if (objectMenu) {
+                objectMenu->ClearOpenWindows();
+            }
+        }
+#endif // USE_IMGUI
     }
 }

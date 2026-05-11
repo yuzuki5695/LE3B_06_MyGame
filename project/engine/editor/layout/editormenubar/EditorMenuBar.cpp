@@ -4,20 +4,18 @@
 #endif // USE_IMGUI
 
 namespace MyEngine {
-    namespace Editor {
-        void MenuBar::Render(const std::function<std::string(const std::string&)>& LT) {
+    void EditorMenuBar::Render(const std::function<std::string(const std::string&)>& LT) {
 #ifdef USE_IMGUI
-            // メインメニューバー開始
-            if (!ImGui::BeginMainMenuBar()) {
-                return;
-            }
-            // 登録済みメニューを順番に描画
-            for (const std::unique_ptr<IMenuComponent>& menu : menuComponents_) {
-                menu->Render(LT);
-            }
-            // メインメニューバー終了
-            ImGui::EndMainMenuBar();
-#endif
+        // メインメニューバー開始
+        if (!ImGui::BeginMainMenuBar()) {
+            return;
         }
+        // 登録済みメニューを順番に描画
+        for (const std::unique_ptr<IMenuComponent>& menu : menuComponents_) {
+            menu->Render(LT);
+        }
+        // メインメニューバー終了
+        ImGui::EndMainMenuBar();
+#endif
     }
 }

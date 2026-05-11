@@ -30,18 +30,18 @@ namespace MyEngine {
         /// </summary>
         /// <param name="message">表示したい文字列</param>
         /// <param name="level">ログレベル（デフォルトはInfo）</param> 
-        void AddLog(const std::string& message, Editor::console::LogLevel level = Editor::console::LogLevel::Info);
+        void AddLog(const std::string& message, EditorTypes::console::LogLevel level = EditorTypes::console::LogLevel::Info);
         /// <summary>
         /// 多言語対応キーからメッセージを取得してログに追加
         /// </summary>
         /// <param name="key">MessageServiceで使用するJSONキー</param>
         /// <param name="level">ログレベル（デフォルトはInfo）</param>
-        void AddLocalizedLog(const std::string& key, Editor::console::LogLevel level = Editor::console::LogLevel::Info);
+        void AddLocalizedLog(const std::string& key, EditorTypes::console::LogLevel level = EditorTypes::console::LogLevel::Info);
 
     private: // メンバ変数
-        std::vector<Editor::console::LogEntry> logs_; /// ログ履歴の格納用コンテナ
+        std::vector<EditorTypes::console::LogEntry> logs_; /// ログ履歴の格納用コンテナ
     public: // アクセッサ
         /// Getter
-        const std::vector<Editor::console::LogEntry> GetLogs() const { return logs_; }   /// 全てのログエントリーを取得
+        const std::vector<EditorTypes::console::LogEntry> GetLogs() const { return logs_; }   /// 全てのログエントリーを取得
     };
 }

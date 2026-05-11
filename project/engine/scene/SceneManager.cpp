@@ -1,5 +1,6 @@
 #include "SceneManager.h"
 #include <cassert>
+#include <EditorManager.h>
 
 namespace MyEngine {
 	// 静的メンバ変数の定義
@@ -29,6 +30,11 @@ namespace MyEngine {
 
 		// 次のシーンの予約があるなら
 		if (nextScene_) {
+#ifdef USE_IMGUI
+			// シーン切り替え通知
+			EditorManager::GetInstance()->OnSceneChanged();
+#endif // USE_IMGUI
+
 			// 旧シーンの終了
 			if (scene_) {
 				scene_->Finalize();

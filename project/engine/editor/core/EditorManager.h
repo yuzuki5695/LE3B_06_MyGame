@@ -7,9 +7,6 @@
 #include <EditorLayout.h>
 
 namespace MyEngine {
-	// 前方宣言
-	//class EditorTypes;
-
 	/// <summary>
 	/// IMGUIエディタ全体の管理
 	/// </summary>
@@ -50,28 +47,20 @@ namespace MyEngine {
 		/// </summary>
 		void AddWindow(std::unique_ptr<IEditorWindow> window);
 
-		void SetLanguage(Editor::Language lang);
+		void SetLanguage(EditorTypes::Language lang);
 
+		void OnSceneChanged();
 
-	private: // 内部描画関数
-		void ShowMenuBar();
-		void ShowSettingsModal();
 	private:
 		// 言語設定を列挙型で管理
-		Editor::Language language_ = Editor::Language::Japanese;
+		EditorTypes::Language language_ = EditorTypes::Language::Japanese;
 		std::vector<std::unique_ptr<IEditorWindow>> windows_;
 		bool showSettings_ = false; // 設定ウィンドウの表示フラグ
 		// --- 追加：自動配置用 ---
 		bool requestResetLayout_ = false; // レイアウトを強制的に組み直すフラグ
-
-
 		std::unique_ptr<EditorLayout> layout_; // レイアウト担当を追加
 
 	public: // アクセッサ	
-		// Setter
-		// 言語設定の取得と変更
-	  //  void SetLanguage(Editor::Language lang);
-	//    Editor::Language GetLanguage() const { return language_; }
 
 	};
 }

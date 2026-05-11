@@ -56,9 +56,9 @@ namespace MyGame {
 
 #ifdef USE_IMGUI
 
-        Editor::EditorObjectInfo info;
+        EditorTypes::EditorObjectInfo info;
         info.name = "Player";
-        info.category = Editor::EditorObjectCategory::Object3D;
+        info.category = EditorTypes::ObjectCategory::Object3D;
         info.objectPtr = this;
 
         info.drawFunc = [](void* ptr) {

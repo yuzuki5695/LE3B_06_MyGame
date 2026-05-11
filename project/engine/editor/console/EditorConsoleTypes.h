@@ -2,7 +2,7 @@
 #include <string>
 
 namespace MyEngine {
-    namespace Editor::console {
+    namespace EditorTypes::console {
         // ロゴの重要度レベル
         enum class LogLevel {
             Info,       ///< 情報

@@ -5,7 +5,7 @@
 
 namespace MyEngine {
 
-    using namespace Editor;
+    using namespace EditorTypes;
     
     void SettingsMenu::Render(const std::function<std::string(const std::string&)>& LT) {
 #ifdef USE_IMGUI

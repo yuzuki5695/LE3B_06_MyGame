@@ -1,7 +1,9 @@
 #include "EditorLayout.h"
 #include <MessageService.h>
 #include <CopylmageCommon.h>
+#ifdef USE_IMGUI
 #include <ImGuiManager.h>
+#endif // USE_IMGUI
 #include <EditorConsole.h>
 #include <externals/imgui/imgui_internal.h>
 #include <EditorManager.h>
@@ -10,34 +12,38 @@
 
 namespace MyEngine {
 
-    using namespace Editor;
+    using namespace EditorTypes;
    
     void EditorLayout::Initialize() {
-
-        menuBar_.AddMenu<SettingsMenu>();
-        menuBar_.AddMenu<ObjectMenu>();
+#ifdef USE_IMGUI
+        menuBar_ = std::make_unique<EditorMenuBar>();
+        menuBar_->AddMenu<SettingsMenu>();
+        menuBar_->AddMenu<ObjectMenu>();
+#endif // USE_IMGUI
     }
 
     void EditorLayout::Render(SrvManager* srvmanager, std::vector<std::unique_ptr<IEditorWindow>>& windows) {
+#ifdef USE_IMGUI
         // 多言語テキスト取得ラムダを初期化
         LT = [](const std::string& key) { return MessageService::GetText(key); };
-
         // 1. メインメニューバー描画
         ShowMenuBar(windows);
-
         // 2. 左側パネル描画（ゲームビュー + コンソール）
         DrawLeftPanel(srvmanager, windows);
-
         // 3. 右側パネル描画（ドッキング領域）
         DrawRightPanel(windows);
+#endif // USE_IMGUI
     }
 
     void EditorLayout::ShowMenuBar(std::vector<std::unique_ptr<IEditorWindow>>& windows) {
+#ifdef USE_IMGUI
         // UI描画はMenuBarクラスへ委譲
-        menuBar_.Render(LT);
+        menuBar_->Render(LT);
+#endif // USE_IMGUI
     }
 
     void EditorLayout::DrawLeftPanel(SrvManager* srvmanager, std::vector<std::unique_ptr<IEditorWindow>>& windows) {
+#ifdef USE_IMGUI
         // パネルの基本サイズ設定
         const float kGameViewW = 640.0f;
         const float kGameViewH = 360.0f;
@@ -80,9 +86,11 @@ namespace MyEngine {
 
         }
         ImGui::End();
+#endif // USE_IMGUI
     }
 
     void EditorLayout::DrawRightPanel(std::vector<std::unique_ptr<IEditorWindow>>& windows) {
+#ifdef USE_IMGUI
         const float kGameViewW = 640.0f;
         ImGuiViewport* viewport = ImGui::GetMainViewport();
         // 右側領域計算
@@ -113,7 +121,7 @@ namespace MyEngine {
         // =============================
         // 開いているオブジェクトウィンドウ描画
         // =============================
-        const std::vector<Editor::EditorObjectInfo>& openWindows = menuBar_.GetMenu<ObjectMenu>()->GetOpenWindows();
+        const std::vector<EditorTypes::EditorObjectInfo>& openWindows = menuBar_->GetMenu<ObjectMenu>()->GetOpenWindows();
         const auto& registeredObjects = EditorEntityRegistry::Instance().GetObjects();
         for (auto it = openWindows.begin(); it != openWindows.end(); ) {
 
@@ -122,7 +130,7 @@ namespace MyEngine {
                 [&](const auto& reg) { return reg.objectPtr == it->objectPtr; });
 
             if (!isAlive) {
-                it = menuBar_.GetMenu<ObjectMenu>()->CloseWindow(it->name); // 消えていたら閉じる
+                it = menuBar_->GetMenu<ObjectMenu>()->CloseWindow(it->name); // 消えていたら閉じる
                 continue;
             }
 
@@ -144,10 +152,11 @@ namespace MyEngine {
             ImGui::End();
             // ×ボタンが押された場合は閉じる
             if (!is_open) {
-                it = menuBar_.GetMenu<ObjectMenu>()->CloseWindow(it->name);
+                it = menuBar_->GetMenu<ObjectMenu>()->CloseWindow(it->name);
             } else {
                 ++it;
             }
         }
+#endif // USE_IMGUI
     }
 }

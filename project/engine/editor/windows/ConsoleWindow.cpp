@@ -5,7 +5,7 @@
 
 namespace MyEngine {
 
-    using namespace Editor::console;
+    using namespace EditorTypes::console;
     
     ConsoleWindow::ConsoleWindow() {
         isOpen = true; // 初期表示ON
