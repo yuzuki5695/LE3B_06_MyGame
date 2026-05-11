@@ -60,6 +60,10 @@ namespace MyGame {
 		void SetAimWorldPos(const MyEngine::Vector3& pos) { aimWorldPos_ = pos; }
 		MyEngine::Sprite* GetSprite() { return targetreticle_.get(); }
 		MyEngine::Object3d* GetTarget() { return target_.get(); }
+			
+
+		const MyEngine::Vector3& GetRotate() const { return object_->GetRotate(); }
+		const MyEngine::Vector3& GetTranslate() const { return object_->GetTranslate(); }
 
 		void SetTranslate(const MyEngine::Vector3& translate) { object_->SetTranslate(translate); }
 		void SetRotate(const MyEngine::Vector3& rotate) { object_->SetRotate(rotate); }

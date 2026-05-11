@@ -24,9 +24,9 @@ namespace MyGame {
 		Ui::titile_02,
 		Ui::titile_03,
 		Ui::titile_04,
+		Ui::titile_03,
 		Ui::titile_05,
 		Ui::titile_06,
-		Ui::titile_07,
 		};
 		for (const auto& t : textures) {
 			TextureManager::GetInstance()->LoadTexture(t);

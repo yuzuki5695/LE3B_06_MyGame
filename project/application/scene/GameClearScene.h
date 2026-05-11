@@ -51,5 +51,16 @@ namespace MyGame {
         float step2Time_ = 0.0f;   // 上下揺れ用の時間
         // GameClearScene.h にフラグ追加
         bool step2FinishPlayerEase_ = false;
+
+        // GameClearScene.h
+        float step3Timer_ = 0.0f;           // Step3開始からの経過時間
+        bool step3FadeTriggered_ = false;   // 1秒後の短いフェード処理フラグ
+        // Step3制御
+        bool step3BackJumpDone_ = false;   // 後ろに下がる演出が完了したか
+        float startStep3PosX_ = 0.0f;     // Step3開始時のX
+
+        float step3TimeScale = 0.7f; // 0.3～0.6 あたりがおすすめ
+        float startStep3PosZ_;
+
     };
 }

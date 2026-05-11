@@ -159,6 +159,7 @@ namespace MyGame {
             // 完全に0になったらStep3へ
             if (fabs(offset_.translate.y) < 0.01f) {
                 step_ = 2;
+                FadeManager::GetInstance()->SceneChangeFade(SceneName::TITLE, FadeStyle::SilhouetteExplode, 1.0f);
             }
         }
 
@@ -174,73 +175,45 @@ namespace MyGame {
     }
 
     void GameClearScene::Step3_MoveCameraOnInput() {
-        //Camera* cam = CameraManager::GetInstance()->GetActiveCamera();
-        //// メインカメラは固定モード
-        //CameraManager::GetInstance()->SetCameraMode(CameraMode::Default);
 
-        //if (ui2Timer_ < ui2Duration_ && ui2_->GetPosition().x != ui2EndPos.x) {
-        //    ui2Timer_++;
+        CameraManager::GetInstance()->GetCurrentBehaviorAs<GameClearCamera>()->SetCameraState(CameraDefs::CameraState::LockOn);
 
-        //    float t = ui2Timer_ / ui2Duration_;
-        //    float easeT = EaseOutBack(t);
-        //    Vector2 newPos1 = {
-        //        ui2StartPos.x + (ui2EndPos.x - ui2StartPos.x) * easeT,
-        //        ui2StartPos.y + (ui2EndPos.y - ui2StartPos.y) * easeT
-        //    };
-        //    ui2_->SetPosition(newPos1);
-        //}
+        // Step3時間更新
+        step3Timer_ += (1.0f / 60.0f) * step3TimeScale;
 
-        //if (ui3Timer_ < ui3Duration_ && ui2_->GetPosition().x != ui3EndPos.x && ui2_->GetPosition().x > 900) {
-        //    ui3Timer_++;
+        Vector3 pos = player_->GetTranslate();
 
-        //    float t = ui3Timer_ / ui3Duration_;
-        //    float easeT = EaseOutBack(t);
-        //    Vector2 newPos1 = {
-        //        ui3StartPos.x + (ui3EndPos.x - ui3StartPos.x) * easeT,
-        //        ui3StartPos.y + (ui3EndPos.y - ui3StartPos.y) * easeT
-        //    };
-        //    ui3_->SetPosition(newPos1);
-        //}
+        /*-----------------------------------------------*/
+        /* ① Step3開始時の「一度だけ後ろに下がる動き」 */
+        /*-----------------------------------------------*/
+        if (!step3BackJumpDone_) {
+            float backDuration = 0.3f;
+            float backDistance = -30.0f;   // 後ろ（-Z）
 
+            float t = step3Timer_ / backDuration;
+            if (t > 1.0f) {
+                t = 1.0f;
+                step3BackJumpDone_ = true;
+                // この時点のZを基準にする
+                startStep3PosZ_ = pos.z;
+            }
 
-        //// Step3時間更新
-        //step3Timer_ += (1.0f / 60.0f) * step3TimeScale;
+            float ease = EaseOutBack(t);
 
-        //Vector3 pos = player_->GetPlayerObject()->GetTranslate();
+            // Zのみ後退
+            pos.z = startStep3PosZ_ + backDistance * ease;
+            pos.y = 0.0f;
 
-        ///*-----------------------------------------------*/
-        ///* ① Step3開始時の「一度だけ後ろに下がる動き」 */
-        ///*-----------------------------------------------*/
-        //if (!step3BackJumpDone_)
-        //{
-        //    float backDuration = 0.3f;
-        //    float backDistance = -30.0f;   // 後ろ（-Z）
+            // 回転のみ変更
+            Vector3 rot = player_->GetRotate();
+            float startRot = 1.5f;
+            float endRot = 3.0f;
+            rot.y = startRot + (endRot - startRot) * ease;
 
-        //    float t = step3Timer_ / backDuration;
-        //    if (t > 1.0f) {
-        //        t = 1.0f;
-        //        step3BackJumpDone_ = true;
-
-        //        // ★ この時点のZを基準にする
-        //        startStep3PosZ_ = pos.z;
-        //    }
-
-        //    float ease = EaseOutBack(t);
-
-        //    // Zのみ後退
-        //    pos.z = startStep3PosZ_ + backDistance * ease;
-        //    pos.y = 0.0f;
-
-        //    // 回転のみ変更
-        //    Vector3 rot = player_->GetPlayerObject()->GetRotate();
-        //    float startRot = 1.5f;
-        //    float endRot = 3.0f;
-        //    rot.y = startRot + (endRot - startRot) * ease;
-
-        //    player_->GetPlayerObject()->SetTranslate(pos);
-        //    player_->GetPlayerObject()->SetRotate(rot);
-        //    return;
-        //}
+            player_->SetTranslate(pos);
+            player_->SetRotate(rot);
+            return;
+        }
 
         ///*-----------------------------------------------*/
         ///* ② カメラへ向かって X/Y/Z 移動（加速付き）   */
