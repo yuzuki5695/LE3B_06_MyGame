@@ -45,4 +45,12 @@ namespace MyEngine {
             std::function<bool(void*)> aliveFunc;
         };
     }
+    //struct CameraEditorInfo {
+    //    std::string name;
+
+    //    void* cameraPtr = nullptr;
+
+    //    std::function<void(void*)> drawFunc;
+    //    std::function<bool(void*)> aliveFunc;
+    //};
 }

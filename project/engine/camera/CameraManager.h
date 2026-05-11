@@ -43,6 +43,8 @@ namespace MyEngine {
         template <typename T>
         T* GetCurrentBehaviorAs() { return dynamic_cast<T*>(currentBehavior_.get()); }
         
+        void DrawEditor();
+
 	private: // 内部関数
 		// 各シーンカメラの登録
         void RegisterCamera();

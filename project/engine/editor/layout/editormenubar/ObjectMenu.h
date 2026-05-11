@@ -24,7 +24,6 @@ namespace MyEngine {
         void DrawCategoryMenu(const char* menuName, EditorTypes::ObjectCategory category, const std::vector<EditorTypes::EditorObjectInfo>& objects);
         /// <summary>
         /// オブジェクトウィンドウを開く
-        /// 
         /// 既に開いている場合は追加しない
         /// </summary>
         void OpenWindow(const EditorTypes::EditorObjectInfo& obj);

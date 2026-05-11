@@ -6,6 +6,7 @@
 #include <externals/imgui/imgui_internal.h>
 #include <EditorEntityRegistry.h>
 #include <ObjectMenu.h>
+#include <CameraMenu.h>
 
 namespace MyEngine {
     // 静的メンバ変数の定義
@@ -76,10 +77,14 @@ namespace MyEngine {
         if (layout_) {
 
             ObjectMenu* objectMenu = layout_->GetMenuBar()->GetMenu<ObjectMenu>();
+          //  CameraMenu* cameraMenu = layout_->GetMenuBar()->GetMenu<CameraMenu>();
 
             if (objectMenu) {
                 objectMenu->ClearOpenWindows();
             }
+         /*   if (cameraMenu) {
+                cameraMenu->ClearOpenWindows();
+            }*/
         }
 #endif // USE_IMGUI
     }

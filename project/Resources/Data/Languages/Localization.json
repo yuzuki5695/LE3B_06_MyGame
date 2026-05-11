@@ -28,6 +28,10 @@
       "Object": {
         "jp": "オブジェクト",
         "en": "Object"
+      },
+      "Camera": {
+        "jp": "カメラ",
+        "en": "Camera"
       }
     },
     "Object": {

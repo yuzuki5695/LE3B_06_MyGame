@@ -11,7 +11,7 @@ namespace MyEngine {
 		// 更新処理
 		void Update();
 		// ImGuiの更新
-		void DebugUpdate();
+		void DrawEditor();
 	private: // メンバ変数
 		Transform transform;
 		Matrix4x4 worldMatrix;

@@ -657,6 +657,9 @@
     <ClCompile Include="application\ui\scene\GameClearUI.cpp">
       <Filter>ソース ファイル\application\ui\scene</Filter>
     </ClCompile>
+    <ClCompile Include="engine\editor\layout\editormenubar\CameraMenu.cpp">
+      <Filter>ソース ファイル\engine\editor\layout\editormenubar</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="engine\2d\Sprite.h">
@@ -1069,6 +1072,9 @@
     </ClInclude>
     <ClInclude Include="application\ui\scene\GameClearUI.h">
       <Filter>ヘッダー ファイル\application\ui\scene</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\editor\layout\editormenubar\CameraMenu.h">
+      <Filter>ヘッダー ファイル\engine\editor\layout\editormenubar</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

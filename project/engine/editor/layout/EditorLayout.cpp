@@ -9,16 +9,18 @@
 #include <EditorManager.h>
 #include <SettingsMenu.h>
 #include <ObjectMenu.h>
+#include <CameraMenu.h>
 
 namespace MyEngine {
 
     using namespace EditorTypes;
-   
+
     void EditorLayout::Initialize() {
 #ifdef USE_IMGUI
         menuBar_ = std::make_unique<EditorMenuBar>();
         menuBar_->AddMenu<SettingsMenu>();
         menuBar_->AddMenu<ObjectMenu>();
+       // menuBar_->AddMenu<CameraMenu>();
 #endif // USE_IMGUI
     }
 
@@ -157,6 +159,40 @@ namespace MyEngine {
                 ++it;
             }
         }
+
+  /*      CameraMenu* cameraMenu = menuBar_->GetMenu<CameraMenu>();
+
+        if (cameraMenu) {
+
+            auto& cameraWindows = cameraMenu->GetOpenWindows();
+
+            for (auto it = cameraWindows.begin();
+                it != cameraWindows.end();) {
+
+                ImGui::SetNextWindowDockID(
+                    dockspace_id,
+                    ImGuiCond_FirstUseEver);
+
+                bool is_open = true;
+
+                if (ImGui::Begin(it->name.c_str(),
+                    &is_open,
+                    ImGuiWindowFlags_NoCollapse)) {
+
+                    if (it->objectPtr && it->drawFunc) {
+                        it->drawFunc(it->objectPtr);
+                    }
+                }
+
+                ImGui::End();
+
+                if (!is_open) {
+                    it = menuBar_->GetMenu<CameraMenu>()->CloseWindow(it->name);
+                } else {
+                    ++it;
+                }
+            }
+        }*/
 #endif // USE_IMGUI
     }
 }

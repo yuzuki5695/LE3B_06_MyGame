@@ -3,6 +3,8 @@
 #include <ParticleCommon.h>
 #include <MatrixVector.h>
 #include <SceneName.h>
+#include <EditorEntityRegistry.h>
+#include <EditorTypes.h>
 
 using namespace MyGame;
 
@@ -41,7 +43,7 @@ namespace MyEngine {
         // 各シーンカメラの初期化処理を呼び出す
         OnSceneChanged(sceneName);
     }
- 
+
     void CameraManager::Update() {
         if (!camera_.activeCamera) return;
 
@@ -51,8 +53,11 @@ namespace MyEngine {
         }
         // アクティブ中のカメラの更新
         camera_.activeCamera->Update();
+#ifdef USE_IMGUI
+        DrawEditor();
+#endif // USE_IMGUI
     }
-    
+
     void CameraManager::RegisterCamera() {
         // 二重登録防止
         if (!cameraRegistry_.empty()) return;
@@ -79,5 +84,32 @@ namespace MyEngine {
             // 生成関数を呼び出して新しい挙動をセット
             SetSceneBehavior(it->second());
         }
+    }
+
+    void CameraManager::DrawEditor() {
+#ifdef USE_IMGUI
+
+        //EditorTypes::EditorObjectInfo info{};
+        //info.name = "Main Camera";
+        //info.category = EditorTypes::ObjectCategory::Camera;
+        //info.objectPtr = this;
+        //info.drawFunc = [](void* ptr) {
+  
+        //    CameraManager* manager = static_cast<CameraManager*>(ptr);
+        //    if (!manager) {
+        //        return;
+        //    }
+
+        //    Camera* cam = manager->GetActiveCamera();
+
+        //    if (cam) {
+        //        cam->DrawEditor();
+        //    }
+        //    };
+
+        //info.aliveFunc = [](void* ptr) {return ptr != nullptr;};
+
+        //EditorEntityRegistry::Instance().Register(info);
+#endif // USE_IMGUI
     }
 }
