@@ -4,6 +4,7 @@
 #include <IEditorWindow.h>
 #include <SrvManager.h>
 #include <EditorMenuBar.h>
+#include <EditorTypes.h>
 
 namespace MyEngine {
     /// <summary>
@@ -12,6 +13,9 @@ namespace MyEngine {
     /// </summary>
     class EditorLayout {
     public: // メンバ関数
+
+        void Initialize();
+
         /// <summary>
         /// エディタ全体のレイアウトを描画するメイン関数
         /// </summary>

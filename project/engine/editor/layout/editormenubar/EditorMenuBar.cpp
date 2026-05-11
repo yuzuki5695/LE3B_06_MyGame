@@ -1,26 +1,23 @@
 #include "EditorMenuBar.h"
+#ifdef USE_IMGUI
 #include <ImGuiManager.h>
-#include <MessageService.h>
-#include <EditorConsole.h>
+#endif // USE_IMGUI
 
 namespace MyEngine {
     namespace Editor {
         void MenuBar::Render(const std::function<std::string(const std::string&)>& LT) {
 #ifdef USE_IMGUI
-            // メインメニューバー開始 
-            if (!ImGui::BeginMainMenuBar())
+            // メインメニューバー開始
+            if (!ImGui::BeginMainMenuBar()) {
                 return;
-
-            // ------------------------------------
-            // 各メニューの描画
-            // ------------------------------------
-
-            settingsMenu_.Render(LT);  // 「設定」メニューの描画
-            objectMenu_.Render(LT);    // 「オブジェクト」メニューの描画
-
+            }
+            // 登録済みメニューを順番に描画
+            for (const std::unique_ptr<IMenuComponent>& menu : menuComponents_) {
+                menu->Render(LT);
+            }
             // メインメニューバー終了
             ImGui::EndMainMenuBar();
-#endif // USE_IMGUI
+#endif
         }
     }
 }

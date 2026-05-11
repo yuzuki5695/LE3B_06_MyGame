@@ -147,7 +147,6 @@ namespace MyEngine {
 
     void Object3d::DrawImGui(const std::string& name) {
 #ifdef USE_IMGUI
-
         ImGui::PushID(this);
 
         //====================================================

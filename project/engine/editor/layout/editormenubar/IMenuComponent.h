@@ -8,8 +8,7 @@ namespace MyEngine {
     /// EditorMenuBar はこのインターフェースを通して
     /// 各メニューを描画する。
     /// </summary>
-    class IMenuComponent
-    {
+    class IMenuComponent {
     public:
         /// <summary>
         /// 仮想デストラクタ

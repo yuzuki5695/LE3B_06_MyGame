@@ -5,11 +5,19 @@
 #include <EditorConsole.h>
 #include <externals/imgui/imgui_internal.h>
 #include <EditorManager.h>
+#include <SettingsMenu.h>
+#include <ObjectMenu.h>
 
 namespace MyEngine {
 
     using namespace Editor;
-    
+   
+    void EditorLayout::Initialize() {
+
+        menuBar_.AddMenu<SettingsMenu>();
+        menuBar_.AddMenu<ObjectMenu>();
+    }
+
     void EditorLayout::Render(SrvManager* srvmanager, std::vector<std::unique_ptr<IEditorWindow>>& windows) {
         // 多言語テキスト取得ラムダを初期化
         LT = [](const std::string& key) { return MessageService::GetText(key); };
@@ -105,8 +113,7 @@ namespace MyEngine {
         // =============================
         // 開いているオブジェクトウィンドウ描画
         // =============================
-        ObjectMenu* objectMenu = menuBar_.GetObjectMenu();
-        const std::vector<Editor::EditorObjectInfo>& openWindows = objectMenu->GetOpenWindows();
+        const std::vector<Editor::EditorObjectInfo>& openWindows = menuBar_.GetMenu<ObjectMenu>()->GetOpenWindows();
         const auto& registeredObjects = EditorEntityRegistry::Instance().GetObjects();
         for (auto it = openWindows.begin(); it != openWindows.end(); ) {
 
@@ -115,7 +122,7 @@ namespace MyEngine {
                 [&](const auto& reg) { return reg.objectPtr == it->objectPtr; });
 
             if (!isAlive) {
-                it = objectMenu->CloseWindow(it->name); // 消えていたら閉じる
+                it = menuBar_.GetMenu<ObjectMenu>()->CloseWindow(it->name); // 消えていたら閉じる
                 continue;
             }
 
@@ -128,22 +135,16 @@ namespace MyEngine {
             // タブとして描画
             if (ImGui::Begin(it->name.c_str(), &is_open, ImGuiWindowFlags_NoCollapse)) {
                 if (it->objectPtr) {
-                    // カテゴリに応じて DrawImGui を呼び出す
-                    switch (it->category) {
-                        // カテゴリごとに描画処理を分岐
-                    case Editor::EditorObjectCategory::Object3D:
-                        static_cast<Object3d*>(it->objectPtr)->DrawImGui(it->name.c_str());
-                        break;
-                    case Editor::EditorObjectCategory::Object2D:
-                        static_cast<Sprite*>(it->objectPtr)->DrawImGui(it->name.c_str());
-                        break;
+                    if (it->drawFunc) {
+                        it->drawFunc(it->objectPtr);
                     }
                 }
             }
+
             ImGui::End();
             // ×ボタンが押された場合は閉じる
             if (!is_open) {
-                it = objectMenu->CloseWindow(it->name);
+                it = menuBar_.GetMenu<ObjectMenu>()->CloseWindow(it->name);
             } else {
                 ++it;
             }

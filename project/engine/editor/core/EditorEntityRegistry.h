@@ -42,34 +42,5 @@ namespace MyEngine {
     private: // メンバ変数
         // 登録されたオブジェクト情報の配列
         std::vector<Editor::EditorObjectInfo> objects_;
-        // 外部から直接生成されないようにする（シングルトン）
-        EditorEntityRegistry() = default;
     };
-
-    /// <summary>
-    /// Object3d / Sprite などのオブジェクトをエディタ用に自動登録するヘルパー関数
-    /// ・生成した直後に呼ぶ
-    /// ・型によって自動でカテゴリを判定し、EditorObjectRegistry に登録
-    /// </summary>
-    template <typename T>
-    void RegisterEditorEntity(T* object, const std::string& name) {
-        // 登録カテゴリを型に応じて自動判定
-        Editor::EditorObjectCategory category;
-
-        if constexpr (std::is_same_v<T, Object3d>) {
-            category = Editor::EditorObjectCategory::Object3D;
-        } else if constexpr (std::is_same_v<T, Sprite>) {
-            category = Editor::EditorObjectCategory::Object2D;
-        } else {
-            static_assert(always_false<T>, "Unsupported type for EditorEntityRegistry");
-        }
-
-        // EditorObjectInfo を作る
-        Editor::EditorObjectInfo info;
-        info.name = name;
-        info.category = category;
-        info.objectPtr = object;
-
-        EditorEntityRegistry::Instance().Register(info);
-    }
 }

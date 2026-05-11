@@ -26,6 +26,7 @@ namespace MyEngine {
         MessageService::Initialize(); // メッセージサービスの初期化（これで言語データがロードされる）
         // 1. レイアウト管理のインスタンス化
         layout_ = std::make_unique<EditorLayout>();
+        layout_->Initialize();
         // 重要：LogWindowを管理リストに追加する
         windows_.push_back(std::make_unique<ConsoleWindow>());
     }

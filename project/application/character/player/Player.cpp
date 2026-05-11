@@ -6,8 +6,13 @@
 #include <PlayerDataLoader.h>
 #include <TextureManager.h>
 #include <MatrixVector.h>
+#ifdef USE_IMGUI
+#include<ImGuiManager.h>
+#endif // USE_IMGUI
 // AssetGeneratorからインクルード
 #include <subproject/AssetGenerator/engine/generator/LoadResourceID.h>
+#include <EditorEntityRegistry.h>
+#include <EditorTypes.h>
 
 using namespace MyEngine;
 using namespace MatrixVector;
@@ -24,7 +29,7 @@ namespace MyGame {
         ModelManager::GetInstance()->LoadModel(Character::Player);
 
         data_ = PlayerDataLoader::Load("player");
- 
+
         baseOffset_ = { 0.0f, -3.0f, 30.0f };
 
         object_ = Object3d::Create(Character::Player, data_.transform);
@@ -48,12 +53,61 @@ namespace MyGame {
         death_->Initialize();
         // 初期ステートをセットする
         ChangeState(std::make_unique<PlayerStateIdle>());
+
+#ifdef USE_IMGUI
+
+        Editor::EditorObjectInfo info;
+        info.name = "Player";
+        info.category = Editor::EditorObjectCategory::Object3D;
+        info.objectPtr = this;
+
+        info.drawFunc = [](void* ptr) {
+            Player* player = static_cast<Player*>(ptr);
+            if (!player) {
+                return;
+            }
+
+            // =========================
+            // Object3d の ImGui
+            // =========================
+
+            if (player->object_) {
+                player->object_->DrawImGui("Player");
+            }
+
+            // =========================
+            // Player 固有
+            // =========================
+
+            if (ImGui::TreeNode("Player")) {
+
+                ImGui::DragFloat3(
+                    "Base Offset",
+                    &player->baseOffset_.x,
+                    0.1f
+                );
+
+  /*              ImGui::Checkbox(
+                    "Active",
+                    &player->isActive_
+                );*/
+
+                ImGui::TreePop();
+            }
+
+
+            };
+
+        info.aliveFunc = [](void* ptr) {return ptr != nullptr;};
+        EditorEntityRegistry::Instance().Register(info);
+
+#endif // USE_IMGUI
     }
 
     void Player::Update() {
         // ステートの更新
         state_.Update(*this);
-        
+
         if (CameraManager::GetInstance()->GetCurrentBehaviorAs<GamePlayCamera>()) {
             SyncWorldTransformByRail();
         }
@@ -61,6 +115,8 @@ namespace MyGame {
         targetreticle_->Update();
         target_->Update();
         object_->Update();
+
+
     }
 
     void Player::Draw() {
