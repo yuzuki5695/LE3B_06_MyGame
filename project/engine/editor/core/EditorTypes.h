@@ -4,14 +4,14 @@
 #include <array>
 
 namespace MyEngine {
-    namespace EditorTypes { 
+    namespace EditorTypes {
         /// 言語設定の列挙体
         enum class Language {
             Japanese, // 日本語
             English   // 英語
             // 将来的に追加可能
         };
- 
+
         /// エディタオブジェクトカテゴリ
         enum class ObjectCategory {
             Object3D,  // 3Dオブジェクト
@@ -37,20 +37,14 @@ namespace MyEngine {
         struct EditorObjectInfo {
             std::string name;                        // エディタ表示用の名前    
             ObjectCategory category;
-
-            void* objectPtr = nullptr;               // 任意のオブジェクトポインタを保持(Object3dまたはSprite*)
-            // エディタ描画関数
-            std::function<void(void*)> drawFunc;
-            // 生存確認
-            std::function<bool(void*)> aliveFunc;
+            // 任意のオブジェクトポインタを保持
+            void* objectPtr = nullptr;
+            std::function<void()> drawEditor;
+        };
+        struct CameraEditorInfo {
+            std::string name;
+            void* cameraPtr = nullptr;
+            std::function<void()> drawEditor;
         };
     }
-    //struct CameraEditorInfo {
-    //    std::string name;
-
-    //    void* cameraPtr = nullptr;
-
-    //    std::function<void(void*)> drawFunc;
-    //    std::function<bool(void*)> aliveFunc;
-    //};
 }

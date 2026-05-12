@@ -20,7 +20,7 @@ namespace MyEngine {
         menuBar_ = std::make_unique<EditorMenuBar>();
         menuBar_->AddMenu<SettingsMenu>();
         menuBar_->AddMenu<ObjectMenu>();
-       // menuBar_->AddMenu<CameraMenu>();
+        menuBar_->AddMenu<CameraMenu>();
 #endif // USE_IMGUI
     }
 
@@ -145,8 +145,8 @@ namespace MyEngine {
             // タブとして描画
             if (ImGui::Begin(it->name.c_str(), &is_open, ImGuiWindowFlags_NoCollapse)) {
                 if (it->objectPtr) {
-                    if (it->drawFunc) {
-                        it->drawFunc(it->objectPtr);
+                    if (it->drawEditor) {
+                        it->drawEditor();
                     }
                 }
             }
@@ -159,40 +159,37 @@ namespace MyEngine {
                 ++it;
             }
         }
+        
+        const auto& cameraWindows = menuBar_->GetMenu<CameraMenu>()->GetOpenWindows();
+        for (auto it = cameraWindows.begin();
+            it != cameraWindows.end();) {
 
-  /*      CameraMenu* cameraMenu = menuBar_->GetMenu<CameraMenu>();
+            ImGui::SetNextWindowDockID(
+                dockspace_id,
+                ImGuiCond_FirstUseEver);
 
-        if (cameraMenu) {
+            bool is_open = true;
 
-            auto& cameraWindows = cameraMenu->GetOpenWindows();
+            if (ImGui::Begin(
+                it->name.c_str(),
+                &is_open,
+                ImGuiWindowFlags_NoCollapse)) {
 
-            for (auto it = cameraWindows.begin();
-                it != cameraWindows.end();) {
-
-                ImGui::SetNextWindowDockID(
-                    dockspace_id,
-                    ImGuiCond_FirstUseEver);
-
-                bool is_open = true;
-
-                if (ImGui::Begin(it->name.c_str(),
-                    &is_open,
-                    ImGuiWindowFlags_NoCollapse)) {
-
-                    if (it->objectPtr && it->drawFunc) {
-                        it->drawFunc(it->objectPtr);
-                    }
-                }
-
-                ImGui::End();
-
-                if (!is_open) {
-                    it = menuBar_->GetMenu<CameraMenu>()->CloseWindow(it->name);
-                } else {
-                    ++it;
+                if (it->drawEditor) {
+                    it->drawEditor();
                 }
             }
-        }*/
+
+            ImGui::End();
+
+            if (!is_open) {
+                it = menuBar_->GetMenu<CameraMenu>()
+                    ->CloseWindow(it->name);
+            } else {
+                ++it;
+            }
+        }
+
 #endif // USE_IMGUI
     }
 }

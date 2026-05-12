@@ -31,7 +31,7 @@ namespace MyEngine {
 		ViewProjectionMatrix = Multiply(viewMatrix, projectionMatrix);
 	}
 
-	void Camera::DrawEditor() {
+	void Camera::DrawImGui() {
 #ifdef USE_IMGUI
 		// 開発用UIの処理
 		ImGui::DragFloat3("Translate", &transform.translate.x, 0.01f);

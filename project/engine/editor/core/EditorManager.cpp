@@ -75,16 +75,15 @@ namespace MyEngine {
 
         // 開いているObjectWindow削除
         if (layout_) {
-
             ObjectMenu* objectMenu = layout_->GetMenuBar()->GetMenu<ObjectMenu>();
-          //  CameraMenu* cameraMenu = layout_->GetMenuBar()->GetMenu<CameraMenu>();
+            CameraMenu* cameraMenu = layout_->GetMenuBar()->GetMenu<CameraMenu>();
 
             if (objectMenu) {
                 objectMenu->ClearOpenWindows();
             }
-         /*   if (cameraMenu) {
+            if (cameraMenu) {
                 cameraMenu->ClearOpenWindows();
-            }*/
+            }
         }
 #endif // USE_IMGUI
     }

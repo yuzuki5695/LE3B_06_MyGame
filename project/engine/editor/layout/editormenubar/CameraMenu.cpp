@@ -1,70 +1,72 @@
 #include "CameraMenu.h"
-#include <CameraManager.h>
 #ifdef USE_IMGUI
 #include <ImGuiManager.h>
 #endif // USE_IMGUI
-#include <EditorEntityRegistry.h>
+#include <CameraManager.h>
 
 namespace MyEngine {
-        
+
     using namespace EditorTypes;
 
-    void CameraMenu::Render(const std::function<std::string(const std::string&)>& LT) {
+    void CameraMenu::Render(
+        const std::function<std::string(const std::string&)>& LT) {
+
 #ifdef USE_IMGUI
-        //if (!ImGui::BeginMenu(LT("Menu.Camera").c_str())) {
-        //    return;
-        //}
 
-        //const std::vector<EditorObjectInfo>& items = EditorEntityRegistry::Instance().GetObjects();
+        CameraManager* cameraManager = CameraManager::GetInstance();
 
-        //for (const auto& item : items) {
+        if (!cameraManager) {
+            return;
+        }
 
-        //    if (item.category != ObjectCategory::Camera) {
-        //        continue;
-        //    }
+        if (ImGui::MenuItem(
+            LT("Menu.Camera").c_str())) {
 
-        //    if (ImGui::MenuItem(item.name.c_str())) {
-        //        OpenWindow(item);
-        //    }
-        //}
+            CameraEditorInfo info;
+            info.name = "Camera";            
+            info.cameraPtr = cameraManager;
+            // 中身はCameraManagerに任せる
+            info.drawEditor = [cameraManager]() {cameraManager->GetActiveCamera()->DrawImGui(); };
+            OpenWindow(info);
+        }
 
-        //ImGui::EndMenu();
 #endif // USE_IMGUI
     }
 
-    void CameraMenu::OpenWindow(const EditorObjectInfo& obj) {
-#ifdef USE_IMGUI 
-        // -------------------------
-        // 既に開いているか確認
-        // -------------------------
-
-        std::vector<EditorObjectInfo>::iterator it = std::find_if(
+    void CameraMenu::OpenWindow(const CameraEditorInfo& info) {
+#ifdef USE_IMGUI
+        auto it = std::find_if(
             openWindows_.begin(),
             openWindows_.end(),
-            [&](const EditorObjectInfo& item) {
-                // 同一ポインタなら既に開いている
-                return item.objectPtr == obj.objectPtr;
+            [&](const CameraEditorInfo& item) {
+                return item.cameraPtr == info.cameraPtr;
             });
-        // -------------------------
-        // 未登録なら追加
-        // -------------------------
+
         if (it == openWindows_.end()) {
-            openWindows_.push_back(obj);
+            openWindows_.push_back(info);
         }
-#endif // USE_IMGUI
+#endif
     }
 
-    std::vector<EditorObjectInfo>::iterator CameraMenu::CloseWindow(const std::string& name) {
-#ifdef USE_IMGUI 
-        std::vector<EditorObjectInfo>::iterator it = std::find_if(openWindows_.begin(), openWindows_.end(),
-            [&](const EditorObjectInfo& obj) { return obj.name == name; });
+    std::vector<CameraEditorInfo>::iterator CameraMenu::CloseWindow(const std::string& name) {
+#ifdef USE_IMGUI
+
+        auto it = std::find_if(
+            openWindows_.begin(),
+            openWindows_.end(),
+            [&](const CameraEditorInfo& item) {
+                return item.name == name;
+            });
 
         if (it != openWindows_.end()) {
-            return openWindows_.erase(it); // リストから削除して次の要素を返す
+            return openWindows_.erase(it);
         }
+
         return openWindows_.end();
-#endif // USE_IMGUI
+
+#endif
     }
+        
     void CameraMenu::ClearOpenWindows() {
 #ifdef USE_IMGUI 
         openWindows_.clear();

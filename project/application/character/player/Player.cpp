@@ -53,53 +53,20 @@ namespace MyGame {
         death_->Initialize();
         // 初期ステートをセットする
         ChangeState(std::make_unique<PlayerStateIdle>());
-
 #ifdef USE_IMGUI
-
         EditorTypes::EditorObjectInfo info;
-        info.name = "Player";
-        info.category = EditorTypes::ObjectCategory::Object3D;
-        info.objectPtr = this;
-
-        info.drawFunc = [](void* ptr) {
-            Player* player = static_cast<Player*>(ptr);
-            if (!player) {
-                return;
+        info.name = "Player";                                 // エディタの登録されるオブジェクト名
+        info.category = EditorTypes::ObjectCategory::Object3D;  // 登録するオブジェクトのカテゴリ
+        info.objectPtr = object_.get();                       // 扱うオブジェクトのポインタ
+        info.drawEditor = [this]() {                            // パラメータの情報を登録
+            /// ======================================
+            /// (engine側の基本のパラメータ) 
+            /// ======================================
+            if (object_) {
+                object_->DrawImGui("object3d");
             }
-
-            // =========================
-            // Object3d の ImGui
-            // =========================
-
-            if (player->object_) {
-                player->object_->DrawImGui("Player");
-            }
-
-            // =========================
-            // Player 固有
-            // =========================
-
-            if (ImGui::TreeNode("Player")) {
-
-                ImGui::DragFloat3(
-                    "Base Offset",
-                    &player->baseOffset_.x,
-                    0.1f
-                );
-
-  /*              ImGui::Checkbox(
-                    "Active",
-                    &player->isActive_
-                );*/
-
-                ImGui::TreePop();
-            }
-
-
             };
-
-        info.aliveFunc = [](void* ptr) {return ptr != nullptr;};
-        EditorEntityRegistry::Instance().Register(info);
+        EditorEntityRegistry::Instance().Register(info);        // オブジェクト情報を登録する
 
 #endif // USE_IMGUI
     }

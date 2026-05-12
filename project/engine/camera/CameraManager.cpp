@@ -53,9 +53,6 @@ namespace MyEngine {
         }
         // アクティブ中のカメラの更新
         camera_.activeCamera->Update();
-#ifdef USE_IMGUI
-        DrawEditor();
-#endif // USE_IMGUI
     }
 
     void CameraManager::RegisterCamera() {
@@ -89,27 +86,8 @@ namespace MyEngine {
     void CameraManager::DrawEditor() {
 #ifdef USE_IMGUI
 
-        //EditorTypes::EditorObjectInfo info{};
-        //info.name = "Main Camera";
-        //info.category = EditorTypes::ObjectCategory::Camera;
-        //info.objectPtr = this;
-        //info.drawFunc = [](void* ptr) {
-  
-        //    CameraManager* manager = static_cast<CameraManager*>(ptr);
-        //    if (!manager) {
-        //        return;
-        //    }
+        camera_.activeCamera->DrawImGui();
 
-        //    Camera* cam = manager->GetActiveCamera();
-
-        //    if (cam) {
-        //        cam->DrawEditor();
-        //    }
-        //    };
-
-        //info.aliveFunc = [](void* ptr) {return ptr != nullptr;};
-
-        //EditorEntityRegistry::Instance().Register(info);
 #endif // USE_IMGUI
     }
 }
