@@ -130,11 +130,11 @@ namespace MyGame {
 		// =========================
 		// Enterで遷移開始
 		// =========================
-		if (Input::GetInstance()->Triggrkey(DIK_RETURN)) {
+		if (Input::GetInstance()->Triggrkey(DIK_RETURN) && titleUI->IsFinished()) {
 			titleUI->StartReverse();
 		}
-					
-		if (titleUI->IsFinished()) {
+
+		if (titleUI->IsReverseFinished()) {
 			isCameraTriggered_ = false;
 			FadeManager::GetInstance()->SceneChangeFade(SceneName::GAMEPLAY, FadeStyle::SilhouetteExplode, 1.5f);
 		}
