@@ -34,6 +34,8 @@ namespace MyGame {
 
 		void SyncWorldTransformByRail();
 
+		void DrawImGui();
+
 	private: // メンバ変数
 		PlayerData data_; // プレイヤーのデータ構造体
 		MyEngine::Transform transform_;

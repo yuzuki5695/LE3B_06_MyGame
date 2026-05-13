@@ -53,22 +53,8 @@ namespace MyGame {
         death_->Initialize();
         // 初期ステートをセットする
         ChangeState(std::make_unique<PlayerStateIdle>());
-#ifdef USE_IMGUI
-        EditorTypes::EditorObjectInfo info;
-        info.name = "Player";                                 // エディタの登録されるオブジェクト名
-        info.category = EditorTypes::ObjectCategory::Object3D;  // 登録するオブジェクトのカテゴリ
-        info.objectPtr = object_.get();                       // 扱うオブジェクトのポインタ
-        info.drawEditor = [this]() {                            // パラメータの情報を登録
-            /// ======================================
-            /// (engine側の基本のパラメータ) 
-            /// ======================================
-            if (object_) {
-                object_->DrawImGui("object3d");
-            }
-            };
-        EditorEntityRegistry::Instance().Register(info);        // オブジェクト情報を登録する
-
-#endif // USE_IMGUI
+        // 
+        DrawImGui();
     }
 
     void Player::Update() {
@@ -120,5 +106,24 @@ namespace MyGame {
         //finalRot.z = camRot.z + move_->GetTiltZ() + move_->GetExtraRotationZ();
 
         //object_->SetRotate(finalRot);
+    }
+
+    void Player::DrawImGui() {
+#ifdef USE_IMGUI
+        EditorTypes::EditorObjectInfo info;
+        info.name = "Player";                                 // エディタの登録されるオブジェクト名
+        info.category = EditorTypes::ObjectCategory::Object3D;  // 登録するオブジェクトのカテゴリ
+        info.objectPtr = object_.get();                       // 扱うオブジェクトのポインタ
+        info.drawEditor = [this]() {                            // パラメータの情報を登録
+            /// ======================================
+            /// (engine側の基本のパラメータ) 
+            /// ======================================
+            if (object_) {
+                object_->DrawImGui("object3d");
+            }
+            };
+        EditorEntityRegistry::Instance().Register(info);        // オブジェクト情報を登録する
+
+#endif // USE_IMGUI    
     }
 }
