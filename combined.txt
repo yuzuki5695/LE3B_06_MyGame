@@ -9014,55 +9014,8 @@ namespace MyGame {
         death_->Initialize();
         // 初期ステートをセットする
         ChangeState(std::make_unique<PlayerStateIdle>());
-
-#ifdef USE_IMGUI
-
-        EditorTypes::EditorObjectInfo info;
-        info.name = "Player";
-        info.category = EditorTypes::ObjectCategory::Object3D;
-        info.objectPtr = this;
-
-        info.drawFunc = [](void* ptr) {
-            Player* player = static_cast<Player*>(ptr);
-            if (!player) {
-                return;
-            }
-
-            // =========================
-            // Object3d の ImGui
-            // =========================
-
-            if (player->object_) {
-                player->object_->DrawImGui("Player");
-            }
-
-            // =========================
-            // Player 固有
-            // =========================
-
-            if (ImGui::TreeNode("Player")) {
-
-                ImGui::DragFloat3(
-                    "Base Offset",
-                    &player->baseOffset_.x,
-                    0.1f
-                );
-
-  /*              ImGui::Checkbox(
-                    "Active",
-                    &player->isActive_
-                );*/
-
-                ImGui::TreePop();
-            }
-
-
-            };
-
-        info.aliveFunc = [](void* ptr) {return ptr != nullptr;};
-        EditorEntityRegistry::Instance().Register(info);
-
-#endif // USE_IMGUI
+        // 
+        DrawImGui();
     }
 
     void Player::Update() {
@@ -9115,6 +9068,25 @@ namespace MyGame {
 
         //object_->SetRotate(finalRot);
     }
+
+    void Player::DrawImGui() {
+#ifdef USE_IMGUI
+        EditorTypes::EditorObjectInfo info;
+        info.name = "Player";                                 // エディタの登録されるオブジェクト名
+        info.category = EditorTypes::ObjectCategory::Object3D;  // 登録するオブジェクトのカテゴリ
+        info.objectPtr = object_.get();                       // 扱うオブジェクトのポインタ
+        info.drawEditor = [this]() {                            // パラメータの情報を登録
+            /// ======================================
+            /// (engine側の基本のパラメータ) 
+            /// ======================================
+            if (object_) {
+                object_->DrawImGui("object3d");
+            }
+            };
+        EditorEntityRegistry::Instance().Register(info);        // オブジェクト情報を登録する
+
+#endif // USE_IMGUI    
+    }
 }
 
 ============================================================
@@ -9155,6 +9127,8 @@ namespace MyGame {
 		void DrawSprite();
 
 		void SyncWorldTransformByRail();
+
+		void DrawImGui();
 
 	private: // メンバ変数
 		PlayerData data_; // プレイヤーのデータ構造体
@@ -11440,11 +11414,11 @@ namespace MyGame {
 		// =========================
 		// Enterで遷移開始
 		// =========================
-		if (Input::GetInstance()->Triggrkey(DIK_RETURN)) {
+		if (Input::GetInstance()->Triggrkey(DIK_RETURN) && titleUI->IsFinished()) {
 			titleUI->StartReverse();
 		}
-					
-		if (titleUI->IsFinished()) {
+
+		if (titleUI->IsReverseFinished()) {
 			isCameraTriggered_ = false;
 			FadeManager::GetInstance()->SceneChangeFade(SceneName::GAMEPLAY, FadeStyle::SilhouetteExplode, 1.5f);
 		}
@@ -12824,17 +12798,15 @@ namespace MyGame {
 	void TitleUI::Initialize() {
 
 		const std::vector<std::string> textures = {
-		Ui::titile_01,
-		Ui::titile_02,
-		Ui::titile_03,
-		Ui::titile_04,
-		Ui::titile_03,
-		Ui::titile_05,
-		Ui::titile_06,
+			Ui::titile_01,Ui::titile_02,Ui::titile_03,Ui::titile_04,
+			Ui::titile_03,Ui::titile_05,Ui::titile_06
 		};
+
 		for (const auto& t : textures) {
 			TextureManager::GetInstance()->LoadTexture(t);
 		}
+
+		TextureManager::GetInstance()->LoadTexture(Ui::UI_02);
 
 		titleSize_ = { 120.0f,100.0f };
 		titleStartPos_ = { 1500.0f,70.0f };
@@ -12855,6 +12827,24 @@ namespace MyGame {
 
 			titleChars_.push_back(std::move(ch));
 		}
+
+
+		TitleCharUI startUI{};
+
+		Vector2 startPos = { 1300.0f, 450.0f };
+		Vector2 endPos = { 750.0f, 450.0f };
+
+		startUI.mission_ = Sprite::Create(Ui::UI_02, startPos, 0.0f, { 360.0f, 90.0f });
+		// 専用座標使用
+		startUI.useCustomPos = true;
+		startUI.startPos = startPos;
+		startUI.endPos = endPos;
+		float lastTitleEndTime = (textures.size() - 1) * kInterval + kDuration;
+		startUI.delay = lastTitleEndTime;
+		titleChars_.push_back(std::move(startUI));
+		// 初期化
+		timer_ = 0.0f;
+		isFinished_ = false;
 	}
 
 	void TitleUI::Update() {
@@ -12864,17 +12854,28 @@ namespace MyGame {
 			}
 			return;
 		}
-		timer_ += 1.0f / 60.0f;	
+		timer_ += 1.0f / 60.0f;
 		float lastEndTime = 0.0f;
 
 		for (auto& ch : titleChars_) {
 			float endTime = ch.delay + kDuration;
 			lastEndTime = std::max(lastEndTime, endTime);
+			float t = 0.0f;
 
-			float localT = std::clamp((timer_ - ch.delay) / kDuration, 0.0f, 1.0f);
-			float t = localT;
+			float localT = std::clamp((timer_ - ch.delay) / kDuration, 0.0f, 1.0f);	
 
-			if (PlayingOut) {
+			if (!PlayingOut) {
+				// =========================
+				// 登場
+				// =========================
+				float localT = std::clamp((timer_ - ch.delay) / kDuration, 0.0f, 1.0f);
+				t = localT;
+			} else {
+				// =========================
+				// 退場
+				// =========================
+								// delay無視
+				float localT = std::clamp(timer_ / kDuration, 0.0f, 1.0f);
 				t = 1.0f - localT;
 			}
 
@@ -12884,7 +12885,15 @@ namespace MyGame {
 		}
 
 		if (timer_ >= lastEndTime) {
-			isFinished_ = true;
+			// 通常演出終了
+			if (!PlayingOut) {
+				isFinished_ = true;
+			}
+
+			// 逆演出終了
+			else {
+				isReverseFinished_ = true;
+			}
 		}
 
 		for (auto& Chars : titleChars_) {
@@ -12900,18 +12909,24 @@ namespace MyGame {
 
 	void TitleUI::UpdateChar(TitleCharUI& ch, float t) {
 
+		// イージング
 		float easeT = EaseOutBack(t);
 
 		Vector2 start;
 		Vector2 end;
 
+		// 専用座標を使うUI
 		if (ch.useCustomPos) {
+
 			start = ch.startPos;
 			end = ch.endPos;
 		} else {
+
+			// 通常タイトル文字
 			start = titleStartPos_ + ch.offset;
 			end = titleEndPos_ + ch.offset;
 		}
+
 		ch.mission_->SetPosition(Vector2::Lerp(start, end, easeT));
 	}
 }
@@ -12931,7 +12946,6 @@ namespace MyGame {
     private:
         struct TitleCharUI {
             std::unique_ptr<MyEngine::Sprite> mission_;
-
             MyEngine::Vector2 startPos;   // 開始位置
             MyEngine::Vector2 endPos;     // 終了位置
             MyEngine::Vector2 offset;
@@ -12948,44 +12962,32 @@ namespace MyGame {
             isStarted_ = true;
             timer_ = 0.0f; // ←リスタートしたいなら必須
         }
-        
+
         void StartReverse() {
             PlayingOut = true;
             isFinished_ = false;
             timer_ = 0.0f;
+            isReverseFinished_ = false;
         }
-        
-        bool IsFinished() const {
-            return PlayingOut == true && isFinished_ == true;
-        }
+
+        bool IsFinished() const { return isFinished_; }
+
+        bool IsReverseFinished() const { return isReverseFinished_; }
 
     private: // メンバ変数
         std::vector<TitleCharUI> titleChars_;
         MyEngine::Vector2 titleSize_;
         MyEngine::Vector2 titleStartPos_;
         MyEngine::Vector2 titleEndPos_;
-            
+
         const float kDuration = 1.0f;
-        const float kInterval = 0.1f;     
+        const float kInterval = 0.1f;
         float timer_ = 0.0f;
+
         bool isFinished_ = false;
-        
         bool isStarted_ = false;
-
         bool PlayingOut = false;
-
-
-        //std::vector<std::unique_ptr<MyEngine::Sprite>> uis_;
-        //std::vector<MyEngine::Vector2> uiOriginalSizes_;
-        //bool isAnimating_;
-        //float timer_;
-        //float duration_;
-
-        //std::unique_ptr <MyEngine::Sprite> gage_;
-        //std::unique_ptr <MyEngine::Sprite> player_ui_;
-
-        //bool uiProgressStarted_ = false;
-        //bool uiProgressFinished_ = false;
+        bool isReverseFinished_ = false; 
     };
 }
 
@@ -16217,7 +16219,7 @@ namespace MyEngine {
 		ViewProjectionMatrix = Multiply(viewMatrix, projectionMatrix);
 	}
 
-	void Camera::DrawEditor() {
+	void Camera::DrawImGui() {
 #ifdef USE_IMGUI
 		// 開発用UIの処理
 		ImGui::DragFloat3("Translate", &transform.translate.x, 0.01f);
@@ -16290,7 +16292,7 @@ namespace MyEngine {
 		// 更新処理
 		void Update();
 		// ImGuiの更新
-		void DrawEditor();
+		void DrawImGui();
 	private: // メンバ変数
 		Transform transform;
 		Matrix4x4 worldMatrix;
@@ -16420,9 +16422,6 @@ namespace MyEngine {
         }
         // アクティブ中のカメラの更新
         camera_.activeCamera->Update();
-#ifdef USE_IMGUI
-        DrawEditor();
-#endif // USE_IMGUI
     }
 
     void CameraManager::RegisterCamera() {
@@ -16456,27 +16455,8 @@ namespace MyEngine {
     void CameraManager::DrawEditor() {
 #ifdef USE_IMGUI
 
-        //EditorTypes::EditorObjectInfo info{};
-        //info.name = "Main Camera";
-        //info.category = EditorTypes::ObjectCategory::Camera;
-        //info.objectPtr = this;
-        //info.drawFunc = [](void* ptr) {
-  
-        //    CameraManager* manager = static_cast<CameraManager*>(ptr);
-        //    if (!manager) {
-        //        return;
-        //    }
+        camera_.activeCamera->DrawImGui();
 
-        //    Camera* cam = manager->GetActiveCamera();
-
-        //    if (cam) {
-        //        cam->DrawEditor();
-        //    }
-        //    };
-
-        //info.aliveFunc = [](void* ptr) {return ptr != nullptr;};
-
-        //EditorEntityRegistry::Instance().Register(info);
 #endif // USE_IMGUI
     }
 }
@@ -16982,16 +16962,15 @@ namespace MyEngine {
 
         // 開いているObjectWindow削除
         if (layout_) {
-
             ObjectMenu* objectMenu = layout_->GetMenuBar()->GetMenu<ObjectMenu>();
-          //  CameraMenu* cameraMenu = layout_->GetMenuBar()->GetMenu<CameraMenu>();
+            CameraMenu* cameraMenu = layout_->GetMenuBar()->GetMenu<CameraMenu>();
 
             if (objectMenu) {
                 objectMenu->ClearOpenWindows();
             }
-         /*   if (cameraMenu) {
+            if (cameraMenu) {
                 cameraMenu->ClearOpenWindows();
-            }*/
+            }
         }
 #endif // USE_IMGUI
     }
@@ -17077,14 +17056,14 @@ File Path: project/engine/editor/core/EditorTypes.h
 #include <array>
 
 namespace MyEngine {
-    namespace EditorTypes { 
+    namespace EditorTypes {
         /// 言語設定の列挙体
         enum class Language {
             Japanese, // 日本語
             English   // 英語
             // 将来的に追加可能
         };
- 
+
         /// エディタオブジェクトカテゴリ
         enum class ObjectCategory {
             Object3D,  // 3Dオブジェクト
@@ -17110,22 +17089,16 @@ namespace MyEngine {
         struct EditorObjectInfo {
             std::string name;                        // エディタ表示用の名前    
             ObjectCategory category;
-
-            void* objectPtr = nullptr;               // 任意のオブジェクトポインタを保持(Object3dまたはSprite*)
-            // エディタ描画関数
-            std::function<void(void*)> drawFunc;
-            // 生存確認
-            std::function<bool(void*)> aliveFunc;
+            // 任意のオブジェクトポインタを保持
+            void* objectPtr = nullptr;
+            std::function<void()> drawEditor;
+        };
+        struct CameraEditorInfo {
+            std::string name;
+            void* cameraPtr = nullptr;
+            std::function<void()> drawEditor;
         };
     }
-    //struct CameraEditorInfo {
-    //    std::string name;
-
-    //    void* cameraPtr = nullptr;
-
-    //    std::function<void(void*)> drawFunc;
-    //    std::function<bool(void*)> aliveFunc;
-    //};
 }
 
 ============================================================
@@ -17178,7 +17151,7 @@ namespace MyEngine {
         menuBar_ = std::make_unique<EditorMenuBar>();
         menuBar_->AddMenu<SettingsMenu>();
         menuBar_->AddMenu<ObjectMenu>();
-       // menuBar_->AddMenu<CameraMenu>();
+        menuBar_->AddMenu<CameraMenu>();
 #endif // USE_IMGUI
     }
 
@@ -17303,8 +17276,8 @@ namespace MyEngine {
             // タブとして描画
             if (ImGui::Begin(it->name.c_str(), &is_open, ImGuiWindowFlags_NoCollapse)) {
                 if (it->objectPtr) {
-                    if (it->drawFunc) {
-                        it->drawFunc(it->objectPtr);
+                    if (it->drawEditor) {
+                        it->drawEditor();
                     }
                 }
             }
@@ -17317,40 +17290,37 @@ namespace MyEngine {
                 ++it;
             }
         }
+        
+        const auto& cameraWindows = menuBar_->GetMenu<CameraMenu>()->GetOpenWindows();
+        for (auto it = cameraWindows.begin();
+            it != cameraWindows.end();) {
 
-  /*      CameraMenu* cameraMenu = menuBar_->GetMenu<CameraMenu>();
+            ImGui::SetNextWindowDockID(
+                dockspace_id,
+                ImGuiCond_FirstUseEver);
 
-        if (cameraMenu) {
+            bool is_open = true;
 
-            auto& cameraWindows = cameraMenu->GetOpenWindows();
+            if (ImGui::Begin(
+                it->name.c_str(),
+                &is_open,
+                ImGuiWindowFlags_NoCollapse)) {
 
-            for (auto it = cameraWindows.begin();
-                it != cameraWindows.end();) {
-
-                ImGui::SetNextWindowDockID(
-                    dockspace_id,
-                    ImGuiCond_FirstUseEver);
-
-                bool is_open = true;
-
-                if (ImGui::Begin(it->name.c_str(),
-                    &is_open,
-                    ImGuiWindowFlags_NoCollapse)) {
-
-                    if (it->objectPtr && it->drawFunc) {
-                        it->drawFunc(it->objectPtr);
-                    }
-                }
-
-                ImGui::End();
-
-                if (!is_open) {
-                    it = menuBar_->GetMenu<CameraMenu>()->CloseWindow(it->name);
-                } else {
-                    ++it;
+                if (it->drawEditor) {
+                    it->drawEditor();
                 }
             }
-        }*/
+
+            ImGui::End();
+
+            if (!is_open) {
+                it = menuBar_->GetMenu<CameraMenu>()
+                    ->CloseWindow(it->name);
+            } else {
+                ++it;
+            }
+        }
+
 #endif // USE_IMGUI
     }
 }
@@ -17414,72 +17384,74 @@ namespace MyEngine {
 File Path: project/engine/editor/layout/editormenubar/CameraMenu.cpp
 ============================================================
 #include "CameraMenu.h"
-#include <CameraManager.h>
 #ifdef USE_IMGUI
 #include <ImGuiManager.h>
 #endif // USE_IMGUI
-#include <EditorEntityRegistry.h>
+#include <CameraManager.h>
 
 namespace MyEngine {
-        
+
     using namespace EditorTypes;
 
-    void CameraMenu::Render(const std::function<std::string(const std::string&)>& LT) {
+    void CameraMenu::Render(
+        const std::function<std::string(const std::string&)>& LT) {
+
 #ifdef USE_IMGUI
-        //if (!ImGui::BeginMenu(LT("Menu.Camera").c_str())) {
-        //    return;
-        //}
 
-        //const std::vector<EditorObjectInfo>& items = EditorEntityRegistry::Instance().GetObjects();
+        CameraManager* cameraManager = CameraManager::GetInstance();
 
-        //for (const auto& item : items) {
+        if (!cameraManager) {
+            return;
+        }
 
-        //    if (item.category != ObjectCategory::Camera) {
-        //        continue;
-        //    }
+        if (ImGui::MenuItem(
+            LT("Menu.Camera").c_str())) {
 
-        //    if (ImGui::MenuItem(item.name.c_str())) {
-        //        OpenWindow(item);
-        //    }
-        //}
+            CameraEditorInfo info;
+            info.name = "Camera";            
+            info.cameraPtr = cameraManager;
+            // 中身はCameraManagerに任せる
+            info.drawEditor = [cameraManager]() {cameraManager->GetActiveCamera()->DrawImGui(); };
+            OpenWindow(info);
+        }
 
-        //ImGui::EndMenu();
 #endif // USE_IMGUI
     }
 
-    void CameraMenu::OpenWindow(const EditorObjectInfo& obj) {
-#ifdef USE_IMGUI 
-        // -------------------------
-        // 既に開いているか確認
-        // -------------------------
-
-        std::vector<EditorObjectInfo>::iterator it = std::find_if(
+    void CameraMenu::OpenWindow(const CameraEditorInfo& info) {
+#ifdef USE_IMGUI
+        auto it = std::find_if(
             openWindows_.begin(),
             openWindows_.end(),
-            [&](const EditorObjectInfo& item) {
-                // 同一ポインタなら既に開いている
-                return item.objectPtr == obj.objectPtr;
+            [&](const CameraEditorInfo& item) {
+                return item.cameraPtr == info.cameraPtr;
             });
-        // -------------------------
-        // 未登録なら追加
-        // -------------------------
+
         if (it == openWindows_.end()) {
-            openWindows_.push_back(obj);
+            openWindows_.push_back(info);
         }
-#endif // USE_IMGUI
+#endif
     }
 
-    std::vector<EditorObjectInfo>::iterator CameraMenu::CloseWindow(const std::string& name) {
-#ifdef USE_IMGUI 
-        std::vector<EditorObjectInfo>::iterator it = std::find_if(openWindows_.begin(), openWindows_.end(),
-            [&](const EditorObjectInfo& obj) { return obj.name == name; });
+    std::vector<CameraEditorInfo>::iterator CameraMenu::CloseWindow(const std::string& name) {
+#ifdef USE_IMGUI
+
+        auto it = std::find_if(
+            openWindows_.begin(),
+            openWindows_.end(),
+            [&](const CameraEditorInfo& item) {
+                return item.name == name;
+            });
 
         if (it != openWindows_.end()) {
-            return openWindows_.erase(it); // リストから削除して次の要素を返す
+            return openWindows_.erase(it);
         }
+
         return openWindows_.end();
-#endif // USE_IMGUI
+
+#endif
     }
+        
     void CameraMenu::ClearOpenWindows() {
 #ifdef USE_IMGUI 
         openWindows_.clear();
@@ -17492,36 +17464,29 @@ File Path: project/engine/editor/layout/editormenubar/CameraMenu.h
 ============================================================
 #pragma once
 #include <IMenuComponent.h>
-#include <EditorTypes.h>
+#include <EditorEntityRegistry.h>
 
 namespace MyEngine {
     /// <summary>
-    /// 「設定」メニューを担当するクラス。
+    /// 
     /// </summary>
     class CameraMenu : public IMenuComponent {
     public: // メンバ関数
-        /// <summary>
-        /// 設定メニューの描画
-        /// </summary>
-        /// <param name="LT">多言語テキスト取得ラムダ</param>
-        void Render(const std::function<std::string(const std::string&)>& LT) override;        
-        /// <summary>
-        /// オブジェクトウィンドウを開く
-        /// 既に開いている場合は追加しない
-        /// </summary>
-        void OpenWindow(const EditorTypes::EditorObjectInfo& obj);
-        /// <summary>
-        /// 指定された名前のウィンドウを閉じる
-        /// </summary>
-        std::vector<EditorTypes::EditorObjectInfo>::iterator CloseWindow(const std::string& name);
+
+        void Render(const std::function<std::string(const std::string&)>& LT) override;
+        
+        void OpenWindow(const EditorTypes::CameraEditorInfo& info);
+        
+        std::vector<EditorTypes::CameraEditorInfo>::iterator CloseWindow(const std::string& name);
+
         /// <summary>
         /// 開いているオブジェクトウィンドウを全て閉じる
         /// </summary>
         void ClearOpenWindows();
-    private :
-        std::vector<EditorTypes::EditorObjectInfo> openWindows_;
+    private: // メンバ変数
+        std::vector<EditorTypes::CameraEditorInfo> openWindows_;   /// 現在開いているオブジェクトウィンドウ一覧     
     public:
-        std::vector<EditorTypes::EditorObjectInfo>& GetOpenWindows() { return openWindows_; }
+        std::vector<EditorTypes::CameraEditorInfo>& GetOpenWindows() { return openWindows_; }
     };
 }
 
