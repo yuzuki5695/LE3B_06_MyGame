@@ -3,6 +3,12 @@
 
 namespace MyGame {
     namespace CollisionConfig {
+
+        struct CollisionProfile {
+            uint32_t attribute;
+            uint32_t mask;
+        };
+
         // 衝突属性をビットフラグで定義
         enum Attribute : uint32_t {
             // カテゴリを定義
@@ -14,16 +20,20 @@ namespace MyGame {
         };
 
         // 衝突マスク（相手が誰なら反応するか）
-        namespace Mask {
-            const uint32_t kNone = None;
-            // 敵はプレイヤーとプレイヤーの弾に当たる
-            const uint32_t kEnemy = Player | PlayerBullet;
-            // プレイヤーは敵と敵の弾に当たる
-            const uint32_t kPlayer = Enemy | EnemyBullet;
-            // プレイヤーの弾は敵に当たる
-            const uint32_t kPlayerBullet = Enemy;
-            // 敵の弾はプレイヤーに当たる
-            const uint32_t kEnemyBullet = Player;
+        namespace CollisionMask {
+
+            constexpr uint32_t None = 0;
+            constexpr uint32_t Player = Attribute::Enemy | Attribute::EnemyBullet;
+            constexpr uint32_t Enemy = Attribute::PlayerBullet;
+            constexpr uint32_t PlayerBullet = Attribute::Enemy;
+            constexpr uint32_t EnemyBullet = Attribute::Player;
         }
+    
+        namespace Profile {
+            constexpr CollisionProfile Player{ Attribute::Player,CollisionMask::Player };
+            constexpr CollisionProfile Enemy{ Attribute::Enemy,CollisionMask::Enemy };
+            constexpr CollisionProfile PlayerBullet{ Attribute::PlayerBullet,CollisionMask::PlayerBullet };
+            constexpr CollisionProfile EnemyBullet{ Attribute::EnemyBullet,CollisionMask::EnemyBullet };
+        } 
     }
 }

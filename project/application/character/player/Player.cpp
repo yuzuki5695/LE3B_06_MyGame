@@ -23,6 +23,8 @@ namespace MyGame {
 
     Player::~Player() {}
 
+    void Player::Finalize() {}
+
     void Player::Initialize() {
         // 3Dオブジェクト生成
         TextureManager::GetInstance()->LoadTexture(Ui::Target);
@@ -43,7 +45,9 @@ namespace MyGame {
         targetreticle_->SetTextureSize(Vector2{ 512.0f, 512.0f });
         targetreticle_->SetAnchorPoint(Vector2{ 0.5f, 0.5f }); // 中心基準
 
-        isActive_ = true;
+        flags_.isAlive = true;
+        flags_.isActive = false;
+        SetActive(true); 
 
         // コンポーネントの生成
         move_ = std::make_unique<PlayerMove>();
@@ -68,18 +72,17 @@ namespace MyGame {
         targetreticle_->Update();
         target_->Update();
         object_->Update();
-
-
     }
 
     void Player::Draw() {
+        if (!IsAlive()) { return; }
         if (object_) {
             object_->Draw();
         }
     }
 
     void Player::DrawSprite() {
-        if (!isActive_) { return; }
+        if (!IsActive()) { return; }
         if (targetreticle_) {
             targetreticle_->Draw();
         }

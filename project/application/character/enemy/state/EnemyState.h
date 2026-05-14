@@ -20,7 +20,7 @@ namespace MyGame {
     // 死亡状態
     class EnemyDead : public ICharacterState {
     private:
-        bool destroyed_ = false;
+
     public:
         void Update(BaseCharacter& character) override;
     };

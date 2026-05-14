@@ -12,7 +12,9 @@ namespace MyGame {
 
     using namespace CollisionConfig;
 
-    void PlayerBullet::Finalize() {}
+    void PlayerBullet::Finalize() {
+        CollisionManager::GetInstance()->UnregisterCollider(collider_.get());
+    }
 
     void PlayerBullet::Initialize(const MyEngine::Transform& transform, const MyEngine::Vector3& velocity) {
         // 基底の初期化
@@ -21,11 +23,19 @@ namespace MyGame {
         // オブジェクト生成
         ModelManager::GetInstance()->LoadModel(Bullet::PlayerBullet);
         bullet = Object3d::Create(Bullet::PlayerBullet, transform_);
-        
-        // コライダーの設定
-        SetCollision(Attribute::PlayerBullet, Mask::kPlayerBullet);
-        // マネージャーに登録
+
+        // Collider生成 
+        collider_ = Collider::Create({
+            .profile = Profile::PlayerBullet,
+            .obb = CollisionUtils::CreateOBB(bullet.get()),
+            .callback = [this](Collider* other) {SetInactive(); } });
+
         CollisionManager::GetInstance()->RegisterCollider(collider_.get());
+
+        //// コライダーの設定
+        //SetCollision(Attribute::PlayerBullet, Mask::kPlayerBullet);
+        //// マネージャーに登録
+        //CollisionManager::GetInstance()->RegisterCollider(collider_.get());
 
         // 初期位置設定
         bullet->SetTranslate(transform_.translate);
@@ -44,15 +54,17 @@ namespace MyGame {
             bullet->SetTranslate(transform_.translate);
             bullet->Update();
         }
-        // コライダーのOBBをObject3dの情報から更新
-        if (collider_) {
-            collider_->SetOBB(CollisionUtils::CreateOBB(bullet.get()));
-        }
+        //// コライダーのOBBをObject3dの情報から更新
+        //if (collider_) {
+        //    collider_->SetOBB(CollisionUtils::CreateOBB(bullet.get()));
+        //}
 
         // =============================
         // ③ 寿命処理
         // =============================
         UpdateLifeTime(1.0f / 60.0f); // 仮で60FPS固定
+        // OBB更新
+        collider_->SetOBB(CollisionUtils::CreateOBB(bullet.get(), { 0.5f,0.5f,0.5f }));
     }
 
     void PlayerBullet::Draw() {
@@ -64,9 +76,9 @@ namespace MyGame {
         }
     }
     
-    void PlayerBullet::OnCollision(Collider* other) {
+   // void PlayerBullet::OnCollision(Collider* other) {
         //if (active_) {
         //    SetInactive();
         //}
-    }
+    //}
 }

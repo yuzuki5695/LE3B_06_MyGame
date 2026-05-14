@@ -60,9 +60,7 @@ namespace MyGame {
 
         // ステージマネージャの初期化
         StageManager::GetInstance()->Initialize(); 
-        StageManager::GetInstance()->SetClearwallTranslate(
-            CameraManager::GetInstance()->GetCurrentBehaviorAs<GamePlayCamera>()->GetRailEndPosition()
-        );
+        StageManager::GetInstance()->SetClearwallTranslate(CameraManager::GetInstance()->GetCurrentBehaviorAs<GamePlayCamera>()->GetRailEndPosition());
 
         GamePlayUI* gameplayUI = UIManager::GetInstance()->GetUI<GamePlayUI>();
         if (gameplayUI) {
@@ -78,20 +76,12 @@ namespace MyGame {
     void GamePlayScene::Update() {
         // カメラマネージャの更新
         CameraManager::GetInstance()->Update();
-
-#pragma region 全てのObject3d個々の更新処理       
+#pragma region 全てのObject3d個々の更新処理      
         //  ゲーム開始前のイベント処理
         if (!isGameStartEventDone_) {
             // ゲーム開始イベントの開始
             EventManager::GetInstance()->EventStart(Event::EventState::GameStart);
             isGameStartEventDone_ = true;
-        }
-           
-        if (Input::GetInstance()->Triggrkey(DIK_RETURN)) {
-            // フェードアウト            
-            // FadeManager::GetInstance()->SceneChangeFade(SceneName::GAMECLEAR, FadeStyle::SilhouetteExplode, 1.0f);
-            //CameraManager::GetInstance()->GetCurrentBehaviorAs<GamePlayCamera>()->SetCameraState(CameraState::LockOn);
-            //player_->ChangeState(std::make_unique<PlayerStateDead>());
         }
 
         // 敵スポーン
@@ -124,8 +114,8 @@ namespace MyGame {
         StageManager::GetInstance()->Update();
         // イベントマネージャの更新
         EventManager::GetInstance()->Update();
-        // 全ての衝突をチェック
-        //CollisionManager::GetInstance()->CheckAllCollisions();
+        // 全ての衝突をチェック 
+        CollisionManager::GetInstance()->CheckAllCollisions();
 
         // ゲームクリアの条件をチェック
         if (CameraManager::GetInstance()->GetCurrentBehaviorAs<GamePlayCamera>()->GetProgress() >= 1.0f) {

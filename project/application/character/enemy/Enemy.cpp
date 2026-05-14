@@ -17,6 +17,8 @@ namespace MyGame {
     Enemy::~Enemy() {}
 
     void Enemy::Finalize() {
+        CollisionManager::GetInstance()->UnregisterCollider(collider_.get());
+        collider_.reset();
         object_.reset();
     }
 
@@ -25,11 +27,17 @@ namespace MyGame {
 
         object_ = Object3d::Create(Character::Enemy, Transform{ { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f } });
 
-        // コライダーの設定
-        SetCollision(Attribute::Enemy, Mask::kEnemy);
-        // マネージャーに登録
+        flags_.isAlive = true;
+        flags_.isActive = false;
+
+
+        collider_ = Collider::Create({ 
+            .profile = Profile::Enemy,
+            .obb = CollisionUtils::CreateOBB(object_.get()),
+            .callback = [this](Collider* other) {if (!IsAlive()) { return; }ChangeState(std::make_unique<EnemyDead>()); } }); 
+
         CollisionManager::GetInstance()->RegisterCollider(collider_.get());
-     
+
         //attack_ = std::make_unique<EnemyAttack>();
         //attack_->SetOwner(this);
         //attack_->Initialize();
@@ -38,35 +46,18 @@ namespace MyGame {
     }
 
     void Enemy::Update() {
-		// アクティブ状態になるまでステートを更新しない
-        if (isActive_) {
-            // ステートの更新（現在のステートのUpdateが呼ばれる）
-            state_.Update(*this);
-        }
+        // ステートの更新（現在のステートのUpdateが呼ばれる）
+        state_.Update(*this);
 
+        // 毎フレーム当たり判定を更新
+        collider_->SetOBB(CollisionUtils::CreateOBB(object_.get()));
+        // オブジェクトの更新
         object_->Update();
-        
-		// コライダーのOBBをObject3dの情報から更新
-        if (collider_) {
-            collider_->SetOBB(CollisionUtils::CreateOBB(object_.get()));
-        }
     }
 
     void Enemy::Draw() {
-        if (!isAlive_) { return; }
-
-        if (object_) {
-            object_->Draw();
-        }
-    }
-
-    void Enemy::OnCollision(Collider* other) {
-        if (isAlive_) {
-            ChangeState(std::make_unique<EnemyDead>());
-            // 判定リストから自分を外す
-            CollisionManager::GetInstance()->UnregisterCollider(collider_.get());
-            // そのあとで自身を破棄・フラグ折る
-            this->isAlive_ = false;
-        }
+        if (!IsAlive()) { return; }
+        // オブジェクトの描画
+        object_->Draw();
     }
 }

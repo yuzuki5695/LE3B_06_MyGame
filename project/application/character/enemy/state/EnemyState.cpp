@@ -12,23 +12,36 @@ using namespace Easing;
 
 namespace MyGame {
     void EnemyIdle::Update(BaseCharacter& character) {
+       /* if (!character.IsActive()) {
+            timer_ += 1.0f / 60.0f;
+            float t = std::clamp(timer_ / duration_, 0.0f, 1.0f);
+            float s = EaseOutBack(t);
+            character.GetObject3d()->SetScale({ s, s, s });
+            if (t >= 1.0f) {
+                t = 1.0f;
+                s = EaseOutBack(t);
+                character.GetObject3d()->SetScale({ s, s, s });
+                character.ChangeState(std::make_unique<EnemyAlive>());
+                character.GetObject3d()->SetScale({ s, s, s });
+                character.SetActive(true);
+            }
+        }*/
         timer_ += 1.0f / 60.0f;
-
         float t = std::clamp(timer_ / duration_, 0.0f, 1.0f);
-
         float s = EaseOutBack(t);
-
         character.GetObject3d()->SetScale({ s, s, s });
-
         if (t >= 1.0f) {
             t = 1.0f;
             s = EaseOutBack(t);
             character.GetObject3d()->SetScale({ s, s, s });
             character.ChangeState(std::make_unique<EnemyAlive>());
+            character.GetObject3d()->SetScale({ s, s, s });
         }
     }
 
     void EnemyAlive::Update(BaseCharacter& character) {
+        //        if (!character.IsActive()) { return; }
+
         // 必要なコンポーネント
         Enemy* enemy = dynamic_cast<Enemy*>(&character);
 
@@ -50,11 +63,9 @@ namespace MyGame {
     }
 
     void EnemyDead::Update(BaseCharacter& character) {
-        if (!destroyed_) {
-            // 死んだらマネージャーから削除する
-            CollisionManager::GetInstance()->UnregisterCollider(character.GetCollider());
+        if (character.IsAlive()) {
+            // 死んだらフラグを立てる
             character.Destroy();
-            destroyed_ = true;
         }
     }
 }

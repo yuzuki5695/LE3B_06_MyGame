@@ -2,20 +2,48 @@
 #include <OBB.h>
 #include <MatrixVector.h>
 #include <Object3d.h>
+#ifdef min
+#undef min
+#endif
+#ifdef max
+#undef max
+#endif
 
 namespace MyGame {
     /// <summary>
-	/// 衝突判定に関する共通関数をまとめたクラス
+    /// 衝突判定に関する共通関数をまとめたクラス
     /// </summary>
     class CollisionUtils {
     public:
+        static bool CheckOBB(const MyEngine::OBB& a, const MyEngine::OBB& b) {
+            MyEngine::Vector3 diff = {
+                a.center.x - b.center.x,
+                a.center.y - b.center.y,
+                a.center.z - b.center.z
+            };
+
+            float distanceSq =
+                diff.x * diff.x +
+                diff.y * diff.y +
+                diff.z * diff.z;
+
+            // 半径っぽく扱う
+            float radiusA = std::max({ a.halfSize.x, a.halfSize.y, a.halfSize.z });
+
+            float radiusB = std::max({ b.halfSize.x, b.halfSize.y, b.halfSize.z });
+
+            float radius = radiusA + radiusB;
+
+            return distanceSq <= radius * radius;
+        };
+
         /// <summary>
         /// Object3d情報からOBBを生成する共通関数
         /// </summary>
         static MyEngine::OBB CreateOBB(const MyEngine::Object3d* object, const MyEngine::Vector3& sizeOffset = { 1.0f, 1.0f, 1.0f }) {
             MyEngine::OBB obb;
             // 中心座標
-            obb.center = object->GetTransform().translate;     
+            obb.center = object->GetTransform().translate;
             MyEngine::Vector3 size = object->GetModel()->GetSize();
             // オブジェクトによって倍率を変えたい場合は引数の倍率を変える
             obb.halfSize = {

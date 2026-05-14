@@ -1076,6 +1076,9 @@
     <ClInclude Include="engine\editor\layout\editormenubar\CameraMenu.h">
       <Filter>ヘッダー ファイル\engine\editor\layout\editormenubar</Filter>
     </ClInclude>
+    <ClInclude Include="application\collision\ColliderCreateInfo.h">
+      <Filter>ヘッダー ファイル\application\collision</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Resources\shaders\Sprite\Sprite.PS.hlsl">

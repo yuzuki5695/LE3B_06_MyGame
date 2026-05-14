@@ -23,23 +23,33 @@ void CollisionManager::Finalize() {
 }
 
 void CollisionManager::CheckAllCollisions() {
-    for (auto itA = colliders_.begin(); itA != colliders_.end(); ++itA) {
-        Collider* colliderA = *itA;
-        for (auto itB = std::next(itA); itB != colliders_.end(); ++itB) {
-            Collider* colliderB = *itB;
 
-            // 修正：両方のビットが立っている時だけ判定
-            bool aCanHitB = colliderA->GetCollisionMask() & colliderB->GetCollisionAttribute();
-            bool bCanHitA = colliderB->GetCollisionMask() & colliderA->GetCollisionAttribute();
+    for (auto itrA = colliders_.begin(); itrA != colliders_.end(); ++itrA) {
+        auto itrB = itrA;
+        ++itrB;
+        for (; itrB != colliders_.end(); ++itrB) {
 
-            if (!(aCanHitB && bCanHitA)) {
+            Collider* a = *itrA;
+            Collider* b = *itrB;
+
+            //========================
+            // マスクチェック
+            //========================
+
+            bool canCollision = (a->GetAttribute() & b->GetMask()) || (b->GetAttribute() & a->GetMask());
+
+            if (!canCollision) {
                 continue;
             }
 
-            // 衝突判定
-            if (MyEngine::Collision::IsOBBIntersect(colliderA->GetOBB(), colliderB->GetOBB())) {
-                colliderA->OnCollision(colliderB);
-                colliderB->OnCollision(colliderA);
+            //========================
+            // OBB判定
+            //========================
+
+            if (CollisionUtils::CheckOBB(a->GetOBB(), b->GetOBB())) {
+
+                a->OnCollision(b);
+                b->OnCollision(a);
             }
         }
     }

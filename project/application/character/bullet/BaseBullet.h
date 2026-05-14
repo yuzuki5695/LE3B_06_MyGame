@@ -2,7 +2,7 @@
 #include <Vector3.h>
 #include <memory>
 #include <Object3d.h>
-#include <Collider.h>
+//#include <Collider.h>
 
 namespace MyGame {
     /// <summary>
@@ -33,7 +33,7 @@ namespace MyGame {
         virtual void Draw() = 0;
 
         // 衝突時に呼ばれる関数 (基本は何もしない、必要なら派生クラスでオーバーライド)
-        virtual void OnCollision(Collider* other) {}
+     //   virtual void OnCollision(Collider* other) {}
 
     protected:
         // 弾の寿命管理
@@ -53,7 +53,7 @@ namespace MyGame {
         float lifeTime_ = 0.0f;      // 経過時間
         float maxLifeTime_ = 3.0f;   // 最大寿命（秒）
         // コライダー本体
-        std::unique_ptr<Collider> collider_;
+      //  std::unique_ptr<Collider> collider_;
     public: // アクセッサ
 
         MyEngine::Object3d* GetObject3d() const { return bullet.get(); }
@@ -73,15 +73,15 @@ namespace MyGame {
 
         void SetTranslate(const MyEngine::Vector3& translate) { bullet->SetTranslate(translate); }
 
-        Collider* GetCollider() const { return collider_.get(); }
+       // Collider* GetCollider() const { return collider_.get(); }
 
-        // 衝突属性の設定を楽にするためのヘルパー
-        void SetCollision(uint32_t attribute, uint32_t mask) {
-            if (!collider_) collider_ = std::make_unique<Collider>();
-            collider_->SetCollisionAttribute(attribute);
-            collider_->SetCollisionMask(mask);
-            // 衝突したら自分のOnCollisionを呼ぶように登録
-            collider_->SetCallback([this](Collider* other) { this->OnCollision(other); });
-        }
+        //// 衝突属性の設定を楽にするためのヘルパー
+        //void SetCollision(uint32_t attribute, uint32_t mask) {
+        //    if (!collider_) collider_ = std::make_unique<Collider>();
+        //    collider_->SetCollisionAttribute(attribute);
+        //    collider_->SetCollisionMask(mask);
+        //    // 衝突したら自分のOnCollisionを呼ぶように登録
+        //    collider_->SetCallback([this](Collider* other) { this->OnCollision(other); });
+        //}
     };
 }

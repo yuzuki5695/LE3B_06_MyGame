@@ -1,6 +1,7 @@
 #pragma once
 #include <BaseCharacter.h>
 #include <EnemyAttack.h>
+#include <Collider.h>
 
 namespace MyGame {
 	/// <summary>
@@ -10,7 +11,10 @@ namespace MyGame {
 	public:// メンバ関数
 		// デストラクタ
 		~Enemy() override;
-		void Finalize();
+		/// <summary>
+		/// 
+		/// </summary>
+		void Finalize() override;
 		/// <summary>
 		/// 初期化処理 
 		/// </summary>
@@ -23,14 +27,13 @@ namespace MyGame {
 		/// 描画処理
 		/// </summary>
 		void Draw() override;
-		
-
-		void OnCollision(Collider* other) override;
 
 		//std::unique_ptr<EnemyAttack> attack_; // 攻撃ロジックの保持
 	public: // アクセッサ
 		// getter
 		//EnemyAttack* GetAttack() { return attack_.get(); }
+		   
+		std::unique_ptr<Collider> collider_;
 
 		MyEngine::Transform* GetTransform() { return &object_->GetTransform(); }
 

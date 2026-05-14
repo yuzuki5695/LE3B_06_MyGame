@@ -10,7 +10,10 @@ namespace MyGame {
         void Update() override;
         void Draw() override;
 
-        
-		void OnCollision(Collider* other) override;
+
+    private: // メンバ変数
+        std::unique_ptr<Collider> collider_;
+
+        //void OnCollision(Collider* other) override;
     };
 }

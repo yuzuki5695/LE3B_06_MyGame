@@ -16,6 +16,10 @@ namespace MyGame {
 		// デストラクタ
 		~Player() override;
 		/// <summary>
+		/// 
+		/// </summary>
+		void Finalize() override;
+		/// <summary>
 		/// 初期化処理 
 		/// </summary>
 		void Initialize() override;
