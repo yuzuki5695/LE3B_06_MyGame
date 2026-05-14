@@ -2,10 +2,9 @@
 #include <ModelManager.h>
 #include <EnemyState.h>
 #include <CameraManager.h>
+#include <CollisionConfig.h>
 // AssetGeneratorからインクルード
 #include <subproject/AssetGenerator/engine/generator/LoadResourceID.h>
-#include <CollisionManager.h>
-#include <CollisionConfig.h>
 
 using namespace MyEngine;
 using namespace AssetGen::LoadResourceID::Models;
@@ -23,24 +22,17 @@ namespace MyGame {
     }
 
     void Enemy::Initialize() {
+        // Resourceの読み込み
         ModelManager::GetInstance()->LoadModel(Character::Enemy);
-
+        // オブジェクトの生成、初期化
         object_ = Object3d::Create(Character::Enemy, Transform{ { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f } });
-
+        // 状態フラグの初期化
         flags_.isAlive = true;
         flags_.isActive = false;
-
-
-        collider_ = Collider::Create({ 
-            .profile = Profile::Enemy,
-            .obb = CollisionUtils::CreateOBB(object_.get()),
-            .callback = [this](Collider* other) {if (!IsAlive()) { return; }ChangeState(std::make_unique<EnemyDead>()); } }); 
-
-        CollisionManager::GetInstance()->RegisterCollider(collider_.get());
-
-        //attack_ = std::make_unique<EnemyAttack>();
-        //attack_->SetOwner(this);
-        //attack_->Initialize();
+        // 当たり判定の生成、初期化
+        collider_ = Collider::Create({ .profile = Profile::Enemy,.obb = CollisionUtils::CreateOBB(object_.get()) });
+        // 衝突時の処理
+        collider_->SetCallback([this](Collider* other) {if (!IsAlive()) { return; }ChangeState(std::make_unique<EnemyDead>()); });
         // 初期ステートをセットする
         ChangeState(std::make_unique<EnemyIdle>());
     }
@@ -48,9 +40,6 @@ namespace MyGame {
     void Enemy::Update() {
         // ステートの更新（現在のステートのUpdateが呼ばれる）
         state_.Update(*this);
-
-        // 毎フレーム当たり判定を更新
-        collider_->SetOBB(CollisionUtils::CreateOBB(object_.get()));
         // オブジェクトの更新
         object_->Update();
     }

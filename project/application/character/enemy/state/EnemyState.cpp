@@ -12,54 +12,29 @@ using namespace Easing;
 
 namespace MyGame {
     void EnemyIdle::Update(BaseCharacter& character) {
-       /* if (!character.IsActive()) {
-            timer_ += 1.0f / 60.0f;
-            float t = std::clamp(timer_ / duration_, 0.0f, 1.0f);
-            float s = EaseOutBack(t);
-            character.GetObject3d()->SetScale({ s, s, s });
-            if (t >= 1.0f) {
-                t = 1.0f;
-                s = EaseOutBack(t);
-                character.GetObject3d()->SetScale({ s, s, s });
-                character.ChangeState(std::make_unique<EnemyAlive>());
-                character.GetObject3d()->SetScale({ s, s, s });
-                character.SetActive(true);
-            }
-        }*/
         timer_ += 1.0f / 60.0f;
         float t = std::clamp(timer_ / duration_, 0.0f, 1.0f);
         float s = EaseOutBack(t);
         character.GetObject3d()->SetScale({ s, s, s });
         if (t >= 1.0f) {
             t = 1.0f;
-            s = EaseOutBack(t);
             character.GetObject3d()->SetScale({ s, s, s });
+            // 当たり判定登録
+            character.RegisterCollider();
+            // 完全出現したので有効化
+            character.SetActive(true);
             character.ChangeState(std::make_unique<EnemyAlive>());
-            character.GetObject3d()->SetScale({ s, s, s });
         }
     }
 
     void EnemyAlive::Update(BaseCharacter& character) {
-        //        if (!character.IsActive()) { return; }
-
-        // 必要なコンポーネント
-        Enemy* enemy = dynamic_cast<Enemy*>(&character);
-
-
-        //// 必要なコンポーネント
-        //Enemy* enemy = dynamic_cast<Enemy*>(&character);
-        //EnemyAttack* attack = enemy->GetAttack();
-
-        //// プレイヤー取得
-        //Player* player = enemy->GetPlayer();
-
-        //if (player) {
-        //    attack->Update(
-        //        player->GetObject3d()->GetTransform(),
-        //        player->GetObject3d()->GetTransform().translate
-        //    );
-        //}
-        //attack->Update(enemy->GetObject3d()->GetTransform(), player->GetObject3d()->GetTransform().translate);
+ //       if (!character.IsActive()) {
+         
+            
+            
+            // 毎フレーム当たり判定を更新
+            character.GetCollider()->SetOBB(CollisionUtils::CreateOBB(character.GetObject3d()));
+      //  }
     }
 
     void EnemyDead::Update(BaseCharacter& character) {

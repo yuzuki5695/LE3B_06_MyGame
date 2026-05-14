@@ -27,15 +27,10 @@ namespace MyGame {
 		/// 描画処理
 		/// </summary>
 		void Draw() override;
+	private: // メンバ変数
 
-		//std::unique_ptr<EnemyAttack> attack_; // 攻撃ロジックの保持
 	public: // アクセッサ
 		// getter
-		//EnemyAttack* GetAttack() { return attack_.get(); }
-		   
-		std::unique_ptr<Collider> collider_;
-
 		MyEngine::Transform* GetTransform() { return &object_->GetTransform(); }
-
 	};
 }

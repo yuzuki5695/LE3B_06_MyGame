@@ -15,17 +15,15 @@ namespace MyGame {
 
         // 衝突通知
         void OnCollision(Collider* other) { if (callback_) { callback_(other); } }
+        
         // 
         static std::unique_ptr<Collider> Create(const ColliderCreateInfo& info) {
             std::unique_ptr<Collider> collider = std::make_unique<Collider>();
             collider->attribute_ = info.profile.attribute;
             collider->mask_ = info.profile.mask;
             collider->obb_ = info.obb;
-            collider->callback_ = info.callback;
-
             return collider;
         }
-
     private: //メンバ変数
         MyEngine::OBB obb_;
         uint32_t attribute_;

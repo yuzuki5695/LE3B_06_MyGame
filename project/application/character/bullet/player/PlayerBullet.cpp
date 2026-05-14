@@ -25,17 +25,10 @@ namespace MyGame {
         bullet = Object3d::Create(Bullet::PlayerBullet, transform_);
 
         // Collider生成 
-        collider_ = Collider::Create({
-            .profile = Profile::PlayerBullet,
-            .obb = CollisionUtils::CreateOBB(bullet.get()),
-            .callback = [this](Collider* other) {SetInactive(); } });
-
+        collider_ = Collider::Create({ .profile = Profile::PlayerBullet,.obb = CollisionUtils::CreateOBB(bullet.get()) });
+        // 衝突時の処理
+        collider_->SetCallback([this](Collider* other) {SetInactive(); });
         CollisionManager::GetInstance()->RegisterCollider(collider_.get());
-
-        //// コライダーの設定
-        //SetCollision(Attribute::PlayerBullet, Mask::kPlayerBullet);
-        //// マネージャーに登録
-        //CollisionManager::GetInstance()->RegisterCollider(collider_.get());
 
         // 初期位置設定
         bullet->SetTranslate(transform_.translate);
@@ -54,17 +47,14 @@ namespace MyGame {
             bullet->SetTranslate(transform_.translate);
             bullet->Update();
         }
-        //// コライダーのOBBをObject3dの情報から更新
-        //if (collider_) {
-        //    collider_->SetOBB(CollisionUtils::CreateOBB(bullet.get()));
-        //}
 
         // =============================
         // ③ 寿命処理
         // =============================
         UpdateLifeTime(1.0f / 60.0f); // 仮で60FPS固定
+
         // OBB更新
-        collider_->SetOBB(CollisionUtils::CreateOBB(bullet.get(), { 0.5f,0.5f,0.5f }));
+        collider_->SetOBB(CollisionUtils::CreateOBB(bullet.get(), { 1.0f,1.0f,1.0f }));
     }
 
     void PlayerBullet::Draw() {
@@ -75,10 +65,4 @@ namespace MyGame {
             bullet->Draw();
         }
     }
-    
-   // void PlayerBullet::OnCollision(Collider* other) {
-        //if (active_) {
-        //    SetInactive();
-        //}
-    //}
 }

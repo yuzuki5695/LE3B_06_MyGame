@@ -45,6 +45,7 @@ namespace MyGame {
         targetreticle_->SetTextureSize(Vector2{ 512.0f, 512.0f });
         targetreticle_->SetAnchorPoint(Vector2{ 0.5f, 0.5f }); // 中心基準
 
+        // 状態フラグの初期化
         flags_.isAlive = true;
         flags_.isActive = false;
         SetActive(true); 

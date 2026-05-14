@@ -2,12 +2,14 @@
 #include <memory>
 #include <Object3d.h>
 #include <CharacterState.h>
+#include <CollisionManager.h>
 
 namespace MyGame {
     
     struct CharacterFlags {
         bool isAlive = true;
         bool isActive = false;
+        bool isColliderRegistered = false;
     };
 
     /// <summary>
@@ -49,6 +51,8 @@ namespace MyGame {
     protected: // メンバ変数
         /// 3Dオブジェクト
         std::unique_ptr<MyEngine::Object3d> object_;
+        /// 当たり判定
+		std::unique_ptr<Collider> collider_;
         /// 状態フラグ
         CharacterFlags flags_;
         /// ステート
@@ -56,6 +60,7 @@ namespace MyGame {
     public: // アクセッサ
         // getter
         MyEngine::Object3d* GetObject3d() const { return object_.get(); }
+        Collider* GetCollider() const { return collider_.get(); }
         bool IsAlive() const { return flags_.isAlive; }
         bool IsActive() const { return flags_.isActive; }
         // setter
@@ -64,5 +69,12 @@ namespace MyGame {
 
         // 削除予約
         void Destroy() { flags_.isAlive = false; }
+        // 当たり判定をCollisionManagerに登録
+        void RegisterCollider() {
+            if (!collider_) { return; }
+            if (flags_.isColliderRegistered) { return; }
+            CollisionManager::GetInstance()->RegisterCollider(collider_.get());
+            flags_.isColliderRegistered = true;
+        }
     };
 }
