@@ -109,5 +109,6 @@ namespace MyEngine {
 		// getter
 		Vector3 GetSize() const { return { modelData.aabb.max - modelData.aabb.min }; }        // AABBのサイズを返す
 		Vector3 GetCenter() const { return (modelData.aabb.min + modelData.aabb.max) * 0.5f; } // AABBの中心を返す
+		MaterialData& GetMaterial() { return modelData.material; } // マテリアルデータへの参照を返す
 	};
 }

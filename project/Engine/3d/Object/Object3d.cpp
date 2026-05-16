@@ -118,7 +118,10 @@ namespace MyEngine {
     }
 
     void Object3d::SetMaterialColor(const Vector4& color) {
-
+        if (model) {
+            // モデルのマテリアルデータを更新する
+            materialData->color = color;
+        }
     }
 
     std::unique_ptr<Object3d> Object3d::Create(std::string filePath, Transform transform) {
