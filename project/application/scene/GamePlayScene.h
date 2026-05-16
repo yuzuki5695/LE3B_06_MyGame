@@ -28,12 +28,9 @@ namespace MyGame {
         /// </summary>
         void Draw() override;
     private: // メンバ変数
-        std::unique_ptr <Player> player_;
-        std::unique_ptr<EnemySpawner> enemySpawner_;
-        std::vector<std::unique_ptr<Enemy>> enemies_;
-
-        bool isGameStartEventDone_;
-
-
+		std::unique_ptr <Player> player_;            // プレイヤー
+		std::unique_ptr<EnemySpawner> enemySpawner_; // 敵スポーン管理クラス
+		std::vector<std::unique_ptr<Enemy>> enemies_; // 敵キャラクターのリスト
+		bool isGameStartEventDone_; //   ゲーム開始イベントが完了したかどうかのフラグ
     };
 }

@@ -15,25 +15,24 @@ namespace MyGame {
     /// </summary>
     class CollisionUtils {
     public:
+        /// <summary>
+		/// OBB同士の衝突判定関数
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <returns></returns>
         static bool CheckOBB(const MyEngine::OBB& a, const MyEngine::OBB& b) {
-            MyEngine::Vector3 diff = {
-                a.center.x - b.center.x,
-                a.center.y - b.center.y,
-                a.center.z - b.center.z
-            };
-
-            float distanceSq =
-                diff.x * diff.x +
-                diff.y * diff.y +
-                diff.z * diff.z;
-
-            // 半径っぽく扱う
+			// 簡易的な球判定で事前に大まかな衝突をチェック
+            MyEngine::Vector3 diff = a.center - b.center;
+			// 距離の二乗を計算
+            float distanceSq = (diff.x * diff.x) + (diff.y * diff.y) + (diff.z * diff.z);
+			// OBBの最大半分サイズを半径とみなす
             float radiusA = std::max({ a.halfSize.x, a.halfSize.y, a.halfSize.z });
-
+			// OBBの最大半分サイズを半径とみなす
             float radiusB = std::max({ b.halfSize.x, b.halfSize.y, b.halfSize.z });
-
+			// 半径の合計を計算
             float radius = radiusA + radiusB;
-
+			// 距離の二乗が半径の二乗以下なら、さらに詳細なOBB同士の衝突判定を行う
             return distanceSq <= radius * radius;
         };
 

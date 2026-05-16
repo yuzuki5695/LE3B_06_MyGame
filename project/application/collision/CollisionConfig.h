@@ -2,11 +2,14 @@
 #include <cstdint>
 
 namespace MyGame {
+    /// <summary>
+	/// 衝突判定のための設定をまとめた名前空間 
+    /// </summary>
     namespace CollisionConfig {
-
+		// 衝突プロファイル構造体
         struct CollisionProfile {
-            uint32_t attribute;
-            uint32_t mask;
+			uint32_t attribute;  // 属性をビットフラグで定義
+			uint32_t mask;       // 衝突マスクをビットフラグで定義
         };
 
         // 衝突属性をビットフラグで定義
@@ -21,15 +24,17 @@ namespace MyGame {
 
         // 衝突マスク（相手が誰なら反応するか）
         namespace CollisionMask {
-
+			// 反応する相手をビットフラグで定義
             constexpr uint32_t None = 0;
             constexpr uint32_t Player = Attribute::Enemy | Attribute::EnemyBullet;
             constexpr uint32_t Enemy = Attribute::PlayerBullet;
             constexpr uint32_t PlayerBullet = Attribute::Enemy;
             constexpr uint32_t EnemyBullet = Attribute::Player;
         }
-    
+
+        // 具体的なプロファイルの定義
         namespace Profile {
+			// それぞれのプロファイルは、属性とマスクを組み合わせて定義
             constexpr CollisionProfile Player{ Attribute::Player,CollisionMask::Player };
             constexpr CollisionProfile Enemy{ Attribute::Enemy,CollisionMask::Enemy };
             constexpr CollisionProfile PlayerBullet{ Attribute::PlayerBullet,CollisionMask::PlayerBullet };

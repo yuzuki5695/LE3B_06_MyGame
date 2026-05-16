@@ -5,11 +5,11 @@
 #include <CollisionManager.h>
 
 namespace MyGame {
-    
+	// キャラクターの状態を管理するフラグ構造体    
     struct CharacterFlags {
-        bool isAlive = true;
-        bool isActive = false;
-        bool isColliderRegistered = false;
+		bool isAlive = true;                // 生存フラグ（falseなら削除対象）
+		bool isActive = false;              // 活動フラグ（falseなら更新・描画処理をスキップ）
+		bool isColliderRegistered = false;  // 当たり判定がCollisionManagerに登録されているか
     };
 
     /// <summary>
@@ -72,7 +72,7 @@ namespace MyGame {
         // 当たり判定をCollisionManagerに登録
         void RegisterCollider() {
             if (!collider_) { return; }
-            if (flags_.isColliderRegistered) { return; }
+            if (flags_.isColliderRegistered) { return; }            
             CollisionManager::GetInstance()->RegisterCollider(collider_.get());
             flags_.isColliderRegistered = true;
         }
