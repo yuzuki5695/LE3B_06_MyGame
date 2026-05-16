@@ -663,6 +663,9 @@
     <ClCompile Include="engine\editor\layout\editormenubar\SceneMenu.cpp">
       <Filter>ソース ファイル\engine\editor\layout\editormenubar</Filter>
     </ClCompile>
+    <ClCompile Include="application\ui\scene\pause\Pausemenu.cpp">
+      <Filter>ソース ファイル\application\ui\scene\pause</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="engine\2d\Sprite.h">
@@ -1084,6 +1087,9 @@
     </ClInclude>
     <ClInclude Include="engine\editor\layout\editormenubar\SceneMenu.h">
       <Filter>ヘッダー ファイル\engine\editor\layout\editormenubar</Filter>
+    </ClInclude>
+    <ClInclude Include="application\ui\scene\pause\Pausemenu.h">
+      <Filter>ヘッダー ファイル\application\ui\scene\pause</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

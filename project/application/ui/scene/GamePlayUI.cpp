@@ -17,31 +17,21 @@ using namespace AssetGen::LoadResourceID::Textures;
 using namespace Easing;
 
 namespace MyGame {
-    void GamePlayUI::Initialize() {
-        TextureManager::GetInstance()->LoadTexture(Operationui::W);
-        TextureManager::GetInstance()->LoadTexture(Operationui::A);
-        TextureManager::GetInstance()->LoadTexture(Operationui::S);
-        TextureManager::GetInstance()->LoadTexture(Operationui::D);
-        TextureManager::GetInstance()->LoadTexture(Operationui::ArrowUp);
-        TextureManager::GetInstance()->LoadTexture(Operationui::ArrowLeft);
-        TextureManager::GetInstance()->LoadTexture(Operationui::ArrowDown);
-        TextureManager::GetInstance()->LoadTexture(Operationui::ArrowRight);
-        TextureManager::GetInstance()->LoadTexture(Operationui::SPACEKey);
-        TextureManager::GetInstance()->LoadTexture(Operationui::SHIFT);
+    void GamePlayUI::Initialize() { 
+        // 操作UIテクスチャ一覧
+        const std::array<const char*, 22> operationTextures = {
+            Operationui::W,Operationui::A,Operationui::S,Operationui::D,
+            Operationui::ArrowUp,Operationui::ArrowLeft,Operationui::ArrowDown,
+            Operationui::ArrowRight,Operationui::SPACEKey,Operationui::SHIFT,Operationui::W_RED,
+            Operationui::A_RED,Operationui::S_RED,Operationui::D_RED,Operationui::ArrowUp_RED,
+            Operationui::ArrowLeft_RED,Operationui::ArrowDown_RED,Operationui::ArrowRight_RED,Operationui::SPACEKey_RED,
+            Operationui::SHIFT_RED,Ui::Gage,Ui::Player_ui
+        };
 
-        TextureManager::GetInstance()->LoadTexture(Operationui::W_RED);
-        TextureManager::GetInstance()->LoadTexture(Operationui::A_RED);
-        TextureManager::GetInstance()->LoadTexture(Operationui::S_RED);
-        TextureManager::GetInstance()->LoadTexture(Operationui::D_RED);
-        TextureManager::GetInstance()->LoadTexture(Operationui::ArrowUp_RED);
-        TextureManager::GetInstance()->LoadTexture(Operationui::ArrowLeft_RED);
-        TextureManager::GetInstance()->LoadTexture(Operationui::ArrowDown_RED);
-        TextureManager::GetInstance()->LoadTexture(Operationui::ArrowRight_RED);
-        TextureManager::GetInstance()->LoadTexture(Operationui::SPACEKey_RED);
-        TextureManager::GetInstance()->LoadTexture(Operationui::SHIFT_RED);
-
-        TextureManager::GetInstance()->LoadTexture(Ui::Gage);
-        TextureManager::GetInstance()->LoadTexture(Ui::Player_ui);
+        // 操作UIをまとめて読み込み
+        for (const auto& texture : operationTextures) {
+            TextureManager::GetInstance()->LoadTexture(texture);
+        }
 
         gage_ = Sprite::Create(Ui::Gage, Vector2{ 380.0f, 10.0f }, 0.0f, Vector2{ 500.0f,30.0f });
         player_ui_ = Sprite::Create(Ui::Player_ui, Vector2{ 380.0f, 12.3f }, 0.0f, Vector2{ 25.0f,25.0f });
@@ -61,6 +51,9 @@ namespace MyGame {
         isAnimating_ = true;
         timer_ = 0.0f;
         duration_ = 0.5f;
+
+        pausemenu_ = std::make_unique<Pausemenu>();
+        pausemenu_->Initialize();
     }
 
     void GamePlayUI::Update() {

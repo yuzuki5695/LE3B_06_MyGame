@@ -1,19 +1,29 @@
 #pragma once
 #include <BaseUI.h>
 #include <Vector2.h>
+#include <Pausemenu.h>
 
 namespace MyGame {
-
     // 前方宣言
     class Player;
 
+    /// <summary>
+	/// ゲームプレイシーンのUIを管理するクラス
+    /// </summary>
     class GamePlayUI : public BaseUI {
     public: // メンバ関数
+        /// <summary>
+		/// 初期化処理
+        /// </summary>
         void Initialize() override;
+        /// <summary>
+		/// 更新処理
+        /// </summary>
         void Update() override;
+        /// <summary>
+		/// 描画処理
+        /// </summary>
         void Draw() override;
-        // アニメーション開始トリガー
-     //   void StartControlUIAnimation();
         void SetPlayer(Player* player) { player_ = player; }
     private: // プレイベートメンバ関数
         void UpdateStageProgressUI();
@@ -23,6 +33,7 @@ namespace MyGame {
         void UpdateControlUI();
         void UpdateControlUIAnimation();
     private: // メンバ変数
+        std::unique_ptr<Pausemenu> pausemenu_;
         std::vector<std::unique_ptr<MyEngine::Sprite>> uis_;
         std::vector<MyEngine::Vector2> uiOriginalSizes_;
         Player* player_ = nullptr;
