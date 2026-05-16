@@ -22,7 +22,7 @@ namespace MyGame {
         // =============================
         // 入力チェック
         // =============================
-        if (Input::GetInstance()->Pushkey(DIK_SPACE) && timer_ <= 0.0f) {
+        if (Input::GetInstance()->PushKey(DIK_SPACE) && timer_ <= 0.0f) {
             Camera* activecamera = CameraManager::GetInstance()->GetActiveCamera();
             Vector3 camPos = activecamera->GetTranslate();
             Vector3 rayDir = Normalize(aimWorldPos - camPos);

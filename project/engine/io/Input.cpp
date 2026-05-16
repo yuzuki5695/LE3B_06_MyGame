@@ -6,23 +6,23 @@
 #pragma comment(lib,"dinput8.lib")
 #pragma comment(lib,"dxguid.lib")
 
-namespace MyEngine {
-	Input* Input::instance = nullptr;
+namespace MyEngine {	 
+	// 静的メンバ変数の定義
+    std::unique_ptr<Input> Input::instance = nullptr;
 
+    // シングルトンインスタンスの取得
 	Input* Input::GetInstance() {
-		if (instance == nullptr) {
-			instance = new Input;
+		if (!instance) {
+			instance = std::make_unique<Input>();
 		}
-		return instance;
+		return instance.get();
 	}
 
 	void Input::Finalize() {
-		delete instance;
-		instance = nullptr;
+		instance.reset();  // `delete` 不要
 	}
 
 	void Input::Initialize(WinApp* winApp) {
-
 		// 借りてきたwinAppのインスタンスを記録
 		this->winApp_ = winApp;
 
@@ -74,8 +74,7 @@ namespace MyEngine {
 		}
 	}
 
-	bool Input::Pushkey(BYTE keyNumber)
-	{
+	bool Input::PushKey(BYTE keyNumber) {
 		// 指定キーを押していればtrueを返す
 		if (key[keyNumber]) {
 			return true;
@@ -84,8 +83,7 @@ namespace MyEngine {
 		return false;
 	}
 
-	bool Input::TriggerKey(BYTE keyNumber)
-	{
+	bool Input::TriggerKey(BYTE keyNumber) {
 		// 前回は押していない,今回は押しているのであればtrueを返す
 		if (!keyPre[keyNumber] && key[keyNumber]) {
 			return true;

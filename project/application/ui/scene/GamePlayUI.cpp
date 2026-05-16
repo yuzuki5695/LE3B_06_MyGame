@@ -161,19 +161,19 @@ namespace MyGame {
     void GamePlayUI::UpdateControlUI() {
         Input* input = Input::GetInstance();
         // === WASD ===
-        uis_[0]->SetTexture(input->Pushkey(DIK_W) ? Operationui::W_RED : Operationui::W);
-        uis_[1]->SetTexture(input->Pushkey(DIK_A) ? Operationui::A_RED : Operationui::A);
-        uis_[2]->SetTexture(input->Pushkey(DIK_S) ? Operationui::S_RED : Operationui::S);
-        uis_[3]->SetTexture(input->Pushkey(DIK_D) ? Operationui::D_RED : Operationui::D);
+        uis_[0]->SetTexture(input->PushKey(DIK_W) ? Operationui::W_RED : Operationui::W);
+        uis_[1]->SetTexture(input->PushKey(DIK_A) ? Operationui::A_RED : Operationui::A);
+        uis_[2]->SetTexture(input->PushKey(DIK_S) ? Operationui::S_RED : Operationui::S);
+        uis_[3]->SetTexture(input->PushKey(DIK_D) ? Operationui::D_RED : Operationui::D);
 
         // === Arrow ===
-        uis_[4]->SetTexture(input->Pushkey(DIK_UP) ? Operationui::ArrowUp_RED : Operationui::ArrowUp);
-        uis_[5]->SetTexture(input->Pushkey(DIK_RIGHT) ? Operationui::ArrowRight_RED : Operationui::ArrowRight);
-        uis_[6]->SetTexture(input->Pushkey(DIK_DOWN) ? Operationui::ArrowDown_RED : Operationui::ArrowDown);
-        uis_[7]->SetTexture(input->Pushkey(DIK_LEFT) ? Operationui::ArrowLeft_RED : Operationui::ArrowLeft);
+        uis_[4]->SetTexture(input->PushKey(DIK_UP) ? Operationui::ArrowUp_RED : Operationui::ArrowUp);
+        uis_[5]->SetTexture(input->PushKey(DIK_RIGHT) ? Operationui::ArrowRight_RED : Operationui::ArrowRight);
+        uis_[6]->SetTexture(input->PushKey(DIK_DOWN) ? Operationui::ArrowDown_RED : Operationui::ArrowDown);
+        uis_[7]->SetTexture(input->PushKey(DIK_LEFT) ? Operationui::ArrowLeft_RED : Operationui::ArrowLeft);
 
         // === SPACE / SHIFT ===
-        uis_[8]->SetTexture(input->Pushkey(DIK_SPACE) ? Operationui::SPACEKey_RED : Operationui::SPACEKey);
+        uis_[8]->SetTexture(input->PushKey(DIK_SPACE) ? Operationui::SPACEKey_RED : Operationui::SPACEKey);
 
         if (!player_) return;
         bool canDash = player_->GetMove()->GetDashing();
@@ -187,7 +187,7 @@ namespace MyGame {
             // 【ダッシュ準備完了】
             uis_[9]->SetColor({ 1.0f, 1.0f, 1.0f, 1.0f });
             // 通常時：SHIFT（白など）、押している間：SHIFT_RED（赤）
-            uis_[9]->SetTexture(input->Pushkey(DIK_LSHIFT) ? Operationui::SHIFT_RED : Operationui::SHIFT);
+            uis_[9]->SetTexture(input->PushKey(DIK_LSHIFT) ? Operationui::SHIFT_RED : Operationui::SHIFT);
         }
     }
 

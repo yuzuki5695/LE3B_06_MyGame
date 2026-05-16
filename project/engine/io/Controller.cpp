@@ -23,7 +23,7 @@ namespace MyEngine {
         // コントローラーが接続されていない場合、状態をゼロクリア
         if (result != ERROR_SUCCESS) {
             ZeroMemory(&currentState, sizeof(XINPUT_STATE));
-            return; // ←ここで早期リターンしてOK
+            return; // ←ここで早期リターン
         }
     }
 

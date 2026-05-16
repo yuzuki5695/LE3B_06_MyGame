@@ -4,51 +4,58 @@
 #define DIRECTINPUT_VERSION   0x0800 // DirectInputのバージョン指定
 #include <dinput.h>
 #include <WinApp.h>
+#include <memory>
 
 namespace MyEngine {
-	// 入力
-	class Input
-	{
-	private:
-		static Input* instance;
+	/// <summary>
+	/// キーボードとマウスの入力を管理するクラス。
+	/// </summary>
+	class Input	{
+	private: // シングルトンインスタンス
+		static std::unique_ptr<Input> instance; // インスタンス
 
-		Input() = default;
-		~Input() = default;
 		Input(Input&) = delete;
 		Input& operator=(Input&) = delete;
 	public: // メンバ関数
+		Input() = default;
+		~Input() = default;
+
 		// シングルトンインスタンスの取得
 		static Input* GetInstance();
-		// 終了
+		/// <summary>		
+		/// 終了
+		/// </summary>
 		void Finalize();
-
 		// namespace省略
 		template <class T> using ComPtr = Microsoft::WRL::ComPtr<T>;
 
-		// 初期化
-		void Initialize(WinApp* winApp);
-		// 更新
+		/// <summary>
+		/// 初期化
+		/// </summary>
+		/// <param name="winApp"></param>
+		void Initialize(WinApp* winApp);			
+		/// <summary>
+		/// キーの状態を更新する。
+		/// </summary>
 		void Update();
-
 		/// <summary>
 		/// キーの押下をチェック
 		/// </summary>
 		/// <param name="keyNumber"キー番号( DIK_0 等)</param>
-		bool Pushkey(BYTE keyNumber);
-
+		bool PushKey(BYTE keyNumber);
 		/// <summary>
 		/// キーのトリガーをチェック
 		/// </summary>
 		/// <param name="keyNumber"キー番号( DIK_0 等)</param>
 		/// <returns>トリガーか</returns>
 		bool TriggerKey(BYTE keyNumber);
-
 		/// <summary>
 		/// マウスの座標を取得
 		/// </summary>
-		POINT GetMousePosition() const { return mousePosition_; }
-
-		// ImGuiデバッグ描画
+		POINT GetMousePosition() const { return mousePosition_; }	
+		/// <summary>
+		/// ImGuiデバッグ描画
+		/// </summary>
 		void DrawImGui();
 	private: // メンバ変数	
 		// ポインタ

@@ -15,10 +15,10 @@ namespace MyGame {
         Vector2 move = { 0.0f, 0.0f };
 
         // ← → ↑ ↓
-        if (input->Pushkey(DIK_LEFT))  move.x -= 1.0f;
-        if (input->Pushkey(DIK_RIGHT)) move.x += 1.0f;
-        if (input->Pushkey(DIK_UP))    move.y -= 1.0f;
-        if (input->Pushkey(DIK_DOWN))  move.y += 1.0f;
+        if (input->PushKey(DIK_LEFT))  move.x -= 1.0f;
+        if (input->PushKey(DIK_RIGHT)) move.x += 1.0f;
+        if (input->PushKey(DIK_UP))    move.y -= 1.0f;
+        if (input->PushKey(DIK_DOWN))  move.y += 1.0f;
 
         // 正規化（斜め移動対策）
         if (move.x != 0.0f || move.y != 0.0f) {

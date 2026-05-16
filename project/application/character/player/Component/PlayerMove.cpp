@@ -21,10 +21,10 @@ namespace MyGame {
 
 		// --- 1. 入力値の取得 ---
 		Vector3 moveInput = { 0, 0, 0 };
-		if (input->Pushkey(DIK_A)) moveInput.x -= finalSpeed;
-		if (input->Pushkey(DIK_D)) moveInput.x += finalSpeed;
-		if (input->Pushkey(DIK_W)) moveInput.y += finalSpeed;
-		if (input->Pushkey(DIK_S)) moveInput.y -= finalSpeed;
+		if (input->PushKey(DIK_A)) moveInput.x -= finalSpeed;
+		if (input->PushKey(DIK_D)) moveInput.x += finalSpeed;
+		if (input->PushKey(DIK_W)) moveInput.y += finalSpeed;
+		if (input->PushKey(DIK_S)) moveInput.y -= finalSpeed;
 		// --- 2. 移動の実行と制限 ---
 		relativePos_.x += moveInput.x;
 		relativePos_.y += moveInput.y;

@@ -7,19 +7,17 @@
 namespace MyEngine {
     // コントローラー
     class Controller {
-    private:
+	private: // シングルトンインスタンス
         // コンストラクタとデストラクタ
         Controller() = default;
         ~Controller() = default;
     public:
         // インスタンス取得（シングルトン）
         static Controller* GetInstance();
-
         /// <summary>
         /// 入力状態を更新
         /// </summary>
         void Update();
-
         /// <summary>
         /// 指定ボタンが押されているかどうか（押されてる間 true）
         /// </summary>
@@ -27,11 +25,17 @@ namespace MyEngine {
         /// <summary>
         /// 指定ボタンが新しく押されたかどうか（押された瞬間 true）
         /// </summary>
-        bool IsTriggered(WORD button);
-
-        // imgui
+        bool IsTriggered(WORD button);        
+        /// <summary>
+		/// ImGuiデバッグ描画
+        /// </summary>
         void DrawImGui();
-        // コントローラーのデットゾーン処理
+        /// <summary>
+		/// スティックの軸値を正規化する。デッドゾーン内は0、最大値は1になるように変換する。
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="deadzone"></param>
+        /// <returns></returns>
         float NormalizeThumbAxis(SHORT value, SHORT deadzone);
     private: // メンバ変数
         XINPUT_STATE currentState{};     // 現在のゲームパッドの状態
