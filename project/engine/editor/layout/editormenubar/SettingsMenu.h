@@ -2,6 +2,9 @@
 #include <IMenuComponent.h>
 
 namespace MyEngine {
+	// 前方宣言
+    class EditorLayout;
+
     /// <summary>
     /// 「設定」メニューを担当するクラス。
     /// </summary>
@@ -12,5 +15,11 @@ namespace MyEngine {
         /// </summary>
         /// <param name="LT">多言語テキスト取得ラムダ</param>
         void Render(const std::function<std::string(const std::string&)>& LT) override;
+	private: // メンバ変数
+        // ポインタ
+        EditorLayout* layout_ = nullptr;
+    public:
+        // setter
+        void SetLayout(EditorLayout* layout) { layout_ = layout; }
     };
 }

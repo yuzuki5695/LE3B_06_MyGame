@@ -164,7 +164,7 @@ namespace MyGame {
         }
 
         // ボタンでStep3に進める
-        if (Input::GetInstance()->Triggrkey(DIK_RETURN) && UIManager::GetInstance()->GetUI<GameClearUI>()->GetUI01Finished()) {
+        if (Input::GetInstance()->TriggerKey(DIK_RETURN) && UIManager::GetInstance()->GetUI<GameClearUI>()->GetUI01Finished()) {
             if (!step2FinishPlayerEase_) {
                 UIManager::GetInstance()->GetUI<GameClearUI>()->UI01Finished();
                 UIManager::GetInstance()->GetUI<GameClearUI>()->StartBack();

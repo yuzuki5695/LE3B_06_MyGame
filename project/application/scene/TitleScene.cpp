@@ -130,7 +130,7 @@ namespace MyGame {
 		// =========================
 		// Enterで遷移開始
 		// =========================
-		if (Input::GetInstance()->Triggrkey(DIK_RETURN) && titleUI->IsFinished()) {
+		if (Input::GetInstance()->TriggerKey(DIK_RETURN) && titleUI->IsFinished()) {
 			titleUI->StartReverse();
 		}
 

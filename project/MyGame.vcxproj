@@ -199,6 +199,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="engine\editor\layout\editormenubar\CameraMenu.cpp" />
     <ClCompile Include="engine\editor\layout\editormenubar\EditorMenuBar.cpp" />
     <ClCompile Include="engine\editor\layout\editormenubar\ObjectMenu.cpp" />
+    <ClCompile Include="engine\editor\layout\editormenubar\SceneMenu.cpp" />
     <ClCompile Include="engine\editor\layout\editormenubar\SettingsMenu.cpp" />
     <ClCompile Include="engine\editor\windows\ConsoleWindow.cpp" />
     <ClCompile Include="engine\io\Controller.cpp" />
@@ -325,6 +326,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="engine\editor\layout\editormenubar\EditorMenuBar.h" />
     <ClInclude Include="engine\editor\layout\editormenubar\IMenuComponent.h" />
     <ClInclude Include="engine\editor\layout\editormenubar\ObjectMenu.h" />
+    <ClInclude Include="engine\editor\layout\editormenubar\SceneMenu.h" />
     <ClInclude Include="engine\editor\layout\editormenubar\SettingsMenu.h" />
     <ClInclude Include="engine\editor\windows\ConsoleWindow.h" />
     <ClInclude Include="engine\camera\CameraDefs.h" />

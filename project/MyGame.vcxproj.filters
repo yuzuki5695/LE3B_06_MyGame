@@ -660,6 +660,9 @@
     <ClCompile Include="engine\editor\layout\editormenubar\CameraMenu.cpp">
       <Filter>ソース ファイル\engine\editor\layout\editormenubar</Filter>
     </ClCompile>
+    <ClCompile Include="engine\editor\layout\editormenubar\SceneMenu.cpp">
+      <Filter>ソース ファイル\engine\editor\layout\editormenubar</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="engine\2d\Sprite.h">
@@ -1078,6 +1081,9 @@
     </ClInclude>
     <ClInclude Include="application\collision\ColliderCreateInfo.h">
       <Filter>ヘッダー ファイル\application\collision</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\editor\layout\editormenubar\SceneMenu.h">
+      <Filter>ヘッダー ファイル\engine\editor\layout\editormenubar</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

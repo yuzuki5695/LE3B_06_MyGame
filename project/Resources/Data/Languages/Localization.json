@@ -25,6 +25,10 @@
         "jp": "設定",
         "en": "Settings"
       },
+      "Scene": {
+        "jp": "シーン",
+        "en": "Scene"
+      },
       "Object": {
         "jp": "オブジェクト",
         "en": "Object"
@@ -32,6 +36,32 @@
       "Camera": {
         "jp": "カメラ",
         "en": "Camera"
+      }
+    },
+    "Scene": {
+      "Current": {
+        "jp": "現在のシーン",
+        "en": "Current Scene"
+      },
+      "Changed": {
+        "jp": "シーンが切り替わりました [前回のシーン : {0} = 変更後のシーン : {1}]",
+        "en": "Scene changed  [Previous Scene : {0} = New Scene : {1}]"
+      },
+      "TITLE": {
+        "jp": "タイトル",
+        "en": "Title"
+      },
+      "GAMEPLAY": {
+        "jp": "ゲームプレイ",
+        "en": "Gameplay"
+      },
+      "GAMECLEAR": {
+        "jp": "ゲームクリア",
+        "en": "GameClear"
+      },
+      "GAMEOVER": {
+        "jp": "ゲームオーバー",
+        "en": "GameOver"
       }
     },
     "Object": {
@@ -43,6 +73,10 @@
         "jp": "2D",
         "en": "2D"
       }
+    },
+    "Fullscreen": {
+      "jp": "全表示",
+      "en": "Fullscreen"
     },
     "Language": {
       "Title": {

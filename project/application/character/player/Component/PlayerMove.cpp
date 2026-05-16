@@ -11,7 +11,7 @@ namespace MyGame {
 	void PlayerMove::Update(MyEngine::Transform& transform, float speedMultiplier) {
 		Input* input = Input::GetInstance();
 
-		if (input->Triggrkey(DIK_LSHIFT) && coolDownTimer_ <= 0.0f && !isDashing_) {
+		if (input->TriggerKey(DIK_LSHIFT) && coolDownTimer_ <= 0.0f && !isDashing_) {
 			isDashing_ = true;
 			dashTimer_ = 0.0f;
 		}

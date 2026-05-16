@@ -1,6 +1,7 @@
 #pragma once
 #include <BaseScene.h>
 #include <string>
+#include <vector>
 
 namespace MyEngine {
 	/// <summary>
@@ -12,5 +13,7 @@ namespace MyEngine {
 		virtual ~AbstractSceneFactory() = default;
 		/// シーン生成
 		virtual BaseScene* CreateScene(const std::string& sceneName) = 0;
+		// シーン名のリストを取得
+		virtual std::vector<std::string> GetSceneNames() const = 0;
 	};
 }

@@ -27,9 +27,17 @@ namespace MyEngine {
 		std::unordered_map<std::string, std::function<BaseScene* ()>>::iterator it = sceneRegistry_.find(sceneName);
 		if (it != sceneRegistry_.end()) {
 			BaseScene* newScene = it->second(); // 登録された関数を実行
-			newScene->SetSceneName(sceneName);
+			newScene->SetSceneName(sceneName);  // シーン名をセット
 			return newScene;
 		}
 		return nullptr;
+	}
+	std::vector<std::string> SceneFactory::GetSceneNames() const {
+		std::vector<std::string> names;
+		// マップのキーをすべて取得してリストにする
+		for (const auto& scene : sceneRegistry_) {
+			names.push_back(scene.first); // シーン名をリストに追加
+		}
+		return names;
 	}
 }

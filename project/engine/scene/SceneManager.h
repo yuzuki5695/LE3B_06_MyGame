@@ -15,14 +15,19 @@ namespace MyEngine {
 	public: // メンバ関数
 		SceneManager() = default;
 		~SceneManager() = default;
-
 		// シングルトンインスタンスの取得
-		static SceneManager* GetInstance();
-		// 終了
+		static SceneManager* GetInstance();		
+		/// <summary>
+		/// 終了処理
+		/// </summary>
 		void Finalize();
-		// 毎フレーム更新
+		/// <summary>
+		/// 毎フレームの更新処理
+		/// </summary>
 		void Update();
-		// 描画
+		/// <summary>
+		/// 毎フレームの描画処理
+		/// </summary>
 		void Draw();
 	private: // メンバ変数	
 		// 今のシーン(実行中シーン)
@@ -42,8 +47,10 @@ namespace MyEngine {
 		// 現在のシーンを取得する
 		BaseScene* GetCurrentScene() const { return scene_.get(); }
 		// 現在のシーンか判定
-		bool IsCurrentScene(const std::string& sceneName) const {
-			return scene_ && scene_->GetSceneName() == sceneName;
-		}
+		bool IsCurrentScene(const std::string& sceneName) const { return scene_ && scene_->GetSceneName() == sceneName; }
+		// 現在のシーン名を取得する
+		const std::string& GetCurrentSceneName() const { return scene_->GetSceneName(); }
+		// シーンファクトリーを取得する
+		AbstractSceneFactory* GetSceneFactory() const { return sceneFactory_; }	
 	};
 }

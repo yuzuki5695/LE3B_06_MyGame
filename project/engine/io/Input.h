@@ -41,7 +41,7 @@ namespace MyEngine {
 		/// </summary>
 		/// <param name="keyNumber"キー番号( DIK_0 等)</param>
 		/// <returns>トリガーか</returns>
-		bool Triggrkey(BYTE keyNumber);
+		bool TriggerKey(BYTE keyNumber);
 
 		/// <summary>
 		/// マウスの座標を取得

@@ -5,8 +5,10 @@
 #include <ConsoleWindow.h>
 #include <externals/imgui/imgui_internal.h>
 #include <EditorEntityRegistry.h>
+#include <Input.h>
 #include <ObjectMenu.h>
 #include <CameraMenu.h>
+
 
 namespace MyEngine {
     // 静的メンバ変数の定義
@@ -27,11 +29,13 @@ namespace MyEngine {
 
     void EditorManager::Initialize() {
 #ifdef USE_IMGUI
-        MessageService::Initialize(); // メッセージサービスの初期化（これで言語データがロードされる）
-        // 1. レイアウト管理のインスタンス化
+        // メッセージサービスの初期化
+        MessageService::Initialize();
+        // レイアウト管理のインスタンス化
         layout_ = std::make_unique<EditorLayout>();
+		// レイアウトの初期化
         layout_->Initialize();
-        // 重要：LogWindowを管理リストに追加する
+        // LogWindowを管理リストに追加する
         windows_.push_back(std::make_unique<ConsoleWindow>());
 #endif // USE_IMGUI
     }
@@ -39,8 +43,18 @@ namespace MyEngine {
 
     void EditorManager::Draw(SrvManager* srvmanager) {
 #ifdef USE_IMGUI
-        // 1. レイアウト（外枠とドッキング）の描画を委譲 
-        // windows_ を渡すことでメニューバーからの表示切り替えも連動します
+        // =====================================
+        // Fullscreen解除
+        // =====================================
+
+        if (layout_->IsGameViewFullscreen()) {
+            // フルスクリーン状態でESCキーが押されたら解除
+            if (Input::GetInstance()->TriggerKey(DIK_ESCAPE)) {
+                // フルスクリーン解除
+                layout_->SetGameViewFullscreen(false);
+            }
+        }
+        // レイアウトの描画
         layout_->Render(srvmanager, windows_);
 #endif // USE_IMGUI
     }
@@ -57,6 +71,7 @@ namespace MyEngine {
     // 登録関数
     void EditorManager::AddWindow(std::unique_ptr<IEditorWindow> window) {
 #ifdef USE_IMGUI
+		// ウィンドウを管理リストに登録
         windows_.push_back(std::move(window));
 #endif // USE_IMGUI
     }
@@ -64,6 +79,7 @@ namespace MyEngine {
     // ログ中継
     void EditorManager::Log(const std::string& message) {
 #ifdef USE_IMGUI
+		// EditorConsoleにログを追加
         EditorConsole::GetInstance()->AddLog(message);
 #endif // USE_IMGUI
     }
@@ -74,16 +90,12 @@ namespace MyEngine {
         EditorEntityRegistry::Instance().Clear();
 
         // 開いているObjectWindow削除
-        if (layout_) {
+        if (layout_) { 
             ObjectMenu* objectMenu = layout_->GetMenuBar()->GetMenu<ObjectMenu>();
             CameraMenu* cameraMenu = layout_->GetMenuBar()->GetMenu<CameraMenu>();
-
-            if (objectMenu) {
-                objectMenu->ClearOpenWindows();
-            }
-            if (cameraMenu) {
-                cameraMenu->ClearOpenWindows();
-            }
+            // 開いているウィンドウをすべて閉じる
+            if (objectMenu) { objectMenu->ClearOpenWindows(); }
+            if (cameraMenu) { cameraMenu->ClearOpenWindows(); }
         }
 #endif // USE_IMGUI
     }

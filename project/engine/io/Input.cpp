@@ -84,7 +84,7 @@ namespace MyEngine {
 		return false;
 	}
 
-	bool Input::Triggrkey(BYTE keyNumber)
+	bool Input::TriggerKey(BYTE keyNumber)
 	{
 		// 前回は押していない,今回は押しているのであればtrueを返す
 		if (!keyPre[keyNumber] && key[keyNumber]) {
