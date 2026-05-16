@@ -21,20 +21,17 @@ namespace MyGame {
             character.GetObject3d()->SetScale({ s, s, s });
             // 当たり判定登録
             character.RegisterCollider();
-            // 完全出現したので有効化
-            character.SetActive(true);
             character.ChangeState(std::make_unique<EnemyAlive>());
         }
     }
 
     void EnemyAlive::Update(BaseCharacter& character) {
- //       if (!character.IsActive()) {
-         
-            
-            
+        if (character.IsActive()) {
+
+
             // 毎フレーム当たり判定を更新
             character.GetCollider()->SetOBB(CollisionUtils::CreateOBB(character.GetObject3d()));
-      //  }
+        }
     }
 
     void EnemyDead::Update(BaseCharacter& character) {
