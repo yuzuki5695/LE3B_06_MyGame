@@ -26,6 +26,7 @@ namespace MyGame {
     }
 
     void EnemyAlive::Update(BaseCharacter& character) {
+		// アクティブ中は各更新処理を行う
         if (character.IsActive()) {
 
 

@@ -26,39 +26,38 @@ namespace MyGame {
     void Player::Finalize() {}
 
     void Player::Initialize() {
-        // 3Dオブジェクト生成
+        // テクスチャの読み込み
         TextureManager::GetInstance()->LoadTexture(Ui::Target);
+        // モデルの読み込み
         ModelManager::GetInstance()->LoadModel(Character::Player);
-
+        // データの読み込み
         data_ = PlayerDataLoader::Load("player");
-
+        // カメラ位置からのオフセットを設定
         baseOffset_ = { 0.0f, -3.0f, 30.0f };
-
+        // プレイヤーオブジェクトの生成、初期化
         object_ = Object3d::Create(Character::Player, data_.transform);
-
+        // ターゲットオブジェクトの生成、初期化
         targettransform_ = { {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 30.0f} };
-
         target_ = Object3d::Create(Character::Player, targettransform_);
 
         // レティクル初期化
-        targetreticle_ = Sprite::Create(Ui::Target, Vector2{ 640.0f, 360.0f }, 0.0f, Vector2{ 100.0f, 100.0f });
-        targetreticle_->SetTextureSize(Vector2{ 512.0f, 512.0f });
+        targetreticle_ = Sprite::Create(Ui::Target, Vector2{ 640.0f, 360.0f }, 0.0f, Vector2{ 512.0f, 512.0f });
         targetreticle_->SetAnchorPoint(Vector2{ 0.5f, 0.5f }); // 中心基準
 
         // 状態フラグの初期化
         flags_.isAlive = true;
-        flags_.isActive = false;
-        SetActive(true); 
+        flags_.isActive = true;
+        SetActive(true);
 
         // コンポーネントの生成
-        move_ = std::make_unique<PlayerMove>();
-        reticle_ = std::make_unique<PlayerReticle>();
-        attack_ = std::make_unique<PlayerAttack>();
-        death_ = std::make_unique<PlayerDeath>();
-        death_->Initialize();
+        move_ = std::make_unique<PlayerMove>();          // 移動ロジックの生成
+        reticle_ = std::make_unique<PlayerReticle>();    // レティクルロジックの生成
+        attack_ = std::make_unique<PlayerAttack>();      // 攻撃ロジックの生成
+        death_ = std::make_unique<PlayerDeath>();        // 死亡演出ロジックの生成
+        death_->Initialize();     // 死亡演出の初期化
         // 初期ステートをセットする
         ChangeState(std::make_unique<PlayerStateIdle>());
-        // 
+        // ImGuiの登録
         DrawImGui();
     }
 
@@ -66,16 +65,19 @@ namespace MyGame {
         // ステートの更新
         state_.Update(*this);
 
+		// カメラがGamePlayCameraで更新中の場合、プレイヤーのワールド座標をカメラ位置に基づいて更新する
         if (CameraManager::GetInstance()->GetCurrentBehaviorAs<GamePlayCamera>()) {
             SyncWorldTransformByRail();
         }
 
+        // 各コンポーネントの更新
         targetreticle_->Update();
         target_->Update();
         object_->Update();
     }
 
     void Player::Draw() {
+		// 生存していない場合は描画処理をスキップ
         if (!IsAlive()) { return; }
         if (object_) {
             object_->Draw();
@@ -83,6 +85,7 @@ namespace MyGame {
     }
 
     void Player::DrawSprite() {
+		// 活動していない場合は描画処理をスキップ
         if (!IsActive()) { return; }
         if (targetreticle_) {
             targetreticle_->Draw();
@@ -90,16 +93,17 @@ namespace MyGame {
     }
 
     void Player::SyncWorldTransformByRail() {
+		// カメラ位置を基準にプレイヤーのワールド座標を更新する
         GamePlayCamera* cam = CameraManager::GetInstance()->GetCurrentBehaviorAs<GamePlayCamera>();
         Camera* active = CameraManager::GetInstance()->GetActiveCamera();
-
+		// カメラのワールド座標を取得
         Vector3 camPos = active->GetTranslate();
 
         // カメラ位置から固定オフセット
         Vector3 offset = { move_->GetRelativePos().x,move_->GetRelativePos().y + baseOffset_.y,baseOffset_.z };
-
+		// カメラ回転を考慮したオフセットの回転
         Vector3 finalPos = camPos + offset;
-
+		// プレイヤーオブジェクトの座標を更新
         object_->SetTranslate(finalPos);
 
         //Vector3 camRot = active->GetRotate();
@@ -126,8 +130,8 @@ namespace MyGame {
                 object_->DrawImGui("object3d");
             }
             };
-        EditorEntityRegistry::Instance().Register(info);        // オブジェクト情報を登録する
-
+        // オブジェクト情報を登録する
+        EditorEntityRegistry::Instance().Register(info);
 #endif // USE_IMGUI    
     }
 }

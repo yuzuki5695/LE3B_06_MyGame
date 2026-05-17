@@ -18,23 +18,21 @@ namespace MyGame {
     void PlayerStateMove::Update(BaseCharacter& character) {
         // 必要なコンポーネント
         Player* player = dynamic_cast<Player*>(&character);
-        PlayerMove* move = player->GetMove();
-        PlayerReticle* reticle = player->GetReticle();
-        PlayerAttack* attack = player->GetAttack();
-        Sprite* mission_ = player->GetSprite();
-        Object3d* target = player->GetTarget();
 
-        // 移動処理の実行
-        move->Update(player->GetObject3d()->GetTransform(), 0.17f);
-        // 入力でレティクル移動
-        reticle->UpdateInput();
-        // スプライト位置更新
-        mission_->SetPosition(reticle->GetScreenPos());
-        // ワールド座標に変換
-        Vector3 worldPos = reticle->ScreenToWorld(reticle->GetScreenPos(), CameraManager::GetInstance()->GetActiveCamera());
-        player->SetAimWorldPos(worldPos);
-        target->SetTranslate(player->GetAimWorldPos());
-        attack->Update(player->GetObject3d()->GetTransform(), player->GetAimWorldPos());
+        // アクティブ中は各更新処理を行う
+        if (character.IsActive()) {
+            // 移動処理の実行
+            player->GetMove()->Update(player->GetObject3d()->GetTransform(), 0.17f);
+            // 入力でレティクル移動
+            player->GetReticle()->UpdateInput();
+            // スプライト位置更新
+            player->GetSprite()->SetPosition(player->GetReticle()->GetScreenPos());
+            // ワールド座標に変換
+            Vector3 worldPos = player->GetReticle()->ScreenToWorld(player->GetReticle()->GetScreenPos(), CameraManager::GetInstance()->GetActiveCamera());
+            player->SetAimWorldPos(worldPos);
+            player->GetTarget()->SetTranslate(player->GetAimWorldPos());
+            player->GetAttack()->Update(player->GetObject3d()->GetTransform(), player->GetAimWorldPos());
+        }
     }
 
     void PlayerStateDead::Update(BaseCharacter& character) {

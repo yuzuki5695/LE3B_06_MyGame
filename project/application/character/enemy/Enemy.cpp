@@ -16,19 +16,19 @@ namespace MyGame {
     Enemy::~Enemy() {}
 
     void Enemy::Finalize() {
-        CollisionManager::GetInstance()->UnregisterCollider(collider_.get());
-        collider_.reset();
-        object_.reset();
+		CollisionManager::GetInstance()->UnregisterCollider(collider_.get()); // 当たり判定の登録解除
+		collider_.reset(); // コライダーの破棄
+		object_.reset();   // 3Dオブジェクトの破棄
     }
 
     void Enemy::Initialize() {
-        // Resourceの読み込み
+        // モデルの読み込み
         ModelManager::GetInstance()->LoadModel(Character::Enemy);
         // オブジェクトの生成、初期化
         object_ = Object3d::Create(Character::Enemy, Transform{ { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f } });
         // 状態フラグの初期化
         flags_.isAlive = true;
-        flags_.isActive = false;
+		flags_.isActive = false;
         // 当たり判定の生成、初期化
         collider_ = Collider::Create({ .profile = Profile::Enemy,.obb = CollisionUtils::CreateOBB(object_.get()) });
         // 衝突時の処理
