@@ -83,6 +83,12 @@ namespace MyGame {
             UIManager::GetInstance()->GetUI<GamePlayUI>()->GetPauseMenu()->SetActive(true);
         }
         
+        if (UIManager::GetInstance()->GetUI<GamePlayUI>()->GetPauseMenu()->IsActive()) {
+            UIManager::GetInstance()->GetUI<GamePlayUI>()->GetPauseMenu()->Update();
+            FadeManager::GetInstance()->Update();
+            return;
+        }
+
         //  ゲーム開始前のイベント処理
         if (!isGameStartEventDone_) {
             // ゲーム開始イベントの開始
