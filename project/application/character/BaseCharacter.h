@@ -23,7 +23,7 @@ namespace MyGame {
         /// </summary> 
         virtual ~BaseCharacter() = default;
         /// <summary>
-        /// 
+		/// 終了処理
         /// </summary>
         virtual void Finalize() = 0;
         /// <summary> 

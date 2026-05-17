@@ -102,6 +102,7 @@ namespace MyGame {
         // 敵更新
         for (auto& enemy : enemies_) {
             enemy->Update();
+			enemy->SetPlayer(player_.get());
         }
 
         enemies_.erase(

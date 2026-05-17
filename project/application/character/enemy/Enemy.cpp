@@ -33,6 +33,11 @@ namespace MyGame {
         collider_ = Collider::Create({ .profile = Profile::Enemy,.obb = CollisionUtils::CreateOBB(object_.get()) });
         // 衝突時の処理
         collider_->SetCallback([this](Collider* other) {if (!IsAlive()) { return; }ChangeState(std::make_unique<EnemyDead>()); });
+
+        // コンポーネントの生成
+		attack_ = std::make_unique<EnemyAttack>(); // 攻撃ロジックの生成
+		attack_->Initialize();                     // 攻撃ロジックの初期化
+
         // 初期ステートをセットする
         ChangeState(std::make_unique<EnemyIdle>());
     }

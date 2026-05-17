@@ -4,8 +4,12 @@
 #include <Collider.h>
 
 namespace MyGame {
+
+	// 前方宣言
+	class Player;
+	
 	/// <summary>
-	/// プレイヤーキャラクタークラス
+	/// 敵キャラクタークラス
 	/// </summary>
 	class Enemy : public BaseCharacter {
 	public:// メンバ関数
@@ -28,9 +32,14 @@ namespace MyGame {
 		/// </summary>
 		void Draw() override;
 	private: // メンバ変数
+		// ポインタ
+		std::unique_ptr<EnemyAttack> attack_; // 攻撃ロジックの保持
+		std::unique_ptr<Player> player_;
 
 	public: // アクセッサ
 		// getter
 		MyEngine::Transform* GetTransform() { return &object_->GetTransform(); }
+		EnemyAttack* GetAttack() { return attack_.get(); }
+		void SetPlayer(Player* player) { player_.reset(player); }
 	};
 }

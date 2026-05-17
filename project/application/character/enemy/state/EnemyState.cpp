@@ -21,14 +21,21 @@ namespace MyGame {
             character.GetObject3d()->SetScale({ s, s, s });
             // 当たり判定登録
             character.RegisterCollider();
+			// BaseCharacter状態からEnemyAlive状態へ遷移
             character.ChangeState(std::make_unique<EnemyAlive>());
         }
     }
 
-    void EnemyAlive::Update(BaseCharacter& character) {
-		// アクティブ中は各更新処理を行う
+    void EnemyAlive::Update(BaseCharacter& character) {        
+        // 必要なコンポーネント
+        Enemy* enemy = dynamic_cast<Enemy*>(&character);
+        Player* player = dynamic_cast<Player*>(&character);
+        
+        // アクティブ中は各更新処理を行う
         if (character.IsActive()) {
 
+			// 攻撃処理の更新処理
+            enemy->GetAttack()->Update(enemy->GetObject3d()->GetTransform(), player->GetTranslate());
 
             // 毎フレーム当たり判定を更新
             character.GetCollider()->SetOBB(CollisionUtils::CreateOBB(character.GetObject3d()));
