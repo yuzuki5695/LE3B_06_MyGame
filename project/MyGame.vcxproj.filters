@@ -319,9 +319,6 @@
     <Filter Include="ヘッダー ファイル\application\ui\scene\pause">
       <UniqueIdentifier>{96ae2b5c-7320-4bb8-aee9-8f9d1d9317df}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ソース ファイル\application\ui\fade">
-      <UniqueIdentifier>{58a614e6-87e6-4fad-ac4d-e17a6f116a40}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ヘッダー ファイル\application\ui\fade">
       <UniqueIdentifier>{ce8bf20a-141d-4b59-ae15-5a296abeb31b}</UniqueIdentifier>
     </Filter>
@@ -375,6 +372,9 @@
     </Filter>
     <Filter Include="ソース ファイル\application\rail">
       <UniqueIdentifier>{303b86f6-7a19-419f-9bc9-8545830282e4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\application\ui\scene\fade">
+      <UniqueIdentifier>{58a614e6-87e6-4fad-ac4d-e17a6f116a40}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -607,7 +607,7 @@
       <Filter>ソース ファイル\application\ui\scene</Filter>
     </ClCompile>
     <ClCompile Include="application\ui\effect\fade\FadeManager.cpp">
-      <Filter>ソース ファイル\application\ui\fade</Filter>
+      <Filter>ソース ファイル\application\ui\scene\fade</Filter>
     </ClCompile>
     <ClCompile Include="application\event\EventManager.cpp">
       <Filter>ソース ファイル\application\event</Filter>

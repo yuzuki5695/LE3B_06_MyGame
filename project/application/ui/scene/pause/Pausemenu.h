@@ -31,7 +31,7 @@ namespace MyGame {
         /// 初期化処理
         /// </summary>
         void Initialize();
-  /*      /// <summary>
+        /// <summary>
         /// 更新処理
         /// </summary>
         void Update();
@@ -45,7 +45,7 @@ namespace MyGame {
         void ExecuteCommand();
 
         void UpdateOperationMove();
-        void UpdateCommandPosition();*/
+        void UpdateCommandPosition();
     private: // メンバ変数
         bool isActive_;  // メニューがアクティブか
         std::unique_ptr <MyEngine::Sprite> paused_;
@@ -113,5 +113,7 @@ namespace MyGame {
         }
 
         bool IsOpening_() const { return isOpening_; }
+    
+    
     };
 }

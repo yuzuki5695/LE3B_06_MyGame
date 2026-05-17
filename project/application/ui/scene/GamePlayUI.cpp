@@ -57,6 +57,9 @@ namespace MyGame {
     }
 
     void GamePlayUI::Update() {
+		// ポーズ画面の更新
+        pausemenu_->Update();
+
         UpdateStageProgressUI();
 
         gage_->Update();
@@ -70,7 +73,8 @@ namespace MyGame {
     }
 
     void GamePlayUI::Draw() {
-
+		// ポーズ画面の描画
+        pausemenu_->Draw();
 
         gage_->Draw();
         player_ui_->Draw();

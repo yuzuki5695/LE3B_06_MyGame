@@ -68,6 +68,7 @@ namespace MyGame {
         }
         // UIマネージャの初期化
         UIManager::GetInstance()->Initialize();
+
         FadeManager::GetInstance()->StartFade(FadeType::FadeIn, FadeStyle::SilhouetteExplode, 1.0f);
 
         isGameStartEventDone_ = true;
@@ -77,6 +78,11 @@ namespace MyGame {
         // カメラマネージャの更新
         CameraManager::GetInstance()->Update();
 #pragma region 全てのObject3d個々の更新処理      
+        if (!UIManager::GetInstance()->GetUI<GamePlayUI>()->GetPauseMenu()->IsActive() &&
+            Input::GetInstance()->TriggerKey(DIK_TAB)) {
+            UIManager::GetInstance()->GetUI<GamePlayUI>()->GetPauseMenu()->SetActive(true);
+        }
+        
         //  ゲーム開始前のイベント処理
         if (!isGameStartEventDone_) {
             // ゲーム開始イベントの開始

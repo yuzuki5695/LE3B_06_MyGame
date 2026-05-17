@@ -46,5 +46,7 @@ namespace MyGame {
     
         bool uiProgressStarted_ = false;
         bool uiProgressFinished_ = false;
+        public: // アクセッサ
+         Pausemenu* GetPauseMenu() const { return pausemenu_.get(); }
     };
 }
