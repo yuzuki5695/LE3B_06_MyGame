@@ -1,20 +1,33 @@
 #pragma once
 #include <BaseBullet.h>
-//#include <OBBCollider.h>
+#include <Collider.h>
 
 namespace MyGame {
+    /// <summary>
+	/// 敵の弾クラス
+    /// </summary>
     class EnemyBullet : public BaseBullet {
-    public:
-        void Finalize() override; 
+    public: // メンバ関数
+        /// <summary>
+		/// 終了処理
+        /// </summary>
+        void Finalize() override;
+        /// <summary>
+		/// 初期化処理
+        /// </summary>
+        /// <param name="transform"></param>
+        /// <param name="velocity"></param>
         void Initialize(const MyEngine::Transform& transform, const MyEngine::Vector3& velocity)  override;
+        /// <summary>
+		/// 更新処理
+        /// </summary>
         void Update() override;
+        /// <summary>
+		/// 描画処理
+        /// </summary>
         void Draw() override;
-
-   
-     //   void OnCollision(Collider* other);
-
-	private:
-       // std::unique_ptr<OBBCollider> collider_;
+    private: // メンバ変数
+		// コライダー
+        std::unique_ptr<Collider> collider_;
     };
-
 }

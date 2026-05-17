@@ -51,9 +51,6 @@ namespace MyGame {
         Transform bulletTransform;
         bulletTransform.translate = startPos;
 
-        BulletManager::GetInstance()->SpawnEnemyBullet(
-            bulletTransform,
-            velocity
-        );
+        BulletManager::GetInstance()->SpawnEnemyBullet(bulletTransform, velocity);
     }
 }

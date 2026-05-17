@@ -12,7 +12,7 @@ namespace MyGame {
 		// デストラクタ
 		~Enemy() override;
 		/// <summary>
-		/// 
+		/// 終了処理
 		/// </summary>
 		void Finalize() override;
 		/// <summary>

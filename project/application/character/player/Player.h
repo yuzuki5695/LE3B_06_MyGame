@@ -16,7 +16,7 @@ namespace MyGame {
 		// デストラクタ
 		~Player() override;
 		/// <summary>
-		/// 
+		/// 終了処理
 		/// </summary>
 		void Finalize() override;
 		/// <summary>
@@ -35,11 +35,14 @@ namespace MyGame {
 		/// 2Dスプライトの描画処理
 		/// </summary>	
 		void DrawSprite();
-
+		/// <summary>
+		/// レール上の相対位置からワールド座標への変換を行い、Object3dのTransformを更新する
+		/// </summary>
 		void SyncWorldTransformByRail();
-
+		/// <summary>
+		/// ImGuiの描画処理
+		/// </summary>
 		void DrawImGui();
-
 	private: // メンバ変数
 		PlayerData data_; // プレイヤーのデータ構造体
 		MyEngine::Transform transform_;
