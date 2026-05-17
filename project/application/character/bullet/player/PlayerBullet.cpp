@@ -13,6 +13,7 @@ namespace MyGame {
     using namespace CollisionConfig;
 
     void PlayerBullet::Finalize() {
+        //コライダーの登録解除
         CollisionManager::GetInstance()->UnregisterCollider(collider_.get());
     }
 
@@ -24,10 +25,11 @@ namespace MyGame {
         ModelManager::GetInstance()->LoadModel(Bullet::PlayerBullet);
         bullet = Object3d::Create(Bullet::PlayerBullet, transform_);
 
-        // Collider生成 
+        // コライダー生成
         collider_ = Collider::Create({ .profile = Profile::PlayerBullet,.obb = CollisionUtils::CreateOBB(bullet.get()) });
         // 衝突時の処理
         collider_->SetCallback([this](Collider* other) {SetInactive(); });
+        // コライダー登録
         CollisionManager::GetInstance()->RegisterCollider(collider_.get());
 
         // 初期位置設定
@@ -58,11 +60,8 @@ namespace MyGame {
     }
 
     void PlayerBullet::Draw() {
-        if (!active_) {
-            return;
-        }
-        if (bullet) {
-            bullet->Draw();
-        }
+        // アクティブでない場合は描画しない
+        if (!active_) { return; }
+        bullet->Draw();
     }
 }
