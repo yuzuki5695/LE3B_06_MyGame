@@ -135,6 +135,7 @@
     └── └──         └── PlayerState.h
     └── ├── collision/
     └── └── ├── Collider.h
+    └── └── ├── ColliderCreateInfo.h
     └── └── ├── CollisionConfig.h
     └── └── ├── CollisionManager.cpp
     └── └── ├── CollisionManager.h
@@ -195,7 +196,10 @@
     └──         ├── GamePlayUI.cpp
     └──         ├── GamePlayUI.h
     └──         ├── TitleUI.cpp
-    └──         └── TitleUI.h
+    └──         ├── TitleUI.h
+    └──         └── pause/
+    └──             ├── Pausemenu.cpp
+    └──             └── Pausemenu.h
     ├── engine/
     └── ├── 2d/
     └── └── ├── Sprite.cpp
@@ -262,6 +266,8 @@
     └── └── └──     ├── IMenuComponent.h
     └── └── └──     ├── ObjectMenu.cpp
     └── └── └──     ├── ObjectMenu.h
+    └── └── └──     ├── SceneMenu.cpp
+    └── └── └──     ├── SceneMenu.h
     └── └── └──     ├── SettingsMenu.cpp
     └── └── └──     └── SettingsMenu.h
     └── └── └── windows/
@@ -770,6 +776,7 @@ namespace MyEngine {
 		// getter
 		Vector3 GetSize() const { return { modelData.aabb.max - modelData.aabb.min }; }        // AABBのサイズを返す
 		Vector3 GetCenter() const { return (modelData.aabb.min + modelData.aabb.max) * 0.5f; } // AABBの中心を返す
+		MaterialData& GetMaterial() { return modelData.material; } // マテリアルデータへの参照を返す
 	};
 }
 
@@ -997,7 +1004,10 @@ namespace MyEngine {
     }
 
     void Object3d::SetMaterialColor(const Vector4& color) {
-
+        if (model) {
+            // モデルのマテリアルデータを更新する
+            materialData->color = color;
+        }
     }
 
     std::unique_ptr<Object3d> Object3d::Create(std::string filePath, Transform transform) {
@@ -5404,6 +5414,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="application\ui\effect\fade\FadeManager.cpp" />
     <ClCompile Include="application\ui\scene\GameClearUI.cpp" />
     <ClCompile Include="application\ui\scene\GamePlayUI.cpp" />
+    <ClCompile Include="application\ui\scene\pause\Pausemenu.cpp" />
     <ClCompile Include="application\ui\scene\TitleUI.cpp" />
     <ClCompile Include="Engine\3d\Model\Model.cpp" />
     <ClCompile Include="Engine\3d\Model\ModelCommon.cpp" />
@@ -5432,6 +5443,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="engine\editor\layout\editormenubar\CameraMenu.cpp" />
     <ClCompile Include="engine\editor\layout\editormenubar\EditorMenuBar.cpp" />
     <ClCompile Include="engine\editor\layout\editormenubar\ObjectMenu.cpp" />
+    <ClCompile Include="engine\editor\layout\editormenubar\SceneMenu.cpp" />
     <ClCompile Include="engine\editor\layout\editormenubar\SettingsMenu.cpp" />
     <ClCompile Include="engine\editor\windows\ConsoleWindow.cpp" />
     <ClCompile Include="engine\io\Controller.cpp" />
@@ -5490,6 +5502,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\character\player\PlayerData.h" />
     <ClInclude Include="application\character\player\State\PlayerState.h" />
     <ClInclude Include="application\collision\Collider.h" />
+    <ClInclude Include="application\collision\ColliderCreateInfo.h" />
     <ClInclude Include="application\collision\CollisionConfig.h" />
     <ClInclude Include="application\collision\CollisionManager.h" />
     <ClInclude Include="application\collision\CollisionUtils.h" />
@@ -5518,6 +5531,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\ui\effect\fade\IFadeEffect.h" />
     <ClInclude Include="application\ui\scene\GameClearUI.h" />
     <ClInclude Include="application\ui\scene\GamePlayUI.h" />
+    <ClInclude Include="application\ui\scene\pause\Pausemenu.h" />
     <ClInclude Include="application\ui\scene\TitleUI.h" />
     <ClInclude Include="Engine\3d\Model\Model.h" />
     <ClInclude Include="Engine\3d\Model\ModelCommon.h" />
@@ -5557,6 +5571,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="engine\editor\layout\editormenubar\EditorMenuBar.h" />
     <ClInclude Include="engine\editor\layout\editormenubar\IMenuComponent.h" />
     <ClInclude Include="engine\editor\layout\editormenubar\ObjectMenu.h" />
+    <ClInclude Include="engine\editor\layout\editormenubar\SceneMenu.h" />
     <ClInclude Include="engine\editor\layout\editormenubar\SettingsMenu.h" />
     <ClInclude Include="engine\editor\windows\ConsoleWindow.h" />
     <ClInclude Include="engine\camera\CameraDefs.h" />
@@ -6021,9 +6036,6 @@ File Path: project/MyGame.vcxproj.filters
     <Filter Include="ヘッダー ファイル\application\ui\scene\pause">
       <UniqueIdentifier>{96ae2b5c-7320-4bb8-aee9-8f9d1d9317df}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ソース ファイル\application\ui\fade">
-      <UniqueIdentifier>{58a614e6-87e6-4fad-ac4d-e17a6f116a40}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ヘッダー ファイル\application\ui\fade">
       <UniqueIdentifier>{ce8bf20a-141d-4b59-ae15-5a296abeb31b}</UniqueIdentifier>
     </Filter>
@@ -6077,6 +6089,9 @@ File Path: project/MyGame.vcxproj.filters
     </Filter>
     <Filter Include="ソース ファイル\application\rail">
       <UniqueIdentifier>{303b86f6-7a19-419f-9bc9-8545830282e4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\application\ui\scene\fade">
+      <UniqueIdentifier>{58a614e6-87e6-4fad-ac4d-e17a6f116a40}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -6309,7 +6324,7 @@ File Path: project/MyGame.vcxproj.filters
       <Filter>ソース ファイル\application\ui\scene</Filter>
     </ClCompile>
     <ClCompile Include="application\ui\effect\fade\FadeManager.cpp">
-      <Filter>ソース ファイル\application\ui\fade</Filter>
+      <Filter>ソース ファイル\application\ui\scene\fade</Filter>
     </ClCompile>
     <ClCompile Include="application\event\EventManager.cpp">
       <Filter>ソース ファイル\application\event</Filter>
@@ -6361,6 +6376,12 @@ File Path: project/MyGame.vcxproj.filters
     </ClCompile>
     <ClCompile Include="engine\editor\layout\editormenubar\CameraMenu.cpp">
       <Filter>ソース ファイル\engine\editor\layout\editormenubar</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\editor\layout\editormenubar\SceneMenu.cpp">
+      <Filter>ソース ファイル\engine\editor\layout\editormenubar</Filter>
+    </ClCompile>
+    <ClCompile Include="application\ui\scene\pause\Pausemenu.cpp">
+      <Filter>ソース ファイル\application\ui\scene\pause</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -6777,6 +6798,15 @@ File Path: project/MyGame.vcxproj.filters
     </ClInclude>
     <ClInclude Include="engine\editor\layout\editormenubar\CameraMenu.h">
       <Filter>ヘッダー ファイル\engine\editor\layout\editormenubar</Filter>
+    </ClInclude>
+    <ClInclude Include="application\collision\ColliderCreateInfo.h">
+      <Filter>ヘッダー ファイル\application\collision</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\editor\layout\editormenubar\SceneMenu.h">
+      <Filter>ヘッダー ファイル\engine\editor\layout\editormenubar</Filter>
+    </ClInclude>
+    <ClInclude Include="application\ui\scene\pause\Pausemenu.h">
+      <Filter>ヘッダー ファイル\application\ui\scene\pause</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -7524,9 +7554,16 @@ File Path: project/application/character/BaseCharacter.h
 #include <memory>
 #include <Object3d.h>
 #include <CharacterState.h>
-#include <Collider.h>
+#include <CollisionManager.h>
 
 namespace MyGame {
+	// キャラクターの状態を管理するフラグ構造体    
+    struct CharacterFlags {
+		bool isAlive = true;                // 生存フラグ（falseなら削除対象）
+		bool isActive = false;              // 活動フラグ（falseなら更新・描画処理をスキップ）
+		bool isColliderRegistered = false;  // 当たり判定がCollisionManagerに登録されているか
+    };
+
     /// <summary>
     /// ゲームキャラクターの基底クラス
     /// 初期化・更新・描画のインターフェイスを定義
@@ -7537,6 +7574,10 @@ namespace MyGame {
         /// デストラクタ
         /// </summary> 
         virtual ~BaseCharacter() = default;
+        /// <summary>
+		/// 終了処理
+        /// </summary>
+        virtual void Finalize() = 0;
         /// <summary> 
         /// 初期化処理
         /// モデル生成や初期パラメータ設定を行う
@@ -7553,63 +7594,39 @@ namespace MyGame {
         /// </summary>
         virtual void Draw() = 0;
         /// <summary>
-        /// キャラクターが生存しているか判定する
-        /// </summary>
-        /// <returns>true: 生存 / false: 死亡</returns>
-        bool IsAlive() const { return isAlive_; }
-        /// <summary>
-        /// キャラクターを死亡状態にする
-        /// 主に削除フラグとして使用
-        /// </summary>
-        void Destroy() { isAlive_ = false; }
-        /// <summary>
         /// キャラクターの状態（ステート）を変更する。
         /// </summary>
         /// <param name="nextState">遷移先のステートポインタ（所有権を渡す）</param>
         void ChangeState(std::unique_ptr<ICharacterState> nextState) {
-            // 内部のステート管理クラスに処理を委譲
-            state_.ChangeState(*this, std::move(nextState));
+            state_.ChangeState(*this, std::move(nextState));            // 内部のステート管理クラスに処理を委譲
         }
-
-        // 衝突時に呼ばれる関数 (基本は何もしない、必要なら派生クラスでオーバーライド)
-        virtual void OnCollision(Collider* other) {}
-
     protected: // メンバ変数
-        /// <summary>
-        /// 3Dオブジェクト本体
-        /// モデルやトランスフォーム情報を保持
-        /// </summary>
+        /// 3Dオブジェクト
         std::unique_ptr<MyEngine::Object3d> object_;
-        /// <summary>
-        /// 生存フラグ
-        /// falseになると削除対象となる
-        /// </summary>
-        bool isAlive_ = true;
-        /// <summary>
-        /// アクティブフラグ
-        /// </summary>
-        bool isActive_ = false;
-        /// <summary>
-        /// ステートの本体
-        /// </summary>
+        /// 当たり判定
+		std::unique_ptr<Collider> collider_;
+        /// 状態フラグ
+        CharacterFlags flags_;
+        /// ステート
         CharacterState state_;
-        // コライダー本体
-        std::unique_ptr<Collider> collider_;
     public: // アクセッサ
         // getter
         MyEngine::Object3d* GetObject3d() const { return object_.get(); }
-        bool IsActive() const { return isActive_; }
-        void SetActive(bool flag) { isActive_ = flag; }
-
         Collider* GetCollider() const { return collider_.get(); }
+        bool IsAlive() const { return flags_.isAlive; }
+        bool IsActive() const { return flags_.isActive; }
+        // setter
+        void SetAlive(bool flag) { flags_.isAlive = flag; }
+        void SetActive(bool flag) { flags_.isActive = flag; }
 
-        // 衝突属性の設定を楽にするためのヘルパー
-        void SetCollision(uint32_t attribute, uint32_t mask) {
-            if (!collider_) collider_ = std::make_unique<Collider>();
-            collider_->SetCollisionAttribute(attribute);
-            collider_->SetCollisionMask(mask);
-            // 衝突したら自分のOnCollisionを呼ぶように登録
-            collider_->SetCallback([this](Collider* other) { this->OnCollision(other); });
+        // 削除予約
+        void Destroy() { flags_.isAlive = false; }
+        // 当たり判定をCollisionManagerに登録
+        void RegisterCollider() {
+            if (!collider_) { return; }
+            if (flags_.isColliderRegistered) { return; }            
+            CollisionManager::GetInstance()->RegisterCollider(collider_.get());
+            flags_.isColliderRegistered = true;
         }
     };
 }
@@ -7739,7 +7756,6 @@ File Path: project/application/character/bullet/BaseBullet.h
 #include <Vector3.h>
 #include <memory>
 #include <Object3d.h>
-#include <Collider.h>
 
 namespace MyGame {
     /// <summary>
@@ -7768,10 +7784,6 @@ namespace MyGame {
         /// 描画処理
         /// </summary>
         virtual void Draw() = 0;
-
-        // 衝突時に呼ばれる関数 (基本は何もしない、必要なら派生クラスでオーバーライド)
-        virtual void OnCollision(Collider* other) {}
-
     protected:
         // 弾の寿命管理
         void UpdateLifeTime(float deltaTime) {
@@ -7782,44 +7794,23 @@ namespace MyGame {
         }
 
     protected: // メンバ変数
+		// ポインタ
         std::unique_ptr<MyEngine::Object3d> bullet;
         bool active_ = true;
-
         MyEngine::Transform transform_; // 現在の位置
         MyEngine::Vector3 velocity_; // 毎フレームの移動量（速度ベクトル）
         float lifeTime_ = 0.0f;      // 経過時間
         float maxLifeTime_ = 3.0f;   // 最大寿命（秒）
-        // コライダー本体
-        std::unique_ptr<Collider> collider_;
     public: // アクセッサ
 
         MyEngine::Object3d* GetObject3d() const { return bullet.get(); }
         MyEngine::Transform GetTransform() const { return transform_; }
 
-        /// <summary>
         /// アクティブ状態を取得
-        /// </summary>
-        /// <returns>弾が有効なら true</returns>
         bool IsActive() const { return active_; }
-
-        /// <summary>
         /// 弾を非アクティブ状態にする（削除対象にする）
-        /// </summary>
         void SetInactive() { active_ = false; }
-
-
         void SetTranslate(const MyEngine::Vector3& translate) { bullet->SetTranslate(translate); }
-
-        Collider* GetCollider() const { return collider_.get(); }
-
-        // 衝突属性の設定を楽にするためのヘルパー
-        void SetCollision(uint32_t attribute, uint32_t mask) {
-            if (!collider_) collider_ = std::make_unique<Collider>();
-            collider_->SetCollisionAttribute(attribute);
-            collider_->SetCollisionMask(mask);
-            // 衝突したら自分のOnCollisionを呼ぶように登録
-            collider_->SetCallback([this](Collider* other) { this->OnCollision(other); });
-        }
     };
 }
 
@@ -7952,7 +7943,8 @@ namespace MyGame {
     using namespace CollisionConfig;
 
     void EnemyBullet::Finalize() {
-
+        //コライダーの登録解除
+        CollisionManager::GetInstance()->UnregisterCollider(collider_.get());
     }
 
     void EnemyBullet::Initialize(const MyEngine::Transform& transform, const MyEngine::Vector3& velocity) {
@@ -7963,6 +7955,13 @@ namespace MyGame {
         ModelManager::GetInstance()->LoadModel(Bullet::EnemyBullet);
         bullet = Object3d::Create(Bullet::EnemyBullet, transform_);
 
+        //// コライダー生成
+        //collider_ = Collider::Create({ .profile = Profile::EnemyBullet,.obb = CollisionUtils::CreateOBB(bullet.get()) });
+        //// 衝突時の処理
+        //collider_->SetCallback([this](Collider* other) {SetInactive(); });
+        //// コライダー登録
+        //CollisionManager::GetInstance()->RegisterCollider(collider_.get());
+     
         // 初期位置設定
         bullet->SetTranslate(transform_.translate);
     }
@@ -7985,19 +7984,16 @@ namespace MyGame {
         // ③ 寿命処理
         // =============================
         UpdateLifeTime(1.0f / 60.0f); // 仮で60FPS固定
+ 
+        // OBB更新
+    //    collider_->SetOBB(CollisionUtils::CreateOBB(bullet.get(), { 1.0f,1.0f,1.0f }));
     }
 
     void EnemyBullet::Draw() {
-        if (bullet) {
-            bullet->Draw();
-        }
+        // アクティブでない場合は描画しない
+        if (!active_) { return; }
+        bullet->Draw();
     }
-
-   // void EnemyBullet::OnCollision(Collider* other) {
-        //if (other->GetCollisionAttribute() == CollisionConfig::Enemy) {
-        //    SetInactive();
-        //}
-   // }
 }
 
 ============================================================
@@ -8005,23 +8001,36 @@ File Path: project/application/character/bullet/enemy/EnemyBullet.h
 ============================================================
 #pragma once
 #include <BaseBullet.h>
-//#include <OBBCollider.h>
+#include <Collider.h>
 
 namespace MyGame {
+    /// <summary>
+	/// 敵の弾クラス
+    /// </summary>
     class EnemyBullet : public BaseBullet {
-    public:
-        void Finalize() override; 
+    public: // メンバ関数
+        /// <summary>
+		/// 終了処理
+        /// </summary>
+        void Finalize() override;
+        /// <summary>
+		/// 初期化処理
+        /// </summary>
+        /// <param name="transform"></param>
+        /// <param name="velocity"></param>
         void Initialize(const MyEngine::Transform& transform, const MyEngine::Vector3& velocity)  override;
+        /// <summary>
+		/// 更新処理
+        /// </summary>
         void Update() override;
+        /// <summary>
+		/// 描画処理
+        /// </summary>
         void Draw() override;
-
-   
-     //   void OnCollision(Collider* other);
-
-	private:
-       // std::unique_ptr<OBBCollider> collider_;
+    private: // メンバ変数
+		// コライダー
+        std::unique_ptr<Collider> collider_;
     };
-
 }
 
 ============================================================
@@ -8041,7 +8050,10 @@ namespace MyGame {
 
     using namespace CollisionConfig;
 
-    void PlayerBullet::Finalize() {}
+    void PlayerBullet::Finalize() {
+        //コライダーの登録解除
+        CollisionManager::GetInstance()->UnregisterCollider(collider_.get());
+    }
 
     void PlayerBullet::Initialize(const MyEngine::Transform& transform, const MyEngine::Vector3& velocity) {
         // 基底の初期化
@@ -8050,10 +8062,12 @@ namespace MyGame {
         // オブジェクト生成
         ModelManager::GetInstance()->LoadModel(Bullet::PlayerBullet);
         bullet = Object3d::Create(Bullet::PlayerBullet, transform_);
-        
-        // コライダーの設定
-        SetCollision(Attribute::PlayerBullet, Mask::kPlayerBullet);
-        // マネージャーに登録
+
+        // コライダー生成
+        collider_ = Collider::Create({ .profile = Profile::PlayerBullet,.obb = CollisionUtils::CreateOBB(bullet.get()) });
+        // 衝突時の処理
+        collider_->SetCallback([this](Collider* other) {SetInactive(); });
+        // コライダー登録
         CollisionManager::GetInstance()->RegisterCollider(collider_.get());
 
         // 初期位置設定
@@ -8073,30 +8087,20 @@ namespace MyGame {
             bullet->SetTranslate(transform_.translate);
             bullet->Update();
         }
-        // コライダーのOBBをObject3dの情報から更新
-        if (collider_) {
-            collider_->SetOBB(CollisionUtils::CreateOBB(bullet.get()));
-        }
 
         // =============================
         // ③ 寿命処理
         // =============================
         UpdateLifeTime(1.0f / 60.0f); // 仮で60FPS固定
+
+        // OBB更新
+        collider_->SetOBB(CollisionUtils::CreateOBB(bullet.get(), { 1.0f,1.0f,1.0f }));
     }
 
     void PlayerBullet::Draw() {
-        if (!active_) {
-            return;
-        }
-        if (bullet) {
-            bullet->Draw();
-        }
-    }
-    
-    void PlayerBullet::OnCollision(Collider* other) {
-        //if (active_) {
-        //    SetInactive();
-        //}
+        // アクティブでない場合は描画しない
+        if (!active_) { return; }
+        bullet->Draw();
     }
 }
 
@@ -8108,15 +8112,32 @@ File Path: project/application/character/bullet/player/PlayerBullet.h
 #include <Collider.h>
 
 namespace MyGame {
+    /// <summary>
+	/// プレイヤーの弾クラス
+    /// </summary>
     class PlayerBullet : public BaseBullet {
-    public:
+    public: // メンバ関数
+        /// <summary>
+		/// 終了処理
+        /// </summary>
         void Finalize() override;
+        /// <summary>
+		/// 初期化処理
+        /// </summary>
+        /// <param name="transform"></param>
+        /// <param name="velocity"></param>
         void Initialize(const MyEngine::Transform& transform, const MyEngine::Vector3& velocity)  override;
+        /// <summary>
+		/// 更新処理
+        /// </summary>
         void Update() override;
+        /// <summary>
+		/// 描画処理
+        /// </summary>
         void Draw() override;
-
-        
-		void OnCollision(Collider* other) override;
+    private: // メンバ変数
+		// コライダー
+        std::unique_ptr<Collider> collider_;
     };
 }
 
@@ -8127,10 +8148,9 @@ File Path: project/application/character/enemy/Enemy.cpp
 #include <ModelManager.h>
 #include <EnemyState.h>
 #include <CameraManager.h>
+#include <CollisionConfig.h>
 // AssetGeneratorからインクルード
 #include <subproject/AssetGenerator/engine/generator/LoadResourceID.h>
-#include <CollisionManager.h>
-#include <CollisionConfig.h>
 
 using namespace MyEngine;
 using namespace AssetGen::LoadResourceID::Models;
@@ -8142,57 +8162,43 @@ namespace MyGame {
     Enemy::~Enemy() {}
 
     void Enemy::Finalize() {
-        object_.reset();
+		CollisionManager::GetInstance()->UnregisterCollider(collider_.get()); // 当たり判定の登録解除
+		collider_.reset(); // コライダーの破棄
+		object_.reset();   // 3Dオブジェクトの破棄
     }
 
     void Enemy::Initialize() {
+        // モデルの読み込み
         ModelManager::GetInstance()->LoadModel(Character::Enemy);
-
+        // オブジェクトの生成、初期化
         object_ = Object3d::Create(Character::Enemy, Transform{ { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f } });
+        // 状態フラグの初期化
+        flags_.isAlive = true;
+		flags_.isActive = false;
+        // 当たり判定の生成、初期化
+        collider_ = Collider::Create({ .profile = Profile::Enemy,.obb = CollisionUtils::CreateOBB(object_.get()) });
+        // 衝突時の処理
+        collider_->SetCallback([this](Collider* other) {if (!IsAlive()) { return; }ChangeState(std::make_unique<EnemyDead>()); });
 
-        // コライダーの設定
-        SetCollision(Attribute::Enemy, Mask::kEnemy);
-        // マネージャーに登録
-        CollisionManager::GetInstance()->RegisterCollider(collider_.get());
-     
-        //attack_ = std::make_unique<EnemyAttack>();
-        //attack_->SetOwner(this);
-        //attack_->Initialize();
+        // コンポーネントの生成
+		attack_ = std::make_unique<EnemyAttack>(); // 攻撃ロジックの生成
+		attack_->Initialize();                     // 攻撃ロジックの初期化
+
         // 初期ステートをセットする
         ChangeState(std::make_unique<EnemyIdle>());
     }
 
     void Enemy::Update() {
-		// アクティブ状態になるまでステートを更新しない
-        if (isActive_) {
-            // ステートの更新（現在のステートのUpdateが呼ばれる）
-            state_.Update(*this);
-        }
-
+        // ステートの更新（現在のステートのUpdateが呼ばれる）
+        state_.Update(*this);
+        // オブジェクトの更新
         object_->Update();
-        
-		// コライダーのOBBをObject3dの情報から更新
-        if (collider_) {
-            collider_->SetOBB(CollisionUtils::CreateOBB(object_.get()));
-        }
     }
 
     void Enemy::Draw() {
-        if (!isAlive_) { return; }
-
-        if (object_) {
-            object_->Draw();
-        }
-    }
-
-    void Enemy::OnCollision(Collider* other) {
-        if (isAlive_) {
-            ChangeState(std::make_unique<EnemyDead>());
-            // 判定リストから自分を外す
-            CollisionManager::GetInstance()->UnregisterCollider(collider_.get());
-            // そのあとで自身を破棄・フラグ折る
-            this->isAlive_ = false;
-        }
+        if (!IsAlive()) { return; }
+        // オブジェクトの描画
+        object_->Draw();
     }
 }
 
@@ -8202,16 +8208,24 @@ File Path: project/application/character/enemy/Enemy.h
 #pragma once
 #include <BaseCharacter.h>
 #include <EnemyAttack.h>
+#include <Collider.h>
 
 namespace MyGame {
+
+	// 前方宣言
+	class Player;
+	
 	/// <summary>
-	/// プレイヤーキャラクタークラス
+	/// 敵キャラクタークラス
 	/// </summary>
 	class Enemy : public BaseCharacter {
 	public:// メンバ関数
 		// デストラクタ
 		~Enemy() override;
-		void Finalize();
+		/// <summary>
+		/// 終了処理
+		/// </summary>
+		void Finalize() override;
 		/// <summary>
 		/// 初期化処理 
 		/// </summary>
@@ -8224,17 +8238,16 @@ namespace MyGame {
 		/// 描画処理
 		/// </summary>
 		void Draw() override;
-		
+	private: // メンバ変数
+		// ポインタ
+		std::unique_ptr<EnemyAttack> attack_; // 攻撃ロジックの保持
+		std::unique_ptr<Player> player_;
 
-		void OnCollision(Collider* other) override;
-
-		//std::unique_ptr<EnemyAttack> attack_; // 攻撃ロジックの保持
 	public: // アクセッサ
 		// getter
-		//EnemyAttack* GetAttack() { return attack_.get(); }
-
 		MyEngine::Transform* GetTransform() { return &object_->GetTransform(); }
-
+		EnemyAttack* GetAttack() { return attack_.get(); }
+		void SetPlayer(Player* player) { player_.reset(player); }
 	};
 }
 
@@ -8360,49 +8373,46 @@ namespace MyGame {
     void EnemyAttack::Initialize() {
         timer_ = 0.0f;
         interval_ = 1.0f; // 1秒ごとに発射
+        canShoot_ = false;
     }
 
     void EnemyAttack::Update(const Transform& transform, const Vector3& aimWorldPos) {
-
         // =========================
         // タイマー更新
         // =========================
         timer_ += 1.0f / 60.0f;
-
         if (timer_ < interval_) {
-            return;
+            canShoot_ = true;
+            timer_ = 0.0f; // タイマーリセット
         }
 
-        timer_ = 0.0f;
+        // 弾が撃てるか確認
+        if (!canShoot_) return;
 
         // =========================
         // 発射位置（敵の位置）
         // =========================
-
         Vector3 startPos = transform.translate;
-
         // =========================
         // プレイヤー方向
         // =========================
         Vector3 dir = aimWorldPos - startPos;
         dir = Normalize(dir);
-
         // =========================
         // 速度
         // =========================
         float speed = 0.5f;
         Vector3 velocity = dir * speed;
-
         // =========================
         // 弾生成
         // =========================
         Transform bulletTransform;
         bulletTransform.translate = startPos;
 
-        BulletManager::GetInstance()->SpawnEnemyBullet(
-            bulletTransform,
-            velocity
-        );
+        BulletManager::GetInstance()->SpawnEnemyBullet(bulletTransform, velocity);
+
+        // 発射後は撃てないようにする
+        canShoot_ = false;
     }
 }
 
@@ -8417,18 +8427,22 @@ namespace MyGame {
     /// 敵の攻撃クラス
     /// </summary>
     class EnemyAttack {
-    public:
-
+	public: // メンバ関数
+        /// <summary>
+		/// 初期化処理
+        /// </summary>
         void Initialize();
+        /// <summary>
+		/// 更新処理
+        /// </summary>
+        /// <param name="transform"></param>
+        /// <param name="aimWorldPos"></param>
         void Update(const MyEngine::Transform& transform, const MyEngine::Vector3& aimWorldPos);
-
     private:
         float coolTime_ = 0.2f;   // 発射間隔
         float timer_ = 0.0f;
-       // Enemy* owner_ = nullptr;
         float interval_; // 1秒ごとに発射
-    public:
-        //void SetOwner(Enemy* owner) { owner_ = owner; }
+		bool canShoot_; // 発射可能フラグ
     };
 }
 
@@ -8450,48 +8464,39 @@ using namespace Easing;
 namespace MyGame {
     void EnemyIdle::Update(BaseCharacter& character) {
         timer_ += 1.0f / 60.0f;
-
         float t = std::clamp(timer_ / duration_, 0.0f, 1.0f);
-
         float s = EaseOutBack(t);
-
         character.GetObject3d()->SetScale({ s, s, s });
-
         if (t >= 1.0f) {
             t = 1.0f;
-            s = EaseOutBack(t);
             character.GetObject3d()->SetScale({ s, s, s });
+            // 当たり判定登録
+            character.RegisterCollider();
+			// BaseCharacter状態からEnemyAlive状態へ遷移
             character.ChangeState(std::make_unique<EnemyAlive>());
         }
     }
 
-    void EnemyAlive::Update(BaseCharacter& character) {
+    void EnemyAlive::Update(BaseCharacter& character) {        
         // 必要なコンポーネント
         Enemy* enemy = dynamic_cast<Enemy*>(&character);
+        Player* player = dynamic_cast<Player*>(&character);
+        
+        // アクティブ中は各更新処理を行う
+        if (character.IsActive()) {
 
+			// 攻撃処理の更新処理
+            enemy->GetAttack()->Update(enemy->GetObject3d()->GetTransform(), player->GetTranslate());
 
-        //// 必要なコンポーネント
-        //Enemy* enemy = dynamic_cast<Enemy*>(&character);
-        //EnemyAttack* attack = enemy->GetAttack();
-
-        //// プレイヤー取得
-        //Player* player = enemy->GetPlayer();
-
-        //if (player) {
-        //    attack->Update(
-        //        player->GetObject3d()->GetTransform(),
-        //        player->GetObject3d()->GetTransform().translate
-        //    );
-        //}
-        //attack->Update(enemy->GetObject3d()->GetTransform(), player->GetObject3d()->GetTransform().translate);
+            // 毎フレーム当たり判定を更新
+            character.GetCollider()->SetOBB(CollisionUtils::CreateOBB(character.GetObject3d()));
+        }
     }
 
     void EnemyDead::Update(BaseCharacter& character) {
-        if (!destroyed_) {
-            // 死んだらマネージャーから削除する
-            CollisionManager::GetInstance()->UnregisterCollider(character.GetCollider());
+        if (character.IsAlive()) {
+            // 死んだらフラグを立てる
             character.Destroy();
-            destroyed_ = true;
         }
     }
 }
@@ -8521,7 +8526,7 @@ namespace MyGame {
     // 死亡状態
     class EnemyDead : public ICharacterState {
     private:
-        bool destroyed_ = false;
+
     public:
         void Update(BaseCharacter& character) override;
     };
@@ -8554,7 +8559,7 @@ namespace MyGame {
         // =============================
         // 入力チェック
         // =============================
-        if (Input::GetInstance()->Pushkey(DIK_SPACE) && timer_ <= 0.0f) {
+        if (Input::GetInstance()->PushKey(DIK_SPACE) && timer_ <= 0.0f) {
             Camera* activecamera = CameraManager::GetInstance()->GetActiveCamera();
             Vector3 camPos = activecamera->GetTranslate();
             Vector3 rayDir = Normalize(aimWorldPos - camPos);
@@ -8709,7 +8714,7 @@ namespace MyGame {
 	void PlayerMove::Update(MyEngine::Transform& transform, float speedMultiplier) {
 		Input* input = Input::GetInstance();
 
-		if (input->Triggrkey(DIK_LSHIFT) && coolDownTimer_ <= 0.0f && !isDashing_) {
+		if (input->TriggerKey(DIK_LSHIFT) && coolDownTimer_ <= 0.0f && !isDashing_) {
 			isDashing_ = true;
 			dashTimer_ = 0.0f;
 		}
@@ -8719,10 +8724,10 @@ namespace MyGame {
 
 		// --- 1. 入力値の取得 ---
 		Vector3 moveInput = { 0, 0, 0 };
-		if (input->Pushkey(DIK_A)) moveInput.x -= finalSpeed;
-		if (input->Pushkey(DIK_D)) moveInput.x += finalSpeed;
-		if (input->Pushkey(DIK_W)) moveInput.y += finalSpeed;
-		if (input->Pushkey(DIK_S)) moveInput.y -= finalSpeed;
+		if (input->PushKey(DIK_A)) moveInput.x -= finalSpeed;
+		if (input->PushKey(DIK_D)) moveInput.x += finalSpeed;
+		if (input->PushKey(DIK_W)) moveInput.y += finalSpeed;
+		if (input->PushKey(DIK_S)) moveInput.y -= finalSpeed;
 		// --- 2. 移動の実行と制限 ---
 		relativePos_.x += moveInput.x;
 		relativePos_.y += moveInput.y;
@@ -8875,10 +8880,10 @@ namespace MyGame {
         Vector2 move = { 0.0f, 0.0f };
 
         // ← → ↑ ↓
-        if (input->Pushkey(DIK_LEFT))  move.x -= 1.0f;
-        if (input->Pushkey(DIK_RIGHT)) move.x += 1.0f;
-        if (input->Pushkey(DIK_UP))    move.y -= 1.0f;
-        if (input->Pushkey(DIK_DOWN))  move.y += 1.0f;
+        if (input->PushKey(DIK_LEFT))  move.x -= 1.0f;
+        if (input->PushKey(DIK_RIGHT)) move.x += 1.0f;
+        if (input->PushKey(DIK_UP))    move.y -= 1.0f;
+        if (input->PushKey(DIK_DOWN))  move.y += 1.0f;
 
         // 正規化（斜め移動対策）
         if (move.x != 0.0f || move.y != 0.0f) {
@@ -8970,10 +8975,11 @@ File Path: project/application/character/player/Player.cpp
 #ifdef USE_IMGUI
 #include<ImGuiManager.h>
 #endif // USE_IMGUI
-// AssetGeneratorからインクルード
-#include <subproject/AssetGenerator/engine/generator/LoadResourceID.h>
 #include <EditorEntityRegistry.h>
 #include <EditorTypes.h>
+// AssetGeneratorからインクルード
+#include <subproject/AssetGenerator/engine/generator/LoadResourceID.h>
+
 
 using namespace MyEngine;
 using namespace MatrixVector;
@@ -8984,19 +8990,21 @@ namespace MyGame {
 
     Player::~Player() {}
 
+    void Player::Finalize() {}
+
     void Player::Initialize() {
-        // 3Dオブジェクト生成
+        // テクスチャの読み込み
         TextureManager::GetInstance()->LoadTexture(Ui::Target);
+        // モデルの読み込み
         ModelManager::GetInstance()->LoadModel(Character::Player);
-
+        // データの読み込み
         data_ = PlayerDataLoader::Load("player");
-
+        // カメラ位置からのオフセットを設定
         baseOffset_ = { 0.0f, -3.0f, 30.0f };
-
+        // プレイヤーオブジェクトの生成、初期化
         object_ = Object3d::Create(Character::Player, data_.transform);
-
+        // ターゲットオブジェクトの生成、初期化
         targettransform_ = { {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 30.0f} };
-
         target_ = Object3d::Create(Character::Player, targettransform_);
 
         // レティクル初期化
@@ -9004,17 +9012,20 @@ namespace MyGame {
         targetreticle_->SetTextureSize(Vector2{ 512.0f, 512.0f });
         targetreticle_->SetAnchorPoint(Vector2{ 0.5f, 0.5f }); // 中心基準
 
-        isActive_ = true;
+        // 状態フラグの初期化
+        flags_.isAlive = true;
+        flags_.isActive = true;
+        SetActive(true);
 
         // コンポーネントの生成
-        move_ = std::make_unique<PlayerMove>();
-        reticle_ = std::make_unique<PlayerReticle>();
-        attack_ = std::make_unique<PlayerAttack>();
-        death_ = std::make_unique<PlayerDeath>();
-        death_->Initialize();
+        move_ = std::make_unique<PlayerMove>();          // 移動ロジックの生成
+        reticle_ = std::make_unique<PlayerReticle>();    // レティクルロジックの生成
+        attack_ = std::make_unique<PlayerAttack>();      // 攻撃ロジックの生成
+        death_ = std::make_unique<PlayerDeath>();        // 死亡演出ロジックの生成
+        death_->Initialize();     // 死亡演出の初期化
         // 初期ステートをセットする
         ChangeState(std::make_unique<PlayerStateIdle>());
-        // 
+        // ImGuiの登録
         DrawImGui();
     }
 
@@ -9022,41 +9033,45 @@ namespace MyGame {
         // ステートの更新
         state_.Update(*this);
 
+		// カメラがGamePlayCameraで更新中の場合、プレイヤーのワールド座標をカメラ位置に基づいて更新する
         if (CameraManager::GetInstance()->GetCurrentBehaviorAs<GamePlayCamera>()) {
             SyncWorldTransformByRail();
         }
 
+        // 各コンポーネントの更新
         targetreticle_->Update();
         target_->Update();
         object_->Update();
-
-
     }
 
     void Player::Draw() {
+		// 生存していない場合は描画処理をスキップ
+        if (!IsAlive()) { return; }
         if (object_) {
             object_->Draw();
         }
     }
 
     void Player::DrawSprite() {
-        if (!isActive_) { return; }
+		// 活動していない場合は描画処理をスキップ
+        if (!IsActive()) { return; }
         if (targetreticle_) {
             targetreticle_->Draw();
         }
     }
 
     void Player::SyncWorldTransformByRail() {
+		// カメラ位置を基準にプレイヤーのワールド座標を更新する
         GamePlayCamera* cam = CameraManager::GetInstance()->GetCurrentBehaviorAs<GamePlayCamera>();
         Camera* active = CameraManager::GetInstance()->GetActiveCamera();
-
+		// カメラのワールド座標を取得
         Vector3 camPos = active->GetTranslate();
 
         // カメラ位置から固定オフセット
         Vector3 offset = { move_->GetRelativePos().x,move_->GetRelativePos().y + baseOffset_.y,baseOffset_.z };
-
+		// カメラ回転を考慮したオフセットの回転
         Vector3 finalPos = camPos + offset;
-
+		// プレイヤーオブジェクトの座標を更新
         object_->SetTranslate(finalPos);
 
         //Vector3 camRot = active->GetRotate();
@@ -9083,8 +9098,8 @@ namespace MyGame {
                 object_->DrawImGui("object3d");
             }
             };
-        EditorEntityRegistry::Instance().Register(info);        // オブジェクト情報を登録する
-
+        // オブジェクト情報を登録する
+        EditorEntityRegistry::Instance().Register(info);
 #endif // USE_IMGUI    
     }
 }
@@ -9110,6 +9125,10 @@ namespace MyGame {
 		// デストラクタ
 		~Player() override;
 		/// <summary>
+		/// 終了処理
+		/// </summary>
+		void Finalize() override;
+		/// <summary>
 		/// 初期化処理 
 		/// </summary>
 		void Initialize() override;
@@ -9125,11 +9144,14 @@ namespace MyGame {
 		/// 2Dスプライトの描画処理
 		/// </summary>	
 		void DrawSprite();
-
+		/// <summary>
+		/// レール上の相対位置からワールド座標への変換を行い、Object3dのTransformを更新する
+		/// </summary>
 		void SyncWorldTransformByRail();
-
+		/// <summary>
+		/// ImGuiの描画処理
+		/// </summary>
 		void DrawImGui();
-
 	private: // メンバ変数
 		PlayerData data_; // プレイヤーのデータ構造体
 		MyEngine::Transform transform_;
@@ -9207,23 +9229,21 @@ namespace MyGame {
     void PlayerStateMove::Update(BaseCharacter& character) {
         // 必要なコンポーネント
         Player* player = dynamic_cast<Player*>(&character);
-        PlayerMove* move = player->GetMove();
-        PlayerReticle* reticle = player->GetReticle();
-        PlayerAttack* attack = player->GetAttack();
-        Sprite* mission_ = player->GetSprite();
-        Object3d* target = player->GetTarget();
 
-        // 移動処理の実行
-        move->Update(player->GetObject3d()->GetTransform(), 0.17f);
-        // 入力でレティクル移動
-        reticle->UpdateInput();
-        // スプライト位置更新
-        mission_->SetPosition(reticle->GetScreenPos());
-        // ワールド座標に変換
-        Vector3 worldPos = reticle->ScreenToWorld(reticle->GetScreenPos(), CameraManager::GetInstance()->GetActiveCamera());
-        player->SetAimWorldPos(worldPos);
-        target->SetTranslate(player->GetAimWorldPos());
-        attack->Update(player->GetObject3d()->GetTransform(), player->GetAimWorldPos());
+        // アクティブ中は各更新処理を行う
+        if (character.IsActive()) {
+            // 移動処理の実行
+            player->GetMove()->Update(player->GetObject3d()->GetTransform(), 0.17f);
+            // 入力でレティクル移動
+            player->GetReticle()->UpdateInput();
+            // スプライト位置更新
+            player->GetSprite()->SetPosition(player->GetReticle()->GetScreenPos());
+            // ワールド座標に変換
+            Vector3 worldPos = player->GetReticle()->ScreenToWorld(player->GetReticle()->GetScreenPos(), CameraManager::GetInstance()->GetActiveCamera());
+            player->SetAimWorldPos(worldPos);
+            player->GetTarget()->SetTranslate(player->GetAimWorldPos());
+            player->GetAttack()->Update(player->GetObject3d()->GetTransform(), player->GetAimWorldPos());
+        }
     }
 
     void PlayerStateDead::Update(BaseCharacter& character) {
@@ -9276,52 +9296,71 @@ File Path: project/application/collision/Collider.h
 #include <OBB.h>
 #include <cstdint>
 #include <functional>
+#include <ColliderCreateInfo.h>
 
 namespace MyGame {
-
     class Collider {
     public:
         // 衝突時に呼び出す関数の型定義
-        // 引数にCollider*を渡すことで、相手の属性(Attribute)などを確認できるようにします
         using CollisionCallback = std::function<void(Collider*)>;
-
+	public: // メンバ関数
+		// コンストラクタとデストラクタ
         Collider() = default;
-        virtual ~Collider() = default;
-
-        // --- 衝突判定データ (OBB) ---
-        // 毎フレーム、オブジェクトの移動後にセットすることを想定
-        void SetOBB(const MyEngine::OBB& obb) { obb_ = obb; }
-        const MyEngine::OBB& GetOBB() const { return obb_; }
-
-        // --- フィルタリング設定 (CollisionConfigと連携) ---
-        void SetCollisionAttribute(uint32_t attr) { attribute_ = attr; }
-        uint32_t GetCollisionAttribute() const { return attribute_; }
-
-        void SetCollisionMask(uint32_t mask) { mask_ = mask; }
-        uint32_t GetCollisionMask() const { return mask_; }
-
-        // --- コールバック設定 ---
-        // 衝突した瞬間に呼び出す処理を登録
-        void SetCallback(CollisionCallback callback) { callback_ = callback; }
-
-        // 衝突通知 (CollisionManagerから呼ばれる)
-        void OnCollision(Collider* other) {
-            if (callback_) {
-                callback_(other);
-            }
+        virtual ~Collider() = default; 
+        /// <summary>
+		/// 衝突が発生したときに呼び出される関数
+        /// </summary>
+        /// <param name="other"></param>
+        void OnCollision(Collider* other) { if (callback_) { callback_(other); } }
+        /// <summary>
+		/// Colliderの生成
+        /// </summary>
+        /// <param name="info"></param>
+        /// <returns></returns>
+        static std::unique_ptr<Collider> Create(const ColliderCreateInfo& info) {
+            std::unique_ptr<Collider> collider = std::make_unique<Collider>();
+			// プロフィールとOBBをセット
+            collider->attribute_ = info.profile.attribute;
+            collider->mask_ = info.profile.mask;
+            collider->obb_ = info.obb;
+            return collider;
         }
+    private: //メンバ変数
+		MyEngine::OBB obb_;                     // 当たり判定のOBB
+		uint32_t attribute_;                    // 属性ビットフィールド
+		uint32_t mask_;                         // 衝突マスクビットフィールド        
+		CollisionCallback callback_ = nullptr;  // 衝突時のコールバック関数
+    public: // アクセッサ
+        // getter
+        const MyEngine::OBB& GetOBB() const { return obb_; }
+        uint32_t GetAttribute() const { return attribute_; }
+        uint32_t GetMask() const { return mask_; }
+        // setter
+        void SetCallback(CollisionCallback callback) { callback_ = callback; }         // コールバック設定
+        void SetOBB(const MyEngine::OBB& obb) { obb_ = obb; }
+        void SetAttribute(uint32_t attribute) { attribute_ = attribute; }
+        void SetMask(uint32_t mask) { mask_ = mask; }
+    };
+}
 
-    private:
-        // --- 判定形状データ ---
-        MyEngine::OBB obb_;
+============================================================
+File Path: project/application/collision/ColliderCreateInfo.h
+============================================================
+#pragma once
+#include <OBB.h>
+#include <functional>
+#include <cstdint>
+#include <CollisionConfig.h>
 
-        // --- フィルタリングデータ ---
-        // 自身の種類
-        uint32_t attribute_ = 0;
-        // 衝突対象のフラグ
-        uint32_t mask_ = 0;
-        // 通知 
-        CollisionCallback callback_ = nullptr;
+namespace MyGame {
+	// 前方宣言
+    class Collider;
+	/// コライダー生成のための情報構造体
+    struct ColliderCreateInfo {
+		using CollisionCallback = std::function<void(Collider*)>;  // 衝突時に呼び出す関数の型定義
+		CollisionConfig::CollisionProfile profile;                 // 衝突プロファイル（属性とマスク）
+        MyEngine::OBB obb;                                         // 当たり判定のOBB
+        CollisionCallback callback = nullptr;                      // 衝突時のコールバック関数
     };
 }
 
@@ -9332,7 +9371,16 @@ File Path: project/application/collision/CollisionConfig.h
 #include <cstdint>
 
 namespace MyGame {
+    /// <summary>
+	/// 衝突判定のための設定をまとめた名前空間 
+    /// </summary>
     namespace CollisionConfig {
+		// 衝突プロファイル構造体
+        struct CollisionProfile {
+			uint32_t attribute;  // 属性をビットフラグで定義
+			uint32_t mask;       // 衝突マスクをビットフラグで定義
+        };
+
         // 衝突属性をビットフラグで定義
         enum Attribute : uint32_t {
             // カテゴリを定義
@@ -9344,17 +9392,23 @@ namespace MyGame {
         };
 
         // 衝突マスク（相手が誰なら反応するか）
-        namespace Mask {
-            const uint32_t kNone = None;
-            // 敵はプレイヤーとプレイヤーの弾に当たる
-            const uint32_t kEnemy = Player | PlayerBullet;
-            // プレイヤーは敵と敵の弾に当たる
-            const uint32_t kPlayer = Enemy | EnemyBullet;
-            // プレイヤーの弾は敵に当たる
-            const uint32_t kPlayerBullet = Enemy;
-            // 敵の弾はプレイヤーに当たる
-            const uint32_t kEnemyBullet = Player;
+        namespace CollisionMask {
+			// 反応する相手をビットフラグで定義
+            constexpr uint32_t None = 0;
+            constexpr uint32_t Player = Attribute::Enemy | Attribute::EnemyBullet;
+            constexpr uint32_t Enemy = Attribute::PlayerBullet;
+            constexpr uint32_t PlayerBullet = Attribute::Enemy;
+            constexpr uint32_t EnemyBullet = Attribute::Player;
         }
+
+        // 具体的なプロファイルの定義
+        namespace Profile {
+			// それぞれのプロファイルは、属性とマスクを組み合わせて定義
+            constexpr CollisionProfile Player{ Attribute::Player,CollisionMask::Player };
+            constexpr CollisionProfile Enemy{ Attribute::Enemy,CollisionMask::Enemy };
+            constexpr CollisionProfile PlayerBullet{ Attribute::PlayerBullet,CollisionMask::PlayerBullet };
+            constexpr CollisionProfile EnemyBullet{ Attribute::EnemyBullet,CollisionMask::EnemyBullet };
+        } 
     }
 }
 
@@ -9386,23 +9440,33 @@ void CollisionManager::Finalize() {
 }
 
 void CollisionManager::CheckAllCollisions() {
-    for (auto itA = colliders_.begin(); itA != colliders_.end(); ++itA) {
-        Collider* colliderA = *itA;
-        for (auto itB = std::next(itA); itB != colliders_.end(); ++itB) {
-            Collider* colliderB = *itB;
+    // 登録されたコライダーの全ての組み合わせに対して衝突判定を行う
+    for (std::list<Collider*>::iterator itrA = colliders_.begin(); itrA != colliders_.end(); ++itrA) {
+        // 内側のループは、外側のループの次の要素から始めることで、同じ組み合わせを二度チェックしないようにする
+        std::list<Collider*>::iterator itrB = itrA;
+        ++itrB;
+        for (; itrB != colliders_.end(); ++itrB) {
 
-            // 修正：両方のビットが立っている時だけ判定
-            bool aCanHitB = colliderA->GetCollisionMask() & colliderB->GetCollisionAttribute();
-            bool bCanHitA = colliderB->GetCollisionMask() & colliderA->GetCollisionAttribute();
+            Collider* a = *itrA;
+            Collider* b = *itrB;
 
-            if (!(aCanHitB && bCanHitA)) {
+            //========================
+            // マスクチェック
+            //========================
+            bool canCollision = (a->GetAttribute() & b->GetMask()) || (b->GetAttribute() & a->GetMask());
+
+            if (!canCollision) {
+                // 衝突可能な組み合わせでなければ次の組み合わせへ
                 continue;
             }
 
-            // 衝突判定
-            if (MyEngine::Collision::IsOBBIntersect(colliderA->GetOBB(), colliderB->GetOBB())) {
-                colliderA->OnCollision(colliderB);
-                colliderB->OnCollision(colliderA);
+            //========================
+            // OBB判定
+            //========================
+            if (CollisionUtils::CheckOBB(a->GetOBB(), b->GetOBB())) {
+                // 衝突があった場合、両方のコライダーに衝突を通知
+                a->OnCollision(b);
+                b->OnCollision(a);
             }
         }
     }
@@ -9433,19 +9497,24 @@ namespace MyGame {
         CollisionManager() = default;
         // シングルトンインスタンスの取得
         static CollisionManager* GetInstance();             
-        // 終了
+        /// <summary>
+		/// 終了処理
+        /// </summary>
         void Finalize();
-
-        // 全判定の実行
+        /// <summary>
+		/// 全てのコライダーの組み合わせに対して衝突判定を行い、衝突があればコールバックを呼び出す。
+        /// </summary>
         void CheckAllCollisions();
-
-        void RegisterCollider(Collider* collider) {
-            colliders_.push_back(collider);
-        }
-
-        void UnregisterCollider(Collider* collider) {
-            colliders_.remove(collider);
-        }
+        /// <summary>
+		/// コライダーを登録する。登録されたコライダーは衝突判定の対象になる。
+        /// </summary>
+        /// <param name="collider"></param>
+        void RegisterCollider(Collider* collider) { colliders_.push_back(collider); }
+        /// <summary>
+		/// コライダーの登録を解除する。登録解除されたコライダーは衝突判定の対象から外れる。
+        /// </summary>
+        /// <param name="collider"></param>
+        void UnregisterCollider(Collider* collider) { colliders_.remove(collider); }
     private: // メンバ変数
 		std::list<Collider*> colliders_; // 登録されたコライダーのリスト
     };
@@ -9458,20 +9527,47 @@ File Path: project/application/collision/CollisionUtils.h
 #include <OBB.h>
 #include <MatrixVector.h>
 #include <Object3d.h>
+#ifdef min
+#undef min
+#endif
+#ifdef max
+#undef max
+#endif
 
 namespace MyGame {
     /// <summary>
-	/// 衝突判定に関する共通関数をまとめたクラス
+    /// 衝突判定に関する共通関数をまとめたクラス
     /// </summary>
     class CollisionUtils {
     public:
+        /// <summary>
+		/// OBB同士の衝突判定関数
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <returns></returns>
+        static bool CheckOBB(const MyEngine::OBB& a, const MyEngine::OBB& b) {
+			// 簡易的な球判定で事前に大まかな衝突をチェック
+            MyEngine::Vector3 diff = a.center - b.center;
+			// 距離の二乗を計算
+            float distanceSq = (diff.x * diff.x) + (diff.y * diff.y) + (diff.z * diff.z);
+			// OBBの最大半分サイズを半径とみなす
+            float radiusA = std::max({ a.halfSize.x, a.halfSize.y, a.halfSize.z });
+			// OBBの最大半分サイズを半径とみなす
+            float radiusB = std::max({ b.halfSize.x, b.halfSize.y, b.halfSize.z });
+			// 半径の合計を計算
+            float radius = radiusA + radiusB;
+			// 距離の二乗が半径の二乗以下なら、さらに詳細なOBB同士の衝突判定を行う
+            return distanceSq <= radius * radius;
+        };
+
         /// <summary>
         /// Object3d情報からOBBを生成する共通関数
         /// </summary>
         static MyEngine::OBB CreateOBB(const MyEngine::Object3d* object, const MyEngine::Vector3& sizeOffset = { 1.0f, 1.0f, 1.0f }) {
             MyEngine::OBB obb;
             // 中心座標
-            obb.center = object->GetTransform().translate;     
+            obb.center = object->GetTransform().translate;
             MyEngine::Vector3 size = object->GetModel()->GetSize();
             // オブジェクトによって倍率を変えたい場合は引数の倍率を変える
             obb.halfSize = {
@@ -10774,7 +10870,7 @@ namespace MyGame {
         }
 
         // ボタンでStep3に進める
-        if (Input::GetInstance()->Triggrkey(DIK_RETURN) && UIManager::GetInstance()->GetUI<GameClearUI>()->GetUI01Finished()) {
+        if (Input::GetInstance()->TriggerKey(DIK_RETURN) && UIManager::GetInstance()->GetUI<GameClearUI>()->GetUI01Finished()) {
             if (!step2FinishPlayerEase_) {
                 UIManager::GetInstance()->GetUI<GameClearUI>()->UI01Finished();
                 UIManager::GetInstance()->GetUI<GameClearUI>()->StartBack();
@@ -11110,9 +11206,7 @@ namespace MyGame {
 
         // ステージマネージャの初期化
         StageManager::GetInstance()->Initialize(); 
-        StageManager::GetInstance()->SetClearwallTranslate(
-            CameraManager::GetInstance()->GetCurrentBehaviorAs<GamePlayCamera>()->GetRailEndPosition()
-        );
+        StageManager::GetInstance()->SetClearwallTranslate(CameraManager::GetInstance()->GetCurrentBehaviorAs<GamePlayCamera>()->GetRailEndPosition());
 
         GamePlayUI* gameplayUI = UIManager::GetInstance()->GetUI<GamePlayUI>();
         if (gameplayUI) {
@@ -11120,6 +11214,7 @@ namespace MyGame {
         }
         // UIマネージャの初期化
         UIManager::GetInstance()->Initialize();
+
         FadeManager::GetInstance()->StartFade(FadeType::FadeIn, FadeStyle::SilhouetteExplode, 1.0f);
 
         isGameStartEventDone_ = true;
@@ -11128,20 +11223,23 @@ namespace MyGame {
     void GamePlayScene::Update() {
         // カメラマネージャの更新
         CameraManager::GetInstance()->Update();
+#pragma region 全てのObject3d個々の更新処理      
+        if (!UIManager::GetInstance()->GetUI<GamePlayUI>()->GetPauseMenu()->IsActive() &&
+            Input::GetInstance()->TriggerKey(DIK_TAB)) {
+            UIManager::GetInstance()->GetUI<GamePlayUI>()->GetPauseMenu()->SetActive(true);
+        }
+        
+        if (UIManager::GetInstance()->GetUI<GamePlayUI>()->GetPauseMenu()->IsActive()) {
+            UIManager::GetInstance()->GetUI<GamePlayUI>()->GetPauseMenu()->Update();
+            FadeManager::GetInstance()->Update();
+            return;
+        }
 
-#pragma region 全てのObject3d個々の更新処理       
         //  ゲーム開始前のイベント処理
         if (!isGameStartEventDone_) {
             // ゲーム開始イベントの開始
             EventManager::GetInstance()->EventStart(Event::EventState::GameStart);
             isGameStartEventDone_ = true;
-        }
-           
-        if (Input::GetInstance()->Triggrkey(DIK_RETURN)) {
-            // フェードアウト            
-            // FadeManager::GetInstance()->SceneChangeFade(SceneName::GAMECLEAR, FadeStyle::SilhouetteExplode, 1.0f);
-            //CameraManager::GetInstance()->GetCurrentBehaviorAs<GamePlayCamera>()->SetCameraState(CameraState::LockOn);
-            //player_->ChangeState(std::make_unique<PlayerStateDead>());
         }
 
         // 敵スポーン
@@ -11150,6 +11248,7 @@ namespace MyGame {
         // 敵更新
         for (auto& enemy : enemies_) {
             enemy->Update();
+			enemy->SetPlayer(player_.get());
         }
 
         enemies_.erase(
@@ -11174,8 +11273,8 @@ namespace MyGame {
         StageManager::GetInstance()->Update();
         // イベントマネージャの更新
         EventManager::GetInstance()->Update();
-        // 全ての衝突をチェック
-        //CollisionManager::GetInstance()->CheckAllCollisions();
+        // 全ての衝突をチェック 
+        CollisionManager::GetInstance()->CheckAllCollisions();
 
         // ゲームクリアの条件をチェック
         if (CameraManager::GetInstance()->GetCurrentBehaviorAs<GamePlayCamera>()->GetProgress() >= 1.0f) {
@@ -11269,13 +11368,10 @@ namespace MyGame {
         /// </summary>
         void Draw() override;
     private: // メンバ変数
-        std::unique_ptr <Player> player_;
-        std::unique_ptr<EnemySpawner> enemySpawner_;
-        std::vector<std::unique_ptr<Enemy>> enemies_;
-
-        bool isGameStartEventDone_;
-
-
+		std::unique_ptr <Player> player_;            // プレイヤー
+		std::unique_ptr<EnemySpawner> enemySpawner_; // 敵スポーン管理クラス
+		std::vector<std::unique_ptr<Enemy>> enemies_; // 敵キャラクターのリスト
+		bool isGameStartEventDone_; //   ゲーム開始イベントが完了したかどうかのフラグ
     };
 }
 
@@ -11414,7 +11510,7 @@ namespace MyGame {
 		// =========================
 		// Enterで遷移開始
 		// =========================
-		if (Input::GetInstance()->Triggrkey(DIK_RETURN) && titleUI->IsFinished()) {
+		if (Input::GetInstance()->TriggerKey(DIK_RETURN) && titleUI->IsFinished()) {
 			titleUI->StartReverse();
 		}
 
@@ -11648,27 +11744,32 @@ namespace MyGame {
     /// 初期化・更新・描画のインターフェースを定義
     /// </summary>
     class BaseUI {
-    public:
-        /// デストラクタ
+	public: // メンバ関数
+        /// <summary>
+		/// デストラクタ
+        /// </summary>
         virtual ~BaseUI() = default;
-
-        /// 初期化
+        /// <summary>
+		/// 初期化処理
+        /// </summary>
         virtual void Initialize() = 0;
-
-        /// 更新
+        /// <summary>
+		/// 更新処理
+        /// </summary>
         virtual void Update() = 0;
-
-        /// 描画
+        /// <summary>
+		/// 描画処理
+        /// </summary>
         virtual void Draw() = 0;
-
-        /// 表示フラグ操作
+		// UIの表示・更新を行うかどうか設定
         void SetActive(bool isActive) { isActive_ = isActive; }
+		// UIの表示・更新を行うかどうか取得
         bool IsActive() const { return isActive_; }
         // どのシーン用のUIか設定・取得
         void SetTargetSceneName(const std::string& name) { sceneName_ = name; }
+		// どのシーン用のUIか取得
         const std::string& GetTargetSceneName() const { return sceneName_; }
-
-    protected:
+	protected: // メンバ変数
         bool isActive_ = true;   // 表示・更新を行うかどうか
         std::string sceneName_; //  シーン名
     };
@@ -12533,31 +12634,21 @@ using namespace AssetGen::LoadResourceID::Textures;
 using namespace Easing;
 
 namespace MyGame {
-    void GamePlayUI::Initialize() {
-        TextureManager::GetInstance()->LoadTexture(Operationui::W);
-        TextureManager::GetInstance()->LoadTexture(Operationui::A);
-        TextureManager::GetInstance()->LoadTexture(Operationui::S);
-        TextureManager::GetInstance()->LoadTexture(Operationui::D);
-        TextureManager::GetInstance()->LoadTexture(Operationui::ArrowUp);
-        TextureManager::GetInstance()->LoadTexture(Operationui::ArrowLeft);
-        TextureManager::GetInstance()->LoadTexture(Operationui::ArrowDown);
-        TextureManager::GetInstance()->LoadTexture(Operationui::ArrowRight);
-        TextureManager::GetInstance()->LoadTexture(Operationui::SPACEKey);
-        TextureManager::GetInstance()->LoadTexture(Operationui::SHIFT);
+    void GamePlayUI::Initialize() { 
+        // 操作UIテクスチャ一覧
+        const std::array<const char*, 22> operationTextures = {
+            Operationui::W,Operationui::A,Operationui::S,Operationui::D,
+            Operationui::ArrowUp,Operationui::ArrowLeft,Operationui::ArrowDown,
+            Operationui::ArrowRight,Operationui::SPACEKey,Operationui::SHIFT,Operationui::W_RED,
+            Operationui::A_RED,Operationui::S_RED,Operationui::D_RED,Operationui::ArrowUp_RED,
+            Operationui::ArrowLeft_RED,Operationui::ArrowDown_RED,Operationui::ArrowRight_RED,Operationui::SPACEKey_RED,
+            Operationui::SHIFT_RED,Ui::Gage,Ui::Player_ui
+        };
 
-        TextureManager::GetInstance()->LoadTexture(Operationui::W_RED);
-        TextureManager::GetInstance()->LoadTexture(Operationui::A_RED);
-        TextureManager::GetInstance()->LoadTexture(Operationui::S_RED);
-        TextureManager::GetInstance()->LoadTexture(Operationui::D_RED);
-        TextureManager::GetInstance()->LoadTexture(Operationui::ArrowUp_RED);
-        TextureManager::GetInstance()->LoadTexture(Operationui::ArrowLeft_RED);
-        TextureManager::GetInstance()->LoadTexture(Operationui::ArrowDown_RED);
-        TextureManager::GetInstance()->LoadTexture(Operationui::ArrowRight_RED);
-        TextureManager::GetInstance()->LoadTexture(Operationui::SPACEKey_RED);
-        TextureManager::GetInstance()->LoadTexture(Operationui::SHIFT_RED);
-
-        TextureManager::GetInstance()->LoadTexture(Ui::Gage);
-        TextureManager::GetInstance()->LoadTexture(Ui::Player_ui);
+        // 操作UIをまとめて読み込み
+        for (const auto& texture : operationTextures) {
+            TextureManager::GetInstance()->LoadTexture(texture);
+        }
 
         gage_ = Sprite::Create(Ui::Gage, Vector2{ 380.0f, 10.0f }, 0.0f, Vector2{ 500.0f,30.0f });
         player_ui_ = Sprite::Create(Ui::Player_ui, Vector2{ 380.0f, 12.3f }, 0.0f, Vector2{ 25.0f,25.0f });
@@ -12577,9 +12668,15 @@ namespace MyGame {
         isAnimating_ = true;
         timer_ = 0.0f;
         duration_ = 0.5f;
+
+        pausemenu_ = std::make_unique<Pausemenu>();
+        pausemenu_->Initialize();
     }
 
     void GamePlayUI::Update() {
+		// ポーズ画面の更新
+        pausemenu_->Update();
+
         UpdateStageProgressUI();
 
         gage_->Update();
@@ -12593,7 +12690,8 @@ namespace MyGame {
     }
 
     void GamePlayUI::Draw() {
-
+		// ポーズ画面の描画
+        pausemenu_->Draw();
 
         gage_->Draw();
         player_ui_->Draw();
@@ -12677,19 +12775,19 @@ namespace MyGame {
     void GamePlayUI::UpdateControlUI() {
         Input* input = Input::GetInstance();
         // === WASD ===
-        uis_[0]->SetTexture(input->Pushkey(DIK_W) ? Operationui::W_RED : Operationui::W);
-        uis_[1]->SetTexture(input->Pushkey(DIK_A) ? Operationui::A_RED : Operationui::A);
-        uis_[2]->SetTexture(input->Pushkey(DIK_S) ? Operationui::S_RED : Operationui::S);
-        uis_[3]->SetTexture(input->Pushkey(DIK_D) ? Operationui::D_RED : Operationui::D);
+        uis_[0]->SetTexture(input->PushKey(DIK_W) ? Operationui::W_RED : Operationui::W);
+        uis_[1]->SetTexture(input->PushKey(DIK_A) ? Operationui::A_RED : Operationui::A);
+        uis_[2]->SetTexture(input->PushKey(DIK_S) ? Operationui::S_RED : Operationui::S);
+        uis_[3]->SetTexture(input->PushKey(DIK_D) ? Operationui::D_RED : Operationui::D);
 
         // === Arrow ===
-        uis_[4]->SetTexture(input->Pushkey(DIK_UP) ? Operationui::ArrowUp_RED : Operationui::ArrowUp);
-        uis_[5]->SetTexture(input->Pushkey(DIK_RIGHT) ? Operationui::ArrowRight_RED : Operationui::ArrowRight);
-        uis_[6]->SetTexture(input->Pushkey(DIK_DOWN) ? Operationui::ArrowDown_RED : Operationui::ArrowDown);
-        uis_[7]->SetTexture(input->Pushkey(DIK_LEFT) ? Operationui::ArrowLeft_RED : Operationui::ArrowLeft);
+        uis_[4]->SetTexture(input->PushKey(DIK_UP) ? Operationui::ArrowUp_RED : Operationui::ArrowUp);
+        uis_[5]->SetTexture(input->PushKey(DIK_RIGHT) ? Operationui::ArrowRight_RED : Operationui::ArrowRight);
+        uis_[6]->SetTexture(input->PushKey(DIK_DOWN) ? Operationui::ArrowDown_RED : Operationui::ArrowDown);
+        uis_[7]->SetTexture(input->PushKey(DIK_LEFT) ? Operationui::ArrowLeft_RED : Operationui::ArrowLeft);
 
         // === SPACE / SHIFT ===
-        uis_[8]->SetTexture(input->Pushkey(DIK_SPACE) ? Operationui::SPACEKey_RED : Operationui::SPACEKey);
+        uis_[8]->SetTexture(input->PushKey(DIK_SPACE) ? Operationui::SPACEKey_RED : Operationui::SPACEKey);
 
         if (!player_) return;
         bool canDash = player_->GetMove()->GetDashing();
@@ -12703,7 +12801,7 @@ namespace MyGame {
             // 【ダッシュ準備完了】
             uis_[9]->SetColor({ 1.0f, 1.0f, 1.0f, 1.0f });
             // 通常時：SHIFT（白など）、押している間：SHIFT_RED（赤）
-            uis_[9]->SetTexture(input->Pushkey(DIK_LSHIFT) ? Operationui::SHIFT_RED : Operationui::SHIFT);
+            uis_[9]->SetTexture(input->PushKey(DIK_LSHIFT) ? Operationui::SHIFT_RED : Operationui::SHIFT);
         }
     }
 
@@ -12736,19 +12834,29 @@ File Path: project/application/ui/scene/GamePlayUI.h
 #pragma once
 #include <BaseUI.h>
 #include <Vector2.h>
+#include <Pausemenu.h>
 
 namespace MyGame {
-
     // 前方宣言
     class Player;
 
+    /// <summary>
+	/// ゲームプレイシーンのUIを管理するクラス
+    /// </summary>
     class GamePlayUI : public BaseUI {
     public: // メンバ関数
+        /// <summary>
+		/// 初期化処理
+        /// </summary>
         void Initialize() override;
+        /// <summary>
+		/// 更新処理
+        /// </summary>
         void Update() override;
+        /// <summary>
+		/// 描画処理
+        /// </summary>
         void Draw() override;
-        // アニメーション開始トリガー
-     //   void StartControlUIAnimation();
         void SetPlayer(Player* player) { player_ = player; }
     private: // プレイベートメンバ関数
         void UpdateStageProgressUI();
@@ -12758,6 +12866,7 @@ namespace MyGame {
         void UpdateControlUI();
         void UpdateControlUIAnimation();
     private: // メンバ変数
+        std::unique_ptr<Pausemenu> pausemenu_;
         std::vector<std::unique_ptr<MyEngine::Sprite>> uis_;
         std::vector<MyEngine::Vector2> uiOriginalSizes_;
         Player* player_ = nullptr;
@@ -12770,6 +12879,8 @@ namespace MyGame {
     
         bool uiProgressStarted_ = false;
         bool uiProgressFinished_ = false;
+        public: // アクセッサ
+         Pausemenu* GetPauseMenu() const { return pausemenu_.get(); }
     };
 }
 
@@ -12988,6 +13099,519 @@ namespace MyGame {
         bool isStarted_ = false;
         bool PlayingOut = false;
         bool isReverseFinished_ = false; 
+    };
+}
+
+============================================================
+File Path: project/application/ui/scene/pause/Pausemenu.cpp
+============================================================
+#include "Pausemenu.h"
+#include <TextureManager.h>
+#include <Input.h>
+#include <Easing.h>
+#include <SceneManager.h>
+#include <FadeManager.h>
+#include <ImGuiManager.h>
+#include <SceneName.h>
+#ifdef min
+#undef min
+#endif
+#ifdef max
+#undef max
+#endif
+// AssetGeneratorからインクルード
+#include <subproject/AssetGenerator/engine/generator/LoadResourceID.h>
+
+using namespace MyEngine;
+using namespace AssetGen::LoadResourceID;
+using namespace Easing;
+
+namespace MyGame {
+    void Pausemenu::Initialize() {
+        TextureManager::GetInstance()->LoadTexture(Textures::Pausemenu::PauseMenuPanel);
+        TextureManager::GetInstance()->LoadTexture(Textures::Pausemenu::Poseicon);
+        TextureManager::GetInstance()->LoadTexture(Textures::Pausemenu::Poseicon_red);
+        TextureManager::GetInstance()->LoadTexture(Textures::Pausemenu::menu_01);
+        TextureManager::GetInstance()->LoadTexture(Textures::Pausemenu::menu_02);
+        TextureManager::GetInstance()->LoadTexture(Textures::Pausemenu::menu_03);
+        TextureManager::GetInstance()->LoadTexture(Textures::Pausemenu::menu_04);
+        TextureManager::GetInstance()->LoadTexture(Textures::Pausemenu::Arrow);
+
+        // 初期状態は非アクティブ
+        isActive_ = false;
+        // ポーズアイコンの作成
+        paused_ = Sprite::Create(Textures::Pausemenu::Poseicon, Vector2{ 3.0f, 3.0f }, 0.0f, Vector2{ 100.0f,100.0f });
+
+        isOpening_ = false;
+        isClosing_ = false;
+        openTimer_ = 0.0f;
+        // パネルUIの作成
+        for (uint32_t i = 0; i < 2; i++) {
+            UIElement element;
+            element.size = { 700.0f, 400.0f };
+            element.position = { 640.0f, 350.0f };
+            element.position.x += (350.0f + 700.0f) * i; // 横にずらす
+            // 初期位置（画面下）
+            Vector2 startPos = element.position;
+            startPos.y = 1000.0f;
+            element.sprite = Sprite::Create(Textures::Pausemenu::PauseMenuPanel, startPos, 0.0f, element.size);
+            element.sprite->SetAnchorPoint({ 0.5f,0.5f });
+            if (i == 1) {
+                element.sprite->SetTextureLeftTop({ 700.0f,0.0f });
+            }
+            panels_.push_back(std::move(element));
+        }
+
+        // テクスチャ読み込み
+        std::string textures[] = {
+            Textures::Pausemenu::menu_01, Textures::Pausemenu::menu_03,
+            Textures::Pausemenu::menu_02, Textures::Pausemenu::menu_04
+        };
+        // コマンドUIの作成
+        for (uint32_t i = 0; i < kMaxCommand; ++i) {
+            UIElement command;
+            command.size = { 200.0f,70.0f };
+            if (i == static_cast<uint32_t>(PauseCommand::Turnback)) {
+                commandPanelIndex_[i] = 1;
+            } else {
+                commandPanelIndex_[i] = 0;
+            }
+            if (i == 3) {
+                commandOffset_[i] = { 0.0f,((i - 1) * kMenuIntervalY) };
+            } else {
+                commandOffset_[i] = { 0.0f,(i * kMenuIntervalY) };
+            }
+            Vector2 panelPos = panels_[commandPanelIndex_[i]].sprite->GetPosition();
+            Vector2 pos{ panelPos.x,panelPos.y + commandOffset_[i].y - 20.0f };
+            command.sprite = Sprite::Create(textures[i], pos, 0.0f, command.size);
+            command.sprite->SetAnchorPoint({ 0.5f,0.5f });
+            commands_[i].push_back(std::move(command));
+        }
+
+        arrow_.size = { 50.0f,50.0f };
+        arrow_.position = { commands_[selectedIndex_][0].sprite->GetPosition().x + kArrowOffsetX , commands_[selectedIndex_][0].sprite->GetPosition().y };
+        arrow_.sprite = Sprite::Create(Textures::Pausemenu::Arrow, arrow_.position, 0.0f, arrow_.size);
+        arrow_.sprite->SetAnchorPoint(Vector2{ 0.5f,0.5f });
+
+        selectedIndex_ = 0;
+        fige = false;
+    }
+
+    void Pausemenu::Update() {
+        if (isOpening_) {
+            openTimer_++;
+            float t = std::clamp(openTimer_ / kOpenMaxFrame, 0.0f, 1.0f);
+            // 既存のイージング関数を使用
+            float easeT = EaseOutBack(t);
+
+
+            for (uint32_t i = 0; i < panels_.size(); i++) {
+                Vector2 targetPos = panels_[i].position;
+                Vector2 targetSize = panels_[i].size;
+                float startY = 1000.0f;
+                float currentY = startY + (targetPos.y - startY) * easeT;
+                // サイズ補間
+                Vector2 currentSize{ targetSize.x * easeT,                    targetSize.y * easeT };
+
+                panels_[i].sprite->SetPosition({ targetPos.x, currentY });
+                panels_[i].sprite->SetSize(currentSize);
+            }
+            if (openTimer_ >= kOpenMaxFrame) {
+                isOpening_ = false;
+                fige = true;
+            }
+        }
+        // 閉じるアニメーション
+        if (isClosing_) {
+            openTimer_++;
+            float t = std::clamp(openTimer_ / kOpenMaxFrame, 0.0f, 1.0f);
+            float easeT = EaseOutBack(t);
+            float reverseT = 1.0f - easeT;
+
+            for (UIElement& panel : panels_) {
+
+                Vector2 targetSize = panel.size;
+
+                float currentY = std::lerp(panel.position.y, 1000.0f, easeT);
+
+                Vector2 currentSize{
+                    targetSize.x * reverseT,
+                    targetSize.y * reverseT
+                };
+
+                panel.sprite->SetPosition({ panel.position.x, currentY });
+                panel.sprite->SetSize(currentSize);
+            }
+
+            if (openTimer_ >= kOpenMaxFrame) {
+
+                isClosing_ = false;
+                isActive_ = false; // ここでポーズ解除
+            }
+        }
+
+        if (isActive_) {
+            paused_->SetTexture(Textures::Pausemenu::Poseicon_red);
+            keyUpdate();
+            ExecuteCommand(); // コマンド実行
+        } else {
+            paused_->SetTexture(Textures::Pausemenu::Poseicon);
+        }
+
+        if (isOperationMove_) {
+            UpdateOperationMove();
+        }
+
+        paused_->Update();
+        arrow_.sprite->Update();
+
+        for (UIElement& panel : panels_) {
+            panel.sprite->Update();
+        }
+
+        for (std::vector<UIElement>& commandList : commands_) {
+            for (UIElement& command : commandList) {
+                command.sprite->Update();
+            }
+        }
+    }
+
+    void Pausemenu::Draw() {
+        paused_->Draw();
+
+        for (UIElement& panel : panels_) {
+            panel.sprite->Draw();
+        }
+
+        for (std::vector<UIElement>& commandList : commands_) {
+            for (UIElement& command : commandList) {
+                command.sprite->Draw();
+            }
+        }
+
+        arrow_.sprite->Draw();
+    }
+
+    void Pausemenu::keyUpdate() {
+        // コマンド実行中は選択処理をしない
+        if (!isCommandRunning_) {
+
+            // 下
+            if (Input::GetInstance()->TriggerKey(DIK_DOWN)) {
+                selectedIndex_++;
+                if (!isOperationMode_ && selectedIndex_ == static_cast<uint32_t>(PauseCommand::Turnback)) {
+                    selectedIndex_ = 0;
+                }
+                if (selectedIndex_ >= kMaxCommand) {
+                    selectedIndex_ = 0;
+                }
+                UpdateArrowPositions();
+            }
+
+            // 上
+            if (Input::GetInstance()->TriggerKey(DIK_UP)) {
+                if (selectedIndex_ == 0) {
+                    selectedIndex_ = kMaxCommand - 1;
+                } else {
+                    selectedIndex_--;
+                }
+
+                if (!isOperationMode_ && selectedIndex_ == static_cast<uint32_t>(PauseCommand::Turnback)) {
+                    selectedIndex_--;
+                }
+                UpdateArrowPositions();
+            }
+        }
+    }
+
+    void Pausemenu::UpdateArrowPositions() {
+        if (commands_[selectedIndex_].empty()) {
+            return;
+        }
+        Vector2 targetPos = commands_[selectedIndex_][0].sprite->GetPosition();
+
+        arrow_.sprite->SetPosition(Vector2{ targetPos.x + kArrowOffsetX,targetPos.y });
+    }
+
+    void Pausemenu::ExecuteCommand() {
+
+        if (!isOperationMove_ && Input::GetInstance()->TriggerKey(DIK_RETURN)) {
+            command_ = static_cast<PauseCommand>(selectedIndex_);
+
+            switch (command_) {
+            case PauseCommand::Resume:
+                if (fige) {
+                    isClosing_ = true;
+                    isOpening_ = false;
+                    openTimer_ = 0.0f;
+                    fige = false;
+                }
+                break;
+            case PauseCommand::Operation:
+                isOperationMode_ = true;
+                isCommandRunning_ = true;
+                isOperationMove_ = true;
+                operationTimer_ = 0.0f;
+                panel1Start_ = { kPanelCenterX, panels_[0].sprite->GetPosition().y };
+                panel1End_ = { kPanelLeftX,   panels_[0].sprite->GetPosition().y };
+
+                panel2Start_ = { kPanelRightX, panels_[1].sprite->GetPosition().y };
+                panel2End_ = { kPanelCenterX, panels_[1].sprite->GetPosition().y };
+
+                for (uint32_t i = 0; i < kMaxCommand; i++) {
+                    if (commands_[i].empty()) continue;
+
+                    Vector2 pos = commands_[i][0].sprite->GetPosition();
+                    commandStart_[i] = pos;
+
+                    // Turnbackだけパネル2へ
+                    if (i == static_cast<uint32_t>(PauseCommand::Turnback)) {
+                        commandEnd_[i] = {
+                            kPanelCenterX,
+                            pos.y
+                        };
+                    } else {
+                        // panel1と一緒に左へ
+                        commandEnd_[i] = {
+                            pos.x + (kPanelLeftX - kPanelCenterX),
+                            pos.y
+                        };
+                    }
+                }
+                selectedIndex_ = static_cast<uint32_t>(PauseCommand::Turnback);
+                UpdateArrowPositions();
+                break;
+            case PauseCommand::GoToTitle:
+                isCommandRunning_ = true;
+
+                // フェードアウト
+                FadeManager::GetInstance()->SceneChangeFade(SceneName::TITLE, FadeStyle::Normal, 1.0f);
+
+                break;
+            case PauseCommand::Turnback:
+                if (isOperationMode_) {
+
+                    isOperationMode_ = false;
+                    isCommandRunning_ = false;
+
+                    isOperationMove_ = true;
+                    operationTimer_ = 0.0f;
+
+                    panel1Start_ = { kPanelLeftX, panels_[0].sprite->GetPosition().y };
+                    panel1End_ = { kPanelCenterX, panels_[0].sprite->GetPosition().y };
+
+                    panel2Start_ = { kPanelCenterX, panels_[1].sprite->GetPosition().y };
+                    panel2End_ = { kPanelRightX, panels_[1].sprite->GetPosition().y };
+
+                    for (uint32_t i = 0; i < kMaxCommand; i++) {
+
+                        if (commands_[i].empty()) continue;
+
+                        Vector2 pos = commands_[i][0].sprite->GetPosition();
+                        commandStart_[i] = pos;
+
+                        commandEnd_[i] = {
+                            640.0f,
+                            kMenuTopY + (i * kMenuIntervalY)
+                        };
+                    }
+
+                    selectedIndex_ = static_cast<uint32_t>(PauseCommand::Operation);
+                    UpdateArrowPositions();
+                }
+
+                break;
+            default:
+                break;
+            }
+        }
+
+        for (uint32_t i = 0; i < kMaxCommand; i++) {
+
+            if (commands_[i].empty()) {
+                continue;
+            }
+
+            UIElement& command = commands_[i][0];
+
+            // Turnback以外
+            if (i == selectedIndex_ && i != static_cast<uint32_t>(PauseCommand::Turnback)) {
+                command.sprite->SetTextureLeftTop({ 200.0f, 0.0f });
+            } else {
+                command.sprite->SetTextureLeftTop({ 0.0f, 0.0f });
+            }
+        }
+        UpdateCommandPosition();
+    }
+
+    void Pausemenu::UpdateOperationMove() {
+        operationTimer_ += 1.0f / 60.0f;
+
+        float t = operationTimer_ / operationDuration_;
+
+        if (t >= 1.0f) {
+            t = 1.0f;
+            isOperationMove_ = false;
+        }
+
+        float ease = EaseOutBack(t);
+
+        // パネル
+        Vector2 p1{
+            Lerp(panel1Start_.x, panel1End_.x, ease),
+            Lerp(panel1Start_.y, panel1End_.y, ease)
+        };
+
+        Vector2 p2{
+            Lerp(panel2Start_.x, panel2End_.x, ease),
+            Lerp(panel2Start_.y, panel2End_.y, ease)
+        };
+
+        panels_[0].sprite->SetPosition(p1);
+        panels_[1].sprite->SetPosition(p2);
+    }
+
+    void Pausemenu::UpdateCommandPosition() {
+        for (uint32_t i = 0; i < kMaxCommand; i++) {
+
+            if (commands_[i].empty()) continue;
+
+            int panelIndex = commandPanelIndex_[i];
+
+            Vector2 panelPos = panels_[panelIndex].sprite->GetPosition();
+
+            Vector2 pos{
+                panelPos.x,
+                panelPos.y + commandOffset_[i].y
+            };
+
+            commands_[i][0].sprite->SetPosition(pos);
+        }
+
+        UpdateArrowPositions();
+    }
+}
+
+============================================================
+File Path: project/application/ui/scene/pause/Pausemenu.h
+============================================================
+#pragma once
+#include<Object3d.h>
+#include<Sprite.h>
+#include <vector>
+#include <memory>
+    
+// ポーズメニューの選択肢
+enum class PauseCommand {
+    Resume,     // ゲーム再開
+    Operation,  // 操作説明
+    GoToTitle,  // タイトルへ
+    Turnback,   // 戻る 
+    kCount,     // 要素数カウント用（常に最後に置く）
+    None        // 選択中
+};
+
+// UIパーツごとの演出データをまとめた構造体
+struct UIElement {
+    std::unique_ptr<MyEngine::Sprite> sprite;
+    MyEngine::Vector2 position;
+    MyEngine::Vector2 size;   // サイズ
+};
+
+namespace MyGame {
+    /// <summary>
+    /// 各演出を管理するクラス
+    /// </summary>
+    class Pausemenu {
+    public: // メンバ関数 
+        /// <summary>
+        /// 初期化処理
+        /// </summary>
+        void Initialize();
+        /// <summary>
+        /// 更新処理
+        /// </summary>
+        void Update();
+        /// <summary>
+        /// 描画処理
+        /// </summary>
+        void Draw();
+
+        void keyUpdate();
+        void UpdateArrowPositions();
+        void ExecuteCommand();
+
+        void UpdateOperationMove();
+        void UpdateCommandPosition();
+    private: // メンバ変数
+        bool isActive_;  // メニューがアクティブか
+        std::unique_ptr <MyEngine::Sprite> paused_;
+        // UIパーツをまとめて管理
+        std::vector<UIElement> panels_;
+        std::vector<MyEngine::Vector2> panelTargetPos_;
+
+        PauseCommand command_ = PauseCommand::None;
+        static const uint32_t kMaxCommand = static_cast<uint32_t>(PauseCommand::kCount);
+        std::vector<UIElement> commands_[kMaxCommand];
+        uint32_t selectedIndex_; // 現在選んでいる項目
+        MyEngine::Vector2 commandOffset_[kMaxCommand];
+        int commandPanelIndex_[kMaxCommand];
+        MyEngine::Vector2 commandStart_[kMaxCommand];
+        MyEngine::Vector2 commandEnd_[kMaxCommand];
+        // 配置用定数
+        const float kMenuTopY = 250.0f;     // 最初の項目のY座標
+        const float kMenuIntervalY = 80.0f; // 項目間の間隔
+        const float kArrowOffsetX = 170.0f; // 項目中心から見た矢印の右オフセット
+
+        UIElement arrow_; // 選択中の項目を示す矢印UI
+
+
+        bool isOperationMove_ = false;
+
+        float operationTimer_ = 0.0f;
+        const float operationDuration_ = 0.5f;
+
+        static constexpr float kPanelCenterX = 640.0f;
+        static constexpr float kPanelRightX = 1980.0f;
+        static constexpr float kPanelLeftX = -1280.0f;
+        MyEngine::Vector2 panel1Start_;
+        MyEngine::Vector2 panel1End_;
+
+        MyEngine::Vector2 panel2Start_;
+        MyEngine::Vector2 panel2End_;
+        bool isOperationMode_ = false;
+        bool isCommandRunning_ = false; // コマンド実行中
+
+
+        float frame_;           // 現在の経過フレーム
+        const float kMaxFrame = 30.0f; // アニメーションにかける時間（30フレーム = 約0.5秒）   
+        bool isFinished_ = false; // 閉じる演出が完全に終わった
+
+        float panelStartOffsetY_;
+
+        float openTimer_;
+        bool isOpening_;
+        bool isClosing_;
+        static constexpr float kOpenMaxFrame = 20.0f;
+        bool fige;
+    public: // メンバ関数 
+        // シーン側から状況を確認するための関数
+        PauseCommand GetCommand() const { return command_; }
+
+        bool IsActive() const { return isActive_; }
+
+        // ポーズメニューを起動する（または閉じる準備をする）
+        void SetActive(bool active) {
+            if (active) {
+                isOpening_ = true;
+                openTimer_ = 0.0f;
+            }
+            isActive_ = active;
+        }
+
+        bool IsOpening_() const { return isOpening_; }
+    
+    
     };
 }
 
@@ -16892,8 +17516,10 @@ File Path: project/engine/editor/core/EditorManager.cpp
 #include <ConsoleWindow.h>
 #include <externals/imgui/imgui_internal.h>
 #include <EditorEntityRegistry.h>
+#include <Input.h>
 #include <ObjectMenu.h>
 #include <CameraMenu.h>
+
 
 namespace MyEngine {
     // 静的メンバ変数の定義
@@ -16914,11 +17540,13 @@ namespace MyEngine {
 
     void EditorManager::Initialize() {
 #ifdef USE_IMGUI
-        MessageService::Initialize(); // メッセージサービスの初期化（これで言語データがロードされる）
-        // 1. レイアウト管理のインスタンス化
+        // メッセージサービスの初期化
+        MessageService::Initialize();
+        // レイアウト管理のインスタンス化
         layout_ = std::make_unique<EditorLayout>();
+		// レイアウトの初期化
         layout_->Initialize();
-        // 重要：LogWindowを管理リストに追加する
+        // LogWindowを管理リストに追加する
         windows_.push_back(std::make_unique<ConsoleWindow>());
 #endif // USE_IMGUI
     }
@@ -16926,8 +17554,18 @@ namespace MyEngine {
 
     void EditorManager::Draw(SrvManager* srvmanager) {
 #ifdef USE_IMGUI
-        // 1. レイアウト（外枠とドッキング）の描画を委譲 
-        // windows_ を渡すことでメニューバーからの表示切り替えも連動します
+        // =====================================
+        // Fullscreen解除
+        // =====================================
+
+        if (layout_->IsGameViewFullscreen()) {
+            // フルスクリーン状態でESCキーが押されたら解除
+            if (Input::GetInstance()->TriggerKey(DIK_ESCAPE)) {
+                // フルスクリーン解除
+                layout_->SetGameViewFullscreen(false);
+            }
+        }
+        // レイアウトの描画
         layout_->Render(srvmanager, windows_);
 #endif // USE_IMGUI
     }
@@ -16944,6 +17582,7 @@ namespace MyEngine {
     // 登録関数
     void EditorManager::AddWindow(std::unique_ptr<IEditorWindow> window) {
 #ifdef USE_IMGUI
+		// ウィンドウを管理リストに登録
         windows_.push_back(std::move(window));
 #endif // USE_IMGUI
     }
@@ -16951,6 +17590,7 @@ namespace MyEngine {
     // ログ中継
     void EditorManager::Log(const std::string& message) {
 #ifdef USE_IMGUI
+		// EditorConsoleにログを追加
         EditorConsole::GetInstance()->AddLog(message);
 #endif // USE_IMGUI
     }
@@ -16961,16 +17601,12 @@ namespace MyEngine {
         EditorEntityRegistry::Instance().Clear();
 
         // 開いているObjectWindow削除
-        if (layout_) {
+        if (layout_) { 
             ObjectMenu* objectMenu = layout_->GetMenuBar()->GetMenu<ObjectMenu>();
             CameraMenu* cameraMenu = layout_->GetMenuBar()->GetMenu<CameraMenu>();
-
-            if (objectMenu) {
-                objectMenu->ClearOpenWindows();
-            }
-            if (cameraMenu) {
-                cameraMenu->ClearOpenWindows();
-            }
+            // 開いているウィンドウをすべて閉じる
+            if (objectMenu) { objectMenu->ClearOpenWindows(); }
+            if (cameraMenu) { cameraMenu->ClearOpenWindows(); }
         }
 #endif // USE_IMGUI
     }
@@ -17141,6 +17777,8 @@ File Path: project/engine/editor/layout/EditorLayout.cpp
 #include <SettingsMenu.h>
 #include <ObjectMenu.h>
 #include <CameraMenu.h>
+#include <SceneMenu.h>
+#include <SceneManager.h>
 
 namespace MyEngine {
 
@@ -17148,8 +17786,10 @@ namespace MyEngine {
 
     void EditorLayout::Initialize() {
 #ifdef USE_IMGUI
+		// メニューバーの初期化とメニューコンポーネントの追加
         menuBar_ = std::make_unique<EditorMenuBar>();
-        menuBar_->AddMenu<SettingsMenu>();
+        menuBar_->AddMenu<SettingsMenu>()->SetLayout(this);
+        menuBar_->AddMenu<SceneMenu>();
         menuBar_->AddMenu<ObjectMenu>();
         menuBar_->AddMenu<CameraMenu>();
 #endif // USE_IMGUI
@@ -17159,6 +17799,18 @@ namespace MyEngine {
 #ifdef USE_IMGUI
         // 多言語テキスト取得ラムダを初期化
         LT = [](const std::string& key) { return MessageService::GetText(key); };
+        // =========================================
+        // GameViewフルスクリーン
+        // =========================================
+        if (isGameViewFullscreen_) {
+            DrawFullscreenGameView(srvmanager);
+            return;
+        }
+
+        // =========================================        
+        // 通常エディタ
+        // =========================================
+
         // 1. メインメニューバー描画
         ShowMenuBar(windows);
         // 2. 左側パネル描画（ゲームビュー + コンソール）
@@ -17177,38 +17829,41 @@ namespace MyEngine {
 
     void EditorLayout::DrawLeftPanel(SrvManager* srvmanager, std::vector<std::unique_ptr<IEditorWindow>>& windows) {
 #ifdef USE_IMGUI
-        // パネルの基本サイズ設定
-        const float kGameViewW = 640.0f;
-        const float kGameViewH = 360.0f;
         // メイン画面の表示領域を取得
         ImGuiViewport* viewport = ImGui::GetMainViewport();
         // パネルの位置とサイズを固定（左端に配置）
         ImGui::SetNextWindowPos(viewport->WorkPos);
-        ImGui::SetNextWindowSize(ImVec2(kGameViewW, viewport->WorkSize.y));
+        ImGui::SetNextWindowSize(ImVec2(kGameViewWidth_, viewport->WorkSize.y));
         // パネルの挙動フラグ（移動不可、リサイズ不可、タイトルバーなし、ドッキング不可）
         ImGuiWindowFlags flags = ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoDocking;
 
-        ImGui::Begin("LeftPanel", nullptr, flags);
-        {
+        ImGui::Begin("LeftPanel", nullptr, flags); {
             // 上段：ゲームビュー(描画結果をテクスチャとして表示）
-            ImGui::BeginChild("GameView", ImVec2(kGameViewW, kGameViewH), true, ImGuiWindowFlags_NoDocking);
-            {
+            ImGui::BeginChild("GameView", ImVec2(kGameViewWidth_, kGameViewHeight_), true, ImGuiWindowFlags_NoDocking); {
                 // レンダーターゲットからSRVインデックスを取得し、ImGui用のテクスチャIDに変換
                 uint32_t srvIdx = CopylmageCommon::GetInstance()->GetSrvIndex();
                 ImTextureID texID = (ImTextureID)(void*)(uintptr_t)srvmanager->GetGPUDescriptorHandle(srvIdx).ptr;
 
                 // 指定サイズで画像を描画
-                ImGui::Image(texID, ImVec2(kGameViewW, kGameViewH));
+                ImGui::Image(texID, ImVec2(kGameViewWidth_, kGameViewHeight_));
             }
             ImGui::EndChild();
 
             // 下段：ログ表示
-            ImGui::BeginChild("SystemConsoleChild", ImVec2(0, 0), false);
-            {
+            ImGui::BeginChild("SystemConsoleChild", ImVec2(0, 0), false); {
                 // windowsリストの中から ConsoleWindow (System Console) を探して描画する
                 for (std::unique_ptr<IEditorWindow>& window : windows) {
                     if (std::string(window->GetName()) == "System Console") {
                         ImGui::Text(LT("Console.Title").c_str());
+                        ImGui::Separator();
+                        // 現在シーン名
+                        SceneManager* sceneManager = SceneManager::GetInstance();
+                        if (sceneManager->GetCurrentScene()) {
+                            std::string currentScene = sceneManager->GetCurrentSceneName();
+                            std::string localizedScene = LT("Scene." + currentScene);
+                            ImGui::Text("%s : %s", LT("Scene.Current").c_str(), localizedScene.c_str());
+                        }
+
                         ImGui::Separator();
                         window->Draw();
                         break;
@@ -17222,13 +17877,39 @@ namespace MyEngine {
 #endif // USE_IMGUI
     }
 
+    void EditorLayout::DrawFullscreenGameView(SrvManager* srvmanager) {
+#ifdef USE_IMGUI
+        ImGuiViewport* viewport = ImGui::GetMainViewport();
+        ImGui::SetNextWindowPos(viewport->WorkPos);
+        ImGui::SetNextWindowSize(viewport->WorkSize);
+
+        ImGuiWindowFlags flags =
+            ImGuiWindowFlags_NoTitleBar |
+            ImGuiWindowFlags_NoMove |
+            ImGuiWindowFlags_NoResize |
+            ImGuiWindowFlags_NoCollapse |
+            ImGuiWindowFlags_NoDocking;
+
+        ImGui::Begin("FullscreenGameView", nullptr, flags);
+
+        uint32_t srvIdx = CopylmageCommon::GetInstance()->GetSrvIndex();
+        ImTextureID texID = (ImTextureID)(void*)(uintptr_t)srvmanager->GetGPUDescriptorHandle(srvIdx).ptr;
+
+        // 利用可能領域取得
+        ImVec2 avail = ImGui::GetContentRegionAvail();
+
+        // GameView描画
+        ImGui::Image(texID, avail);
+        ImGui::End();
+#endif
+    }
+
     void EditorLayout::DrawRightPanel(std::vector<std::unique_ptr<IEditorWindow>>& windows) {
 #ifdef USE_IMGUI
-        const float kGameViewW = 640.0f;
         ImGuiViewport* viewport = ImGui::GetMainViewport();
         // 右側領域計算
-        float dockPosX = viewport->WorkPos.x + kGameViewW;
-        float dockWidth = viewport->WorkSize.x - kGameViewW;
+        float dockPosX = viewport->WorkPos.x + kRightPanelViewWidth_;
+        float dockWidth = viewport->WorkSize.x - kRightPanelViewWidth_;
 
         ImGui::SetNextWindowPos(ImVec2(dockPosX, viewport->WorkPos.y));
         ImGui::SetNextWindowSize(ImVec2(dockWidth, viewport->WorkSize.y));
@@ -17251,71 +17932,47 @@ namespace MyEngine {
         ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), ImGuiDockNodeFlags_None);
         ImGui::End();
 
-        // =============================
-        // 開いているオブジェクトウィンドウ描画
-        // =============================
-        const std::vector<EditorTypes::EditorObjectInfo>& openWindows = menuBar_->GetMenu<ObjectMenu>()->GetOpenWindows();
-        const auto& registeredObjects = EditorEntityRegistry::Instance().GetObjects();
-        for (auto it = openWindows.begin(); it != openWindows.end(); ) {
-
-            // オブジェクト生存チェック
-            auto isAlive = std::any_of(registeredObjects.begin(), registeredObjects.end(),
-                [&](const auto& reg) { return reg.objectPtr == it->objectPtr; });
+        // =====================================
+        // Object Window
+        // =====================================
+        const std::vector<EditorTypes::EditorObjectInfo>& registeredObjects = EditorEntityRegistry::Instance().GetObjects();
+        auto& openWindows = menuBar_->GetMenu<ObjectMenu>()->GetOpenWindows();
+        for (auto it = openWindows.begin();
+            it != openWindows.end(); ) {
+            // 生存チェック
+            auto isAlive = std::any_of(
+                registeredObjects.begin(),
+                registeredObjects.end(),
+                [&](const auto& reg) {
+                    return reg.objectPtr == it->objectPtr;
+                });
 
             if (!isAlive) {
-                it = menuBar_->GetMenu<ObjectMenu>()->CloseWindow(it->name); // 消えていたら閉じる
+                it = menuBar_->GetMenu<ObjectMenu>()->CloseWindow(it->name);
                 continue;
             }
 
-            // 次のウィンドウをドッキングスペースへ誘導
-            ImGui::SetNextWindowDockID(dockspace_id, ImGuiCond_FirstUseEver);
+            bool is_open = BeginDockedWindow(*it, dockspace_id);
 
-            // 「×」ボタンを表示するためのフラグ
-            bool is_open = true;
-
-            // タブとして描画
-            if (ImGui::Begin(it->name.c_str(), &is_open, ImGuiWindowFlags_NoCollapse)) {
-                if (it->objectPtr) {
-                    if (it->drawEditor) {
-                        it->drawEditor();
-                    }
-                }
-            }
-
-            ImGui::End();
-            // ×ボタンが押された場合は閉じる
             if (!is_open) {
                 it = menuBar_->GetMenu<ObjectMenu>()->CloseWindow(it->name);
             } else {
                 ++it;
             }
         }
-        
-        const auto& cameraWindows = menuBar_->GetMenu<CameraMenu>()->GetOpenWindows();
+
+        // =====================================
+        // Camera Window
+        // =====================================
+        std::vector<EditorTypes::CameraEditorInfo>& cameraWindows = menuBar_->GetMenu<CameraMenu>()->GetOpenWindows();
         for (auto it = cameraWindows.begin();
-            it != cameraWindows.end();) {
+            it != cameraWindows.end(); ) {
 
-            ImGui::SetNextWindowDockID(
-                dockspace_id,
-                ImGuiCond_FirstUseEver);
-
-            bool is_open = true;
-
-            if (ImGui::Begin(
-                it->name.c_str(),
-                &is_open,
-                ImGuiWindowFlags_NoCollapse)) {
-
-                if (it->drawEditor) {
-                    it->drawEditor();
-                }
-            }
-
-            ImGui::End();
+            bool is_open =
+                BeginDockedWindow(*it, dockspace_id);
 
             if (!is_open) {
-                it = menuBar_->GetMenu<CameraMenu>()
-                    ->CloseWindow(it->name);
+                it = menuBar_->GetMenu<CameraMenu>()->CloseWindow(it->name);
             } else {
                 ++it;
             }
@@ -17335,6 +17992,9 @@ File Path: project/engine/editor/layout/EditorLayout.h
 #include <SrvManager.h>
 #include <EditorMenuBar.h>
 #include <EditorTypes.h>
+#ifdef USE_IMGUI
+#include <ImGuiManager.h>
+#endif // USE_IMGUI
 
 namespace MyEngine {
     /// <summary>
@@ -17342,10 +18002,17 @@ namespace MyEngine {
     /// メニューバーやパネルの配置など、画面の枠組みを構築する。
     /// </summary>
     class EditorLayout {
+    private:
+        // 左側のパネルサイズ
+        static constexpr float kGameViewWidth_  = 640.0f;
+        static constexpr float kGameViewHeight_ = 360.0f;
+        // 右側のパネルサイズ
+        static constexpr float kRightPanelViewWidth_ = 640.0f;
     public: // メンバ関数
-
+        /// <summary>
+		/// 初期化処理
+        /// </summary>
         void Initialize();
-
         /// <summary>
         /// エディタ全体のレイアウトを描画するメイン関数
         /// </summary>
@@ -17367,16 +18034,46 @@ namespace MyEngine {
         /// 右側パネルを描画する
         /// </summary>
         void DrawRightPanel(std::vector<std::unique_ptr<IEditorWindow>>& windows);
+        /// <summary>
+		/// ゲームビューを全画面表示する
+        /// </summary>
+        /// <param name="srvmanager"></param>
+        void DrawFullscreenGameView(SrvManager* srvmanager);
+        /// <summary>
+		/// ドッキングされたウィンドウを描画するための共通関数
+        /// </summary>
+        /// <typeparam name="WindowType"></typeparam>
+        /// <param name="window"></param>
+        /// <param name="dockspace_id"></param>
+        /// <returns></returns>
+        template<class WindowType>
+        bool BeginDockedWindow(WindowType& window, ImGuiID dockspace_id) {
+            ImGui::SetNextWindowDockID(dockspace_id, ImGuiCond_FirstUseEver);
+            bool is_open = true;
+            if (ImGui::Begin(window.name.c_str(), &is_open, ImGuiWindowFlags_NoCollapse)) {
+                if (window.drawEditor) {
+                    window.drawEditor();
+                }
+            }
+            ImGui::End();
+            return is_open;
+        }
     private: // メンバ変数
-        std::function<std::string(const std::string&)> LT; /// 多言語テキスト取得用の短縮ラムダ
-        std::unique_ptr<EditorMenuBar> menuBar_;                          /// メニューバー
-        bool requestResetLayout_ = true;
-        void* activeObject_ = nullptr;                     /// 選択中オブジェクトのポインタ
-        std::string activeObjectName_;                     /// 選択中オブジェクトの名前
+        std::function<std::string(const std::string&)> LT;  /// 多言語テキスト取得用の短縮ラムダ
+        std::unique_ptr<EditorMenuBar> menuBar_;            /// メニューバー
+		bool requestResetLayout_ = true;                    /// レイアウトリセット要求フラグ
+        void* activeObject_ = nullptr;                      /// 選択中オブジェクトのポインタ
+        std::string activeObjectName_;                      /// 選択中オブジェクトの名前
         EditorTypes::EditorObjectInfo activeCategory_;      /// 型情報を保持して判定用
+        bool isGameViewFullscreen_ = false;                 /// GameView最大化状態
     public:
+        // getter
         EditorMenuBar* GetMenuBar() { return menuBar_.get(); }
-   
+        // setter
+        void SetGameViewFullscreen(bool fullscreen) { isGameViewFullscreen_ = fullscreen; }        
+
+        bool IsGameViewFullscreen() const { return isGameViewFullscreen_; }
+        void ToggleGameViewFullscreen() { isGameViewFullscreen_ = !isGameViewFullscreen_; }
     };
 }
 
@@ -17781,23 +18478,101 @@ namespace MyEngine {
 }
 
 ============================================================
+File Path: project/engine/editor/layout/editormenubar/SceneMenu.cpp
+============================================================
+#include "SceneMenu.h"
+#ifdef USE_IMGUI
+#include <ImGuiManager.h>
+#endif // USE_IMGUI
+#include <SceneManager.h>
+#include <SceneFactory.h>
+
+namespace MyEngine {
+    void SceneMenu::Render(const std::function<std::string(const std::string&)>& LT) {
+#ifdef USE_IMGUI
+		// 「Scene」メニュー開始
+        if (!ImGui::BeginMenu(LT("Menu.Scene").c_str())) {
+            return;
+        }
+        // シーンマネージャ取得
+        SceneManager* sceneManager = SceneManager::GetInstance();
+		// シーンファクトリー取得
+        AbstractSceneFactory* factory = sceneManager->GetSceneFactory();
+
+        if (factory) {
+			// シーン名のリストを取得
+            const std::vector<std::string> scenes = factory->GetSceneNames();
+			// 現在のシーン名を取得
+            const std::string currentScene = sceneManager->GetCurrentSceneName();
+			// シーン名のリストをループしてメニューアイテムを作成
+            for (const std::string& sceneName : scenes) {
+				// 現在のシーンと同じかどうかを判定して、チェックマークを表示
+                bool selected = (sceneName == currentScene);
+                // Localization取得
+                std::string label = LT("Scene." + sceneName);
+				// メニューアイテムを作成。選択されたとき、現在のシーンと同じでなければシーンを切り替える
+                if (ImGui::MenuItem(label.c_str(), nullptr, selected)) {
+					// シーン切り替え
+                    if (!selected) {
+                        sceneManager->ChangeScene(sceneName);
+                    }
+                }
+            }
+        }
+		//  Sceneメニュー終了
+        ImGui::EndMenu();
+#endif
+    }
+}
+
+============================================================
+File Path: project/engine/editor/layout/editormenubar/SceneMenu.h
+============================================================
+#pragma once
+#include <IMenuComponent.h>
+
+namespace MyEngine {
+    /// <summary>
+	/// 「シーン」メニューを担当するクラス。
+    /// </summary>
+    class SceneMenu : public IMenuComponent {
+	public: // メンバ関数
+        /// <summary>
+		/// シーンメニューの描画
+        /// </summary>
+        /// <param name="LT"></param>
+        void Render(const std::function<std::string(const std::string&)>& LT) override;
+    };
+}
+
+============================================================
 File Path: project/engine/editor/layout/editormenubar/SettingsMenu.cpp
 ============================================================
 #include "SettingsMenu.h"
 #include <MessageService.h>
 #include <EditorConsole.h>
 #include <ImGuiManager.h>
+#include <EditorLayout.h>
 
 namespace MyEngine {
 
     using namespace EditorTypes;
-    
+
     void SettingsMenu::Render(const std::function<std::string(const std::string&)>& LT) {
 #ifdef USE_IMGUI
         // 「Settings」メニュー開始
         // 開いていない場合は即終了
         if (!ImGui::BeginMenu(LT("Menu.Settings").c_str()))
             return;
+
+        // ====================================================
+        // 全表示
+        // ====================================================
+        bool fullscreen = layout_ && layout_->IsGameViewFullscreen();
+        if (ImGui::MenuItem(LT("Fullscreen").c_str(), "", fullscreen)) {
+            layout_->ToggleGameViewFullscreen();
+        }
+        ImGui::Separator();
         // -----------------------------
         // 言語設定サブメニュー
         // -----------------------------
@@ -17840,6 +18615,9 @@ File Path: project/engine/editor/layout/editormenubar/SettingsMenu.h
 #include <IMenuComponent.h>
 
 namespace MyEngine {
+	// 前方宣言
+    class EditorLayout;
+
     /// <summary>
     /// 「設定」メニューを担当するクラス。
     /// </summary>
@@ -17850,6 +18628,12 @@ namespace MyEngine {
         /// </summary>
         /// <param name="LT">多言語テキスト取得ラムダ</param>
         void Render(const std::function<std::string(const std::string&)>& LT) override;
+	private: // メンバ変数
+        // ポインタ
+        EditorLayout* layout_ = nullptr;
+    public:
+        // setter
+        void SetLayout(EditorLayout* layout) { layout_ = layout; }
     };
 }
 
@@ -18010,7 +18794,7 @@ namespace MyEngine {
         // コントローラーが接続されていない場合、状態をゼロクリア
         if (result != ERROR_SUCCESS) {
             ZeroMemory(&currentState, sizeof(XINPUT_STATE));
-            return; // ←ここで早期リターンしてOK
+            return; // ←ここで早期リターン
         }
     }
 
@@ -18106,19 +18890,17 @@ File Path: project/engine/io/Controller.h
 namespace MyEngine {
     // コントローラー
     class Controller {
-    private:
+	private: // シングルトンインスタンス
         // コンストラクタとデストラクタ
         Controller() = default;
         ~Controller() = default;
     public:
         // インスタンス取得（シングルトン）
         static Controller* GetInstance();
-
         /// <summary>
         /// 入力状態を更新
         /// </summary>
         void Update();
-
         /// <summary>
         /// 指定ボタンが押されているかどうか（押されてる間 true）
         /// </summary>
@@ -18126,11 +18908,17 @@ namespace MyEngine {
         /// <summary>
         /// 指定ボタンが新しく押されたかどうか（押された瞬間 true）
         /// </summary>
-        bool IsTriggered(WORD button);
-
-        // imgui
+        bool IsTriggered(WORD button);        
+        /// <summary>
+		/// ImGuiデバッグ描画
+        /// </summary>
         void DrawImGui();
-        // コントローラーのデットゾーン処理
+        /// <summary>
+		/// スティックの軸値を正規化する。デッドゾーン内は0、最大値は1になるように変換する。
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="deadzone"></param>
+        /// <returns></returns>
         float NormalizeThumbAxis(SHORT value, SHORT deadzone);
     private: // メンバ変数
         XINPUT_STATE currentState{};     // 現在のゲームパッドの状態
@@ -18149,23 +18937,23 @@ File Path: project/engine/io/Input.cpp
 #pragma comment(lib,"dinput8.lib")
 #pragma comment(lib,"dxguid.lib")
 
-namespace MyEngine {
-	Input* Input::instance = nullptr;
+namespace MyEngine {	 
+	// 静的メンバ変数の定義
+    std::unique_ptr<Input> Input::instance = nullptr;
 
+    // シングルトンインスタンスの取得
 	Input* Input::GetInstance() {
-		if (instance == nullptr) {
-			instance = new Input;
+		if (!instance) {
+			instance = std::make_unique<Input>();
 		}
-		return instance;
+		return instance.get();
 	}
 
 	void Input::Finalize() {
-		delete instance;
-		instance = nullptr;
+		instance.reset();  // `delete` 不要
 	}
 
 	void Input::Initialize(WinApp* winApp) {
-
 		// 借りてきたwinAppのインスタンスを記録
 		this->winApp_ = winApp;
 
@@ -18217,8 +19005,7 @@ namespace MyEngine {
 		}
 	}
 
-	bool Input::Pushkey(BYTE keyNumber)
-	{
+	bool Input::PushKey(BYTE keyNumber) {
 		// 指定キーを押していればtrueを返す
 		if (key[keyNumber]) {
 			return true;
@@ -18227,8 +19014,7 @@ namespace MyEngine {
 		return false;
 	}
 
-	bool Input::Triggrkey(BYTE keyNumber)
-	{
+	bool Input::TriggerKey(BYTE keyNumber) {
 		// 前回は押していない,今回は押しているのであればtrueを返す
 		if (!keyPre[keyNumber] && key[keyNumber]) {
 			return true;
@@ -18269,51 +19055,58 @@ File Path: project/engine/io/Input.h
 #define DIRECTINPUT_VERSION   0x0800 // DirectInputのバージョン指定
 #include <dinput.h>
 #include <WinApp.h>
+#include <memory>
 
 namespace MyEngine {
-	// 入力
-	class Input
-	{
-	private:
-		static Input* instance;
+	/// <summary>
+	/// キーボードとマウスの入力を管理するクラス。
+	/// </summary>
+	class Input	{
+	private: // シングルトンインスタンス
+		static std::unique_ptr<Input> instance; // インスタンス
 
-		Input() = default;
-		~Input() = default;
 		Input(Input&) = delete;
 		Input& operator=(Input&) = delete;
 	public: // メンバ関数
+		Input() = default;
+		~Input() = default;
+
 		// シングルトンインスタンスの取得
 		static Input* GetInstance();
-		// 終了
+		/// <summary>		
+		/// 終了
+		/// </summary>
 		void Finalize();
-
 		// namespace省略
 		template <class T> using ComPtr = Microsoft::WRL::ComPtr<T>;
 
-		// 初期化
-		void Initialize(WinApp* winApp);
-		// 更新
+		/// <summary>
+		/// 初期化
+		/// </summary>
+		/// <param name="winApp"></param>
+		void Initialize(WinApp* winApp);			
+		/// <summary>
+		/// キーの状態を更新する。
+		/// </summary>
 		void Update();
-
 		/// <summary>
 		/// キーの押下をチェック
 		/// </summary>
 		/// <param name="keyNumber"キー番号( DIK_0 等)</param>
-		bool Pushkey(BYTE keyNumber);
-
+		bool PushKey(BYTE keyNumber);
 		/// <summary>
 		/// キーのトリガーをチェック
 		/// </summary>
 		/// <param name="keyNumber"キー番号( DIK_0 等)</param>
 		/// <returns>トリガーか</returns>
-		bool Triggrkey(BYTE keyNumber);
-
+		bool TriggerKey(BYTE keyNumber);
 		/// <summary>
 		/// マウスの座標を取得
 		/// </summary>
-		POINT GetMousePosition() const { return mousePosition_; }
-
-		// ImGuiデバッグ描画
+		POINT GetMousePosition() const { return mousePosition_; }	
+		/// <summary>
+		/// ImGuiデバッグ描画
+		/// </summary>
 		void DrawImGui();
 	private: // メンバ変数	
 		// ポインタ
@@ -19017,6 +19810,7 @@ File Path: project/engine/scene/AbstractSceneFactory.h
 #pragma once
 #include <BaseScene.h>
 #include <string>
+#include <vector>
 
 namespace MyEngine {
 	/// <summary>
@@ -19028,6 +19822,8 @@ namespace MyEngine {
 		virtual ~AbstractSceneFactory() = default;
 		/// シーン生成
 		virtual BaseScene* CreateScene(const std::string& sceneName) = 0;
+		// シーン名のリストを取得
+		virtual std::vector<std::string> GetSceneNames() const = 0;
 	};
 }
 
@@ -19089,7 +19885,7 @@ namespace MyEngine {
         sceneFactory_ = std::make_unique<SceneFactory>();
         SceneManager::GetInstance()->SetSceneFactory(sceneFactory_.get());
         // シーンマネージャに最初のシーンをセット
-        SceneManager::GetInstance()->ChangeScene(SceneName::TITLE);
+        SceneManager::GetInstance()->ChangeScene(SceneName::GAMEPLAY);
     }
 
     void MyGame::Update() {
@@ -19160,10 +19956,18 @@ namespace MyEngine {
 		std::unordered_map<std::string, std::function<BaseScene* ()>>::iterator it = sceneRegistry_.find(sceneName);
 		if (it != sceneRegistry_.end()) {
 			BaseScene* newScene = it->second(); // 登録された関数を実行
-			newScene->SetSceneName(sceneName);
+			newScene->SetSceneName(sceneName);  // シーン名をセット
 			return newScene;
 		}
 		return nullptr;
+	}
+	std::vector<std::string> SceneFactory::GetSceneNames() const {
+		std::vector<std::string> names;
+		// マップのキーをすべて取得してリストにする
+		for (const auto& scene : sceneRegistry_) {
+			names.push_back(scene.first); // シーン名をリストに追加
+		}
+		return names;
 	}
 }
 
@@ -19176,21 +19980,28 @@ File Path: project/engine/scene/SceneFactory.h
 #include <functional>
 
 namespace MyEngine {
-	// このゲーム用のシーン工場
+	/// <summary>
+	/// このゲーム用のシーン工場
+	/// </summary>
 	class SceneFactory : public AbstractSceneFactory {
 	public: // メンバ関数
 		//	コンストラクタ
 		SceneFactory();
-
-		// 初期化時にシーンを登録する関数
+		/// <summary>
+		/// シーン名と生成関数のマップにシーンを登録する
+		/// </summary>
 		void RegisterScenes();
-
 		/// <summary>
 		/// シーン生成
 		/// </summary>
 		/// <param name="sceneName">シーン名</param>
 		/// <returns>生成したシーン</returns>
-		virtual BaseScene* CreateScene(const std::string& sceneName) override;
+		virtual BaseScene* CreateScene(const std::string& sceneName) override;	
+		/// <summary>
+		/// シーン名のリストを取得
+		/// </summary>
+		/// <returns>シーン名のリスト</returns>
+		std::vector<std::string> GetSceneNames() const override;
 	private: // メンバ変数
 		// シーン名と生成関数のマップ
 		std::unordered_map<std::string, std::function<BaseScene* ()>> sceneRegistry_;
@@ -19203,6 +20014,7 @@ File Path: project/engine/scene/SceneManager.cpp
 #include "SceneManager.h"
 #include <cassert>
 #include <EditorManager.h>
+#include <EditorConsole.h>
 
 namespace MyEngine {
 	// 静的メンバ変数の定義
@@ -19233,6 +20045,15 @@ namespace MyEngine {
 		// 次のシーンの予約があるなら
 		if (nextScene_) {
 #ifdef USE_IMGUI
+			// 現在シーン名を保存
+			std::string oldSceneName;
+			// scene_ が存在する時だけ取得
+			bool hasOldScene = false;
+			if (scene_) {
+				// 旧シーン名を保存
+				oldSceneName = scene_->GetSceneName();
+				hasOldScene = true; // フラグを立てる
+			}
 			// シーン切り替え通知
 			EditorManager::GetInstance()->OnSceneChanged();
 #endif // USE_IMGUI
@@ -19249,8 +20070,29 @@ namespace MyEngine {
 			scene_->SetSceneManager(this);
 			// 次のシーンを初期化する
 			scene_->Initialize();
-		}
 
+#ifdef USE_IMGUI
+			// 初回以外のみログを出す
+			if (hasOldScene) {
+				// 新シーン名を保存
+				std::string newSceneName = scene_->GetSceneName();
+				// 多言語対応されたシーン名を取得
+				std::string oldLocalized = MessageService::GetText("Scene." + oldSceneName);
+				// 多言語対応されたシーン名を取得
+				std::string newLocalized = MessageService::GetText("Scene." + newSceneName);
+				// ログ生成
+				std::string log = MessageService::GetText("Scene.Changed");
+				// ログ内のプレースホルダを置換
+				size_t pos0 = log.find("{0}");
+				if (pos0 != std::string::npos) { log.replace(pos0, 3, oldLocalized); }
+				// ログ内のプレースホルダを置換
+				size_t pos1 = log.find("{1}");
+				if (pos1 != std::string::npos) { log.replace(pos1, 3, newLocalized); }
+				// ログ出力
+				EditorConsole::GetInstance()->AddLog(log);
+			}
+#endif
+		}
 		// 実行中シーンを更新する
 		scene_->Update();
 	}
@@ -19286,14 +20128,19 @@ namespace MyEngine {
 	public: // メンバ関数
 		SceneManager() = default;
 		~SceneManager() = default;
-
 		// シングルトンインスタンスの取得
-		static SceneManager* GetInstance();
-		// 終了
+		static SceneManager* GetInstance();		
+		/// <summary>
+		/// 終了処理
+		/// </summary>
 		void Finalize();
-		// 毎フレーム更新
+		/// <summary>
+		/// 毎フレームの更新処理
+		/// </summary>
 		void Update();
-		// 描画
+		/// <summary>
+		/// 毎フレームの描画処理
+		/// </summary>
 		void Draw();
 	private: // メンバ変数	
 		// 今のシーン(実行中シーン)
@@ -19313,9 +20160,11 @@ namespace MyEngine {
 		// 現在のシーンを取得する
 		BaseScene* GetCurrentScene() const { return scene_.get(); }
 		// 現在のシーンか判定
-		bool IsCurrentScene(const std::string& sceneName) const {
-			return scene_ && scene_->GetSceneName() == sceneName;
-		}
+		bool IsCurrentScene(const std::string& sceneName) const { return scene_ && scene_->GetSceneName() == sceneName; }
+		// 現在のシーン名を取得する
+		const std::string& GetCurrentSceneName() const { return scene_->GetSceneName(); }
+		// シーンファクトリーを取得する
+		AbstractSceneFactory* GetSceneFactory() const { return sceneFactory_; }	
 	};
 }
 
