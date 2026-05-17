@@ -42,7 +42,8 @@ namespace MyGame {
         target_ = Object3d::Create(Character::Player, targettransform_);
 
         // レティクル初期化
-        targetreticle_ = Sprite::Create(Ui::Target, Vector2{ 640.0f, 360.0f }, 0.0f, Vector2{ 512.0f, 512.0f });
+        targetreticle_ = Sprite::Create(Ui::Target, Vector2{ 640.0f, 360.0f }, 0.0f, Vector2{ 100.0f, 100.0f });
+        targetreticle_->SetTextureSize(Vector2{ 512.0f, 512.0f });
         targetreticle_->SetAnchorPoint(Vector2{ 0.5f, 0.5f }); // 中心基準
 
         // 状態フラグの初期化
