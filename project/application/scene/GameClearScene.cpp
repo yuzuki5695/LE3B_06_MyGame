@@ -8,7 +8,7 @@
 #include <StageManager.h>
 #include <FadeManager.h>
 #include <UIManager.h>
-#include<Easing.h>
+#include <Easing.h>
 #include <GameClearUI.h>
 #include <Input.h>
 #ifdef min
@@ -25,6 +25,7 @@ namespace MyGame {
     void GameClearScene::Finalize() {
         CameraManager::GetInstance()->Finalize(); // カメラマネージャの終了処理
         FadeManager::GetInstance()->Finalize();   // フェードマネージャの終了処理
+        UIManager::GetInstance()->Finalize();     // UIマネージャの終了処理 
         StageManager::GetInstance()->Finalize();  // ステージマネージャの終了処理
     }
 
