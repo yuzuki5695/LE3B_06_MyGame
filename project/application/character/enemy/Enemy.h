@@ -34,12 +34,14 @@ namespace MyGame {
 	private: // メンバ変数
 		// ポインタ
 		std::unique_ptr<EnemyAttack> attack_; // 攻撃ロジックの保持
-		std::unique_ptr<Player> player_;
 
+		// プレイヤーへの参照
+		Player* player_ = nullptr;
 	public: // アクセッサ
 		// getter
 		MyEngine::Transform* GetTransform() { return &object_->GetTransform(); }
 		EnemyAttack* GetAttack() { return attack_.get(); }
-		void SetPlayer(Player* player) { player_.reset(player); }
+		void SetPlayer(Player* player) { player_ = player; }
+		Player* GetPlayer() const { return player_; }
 	};
 }
