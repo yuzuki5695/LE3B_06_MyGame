@@ -60,5 +60,6 @@ namespace MyGame {
         bool IsFading() const { return isFading_; }
         bool IsFadeEnd() const { return isFadeEnd_; }
         bool IsFadeInFinished() const { return isFadeInFinished_; }
+		bool IsSceneChangeReserved() const { return isSceneChangeReserved_; }
     };
 }
