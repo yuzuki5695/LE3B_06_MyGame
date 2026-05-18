@@ -49,16 +49,21 @@ namespace MyGame {
         // 敵生成
         const int kEnemyMax = 300;
         for (int i = 0; i < kEnemyMax; i++) {
-            auto enemy = std::make_unique<Enemy>();
-            enemy->Initialize();
-            enemy->SetPlayer(player_.get());
-            enemies_.push_back(std::move(enemy));
+			auto enemy = std::make_unique<Enemy>(); // 敵の生成
+			enemy->Initialize(); // 敵の初期化
+            enemy->SetActive(false); // 非アクティブ
+            enemy->SetSpawned(false); // 出現フラグ
+            enemy->SetPlayer(player_.get()); // プレイヤーへの参照をセット
+			enemies_.push_back(std::move(enemy)); // 敵リストに追加
         }
 
-        // Spawner生成
+        // 敵のSpawner生成,初期化
         enemySpawner_ = std::make_unique<EnemySpawner>();
-        enemySpawner_->SetEnemies(&enemies_);
-		enemySpawner_->SetPlayer(player_.get());
+		enemySpawner_->SetEnemies(&enemies_);    // 敵リストへの参照をセット
+		enemySpawner_->SetPlayer(player_.get()); // プレイヤーへの参照をセット
+
+        // 最初のスポーン
+        player_->SetEnemy(enemies_.empty() ? nullptr : enemies_.front().get());
 
         // ステージマネージャの初期化
         StageManager::GetInstance()->Initialize();
@@ -93,12 +98,12 @@ namespace MyGame {
             return;
         }
 
-        //  ゲーム開始前のイベント処理
-        if (!isGameStartEventDone_) {
-            // ゲーム開始イベントの開始
-            EventManager::GetInstance()->EventStart(Event::EventState::GameStart);
-            isGameStartEventDone_ = true;
-        }
+        ////  ゲーム開始前のイベント処理
+        //if (!isGameStartEventDone_) {
+        //    // ゲーム開始イベントの開始
+        //    EventManager::GetInstance()->EventStart(Event::EventState::GameStart);
+        //    isGameStartEventDone_ = true;
+        //}
 
         // 敵スポーン
         enemySpawner_->Update();
@@ -108,17 +113,16 @@ namespace MyGame {
             enemy->Update();
         }
 		// 死亡した敵の削除
-        enemies_.erase(
-            std::remove_if(enemies_.begin(), enemies_.end(),
-                [](std::unique_ptr<Enemy>& enemy) {
-                    if (!enemy->IsAlive()) {
-                        enemy->Finalize(); // ←ここで安全に消す
-                        return true;
-                    }
-                    return false;
-                }),
+        enemies_.erase(std::remove_if(enemies_.begin(), enemies_.end(), [](std::unique_ptr<Enemy>& enemy) {
+            if (!enemy->IsAlive()) {
+                enemy->Finalize();
+                return true;
+            }
+            return false;
+            }),
             enemies_.end()
         );
+
 		// カメラのターゲットとプレイヤーをセット（プレイヤーの位置にカメラを追従させるため）
         CameraManager::GetInstance()->GetCurrentBehaviorAs<GamePlayCamera>()->SetTargetObject(player_->GetObject3d());
         CameraManager::GetInstance()->GetCurrentBehaviorAs<GamePlayCamera>()->SetPlayer(player_.get()); 

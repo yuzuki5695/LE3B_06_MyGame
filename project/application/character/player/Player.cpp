@@ -11,6 +11,8 @@
 #endif // USE_IMGUI
 #include <EditorEntityRegistry.h>
 #include <EditorTypes.h>
+#include <CollisionConfig.h>
+#include <Enemy.h>
 // AssetGeneratorからインクルード
 #include <subproject/AssetGenerator/engine/generator/LoadResourceID.h>
 
@@ -21,10 +23,15 @@ using namespace AssetGen::LoadResourceID::Models;
 using namespace AssetGen::LoadResourceID::Textures;
 
 namespace MyGame {
+     
+    using namespace CollisionConfig;
 
     Player::~Player() {}
 
-    void Player::Finalize() {}
+    void Player::Finalize() {
+        collider_.reset(); // コライダーの破棄
+        object_.reset();   // 3Dオブジェクトの破棄
+    }
 
     void Player::Initialize() {
         // テクスチャの読み込み
@@ -37,6 +44,21 @@ namespace MyGame {
         baseOffset_ = { 0.0f, -3.0f, 30.0f };
         // プレイヤーオブジェクトの生成、初期化
         object_ = Object3d::Create(Character::Player, data_.transform);
+
+        // 状態フラグの初期化
+        flags_.isAlive = true;
+        flags_.isActive = true;
+
+        // コライダー生成
+        collider_ = Collider::Create({ .profile = Profile::Player,.obb = CollisionUtils::CreateOBB(object_.get()) });
+        // 衝突時の処理
+        collider_->SetCallback([this](Collider* other) {
+            if (!IsAlive()) { return; }
+                ChangeState(std::make_unique<PlayerStateDead>());            
+            });
+        // コライダー登録
+        CollisionManager::GetInstance()->RegisterCollider(collider_.get());
+
         // ターゲットオブジェクトの生成、初期化
         targettransform_ = { {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 30.0f} };
         target_ = Object3d::Create(Character::Player, targettransform_);
@@ -45,11 +67,6 @@ namespace MyGame {
         targetreticle_ = Sprite::Create(Ui::Target, Vector2{ 640.0f, 360.0f }, 0.0f, Vector2{ 100.0f, 100.0f });
         targetreticle_->SetTextureSize(Vector2{ 512.0f, 512.0f });
         targetreticle_->SetAnchorPoint(Vector2{ 0.5f, 0.5f }); // 中心基準
-
-        // 状態フラグの初期化
-        flags_.isAlive = true;
-        flags_.isActive = true;
-        SetActive(true);
 
         // コンポーネントの生成
         move_ = std::make_unique<PlayerMove>();          // 移動ロジックの生成
@@ -69,7 +86,10 @@ namespace MyGame {
 
 		// カメラがGamePlayCameraで更新中の場合、プレイヤーのワールド座標をカメラ位置に基づいて更新する
         if (CameraManager::GetInstance()->GetCurrentBehaviorAs<GamePlayCamera>()) {
-            SyncWorldTransformByRail();
+            // 死亡状態ではないなら
+            if (!dynamic_cast<PlayerStateDead*>(state_.GetCurrentState())) {
+                SyncWorldTransformByRail();
+            }
         }
 
         // 各コンポーネントの更新
@@ -79,11 +99,8 @@ namespace MyGame {
     }
 
     void Player::Draw() {
-		// 生存していない場合は描画処理をスキップ
-        if (!IsAlive()) { return; }
-        if (object_) {
-            object_->Draw();
-        }
+		// 描画処理
+        object_->Draw();
     }
 
     void Player::DrawSprite() {

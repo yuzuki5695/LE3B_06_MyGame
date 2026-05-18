@@ -24,12 +24,12 @@ namespace MyGame {
 
         // 衝突マスク（相手が誰なら反応するか）
         namespace CollisionMask {
-			// 反応する相手をビットフラグで定義
+            // 反応する相手をビットフラグで定義
             constexpr uint32_t None = 0;
             constexpr uint32_t Player = Attribute::Enemy | Attribute::EnemyBullet;
             constexpr uint32_t Enemy = Attribute::PlayerBullet;
             constexpr uint32_t PlayerBullet = Attribute::Enemy | Attribute::EnemyBullet;
-            constexpr uint32_t EnemyBullet = Attribute::PlayerBullet;
+            constexpr uint32_t EnemyBullet = Attribute::Player | Attribute::PlayerBullet;
         }
 
         // 具体的なプロファイルの定義

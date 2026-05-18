@@ -7,7 +7,7 @@ namespace MyGame {
 
 	// 前方宣言
 	class Player;
-	
+
 	/// <summary>
 	/// 敵キャラクタークラス
 	/// </summary>
@@ -34,7 +34,7 @@ namespace MyGame {
 	private: // メンバ変数
 		// ポインタ
 		std::unique_ptr<EnemyAttack> attack_; // 攻撃ロジックの保持
-
+		bool isSpawned_ = false; // 出現フラグ
 		// プレイヤーへの参照
 		Player* player_ = nullptr;
 	public: // アクセッサ
@@ -43,5 +43,7 @@ namespace MyGame {
 		EnemyAttack* GetAttack() { return attack_.get(); }
 		void SetPlayer(Player* player) { player_ = player; }
 		Player* GetPlayer() const { return player_; }
+		bool IsSpawned() const { return isSpawned_; }
+		void SetSpawned(bool flag) { isSpawned_ = flag; }
 	};
 }

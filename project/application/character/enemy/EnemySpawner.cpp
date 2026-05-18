@@ -38,17 +38,17 @@ namespace MyGame {
         int spawned = 0;
 
         for (auto& enemy : *enemies_) {
-            if (!enemy->IsActive() && spawned < count) {
-
+            if (!enemy->IsSpawned() && !enemy->IsActive() && spawned < count) {
                 // ランダム値生成
                 float randX = distX(randomEngine);
                 float randY = disty(randomEngine);
                 float randZ = distz(randomEngine);
 
                 Vector3 spawnPos = playerPos + forward * randZ + right * randX + up * randY;
-                enemy->SetActive(true);
                 enemy->GetObject3d()->SetTranslate(spawnPos);
                 enemy->ChangeState(std::make_unique<EnemyIdle>());
+                // 出現フラグを立てる              
+                enemy->SetSpawned(true);
                 spawned++;
             }
         }

@@ -12,17 +12,28 @@ using namespace Easing;
 
 namespace MyGame {
     void EnemyIdle::Update(BaseCharacter& character) {
-        timer_ += 1.0f / 60.0f;
-        float t = std::clamp(timer_ / duration_, 0.0f, 1.0f);
-        float s = EaseOutBack(t);
-        character.GetObject3d()->SetScale({ s, s, s });
-        if (t >= 1.0f) {
-            t = 1.0f;
+        // 必要なコンポーネント
+        Enemy* enemy = dynamic_cast<Enemy*>(&character);
+        // 敵が出現している場合は出現アニメーションを行う  
+        if (enemy->IsSpawned()) {
+            timer_ += 1.0f / 60.0f;
+            float t = std::clamp(timer_ / duration_, 0.0f, 1.0f);
+            float s = EaseOutBack(t);
             character.GetObject3d()->SetScale({ s, s, s });
-            // 当たり判定登録
-            character.RegisterCollider();
-			// BaseCharacter状態からEnemyAlive状態へ遷移
-            character.ChangeState(std::make_unique<EnemyAlive>());
+            if (t >= 1.0f) {
+                t = 1.0f;
+                character.GetObject3d()->SetScale({ s, s, s });
+                // 出現完了したのでアクティブにする
+                character.SetActive(true);
+                // 出現フラグをオフにする
+                enemy->SetSpawned(false);
+                // 登録前にOBB更新
+                character.GetCollider()->SetOBB(CollisionUtils::CreateOBB(character.GetObject3d()));
+                // 当たり判定登録
+                character.RegisterCollider();
+                // BaseCharacter状態からEnemyAlive状態へ遷移
+                character.ChangeState(std::make_unique<EnemyAlive>());
+            }
         }
     }
 
@@ -30,9 +41,8 @@ namespace MyGame {
         // 必要なコンポーネント
         Enemy* enemy = dynamic_cast<Enemy*>(&character);
 
-        // アクティブ中は各更新処理を行う
-        if (character.IsActive()) {
-
+		// アクティブ中またはプレイヤ―が非アクティブ中は各更新処理を行う
+        if (character.IsActive() || !enemy->GetPlayer()->IsActive()) {
             // =========================
             // プレイヤーが追い越したら削除
             // =========================
@@ -60,6 +70,10 @@ namespace MyGame {
 
     void EnemyDead::Update(BaseCharacter& character) {
         if (character.IsAlive()) {
+            // 当たり判定解除
+            CollisionManager::GetInstance()->UnregisterCollider(character.GetCollider());
+            character.SetActive(false); // アクティブフラグを下げる
+            character.SetAlive(false);  // 生存フラグを下げる
             // 死んだらフラグを立てる
             character.Destroy();
         }

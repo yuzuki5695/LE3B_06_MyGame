@@ -5,11 +5,13 @@
 #include <CameraManager.h>
 #include <SceneManager.h>
 #include <SceneName.h>
+#include <FadeManager.h>
 
 using namespace MyEngine;
 
 namespace MyGame {
     void PlayerStateIdle::Update(BaseCharacter& character) {
+		// 現在のシーンはゲームプレイなら移動状態へ遷移
         if (CameraManager::GetInstance()->GetCurrentBehaviorAs <GamePlayCamera>()) {
             character.ChangeState(std::make_unique<PlayerStateMove>());
         }
@@ -18,6 +20,9 @@ namespace MyGame {
     void PlayerStateMove::Update(BaseCharacter& character) {
         // 必要なコンポーネント
         Player* player = dynamic_cast<Player*>(&character);
+        if (Input::GetInstance()->PushKey(DIK_Z)) {
+            character.ChangeState(std::make_unique<PlayerStateDead>());
+        }
 
         // アクティブ中は各更新処理を行う
         if (character.IsActive()) {
@@ -37,11 +42,17 @@ namespace MyGame {
 
     void PlayerStateDead::Update(BaseCharacter& character) {
         Player* player = static_cast<Player*>(&character);
-        PlayerDeath* death = player->GetDeath();
-        Object3d* object = player->GetObject3d();
-        death->Update(object->GetTransform().rotate, object->GetTransform().translate, object);
-        player->SetActive(false);
-
-        //    character.Destroy();
+        if (player->IsActive()) {
+			player->SetActive(false); // アクティブフラグを下げる
+			player->Destroy();        // 削除予約
+            // 当たり判定の登録解除
+            CollisionManager::GetInstance()->UnregisterCollider(player->GetCollider());
+            // カメラの状態をロックオンに変更(ゲームプレイカメラの状態なので向こうでサブカメラに切り替わる)
+            CameraManager::GetInstance()->GetCurrentBehaviorAs<GamePlayCamera>()->SetCameraState(CameraDefs::CameraState::LockOn);
+        }
+        // 死亡演出の更新
+        player->GetDeath()->Update(player->GetObject3d()->GetTransform().rotate, player->GetObject3d()->GetTransform().translate, player->GetObject3d());
+        // ゲームオーバーシーンへ遷移
+        FadeManager::GetInstance()->SceneChangeFade(SceneName::GAMEOVER, FadeStyle::Normal, 1.5f);
     }
 }

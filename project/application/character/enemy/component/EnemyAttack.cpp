@@ -18,7 +18,7 @@ namespace MyGame {
 		canShoot_ = false;    // 最初は撃てないようにする
         // 最初は即撃てるようにする
         timer_ = coolTime_;
-        speed = 2.5f;
+        speed = 5.0f;
     }
 
     void EnemyAttack::Update(const Transform& transform, const Vector3& aimWorldPos) {
