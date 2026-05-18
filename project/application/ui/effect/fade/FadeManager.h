@@ -7,7 +7,7 @@ namespace MyGame {
     /// フェードを管理するマネージャークラス
     /// </summary>
     class FadeManager {
-    private:
+	private: // シングルトンインスタンス
         static std::unique_ptr<FadeManager> instance;
 
         FadeManager(FadeManager&) = delete;
@@ -29,12 +29,20 @@ namespace MyGame {
         /// 描画処理
         /// </summary>
         void Draw();
-
-        // フェード開始
-        void StartFade(FadeType type, FadeStyle style, float duration);
-        // フェード開始後にシーン切り替えを予約
+        /// <summary>
+		/// フェード開始
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="style"></param>
+        /// <param name="duration"></param>
+        void StartFade(FadeType type, FadeStyle style, float duration);       
+        /// <summary>
+		/// フェード開始後にシーン切り替えを予約
+        /// </summary>
+        /// <param name="sceneName"></param>
+        /// <param name="style"></param>
+        /// <param name="duration"></param>
         void SceneChangeFade(const std::string& sceneName, FadeStyle style, float duration);
-
     private: // メンバ変数
         // 現在のフェードエフェクト
         std::unique_ptr<IFadeEffect> effect_;
@@ -46,5 +54,11 @@ namespace MyGame {
         // シーン切り替え予約用変数
         std::string nextSceneName_;
         bool isSceneChangeReserved_ = false; // フェード完了後にシーン切り替えを行うか
+        bool isFadeEnd_ = false;         // フェード終了済み
+        bool isFadeInFinished_ = false;  // フェードイン完了
+    public:
+        bool IsFading() const { return isFading_; }
+        bool IsFadeEnd() const { return isFadeEnd_; }
+        bool IsFadeInFinished() const { return isFadeInFinished_; }
     };
 }

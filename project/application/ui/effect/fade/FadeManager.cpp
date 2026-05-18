@@ -42,7 +42,8 @@ namespace MyGame {
         effect_->Update(t_, type_);
 
         if (t_ >= 1.0f) {
-            isFading_ = false;
+			isFadeInFinished_ = true; // フェードインが完了したことを示すフラグを立てる
+			isFading_ = false;      // フェード終了
             // フェード完了後にシーン切り替えが予約されている場合は実行
             if (isSceneChangeReserved_) {
                 // シーンマネージャに切り替え処理を実行
@@ -67,7 +68,7 @@ namespace MyGame {
         duration_ = std::max(duration, 0.001f);
         timer_ = 0.0f;
         isFading_ = true;
-
+        isFadeInFinished_ = false;
 		// フェードスタイルに応じたエフェクトクラスのインスタンスを生成
         switch (style) {
 		case FadeStyle::Normal: // 全画面フェード

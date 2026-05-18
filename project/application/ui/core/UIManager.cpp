@@ -41,7 +41,7 @@ namespace MyGame {
             AddUI(SceneName::GAMEPLAY, std::make_unique<GamePlayUI>());
 		} else if (currentScene == SceneName::GAMECLEAR) {                  // ゲームクリアシーンのUIを生成
             AddUI(SceneName::GAMECLEAR, std::make_unique<GameClearUI>());
-        } else if (currentScene == SceneName::GAMECLEAR) {                  // ゲームオーバーシーンのUIを生成
+        } else if (currentScene == SceneName::GAMEOVER) {                  // ゲームオーバーシーンのUIを生成
             AddUI(SceneName::GAMEOVER, std::make_unique<GameOverUI>());
         }
 

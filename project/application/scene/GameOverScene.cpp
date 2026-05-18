@@ -19,17 +19,17 @@ namespace MyGame {
 		StageManager::GetInstance()->Finalize();  // ステージマネージャの終了処理
 	}
 
-	void GameOverScene::Initialize() {	
-		 // カメラマネージャの初期化       
+	void GameOverScene::Initialize() {
+		// カメラマネージャの初期化       
 		CameraManager::GetInstance()->Initialize(SceneName::GAMEOVER);
-		
-		
+
+
 		// ステージマネージャの初期化
-        StageManager::GetInstance()->Initialize();
-		// UIマネージャの初期化
-        UIManager::GetInstance()->Initialize();
+		StageManager::GetInstance()->Initialize();
 		// フェードマネージャの初期化(フェードイン開始処理)
-        FadeManager::GetInstance()->StartFade(FadeType::FadeIn, FadeStyle::SilhouetteExplode, 1.0f);
+		FadeManager::GetInstance()->StartFade(FadeType::FadeIn, FadeStyle::SilhouetteExplode, 1.0f);
+		// UIマネージャの初期化
+		UIManager::GetInstance()->Initialize();
 	}
 
 	void GameOverScene::Update() {

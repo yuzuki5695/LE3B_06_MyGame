@@ -21,7 +21,19 @@ namespace MyGame {
         /// </summary>
         void Draw() override;
     private: // メンバ変数
-        std::unique_ptr<MyEngine::Sprite> mission_;
+        std::unique_ptr<MyEngine::Sprite> gameover_;
+        std::unique_ptr<MyEngine::Sprite> enter_;
+        MyEngine::Vector2 ui1StartPos; // 上にずらした初期位置
+        MyEngine::Vector2 ui1EndPos; // 最終位置（現在の値）
+        MyEngine::Vector2 ui2StartPos;
+        MyEngine::Vector2 ui2EndPos;
 
+        float ui1Timer_;
+        float ui1Duration_;
+        float ui2Timer_;
+        float ui2Duration_;
+
+        uint32_t phase_;
+    
     };
 }
