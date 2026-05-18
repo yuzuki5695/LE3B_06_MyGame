@@ -40,9 +40,10 @@ namespace MyGame {
     void GamePlayScene::Initialize() {
         // カメラマネージャの初期化
         CameraManager::GetInstance()->Initialize(SceneName::GAMEPLAY);
-
+        // プレイヤー生成,初期化
         player_ = std::make_unique<Player>();
         player_->Initialize();
+		// カメラのターゲットとプレイヤーをセット
         CameraManager::GetInstance()->GetCurrentBehaviorAs<GamePlayCamera>()->SetPlayer(player_.get());
 
         // 敵生成
@@ -50,6 +51,7 @@ namespace MyGame {
         for (int i = 0; i < kEnemyMax; i++) {
             auto enemy = std::make_unique<Enemy>();
             enemy->Initialize();
+            enemy->SetPlayer(player_.get());
             enemies_.push_back(std::move(enemy));
         }
 
@@ -59,18 +61,19 @@ namespace MyGame {
 		enemySpawner_->SetPlayer(player_.get());
 
         // ステージマネージャの初期化
-        StageManager::GetInstance()->Initialize(); 
+        StageManager::GetInstance()->Initialize();
         StageManager::GetInstance()->SetClearwallTranslate(CameraManager::GetInstance()->GetCurrentBehaviorAs<GamePlayCamera>()->GetRailEndPosition());
 
+        // UIにプレイヤーの情報を渡す
         GamePlayUI* gameplayUI = UIManager::GetInstance()->GetUI<GamePlayUI>();
         if (gameplayUI) {
             gameplayUI->SetPlayer(player_.get());
         }
         // UIマネージャの初期化
         UIManager::GetInstance()->Initialize();
-
+		// フェードマネージャの初期化(フェードイン開始処理)
         FadeManager::GetInstance()->StartFade(FadeType::FadeIn, FadeStyle::SilhouetteExplode, 1.0f);
-
+		// ゲーム開始イベントの開始
         isGameStartEventDone_ = true;
     }
 
@@ -78,11 +81,12 @@ namespace MyGame {
         // カメラマネージャの更新
         CameraManager::GetInstance()->Update();
 #pragma region 全てのObject3d個々の更新処理      
+		// ポーズメニューのトリガーと更新
         if (!UIManager::GetInstance()->GetUI<GamePlayUI>()->GetPauseMenu()->IsActive() &&
             Input::GetInstance()->TriggerKey(DIK_TAB)) {
             UIManager::GetInstance()->GetUI<GamePlayUI>()->GetPauseMenu()->SetActive(true);
         }
-        
+		// ポーズがアクティブ中、ゲームの更新を停止してポーズメニューの更新のみ行う
         if (UIManager::GetInstance()->GetUI<GamePlayUI>()->GetPauseMenu()->IsActive()) {
             UIManager::GetInstance()->GetUI<GamePlayUI>()->GetPauseMenu()->Update();
             FadeManager::GetInstance()->Update();
@@ -102,9 +106,8 @@ namespace MyGame {
         // 敵更新
         for (auto& enemy : enemies_) {
             enemy->Update();
-			enemy->SetPlayer(player_.get());
         }
-
+		// 死亡した敵の削除
         enemies_.erase(
             std::remove_if(enemies_.begin(), enemies_.end(),
                 [](std::unique_ptr<Enemy>& enemy) {
@@ -116,7 +119,7 @@ namespace MyGame {
                 }),
             enemies_.end()
         );
-
+		// カメラのターゲットとプレイヤーをセット（プレイヤーの位置にカメラを追従させるため）
         CameraManager::GetInstance()->GetCurrentBehaviorAs<GamePlayCamera>()->SetTargetObject(player_->GetObject3d());
         CameraManager::GetInstance()->GetCurrentBehaviorAs<GamePlayCamera>()->SetPlayer(player_.get()); 
         // プレイヤーの更新
@@ -158,7 +161,8 @@ namespace MyGame {
 
         // プレイヤーの描画
         player_->Draw();
-        
+
+        // 敵の描画
         for (auto& enemy : enemies_) {
             enemy->Draw();
         }

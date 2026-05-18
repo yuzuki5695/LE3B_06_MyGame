@@ -28,8 +28,8 @@ namespace MyGame {
             constexpr uint32_t None = 0;
             constexpr uint32_t Player = Attribute::Enemy | Attribute::EnemyBullet;
             constexpr uint32_t Enemy = Attribute::PlayerBullet;
-            constexpr uint32_t PlayerBullet = Attribute::Enemy;
-            constexpr uint32_t EnemyBullet = Attribute::Player;
+            constexpr uint32_t PlayerBullet = Attribute::Enemy | Attribute::EnemyBullet;
+            constexpr uint32_t EnemyBullet = Attribute::PlayerBullet;
         }
 
         // 具体的なプロファイルの定義
