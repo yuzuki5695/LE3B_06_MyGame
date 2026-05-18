@@ -2,14 +2,23 @@
 #include <ISceneCameraBehavior.h>
 
 namespace MyGame {
-
+    /// <summary>
+	/// ゲームオーバー用カメラクラス
+    /// </summary>
     class GameOverCamera : public ISceneCameraBehavior {
-    public:
-
+	public: // メンバ関数
+        /// <summary>
+		/// 初期化処理
+        /// </summary>
+        /// <param name="camera"></param>
         void Initialize(MyEngine::Camera* camera)override;
+        /// <summary>
+		/// 更新処理
+        /// </summary>
+        /// <param name="camera"></param>
         void Update(MyEngine::Camera* camera) override;
-
-    private:
-        MyEngine::Vector3 targetOffset_ = { 0.0f, 0.0f, -100.0f };
+	private: // メンバ変数
+		// トランスフォーム
+        MyEngine::Vector3 transform_;
     };
 }
