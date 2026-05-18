@@ -43,7 +43,7 @@ namespace MyGame {
 
         // カメラのターゲットにプレイヤーをセット
         CameraManager::GetInstance()->GetCurrentBehaviorAs<GameClearCamera>()->SetTargetObject(player_->GetObject3d());
-
+		// 演出の段階を初期化
         step_ = 0;
 
         // ステージマネージャの初期化
@@ -59,8 +59,6 @@ namespace MyGame {
         CameraManager::GetInstance()->Update();
 
 #pragma region 全てのObject3d個々の更新処理
-        // ステージマネージャの更新
-        StageManager::GetInstance()->Update();
 
         UpdateStep();
 

@@ -4,6 +4,7 @@
 #include <GamePlayUI.h>
 #include <TitleUI.h>
 #include <GameClearUI.h>
+#include <GameOverUI.h>
 
 using namespace MyEngine;
 
@@ -34,12 +35,14 @@ namespace MyGame {
         std::string currentScene = SceneManager::GetInstance()->GetCurrentScene()->GetSceneName();
 
         // シーン名に紐付いたUIクラスをインスタンス化
-        if (currentScene == SceneName::TITLE) {
+		if (currentScene == SceneName::TITLE) {                             // タイトルシーンのUIを生成
             AddUI(SceneName::TITLE, std::make_unique<TitleUI>());
-        } else if (currentScene == SceneName::GAMEPLAY) {
+		} else if (currentScene == SceneName::GAMEPLAY) {                   // ゲームプレイシーンのUIを生成
             AddUI(SceneName::GAMEPLAY, std::make_unique<GamePlayUI>());
-        } else if (currentScene == SceneName::GAMECLEAR) {
+		} else if (currentScene == SceneName::GAMECLEAR) {                  // ゲームクリアシーンのUIを生成
             AddUI(SceneName::GAMECLEAR, std::make_unique<GameClearUI>());
+        } else if (currentScene == SceneName::GAMECLEAR) {                  // ゲームオーバーシーンのUIを生成
+            AddUI(SceneName::GAMEOVER, std::make_unique<GameOverUI>());
         }
 
         // 生成したUIの個別初期化
@@ -73,6 +76,7 @@ namespace MyGame {
     }
 
     void UIManager::Clear() {
+		// 管理している全UIの破棄
         uiList_.clear();
     }
 }

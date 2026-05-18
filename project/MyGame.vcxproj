@@ -170,6 +170,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="application\ui\core\UIManager.cpp" />
     <ClCompile Include="application\ui\effect\fade\FadeManager.cpp" />
     <ClCompile Include="application\ui\scene\GameClearUI.cpp" />
+    <ClCompile Include="application\ui\scene\GameOverUI.cpp" />
     <ClCompile Include="application\ui\scene\GamePlayUI.cpp" />
     <ClCompile Include="application\ui\scene\pause\Pausemenu.cpp" />
     <ClCompile Include="application\ui\scene\TitleUI.cpp" />
@@ -287,6 +288,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\ui\effect\fade\FadeTypes.h" />
     <ClInclude Include="application\ui\effect\fade\IFadeEffect.h" />
     <ClInclude Include="application\ui\scene\GameClearUI.h" />
+    <ClInclude Include="application\ui\scene\GameOverUI.h" />
     <ClInclude Include="application\ui\scene\GamePlayUI.h" />
     <ClInclude Include="application\ui\scene\pause\Pausemenu.h" />
     <ClInclude Include="application\ui\scene\TitleUI.h" />
