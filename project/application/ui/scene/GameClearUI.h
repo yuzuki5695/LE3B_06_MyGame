@@ -1,6 +1,6 @@
 #pragma once
 #include <BaseUI.h>
-#include<Sprite.h>
+#include <Sprite.h>
 
 namespace MyGame {
     /// <summary>

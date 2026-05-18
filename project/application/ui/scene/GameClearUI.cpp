@@ -1,6 +1,6 @@
 #include "GameClearUI.h"
 #include <TextureManager.h>
-#include<Easing.h>
+#include <Easing.h>
 
 // AssetGeneratorからインクルード
 #include <subproject/AssetGenerator/engine/generator/LoadResourceID.h>
