@@ -87,7 +87,8 @@ namespace MyGame {
 
 #pragma region 全てのObject3d個々の更新処理			
 
-		UpdateParts(); //  落下処理
+		//  落下処理
+		UpdateParts();
 		// プレイヤ―パーツの更新
 		for (PartInfo& part : partsList) {
 			part.obj->Update();
@@ -136,6 +137,7 @@ namespace MyGame {
 
 #pragma endregion 全てのSprite個々の描画処理
 	}
+
 	void GameOverScene::UpdateParts() {
 		for (PartInfo& part : partsList) {
 			// フェードインが完了するまでは落下させない
@@ -145,10 +147,8 @@ namespace MyGame {
 			if (part.transform.translate.y < -20.0f) {
 				part.transform.translate.y = -20.0f; // 地面で止める
 			}
-
 			// 回転
 			part.transform.rotate -= part.rotateSpeed;
-
 			// 更新反映
 			part.obj->SetTranslate(part.transform.translate);
 			part.obj->SetRotate(part.transform.rotate);

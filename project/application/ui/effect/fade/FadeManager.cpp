@@ -68,7 +68,7 @@ namespace MyGame {
         duration_ = std::max(duration, 0.001f);
         timer_ = 0.0f;
         isFading_ = true;
-        isFadeInFinished_ = false;
+
 		// フェードスタイルに応じたエフェクトクラスのインスタンスを生成
         switch (style) {
 		case FadeStyle::Normal: // 全画面フェード
