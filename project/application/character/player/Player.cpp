@@ -112,27 +112,46 @@ namespace MyGame {
     }
 
     void Player::SyncWorldTransformByRail() {
-		// カメラ位置を基準にプレイヤーのワールド座標を更新する
-        GamePlayCamera* cam = CameraManager::GetInstance()->GetCurrentBehaviorAs<GamePlayCamera>();
+        // カメラを取得
         Camera* active = CameraManager::GetInstance()->GetActiveCamera();
-		// カメラのワールド座標を取得
+        if (!active) { return; }
+        // カメラ位置
         Vector3 camPos = active->GetTranslate();
+        // カメラ回転
+        Vector3 camRot = active->GetRotate();
+        // --------------------
+        // カメラ基準ベクトル
+        // --------------------
+        float yaw = camRot.y;
+        float pitch = camRot.x;
+		// カメラの回転から前方向ベクトルを計算
+        Vector3 forward = {
+            sinf(yaw) * cosf(pitch),
+            -sinf(pitch),
+            cosf(yaw) * cosf(pitch)
+        };
+		// ベクトルの正規化
+        forward = Normalize(forward);
+		// ワールド上の上方向
+        Vector3 worldUp = { 0,1,0 };	
+        Vector3 right = Normalize(Cross(worldUp, forward));
+        Vector3 up = Normalize(Cross(forward, right));
 
-        // カメラ位置から固定オフセット
-        Vector3 offset = { move_->GetRelativePos().x,move_->GetRelativePos().y + baseOffset_.y,baseOffset_.z };
-		// カメラ回転を考慮したオフセットの回転
-        Vector3 finalPos = camPos + offset;
+        // --------------------
+        // プレイヤーローカル座標
+        // --------------------
+
+        Vector3 relative = {
+            move_->GetRelativePos().x,
+            move_->GetRelativePos().y + baseOffset_.y,
+            baseOffset_.z
+        };
+        // -------------------- 
+        // カメラ向きへ変換
+        // --------------------
+        Vector3 finalPos = camPos + right * relative.x + up * relative.y + forward * relative.z;
 		// プレイヤーオブジェクトの座標を更新
         object_->SetTranslate(finalPos);
-
-        //Vector3 camRot = active->GetRotate();
-        //Vector3 finalRot{};
-        //// カメラ回転を基準
-        //finalRot.x = camRot.x + move_->GetTiltX();
-        //finalRot.y = camRot.y;
-        //finalRot.z = camRot.z + move_->GetTiltZ() + move_->GetExtraRotationZ();
-
-        //object_->SetRotate(finalRot);
     }
 
     void Player::DrawImGui() {
