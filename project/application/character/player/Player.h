@@ -65,7 +65,7 @@ namespace MyGame {
 		MyEngine::Vector3 aimWorldPos_; // 
 		// カメラの位置調整用オフセット
 		MyEngine::Vector3 baseOffset_;
-
+		// 参照ポインタ
 		Enemy* enemy_;
 	public: // アクセッサ
 		// getter
