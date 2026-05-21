@@ -364,14 +364,8 @@
     <Filter Include="ヘッダー ファイル\application\math">
       <UniqueIdentifier>{a34d5205-3f79-4e82-a458-dde24b16cb7b}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ヘッダー ファイル\application\rail">
-      <UniqueIdentifier>{7a4b4ca3-20fb-4079-b704-ef333407532c}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ソース ファイル\application\math">
       <UniqueIdentifier>{83f2906c-a1cd-45a7-83e7-4e332edb6e5a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ソース ファイル\application\rail">
-      <UniqueIdentifier>{303b86f6-7a19-419f-9bc9-8545830282e4}</UniqueIdentifier>
     </Filter>
     <Filter Include="ソース ファイル\application\ui\scene\fade">
       <UniqueIdentifier>{58a614e6-87e6-4fad-ac4d-e17a6f116a40}</UniqueIdentifier>
@@ -638,12 +632,6 @@
     </ClCompile>
     <ClCompile Include="application\ui\scene\TitleUI.cpp">
       <Filter>ソース ファイル\application\ui\scene</Filter>
-    </ClCompile>
-    <ClCompile Include="application\rail\RailPath.cpp">
-      <Filter>ソース ファイル\application\rail</Filter>
-    </ClCompile>
-    <ClCompile Include="application\rail\RailSampler.cpp">
-      <Filter>ソース ファイル\application\rail</Filter>
     </ClCompile>
     <ClCompile Include="application\math\Spline.cpp">
       <Filter>ソース ファイル\application\math</Filter>
@@ -1066,12 +1054,6 @@
     </ClInclude>
     <ClInclude Include="application\math\Spline.h">
       <Filter>ヘッダー ファイル\application\math</Filter>
-    </ClInclude>
-    <ClInclude Include="application\rail\RailSampler.h">
-      <Filter>ヘッダー ファイル\application\rail</Filter>
-    </ClInclude>
-    <ClInclude Include="application\rail\RailPath.h">
-      <Filter>ヘッダー ファイル\application\rail</Filter>
     </ClInclude>
     <ClInclude Include="application\character\player\Component\PlayerDeath.h">
       <Filter>ヘッダー ファイル\application\character\player\component</Filter>
