@@ -98,12 +98,12 @@ namespace MyGame {
             return;
         }
 
-        ////  ゲーム開始前のイベント処理
-        //if (!isGameStartEventDone_) {
-        //    // ゲーム開始イベントの開始
-        //    EventManager::GetInstance()->EventStart(Event::EventState::GameStart);
-        //    isGameStartEventDone_ = true;
-        //}
+        //  ゲーム開始前のイベント処理
+        if (!isGameStartEventDone_) {
+            // ゲーム開始イベントの開始
+            EventManager::GetInstance()->EventStart(Event::EventState::GameStart);
+            isGameStartEventDone_ = true;
+        }
 
   //      // 敵スポーン
   //      enemySpawner_->Update();
