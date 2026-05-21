@@ -54,6 +54,8 @@ namespace MyGame {
         MyEngine::Vector3 bezierPos_{};                          // 現在のベジェ曲線上の位置
         MyEngine::Vector3 forward_{};                            //
         MyEngine::Vector3 prevForward_;                          //  
+        MyEngine::Vector3 railVelocity_{};   // レール移動速度
+        MyEngine::Vector3 prevBezierPos_{};  // 前フレーム位置
         uint32_t currentSegment_;      // 
         float speed_;                  // 移動速度
         float lookAheadDistance_;      // 未来を見る距離
@@ -66,6 +68,7 @@ namespace MyGame {
         const MyEngine::Vector3& GetForward() const { return forward_; }
         const MyEngine::Vector3& GetRailPosition() const { return bezierPos_; }
         const bool GetFinished() const { return isFinished_; }
+        const MyEngine::Vector3& GetRailVelocity() const { return railVelocity_; }
         float GetProgress() const;
         // setter
         void SetPlayer(Player* player) { player_ = player; }

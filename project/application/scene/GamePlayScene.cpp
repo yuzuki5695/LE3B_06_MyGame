@@ -49,7 +49,7 @@ namespace MyGame {
         // 敵生成
         const int kEnemyMax = 300;
         for (int i = 0; i < kEnemyMax; i++) {
-			auto enemy = std::make_unique<Enemy>(); // 敵の生成
+			std::unique_ptr<Enemy> enemy = std::make_unique<Enemy>(); // 敵の生成
 			enemy->Initialize(); // 敵の初期化
             enemy->SetActive(false); // 非アクティブ
             enemy->SetSpawned(false); // 出現フラグ
@@ -98,30 +98,31 @@ namespace MyGame {
             return;
         }
 
-        //  ゲーム開始前のイベント処理
-        if (!isGameStartEventDone_) {
-            // ゲーム開始イベントの開始
-            EventManager::GetInstance()->EventStart(Event::EventState::GameStart);
-            isGameStartEventDone_ = true;
+        ////  ゲーム開始前のイベント処理
+        //if (!isGameStartEventDone_) {
+        //    // ゲーム開始イベントの開始
+        //    EventManager::GetInstance()->EventStart(Event::EventState::GameStart);
+        //    isGameStartEventDone_ = true;
+        //}
+
+        // 敵スポーン
+        enemySpawner_->Update();
+
+        // 敵更新
+        for (std::unique_ptr<Enemy>& enemy : enemies_) {
+            enemy->Update();
         }
 
-  //      // 敵スポーン
-  //      enemySpawner_->Update();
-
-  //      // 敵更新
-  //      for (auto& enemy : enemies_) {
-  //          enemy->Update();
-  //      }
-		//// 死亡した敵の削除
-  //      enemies_.erase(std::remove_if(enemies_.begin(), enemies_.end(), [](std::unique_ptr<Enemy>& enemy) {
-  //          if (!enemy->IsAlive()) {
-  //              enemy->Finalize();
-  //              return true;
-  //          }
-  //          return false;
-  //          }),
-  //          enemies_.end()
-  //      );
+		// 死亡した敵の削除
+        enemies_.erase(std::remove_if(enemies_.begin(), enemies_.end(), [](std::unique_ptr<Enemy>& enemy) {
+            if (!enemy->IsAlive()) {
+                enemy->Finalize();
+                return true;
+            }
+            return false;
+            }),
+            enemies_.end()
+        );
 
 		// カメラのターゲットとプレイヤーをセット（プレイヤーの位置にカメラを追従させるため）
         CameraManager::GetInstance()->GetCurrentBehaviorAs<GamePlayCamera>()->SetPlayer(player_.get()); 
@@ -165,10 +166,10 @@ namespace MyGame {
         // プレイヤーの描画
         player_->Draw();
 
-        //// 敵の描画
-        //for (auto& enemy : enemies_) {
-        //    enemy->Draw();
-        //}
+        // 敵の描画
+        for (std::unique_ptr<Enemy>& enemy : enemies_) {
+            enemy->Draw();
+        }
 
         // 弾の描画
         BulletManager::GetInstance()->Draw();

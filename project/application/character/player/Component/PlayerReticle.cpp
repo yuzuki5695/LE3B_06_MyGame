@@ -37,30 +37,43 @@ namespace MyGame {
     }
 
     Vector3 PlayerReticle::ScreenToWorld(const Vector2& screenPos, Camera* camera) {
-        float ndcX = (screenPos.x / 1280.0f) * 2.0f - 1.0f;
-        float ndcY = -(screenPos.y / 720.0f) * 2.0f + 1.0f;
+        if (!camera) {
+            return {};
+        }
 
-        Matrix4x4 invViewProj = Inverse(camera->GetViewProjectionMatrix());
+        // ----------------------------
+        // スクリーン中心基準
+        // ----------------------------
+        float offsetX = screenPos.x - 640.0f;
+        float offsetY = screenPos.y - 360.0f;
 
-        Vector4 nearPos = { ndcX, ndcY, 0.0f, 1.0f };
-        Vector4 farPos = { ndcX, ndcY, 1.0f, 1.0f };
+        // 感度
+        constexpr float scale = 0.08f;
+        // カメラ回転
+        Vector3 camRot = camera->GetRotate();
 
-        // ワールド変換
-        nearPos = TransformCoord(nearPos, invViewProj);
-        farPos = TransformCoord(farPos, invViewProj);
+        float yaw = camRot.y;
+        float pitch = camRot.x;
 
-        nearPos = nearPos / nearPos.w;
-        farPos = farPos / farPos.w;
+        // カメラ基底
+        Vector3 forward = { sinf(yaw) * cosf(pitch),-sinf(pitch),cosf(yaw) * cosf(pitch) };
 
-        Vector3 rayDir = Normalize(Vector3{
-            farPos.x - nearPos.x,
-            farPos.y - nearPos.y,
-            farPos.z - nearPos.z
-            });
-        
-        Vector3 camPos = camera->GetTranslate();
+        forward = Normalize(forward);
 
-        // 適当な距離
-        return camPos + rayDir * kForwardDistance;
+        Vector3 worldUp = { 0,1,0 };
+        Vector3 right = Normalize(Cross(worldUp, forward));
+        Vector3 up = Normalize(Cross(forward, right));
+
+        // ----------------------------
+        // レティクルの
+        // カメラローカル位置
+        // ----------------------------
+        Vector3 relative = { offsetX * scale,-offsetY * scale,150.0f };
+        // ----------------------------
+        // カメラ空間→ワールド
+        // ----------------------------
+        Vector3 targetPos = camera->GetTranslate() + right * relative.x + up * relative.y + forward * relative.z;
+
+        return targetPos;
     }
 }

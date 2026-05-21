@@ -23,31 +23,82 @@ namespace MyGame {
         // 入力チェック
         // =============================
         if (Input::GetInstance()->PushKey(DIK_SPACE) && timer_ <= 0.0f) {
-            Camera* activecamera = CameraManager::GetInstance()->GetActiveCamera();
-            Vector3 camPos = activecamera->GetTranslate();
-            Vector3 rayDir = Normalize(aimWorldPos - camPos);
+
+            Camera* camera = CameraManager::GetInstance()->GetActiveCamera();
+
+            if (!camera) {
+                return;
+            }
+
+            //---------------------------------
+            // カメラ回転
+            //---------------------------------
+            Vector3 camRot = camera->GetRotate();
+
+            float camYaw = camRot.y;
+            float camPitch = camRot.x;
+
+            //---------------------------------
+            // カメラ forward
+            //---------------------------------
+            Vector3 camForward = { sinf(camYaw) * cosf(camPitch),-sinf(camPitch),cosf(camYaw) * cosf(camPitch) };
+
+
+            camForward = Normalize(camForward);
+
+            //---------------------------------
+            // プレイヤー→target方向
+            //---------------------------------
             Vector3 playerPos = playerTransform.translate;
 
-            // レイに投影
-            float t = Dot(playerPos - camPos, rayDir);
-            Vector3 startPos = camPos + rayDir * t;
+            Vector3 targetDir = Normalize(aimWorldPos - playerPos);
 
-            float speed = 15.0f;
-            Vector3 velocity = rayDir * speed;
+            //---------------------------------
+            // yaw / pitch算出
+            //---------------------------------
+            float targetYaw = atan2f(targetDir.x, targetDir.z);
+            float targetPitch = -asinf(targetDir.y);
 
+            //---------------------------------
+            // カメラとの差分角
+            //---------------------------------
+            float deltaYaw = targetYaw - camYaw;
+
+            float deltaPitch = targetPitch - camPitch;
+
+            //---------------------------------
+            // 最終弾回転
+            //---------------------------------
+            float bulletYaw = camYaw + deltaYaw;
+            float bulletPitch = camPitch + deltaPitch;
+
+            //---------------------------------
+            // 発射方向再構築
+            //---------------------------------
+            Vector3 bulletDir = { sinf(bulletYaw) * cosf(bulletPitch),-sinf(bulletPitch),cosf(bulletYaw) * cosf(bulletPitch) };
+
+            bulletDir = Normalize(bulletDir);
+
+            //---------------------------------
+            // 弾速度
+            //---------------------------------
+            constexpr float speed = 15.0f;
+
+            Vector3 velocity = bulletDir * speed;
+
+            //---------------------------------
+            // Transform
+            //---------------------------------
             Transform bulletTransform;
-            bulletTransform.scale = { 1.0f,1.0f,1.0f };
-            bulletTransform.rotate = { 0.0f,0.0f,0.0f };
-            bulletTransform.translate = playerTransform.translate;
+            bulletTransform.scale = { 1,1,1 };
+            bulletTransform.rotate = { bulletPitch,bulletYaw,0.0f };
+            bulletTransform.translate = playerPos;
 
-            // =============================
-            // ③ 弾生成
-            // =============================
+            //---------------------------------
+            // 発射
+            //---------------------------------
             BulletManager::GetInstance()->SpawnPlayerBullet(bulletTransform, velocity);
-
-            // =============================
-            // ④ クールタイムリセット
-            // =============================
+            // クールタイム
             timer_ = coolTime_;
         }
     }

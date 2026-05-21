@@ -33,7 +33,7 @@ namespace MyGame {
         // サブカメラ登録
         CameraManager::GetInstance()->GetCameraSet().AddSubCamera("Sub", std::move(subCam));
 
-        speed_ = 1.0f;
+        speed_ = 0.5f;
         currentSegment_ = 0;
         prevForward_ = { 0,0,1 };
         lookAheadDistance_ = 180.0f;
@@ -57,6 +57,9 @@ namespace MyGame {
         // start地点をセット
         bezierPos_ = bezierdata_->points[0].controlPoint.controlPoint;
         camera->SetTranslate(bezierPos_);
+        
+        prevBezierPos_ = bezierPos_;
+        railVelocity_ = {};
     }
 
     void GamePlayCamera::Update(Camera* camera) {
@@ -79,11 +82,14 @@ namespace MyGame {
 
     void GamePlayCamera::UpdateRailCamera(Camera* camera) {
         // レール更新可能か判定
-        if (!CanUpdateRail()) {
-            return;
-        }
+        if (!CanUpdateRail()) { return; }
+
         // 移動更新
         UpdateRailMovement();
+        
+        // レール速度更新
+        railVelocity_ =bezierPos_ - prevBezierPos_;
+ 
         // 回転更新
         UpdateRailRotation();
 
