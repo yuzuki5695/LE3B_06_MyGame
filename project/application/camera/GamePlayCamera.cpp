@@ -36,13 +36,22 @@ namespace MyGame {
         speed_ = 1.0f;
         currentSegment_ = 0;
         prevForward_ = { 0,0,1 };
-        lookAheadDistance_ = 180.0f;         
-        rotateSmooth_ = 0.025f;  
+        lookAheadDistance_ = 180.0f;
+        rotateSmooth_ = 0.025f;
         pitchInfluence_ = 0.45f;
 
         // 全制御点を通過可能に
         for (BezierPoint& point : bezierdata_->points) {
             point.passed = true;
+        }
+
+        // レール全長を計算
+        totalRailLength_ = 0.0f;
+        for (size_t i = 0; i + 1 < bezierdata_->points.size(); ++i) {
+            const Vector3& p0 = bezierdata_->points[i].controlPoint.controlPoint;
+            const Vector3& p1 = bezierdata_->points[i + 1].controlPoint.controlPoint;
+
+            totalRailLength_ += Length(p1 - p0);
         }
 
         // start地点をセット
@@ -59,7 +68,7 @@ namespace MyGame {
             UpdateRailCamera(camera);
             break;
         case CameraState::LockOn: // サブカメラの更新(プレイヤーへロックオン)
-			// カメラのステートをサブカメラに切り替え
+            // カメラのステートをサブカメラに切り替え
             stateData_.type = CameraType::Sub;
             CameraManager::GetInstance()->SetActiveSubCamera("Sub");
             // サブカメラの更新
@@ -90,31 +99,31 @@ namespace MyGame {
     }
 
     bool GamePlayCamera::CanUpdateRail() const {
-		// ベジェデータがない
+        // ベジェデータがない
         if (!bezierdata_) { return false; }
-		// 制御点が2つ未満なら処理しない
+        // 制御点が2つ未満なら処理しない
         if (bezierdata_->points.size() < 2) { return false; }
-		// すでにendに到達している
+        // すでにendに到達している
         if (isFinished_) { return false; }
-		// それ以外は更新可能
+        // それ以外は更新可能
         return true;
     }
 
     void GamePlayCamera::UpdateRailMovement() {
-		// 現在のセグメントの終点を取得
+        // 現在のセグメントの終点を取得
         const auto& points = bezierdata_->points;
-		// 現在のセグメントの終点
+        // 現在のセグメントの終点
         Vector3 end = points[currentSegment_ + 1].controlPoint.controlPoint;
-		// 現在位置から終点へのベクトル
+        // 現在位置から終点へのベクトル
         Vector3 dir = end - bezierPos_;
-		// 終点までの距離
+        // 終点までの距離
         float distance = Length(dir);
 
-		// 終点までの距離がspeed以下なら、終点に到達したとみなして次のセグメントへ
+        // 終点までの距離がspeed以下なら、終点に到達したとみなして次のセグメントへ
         if (distance <= speed_) {
-			// 終点に到達
+            // 終点に到達
             bezierPos_ = end;
-			// 次のセグメントへ
+            // 次のセグメントへ
             currentSegment_++;
             // 終点
             if (currentSegment_ >= points.size() - 1) {
@@ -122,7 +131,7 @@ namespace MyGame {
                 isFinished_ = true;
             }
         } else {
-			// まだ終点に到達していないので、speed分だけ移動
+            // まだ終点に到達していないので、speed分だけ移動
             dir = Normalize(dir);
             bezierPos_ += dir * speed_;
         }
@@ -173,7 +182,7 @@ namespace MyGame {
     void GamePlayCamera::UpdateSubCamera() {
         Camera* subCam = CameraManager::GetInstance()->GetActiveCamera();
         if (!subCam || !player_) return;
-		// プレイヤーの位置を取得
+        // プレイヤーの位置を取得
         Vector3 targetPos = player_->GetObject3d()->GetTranslate();
         // プレイヤー前方に配置
         Vector3 desiredPos = targetPos + forward_ * 20.0f + Vector3{ 0, 3, 0 };
@@ -181,7 +190,7 @@ namespace MyGame {
         float ease = 0.1f;
         Vector3 now = subCam->GetTranslate();
         Vector3 newPos = now + (desiredPos - now) * ease;
-		// カメラの位置を更新
+        // カメラの位置を更新
         subCam->SetTranslate(newPos);
         // プレイヤーを見る
         Vector3 dir = targetPos - newPos;
@@ -191,5 +200,30 @@ namespace MyGame {
             float pitch = -asinf(dir.y);
             subCam->SetRotate({ pitch, yaw, 0.0f });
         }
+    }
+
+    float GamePlayCamera::GetProgress() const {
+        if (!bezierdata_ || bezierdata_->points.size() < 2 || totalRailLength_ <= 0.0f) {
+            return 0.0f;
+        }
+
+        const auto& points = bezierdata_->points;
+        float traveledDistance = 0.0f;
+
+        // すでに通過したセグメント距離
+        for (uint32_t i = 0; i < currentSegment_; ++i) {
+            const Vector3& p0 = points[i].controlPoint.controlPoint;
+            const Vector3& p1 = points[i + 1].controlPoint.controlPoint;
+            traveledDistance += Length(p1 - p0);
+        }
+
+        // 現在セグメント内の進行距離
+        if (currentSegment_ < points.size() - 1) {
+            const Vector3& start = points[currentSegment_].controlPoint.controlPoint;
+            traveledDistance += Length(bezierPos_ - start);
+        }
+
+        // 0～1に正規化
+        return std::clamp(traveledDistance / totalRailLength_, 0.0f, 1.0f);
     }
 }

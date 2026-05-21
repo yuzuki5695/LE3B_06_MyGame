@@ -3,8 +3,6 @@
 #include <CurveJsonLoader.h>
 #include <memory>
 #include <Player.h>
-#include <RailPath.h>
-#include <RailSampler.h>
 
 namespace MyGame {
     /// <summary>
@@ -60,13 +58,15 @@ namespace MyGame {
         float speed_;                  // 移動速度
         float lookAheadDistance_;      // 未来を見る距離
         float rotateSmooth_;           // 回転の追従速度
-        float pitchInfluence_;         // ピッチ影響率        
+        float pitchInfluence_;         // ピッチ影響率
+        float totalRailLength_;        // レール全体の長さ
         bool isFinished_ = false;      // 
     public: // アクセッサ
         // getter
         const MyEngine::Vector3& GetForward() const { return forward_; }
         const MyEngine::Vector3& GetRailPosition() const { return bezierPos_; }
         const bool GetFinished() const { return isFinished_; }
+        float GetProgress() const;
         // setter
         void SetPlayer(Player* player) { player_ = player; }
 
