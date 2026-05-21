@@ -7,6 +7,7 @@
 #ifdef min
 #undef min
 #endif
+#include <numbers>
 #ifdef max
 #undef max
 #endif
@@ -26,109 +27,162 @@ namespace MyGame {
         // ベジェカーブのJSONデータ読み込み
         Jsondata_ = std::make_unique<CurveJsonLoader>();
         // ベジェ制御点の読み込み
-        bezierPoints = Jsondata_->LoadBezierFromJSON("Resources/levels/bezier.json");
+        bezierdata_ = Jsondata_->LoadFile("bezier");
         // サブカメラ生成
         std::unique_ptr<MyEngine::Camera> subCam = std::make_unique<MyEngine::Camera>();
         // サブカメラ登録
         CameraManager::GetInstance()->GetCameraSet().AddSubCamera("Sub", std::move(subCam));
-        // ベジェ曲線の初期化
-        const auto& curve = bezierPoints[0];
-        railPath_.Build(curve);        // 距離計算用
-        railSampler_.SetCurve(curve);  // 座標取得用
-     
-        // 開始地点の座標と方向を強制的に設定する
-        distance_ = 0.0f;
-        railPath_.ConvertDistance(distance_, currentIndex_, t_);
-        bezierPos_ = railSampler_.Sample(currentIndex_, t_);
-        forward_ = Normalize(railSampler_.SampleTangent(currentIndex_, t_));
 
-        // カメラをレールの開始地点に向かせる
-        if (camera) {
-            camera->SetLookAt(bezierPos_, bezierPos_ + forward_, { 0, 1, 0 });
-            camera->Update(); // 行列を確定させる
+        speed_ = 1.0f;
+        currentSegment_ = 0;
+        prevForward_ = { 0,0,1 };
+        lookAheadDistance_ = 180.0f;         
+        rotateSmooth_ = 0.025f;  
+        pitchInfluence_ = 0.45f;
+
+        // 全制御点を通過可能に
+        for (BezierPoint& point : bezierdata_->points) {
+            point.passed = true;
         }
+
+        // start地点をセット
+        bezierPos_ = bezierdata_->points[0].controlPoint.controlPoint;
+        camera->SetTranslate(bezierPos_);
     }
 
     void GamePlayCamera::Update(Camera* camera) {
         if (!camera) return;
 
         switch (stateData_.state) {
-        case CameraState::Follow:
-            UpdateBezier(camera);
-            camera->SetTranslate(bezierPos_);
+        case CameraState::Follow:     // レールカメラの更新
+            // レールカメラの更新
+            UpdateRailCamera(camera);
             break;
-        case CameraState::LockOn:
+        case CameraState::LockOn: // サブカメラの更新(プレイヤーへロックオン)
+			// カメラのステートをサブカメラに切り替え
             stateData_.type = CameraType::Sub;
             CameraManager::GetInstance()->SetActiveSubCamera("Sub");
-			// サブカメラの更新
+            // サブカメラの更新
             UpdateSubCamera();
             break;
         }
     }
 
-    void GamePlayCamera::UpdateBezier(Camera* camera) {
-        const auto& curve = bezierPoints[0];
-        if (curve.size() < 2) return;
-
-        // 距離進める
-        distance_ += speed;
-
-        // 最大制限
-        float maxLen = railPath_.GetTotalLength(); // ← getter追加してね
-        if (distance_ >= maxLen) {
-            distance_ = maxLen;
+    void GamePlayCamera::UpdateRailCamera(Camera* camera) {
+        // レール更新可能か判定
+        if (!CanUpdateRail()) {
+            return;
         }
+        // 移動更新
+        UpdateRailMovement();
+        // 回転更新
+        UpdateRailRotation();
 
-        // 距離 → index, t
-        railPath_.ConvertDistance(distance_, currentIndex_, t_);
+        // カメラへ反映
+        float yaw = atan2f(forward_.x, forward_.z);
+        float pitch = -asinf(forward_.y);
+        // 上下傾き弱める
+        pitch *= pitchInfluence_;
 
-        // 座標取得
-        bezierPos_ = railSampler_.Sample(currentIndex_, t_);
+        // カメラの位置と回転を更新
+        camera->SetTranslate(bezierPos_);
+        camera->SetRotate({ pitch, yaw, 0.0f });
+    }
 
-        // 接線
-        Vector3 tangent = railSampler_.SampleTangent(currentIndex_, t_);
-        Vector3 targetForward = Normalize(tangent);
+    bool GamePlayCamera::CanUpdateRail() const {
+		// ベジェデータがない
+        if (!bezierdata_) { return false; }
+		// 制御点が2つ未満なら処理しない
+        if (bezierdata_->points.size() < 2) { return false; }
+		// すでにendに到達している
+        if (isFinished_) { return false; }
+		// それ以外は更新可能
+        return true;
+    }
 
-        // 先読み
-        float futureT = std::min(t_ + 0.1f, 1.0f);
-        Vector3 futurePos = railSampler_.Sample(currentIndex_, futureT);
-        Vector3 futureForward = Normalize(futurePos - bezierPos_);
+    void GamePlayCamera::UpdateRailMovement() {
+		// 現在のセグメントの終点を取得
+        const auto& points = bezierdata_->points;
+		// 現在のセグメントの終点
+        Vector3 end = points[currentSegment_ + 1].controlPoint.controlPoint;
+		// 現在位置から終点へのベクトル
+        Vector3 dir = end - bezierPos_;
+		// 終点までの距離
+        float distance = Length(dir);
 
-        targetForward = Normalize(Lerp(targetForward, futureForward, 0.3f));
+		// 終点までの距離がspeed以下なら、終点に到達したとみなして次のセグメントへ
+        if (distance <= speed_) {
+			// 終点に到達
+            bezierPos_ = end;
+			// 次のセグメントへ
+            currentSegment_++;
+            // 終点
+            if (currentSegment_ >= points.size() - 1) {
+                // 最終セグメントに到達
+                isFinished_ = true;
+            }
+        } else {
+			// まだ終点に到達していないので、speed分だけ移動
+            dir = Normalize(dir);
+            bezierPos_ += dir * speed_;
+        }
+    }
 
-        // 回転補間
-        float dot = std::clamp(Dot(forward_, targetForward), -1.0f, 1.0f);
-        float angle = acosf(dot);
+    Vector3 GamePlayCamera::CalculateFuturePosition(const std::vector<BezierPoint>& points) const {
+        // 現在のセグメントの終点を取得
+        Vector3 currentEnd = points[currentSegment_ + 1].controlPoint.controlPoint;
+        // 未来位置の初期値は現在のセグメントの終点
+        Vector3 futurePos = currentEnd;
+        // 現在位置から終点までの距離
+        float remainDist = Length(currentEnd - bezierPos_);
+        // 未来位置の計算
+        if (remainDist < lookAheadDistance_ && currentSegment_ + 2 < points.size()) {
+            // 次のセグメントの終点
+            Vector3 next = points[currentSegment_ + 2].controlPoint.controlPoint;
+            // 現在位置から次のセグメントの終点までの距離
+            float blend = 1.0f - (remainDist / lookAheadDistance_);
+            // ブレンド値を0.0f～1.0fの範囲にクランプ
+            blend = std::clamp(blend, 0.0f, 1.0f);
+            // ブレンド値をイージングして滑らかにする
+            blend = blend * blend * (3.0f - 2.0f * blend);
+            // 現在のセグメントの終点と次のセグメントの終点をブレンドして未来位置を計算
+            futurePos = currentEnd * (1.0f - blend) + next * blend;
+        }
+        // 未来位置を返す
+        return futurePos;
+    }
 
-        float smooth = std::clamp(angle * 0.1f, 0.02f, 0.2f);
-
-        forward_ = Normalize(Slerp(forward_, targetForward, smooth));
-        // ワールド上方向
-        Vector3 worldUp = { 0,1,0 };
-        // right = forward × up
-        right_ = Normalize(Cross(worldUp, forward_));
-        // up = right × forward（直交化）
-        up_ = Normalize(Cross(forward_, right_));
-        // カメラ適用
-        camera->SetLookAt(bezierPos_, bezierPos_ + forward_, { 0, 1, 0 });
+    void GamePlayCamera::UpdateRailRotation() {
+        // ベジェデータから現在のセグメントの制御点を取得
+        const auto& points = bezierdata_->points;
+        // 目標の前方ベクトルを計算
+        Vector3 targetForward = prevForward_;
+        // 未来位置を考慮して目標の前方ベクトルを計算
+        if (currentSegment_ < points.size() - 1) {
+            // 未来位置を計算
+            Vector3 futurePos = CalculateFuturePosition(points);
+            // 現在位置から未来位置へのベクトルを正規化して目標の前方ベクトルとする
+            targetForward = Normalize(futurePos - bezierPos_);
+        }
+        // 現在の前方ベクトルと目標の前方ベクトルをSlerpで滑らかに補間して新しい前方ベクトルを計算
+        forward_ = Normalize(Slerp(prevForward_, targetForward, rotateSmooth_));
+        // 現在の前方ベクトルを保存して次回の更新で使用する
+        prevForward_ = forward_;
     }
 
     void GamePlayCamera::UpdateSubCamera() {
         Camera* subCam = CameraManager::GetInstance()->GetActiveCamera();
         if (!subCam || !player_) return;
-
+		// プレイヤーの位置を取得
         Vector3 targetPos = player_->GetObject3d()->GetTranslate();
-
         // プレイヤー前方に配置
         Vector3 desiredPos = targetPos + forward_ * 20.0f + Vector3{ 0, 3, 0 };
-
         // イージング
         float ease = 0.1f;
         Vector3 now = subCam->GetTranslate();
         Vector3 newPos = now + (desiredPos - now) * ease;
-
+		// カメラの位置を更新
         subCam->SetTranslate(newPos);
-
         // プレイヤーを見る
         Vector3 dir = targetPos - newPos;
         if (Length(dir) > 0.0001f) {

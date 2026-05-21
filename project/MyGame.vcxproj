@@ -387,6 +387,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\Data\Camera\bezier.json" />
     <None Include="Resources\Data\Enemy\enemy.json" />
     <None Include="Resources\Data\Languages\Localization.json" />
     <None Include="Resources\Data\Player\player.json" />

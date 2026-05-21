@@ -43,7 +43,7 @@ namespace MyGame {
         // プレイヤー生成,初期化
         player_ = std::make_unique<Player>();
         player_->Initialize();
-		// カメラのターゲットとプレイヤーをセット
+		// GamePlayCameraにプレイヤーを渡す(プレイヤ―の位置を確認)
         CameraManager::GetInstance()->GetCurrentBehaviorAs<GamePlayCamera>()->SetPlayer(player_.get());
 
         // 敵生成
@@ -105,26 +105,25 @@ namespace MyGame {
         //    isGameStartEventDone_ = true;
         //}
 
-        // 敵スポーン
-        enemySpawner_->Update();
+  //      // 敵スポーン
+  //      enemySpawner_->Update();
 
-        // 敵更新
-        for (auto& enemy : enemies_) {
-            enemy->Update();
-        }
-		// 死亡した敵の削除
-        enemies_.erase(std::remove_if(enemies_.begin(), enemies_.end(), [](std::unique_ptr<Enemy>& enemy) {
-            if (!enemy->IsAlive()) {
-                enemy->Finalize();
-                return true;
-            }
-            return false;
-            }),
-            enemies_.end()
-        );
+  //      // 敵更新
+  //      for (auto& enemy : enemies_) {
+  //          enemy->Update();
+  //      }
+		//// 死亡した敵の削除
+  //      enemies_.erase(std::remove_if(enemies_.begin(), enemies_.end(), [](std::unique_ptr<Enemy>& enemy) {
+  //          if (!enemy->IsAlive()) {
+  //              enemy->Finalize();
+  //              return true;
+  //          }
+  //          return false;
+  //          }),
+  //          enemies_.end()
+  //      );
 
 		// カメラのターゲットとプレイヤーをセット（プレイヤーの位置にカメラを追従させるため）
-        CameraManager::GetInstance()->GetCurrentBehaviorAs<GamePlayCamera>()->SetTargetObject(player_->GetObject3d());
         CameraManager::GetInstance()->GetCurrentBehaviorAs<GamePlayCamera>()->SetPlayer(player_.get()); 
         // プレイヤーの更新
         player_->Update();
@@ -138,8 +137,8 @@ namespace MyGame {
         CollisionManager::GetInstance()->CheckAllCollisions();
 
         // ゲームクリアの条件をチェック
-        if (CameraManager::GetInstance()->GetCurrentBehaviorAs<GamePlayCamera>()->GetProgress() >= 1.0f) {
-			// フェードアウト
+        if (CameraManager::GetInstance()->GetCurrentBehaviorAs<GamePlayCamera>()->GetFinished()) {
+            // フェードアウト
             FadeManager::GetInstance()->SceneChangeFade(SceneName::GAMECLEAR, FadeStyle::SilhouetteExplode, 1.5f);
         }
 
@@ -166,10 +165,10 @@ namespace MyGame {
         // プレイヤーの描画
         player_->Draw();
 
-        // 敵の描画
-        for (auto& enemy : enemies_) {
-            enemy->Draw();
-        }
+        //// 敵の描画
+        //for (auto& enemy : enemies_) {
+        //    enemy->Draw();
+        //}
 
         // 弾の描画
         BulletManager::GetInstance()->Draw();

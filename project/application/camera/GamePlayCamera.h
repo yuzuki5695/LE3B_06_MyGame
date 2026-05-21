@@ -23,53 +23,58 @@ namespace MyGame {
         /// <param name="camera"></param>
         void Update(MyEngine::Camera* camera) override;
         /// <summary>
-        /// ベジェ曲線に沿ってカメラを移動させる更新処理
+        /// レールカメラをプレイヤーの相対移動に合わせて更新する処理
         /// </summary>
         /// <param name="camera"></param>
-        void UpdateBezier(MyEngine::Camera* camera);
+        void UpdateRailCamera(MyEngine::Camera* camera);
         /// <summary>
-        /// サブカメラをプレイヤーの相対移動に合わせて更新する処理
+        /// サブカメラをプレイヤーの相対移動に合わせて更新する処理 
         /// </summary>
         void UpdateSubCamera();
+    private: // 内部関
+        /// <summary>
+        /// レール更新可能かどうか判定
+        /// </summary>
+        bool CanUpdateRail() const;
+        /// <summary>
+        /// レール移動更新
+        /// </summary>
+        void UpdateRailMovement();
+        /// <summary>
+        /// レール回転更新
+        /// </summary>
+        void UpdateRailRotation();
+        /// <summary>
+        /// 未来位置取得
+        /// </summary>
+        MyEngine::Vector3 CalculateFuturePosition(const std::vector<BezierPoint>& points) const;
     private: // メンバ変数
         // プレイヤーへの参照ポインタ（移動の相対座標を取得するために使用）
         Player* player_ = nullptr;
-        RailPath railPath_;       // 距離計算用
-        RailSampler railSampler_; // 座標取得用       
-        std::unique_ptr<CurveJsonLoader> Jsondata_ = nullptr;         // ベジェ制御点を読み込むローダー 
-        std::vector<std::vector<BezierPoint>> bezierPoints;           // 移動に使う制御点データ
-        MyEngine::Vector3 bezierPos_;                                 // 現在のベジェ曲線上の位置
-        float speed = 0.3f;                                           // 移動速度
-        float distance_ = 0.0f;                                       // 現在の移動距離
-        MyEngine::Vector3 forward_{};
-        int currentIndex_ = 0;                                        // 今いる区間（p1）
-        float t_ = 0.0f;                                              // 区間内の進行度 
-        MyEngine::Vector3 right_{};
-        MyEngine::Vector3 up_{};
+        std::unique_ptr<CurveJsonLoader> Jsondata_ = nullptr;    // ベジェ制御点を読み込むローダー 
+        std::unique_ptr<BezierData> bezierdata_;                 // 移動に使う制御点データ    
+        MyEngine::Vector3 bezierPos_{};                          // 現在のベジェ曲線上の位置
+        MyEngine::Vector3 forward_{};                            //
+        MyEngine::Vector3 prevForward_;                          //  
+        uint32_t currentSegment_;      // 
+        float speed_;                  // 移動速度
+        float lookAheadDistance_;      // 未来を見る距離
+        float rotateSmooth_;           // 回転の追従速度
+        float pitchInfluence_;         // ピッチ影響率        
+        bool isFinished_ = false;      // 
     public: // アクセッサ
         // getter
-        MyEngine::Vector3 GetForward() const {
-            return forward_;
-        }
-        // 進捗率を計算して返す関数
-        float GetProgress() const {
-            float total = railPath_.GetTotalLength();
-            if (total <= 0.0001f) return 0.0f;
-            // 進捗率を計算（distance_ / total）し、0.0f～1.0fの範囲にクランプして返す
-            return std::clamp(distance_ / total, 0.0f, 1.0f);
-        }
-        MyEngine::Vector3 GetRight()   const { return right_; }
-        MyEngine::Vector3 GetUp()      const { return up_; }
-        MyEngine::Vector3 GetBezierPos() const { return bezierPos_; }
+        const MyEngine::Vector3& GetForward() const { return forward_; }
+        const MyEngine::Vector3& GetRailPosition() const { return bezierPos_; }
+        const bool GetFinished() const { return isFinished_; }
         // setter
-        // Playerをセット
         void SetPlayer(Player* player) { player_ = player; }
+
         MyEngine::Vector3 GetRailEndPosition() const {
-            if (bezierPoints.empty()) { return {}; }
-            const auto& curve = bezierPoints[0];
-            if (curve.empty()) { return {}; }
-            // 最後の制御点
-            return curve.back().controlPoint;
+            // データ未読み込み対策
+            if (!bezierdata_ || bezierdata_->points.empty()) { return {}; }
+            // 最後の制御点(end)を返す
+            return bezierdata_->points.back().controlPoint.controlPoint;
         }
     };
 }

@@ -376,6 +376,9 @@
     <Filter Include="ソース ファイル\application\ui\scene\fade">
       <UniqueIdentifier>{58a614e6-87e6-4fad-ac4d-e17a6f116a40}</UniqueIdentifier>
     </Filter>
+    <Filter Include="リソース ファイル\Data\Camera">
+      <UniqueIdentifier>{36ce3736-11e8-49f1-bd38-678dbba6bc00}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -1184,6 +1187,9 @@
     </None>
     <None Include="Resources\Data\Resource\Textures.json">
       <Filter>リソース ファイル\Data\Resource</Filter>
+    </None>
+    <None Include="Resources\Data\Camera\bezier.json">
+      <Filter>リソース ファイル\Data\Camera</Filter>
     </None>
   </ItemGroup>
 </Project>

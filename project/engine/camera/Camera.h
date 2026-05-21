@@ -3,22 +3,29 @@
 #include <Matrix4x4.h>
 
 namespace MyEngine {
-	// カメラ
+	/// <summary>
+	/// カメラクラス
+	/// </summary>
 	class Camera {
 	public: // メンバ関数
-		// コントラクタ
+		/// <summary>
+		/// コンストラクタ
+		/// </summary>
 		Camera();
-		// 更新処理
-		void Update();
-		// ImGuiの更新
+		/// <summary>
+		/// 更新処理
+		/// </summary>
+		void Update();		
+		/// <summary>
+		/// ImGuiの描画処理
+		/// </summary>
 		void DrawImGui();
 	private: // メンバ変数
-		Transform transform;
-		Matrix4x4 worldMatrix;
-		Matrix4x4 viewMatrix;
-		Matrix4x4 projectionMatrix;
-		Matrix4x4 ViewProjectionMatrix;
-
+		Transform transform;             // カメラのTransform
+		Matrix4x4 worldMatrix;           // ワールド行列
+		Matrix4x4 viewMatrix;            // ビュー行列
+		Matrix4x4 projectionMatrix;      // プロジェクション行列
+		Matrix4x4 ViewProjectionMatrix;  // ビュー・プロジェクション行列
 		float fovY; // 水平方向視野野角
 		float aspectRatio; // アスペクト比
 		float nearClip; // ニアクリップ距離
@@ -41,7 +48,5 @@ namespace MyEngine {
 		void SetAspectRatio(const float& aspectRatio) { this->aspectRatio = aspectRatio; }
 		void SetNearClip(const float& nearClip) { this->nearClip = nearClip; }
 		void Setfarclip(const float& farclip) { this->farclip = farclip; }
-		void SetForward() const;
-		void SetLookAt(const Vector3& eye, const Vector3& target, const Vector3& up);
 	};
 }
