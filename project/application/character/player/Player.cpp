@@ -119,36 +119,20 @@ namespace MyGame {
         Vector3 camPos = active->GetTranslate();
         // カメラ回転
         Vector3 camRot = active->GetRotate();
-        // --------------------
         // カメラ基準ベクトル
-        // --------------------
         float yaw = camRot.y;
         float pitch = camRot.x;
 		// カメラの回転から前方向ベクトルを計算
-        Vector3 forward = {
-            sinf(yaw) * cosf(pitch),
-            -sinf(pitch),
-            cosf(yaw) * cosf(pitch)
-        };
+        Vector3 forward = { sinf(yaw) * cosf(pitch),-sinf(pitch),cosf(yaw) * cosf(pitch) };
 		// ベクトルの正規化
         forward = Normalize(forward);
 		// ワールド上の上方向
         Vector3 worldUp = { 0,1,0 };	
         Vector3 right = Normalize(Cross(worldUp, forward));
-        Vector3 up = Normalize(Cross(forward, right));
-
-        // --------------------
-        // プレイヤーローカル座標
-        // --------------------
-
-        Vector3 relative = {
-            move_->GetRelativePos().x,
-            move_->GetRelativePos().y + baseOffset_.y,
-            baseOffset_.z
-        };
-        // -------------------- 
+        Vector3 up = Normalize(Cross(forward, right)); 
+        // プレイヤーローカル座標        
+        Vector3 relative = { move_->GetRelativePos().x,            move_->GetRelativePos().y + baseOffset_.y,            baseOffset_.z };      
         // カメラ向きへ変換
-        // --------------------
         Vector3 finalPos = camPos + right * relative.x + up * relative.y + forward * relative.z;
 		// プレイヤーオブジェクトの座標を更新
         object_->SetTranslate(finalPos);
