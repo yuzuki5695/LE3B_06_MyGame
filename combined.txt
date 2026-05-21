@@ -158,11 +158,6 @@
     └── ├── math/
     └── └── ├── Spline.cpp
     └── └── └── Spline.h
-    └── ├── rail/
-    └── └── ├── RailPath.cpp
-    └── └── ├── RailPath.h
-    └── └── ├── RailSampler.cpp
-    └── └── └── RailSampler.h
     └── ├── scene/
     └── └── ├── GameClearScene.cpp
     └── └── ├── GameClearScene.h
@@ -193,6 +188,8 @@
     └──     └── scene/
     └──         ├── GameClearUI.cpp
     └──         ├── GameClearUI.h
+    └──         ├── GameOverUI.cpp
+    └──         ├── GameOverUI.h
     └──         ├── GamePlayUI.cpp
     └──         ├── GamePlayUI.h
     └──         ├── TitleUI.cpp
@@ -5307,7 +5304,7 @@ File Path: project/MyGame.vcxproj
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)engine\2d;$(ProjectDir)engine\3d;$(ProjectDir)engine\audio;$(ProjectDir)engine\base;$(ProjectDir)engine\io;$(ProjectDir)engine\math;$(ProjectDir)engine\scene;$(ProjectDir)engine\3d\Particle;$(ProjectDir)engine\camera;$(ProjectDir)engine\base\DirectX;$(ProjectDir)engine\base\Utility;$(ProjectDir)engine\base\DirectX\Core;$(ProjectDir)engine\math\Light;$(ProjectDir)engine\resource;$(ProjectDir)externals\nlohmann;$(ProjectDir)externals\assimp\include;$(ProjectDir)engine\editor;$(ProjectDir)engine\editor\core;$(ProjectDir)engine\editor\console;$(ProjectDir)engine\editor\layout;$(ProjectDir)engine\editor\windows;$(ProjectDir)engine\time;$(ProjectDir)engine\editor\layout\editormenubar;$(ProjectDir)engine\math\Base;$(ProjectDir)engine\math\Geometry;$(ProjectDir)engine\math\Transform;$(ProjectDir)engine\math\Functions;$(ProjectDir)engine\3d\Model;$(ProjectDir)engine\3d\Object;$(ProjectDir)engine\3d\Skybox;$(ProjectDir)engine\base\DirectX\Descriptors;$(ProjectDir)engine\base\DirectX\Pipeline;$(ProjectDir)engine\base\DirectX\Screen;$(ProjectDir)application\scene;$(ProjectDir)application;$(ProjectDir)application\character;$(ProjectDir)application\character\player;$(ProjectDir)application\character\basestate;$(ProjectDir)application\camera;$(ProjectDir)application\loader;$(ProjectDir)application\stage;$(ProjectDir)application\character\player\component;$(ProjectDir)application\character\player\state;$(ProjectDir)application\character\bullet;$(ProjectDir)application\character\bullet\player;$(ProjectDir)application\ui;$(ProjectDir)application\ui\core;$(ProjectDir)application\ui\effect;$(ProjectDir)application\ui\scene;$(ProjectDir)application\ui\effect\fade;$(ProjectDir)application\ui\effect\fade\effects;$(ProjectDir)application\ui\scene\pause;$(ProjectDir)application\event;$(ProjectDir)application\event\events;$(ProjectDir)application\character\enemy;$(ProjectDir)application\character\enemy\component;$(ProjectDir)application\character\enemy\state;$(ProjectDir)application\collision;$(ProjectDir)application\math;$(ProjectDir)application\rail;$(ProjectDir)application\character\bullet\enemy</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)engine\2d;$(ProjectDir)engine\3d;$(ProjectDir)engine\audio;$(ProjectDir)engine\base;$(ProjectDir)engine\io;$(ProjectDir)engine\math;$(ProjectDir)engine\scene;$(ProjectDir)engine\3d\Particle;$(ProjectDir)engine\camera;$(ProjectDir)engine\base\DirectX;$(ProjectDir)engine\base\Utility;$(ProjectDir)engine\base\DirectX\Core;$(ProjectDir)engine\math\Light;$(ProjectDir)engine\resource;$(ProjectDir)externals\nlohmann;$(ProjectDir)externals\assimp\include;$(ProjectDir)engine\editor;$(ProjectDir)engine\editor\core;$(ProjectDir)engine\editor\console;$(ProjectDir)engine\editor\layout;$(ProjectDir)engine\editor\windows;$(ProjectDir)engine\time;$(ProjectDir)engine\editor\layout\editormenubar;$(ProjectDir)engine\math\Base;$(ProjectDir)engine\math\Geometry;$(ProjectDir)engine\math\Transform;$(ProjectDir)engine\math\Functions;$(ProjectDir)engine\3d\Model;$(ProjectDir)engine\3d\Object;$(ProjectDir)engine\3d\Skybox;$(ProjectDir)engine\base\DirectX\Descriptors;$(ProjectDir)engine\base\DirectX\Pipeline;$(ProjectDir)engine\base\DirectX\Screen;$(ProjectDir)application\scene;$(ProjectDir)application;$(ProjectDir)application\character;$(ProjectDir)application\character\player;$(ProjectDir)application\character\basestate;$(ProjectDir)application\camera;$(ProjectDir)application\loader;$(ProjectDir)application\stage;$(ProjectDir)application\character\player\component;$(ProjectDir)application\character\player\state;$(ProjectDir)application\character\bullet;$(ProjectDir)application\character\bullet\player;$(ProjectDir)application\ui;$(ProjectDir)application\ui\core;$(ProjectDir)application\ui\effect;$(ProjectDir)application\ui\scene;$(ProjectDir)application\ui\effect\fade;$(ProjectDir)application\ui\effect\fade\effects;$(ProjectDir)application\ui\scene\pause;$(ProjectDir)application\event;$(ProjectDir)application\event\events;$(ProjectDir)application\character\enemy;$(ProjectDir)application\character\enemy\component;$(ProjectDir)application\character\enemy\state;$(ProjectDir)application\collision;$(ProjectDir)application\math;$(ProjectDir)application\character\bullet\enemy</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
     </ClCompile>
     <Link>
@@ -5348,7 +5345,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)engine\2d;$(ProjectDir)engine\3d;$(ProjectDir)engine\audio;$(ProjectDir)engine\base;$(ProjectDir)engine\io;$(ProjectDir)engine\math;$(ProjectDir)engine\scene;$(ProjectDir)engine\3d\Particle;$(ProjectDir)engine\camera;$(ProjectDir)engine\base\DirectX;$(ProjectDir)engine\base\Utility;$(ProjectDir)engine\base\DirectX\Core;$(ProjectDir)engine\math\Light;$(ProjectDir)engine\resource;$(ProjectDir)externals\nlohmann;$(ProjectDir)externals\assimp\include;$(ProjectDir)engine\editor;$(ProjectDir)engine\editor\core;$(ProjectDir)engine\editor\console;$(ProjectDir)engine\editor\layout;$(ProjectDir)engine\editor\windows;$(ProjectDir)engine\time;$(ProjectDir)engine\editor\layout\editormenubar;$(ProjectDir)engine\math\Base;$(ProjectDir)engine\math\Geometry;$(ProjectDir)engine\math\Transform;$(ProjectDir)engine\math\Functions;$(ProjectDir)engine\3d\Model;$(ProjectDir)engine\3d\Object;$(ProjectDir)engine\3d\Skybox;$(ProjectDir)engine\base\DirectX\Descriptors;$(ProjectDir)engine\base\DirectX\Pipeline;$(ProjectDir)engine\base\DirectX\Screen;$(ProjectDir)application\scene;$(ProjectDir)application;$(ProjectDir)application\character;$(ProjectDir)application\character\player;$(ProjectDir)application\character\basestate;$(ProjectDir)application\camera;$(ProjectDir)application\loader;$(ProjectDir)application\stage;$(ProjectDir)application\character\player\component;$(ProjectDir)application\character\player\state;$(ProjectDir)application\character\bullet;$(ProjectDir)application\character\bullet\player;$(ProjectDir)application\ui;$(ProjectDir)application\ui\core;$(ProjectDir)application\ui\effect;$(ProjectDir)application\ui\scene;$(ProjectDir)application\ui\effect\fade;$(ProjectDir)application\ui\effect\fade\effects;$(ProjectDir)application\ui\scene\pause;$(ProjectDir)application\event;$(ProjectDir)application\event\events;$(ProjectDir)application\character\enemy;$(ProjectDir)application\character\enemy\component;$(ProjectDir)application\character\enemy\state;$(ProjectDir)application\collision;$(ProjectDir)application\math;$(ProjectDir)application\rail;$(ProjectDir)application\character\bullet\enemy</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)engine\2d;$(ProjectDir)engine\3d;$(ProjectDir)engine\audio;$(ProjectDir)engine\base;$(ProjectDir)engine\io;$(ProjectDir)engine\math;$(ProjectDir)engine\scene;$(ProjectDir)engine\3d\Particle;$(ProjectDir)engine\camera;$(ProjectDir)engine\base\DirectX;$(ProjectDir)engine\base\Utility;$(ProjectDir)engine\base\DirectX\Core;$(ProjectDir)engine\math\Light;$(ProjectDir)engine\resource;$(ProjectDir)externals\nlohmann;$(ProjectDir)externals\assimp\include;$(ProjectDir)engine\editor;$(ProjectDir)engine\editor\core;$(ProjectDir)engine\editor\console;$(ProjectDir)engine\editor\layout;$(ProjectDir)engine\editor\windows;$(ProjectDir)engine\time;$(ProjectDir)engine\editor\layout\editormenubar;$(ProjectDir)engine\math\Base;$(ProjectDir)engine\math\Geometry;$(ProjectDir)engine\math\Transform;$(ProjectDir)engine\math\Functions;$(ProjectDir)engine\3d\Model;$(ProjectDir)engine\3d\Object;$(ProjectDir)engine\3d\Skybox;$(ProjectDir)engine\base\DirectX\Descriptors;$(ProjectDir)engine\base\DirectX\Pipeline;$(ProjectDir)engine\base\DirectX\Screen;$(ProjectDir)application\scene;$(ProjectDir)application;$(ProjectDir)application\character;$(ProjectDir)application\character\player;$(ProjectDir)application\character\basestate;$(ProjectDir)application\camera;$(ProjectDir)application\loader;$(ProjectDir)application\stage;$(ProjectDir)application\character\player\component;$(ProjectDir)application\character\player\state;$(ProjectDir)application\character\bullet;$(ProjectDir)application\character\bullet\player;$(ProjectDir)application\ui;$(ProjectDir)application\ui\core;$(ProjectDir)application\ui\effect;$(ProjectDir)application\ui\scene;$(ProjectDir)application\ui\effect\fade;$(ProjectDir)application\ui\effect\fade\effects;$(ProjectDir)application\ui\scene\pause;$(ProjectDir)application\event;$(ProjectDir)application\event\events;$(ProjectDir)application\character\enemy;$(ProjectDir)application\character\enemy\component;$(ProjectDir)application\character\enemy\state;$(ProjectDir)application\collision;$(ProjectDir)application\math;$(ProjectDir)application\character\bullet\enemy</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -5404,8 +5401,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="application\loader\CurveJsonLoader.cpp" />
     <ClCompile Include="application\loader\PlayerDataLoader.cpp" />
     <ClCompile Include="application\math\Spline.cpp" />
-    <ClCompile Include="application\rail\RailPath.cpp" />
-    <ClCompile Include="application\rail\RailSampler.cpp" />
     <ClCompile Include="application\scene\GameOverScene.cpp" />
     <ClCompile Include="application\scene\GamePlayScene.cpp" />
     <ClCompile Include="application\scene\TitleScene.cpp" />
@@ -5413,6 +5408,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="application\ui\core\UIManager.cpp" />
     <ClCompile Include="application\ui\effect\fade\FadeManager.cpp" />
     <ClCompile Include="application\ui\scene\GameClearUI.cpp" />
+    <ClCompile Include="application\ui\scene\GameOverUI.cpp" />
     <ClCompile Include="application\ui\scene\GamePlayUI.cpp" />
     <ClCompile Include="application\ui\scene\pause\Pausemenu.cpp" />
     <ClCompile Include="application\ui\scene\TitleUI.cpp" />
@@ -5514,8 +5510,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\loader\CurveJsonLoader.h" />
     <ClInclude Include="application\loader\PlayerDataLoader.h" />
     <ClInclude Include="application\math\Spline.h" />
-    <ClInclude Include="application\rail\RailPath.h" />
-    <ClInclude Include="application\rail\RailSampler.h" />
     <ClInclude Include="application\scene\GameClearScene.h" />
     <ClInclude Include="application\scene\GameOverScene.h" />
     <ClInclude Include="application\scene\GamePlayScene.h" />
@@ -5530,6 +5524,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\ui\effect\fade\FadeTypes.h" />
     <ClInclude Include="application\ui\effect\fade\IFadeEffect.h" />
     <ClInclude Include="application\ui\scene\GameClearUI.h" />
+    <ClInclude Include="application\ui\scene\GameOverUI.h" />
     <ClInclude Include="application\ui\scene\GamePlayUI.h" />
     <ClInclude Include="application\ui\scene\pause\Pausemenu.h" />
     <ClInclude Include="application\ui\scene\TitleUI.h" />
@@ -5628,6 +5623,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\Data\Camera\bezier.json" />
     <None Include="Resources\Data\Enemy\enemy.json" />
     <None Include="Resources\Data\Languages\Localization.json" />
     <None Include="Resources\Data\Player\player.json" />
@@ -6081,17 +6077,14 @@ File Path: project/MyGame.vcxproj.filters
     <Filter Include="ヘッダー ファイル\application\math">
       <UniqueIdentifier>{a34d5205-3f79-4e82-a458-dde24b16cb7b}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ヘッダー ファイル\application\rail">
-      <UniqueIdentifier>{7a4b4ca3-20fb-4079-b704-ef333407532c}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ソース ファイル\application\math">
       <UniqueIdentifier>{83f2906c-a1cd-45a7-83e7-4e332edb6e5a}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ソース ファイル\application\rail">
-      <UniqueIdentifier>{303b86f6-7a19-419f-9bc9-8545830282e4}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ソース ファイル\application\ui\scene\fade">
       <UniqueIdentifier>{58a614e6-87e6-4fad-ac4d-e17a6f116a40}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="リソース ファイル\Data\Camera">
+      <UniqueIdentifier>{36ce3736-11e8-49f1-bd38-678dbba6bc00}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -6353,12 +6346,6 @@ File Path: project/MyGame.vcxproj.filters
     <ClCompile Include="application\ui\scene\TitleUI.cpp">
       <Filter>ソース ファイル\application\ui\scene</Filter>
     </ClCompile>
-    <ClCompile Include="application\rail\RailPath.cpp">
-      <Filter>ソース ファイル\application\rail</Filter>
-    </ClCompile>
-    <ClCompile Include="application\rail\RailSampler.cpp">
-      <Filter>ソース ファイル\application\rail</Filter>
-    </ClCompile>
     <ClCompile Include="application\math\Spline.cpp">
       <Filter>ソース ファイル\application\math</Filter>
     </ClCompile>
@@ -6382,6 +6369,9 @@ File Path: project/MyGame.vcxproj.filters
     </ClCompile>
     <ClCompile Include="application\ui\scene\pause\Pausemenu.cpp">
       <Filter>ソース ファイル\application\ui\scene\pause</Filter>
+    </ClCompile>
+    <ClCompile Include="application\ui\scene\GameOverUI.cpp">
+      <Filter>ソース ファイル\application\ui\scene</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -6778,12 +6768,6 @@ File Path: project/MyGame.vcxproj.filters
     <ClInclude Include="application\math\Spline.h">
       <Filter>ヘッダー ファイル\application\math</Filter>
     </ClInclude>
-    <ClInclude Include="application\rail\RailSampler.h">
-      <Filter>ヘッダー ファイル\application\rail</Filter>
-    </ClInclude>
-    <ClInclude Include="application\rail\RailPath.h">
-      <Filter>ヘッダー ファイル\application\rail</Filter>
-    </ClInclude>
     <ClInclude Include="application\character\player\Component\PlayerDeath.h">
       <Filter>ヘッダー ファイル\application\character\player\component</Filter>
     </ClInclude>
@@ -6807,6 +6791,9 @@ File Path: project/MyGame.vcxproj.filters
     </ClInclude>
     <ClInclude Include="application\ui\scene\pause\Pausemenu.h">
       <Filter>ヘッダー ファイル\application\ui\scene\pause</Filter>
+    </ClInclude>
+    <ClInclude Include="application\ui\scene\GameOverUI.h">
+      <Filter>ヘッダー ファイル\application\ui\scene</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -6895,6 +6882,9 @@ File Path: project/MyGame.vcxproj.filters
     </None>
     <None Include="Resources\Data\Resource\Textures.json">
       <Filter>リソース ファイル\Data\Resource</Filter>
+    </None>
+    <None Include="Resources\Data\Camera\bezier.json">
+      <Filter>リソース ファイル\Data\Camera</Filter>
     </None>
   </ItemGroup>
 </Project>
@@ -7039,47 +7029,20 @@ File Path: project/application/camera/GameOverCamera.cpp
 #include <CameraManager.h>
 
 using namespace MyEngine;
+using namespace CameraDefs;
 
 namespace MyGame {
 
     void GameOverCamera::Initialize(MyEngine::Camera* camera) {
-       // if (!camera) return;
+		stateData_.type = CameraType::Main;         // メインカメラを使用
+		stateData_.state = CameraState::Default;    // デフォルト
 
-        //camera->SetRotate({ 0.0f, 0.0f, 0.0f });
-        //camera->SetTranslate({ 0.0f, 0.0f, -50.0f });
-
-        //auto camMgr = CameraManager::GetInstance();
-
-        //// メインカメラの位置取得
-        //MyEngine::Vector3 mainPos = camera->GetTranslate();
-
-        //// サブカメラ生成
-        //std::unique_ptr<MyEngine::Camera> subCam = std::make_unique<MyEngine::Camera>();
-
-        //// Zを -50 離す
-        //MyEngine::Vector3 subPos = mainPos;
-        //subPos.z -= 50.0f;
-
-        //subCam->SetTranslate(subPos);
-        //subCam->SetRotate(camera->GetRotate());
-
-        //// 登録
-        //camMgr->GetCameraSet().AddSubCamera("Sub1", std::move(subCam));
-
-        //// 有効化
-        //camMgr->GetCameraSet().SetActiveSubCamera("Sub1");
+        transform_ = { 0.0f, 3.0f, 0.0f };
+		//  カメラの位置を設定
+        camera->SetTranslate(transform_);
     }
     
-    void GameOverCamera::Update(MyEngine::Camera* camera) {
-        //CameraSet& camSet = CameraManager::GetInstance()->GetCameraSet();
-        //if (!camera) return;
-
-        //// サブカメラ中なら何もしない
-        //if (camSet.IsUsingSubCamera()) {
-        //    return;
-        //}
-    
-    
+    void GameOverCamera::Update(MyEngine::Camera* camera) {    
     
     }
 }
@@ -7091,15 +7054,24 @@ File Path: project/application/camera/GameOverCamera.h
 #include <ISceneCameraBehavior.h>
 
 namespace MyGame {
-
+    /// <summary>
+	/// ゲームオーバー用カメラクラス
+    /// </summary>
     class GameOverCamera : public ISceneCameraBehavior {
-    public:
-
+	public: // メンバ関数
+        /// <summary>
+		/// 初期化処理
+        /// </summary>
+        /// <param name="camera"></param>
         void Initialize(MyEngine::Camera* camera)override;
+        /// <summary>
+		/// 更新処理
+        /// </summary>
+        /// <param name="camera"></param>
         void Update(MyEngine::Camera* camera) override;
-
-    private:
-        MyEngine::Vector3 targetOffset_ = { 0.0f, 0.0f, -100.0f };
+	private: // メンバ変数
+		// トランスフォーム
+        MyEngine::Vector3 transform_;
     };
 }
 
@@ -7115,6 +7087,7 @@ File Path: project/application/camera/GamePlayCamera.cpp
 #ifdef min
 #undef min
 #endif
+#include <numbers>
 #ifdef max
 #undef max
 #endif
@@ -7134,109 +7107,177 @@ namespace MyGame {
         // ベジェカーブのJSONデータ読み込み
         Jsondata_ = std::make_unique<CurveJsonLoader>();
         // ベジェ制御点の読み込み
-        bezierPoints = Jsondata_->LoadBezierFromJSON("Resources/levels/bezier.json");
+        bezierdata_ = Jsondata_->LoadFile("bezier");
         // サブカメラ生成
         std::unique_ptr<MyEngine::Camera> subCam = std::make_unique<MyEngine::Camera>();
         // サブカメラ登録
         CameraManager::GetInstance()->GetCameraSet().AddSubCamera("Sub", std::move(subCam));
-        // ベジェ曲線の初期化
-        const auto& curve = bezierPoints[0];
-        railPath_.Build(curve);        // 距離計算用
-        railSampler_.SetCurve(curve);  // 座標取得用
-     
-        // 開始地点の座標と方向を強制的に設定する
-        distance_ = 0.0f;
-        railPath_.ConvertDistance(distance_, currentIndex_, t_);
-        bezierPos_ = railSampler_.Sample(currentIndex_, t_);
-        forward_ = Normalize(railSampler_.SampleTangent(currentIndex_, t_));
 
-        // カメラをレールの開始地点に向かせる
-        if (camera) {
-            camera->SetLookAt(bezierPos_, bezierPos_ + forward_, { 0, 1, 0 });
-            camera->Update(); // 行列を確定させる
+        speed_ = 0.5f;
+        currentSegment_ = 0;
+        prevForward_ = { 0,0,1 };
+        lookAheadDistance_ = 180.0f;
+        rotateSmooth_ = 0.025f;
+        pitchInfluence_ = 0.45f;
+
+        // 全制御点を通過可能に
+        for (BezierPoint& point : bezierdata_->points) {
+            point.passed = true;
         }
+
+        // レール全長を計算
+        totalRailLength_ = 0.0f;
+        for (size_t i = 0; i + 1 < bezierdata_->points.size(); ++i) {
+            const Vector3& p0 = bezierdata_->points[i].controlPoint.controlPoint;
+            const Vector3& p1 = bezierdata_->points[i + 1].controlPoint.controlPoint;
+
+            totalRailLength_ += Length(p1 - p0);
+        }
+
+        // start地点をセット
+        bezierPos_ = bezierdata_->points[0].controlPoint.controlPoint;
+        camera->SetTranslate(bezierPos_);
+        
+        prevBezierPos_ = bezierPos_;
+        railVelocity_ = {};
     }
 
     void GamePlayCamera::Update(Camera* camera) {
         if (!camera) return;
 
         switch (stateData_.state) {
-        case CameraState::Follow:
-            UpdateBezier(camera);
-            camera->SetTranslate(bezierPos_);
+        case CameraState::Follow:     // レールカメラの更新
+            // レールカメラの更新
+            UpdateRailCamera(camera);
             break;
-        case CameraState::LockOn:
+        case CameraState::LockOn: // サブカメラの更新(プレイヤーへロックオン)
+            // カメラのステートをサブカメラに切り替え
             stateData_.type = CameraType::Sub;
             CameraManager::GetInstance()->SetActiveSubCamera("Sub");
-			// サブカメラの更新
+            // サブカメラの更新
             UpdateSubCamera();
             break;
         }
     }
 
-    void GamePlayCamera::UpdateBezier(Camera* camera) {
-        const auto& curve = bezierPoints[0];
-        if (curve.size() < 2) return;
+    void GamePlayCamera::UpdateRailCamera(Camera* camera) {
+        // レール更新可能か判定
+        if (!CanUpdateRail()) { return; }
 
-        // 距離進める
-        distance_ += speed;
+        // 移動更新
+        UpdateRailMovement();
+        
+        // レール速度更新
+        railVelocity_ =bezierPos_ - prevBezierPos_;
+ 
+        // 回転更新
+        UpdateRailRotation();
 
-        // 最大制限
-        float maxLen = railPath_.GetTotalLength(); // ← getter追加してね
-        if (distance_ >= maxLen) {
-            distance_ = maxLen;
+        // カメラへ反映
+        float yaw = atan2f(forward_.x, forward_.z);
+        float pitch = -asinf(forward_.y);
+        // 上下傾き弱める
+        pitch *= pitchInfluence_;
+
+        // カメラの位置と回転を更新
+        camera->SetTranslate(bezierPos_);
+        camera->SetRotate({ pitch, yaw, 0.0f });
+    }
+
+    bool GamePlayCamera::CanUpdateRail() const {
+        // ベジェデータがない
+        if (!bezierdata_) { return false; }
+        // 制御点が2つ未満なら処理しない
+        if (bezierdata_->points.size() < 2) { return false; }
+        // すでにendに到達している
+        if (isFinished_) { return false; }
+        // それ以外は更新可能
+        return true;
+    }
+
+    void GamePlayCamera::UpdateRailMovement() {
+        // 現在のセグメントの終点を取得
+        const auto& points = bezierdata_->points;
+        // 現在のセグメントの終点
+        Vector3 end = points[currentSegment_ + 1].controlPoint.controlPoint;
+        // 現在位置から終点へのベクトル
+        Vector3 dir = end - bezierPos_;
+        // 終点までの距離
+        float distance = Length(dir);
+
+        // 終点までの距離がspeed以下なら、終点に到達したとみなして次のセグメントへ
+        if (distance <= speed_) {
+            // 終点に到達
+            bezierPos_ = end;
+            // 次のセグメントへ
+            currentSegment_++;
+            // 終点
+            if (currentSegment_ >= points.size() - 1) {
+                // 最終セグメントに到達
+                isFinished_ = true;
+            }
+        } else {
+            // まだ終点に到達していないので、speed分だけ移動
+            dir = Normalize(dir);
+            bezierPos_ += dir * speed_;
         }
+    }
 
-        // 距離 → index, t
-        railPath_.ConvertDistance(distance_, currentIndex_, t_);
+    Vector3 GamePlayCamera::CalculateFuturePosition(const std::vector<BezierPoint>& points) const {
+        // 現在のセグメントの終点を取得
+        Vector3 currentEnd = points[currentSegment_ + 1].controlPoint.controlPoint;
+        // 未来位置の初期値は現在のセグメントの終点
+        Vector3 futurePos = currentEnd;
+        // 現在位置から終点までの距離
+        float remainDist = Length(currentEnd - bezierPos_);
+        // 未来位置の計算
+        if (remainDist < lookAheadDistance_ && currentSegment_ + 2 < points.size()) {
+            // 次のセグメントの終点
+            Vector3 next = points[currentSegment_ + 2].controlPoint.controlPoint;
+            // 現在位置から次のセグメントの終点までの距離
+            float blend = 1.0f - (remainDist / lookAheadDistance_);
+            // ブレンド値を0.0f～1.0fの範囲にクランプ
+            blend = std::clamp(blend, 0.0f, 1.0f);
+            // ブレンド値をイージングして滑らかにする
+            blend = blend * blend * (3.0f - 2.0f * blend);
+            // 現在のセグメントの終点と次のセグメントの終点をブレンドして未来位置を計算
+            futurePos = currentEnd * (1.0f - blend) + next * blend;
+        }
+        // 未来位置を返す
+        return futurePos;
+    }
 
-        // 座標取得
-        bezierPos_ = railSampler_.Sample(currentIndex_, t_);
-
-        // 接線
-        Vector3 tangent = railSampler_.SampleTangent(currentIndex_, t_);
-        Vector3 targetForward = Normalize(tangent);
-
-        // 先読み
-        float futureT = std::min(t_ + 0.1f, 1.0f);
-        Vector3 futurePos = railSampler_.Sample(currentIndex_, futureT);
-        Vector3 futureForward = Normalize(futurePos - bezierPos_);
-
-        targetForward = Normalize(Lerp(targetForward, futureForward, 0.3f));
-
-        // 回転補間
-        float dot = std::clamp(Dot(forward_, targetForward), -1.0f, 1.0f);
-        float angle = acosf(dot);
-
-        float smooth = std::clamp(angle * 0.1f, 0.02f, 0.2f);
-
-        forward_ = Normalize(Slerp(forward_, targetForward, smooth));
-        // ワールド上方向
-        Vector3 worldUp = { 0,1,0 };
-        // right = forward × up
-        right_ = Normalize(Cross(worldUp, forward_));
-        // up = right × forward（直交化）
-        up_ = Normalize(Cross(forward_, right_));
-        // カメラ適用
-        camera->SetLookAt(bezierPos_, bezierPos_ + forward_, { 0, 1, 0 });
+    void GamePlayCamera::UpdateRailRotation() {
+        // ベジェデータから現在のセグメントの制御点を取得
+        const auto& points = bezierdata_->points;
+        // 目標の前方ベクトルを計算
+        Vector3 targetForward = prevForward_;
+        // 未来位置を考慮して目標の前方ベクトルを計算
+        if (currentSegment_ < points.size() - 1) {
+            // 未来位置を計算
+            Vector3 futurePos = CalculateFuturePosition(points);
+            // 現在位置から未来位置へのベクトルを正規化して目標の前方ベクトルとする
+            targetForward = Normalize(futurePos - bezierPos_);
+        }
+        // 現在の前方ベクトルと目標の前方ベクトルをSlerpで滑らかに補間して新しい前方ベクトルを計算
+        forward_ = Normalize(Slerp(prevForward_, targetForward, rotateSmooth_));
+        // 現在の前方ベクトルを保存して次回の更新で使用する
+        prevForward_ = forward_;
     }
 
     void GamePlayCamera::UpdateSubCamera() {
         Camera* subCam = CameraManager::GetInstance()->GetActiveCamera();
         if (!subCam || !player_) return;
-
+        // プレイヤーの位置を取得
         Vector3 targetPos = player_->GetObject3d()->GetTranslate();
-
         // プレイヤー前方に配置
         Vector3 desiredPos = targetPos + forward_ * 20.0f + Vector3{ 0, 3, 0 };
-
         // イージング
         float ease = 0.1f;
         Vector3 now = subCam->GetTranslate();
         Vector3 newPos = now + (desiredPos - now) * ease;
-
+        // カメラの位置を更新
         subCam->SetTranslate(newPos);
-
         // プレイヤーを見る
         Vector3 dir = targetPos - newPos;
         if (Length(dir) > 0.0001f) {
@@ -7245,6 +7286,31 @@ namespace MyGame {
             float pitch = -asinf(dir.y);
             subCam->SetRotate({ pitch, yaw, 0.0f });
         }
+    }
+
+    float GamePlayCamera::GetProgress() const {
+        if (!bezierdata_ || bezierdata_->points.size() < 2 || totalRailLength_ <= 0.0f) {
+            return 0.0f;
+        }
+
+        const auto& points = bezierdata_->points;
+        float traveledDistance = 0.0f;
+
+        // すでに通過したセグメント距離
+        for (uint32_t i = 0; i < currentSegment_; ++i) {
+            const Vector3& p0 = points[i].controlPoint.controlPoint;
+            const Vector3& p1 = points[i + 1].controlPoint.controlPoint;
+            traveledDistance += Length(p1 - p0);
+        }
+
+        // 現在セグメント内の進行距離
+        if (currentSegment_ < points.size() - 1) {
+            const Vector3& start = points[currentSegment_].controlPoint.controlPoint;
+            traveledDistance += Length(bezierPos_ - start);
+        }
+
+        // 0～1に正規化
+        return std::clamp(traveledDistance / totalRailLength_, 0.0f, 1.0f);
     }
 }
 
@@ -7256,8 +7322,6 @@ File Path: project/application/camera/GamePlayCamera.h
 #include <CurveJsonLoader.h>
 #include <memory>
 #include <Player.h>
-#include <RailPath.h>
-#include <RailSampler.h>
 
 namespace MyGame {
     /// <summary>
@@ -7276,53 +7340,63 @@ namespace MyGame {
         /// <param name="camera"></param>
         void Update(MyEngine::Camera* camera) override;
         /// <summary>
-        /// ベジェ曲線に沿ってカメラを移動させる更新処理
+        /// レールカメラをプレイヤーの相対移動に合わせて更新する処理
         /// </summary>
         /// <param name="camera"></param>
-        void UpdateBezier(MyEngine::Camera* camera);
+        void UpdateRailCamera(MyEngine::Camera* camera);
         /// <summary>
-        /// サブカメラをプレイヤーの相対移動に合わせて更新する処理
+        /// サブカメラをプレイヤーの相対移動に合わせて更新する処理 
         /// </summary>
         void UpdateSubCamera();
+    private: // 内部関
+        /// <summary>
+        /// レール更新可能かどうか判定
+        /// </summary>
+        bool CanUpdateRail() const;
+        /// <summary>
+        /// レール移動更新
+        /// </summary>
+        void UpdateRailMovement();
+        /// <summary>
+        /// レール回転更新
+        /// </summary>
+        void UpdateRailRotation();
+        /// <summary>
+        /// 未来位置取得
+        /// </summary>
+        MyEngine::Vector3 CalculateFuturePosition(const std::vector<BezierPoint>& points) const;
     private: // メンバ変数
         // プレイヤーへの参照ポインタ（移動の相対座標を取得するために使用）
         Player* player_ = nullptr;
-        RailPath railPath_;       // 距離計算用
-        RailSampler railSampler_; // 座標取得用       
-        std::unique_ptr<CurveJsonLoader> Jsondata_ = nullptr;         // ベジェ制御点を読み込むローダー 
-        std::vector<std::vector<BezierPoint>> bezierPoints;           // 移動に使う制御点データ
-        MyEngine::Vector3 bezierPos_;                                 // 現在のベジェ曲線上の位置
-        float speed = 0.3f;                                           // 移動速度
-        float distance_ = 0.0f;                                       // 現在の移動距離
-        MyEngine::Vector3 forward_{};
-        int currentIndex_ = 0;                                        // 今いる区間（p1）
-        float t_ = 0.0f;                                              // 区間内の進行度 
-        MyEngine::Vector3 right_{};
-        MyEngine::Vector3 up_{};
+        std::unique_ptr<CurveJsonLoader> Jsondata_ = nullptr;    // ベジェ制御点を読み込むローダー 
+        std::unique_ptr<BezierData> bezierdata_;                 // 移動に使う制御点データ    
+        MyEngine::Vector3 bezierPos_{};                          // 現在のベジェ曲線上の位置
+        MyEngine::Vector3 forward_{};                            //
+        MyEngine::Vector3 prevForward_;                          //  
+        MyEngine::Vector3 railVelocity_{};   // レール移動速度
+        MyEngine::Vector3 prevBezierPos_{};  // 前フレーム位置
+        uint32_t currentSegment_;      // 
+        float speed_;                  // 移動速度
+        float lookAheadDistance_;      // 未来を見る距離
+        float rotateSmooth_;           // 回転の追従速度
+        float pitchInfluence_;         // ピッチ影響率
+        float totalRailLength_;        // レール全体の長さ
+        bool isFinished_ = false;      // 
     public: // アクセッサ
         // getter
-        MyEngine::Vector3 GetForward() const {
-            return forward_;
-        }
-        // 進捗率を計算して返す関数
-        float GetProgress() const {
-            float total = railPath_.GetTotalLength();
-            if (total <= 0.0001f) return 0.0f;
-            // 進捗率を計算（distance_ / total）し、0.0f～1.0fの範囲にクランプして返す
-            return std::clamp(distance_ / total, 0.0f, 1.0f);
-        }
-        MyEngine::Vector3 GetRight()   const { return right_; }
-        MyEngine::Vector3 GetUp()      const { return up_; }
-        MyEngine::Vector3 GetBezierPos() const { return bezierPos_; }
+        const MyEngine::Vector3& GetForward() const { return forward_; }
+        const MyEngine::Vector3& GetRailPosition() const { return bezierPos_; }
+        const bool GetFinished() const { return isFinished_; }
+        const MyEngine::Vector3& GetRailVelocity() const { return railVelocity_; }
+        float GetProgress() const;
         // setter
-        // Playerをセット
         void SetPlayer(Player* player) { player_ = player; }
+
         MyEngine::Vector3 GetRailEndPosition() const {
-            if (bezierPoints.empty()) { return {}; }
-            const auto& curve = bezierPoints[0];
-            if (curve.empty()) { return {}; }
-            // 最後の制御点
-            return curve.back().controlPoint;
+            // データ未読み込み対策
+            if (!bezierdata_ || bezierdata_->points.empty()) { return {}; }
+            // 最後の制御点(end)を返す
+            return bezierdata_->points.back().controlPoint.controlPoint;
         }
     };
 }
@@ -7337,38 +7411,34 @@ File Path: project/application/camera/ISceneCameraBehavior.h
 #include <CameraSet.h>
 
 namespace MyGame {
-
     /// <summary>
     /// 各シーンカメラ挙動インターフェース
     /// </summary>
     class ISceneCameraBehavior {
-    public:
+    public: // メンバ関数
         virtual ~ISceneCameraBehavior() = default;
-
         /// <summary>
-        /// 挙動の初期化（シーン切り替え時に一度呼ばれる）
+        /// 初期化処理
         /// </summary>
         /// <param name="camera">操作対象のカメラポインタ</param>
         virtual void Initialize(MyEngine::Camera* camera) = 0;
-
         /// <summary>
-        /// 挙動の毎フレーム更新
+        /// 毎フレーム更新
         /// </summary>
         /// <param name="camera">操作対象のカメラポインタ</param>
         virtual void Update(MyEngine::Camera* camera) = 0;
-
-        // 対象のオブジェクトをセットする関数
+        /// <summary>
+        /// 操作対象のオブジェクトをセットする関数
+        /// </summary>
+        /// <param name="target"></param>
         virtual void SetTargetObject(MyEngine::Object3d* target) { target_ = target; }
-
-        // 進捗率(0.0~1.0)を返す仮想関数。デフォルトは0を返す
-        virtual float GetProgress() const { return 0.0f; }
-    protected:
-		// 対象のオブジェクト
+    protected: // メンバ変数
+        // 対象のオブジェクト
         MyEngine::Object3d* target_{};
         // カメラの状態データ
         MyEngine::CameraDefs::StateData stateData_;
     public:
-		// getter
+        // getter
         const MyEngine::CameraDefs::StateData& GetStateData() const { return stateData_; }
         // setter
         void SetCameraState(const MyEngine::CameraDefs::CameraState& state) { stateData_.state = state; }
@@ -7687,6 +7757,7 @@ File Path: project/application/character/basestate/CharacterState.h
 
 namespace MyGame {
 
+    // 前方宣言
     class BaseCharacter;
 
     /// <summary>
@@ -7694,23 +7765,23 @@ namespace MyGame {
     /// ステートの切り替え（遷移）と、毎フレームの更新処理の委譲を責務とする。
     /// </summary>
     class CharacterState {
-    public:
+	public: // メンバ関数
         /// <summary>
         /// 現在のステートを終了し、新しいステートへ遷移させる。
         /// </summary>
         /// <param name="character">状態変更の対象となるキャラクター参照</param>
         /// <param name="nextState">次に遷移するステートの所有権付きポインタ</param>
         void ChangeState(BaseCharacter& character, std::unique_ptr<ICharacterState> nextState);
-
         /// <summary>
         /// 現在保持しているステートのUpdate処理を実行する。
         /// </summary>
         /// <param name="character">更新処理の対象となるキャラクター参照</param>
         void Update(BaseCharacter& character);
-
-    private:
+	private: // メンバ変数
         // 現在実行中のステート（Strategy/Stateパターン）
         std::unique_ptr<ICharacterState> currentState_;
+	public: // アクセッサ
+		ICharacterState* GetCurrentState() const { return currentState_.get(); }
     };
 }
 
@@ -7955,12 +8026,12 @@ namespace MyGame {
         ModelManager::GetInstance()->LoadModel(Bullet::EnemyBullet);
         bullet = Object3d::Create(Bullet::EnemyBullet, transform_);
 
-        //// コライダー生成
-        //collider_ = Collider::Create({ .profile = Profile::EnemyBullet,.obb = CollisionUtils::CreateOBB(bullet.get()) });
-        //// 衝突時の処理
-        //collider_->SetCallback([this](Collider* other) {SetInactive(); });
-        //// コライダー登録
-        //CollisionManager::GetInstance()->RegisterCollider(collider_.get());
+        // コライダー生成
+        collider_ = Collider::Create({ .profile = Profile::EnemyBullet,.obb = CollisionUtils::CreateOBB(bullet.get()) });
+        // 衝突時の処理
+        collider_->SetCallback([this](Collider* other) {SetInactive(); });
+        // コライダー登録
+        CollisionManager::GetInstance()->RegisterCollider(collider_.get());
      
         // 初期位置設定
         bullet->SetTranslate(transform_.translate);
@@ -7986,7 +8057,7 @@ namespace MyGame {
         UpdateLifeTime(1.0f / 60.0f); // 仮で60FPS固定
  
         // OBB更新
-    //    collider_->SetOBB(CollisionUtils::CreateOBB(bullet.get(), { 1.0f,1.0f,1.0f }));
+        collider_->SetOBB(CollisionUtils::CreateOBB(bullet.get(), { 1.0f,1.0f,1.0f }));
     }
 
     void EnemyBullet::Draw() {
@@ -8214,7 +8285,7 @@ namespace MyGame {
 
 	// 前方宣言
 	class Player;
-	
+
 	/// <summary>
 	/// 敵キャラクタークラス
 	/// </summary>
@@ -8241,13 +8312,17 @@ namespace MyGame {
 	private: // メンバ変数
 		// ポインタ
 		std::unique_ptr<EnemyAttack> attack_; // 攻撃ロジックの保持
-		std::unique_ptr<Player> player_;
-
+		bool isSpawned_ = false; // 出現フラグ
+		// プレイヤーへの参照
+		Player* player_ = nullptr;
 	public: // アクセッサ
 		// getter
 		MyEngine::Transform* GetTransform() { return &object_->GetTransform(); }
 		EnemyAttack* GetAttack() { return attack_.get(); }
-		void SetPlayer(Player* player) { player_.reset(player); }
+		void SetPlayer(Player* player) { player_ = player; }
+		Player* GetPlayer() const { return player_; }
+		bool IsSpawned() const { return isSpawned_; }
+		void SetSpawned(bool flag) { isSpawned_ = flag; }
 	};
 }
 
@@ -8294,17 +8369,17 @@ namespace MyGame {
         int spawned = 0;
 
         for (auto& enemy : *enemies_) {
-            if (!enemy->IsActive() && spawned < count) {
-
+            if (!enemy->IsSpawned() && !enemy->IsActive() && spawned < count) {
                 // ランダム値生成
                 float randX = distX(randomEngine);
                 float randY = disty(randomEngine);
                 float randZ = distz(randomEngine);
 
                 Vector3 spawnPos = playerPos + forward * randZ + right * randX + up * randY;
-                enemy->SetActive(true);
                 enemy->GetObject3d()->SetTranslate(spawnPos);
                 enemy->ChangeState(std::make_unique<EnemyIdle>());
+                // 出現フラグを立てる              
+                enemy->SetSpawned(true);
                 spawned++;
             }
         }
@@ -8371,9 +8446,15 @@ using namespace MatrixVector;
 namespace MyGame {
 
     void EnemyAttack::Initialize() {
-        timer_ = 0.0f;
-        interval_ = 1.0f; // 1秒ごとに発射
-        canShoot_ = false;
+        // 初期化
+        // 乱数エンジン初期化
+        randomEngine_ = std::mt19937(rd()); 
+		distcooltime_ = std::uniform_real_distribution<float>(2.0f, 5.0f); // クールタイムを設定
+        coolTime_ = distcooltime_(randomEngine_); // 最初のクールタイムをランダムに決定
+		canShoot_ = false;    // 最初は撃てないようにする
+        // 最初は即撃てるようにする
+        timer_ = coolTime_;
+        speed = 5.0f;
     }
 
     void EnemyAttack::Update(const Transform& transform, const Vector3& aimWorldPos) {
@@ -8381,13 +8462,15 @@ namespace MyGame {
         // タイマー更新
         // =========================
         timer_ += 1.0f / 60.0f;
-        if (timer_ < interval_) {
-            canShoot_ = true;
-            timer_ = 0.0f; // タイマーリセット
+        if (timer_ < coolTime_) {
+            return;
         }
 
-        // 弾が撃てるか確認
-        if (!canShoot_) return;
+        // 発射したのでタイマーリセット
+        timer_ = 0.0f;
+    
+        // 次回クールタイムをランダム決定 
+        coolTime_ = distcooltime_(randomEngine_);
 
         // =========================
         // 発射位置（敵の位置）
@@ -8401,14 +8484,16 @@ namespace MyGame {
         // =========================
         // 速度
         // =========================
-        float speed = 0.5f;
         Vector3 velocity = dir * speed;
         // =========================
         // 弾生成
         // =========================
         Transform bulletTransform;
+        bulletTransform.scale = { 1.0f,1.0f,1.0f };
+        bulletTransform.rotate = { 0.0f,0.0f,0.0f };
         bulletTransform.translate = startPos;
 
+        // 弾生成
         BulletManager::GetInstance()->SpawnEnemyBullet(bulletTransform, velocity);
 
         // 発射後は撃てないようにする
@@ -8420,7 +8505,8 @@ namespace MyGame {
 File Path: project/application/character/enemy/component/EnemyAttack.h
 ============================================================
 #pragma once
-#include <Object3d.h>                   
+#include <Object3d.h>
+#include <random>
 
 namespace MyGame {
     /// <summary>
@@ -8438,11 +8524,15 @@ namespace MyGame {
         /// <param name="transform"></param>
         /// <param name="aimWorldPos"></param>
         void Update(const MyEngine::Transform& transform, const MyEngine::Vector3& aimWorldPos);
-    private:
-        float coolTime_ = 0.2f;   // 発射間隔
+	private: // メンバ変数
         float timer_ = 0.0f;
-        float interval_; // 1秒ごとに発射
+        float coolTime_ = 5.0f;   // 発射間隔
 		bool canShoot_; // 発射可能フラグ
+        float speed;
+		// 乱数生成器
+        std::random_device rd;// 乱数生成器
+        std::mt19937 randomEngine_;
+        std::uniform_real_distribution<float> distcooltime_;
     };
 }
 
@@ -8463,30 +8553,56 @@ using namespace Easing;
 
 namespace MyGame {
     void EnemyIdle::Update(BaseCharacter& character) {
-        timer_ += 1.0f / 60.0f;
-        float t = std::clamp(timer_ / duration_, 0.0f, 1.0f);
-        float s = EaseOutBack(t);
-        character.GetObject3d()->SetScale({ s, s, s });
-        if (t >= 1.0f) {
-            t = 1.0f;
+        // 必要なコンポーネント
+        Enemy* enemy = dynamic_cast<Enemy*>(&character);
+        // 敵が出現している場合は出現アニメーションを行う  
+        if (enemy->IsSpawned()) {
+            timer_ += 1.0f / 60.0f;
+            float t = std::clamp(timer_ / duration_, 0.0f, 1.0f);
+            float s = EaseOutBack(t);
             character.GetObject3d()->SetScale({ s, s, s });
-            // 当たり判定登録
-            character.RegisterCollider();
-			// BaseCharacter状態からEnemyAlive状態へ遷移
-            character.ChangeState(std::make_unique<EnemyAlive>());
+            if (t >= 1.0f) {
+                t = 1.0f;
+                character.GetObject3d()->SetScale({ s, s, s });
+                // 出現完了したのでアクティブにする
+                character.SetActive(true);
+                // 出現フラグをオフにする
+                enemy->SetSpawned(false);
+                // 登録前にOBB更新
+                character.GetCollider()->SetOBB(CollisionUtils::CreateOBB(character.GetObject3d()));
+                // 当たり判定登録
+                character.RegisterCollider();
+                // BaseCharacter状態からEnemyAlive状態へ遷移
+                character.ChangeState(std::make_unique<EnemyAlive>());
+            }
         }
     }
 
-    void EnemyAlive::Update(BaseCharacter& character) {        
+    void EnemyAlive::Update(BaseCharacter& character) {
         // 必要なコンポーネント
         Enemy* enemy = dynamic_cast<Enemy*>(&character);
-        Player* player = dynamic_cast<Player*>(&character);
-        
-        // アクティブ中は各更新処理を行う
-        if (character.IsActive()) {
 
-			// 攻撃処理の更新処理
-            enemy->GetAttack()->Update(enemy->GetObject3d()->GetTransform(), player->GetTranslate());
+		// アクティブ中またはプレイヤ―が非アクティブ中は各更新処理を行う
+        if (character.IsActive() || !enemy->GetPlayer()->IsActive()) {
+            // =========================
+            // プレイヤーが追い越したら削除
+            // =========================
+            const float kDeleteMargin = 15.0f;
+            if (enemy->GetPlayer()->GetTranslate().z > enemy->GetObject3d()->GetTransform().translate.z + kDeleteMargin) {
+                // EnemyDeadへ
+                character.ChangeState(std::make_unique<EnemyDead>());
+                return;
+            }
+
+            // =========================
+            // プレイヤーが追い越したら攻撃停止
+            // =========================
+            if (enemy->GetPlayer()->GetTranslate().z > enemy->GetObject3d()->GetTransform().translate.z) {
+                return;
+            }
+
+            // 攻撃処理の更新処理
+            enemy->GetAttack()->Update(enemy->GetObject3d()->GetTransform(), enemy->GetPlayer()->GetTranslate());
 
             // 毎フレーム当たり判定を更新
             character.GetCollider()->SetOBB(CollisionUtils::CreateOBB(character.GetObject3d()));
@@ -8495,6 +8611,10 @@ namespace MyGame {
 
     void EnemyDead::Update(BaseCharacter& character) {
         if (character.IsAlive()) {
+            // 当たり判定解除
+            CollisionManager::GetInstance()->UnregisterCollider(character.GetCollider());
+            character.SetActive(false); // アクティブフラグを下げる
+            character.SetAlive(false);  // 生存フラグを下げる
             // 死んだらフラグを立てる
             character.Destroy();
         }
@@ -8560,31 +8680,82 @@ namespace MyGame {
         // 入力チェック
         // =============================
         if (Input::GetInstance()->PushKey(DIK_SPACE) && timer_ <= 0.0f) {
-            Camera* activecamera = CameraManager::GetInstance()->GetActiveCamera();
-            Vector3 camPos = activecamera->GetTranslate();
-            Vector3 rayDir = Normalize(aimWorldPos - camPos);
+
+            Camera* camera = CameraManager::GetInstance()->GetActiveCamera();
+
+            if (!camera) {
+                return;
+            }
+
+            //---------------------------------
+            // カメラ回転
+            //---------------------------------
+            Vector3 camRot = camera->GetRotate();
+
+            float camYaw = camRot.y;
+            float camPitch = camRot.x;
+
+            //---------------------------------
+            // カメラ forward
+            //---------------------------------
+            Vector3 camForward = { sinf(camYaw) * cosf(camPitch),-sinf(camPitch),cosf(camYaw) * cosf(camPitch) };
+
+
+            camForward = Normalize(camForward);
+
+            //---------------------------------
+            // プレイヤー→target方向
+            //---------------------------------
             Vector3 playerPos = playerTransform.translate;
 
-            // レイに投影
-            float t = Dot(playerPos - camPos, rayDir);
-            Vector3 startPos = camPos + rayDir * t;
+            Vector3 targetDir = Normalize(aimWorldPos - playerPos);
 
-            float speed = 15.0f;
-            Vector3 velocity = rayDir * speed;
+            //---------------------------------
+            // yaw / pitch算出
+            //---------------------------------
+            float targetYaw = atan2f(targetDir.x, targetDir.z);
+            float targetPitch = -asinf(targetDir.y);
 
+            //---------------------------------
+            // カメラとの差分角
+            //---------------------------------
+            float deltaYaw = targetYaw - camYaw;
+
+            float deltaPitch = targetPitch - camPitch;
+
+            //---------------------------------
+            // 最終弾回転
+            //---------------------------------
+            float bulletYaw = camYaw + deltaYaw;
+            float bulletPitch = camPitch + deltaPitch;
+
+            //---------------------------------
+            // 発射方向再構築
+            //---------------------------------
+            Vector3 bulletDir = { sinf(bulletYaw) * cosf(bulletPitch),-sinf(bulletPitch),cosf(bulletYaw) * cosf(bulletPitch) };
+
+            bulletDir = Normalize(bulletDir);
+
+            //---------------------------------
+            // 弾速度
+            //---------------------------------
+            constexpr float speed = 15.0f;
+
+            Vector3 velocity = bulletDir * speed;
+
+            //---------------------------------
+            // Transform
+            //---------------------------------
             Transform bulletTransform;
-            bulletTransform.scale = { 1.0f,1.0f,1.0f };
-            bulletTransform.rotate = { 0.0f,0.0f,0.0f };
-            bulletTransform.translate = playerTransform.translate;
+            bulletTransform.scale = { 1,1,1 };
+            bulletTransform.rotate = { bulletPitch,bulletYaw,0.0f };
+            bulletTransform.translate = playerPos;
 
-            // =============================
-            // ③ 弾生成
-            // =============================
+            //---------------------------------
+            // 発射
+            //---------------------------------
             BulletManager::GetInstance()->SpawnPlayerBullet(bulletTransform, velocity);
-
-            // =============================
-            // ④ クールタイムリセット
-            // =============================
+            // クールタイム
             timer_ = coolTime_;
         }
     }
@@ -8902,31 +9073,44 @@ namespace MyGame {
     }
 
     Vector3 PlayerReticle::ScreenToWorld(const Vector2& screenPos, Camera* camera) {
-        float ndcX = (screenPos.x / 1280.0f) * 2.0f - 1.0f;
-        float ndcY = -(screenPos.y / 720.0f) * 2.0f + 1.0f;
+        if (!camera) {
+            return {};
+        }
 
-        Matrix4x4 invViewProj = Inverse(camera->GetViewProjectionMatrix());
+        // ----------------------------
+        // スクリーン中心基準
+        // ----------------------------
+        float offsetX = screenPos.x - 640.0f;
+        float offsetY = screenPos.y - 360.0f;
 
-        Vector4 nearPos = { ndcX, ndcY, 0.0f, 1.0f };
-        Vector4 farPos = { ndcX, ndcY, 1.0f, 1.0f };
+        // 感度
+        constexpr float scale = 0.08f;
+        // カメラ回転
+        Vector3 camRot = camera->GetRotate();
 
-        // ワールド変換
-        nearPos = TransformCoord(nearPos, invViewProj);
-        farPos = TransformCoord(farPos, invViewProj);
+        float yaw = camRot.y;
+        float pitch = camRot.x;
 
-        nearPos = nearPos / nearPos.w;
-        farPos = farPos / farPos.w;
+        // カメラ基底
+        Vector3 forward = { sinf(yaw) * cosf(pitch),-sinf(pitch),cosf(yaw) * cosf(pitch) };
 
-        Vector3 rayDir = Normalize(Vector3{
-            farPos.x - nearPos.x,
-            farPos.y - nearPos.y,
-            farPos.z - nearPos.z
-            });
-        
-        Vector3 camPos = camera->GetTranslate();
+        forward = Normalize(forward);
 
-        // 適当な距離
-        return camPos + rayDir * kForwardDistance;
+        Vector3 worldUp = { 0,1,0 };
+        Vector3 right = Normalize(Cross(worldUp, forward));
+        Vector3 up = Normalize(Cross(forward, right));
+
+        // ----------------------------
+        // レティクルの
+        // カメラローカル位置
+        // ----------------------------
+        Vector3 relative = { offsetX * scale,-offsetY * scale,150.0f };
+        // ----------------------------
+        // カメラ空間→ワールド
+        // ----------------------------
+        Vector3 targetPos = camera->GetTranslate() + right * relative.x + up * relative.y + forward * relative.z;
+
+        return targetPos;
     }
 }
 
@@ -8977,6 +9161,8 @@ File Path: project/application/character/player/Player.cpp
 #endif // USE_IMGUI
 #include <EditorEntityRegistry.h>
 #include <EditorTypes.h>
+#include <CollisionConfig.h>
+#include <Enemy.h>
 // AssetGeneratorからインクルード
 #include <subproject/AssetGenerator/engine/generator/LoadResourceID.h>
 
@@ -8987,10 +9173,15 @@ using namespace AssetGen::LoadResourceID::Models;
 using namespace AssetGen::LoadResourceID::Textures;
 
 namespace MyGame {
+     
+    using namespace CollisionConfig;
 
     Player::~Player() {}
 
-    void Player::Finalize() {}
+    void Player::Finalize() {
+        collider_.reset(); // コライダーの破棄
+        object_.reset();   // 3Dオブジェクトの破棄
+    }
 
     void Player::Initialize() {
         // テクスチャの読み込み
@@ -9003,6 +9194,21 @@ namespace MyGame {
         baseOffset_ = { 0.0f, -3.0f, 30.0f };
         // プレイヤーオブジェクトの生成、初期化
         object_ = Object3d::Create(Character::Player, data_.transform);
+
+        // 状態フラグの初期化
+        flags_.isAlive = true;
+        flags_.isActive = true;
+
+        // コライダー生成
+        collider_ = Collider::Create({ .profile = Profile::Player,.obb = CollisionUtils::CreateOBB(object_.get()) });
+        // 衝突時の処理
+        collider_->SetCallback([this](Collider* other) {
+            if (!IsAlive()) { return; }
+                ChangeState(std::make_unique<PlayerStateDead>());            
+            });
+        // コライダー登録
+        CollisionManager::GetInstance()->RegisterCollider(collider_.get());
+
         // ターゲットオブジェクトの生成、初期化
         targettransform_ = { {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 30.0f} };
         target_ = Object3d::Create(Character::Player, targettransform_);
@@ -9011,11 +9217,6 @@ namespace MyGame {
         targetreticle_ = Sprite::Create(Ui::Target, Vector2{ 640.0f, 360.0f }, 0.0f, Vector2{ 100.0f, 100.0f });
         targetreticle_->SetTextureSize(Vector2{ 512.0f, 512.0f });
         targetreticle_->SetAnchorPoint(Vector2{ 0.5f, 0.5f }); // 中心基準
-
-        // 状態フラグの初期化
-        flags_.isAlive = true;
-        flags_.isActive = true;
-        SetActive(true);
 
         // コンポーネントの生成
         move_ = std::make_unique<PlayerMove>();          // 移動ロジックの生成
@@ -9035,7 +9236,10 @@ namespace MyGame {
 
 		// カメラがGamePlayCameraで更新中の場合、プレイヤーのワールド座標をカメラ位置に基づいて更新する
         if (CameraManager::GetInstance()->GetCurrentBehaviorAs<GamePlayCamera>()) {
-            SyncWorldTransformByRail();
+            // 死亡状態ではないなら
+            if (!dynamic_cast<PlayerStateDead*>(state_.GetCurrentState())) {
+                SyncWorldTransformByRail();
+            }
         }
 
         // 各コンポーネントの更新
@@ -9045,11 +9249,8 @@ namespace MyGame {
     }
 
     void Player::Draw() {
-		// 生存していない場合は描画処理をスキップ
-        if (!IsAlive()) { return; }
-        if (object_) {
-            object_->Draw();
-        }
+		// 描画処理
+        object_->Draw();
     }
 
     void Player::DrawSprite() {
@@ -9061,27 +9262,30 @@ namespace MyGame {
     }
 
     void Player::SyncWorldTransformByRail() {
-		// カメラ位置を基準にプレイヤーのワールド座標を更新する
-        GamePlayCamera* cam = CameraManager::GetInstance()->GetCurrentBehaviorAs<GamePlayCamera>();
+        // カメラを取得
         Camera* active = CameraManager::GetInstance()->GetActiveCamera();
-		// カメラのワールド座標を取得
+        if (!active) { return; }
+        // カメラ位置
         Vector3 camPos = active->GetTranslate();
-
-        // カメラ位置から固定オフセット
-        Vector3 offset = { move_->GetRelativePos().x,move_->GetRelativePos().y + baseOffset_.y,baseOffset_.z };
-		// カメラ回転を考慮したオフセットの回転
-        Vector3 finalPos = camPos + offset;
-		// プレイヤーオブジェクトの座標を更新
+        // カメラ回転
+        Vector3 camRot = active->GetRotate();
+        // カメラ基準ベクトル
+        float yaw = camRot.y;
+        float pitch = camRot.x;
+        // カメラの回転から前方向ベクトルを計算
+        Vector3 forward = { sinf(yaw) * cosf(pitch),-sinf(pitch),cosf(yaw) * cosf(pitch) };
+        // ベクトルの正規化
+        forward = Normalize(forward);
+        // ワールド上の上方向
+        Vector3 worldUp = { 0,1,0 };
+        Vector3 right = Normalize(Cross(worldUp, forward));
+        Vector3 up = Normalize(Cross(forward, right));
+        // プレイヤーローカル座標        
+        Vector3 relative = { move_->GetRelativePos().x,move_->GetRelativePos().y + baseOffset_.y,baseOffset_.z };
+        // カメラ向きへ変換
+        Vector3 finalPos = camPos + right * relative.x + up * relative.y + forward * relative.z;
+        // プレイヤーオブジェクトの座標を更新
         object_->SetTranslate(finalPos);
-
-        //Vector3 camRot = active->GetRotate();
-        //Vector3 finalRot{};
-        //// カメラ回転を基準
-        //finalRot.x = camRot.x + move_->GetTiltX();
-        //finalRot.y = camRot.y;
-        //finalRot.z = camRot.z + move_->GetTiltZ() + move_->GetExtraRotationZ();
-
-        //object_->SetRotate(finalRot);
     }
 
     void Player::DrawImGui() {
@@ -9115,8 +9319,13 @@ File Path: project/application/character/player/Player.h
 #include <PlayerReticle.h>
 #include <PlayerAttack.h>
 #include <PlayerDeath.h>
+#include <Collider.h>
 
 namespace MyGame {
+	
+	// 前方宣言
+	class Enemy;
+
 	/// <summary>
 	/// プレイヤーキャラクタークラス
 	/// </summary>
@@ -9155,6 +9364,8 @@ namespace MyGame {
 	private: // メンバ変数
 		PlayerData data_; // プレイヤーのデータ構造体
 		MyEngine::Transform transform_;
+		// コライダー
+        std::unique_ptr<Collider> collider_;
 		// 各種コンポーネント
 		std::unique_ptr<PlayerMove> move_;       // 移動ロジックの保持
 		std::unique_ptr<PlayerReticle> reticle_; // レティクルロジックの保持
@@ -9167,24 +9378,24 @@ namespace MyGame {
 		MyEngine::Vector3 aimWorldPos_; // 
 		// カメラの位置調整用オフセット
 		MyEngine::Vector3 baseOffset_;
+		// 参照ポインタ
+		Enemy* enemy_;
 	public: // アクセッサ
 		// getter
 		PlayerMove* GetMove() { return move_.get(); }
 		PlayerReticle* GetReticle() { return reticle_.get(); }
 		PlayerAttack* GetAttack() { return attack_.get(); }    
 		PlayerDeath* GetDeath() { return death_.get(); }    
-		const MyEngine::Vector3& GetAimWorldPos() const { return aimWorldPos_; }
-
-		void SetAimWorldPos(const MyEngine::Vector3& pos) { aimWorldPos_ = pos; }
-		MyEngine::Sprite* GetSprite() { return targetreticle_.get(); }
-		MyEngine::Object3d* GetTarget() { return target_.get(); }
-			
-
 		const MyEngine::Vector3& GetRotate() const { return object_->GetRotate(); }
 		const MyEngine::Vector3& GetTranslate() const { return object_->GetTranslate(); }
-
+		const MyEngine::Vector3& GetAimWorldPos() const { return aimWorldPos_; }
+		MyEngine::Sprite* GetSprite() { return targetreticle_.get(); }
+		MyEngine::Object3d* GetTarget() { return target_.get(); }
+		// setter
+		void SetAimWorldPos(const MyEngine::Vector3& pos) { aimWorldPos_ = pos; }
 		void SetTranslate(const MyEngine::Vector3& translate) { object_->SetTranslate(translate); }
 		void SetRotate(const MyEngine::Vector3& rotate) { object_->SetRotate(rotate); }
+		void SetEnemy(Enemy* enemy) { enemy_ = enemy; }
 	};
 }
 
@@ -9216,11 +9427,13 @@ File Path: project/application/character/player/State/PlayerState.cpp
 #include <CameraManager.h>
 #include <SceneManager.h>
 #include <SceneName.h>
+#include <FadeManager.h>
 
 using namespace MyEngine;
 
 namespace MyGame {
     void PlayerStateIdle::Update(BaseCharacter& character) {
+		// 現在のシーンはゲームプレイなら移動状態へ遷移
         if (CameraManager::GetInstance()->GetCurrentBehaviorAs <GamePlayCamera>()) {
             character.ChangeState(std::make_unique<PlayerStateMove>());
         }
@@ -9229,6 +9442,9 @@ namespace MyGame {
     void PlayerStateMove::Update(BaseCharacter& character) {
         // 必要なコンポーネント
         Player* player = dynamic_cast<Player*>(&character);
+        if (Input::GetInstance()->PushKey(DIK_Z)) {
+            character.ChangeState(std::make_unique<PlayerStateDead>());
+        }
 
         // アクティブ中は各更新処理を行う
         if (character.IsActive()) {
@@ -9248,12 +9464,18 @@ namespace MyGame {
 
     void PlayerStateDead::Update(BaseCharacter& character) {
         Player* player = static_cast<Player*>(&character);
-        PlayerDeath* death = player->GetDeath();
-        Object3d* object = player->GetObject3d();
-        death->Update(object->GetTransform().rotate, object->GetTransform().translate, object);
-        player->SetActive(false);
-
-        //    character.Destroy();
+        if (player->IsActive()) {
+			player->SetActive(false); // アクティブフラグを下げる
+			player->Destroy();        // 削除予約
+            // 当たり判定の登録解除
+            CollisionManager::GetInstance()->UnregisterCollider(player->GetCollider());
+            // カメラの状態をロックオンに変更(ゲームプレイカメラの状態なので向こうでサブカメラに切り替わる)
+            CameraManager::GetInstance()->GetCurrentBehaviorAs<GamePlayCamera>()->SetCameraState(CameraDefs::CameraState::LockOn);
+        }
+        // 死亡演出の更新
+        player->GetDeath()->Update(player->GetObject3d()->GetTransform().rotate, player->GetObject3d()->GetTransform().translate, player->GetObject3d());
+        // ゲームオーバーシーンへ遷移
+        FadeManager::GetInstance()->SceneChangeFade(SceneName::GAMEOVER, FadeStyle::Normal, 1.5f);
     }
 }
 
@@ -9357,8 +9579,8 @@ namespace MyGame {
     class Collider;
 	/// コライダー生成のための情報構造体
     struct ColliderCreateInfo {
-		using CollisionCallback = std::function<void(Collider*)>;  // 衝突時に呼び出す関数の型定義
-		CollisionConfig::CollisionProfile profile;                 // 衝突プロファイル（属性とマスク）
+        using CollisionCallback = std::function<void(Collider*)>;  // 衝突時に呼び出す関数の型定義
+        CollisionConfig::CollisionProfile profile;                 // 衝突プロファイル（属性とマスク）
         MyEngine::OBB obb;                                         // 当たり判定のOBB
         CollisionCallback callback = nullptr;                      // 衝突時のコールバック関数
     };
@@ -9393,12 +9615,12 @@ namespace MyGame {
 
         // 衝突マスク（相手が誰なら反応するか）
         namespace CollisionMask {
-			// 反応する相手をビットフラグで定義
+            // 反応する相手をビットフラグで定義
             constexpr uint32_t None = 0;
             constexpr uint32_t Player = Attribute::Enemy | Attribute::EnemyBullet;
             constexpr uint32_t Enemy = Attribute::PlayerBullet;
-            constexpr uint32_t PlayerBullet = Attribute::Enemy;
-            constexpr uint32_t EnemyBullet = Attribute::Player;
+            constexpr uint32_t PlayerBullet = Attribute::Enemy | Attribute::EnemyBullet;
+            constexpr uint32_t EnemyBullet = Attribute::Player | Attribute::PlayerBullet;
         }
 
         // 具体的なプロファイルの定義
@@ -10204,7 +10426,6 @@ namespace MyGame {
 File Path: project/application/loader/CurveJsonLoader.cpp
 ============================================================
 #include "CurveJsonLoader.h"
-#include <json.hpp>
 #include <fstream>
 #include <stdexcept>
 
@@ -10213,67 +10434,97 @@ using namespace MyEngine;
 namespace MyGame {
 
     using json = nlohmann::json;
+    // 静的定数の定義
+    const std::string CurveJsonLoader::kDefaultBaseDirectory = "Resources/Data/Camera/";
+    const std::string CurveJsonLoader::kExtension = ".json";
 
-    std::vector<std::vector<BezierPoint>> CurveJsonLoader::LoadBezierFromJSON(const std::string& filePath) {
-        // 複数カーブ（スプライン）を格納する配列
-        std::vector<std::vector<BezierPoint>> curves;
-
+    std::unique_ptr<BezierData> CurveJsonLoader::LoadFile(const std::string& fileName) {
+        // 連結してフルパスを得る
+        const std::string fullpath = kDefaultBaseDirectory + fileName + kExtension;
+        // ファイルストリーム
+        std::ifstream file;
         // ファイルを開く
-        std::ifstream file(filePath);
-        if (!file.is_open()) {
-            throw std::runtime_error("Failed to open JSON: " + filePath);
-        }
+        file.open(fullpath);
+        // ファイルオープン失敗をチェック
+        if (file.fail()) { assert(0); }
+        // JSON文字列から解凍したデータ
+        nlohmann::json deserialized;
+        // 解凍
+        file >> deserialized;
+        // ファイルを閉じる
+        std::unique_ptr<BezierData> bezierData = std::make_unique<BezierData>();
+        // JSONの形式をチェック
+        assert(deserialized.contains("object_names"));
 
-        // JSONデータを読み込む
-        json j;
-        file >> j;
-
-        // object_names の存在確認
-        if (!j.contains("object_names") || !j["object_names"].is_array()) {
-            throw std::runtime_error("object_names が見つかりません");
-        }
-
-        // カーブ名ごとに処理
-        for (const json& name : j["object_names"]) {
-            // カーブ名
-            const std::string curveName = name.get<std::string>();
-            // カーブデータが存在するかチェック
-            if (!j.contains(curveName) || !j[curveName].is_array()) {
-                continue;
-            }
-            // カーブごと
-            for (const json& spline : j[curveName]) {
-                // 1本のカーブを格納
-                std::vector<BezierPoint> oneCurve;
-                // 制御点ごとに処理
-                for (const auto& pointData : spline) {
-                    BezierPoint pt;
-
-                    // name を読み込む
-                    if (pointData.contains("name")) {
-                        pt.name = pointData["name"].get<std::string>();
-                    }
-
-                    // control_point を読み込む
-                    if (pointData.contains("control_point") &&
-                        pointData["control_point"].is_array() &&
-                        pointData["control_point"].size() == 3) {
-                        pt.controlPoint = {
-                            pointData["control_point"][0].get<float>(),
-                            pointData["control_point"][1].get<float>(),
-                            pointData["control_point"][2].get<float>()
-                        };
-                    }
-                    // カーブに追加
-                    oneCurve.push_back(pt);
-                }
-                // カーブ単位で追加
-                if (!oneCurve.empty()) {
-                    curves.push_back(oneCurve);
-                }
+        // JSONの形式をチェック
+        for (const json& objectName : deserialized["object_names"]) {
+            std::string curveName = objectName.get<std::string>();
+            // 曲線名が存在するかチェック
+            if (deserialized.contains(curveName)) {
+                // 曲線データを再帰的に読み込む
+                const json& curveJson = deserialized[curveName];
+                // 曲線データの読み込み
+                LoadBezierDataRecursive(curveJson, *bezierData);
             }
         }
-        return curves;
+        // ベジェデータを返す
+        return bezierData;
+    }
+
+    void CurveJsonLoader::LoadBezierDataRecursive(const json& objectsJson, BezierData& bezierData) {
+        assert(objectsJson.is_array());
+		// JSON配列の各要素を処理
+        for (const json& spline : objectsJson) {
+			// "spline"が存在するかチェック
+            for (const json& pointJson : spline) {
+				// ベジェデータのポイントリストに新しいポイントを追加
+                bezierData.points.emplace_back(BezierPoint{});
+				// ポイントの参照を取得
+                BezierPoint& point = bezierData.points.back();
+
+                // "名前"が存在するかチェック
+                if (pointJson.contains("name")) {
+                    point.name = pointJson["name"].get<std::string>();
+                }
+
+				// "control_point"が存在するかチェック
+                if (pointJson.contains("control_point")) {
+                    const json& controlPoint = pointJson["control_point"];
+                    // 読み込む
+                    point.controlPoint.controlPoint = GetVector3FromJson(controlPoint);
+                }
+
+				// "handle_left"が存在するかチェック
+                if (pointJson.contains("handle_left")) {
+                    const json& handleLeft = pointJson["handle_left"];
+					// 読み込む
+                    point.controlPoint.handleLeft = GetVector3FromJson(handleLeft);
+                }
+
+                // "handle_right"が存在するかチェック
+                if (pointJson.contains("handle_right")) {
+                    const json& handleRight = pointJson["handle_right"];
+					// 読み込む
+                    point.controlPoint.handleRight = GetVector3FromJson(handleRight);
+                }
+            }
+        }
+    }
+
+    Vector3 CurveJsonLoader::GetVector3FromJson(const json& jsonArray) {
+		// JSON配列が3要素の数値であることを確認
+        assert(jsonArray.is_array());
+		// 要素数が3以上であることを確認（3要素以上あれば、最初の3要素を使用する）
+        assert(jsonArray.size() >= 3);
+
+        Vector3 result;
+		// JSON配列の最初の3要素をVector3のx, y, zに割り当てる
+        for (uint32_t i = 0; i < 3; i++) {
+            result[i] = jsonArray[i].get<float>();
+        }
+
+        // 結果を返す
+        return result;
     }
 }
 
@@ -10284,28 +10535,64 @@ File Path: project/application/loader/CurveJsonLoader.h
 #include <string>
 #include <Vector3.h>
 #include <vector>
+#include <json.hpp>
 
 namespace MyGame {
     /// <summary>
-    /// ベジェ曲線の1点分の制御情報を保持する構造体
+	/// ベジェ曲線の1点分の制御情報を保持する構造体
+    /// </summary>
+    struct ControlPoint {
+        MyEngine::Vector3 handleLeft;  // ベジェ曲線の左側のハンドル（制御点）
+        MyEngine::Vector3 controlPoint;// ベジェ曲線の制御点（実際の位置）
+        MyEngine::Vector3 handleRight; // ベジェ曲線の右側のハンドル（制御点）
+    };
+
+    /// <summary>
+	/// ベジェ曲線の1点分のデータを保持する構造体
     /// </summary>
     struct BezierPoint {
-        std::string name;               // 制御点の名前
-        MyEngine::Vector3 controlPoint; // 実際に通る点
+        std::string name;             // 制御点の名前
+        ControlPoint controlPoint;    // 制御点の情報
         bool passed = false;          // この制御点を通過したかどうかのフラグ
+    };
+    
+    /// <summary>
+	/// ベジェ曲線の全制御点を保持する構造体
+    /// </summary>
+    struct BezierData {
+        std::vector<BezierPoint> points;
     };
 
     /// <summary>
     /// JSONファイルからベジェ曲線制御点を読み込むクラス
     /// </summary>
     class CurveJsonLoader {
-    public:
+    public: // 静的定数
+        static const std::string kDefaultBaseDirectory;
+        static const std::string kExtension;
+    public: // メンバ関数
         /// <summary>
-        /// 指定したパスのJSONファイルを読み込み、ベジェ制御点リストを返す
+        /// ファイルの読み込み
         /// </summary>
-        /// <param name="filePath">JSONファイルのパス</param>
-        /// <returns>BezierPointの配列</returns>s
-        std::vector<std::vector<BezierPoint>> LoadBezierFromJSON(const std::string& filePath);
+        /// <param name="fileName"></param>
+        /// <returns></returns>
+        std::unique_ptr<BezierData> LoadFile(const std::string& fileName);
+        /// <summary>
+        /// JSONデータからベジェ曲線の制御点を再帰的に読み込む関数
+        /// </summary>
+        /// <param name="objectsJson"></param>
+        /// <param name="levelData"></param>
+        void LoadBezierDataRecursive(const nlohmann::json& objectsJson, BezierData& levelData);
+    private: // 内部関数
+        /// <summary>
+		/// JSON配列からVector3を取得する関数
+        /// </summary>
+        /// <param name="jsonArray"></param>
+        /// <returns></returns>
+        MyEngine::Vector3 GetVector3FromJson(const nlohmann::json& jsonArray);
+    private: // メンバ変数
+		// ベジェ曲線の制御点データを保持する変数
+        std::unique_ptr<BezierData> bezierdata_;
     };
 }
 
@@ -10497,211 +10784,6 @@ namespace MyGame::Math::Spline {
 }
 
 ============================================================
-File Path: project/application/rail/RailPath.cpp
-============================================================
-#include "RailPath.h"
-#include <algorithm>
-#include <Spline.h>
-#include <MatrixVector.h>
-
-using namespace MyEngine;
-using namespace MatrixVector;
-
-namespace MyGame {
-     
-    using namespace Math::Spline;
-
-    void RailPath::Build(const std::vector<BezierPoint>& curve) {
-        segmentLengths_.clear();
-        totalLength_ = 0.0f;
-
-        for (int i = 0; i < (int)curve.size() - 1; i++) {
-            float length = CalculateSegmentLength(curve, i);
-            segmentLengths_.push_back(length);
-            totalLength_ += length;
-        }
-    }
-
-    void RailPath::ConvertDistance(float distance, int& index, float& t) {
-        float remain = distance;
-        int segment = 0;
-
-        while (segment < (int)segmentLengths_.size()) {
-            if (remain <= segmentLengths_[segment]) break;
-            remain -= segmentLengths_[segment];
-            segment++;
-        }
-
-        segment = std::clamp(segment, 0, (int)segmentLengths_.size() - 1);
-
-        float len = segmentLengths_[segment];
-        index = segment;
-        t = (len > 0.0f) ? remain / len : 0.0f;
-    }
-
-
-    float RailPath::CalculateSegmentLength(const std::vector<BezierPoint>& curve, int index) {
-        const int div = 10;
-        float length = 0.0f;
-
-        Vector3 prev = GetPoint(curve, index, 0.0f);
-
-        for (int i = 1; i <= div; i++) {
-            float t = i / (float)div;
-            Vector3 pos = GetPoint(curve, index, t);
-            length += Length(pos - prev);
-            prev = pos;
-        }
-        return length;
-    }
-
-    Vector3 RailPath::GetPoint(const std::vector<BezierPoint>& curve, int index, float t) {
-        auto Get = [&](int i) -> const Vector3& {
-            i = std::clamp(i, 0, (int)curve.size() - 1);
-            return curve[i].controlPoint;
-            };
-
-        const Vector3& p0 = Get(index - 1);
-        const Vector3& p1 = Get(index);
-        const Vector3& p2 = Get(index + 1);
-        const Vector3& p3 = Get(index + 2);
-
-        return CatmullRom(p0, p1, p2, p3, t);
-    }
-}
-
-============================================================
-File Path: project/application/rail/RailPath.h
-============================================================
-#pragma once
-#include <CurveJsonLoader.h>
-
-namespace MyGame {
-    /// <summary>
-	/// レール上の距離を区間と進行度に変換するクラス
-    /// </summary>
-    class RailPath {
-    public: // メンバ関数
-        /// <summary>
-		/// ベジェ曲線の制御点をセットし、区間長と全体長を計算して保存する
-        /// </summary>
-        /// <param name="curve"></param>
-        void Build(const std::vector<BezierPoint>& curve);
-        /// <summary>
-		/// レール上の距離を区間と進行度に変換する 
-        /// </summary>
-        /// <param name="distance"></param>
-        /// <param name="index"></param>
-        /// <param name="t"></param>
-        void ConvertDistance(float distance, int& index, float& t);
-    private: // 内部関数
-        /// <summary>
-		/// 指定した区間の長さを計算する関数
-        /// </summary>
-        /// <param name="curve"></param>
-        /// <param name="index"></param>
-        /// <returns></returns>
-        float CalculateSegmentLength(const std::vector<BezierPoint>& curve, int index);
-        /// <summary>
-		/// 指定した区間と進行度に基づいて、レール上の位置をサンプリングする関数
-        /// </summary>
-        /// <param name="curve"></param>
-        /// <param name="index"></param>
-        /// <param name="t"></param>
-        /// <returns></returns>
-        MyEngine::Vector3 GetPoint(const std::vector<BezierPoint>& curve, int index, float t);
-	private: // メンバ変数
-        std::vector<float> segmentLengths_;
-        float totalLength_ = 0.0f;
-    public:
-		// getter
-		float GetTotalLength() const { return totalLength_; }
-    };
-}
-
-============================================================
-File Path: project/application/rail/RailSampler.cpp
-============================================================
-#include "RailSampler.h"
-#include <algorithm>
-#include <Spline.h>
-
-using namespace MyEngine;
-
-namespace MyGame {
-
-    using namespace Math::Spline;
-
-    void RailSampler::SetCurve(const std::vector<BezierPoint>& curve) {
-        curve_ = curve;
-    }
-
-    Vector3 RailSampler::Sample(int index, float t) {
-        auto GetPoint = [&](int i) -> const Vector3& {
-            i = std::clamp(i, 0, (int)curve_.size() - 1);
-            return curve_[i].controlPoint;
-            };
-
-        const Vector3& p0 = GetPoint(index - 1);
-        const Vector3& p1 = GetPoint(index);
-        const Vector3& p2 = GetPoint(index + 1);
-        const Vector3& p3 = GetPoint(index + 2);
-
-        return CatmullRom(p0, p1, p2, p3, t);
-    }
-
-    Vector3 RailSampler::SampleTangent(int index, float t) {
-        auto GetPoint = [&](int i) -> const Vector3& {
-            i = std::clamp(i, 0, (int)curve_.size() - 1);
-            return curve_[i].controlPoint;
-            };
-
-        const Vector3& p0 = GetPoint(index - 1);
-        const Vector3& p1 = GetPoint(index);
-        const Vector3& p2 = GetPoint(index + 1);
-        const Vector3& p3 = GetPoint(index + 2);
-
-        return CatmullRomTangent(p0, p1, p2, p3, t);
-    }
-}
-
-============================================================
-File Path: project/application/rail/RailSampler.h
-============================================================
-#pragma once
-#include <CurveJsonLoader.h>
-
-namespace MyGame {
-    /// <summary>
-    /// レール上の位置と接線をサンプリングするクラス
-    /// </summary>
-    class RailSampler {
-    public: // メンバ関数
-        /// <summary>
-        /// ベジェ曲線の制御点をセットする
-        /// </summary>
-        /// <param name="curve"></param>
-        void SetCurve(const std::vector<BezierPoint>& curve);
-        /// <summary>
-        /// 指定した区間と進行度に基づいて、レール上の位置をサンプリングする
-        /// </summary>
-        /// <param name="index"></param>
-        /// <param name="t"></param>
-        /// <returns></returns>
-        MyEngine::Vector3 Sample(int index, float t);
-        /// <summary>
-        /// 指定した区間と進行度に基づいて、レール上の接線をサンプリングする
-        /// </summary>
-        /// <param name="index"></param>
-        /// <param name="t"></param>
-        /// <returns></returns>
-        MyEngine::Vector3 SampleTangent(int index, float t);
-    private: // メンバ変数
-        std::vector<BezierPoint> curve_;
-    };
-}
-
-============================================================
 File Path: project/application/scene/GameClearScene.cpp
 ============================================================
 #include "GameClearScene.h"
@@ -10714,7 +10796,7 @@ File Path: project/application/scene/GameClearScene.cpp
 #include <StageManager.h>
 #include <FadeManager.h>
 #include <UIManager.h>
-#include<Easing.h>
+#include <Easing.h>
 #include <GameClearUI.h>
 #include <Input.h>
 #ifdef min
@@ -10731,6 +10813,7 @@ namespace MyGame {
     void GameClearScene::Finalize() {
         CameraManager::GetInstance()->Finalize(); // カメラマネージャの終了処理
         FadeManager::GetInstance()->Finalize();   // フェードマネージャの終了処理
+        UIManager::GetInstance()->Finalize();     // UIマネージャの終了処理 
         StageManager::GetInstance()->Finalize();  // ステージマネージャの終了処理
     }
 
@@ -10748,7 +10831,7 @@ namespace MyGame {
 
         // カメラのターゲットにプレイヤーをセット
         CameraManager::GetInstance()->GetCurrentBehaviorAs<GameClearCamera>()->SetTargetObject(player_->GetObject3d());
-
+		// 演出の段階を初期化
         step_ = 0;
 
         // ステージマネージャの初期化
@@ -10764,8 +10847,6 @@ namespace MyGame {
         CameraManager::GetInstance()->Update();
 
 #pragma region 全てのObject3d個々の更新処理
-        // ステージマネージャの更新
-        StageManager::GetInstance()->Update();
 
         UpdateStep();
 
@@ -11060,40 +11141,123 @@ File Path: project/application/scene/GameOverScene.cpp
 #include <Object3dCommon.h>
 #include <ParticleCommon.h>
 #include <SceneName.h>
+#include <FadeManager.h>
+#include <UIManager.h>
+#include <StageManager.h>
+#include <ModelManager.h>
+#include <random>
+// AssetGeneratorからインクルード
+#include <subproject/AssetGenerator/engine/generator/LoadResourceID.h>
 
 using namespace MyEngine;
+using namespace AssetGen::LoadResourceID::Models;
 
 namespace MyGame {
 	void GameOverScene::Finalize() {
 		CameraManager::GetInstance()->Finalize(); // カメラマネージャの終了処理
+		FadeManager::GetInstance()->Finalize();   // フェードマネージャの終了処理
+		UIManager::GetInstance()->Finalize();     // UIマネージャの終了処理 
+		StageManager::GetInstance()->Finalize();  // ステージマネージャの終了処理
 	}
 
-	void GameOverScene::Initialize() {	
+	void GameOverScene::Initialize() {
+		// カメラマネージャの初期化       
 		CameraManager::GetInstance()->Initialize(SceneName::GAMEOVER);
+		// モデルの読み込み    
+		ModelManager::GetInstance()->LoadModel(Character::parts_01);
+		ModelManager::GetInstance()->LoadModel(Character::parts_02);
+		ModelManager::GetInstance()->LoadModel(Character::parts_03);
+		ModelManager::GetInstance()->LoadModel(Character::parts_04);
 
+		// ランダム生成
+		std::random_device rd;
+		std::mt19937 randomEngine(rd());
+		std::uniform_real_distribution<float> transformY(15.0f, 20.0f);
+		std::uniform_real_distribution<float> distX(-10.0f, 3.0f);
+		std::uniform_real_distribution<float> distY(0.06f, 0.12f);
+		std::uniform_real_distribution<float> rotateX(-0.01f, 0.01f);
+		std::uniform_real_distribution<float> rotateY(-0.01f, 0.01f);
+		std::uniform_real_distribution<float> rotateZ(-0.01f, 0.01f);
+
+
+		std::vector<std::string> textureNames = { Character::parts_01,Character::parts_02,Character::parts_03,Character::parts_04, };
+		partCount_ = 7;
+		for (size_t i = 0; i < partCount_; ++i) {
+			PartInfo part;
+
+			part.transform = { {1.0f, 1.0f, 1.0f}, {0.0f,0.0f,0.0f}, {distX(randomEngine), transformY(randomEngine), 30.0f} };
+			// 1つ目はそのまま、それ以降は2個ずつテクスチャを切り替え
+			size_t textureIndex = 0; // 1つ目は 0
+			if (i > 0) {
+				textureIndex = ((i - 1) / 2) + 1; // 2個ごとに切り替え
+				if (textureIndex >= textureNames.size()) textureIndex = textureNames.size() - 1; // 配列オーバー防止
+			}
+
+			part.obj = Object3d::Create(Character::parts_01, part.transform);
+			part.obj->SetModel(textureNames[textureIndex]); // 後からテクスチャを設定
+
+			part.fallSpeed = { 0.0f, distY(randomEngine), 0.0f }; // Y軸落下
+			part.rotateSpeed = { rotateX(randomEngine), rotateY(randomEngine), rotateZ(randomEngine) };
+
+			partsList.push_back(std::move(part));
+		}
+		std::vector<Object3d*> partTargets;
+		partTargets.reserve(partsList.size());  // 最適化
+
+		for (auto& part : partsList) {
+			partTargets.push_back(part.obj.get());  // unique_ptr → raw pointer に変換
+		}
+
+
+		// ステージマネージャの初期化
+		StageManager::GetInstance()->Initialize();
+		// フェードマネージャの初期化(フェードイン開始処理)
+		FadeManager::GetInstance()->StartFade(FadeType::FadeIn, FadeStyle::SilhouetteExplode, 1.0f);
+		// UIマネージャの初期化
+		UIManager::GetInstance()->Initialize();
 	}
 
 	void GameOverScene::Update() {
-#pragma region 全てのObject3d個々の更新処理			
+		// カメラマネージャの更新
 		CameraManager::GetInstance()->Update();
 
+#pragma region 全てのObject3d個々の更新処理			
 
+		//  落下処理
+		UpdateParts();
+		// プレイヤ―パーツの更新
+		for (PartInfo& part : partsList) {
+			part.obj->Update();
+		}
+
+		// ステージマネージャの更新
+		StageManager::GetInstance()->Update();
 #pragma endregion 全てのObject3d個々の更新処理
 
 #pragma region 全てのSprite個々の更新処理
-
+		// UIマネージャの更新
+		UIManager::GetInstance()->Update();
+		// フェードマネージャの更新
+		FadeManager::GetInstance()->Update();
 #pragma endregion 全てのSprite個々の更新処理
 	}
 
 	void GameOverScene::Draw() {
-	#pragma region 全てのObject3d個々の描画処理
+#pragma region 全てのObject3d個々の描画処理
 		// 箱オブジェクトの描画準備。3Dオブジェクトの描画に共通のグラフィックスコマンドを積む
 		SkyboxCommon::GetInstance()->Commondrawing();
-
+		// ステージマネージャの描画
+		StageManager::GetInstance()->DDSDraw();
 		// 3Dオブジェクトの描画準備。3Dオブジェクトの描画に共通のグラフィックスコマンドを積む
 		Object3dCommon::GetInstance()->Commondrawing();
 
+		// プレイヤ―パーツの描画
+		for (PartInfo& part : partsList) {
+			part.obj->Draw();
+		}
 
+		// ステージマネージャの描画
+		StageManager::GetInstance()->Draw();
 		// パーティクルの描画準備。パーティクルの描画に共通のグラフィックスコマンドを積む 
 		ParticleCommon::GetInstance()->Commondrawing();
 #pragma endregion 全てのObject3d個々の描画処理
@@ -11102,7 +11266,30 @@ namespace MyGame {
 		// Spriteの描画準備。Spriteの描画に共通のグラフィックスコマンドを積む
 		SpriteCommon::GetInstance()->Commondrawing();
 
+		// UIマネージャの描画
+		UIManager::GetInstance()->Draw();
+		// フェードマネージャの描画
+		FadeManager::GetInstance()->Draw();
+
 #pragma endregion 全てのSprite個々の描画処理
+	}
+
+	void GameOverScene::UpdateParts() {
+		for (PartInfo& part : partsList) {
+			// フェードインが完了するまでは落下させない
+			if (!FadeManager::GetInstance()->IsFadeInFinished()) { return; }
+			// 落下
+			part.transform.translate.y -= part.fallSpeed.y;
+			if (part.transform.translate.y < -20.0f) {
+				part.transform.translate.y = -20.0f; // 地面で止める
+			}
+			// 回転
+			part.transform.rotate -= part.rotateSpeed;
+			// 更新反映
+			part.obj->SetTranslate(part.transform.translate);
+			part.obj->SetRotate(part.transform.rotate);
+
+		}
 	}
 }
 
@@ -11110,14 +11297,21 @@ namespace MyGame {
 File Path: project/application/scene/GameOverScene.h
 ============================================================
 #pragma once
-#include<BaseScene.h>
+#include <BaseScene.h>
+#include <Object3d.h>
+
+struct PartInfo {
+    std::unique_ptr<MyEngine::Object3d> obj;
+    MyEngine::Transform transform;
+    MyEngine::Vector3 fallSpeed;
+    MyEngine::Vector3 rotateSpeed;
+};
 
 namespace MyGame {
     /// <summary>
     /// ゲームオーバーシーン
     /// </summary>
-    class GameOverScene : public MyEngine::BaseScene
-    {
+    class GameOverScene : public MyEngine::BaseScene {
     public: // メンバ関数
         /// <summary>
         /// 初期化処理
@@ -11135,9 +11329,13 @@ namespace MyGame {
         /// 描画処理
         /// </summary>
         void Draw() override;
-
+        /// <summary>
+        /// パーツの位置と回転を更新する
+        /// </summary>
+        void UpdateParts();
     private: // メンバ変数      
-
+        std::vector<PartInfo> partsList; // 複数のパーツ用
+        uint32_t partCount_; // 生成するオブジェクト数
     };
 }
 
@@ -11186,37 +11384,45 @@ namespace MyGame {
     void GamePlayScene::Initialize() {
         // カメラマネージャの初期化
         CameraManager::GetInstance()->Initialize(SceneName::GAMEPLAY);
-
+        // プレイヤー生成,初期化
         player_ = std::make_unique<Player>();
         player_->Initialize();
+		// GamePlayCameraにプレイヤーを渡す(プレイヤ―の位置を確認)
         CameraManager::GetInstance()->GetCurrentBehaviorAs<GamePlayCamera>()->SetPlayer(player_.get());
 
         // 敵生成
         const int kEnemyMax = 300;
         for (int i = 0; i < kEnemyMax; i++) {
-            auto enemy = std::make_unique<Enemy>();
-            enemy->Initialize();
-            enemies_.push_back(std::move(enemy));
+			std::unique_ptr<Enemy> enemy = std::make_unique<Enemy>(); // 敵の生成
+			enemy->Initialize(); // 敵の初期化
+            enemy->SetActive(false); // 非アクティブ
+            enemy->SetSpawned(false); // 出現フラグ
+            enemy->SetPlayer(player_.get()); // プレイヤーへの参照をセット
+			enemies_.push_back(std::move(enemy)); // 敵リストに追加
         }
 
-        // Spawner生成
+        // 敵のSpawner生成,初期化
         enemySpawner_ = std::make_unique<EnemySpawner>();
-        enemySpawner_->SetEnemies(&enemies_);
-		enemySpawner_->SetPlayer(player_.get());
+		enemySpawner_->SetEnemies(&enemies_);    // 敵リストへの参照をセット
+		enemySpawner_->SetPlayer(player_.get()); // プレイヤーへの参照をセット
+
+        // 最初のスポーン
+        player_->SetEnemy(enemies_.empty() ? nullptr : enemies_.front().get());
 
         // ステージマネージャの初期化
-        StageManager::GetInstance()->Initialize(); 
+        StageManager::GetInstance()->Initialize();
         StageManager::GetInstance()->SetClearwallTranslate(CameraManager::GetInstance()->GetCurrentBehaviorAs<GamePlayCamera>()->GetRailEndPosition());
 
+        // UIにプレイヤーの情報を渡す
         GamePlayUI* gameplayUI = UIManager::GetInstance()->GetUI<GamePlayUI>();
         if (gameplayUI) {
             gameplayUI->SetPlayer(player_.get());
         }
         // UIマネージャの初期化
         UIManager::GetInstance()->Initialize();
-
+		// フェードマネージャの初期化(フェードイン開始処理)
         FadeManager::GetInstance()->StartFade(FadeType::FadeIn, FadeStyle::SilhouetteExplode, 1.0f);
-
+		// ゲーム開始イベントの開始
         isGameStartEventDone_ = true;
     }
 
@@ -11224,46 +11430,45 @@ namespace MyGame {
         // カメラマネージャの更新
         CameraManager::GetInstance()->Update();
 #pragma region 全てのObject3d個々の更新処理      
+		// ポーズメニューのトリガーと更新
         if (!UIManager::GetInstance()->GetUI<GamePlayUI>()->GetPauseMenu()->IsActive() &&
             Input::GetInstance()->TriggerKey(DIK_TAB)) {
             UIManager::GetInstance()->GetUI<GamePlayUI>()->GetPauseMenu()->SetActive(true);
         }
-        
+		// ポーズがアクティブ中、ゲームの更新を停止してポーズメニューの更新のみ行う
         if (UIManager::GetInstance()->GetUI<GamePlayUI>()->GetPauseMenu()->IsActive()) {
             UIManager::GetInstance()->GetUI<GamePlayUI>()->GetPauseMenu()->Update();
             FadeManager::GetInstance()->Update();
             return;
         }
 
-        //  ゲーム開始前のイベント処理
-        if (!isGameStartEventDone_) {
-            // ゲーム開始イベントの開始
-            EventManager::GetInstance()->EventStart(Event::EventState::GameStart);
-            isGameStartEventDone_ = true;
-        }
+        ////  ゲーム開始前のイベント処理
+        //if (!isGameStartEventDone_) {
+        //    // ゲーム開始イベントの開始
+        //    EventManager::GetInstance()->EventStart(Event::EventState::GameStart);
+        //    isGameStartEventDone_ = true;
+        //}
 
         // 敵スポーン
         enemySpawner_->Update();
 
         // 敵更新
-        for (auto& enemy : enemies_) {
+        for (std::unique_ptr<Enemy>& enemy : enemies_) {
             enemy->Update();
-			enemy->SetPlayer(player_.get());
         }
 
-        enemies_.erase(
-            std::remove_if(enemies_.begin(), enemies_.end(),
-                [](std::unique_ptr<Enemy>& enemy) {
-                    if (!enemy->IsAlive()) {
-                        enemy->Finalize(); // ←ここで安全に消す
-                        return true;
-                    }
-                    return false;
-                }),
+		// 死亡した敵の削除
+        enemies_.erase(std::remove_if(enemies_.begin(), enemies_.end(), [](std::unique_ptr<Enemy>& enemy) {
+            if (!enemy->IsAlive()) {
+                enemy->Finalize();
+                return true;
+            }
+            return false;
+            }),
             enemies_.end()
         );
 
-        CameraManager::GetInstance()->GetCurrentBehaviorAs<GamePlayCamera>()->SetTargetObject(player_->GetObject3d());
+		// カメラのターゲットとプレイヤーをセット（プレイヤーの位置にカメラを追従させるため）
         CameraManager::GetInstance()->GetCurrentBehaviorAs<GamePlayCamera>()->SetPlayer(player_.get()); 
         // プレイヤーの更新
         player_->Update();
@@ -11277,8 +11482,8 @@ namespace MyGame {
         CollisionManager::GetInstance()->CheckAllCollisions();
 
         // ゲームクリアの条件をチェック
-        if (CameraManager::GetInstance()->GetCurrentBehaviorAs<GamePlayCamera>()->GetProgress() >= 1.0f) {
-			// フェードアウト
+        if (CameraManager::GetInstance()->GetCurrentBehaviorAs<GamePlayCamera>()->GetFinished()) {
+            // フェードアウト
             FadeManager::GetInstance()->SceneChangeFade(SceneName::GAMECLEAR, FadeStyle::SilhouetteExplode, 1.5f);
         }
 
@@ -11304,8 +11509,9 @@ namespace MyGame {
 
         // プレイヤーの描画
         player_->Draw();
-        
-        for (auto& enemy : enemies_) {
+
+        // 敵の描画
+        for (std::unique_ptr<Enemy>& enemy : enemies_) {
             enemy->Draw();
         }
 
@@ -11784,6 +11990,7 @@ File Path: project/application/ui/core/UIManager.cpp
 #include <GamePlayUI.h>
 #include <TitleUI.h>
 #include <GameClearUI.h>
+#include <GameOverUI.h>
 
 using namespace MyEngine;
 
@@ -11814,12 +12021,14 @@ namespace MyGame {
         std::string currentScene = SceneManager::GetInstance()->GetCurrentScene()->GetSceneName();
 
         // シーン名に紐付いたUIクラスをインスタンス化
-        if (currentScene == SceneName::TITLE) {
+		if (currentScene == SceneName::TITLE) {                             // タイトルシーンのUIを生成
             AddUI(SceneName::TITLE, std::make_unique<TitleUI>());
-        } else if (currentScene == SceneName::GAMEPLAY) {
+		} else if (currentScene == SceneName::GAMEPLAY) {                   // ゲームプレイシーンのUIを生成
             AddUI(SceneName::GAMEPLAY, std::make_unique<GamePlayUI>());
-        } else if (currentScene == SceneName::GAMECLEAR) {
+		} else if (currentScene == SceneName::GAMECLEAR) {                  // ゲームクリアシーンのUIを生成
             AddUI(SceneName::GAMECLEAR, std::make_unique<GameClearUI>());
+        } else if (currentScene == SceneName::GAMEOVER) {                  // ゲームオーバーシーンのUIを生成
+            AddUI(SceneName::GAMEOVER, std::make_unique<GameOverUI>());
         }
 
         // 生成したUIの個別初期化
@@ -11853,6 +12062,7 @@ namespace MyGame {
     }
 
     void UIManager::Clear() {
+		// 管理している全UIの破棄
         uiList_.clear();
     }
 }
@@ -11977,7 +12187,8 @@ namespace MyGame {
         effect_->Update(t_, type_);
 
         if (t_ >= 1.0f) {
-            isFading_ = false;
+			isFadeInFinished_ = true; // フェードインが完了したことを示すフラグを立てる
+			isFading_ = false;      // フェード終了
             // フェード完了後にシーン切り替えが予約されている場合は実行
             if (isSceneChangeReserved_) {
                 // シーンマネージャに切り替え処理を実行
@@ -12045,7 +12256,7 @@ namespace MyGame {
     /// フェードを管理するマネージャークラス
     /// </summary>
     class FadeManager {
-    private:
+	private: // シングルトンインスタンス
         static std::unique_ptr<FadeManager> instance;
 
         FadeManager(FadeManager&) = delete;
@@ -12067,12 +12278,20 @@ namespace MyGame {
         /// 描画処理
         /// </summary>
         void Draw();
-
-        // フェード開始
-        void StartFade(FadeType type, FadeStyle style, float duration);
-        // フェード開始後にシーン切り替えを予約
+        /// <summary>
+		/// フェード開始
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="style"></param>
+        /// <param name="duration"></param>
+        void StartFade(FadeType type, FadeStyle style, float duration);       
+        /// <summary>
+		/// フェード開始後にシーン切り替えを予約
+        /// </summary>
+        /// <param name="sceneName"></param>
+        /// <param name="style"></param>
+        /// <param name="duration"></param>
         void SceneChangeFade(const std::string& sceneName, FadeStyle style, float duration);
-
     private: // メンバ変数
         // 現在のフェードエフェクト
         std::unique_ptr<IFadeEffect> effect_;
@@ -12084,6 +12303,13 @@ namespace MyGame {
         // シーン切り替え予約用変数
         std::string nextSceneName_;
         bool isSceneChangeReserved_ = false; // フェード完了後にシーン切り替えを行うか
+        bool isFadeEnd_ = false;         // フェード終了済み
+        bool isFadeInFinished_ = false;  // フェードイン完了
+    public:
+        bool IsFading() const { return isFading_; }
+        bool IsFadeEnd() const { return isFadeEnd_; }
+        bool IsFadeInFinished() const { return isFadeInFinished_; }
+		bool IsSceneChangeReserved() const { return isSceneChangeReserved_; }
     };
 }
 
@@ -12404,7 +12630,7 @@ File Path: project/application/ui/scene/GameClearUI.cpp
 ============================================================
 #include "GameClearUI.h"
 #include <TextureManager.h>
-#include<Easing.h>
+#include <Easing.h>
 
 // AssetGeneratorからインクルード
 #include <subproject/AssetGenerator/engine/generator/LoadResourceID.h>
@@ -12546,7 +12772,7 @@ File Path: project/application/ui/scene/GameClearUI.h
 ============================================================
 #pragma once
 #include <BaseUI.h>
-#include<Sprite.h>
+#include <Sprite.h>
 
 namespace MyGame {
     /// <summary>
@@ -12609,6 +12835,167 @@ namespace MyGame {
 
         float backTimer_ = 0.0f;
 float backDuration_ = 60.0f;
+    };
+}
+
+============================================================
+File Path: project/application/ui/scene/GameOverUI.cpp
+============================================================
+#include "GameOverUI.h"
+#include <TextureManager.h>
+#include <Easing.h>
+#include <FadeManager.h>
+#include <Input.h>
+#include <SceneName.h>
+// AssetGeneratorからインクルード
+#include <subproject/AssetGenerator/engine/generator/LoadResourceID.h>
+
+using namespace MyEngine;
+using namespace AssetGen::LoadResourceID::Textures;
+using namespace Easing;
+
+namespace MyGame {
+
+    void GameOverUI::Initialize() {
+        // テクスチャの読み込み
+        TextureManager::GetInstance()->LoadTexture(Ui::Gameover);
+        TextureManager::GetInstance()->LoadTexture(Ui::UI_01);
+
+        ui1Timer_ = 0.0f;
+        ui1Duration_ = 60.0f;
+        ui2Timer_ = 0.0f;
+        ui2Duration_ = 60.0f;
+
+        ui1StartPos = { 1000.0f, -100.0f }; // 初期位置
+        ui1EndPos = { 1000.0f, 200.0f }; // 最終位置（現在の値）
+        ui2StartPos = { 1000.0f, -250.0f };
+        ui2EndPos = { 1000.0f, 350.0f };
+            
+        phase_ = 0;
+
+        // ゲームオーバーUIのスプライトを生成,初期化
+        gameover_ = Sprite::Create(Ui::Gameover, ui1StartPos, 0.0f, Vector2{ 300.0f,120.0f });
+        gameover_->SetAnchorPoint(Vector2{ 0.5f, 0.5f }); // 中心基準
+        // エンターUIのスプライトを生成,初期化
+        enter_ = Sprite::Create(Ui::UI_01, ui2StartPos, 0.0f, Vector2{ 360.0f,100.0f });
+        enter_->SetAnchorPoint(Vector2{ 0.5f, 0.5f }); // 中心基準
+        gameover_->SetTextureSize(Vector2{ 300.0f,120.0f });
+        enter_->SetTextureSize(Vector2{ 360.0f,100.0f });
+    }
+
+    void GameOverUI::Update() {
+		// フェードインが完了していない場合はUIの移動を開始しない
+        if (!FadeManager::GetInstance()->IsFadeInFinished()) { return; }
+        
+        // タイトルシーンへの入力処理
+        if (Input::GetInstance()->TriggerKey(DIK_RETURN)) {
+            // UI演出完了後のみキー入力を許可
+            if (phase_ == 2) {
+                // タイトルシーンへ遷移
+                FadeManager::GetInstance()->SceneChangeFade(SceneName::TITLE, FadeStyle::SilhouetteSlide, 1.0f);
+            }
+        }
+
+        // UIの移動を段階的に行うための状態管理
+        switch (phase_) {
+        case 0: // --- UI1移動中 ---
+            if (ui1Timer_ < ui1Duration_) {
+                ui1Timer_++;
+
+                float t = ui1Timer_ / ui1Duration_;
+                float easeT = EaseOutBack(t);
+
+                Vector2 newPos1 = {
+                    ui1StartPos.x + (ui1EndPos.x - ui1StartPos.x) * easeT,
+                    ui1StartPos.y + (ui1EndPos.y - ui1StartPos.y) * easeT
+                };
+                gameover_->SetPosition(newPos1);
+            }
+
+            // --- 到着チェック ---
+            if (fabsf(gameover_->GetPosition().y - ui1EndPos.y) < 0.5f) {
+                gameover_->SetPosition(ui1EndPos);
+                phase_ = 1;     // 次のUIへ
+                ui2Timer_ = 0;  // 次のタイマーリセット
+            }
+            gameover_->Update();
+            break;
+
+        case 1: // --- UI2移動中 ---
+            if (ui2Timer_ < ui2Duration_) {
+                ui2Timer_++;
+
+                float t = ui2Timer_ / ui2Duration_;
+                float easeT = EaseOutBack(t);
+
+                Vector2 newPos2 = {
+                    ui2StartPos.x + (ui2EndPos.x - ui2StartPos.x) * easeT,
+                    ui2StartPos.y + (ui2EndPos.y - ui2StartPos.y) * easeT
+                };
+                enter_->SetPosition(newPos2);
+            }
+
+            if (fabsf(enter_->GetPosition().y - ui2EndPos.y) < 0.5f) {
+                enter_->SetPosition(ui2EndPos);
+                phase_ = 2; // 完了
+            }
+            enter_->Update();
+            break;
+
+        case 2:
+            // --- 全て完了 ---
+            break;
+        }
+    }
+
+    void GameOverUI::Draw() {	
+		// ゲームオーバーUIの描画処理
+        gameover_->Draw();
+		// エンターUIの描画処理
+        enter_->Draw();
+    }
+}
+
+============================================================
+File Path: project/application/ui/scene/GameOverUI.h
+============================================================
+#pragma once
+#include <BaseUI.h>
+#include <Sprite.h>
+
+namespace MyGame {
+    /// <summary>
+	/// ゲームオーバーシーンのUIクラス
+    /// </summary>
+    class GameOverUI : public BaseUI {
+    public: // メンバ関数
+        /// <summary>
+        /// 初期化処理
+        /// </summary>
+        void Initialize() override;
+        /// <summary>
+        /// 毎フレームの更新処理
+        /// </summary>
+        void Update() override;
+        /// <summary>
+        /// 描画処理
+        /// </summary>
+        void Draw() override;
+    private: // メンバ変数
+        std::unique_ptr<MyEngine::Sprite> gameover_;
+        std::unique_ptr<MyEngine::Sprite> enter_;
+        MyEngine::Vector2 ui1StartPos; // 上にずらした初期位置
+        MyEngine::Vector2 ui1EndPos; // 最終位置（現在の値）
+        MyEngine::Vector2 ui2StartPos;
+        MyEngine::Vector2 ui2EndPos;
+
+        float ui1Timer_;
+        float ui1Duration_;
+        float ui2Timer_;
+        float ui2Duration_;
+
+        uint32_t phase_;
+    
     };
 }
 
@@ -16850,54 +17237,6 @@ namespace MyEngine {
 		ImGui::DragFloat3("Rotate", &transform.rotate.x, 0.0001f);
 #endif // USE_IMGUI
 	}
-
-	Vector3 Camera::GetForward() const {
-		Vector3 forward = { worldMatrix.m[0][2], worldMatrix.m[1][2], worldMatrix.m[2][2] };
-		// 正規化
-		forward = Normalize(forward);
-
-		return forward;
-	}
-
-	void Camera::SetLookAt(const Vector3& eye, const Vector3& target, const Vector3& up) {
-		// forward
-		Vector3 forward = Normalize(target - eye);
-
-		// right
-		Vector3 right = Normalize(Cross(up, forward));
-
-		// up（再計算）
-		Vector3 newUp = Cross(forward, right);
-
-		// ワールド行列を直接作る（回転＋位置）
-		worldMatrix.m[0][0] = right.x;
-		worldMatrix.m[1][0] = right.y;
-		worldMatrix.m[2][0] = right.z;
-
-		worldMatrix.m[0][1] = newUp.x;
-		worldMatrix.m[1][1] = newUp.y;
-		worldMatrix.m[2][1] = newUp.z;
-
-		worldMatrix.m[0][2] = forward.x;
-		worldMatrix.m[1][2] = forward.y;
-		worldMatrix.m[2][2] = forward.z;
-
-		worldMatrix.m[3][0] = eye.x;
-		worldMatrix.m[3][1] = eye.y;
-		worldMatrix.m[3][2] = eye.z;
-
-		// スケール固定
-		worldMatrix.m[0][3] = 0.0f;
-		worldMatrix.m[1][3] = 0.0f;
-		worldMatrix.m[2][3] = 0.0f;
-		worldMatrix.m[3][3] = 1.0f;
-
-		// view更新
-		viewMatrix = Inverse(worldMatrix);
-
-		// VP更新
-		ViewProjectionMatrix = Multiply(viewMatrix, projectionMatrix);
-	}
 }
 
 ============================================================
@@ -16908,22 +17247,29 @@ File Path: project/engine/camera/Camera.h
 #include <Matrix4x4.h>
 
 namespace MyEngine {
-	// カメラ
+	/// <summary>
+	/// カメラクラス
+	/// </summary>
 	class Camera {
 	public: // メンバ関数
-		// コントラクタ
+		/// <summary>
+		/// コンストラクタ
+		/// </summary>
 		Camera();
-		// 更新処理
-		void Update();
-		// ImGuiの更新
+		/// <summary>
+		/// 更新処理
+		/// </summary>
+		void Update();		
+		/// <summary>
+		/// ImGuiの描画処理
+		/// </summary>
 		void DrawImGui();
 	private: // メンバ変数
-		Transform transform;
-		Matrix4x4 worldMatrix;
-		Matrix4x4 viewMatrix;
-		Matrix4x4 projectionMatrix;
-		Matrix4x4 ViewProjectionMatrix;
-
+		Transform transform;             // カメラのTransform
+		Matrix4x4 worldMatrix;           // ワールド行列
+		Matrix4x4 viewMatrix;            // ビュー行列
+		Matrix4x4 projectionMatrix;      // プロジェクション行列
+		Matrix4x4 ViewProjectionMatrix;  // ビュー・プロジェクション行列
 		float fovY; // 水平方向視野野角
 		float aspectRatio; // アスペクト比
 		float nearClip; // ニアクリップ距離
@@ -16946,8 +17292,6 @@ namespace MyEngine {
 		void SetAspectRatio(const float& aspectRatio) { this->aspectRatio = aspectRatio; }
 		void SetNearClip(const float& nearClip) { this->nearClip = nearClip; }
 		void Setfarclip(const float& farclip) { this->farclip = farclip; }
-		void SetForward() const;
-		void SetLookAt(const Vector3& eye, const Vector3& target, const Vector3& up);
 	};
 }
 
@@ -18004,13 +18348,13 @@ namespace MyEngine {
     class EditorLayout {
     private:
         // 左側のパネルサイズ
-        static constexpr float kGameViewWidth_  = 640.0f;
+        static constexpr float kGameViewWidth_ = 640.0f;
         static constexpr float kGameViewHeight_ = 360.0f;
         // 右側のパネルサイズ
         static constexpr float kRightPanelViewWidth_ = 640.0f;
     public: // メンバ関数
         /// <summary>
-		/// 初期化処理
+        /// 初期化処理
         /// </summary>
         void Initialize();
         /// <summary>
@@ -18035,12 +18379,13 @@ namespace MyEngine {
         /// </summary>
         void DrawRightPanel(std::vector<std::unique_ptr<IEditorWindow>>& windows);
         /// <summary>
-		/// ゲームビューを全画面表示する
+        /// ゲームビューを全画面表示する
         /// </summary>
         /// <param name="srvmanager"></param>
         void DrawFullscreenGameView(SrvManager* srvmanager);
+#ifdef USE_IMGUI
         /// <summary>
-		/// ドッキングされたウィンドウを描画するための共通関数
+        /// ドッキングされたウィンドウを描画するための共通関数
         /// </summary>
         /// <typeparam name="WindowType"></typeparam>
         /// <param name="window"></param>
@@ -18058,10 +18403,12 @@ namespace MyEngine {
             ImGui::End();
             return is_open;
         }
+#endif // USE_IMGUI
+
     private: // メンバ変数
         std::function<std::string(const std::string&)> LT;  /// 多言語テキスト取得用の短縮ラムダ
         std::unique_ptr<EditorMenuBar> menuBar_;            /// メニューバー
-		bool requestResetLayout_ = true;                    /// レイアウトリセット要求フラグ
+        bool requestResetLayout_ = true;                    /// レイアウトリセット要求フラグ
         void* activeObject_ = nullptr;                      /// 選択中オブジェクトのポインタ
         std::string activeObjectName_;                      /// 選択中オブジェクトの名前
         EditorTypes::EditorObjectInfo activeCategory_;      /// 型情報を保持して判定用
@@ -18070,7 +18417,7 @@ namespace MyEngine {
         // getter
         EditorMenuBar* GetMenuBar() { return menuBar_.get(); }
         // setter
-        void SetGameViewFullscreen(bool fullscreen) { isGameViewFullscreen_ = fullscreen; }        
+        void SetGameViewFullscreen(bool fullscreen) { isGameViewFullscreen_ = fullscreen; }
 
         bool IsGameViewFullscreen() const { return isGameViewFullscreen_; }
         void ToggleGameViewFullscreen() { isGameViewFullscreen_ = !isGameViewFullscreen_; }
