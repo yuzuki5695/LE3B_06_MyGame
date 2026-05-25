@@ -5,7 +5,7 @@
 #include <SkyboxCommon.h>
 #include <SpriteCommon.h>
 #include <Object3dCommon.h>
-#include <ParticleCommon.h>
+//#include <ParticleCommon.h>
 #include <CameraManager.h>
 #include <Input.h>
 #include <StageManager.h>
@@ -17,9 +17,10 @@
 #include <EventManager.h>
 #include <CollisionManager.h>
 #include <CameraDefs.h>
+//#include <ParticleManager.h>
+#include <PlayerState.h>
 // AssetGeneratorからインクルード
 #include <subproject/AssetGenerator/engine/generator/LoadResourceID.h>
-#include <PlayerState.h>
 
 using namespace MyEngine;
 using namespace CameraDefs;
@@ -34,7 +35,8 @@ namespace MyGame {
         CameraManager::GetInstance()->Finalize(); // カメラマネージャの終了処理
         UIManager::GetInstance()->Finalize();     // UIマネージャの終了処理 
         FadeManager::GetInstance()->Finalize();   // フェードマネージャの終了処理
-		CollisionManager::GetInstance()->Finalize(); // 衝突マネージャの終了処理
+        CollisionManager::GetInstance()->Finalize(); // 衝突マネージャの終了処理
+        ParticleManager::GetInstance()->Finalize(); // パーティクルマネージャの開放
     }
 
     void GamePlayScene::Initialize() {
@@ -143,6 +145,8 @@ namespace MyGame {
             FadeManager::GetInstance()->SceneChangeFade(SceneName::GAMECLEAR, FadeStyle::SilhouetteExplode, 1.5f);
         }
 
+        // パーティクル更新
+   //     ParticleManager::GetInstance()->Update();
 #pragma endregion 全てのObject3d個々の更新処理
 
 #pragma region 全てのSprite個々の更新処理
@@ -176,8 +180,8 @@ namespace MyGame {
         // ステージマネージャの描画
         StageManager::GetInstance()->Draw();
         // パーティクルの描画準備。パーティクルの描画に共通のグラフィックスコマンドを積む 
-        ParticleCommon::GetInstance()->Commondrawing();
-        //ParticleManager::GetInstance()->Draw();
+       // ParticleCommon::GetInstance()->Commondrawing();
+       // ParticleManager::GetInstance()->Draw();
 #pragma endregion 全てのObject3d個々の描画処理
 
 #pragma region 全てのSprite個々の描画処理 

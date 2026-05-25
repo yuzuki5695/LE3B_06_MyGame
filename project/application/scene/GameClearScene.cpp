@@ -3,7 +3,7 @@
 #include <SkyboxCommon.h>
 #include <SpriteCommon.h>
 #include <Object3dCommon.h>
-#include <ParticleCommon.h>
+//#include <ParticleCommon.h>
 #include <SceneName.h>
 #include <StageManager.h>
 #include <FadeManager.h>
@@ -92,7 +92,7 @@ namespace MyGame {
         // ステージマネージャの描画
         StageManager::GetInstance()->Draw();
         // パーティクルの描画準備。パーティクルの描画に共通のグラフィックスコマンドを積む 
-        ParticleCommon::GetInstance()->Commondrawing();
+       // ParticleCommon::GetInstance()->Commondrawing();
 #pragma endregion 全てのObject3d個々の描画処理
 
 #pragma region 全てのSprite個々の描画処理 
