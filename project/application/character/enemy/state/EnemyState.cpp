@@ -41,7 +41,7 @@ namespace MyGame {
         // 必要なコンポーネント
         Enemy* enemy = dynamic_cast<Enemy*>(&character);
 
-		// アクティブ中またはプレイヤ―が非アクティブ中は各更新処理を行う
+        // アクティブ中またはプレイヤ―が非アクティブ中は各更新処理を行う
         if (character.IsActive() || !enemy->GetPlayer()->IsActive()) {
             // =========================
             // プレイヤーが追い越したら削除
@@ -61,7 +61,7 @@ namespace MyGame {
             }
 
             // 攻撃処理の更新処理
-            enemy->GetAttack()->Update(enemy->GetObject3d()->GetTransform(), enemy->GetPlayer()->GetTranslate());
+            //enemy->GetAttack()->Update(enemy->GetObject3d()->GetTransform(), enemy->GetPlayer()->GetTranslate());
 
             // 毎フレーム当たり判定を更新
             character.GetCollider()->SetOBB(CollisionUtils::CreateOBB(character.GetObject3d()));
@@ -69,7 +69,17 @@ namespace MyGame {
     }
 
     void EnemyDead::Update(BaseCharacter& character) {
+        // 必要なコンポーネント
+        Enemy* enemy = dynamic_cast<Enemy*>(&character);
         if (character.IsAlive()) {
+            // プレイヤーに倒されたら経験値付与
+            // 経験値は1回だけ
+            if (!enemy->IsExpGranted() && enemy->IsKilledByPlayer()) {
+                if (enemy->GetPlayer()) {
+                    enemy->GetPlayer()->GainExp(enemy->GetExpReward());
+                }
+                enemy->SetExpGranted(true);
+            }
             // 当たり判定解除
             CollisionManager::GetInstance()->UnregisterCollider(character.GetCollider());
             character.SetActive(false); // アクティブフラグを下げる

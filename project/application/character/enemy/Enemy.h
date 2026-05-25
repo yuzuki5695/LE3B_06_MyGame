@@ -37,13 +37,21 @@ namespace MyGame {
 		bool isSpawned_ = false; // 出現フラグ
 		// プレイヤーへの参照
 		Player* player_ = nullptr;
+		uint32_t expReward_ = 10; // 倒した時の経験値
+		bool isExpGranted_ = false; // 経験値付与済みフラグ
+		bool isKilledByPlayer_ = false;
 	public: // アクセッサ
 		// getter
 		MyEngine::Transform* GetTransform() { return &object_->GetTransform(); }
 		EnemyAttack* GetAttack() { return attack_.get(); }
 		void SetPlayer(Player* player) { player_ = player; }
 		Player* GetPlayer() const { return player_; }
+		uint32_t GetExpReward() const { return expReward_; }
 		bool IsSpawned() const { return isSpawned_; }
 		void SetSpawned(bool flag) { isSpawned_ = flag; }
+		bool IsExpGranted() const { return isExpGranted_; }
+		void SetExpGranted(bool flag) { isExpGranted_ = flag; }
+		bool IsKilledByPlayer() const { return isKilledByPlayer_; }
+		void SetKilledByPlayer(bool flag) { isKilledByPlayer_ = flag; }
 	};
 }

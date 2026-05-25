@@ -23,7 +23,7 @@ using namespace AssetGen::LoadResourceID::Models;
 using namespace AssetGen::LoadResourceID::Textures;
 
 namespace MyGame {
-     
+
     using namespace CollisionConfig;
 
     Player::~Player() {}
@@ -54,7 +54,7 @@ namespace MyGame {
         // 衝突時の処理
         collider_->SetCallback([this](Collider* other) {
             if (!IsAlive()) { return; }
-                ChangeState(std::make_unique<PlayerStateDead>());            
+            ChangeState(std::make_unique<PlayerStateDead>());
             });
         // コライダー登録
         CollisionManager::GetInstance()->RegisterCollider(collider_.get());
@@ -84,7 +84,7 @@ namespace MyGame {
         // ステートの更新
         state_.Update(*this);
 
-		// カメラがGamePlayCameraで更新中の場合、プレイヤーのワールド座標をカメラ位置に基づいて更新する
+        // カメラがGamePlayCameraで更新中の場合、プレイヤーのワールド座標をカメラ位置に基づいて更新する
         if (CameraManager::GetInstance()->GetCurrentBehaviorAs<GamePlayCamera>()) {
             // 死亡状態ではないなら
             if (!dynamic_cast<PlayerStateDead*>(state_.GetCurrentState())) {
@@ -99,12 +99,12 @@ namespace MyGame {
     }
 
     void Player::Draw() {
-		// 描画処理
+        // 描画処理
         object_->Draw();
     }
 
     void Player::DrawSprite() {
-		// 活動していない場合は描画処理をスキップ
+        // 活動していない場合は描画処理をスキップ
         if (!IsActive()) { return; }
         if (targetreticle_) {
             targetreticle_->Draw();
@@ -138,6 +138,22 @@ namespace MyGame {
         object_->SetTranslate(finalPos);
     }
 
+    void Player::GainExp(uint32_t exp) {
+        exp_ += exp;
+        CheckLevelUp();
+    }
+
+    void Player::CheckLevelUp() {
+        // 経験値が規定値を超えている間、レベルアップを繰り返す
+        while (exp_ >= nextLevelExp_) {
+            exp_ -= nextLevelExp_;
+            level_++;
+            // 次のレベルへの必要経験値を増加させる
+            nextLevelExp_ = static_cast<uint32_t>(nextLevelExp_ * 1.5f);
+            // レベルアップ演出（エフェクトや音）をここに初期化しても良い
+        }
+    }
+
     void Player::DrawImGui() {
 #ifdef USE_IMGUI
         EditorTypes::EditorObjectInfo info;
@@ -151,6 +167,24 @@ namespace MyGame {
             if (object_) {
                 object_->DrawImGui("object3d");
             }
+            /// ======================================
+            /// Player Status
+            /// ======================================
+            ImGui::SeparatorText("Player Status");
+            // レベル
+            ImGui::Text("Level : %u", level_);
+            // 現在経験値
+            ImGui::Text("EXP : %u / %u", exp_, nextLevelExp_);
+            // 経験値バー
+            float expRate = 0.0f;
+
+            if (nextLevelExp_ > 0) {
+                expRate = static_cast<float>(exp_) / static_cast<float>(nextLevelExp_);
+            }
+            ImGui::ProgressBar(expRate, ImVec2(200.0f, 20.0f));
+            // デバッグ用
+            if (ImGui::Button("Add EXP +10")) { GainExp(10); }
+
             };
         // オブジェクト情報を登録する
         EditorEntityRegistry::Instance().Register(info);

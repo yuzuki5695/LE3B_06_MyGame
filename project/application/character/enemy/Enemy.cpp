@@ -32,7 +32,17 @@ namespace MyGame {
         // 当たり判定の生成、初期化
         collider_ = Collider::Create({ .profile = Profile::Enemy,.obb = CollisionUtils::CreateOBB(object_.get()) });
         // 衝突時の処理
-        collider_->SetCallback([this](Collider* other) {if (!IsAlive()) { return; }ChangeState(std::make_unique<EnemyDead>()); });
+        collider_->SetCallback([this](Collider* other) {
+            if (!IsAlive()) {
+                return;
+            }
+            // プレイヤー弾に当たった場合
+            if (other->GetAttribute() & CollisionConfig::Attribute::PlayerBullet) {
+                SetKilledByPlayer(true);
+            }
+
+            ChangeState(std::make_unique<EnemyDead>());
+            });
 
         // コンポーネントの生成
 		attack_ = std::make_unique<EnemyAttack>(); // 攻撃ロジックの生成
