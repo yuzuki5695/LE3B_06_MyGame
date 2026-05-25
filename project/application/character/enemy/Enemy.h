@@ -2,6 +2,7 @@
 #include <BaseCharacter.h>
 #include <EnemyAttack.h>
 #include <Collider.h>
+#include <EnemyDeath.h>
 
 namespace MyGame {
 
@@ -34,16 +35,19 @@ namespace MyGame {
 	private: // メンバ変数
 		// ポインタ
 		std::unique_ptr<EnemyAttack> attack_; // 攻撃ロジックの保持
+		std::unique_ptr<EnemyDeath> death_;   // 死亡演出の保持
 		bool isSpawned_ = false; // 出現フラグ
 		// プレイヤーへの参照
 		Player* player_ = nullptr;
-		uint32_t expReward_ = 10; // 倒した時の経験値
-		bool isExpGranted_ = false; // 経験値付与済みフラグ
-		bool isKilledByPlayer_ = false;
+		uint32_t expReward_; // 倒した時の経験値
+		bool isExpGranted_; // 経験値付与済みフラグ
+		bool isKilledByPlayer_;
+		bool isDeathStarted_;
 	public: // アクセッサ
 		// getter
 		MyEngine::Transform* GetTransform() { return &object_->GetTransform(); }
 		EnemyAttack* GetAttack() { return attack_.get(); }
+		EnemyDeath* GetDeath() { return death_.get(); }
 		void SetPlayer(Player* player) { player_ = player; }
 		Player* GetPlayer() const { return player_; }
 		uint32_t GetExpReward() const { return expReward_; }
@@ -53,5 +57,7 @@ namespace MyGame {
 		void SetExpGranted(bool flag) { isExpGranted_ = flag; }
 		bool IsKilledByPlayer() const { return isKilledByPlayer_; }
 		void SetKilledByPlayer(bool flag) { isKilledByPlayer_ = flag; }
+		bool IsDeathStarted() { return isDeathStarted_; }
+		void SetDeathStarted(bool flag) { isDeathStarted_ = flag; }
 	};
 }

@@ -28,14 +28,25 @@ namespace MyGame {
         object_ = Object3d::Create(Character::Enemy, Transform{ { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f } });
         // 状態フラグの初期化
         flags_.isAlive = true;
-		flags_.isActive = false;
+        flags_.isActive = false;
+        expReward_ = 10; // 倒した時の経験値
+        isExpGranted_ = false; // 経験値付与済みフラグ
+        isKilledByPlayer_ = false;
+        isDeathStarted_ = false;
         // 当たり判定の生成、初期化
         collider_ = Collider::Create({ .profile = Profile::Enemy,.obb = CollisionUtils::CreateOBB(object_.get()) });
         // 衝突時の処理
         collider_->SetCallback([this](Collider* other) {
+            // 非アクティブなら無視
+            if (!IsActive()) {
+                return;
+            }
+
+            // すでに死んでいるなら無視
             if (!IsAlive()) {
                 return;
             }
+
             // プレイヤー弾に当たった場合
             if (other->GetAttribute() & CollisionConfig::Attribute::PlayerBullet) {
                 SetKilledByPlayer(true);
@@ -45,9 +56,9 @@ namespace MyGame {
             });
 
         // コンポーネントの生成
-		attack_ = std::make_unique<EnemyAttack>(); // 攻撃ロジックの生成
-		attack_->Initialize();                     // 攻撃ロジックの初期化
-
+        attack_ = std::make_unique<EnemyAttack>(); // 攻撃ロジックの生成
+        attack_->Initialize();                     // 攻撃ロジックの初期化
+        death_ = std::make_unique< EnemyDeath>(); // 死亡演出の生成
         // 初期ステートをセットする
         ChangeState(std::make_unique<EnemyIdle>());
     }

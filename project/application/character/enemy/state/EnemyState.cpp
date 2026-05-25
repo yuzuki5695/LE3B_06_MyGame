@@ -71,7 +71,25 @@ namespace MyGame {
     void EnemyDead::Update(BaseCharacter& character) {
         // 必要なコンポーネント
         Enemy* enemy = dynamic_cast<Enemy*>(&character);
-        if (character.IsAlive()) {
+        //  if (character.IsAlive()) {
+
+        if (!enemy->IsDeathStarted()) {
+            enemy->SetDeathStarted(true);
+            // 当たり判定解除
+            CollisionManager::GetInstance()->UnregisterCollider(character.GetCollider());
+            character.SetActive(false); // アクティブフラグを下げる
+            // 死亡演出処理の開始
+            enemy->GetDeath()->Start();
+        }
+
+        // =====================
+        // 死亡演出更新
+        // =====================
+        enemy->GetDeath()->Update(character.GetObject3d());
+        // =====================
+        // 演出終了
+        // =====================
+        if (enemy->GetDeath()->IsFinished()) {
             // プレイヤーに倒されたら経験値付与
             // 経験値は1回だけ
             if (!enemy->IsExpGranted() && enemy->IsKilledByPlayer()) {
@@ -80,10 +98,6 @@ namespace MyGame {
                 }
                 enemy->SetExpGranted(true);
             }
-            // 当たり判定解除
-            CollisionManager::GetInstance()->UnregisterCollider(character.GetCollider());
-            character.SetActive(false); // アクティブフラグを下げる
-            character.SetAlive(false);  // 生存フラグを下げる
             // 死んだらフラグを立てる
             character.Destroy();
         }

@@ -660,6 +660,9 @@
     <ClCompile Include="application\ui\scene\GameOverUI.cpp">
       <Filter>ソース ファイル\application\ui\scene</Filter>
     </ClCompile>
+    <ClCompile Include="application\character\enemy\component\EnemyDeath.cpp">
+      <Filter>ソース ファイル\application\character\enemy\component</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="engine\2d\Sprite.h">
@@ -1081,6 +1084,9 @@
     </ClInclude>
     <ClInclude Include="application\ui\scene\GameOverUI.h">
       <Filter>ヘッダー ファイル\application\ui\scene</Filter>
+    </ClInclude>
+    <ClInclude Include="application\character\enemy\component\EnemyDeath.h">
+      <Filter>ソース ファイル\application\character\enemy\component</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
