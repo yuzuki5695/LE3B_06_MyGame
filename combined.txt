@@ -113,7 +113,9 @@
     └── └── └── ├── EnemySpawner.h
     └── └── └── ├── component/
     └── └── └── └── ├── EnemyAttack.cpp
-    └── └── └── └── └── EnemyAttack.h
+    └── └── └── └── ├── EnemyAttack.h
+    └── └── └── └── ├── EnemyDeath.cpp
+    └── └── └── └── └── EnemyDeath.h
     └── └── └── └── state/
     └── └── └──     ├── EnemyState.cpp
     └── └── └──     └── EnemyState.h
@@ -5385,6 +5387,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="application\character\bullet\enemy\EnemyBullet.cpp" />
     <ClCompile Include="application\character\bullet\player\PlayerBullet.cpp" />
     <ClCompile Include="application\character\enemy\component\EnemyAttack.cpp" />
+    <ClCompile Include="application\character\enemy\component\EnemyDeath.cpp" />
     <ClCompile Include="application\character\enemy\Enemy.cpp" />
     <ClCompile Include="application\character\enemy\EnemySpawner.cpp" />
     <ClCompile Include="application\character\enemy\state\EnemyState.cpp" />
@@ -5487,6 +5490,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\character\bullet\enemy\EnemyBullet.h" />
     <ClInclude Include="application\character\bullet\player\PlayerBullet.h" />
     <ClInclude Include="application\character\enemy\component\EnemyAttack.h" />
+    <ClInclude Include="application\character\enemy\component\EnemyDeath.h" />
     <ClInclude Include="application\character\enemy\Enemy.h" />
     <ClInclude Include="application\character\enemy\EnemySpawner.h" />
     <ClInclude Include="application\character\enemy\state\EnemyState.h" />
@@ -6373,6 +6377,9 @@ File Path: project/MyGame.vcxproj.filters
     <ClCompile Include="application\ui\scene\GameOverUI.cpp">
       <Filter>ソース ファイル\application\ui\scene</Filter>
     </ClCompile>
+    <ClCompile Include="application\character\enemy\component\EnemyDeath.cpp">
+      <Filter>ソース ファイル\application\character\enemy\component</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="engine\2d\Sprite.h">
@@ -6794,6 +6801,9 @@ File Path: project/MyGame.vcxproj.filters
     </ClInclude>
     <ClInclude Include="application\ui\scene\GameOverUI.h">
       <Filter>ヘッダー ファイル\application\ui\scene</Filter>
+    </ClInclude>
+    <ClInclude Include="application\character\enemy\component\EnemyDeath.h">
+      <Filter>ヘッダー ファイル\application\character\enemy\component</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -7919,40 +7929,39 @@ namespace MyGame {
     }
 
     void BulletManager::Update() {
-        // 全弾更新
-        for (auto& bullet : bullets_) {
-            bullet->Update();
-        }
-
         // 非アクティブ削除
-        bullets_.erase(
-            std::remove_if(bullets_.begin(), bullets_.end(),
-                [](std::unique_ptr<BaseBullet>& bullet)
-                {
-                    if (!bullet->IsActive()) {
-                        bullet->Finalize();
-                        return true;
-                    }
-                    return false;
-                }),
+        bullets_.erase(std::remove_if(bullets_.begin(), bullets_.end(),
+            [](std::unique_ptr<BaseBullet>& bullet)
+            {
+                if (!bullet->IsActive()) {
+                    bullet->Finalize();
+                    return true;
+                }
+                return false;
+            }),
             bullets_.end()
         );
+
+        // 全弾更新
+        for (std::unique_ptr<BaseBullet>& bullet : bullets_) {
+            bullet->Update();
+        }
     }
 
     void BulletManager::Draw() {
-        for (auto& bullet : bullets_) {
+        for (std::unique_ptr<BaseBullet>& bullet : bullets_) {
             bullet->Draw();
         }
     }
 
     void BulletManager::SpawnPlayerBullet(const Transform& transform, const Vector3& velocity) {
-        auto bullet = std::make_unique<PlayerBullet>();
+        std::unique_ptr<BaseBullet> bullet = std::make_unique<PlayerBullet>();
         bullet->Initialize(transform, velocity);
         bullets_.push_back(std::move(bullet));
     }
 
     void BulletManager::SpawnEnemyBullet(const MyEngine::Transform& transform, const MyEngine::Vector3& velocity) {
-        auto bullet = std::make_unique<EnemyBullet>();
+        std::unique_ptr<BaseBullet> bullet = std::make_unique<EnemyBullet>();
         bullet->Initialize(transform, velocity);
         bullets_.push_back(std::move(bullet));
     }
@@ -8245,16 +8254,37 @@ namespace MyGame {
         object_ = Object3d::Create(Character::Enemy, Transform{ { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f } });
         // 状態フラグの初期化
         flags_.isAlive = true;
-		flags_.isActive = false;
+        flags_.isActive = false;
+        expReward_ = 10; // 倒した時の経験値
+        isExpGranted_ = false; // 経験値付与済みフラグ
+        isKilledByPlayer_ = false;
+        isDeathStarted_ = false;
         // 当たり判定の生成、初期化
         collider_ = Collider::Create({ .profile = Profile::Enemy,.obb = CollisionUtils::CreateOBB(object_.get()) });
         // 衝突時の処理
-        collider_->SetCallback([this](Collider* other) {if (!IsAlive()) { return; }ChangeState(std::make_unique<EnemyDead>()); });
+        collider_->SetCallback([this](Collider* other) {
+            // 非アクティブなら無視
+            if (!IsActive()) {
+                return;
+            }
+
+            // すでに死んでいるなら無視
+            if (!IsAlive()) {
+                return;
+            }
+
+            // プレイヤー弾に当たった場合
+            if (other->GetAttribute() & CollisionConfig::Attribute::PlayerBullet) {
+                SetKilledByPlayer(true);
+            }
+
+            ChangeState(std::make_unique<EnemyDead>());
+            });
 
         // コンポーネントの生成
-		attack_ = std::make_unique<EnemyAttack>(); // 攻撃ロジックの生成
-		attack_->Initialize();                     // 攻撃ロジックの初期化
-
+        attack_ = std::make_unique<EnemyAttack>(); // 攻撃ロジックの生成
+        attack_->Initialize();                     // 攻撃ロジックの初期化
+        death_ = std::make_unique< EnemyDeath>(); // 死亡演出の生成
         // 初期ステートをセットする
         ChangeState(std::make_unique<EnemyIdle>());
     }
@@ -8280,6 +8310,7 @@ File Path: project/application/character/enemy/Enemy.h
 #include <BaseCharacter.h>
 #include <EnemyAttack.h>
 #include <Collider.h>
+#include <EnemyDeath.h>
 
 namespace MyGame {
 
@@ -8312,17 +8343,30 @@ namespace MyGame {
 	private: // メンバ変数
 		// ポインタ
 		std::unique_ptr<EnemyAttack> attack_; // 攻撃ロジックの保持
+		std::unique_ptr<EnemyDeath> death_;   // 死亡演出の保持
 		bool isSpawned_ = false; // 出現フラグ
 		// プレイヤーへの参照
 		Player* player_ = nullptr;
+		uint32_t expReward_; // 倒した時の経験値
+		bool isExpGranted_; // 経験値付与済みフラグ
+		bool isKilledByPlayer_;
+		bool isDeathStarted_;
 	public: // アクセッサ
 		// getter
 		MyEngine::Transform* GetTransform() { return &object_->GetTransform(); }
 		EnemyAttack* GetAttack() { return attack_.get(); }
+		EnemyDeath* GetDeath() { return death_.get(); }
 		void SetPlayer(Player* player) { player_ = player; }
 		Player* GetPlayer() const { return player_; }
+		uint32_t GetExpReward() const { return expReward_; }
 		bool IsSpawned() const { return isSpawned_; }
 		void SetSpawned(bool flag) { isSpawned_ = flag; }
+		bool IsExpGranted() const { return isExpGranted_; }
+		void SetExpGranted(bool flag) { isExpGranted_ = flag; }
+		bool IsKilledByPlayer() const { return isKilledByPlayer_; }
+		void SetKilledByPlayer(bool flag) { isKilledByPlayer_ = flag; }
+		bool IsDeathStarted() { return isDeathStarted_; }
+		void SetDeathStarted(bool flag) { isDeathStarted_ = flag; }
 	};
 }
 
@@ -8537,6 +8581,109 @@ namespace MyGame {
 }
 
 ============================================================
+File Path: project/application/character/enemy/component/EnemyDeath.cpp
+============================================================
+#include "EnemyDeath.h"
+#include <algorithm>
+
+using namespace MyEngine;
+
+namespace MyGame {
+
+    void EnemyDeath::Start() {
+        isPlaying_ = true;
+        isFinished_ = false;
+        timer_ = 0.0f;
+        duration_ = 0.5f;
+    }
+
+    void EnemyDeath::Update(Object3d* object) {
+        if (!isPlaying_ || !object) {
+            return;
+        }
+
+        timer_ += 1.0f / 60.0f;
+
+        float t = timer_ / duration_;
+
+        // =================================
+        // 演出終了時
+        // =================================
+        if (t >= 1.0f) {
+            t = 1.0f;
+            // 完全に0スケールで固定
+            object->SetScale({ 0.0f, 0.0f, 0.0f });
+            isFinished_ = true;
+            isPlaying_ = false;
+            return;
+        }
+
+        // =================================
+        // 縮小
+        // =================================
+        float scale = 1.0f - t;
+
+        object->SetScale({ scale, scale, scale });
+
+        // =================================
+        // ランダム回転
+        // =================================
+        std::uniform_real_distribution<float> rotDist(-5.0f, 5.0f);
+
+        Vector3 rot = object->GetRotate();
+
+        rot.x += rotDist(randomEngine_);
+        rot.y += rotDist(randomEngine_);
+        rot.z += rotDist(randomEngine_);
+
+        object->SetRotate(rot);
+
+        // =================================
+        // 吹っ飛び
+        // =================================
+        std::uniform_real_distribution<float> moveDist(-0.2f, 0.2f);
+        std::uniform_real_distribution<float> moveZDist(0.1f, 0.3f);
+
+        Vector3 pos = object->GetTranslate();
+
+        pos.x += moveDist(randomEngine_);
+        pos.y += moveDist(randomEngine_);
+        pos.z += moveZDist(randomEngine_);
+
+        object->SetTranslate(pos);
+    }
+}
+
+============================================================
+File Path: project/application/character/enemy/component/EnemyDeath.h
+============================================================
+#pragma once
+#include <Object3d.h>
+#include <random>
+
+namespace MyGame {
+
+    class EnemyDeath {
+    public:
+
+        void Start();
+        void Update(MyEngine::Object3d* object);
+
+    private:
+
+        bool isPlaying_;
+        bool isFinished_;
+
+        float timer_;
+        float duration_;
+
+        std::mt19937 randomEngine_{ std::random_device{}() };
+    public:
+        bool IsFinished() const { return isFinished_; }
+    };
+}
+
+============================================================
 File Path: project/application/character/enemy/state/EnemyState.cpp
 ============================================================
 #include "EnemyState.h"
@@ -8582,7 +8729,7 @@ namespace MyGame {
         // 必要なコンポーネント
         Enemy* enemy = dynamic_cast<Enemy*>(&character);
 
-		// アクティブ中またはプレイヤ―が非アクティブ中は各更新処理を行う
+        // アクティブ中またはプレイヤ―が非アクティブ中は各更新処理を行う
         if (character.IsActive() || !enemy->GetPlayer()->IsActive()) {
             // =========================
             // プレイヤーが追い越したら削除
@@ -8602,7 +8749,7 @@ namespace MyGame {
             }
 
             // 攻撃処理の更新処理
-            enemy->GetAttack()->Update(enemy->GetObject3d()->GetTransform(), enemy->GetPlayer()->GetTranslate());
+            //enemy->GetAttack()->Update(enemy->GetObject3d()->GetTransform(), enemy->GetPlayer()->GetTranslate());
 
             // 毎フレーム当たり判定を更新
             character.GetCollider()->SetOBB(CollisionUtils::CreateOBB(character.GetObject3d()));
@@ -8610,11 +8757,35 @@ namespace MyGame {
     }
 
     void EnemyDead::Update(BaseCharacter& character) {
-        if (character.IsAlive()) {
+        // 必要なコンポーネント
+        Enemy* enemy = dynamic_cast<Enemy*>(&character);
+        //  if (character.IsAlive()) {
+
+        if (!enemy->IsDeathStarted()) {
+            enemy->SetDeathStarted(true);
             // 当たり判定解除
             CollisionManager::GetInstance()->UnregisterCollider(character.GetCollider());
             character.SetActive(false); // アクティブフラグを下げる
-            character.SetAlive(false);  // 生存フラグを下げる
+            // 死亡演出処理の開始
+            enemy->GetDeath()->Start();
+        }
+
+        // =====================
+        // 死亡演出更新
+        // =====================
+        enemy->GetDeath()->Update(character.GetObject3d());
+        // =====================
+        // 演出終了
+        // =====================
+        if (enemy->GetDeath()->IsFinished()) {
+            // プレイヤーに倒されたら経験値付与
+            // 経験値は1回だけ
+            if (!enemy->IsExpGranted() && enemy->IsKilledByPlayer()) {
+                if (enemy->GetPlayer()) {
+                    enemy->GetPlayer()->GainExp(enemy->GetExpReward());
+                }
+                enemy->SetExpGranted(true);
+            }
             // 死んだらフラグを立てる
             character.Destroy();
         }
@@ -9137,7 +9308,7 @@ namespace MyGame {
 
     private:
         MyEngine::Vector2 screenPos_ = { 640.0f, 360.0f }; // 画面中央
-        float moveSpeed_ = 15.0f;
+        float moveSpeed_ = 10.0f;
         const float kForwardDistance = 2.0f; // プレイヤーからどれくらい前方に配置するか
     public:
         const MyEngine::Vector2& GetScreenPos() const { return screenPos_; }
@@ -9173,7 +9344,7 @@ using namespace AssetGen::LoadResourceID::Models;
 using namespace AssetGen::LoadResourceID::Textures;
 
 namespace MyGame {
-     
+
     using namespace CollisionConfig;
 
     Player::~Player() {}
@@ -9204,7 +9375,7 @@ namespace MyGame {
         // 衝突時の処理
         collider_->SetCallback([this](Collider* other) {
             if (!IsAlive()) { return; }
-                ChangeState(std::make_unique<PlayerStateDead>());            
+            ChangeState(std::make_unique<PlayerStateDead>());
             });
         // コライダー登録
         CollisionManager::GetInstance()->RegisterCollider(collider_.get());
@@ -9234,7 +9405,7 @@ namespace MyGame {
         // ステートの更新
         state_.Update(*this);
 
-		// カメラがGamePlayCameraで更新中の場合、プレイヤーのワールド座標をカメラ位置に基づいて更新する
+        // カメラがGamePlayCameraで更新中の場合、プレイヤーのワールド座標をカメラ位置に基づいて更新する
         if (CameraManager::GetInstance()->GetCurrentBehaviorAs<GamePlayCamera>()) {
             // 死亡状態ではないなら
             if (!dynamic_cast<PlayerStateDead*>(state_.GetCurrentState())) {
@@ -9249,12 +9420,12 @@ namespace MyGame {
     }
 
     void Player::Draw() {
-		// 描画処理
+        // 描画処理
         object_->Draw();
     }
 
     void Player::DrawSprite() {
-		// 活動していない場合は描画処理をスキップ
+        // 活動していない場合は描画処理をスキップ
         if (!IsActive()) { return; }
         if (targetreticle_) {
             targetreticle_->Draw();
@@ -9288,6 +9459,22 @@ namespace MyGame {
         object_->SetTranslate(finalPos);
     }
 
+    void Player::GainExp(uint32_t exp) {
+        exp_ += exp;
+        CheckLevelUp();
+    }
+
+    void Player::CheckLevelUp() {
+        // 経験値が規定値を超えている間、レベルアップを繰り返す
+        while (exp_ >= nextLevelExp_) {
+            exp_ -= nextLevelExp_;
+            level_++;
+            // 次のレベルへの必要経験値を増加させる
+            nextLevelExp_ = static_cast<uint32_t>(nextLevelExp_ * 1.5f);
+            // レベルアップ演出（エフェクトや音）をここに初期化しても良い
+        }
+    }
+
     void Player::DrawImGui() {
 #ifdef USE_IMGUI
         EditorTypes::EditorObjectInfo info;
@@ -9301,6 +9488,24 @@ namespace MyGame {
             if (object_) {
                 object_->DrawImGui("object3d");
             }
+            /// ======================================
+            /// Player Status
+            /// ======================================
+            ImGui::SeparatorText("Player Status");
+            // レベル
+            ImGui::Text("Level : %u", level_);
+            // 現在経験値
+            ImGui::Text("EXP : %u / %u", exp_, nextLevelExp_);
+            // 経験値バー
+            float expRate = 0.0f;
+
+            if (nextLevelExp_ > 0) {
+                expRate = static_cast<float>(exp_) / static_cast<float>(nextLevelExp_);
+            }
+            ImGui::ProgressBar(expRate, ImVec2(200.0f, 20.0f));
+            // デバッグ用
+            if (ImGui::Button("Add EXP +10")) { GainExp(10); }
+
             };
         // オブジェクト情報を登録する
         EditorEntityRegistry::Instance().Register(info);
@@ -9322,7 +9527,7 @@ File Path: project/application/character/player/Player.h
 #include <Collider.h>
 
 namespace MyGame {
-	
+
 	// 前方宣言
 	class Enemy;
 
@@ -9361,11 +9566,15 @@ namespace MyGame {
 		/// ImGuiの描画処理
 		/// </summary>
 		void DrawImGui();
+
+		void GainExp(uint32_t exp);
+		void CheckLevelUp();
+
 	private: // メンバ変数
 		PlayerData data_; // プレイヤーのデータ構造体
 		MyEngine::Transform transform_;
 		// コライダー
-        std::unique_ptr<Collider> collider_;
+		std::unique_ptr<Collider> collider_;
 		// 各種コンポーネント
 		std::unique_ptr<PlayerMove> move_;       // 移動ロジックの保持
 		std::unique_ptr<PlayerReticle> reticle_; // レティクルロジックの保持
@@ -9374,23 +9583,31 @@ namespace MyGame {
 
 		std::unique_ptr <MyEngine::Sprite> targetreticle_; // レティクル用スプライト
 		std::unique_ptr <MyEngine::Object3d> target_; // ターゲット用3Dオブジェクト
-		MyEngine::Transform targettransform_; 
+		MyEngine::Transform targettransform_;
 		MyEngine::Vector3 aimWorldPos_; // 
 		// カメラの位置調整用オフセット
 		MyEngine::Vector3 baseOffset_;
 		// 参照ポインタ
 		Enemy* enemy_;
+
+		// 経験値・レベル用メンバ変数
+		uint32_t level_ = 1;         // 現在のレベル
+		uint32_t exp_ = 0;           // 現在の経験値
+		uint32_t nextLevelExp_ = 100; // 次のレベルに必要な経験値 (初期値)
 	public: // アクセッサ
 		// getter
 		PlayerMove* GetMove() { return move_.get(); }
 		PlayerReticle* GetReticle() { return reticle_.get(); }
-		PlayerAttack* GetAttack() { return attack_.get(); }    
-		PlayerDeath* GetDeath() { return death_.get(); }    
+		PlayerAttack* GetAttack() { return attack_.get(); }
+		PlayerDeath* GetDeath() { return death_.get(); }
 		const MyEngine::Vector3& GetRotate() const { return object_->GetRotate(); }
 		const MyEngine::Vector3& GetTranslate() const { return object_->GetTranslate(); }
 		const MyEngine::Vector3& GetAimWorldPos() const { return aimWorldPos_; }
 		MyEngine::Sprite* GetSprite() { return targetreticle_.get(); }
 		MyEngine::Object3d* GetTarget() { return target_.get(); }
+		uint32_t GetLevel() const { return level_; }
+		uint32_t GetExp() const { return exp_; }
+		uint32_t GetNextLevelExp() const { return nextLevelExp_; }
 		// setter
 		void SetAimWorldPos(const MyEngine::Vector3& pos) { aimWorldPos_ = pos; }
 		void SetTranslate(const MyEngine::Vector3& translate) { object_->SetTranslate(translate); }
