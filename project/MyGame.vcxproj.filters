@@ -1086,7 +1086,7 @@
       <Filter>ヘッダー ファイル\application\ui\scene</Filter>
     </ClInclude>
     <ClInclude Include="application\character\enemy\component\EnemyDeath.h">
-      <Filter>ソース ファイル\application\character\enemy\component</Filter>
+      <Filter>ヘッダー ファイル\application\character\enemy\component</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
