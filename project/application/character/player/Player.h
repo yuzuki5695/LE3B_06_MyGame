@@ -71,7 +71,6 @@ namespace MyGame {
 		MyEngine::Vector3 baseOffset_;
 		// 参照ポインタ
 		Enemy* enemy_;
-
 		// 経験値・レベル用メンバ変数
 		uint32_t level_ = 1;         // 現在のレベル
 		uint32_t exp_ = 0;           // 現在の経験値

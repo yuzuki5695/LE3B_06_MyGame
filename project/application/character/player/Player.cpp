@@ -13,6 +13,8 @@
 #include <EditorTypes.h>
 #include <CollisionConfig.h>
 #include <Enemy.h>
+//#include <ParticleManager.h>
+//#include <ParticleEmitter.h>
 // AssetGeneratorからインクルード
 #include <subproject/AssetGenerator/engine/generator/LoadResourceID.h>
 
@@ -76,6 +78,8 @@ namespace MyGame {
         death_->Initialize();     // 死亡演出の初期化
         // 初期ステートをセットする
         ChangeState(std::make_unique<PlayerStateIdle>());
+        // パーティクルグループ生成
+      //  ParticleManager::GetInstance()->CreateParticleGroup("Particles", "Particle/Particle.png", "Particle.obj", VertexType::Model);
         // ImGuiの登録
         DrawImGui();
     }
@@ -91,6 +95,24 @@ namespace MyGame {
                 SyncWorldTransformByRail();
             }
         }
+
+        //// ==========================
+        //// Particleを1つだけ出す
+        //// ==========================
+        //Transform particleTransform{};
+        //particleTransform.translate = object_->GetTranslate();
+        //particleTransform.scale = { 1.0f,1.0f,1.0f };
+        //particleTransform.rotate = { 0.0f,0.0f,0.0f };
+
+        //ParticleManager::GetInstance()->Emit(
+        //    "Particles",
+        //    particleTransform,
+        //    { 1,1,1,1 },
+        //    1,                  // 1個だけ
+        //    Velocity{},         // 動かない
+        //    0.1f,               // 短寿命
+        //    RandomParameter{}
+        //);
 
         // 各コンポーネントの更新
         targetreticle_->Update();
