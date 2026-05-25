@@ -18,7 +18,7 @@ namespace MyGame {
 
     private:
         MyEngine::Vector2 screenPos_ = { 640.0f, 360.0f }; // 画面中央
-        float moveSpeed_ = 15.0f;
+        float moveSpeed_ = 10.0f;
         const float kForwardDistance = 2.0f; // プレイヤーからどれくらい前方に配置するか
     public:
         const MyEngine::Vector2& GetScreenPos() const { return screenPos_; }
