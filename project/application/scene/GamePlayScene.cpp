@@ -36,7 +36,6 @@ namespace MyGame {
         UIManager::GetInstance()->Finalize();     // UIマネージャの終了処理 
         FadeManager::GetInstance()->Finalize();   // フェードマネージャの終了処理
         CollisionManager::GetInstance()->Finalize(); // 衝突マネージャの終了処理
-        ParticleManager::GetInstance()->Finalize(); // パーティクルマネージャの開放
     }
 
     void GamePlayScene::Initialize() {
