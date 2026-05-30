@@ -147,6 +147,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="application\character\enemy\component\EnemyAttack.cpp" />
     <ClCompile Include="application\character\enemy\component\EnemyDeath.cpp" />
     <ClCompile Include="application\character\enemy\Enemy.cpp" />
+    <ClCompile Include="application\character\enemy\EnemyListEditor.cpp" />
     <ClCompile Include="application\character\enemy\EnemySpawner.cpp" />
     <ClCompile Include="application\character\enemy\state\EnemyState.cpp" />
     <ClCompile Include="application\character\player\Component\PlayerAttack.cpp" />
@@ -252,6 +253,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\character\enemy\component\EnemyAttack.h" />
     <ClInclude Include="application\character\enemy\component\EnemyDeath.h" />
     <ClInclude Include="application\character\enemy\Enemy.h" />
+    <ClInclude Include="application\character\enemy\EnemyListEditor.h" />
     <ClInclude Include="application\character\enemy\EnemySpawner.h" />
     <ClInclude Include="application\character\enemy\state\EnemyState.h" />
     <ClInclude Include="application\character\player\Component\PlayerAttack.h" />

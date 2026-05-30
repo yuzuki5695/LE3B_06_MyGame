@@ -6,6 +6,7 @@
 #include <SpriteCommon.h>
 #include <Object3dCommon.h>
 //#include <ParticleCommon.h>
+//#include <ParticleManager.h>
 #include <CameraManager.h>
 #include <Input.h>
 #include <StageManager.h>
@@ -17,8 +18,8 @@
 #include <EventManager.h>
 #include <CollisionManager.h>
 #include <CameraDefs.h>
-//#include <ParticleManager.h>
 #include <PlayerState.h>
+#include <EnemyListEditor.h>
 // AssetGeneratorからインクルード
 #include <subproject/AssetGenerator/engine/generator/LoadResourceID.h>
 
@@ -36,6 +37,7 @@ namespace MyGame {
         UIManager::GetInstance()->Finalize();     // UIマネージャの終了処理 
         FadeManager::GetInstance()->Finalize();   // フェードマネージャの終了処理
         CollisionManager::GetInstance()->Finalize(); // 衝突マネージャの終了処理
+        EnemyListEditor::GetInstance()->Finalize();
     }
 
     void GamePlayScene::Initialize() {
@@ -62,6 +64,8 @@ namespace MyGame {
         enemySpawner_ = std::make_unique<EnemySpawner>();
 		enemySpawner_->SetEnemies(&enemies_);    // 敵リストへの参照をセット
 		enemySpawner_->SetPlayer(player_.get()); // プレイヤーへの参照をセット
+        // imgui        
+        EnemyListEditor::GetInstance()->SetEnemies(&enemies_);
 
         // 最初のスポーン
         player_->SetEnemy(enemies_.empty() ? nullptr : enemies_.front().get());
@@ -87,12 +91,12 @@ namespace MyGame {
         // カメラマネージャの更新
         CameraManager::GetInstance()->Update();
 #pragma region 全てのObject3d個々の更新処理      
-		// ポーズメニューのトリガーと更新
+        // ポーズメニューのトリガーと更新
         if (!UIManager::GetInstance()->GetUI<GamePlayUI>()->GetPauseMenu()->IsActive() &&
             Input::GetInstance()->TriggerKey(DIK_TAB)) {
             UIManager::GetInstance()->GetUI<GamePlayUI>()->GetPauseMenu()->SetActive(true);
         }
-		// ポーズがアクティブ中、ゲームの更新を停止してポーズメニューの更新のみ行う
+        // ポーズがアクティブ中、ゲームの更新を停止してポーズメニューの更新のみ行う
         if (UIManager::GetInstance()->GetUI<GamePlayUI>()->GetPauseMenu()->IsActive()) {
             UIManager::GetInstance()->GetUI<GamePlayUI>()->GetPauseMenu()->Update();
             FadeManager::GetInstance()->Update();
@@ -114,7 +118,7 @@ namespace MyGame {
             enemy->Update();
         }
 
-		// 死亡した敵の削除
+        // 死亡した敵の削除
         enemies_.erase(std::remove_if(enemies_.begin(), enemies_.end(), [](std::unique_ptr<Enemy>& enemy) {
             if (!enemy->IsAlive()) {
                 enemy->Finalize();
@@ -125,8 +129,8 @@ namespace MyGame {
             enemies_.end()
         );
 
-		// カメラのターゲットとプレイヤーをセット（プレイヤーの位置にカメラを追従させるため）
-        CameraManager::GetInstance()->GetCurrentBehaviorAs<GamePlayCamera>()->SetPlayer(player_.get()); 
+        // カメラのターゲットとプレイヤーをセット（プレイヤーの位置にカメラを追従させるため）
+        CameraManager::GetInstance()->GetCurrentBehaviorAs<GamePlayCamera>()->SetPlayer(player_.get());
         // プレイヤーの更新
         player_->Update();
         // 弾の更新
@@ -155,6 +159,10 @@ namespace MyGame {
         FadeManager::GetInstance()->Update();
 
 #pragma endregion 全てのSprite個々の更新処理
+#ifdef USE_IMGUI
+        // 敵のパラメータ
+        EnemyListEditor::GetInstance()->DrawImGui();
+#endif // USE_IMGUI
     }
 
     void GamePlayScene::Draw() {

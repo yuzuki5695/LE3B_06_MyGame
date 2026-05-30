@@ -37,6 +37,7 @@ namespace MyGame {
 		std::unique_ptr<EnemyAttack> attack_; // 攻撃ロジックの保持
 		std::unique_ptr<EnemyDeath> death_;   // 死亡演出の保持
 		bool isSpawned_ = false; // 出現フラグ
+		MyEngine::Vector3 colliderSize_;  // 当たり判定のサイズ
 		// プレイヤーへの参照
 		Player* player_ = nullptr;
 		uint32_t expReward_; // 倒した時の経験値

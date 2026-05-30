@@ -3,6 +3,9 @@
 #include <EnemyState.h>
 #include <CameraManager.h>
 #include <CollisionConfig.h>
+#include <LineRenderer.h>
+#include <EditorEntityRegistry.h>
+#include <EditorTypes.h>
 // AssetGeneratorからインクルード
 #include <subproject/AssetGenerator/engine/generator/LoadResourceID.h>
 
@@ -10,15 +13,15 @@ using namespace MyEngine;
 using namespace AssetGen::LoadResourceID::Models;
 
 namespace MyGame {
-    
+
     using namespace CollisionConfig;
 
     Enemy::~Enemy() {}
 
     void Enemy::Finalize() {
-		CollisionManager::GetInstance()->UnregisterCollider(collider_.get()); // 当たり判定の登録解除
-		collider_.reset(); // コライダーの破棄
-		object_.reset();   // 3Dオブジェクトの破棄
+        CollisionManager::GetInstance()->UnregisterCollider(collider_.get()); // 当たり判定の登録解除
+        collider_.reset(); // コライダーの破棄
+        object_.reset();   // 3Dオブジェクトの破棄
     }
 
     void Enemy::Initialize() {
@@ -33,10 +36,15 @@ namespace MyGame {
         isExpGranted_ = false; // 経験値付与済みフラグ
         isKilledByPlayer_ = false;
         isDeathStarted_ = false;
+        // 当たり判定サイズ
+        colliderSize_ = object_->GetScale();
         // 当たり判定の生成、初期化
-        collider_ = Collider::Create({ .profile = Profile::Enemy,.obb = CollisionUtils::CreateOBB(object_.get()) });
+        collider_ = Collider::Create({ .profile = Profile::Enemy,.obb = CollisionUtils::CreateOBB(object_.get(),colliderSize_) });
         // 衝突時の処理
         collider_->SetCallback([this](Collider* other) {
+#ifdef USE_IMGUI
+            LineRenderer::GetInstance()->SetHit(true);
+#endif // USE_IMGUI
             // 非アクティブなら無視
             if (!IsActive()) {
                 return;
@@ -68,6 +76,15 @@ namespace MyGame {
         state_.Update(*this);
         // オブジェクトの更新
         object_->Update();
+#ifdef USE_IMGUI
+        const auto& debug = LineRenderer::GetInstance()->GetDebugSettings();
+        if (debug.enable && object_) {
+            LineRenderer::GetInstance()->SetHit(false);
+            Vector4 hitColor = debug.isHit ? Vector4{ 1,0,0,1 } : Vector4{ 0,1,0,1 };
+            OBB obb = CollisionUtils::CreateOBB(object_.get(), colliderSize_);
+            LineRenderer::GetInstance()->AddOBB(obb, hitColor);
+        }
+#endif // USE_IMGUI
     }
 
     void Enemy::Draw() {
@@ -75,4 +92,25 @@ namespace MyGame {
         // オブジェクトの描画
         object_->Draw();
     }
+
+//    void Enemy::DrawImGui() {
+//#ifdef USE_IMGUI
+//        EditorTypes::EditorObjectInfo info;
+//        info.name = "Enemy";                                 // エディタの登録されるオブジェクト名
+//        info.category = EditorTypes::ObjectCategory::Object3D;  // 登録するオブジェクトのカテゴリ
+//        info.objectPtr = object_.get();                       // 扱うオブジェクトのポインタ
+//        info.drawEditor = [this]() {                            // パラメータの情報を登録
+//            /// ======================================
+//            /// (engine側の基本のパラメータ) 
+//            /// ======================================
+//            if (object_) {
+//                object_->DrawImGui("Enemy");
+//            }
+//            // LineRenderer基本パラメータ
+//            LineRenderer::GetInstance()->DrawImGui(colliderSize_);
+//            };
+//        // オブジェクト情報を登録する
+//        EditorEntityRegistry::Instance().Register(info);
+//#endif // USE_IMGUI    
+//    }
 }
