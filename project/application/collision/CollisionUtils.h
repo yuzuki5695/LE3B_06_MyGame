@@ -43,6 +43,7 @@ namespace MyGame {
             MyEngine::OBB obb;
             // 中心座標
             obb.center = object->GetTransform().translate;
+            // halfsize
             MyEngine::Vector3 size = object->GetModel()->GetSize();
             // オブジェクトによって倍率を変えたい場合は引数の倍率を変える
             obb.halfSize = {

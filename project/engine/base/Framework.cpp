@@ -12,6 +12,9 @@
 #include <EditorManager.h>
 #include <EditorConsole.h>
 #include <TimeSystem.h>
+#include <LineCommon.h>
+#include <LineRenderer.h>
+#include <CameraManager.h>
 
 namespace MyEngine {
     void Framework::Run() {
@@ -39,6 +42,10 @@ namespace MyEngine {
         // シーンマネージャの解放
         SceneManager::GetInstance()->Finalize();
         // 基盤システムの解放
+#ifdef USE_IMGUI
+        LineRenderer::GetInstance()->Finalize();
+        LineCommon::GetInstance()->Finalize();
+#endif // USE_IMGUI
         SkyboxCommon::GetInstance()->Finalize();
         ParticleCommon::GetInstance()->Finalize();
         SpriteCommon::GetInstance()->Finalize();
@@ -126,6 +133,10 @@ namespace MyEngine {
         CopylmageCommon::GetInstance()->Initialize(dxCommon.get(), srvManager.get(), rtvManager.get(), dsvManager.get());
         // 箱の共通部の初期化
         SkyboxCommon::GetInstance()->Initialize(dxCommon.get(), dsvManager.get());
+#ifdef USE_IMGUI
+        // ライン共通部の初期化
+        LineCommon::GetInstance()->Initialize(dxCommon.get());
+#endif // USE_IMGUI
 #pragma endregion 基盤システムの初期化
 #ifdef USE_IMGUI
         // ------------------------------------------------------------
@@ -133,6 +144,8 @@ namespace MyEngine {
         // ------------------------------------------------------------
         // エディタにウィンドウを登録していく
         EditorManager::GetInstance()->Initialize();
+        // Debug用ラインの作成
+        LineRenderer::GetInstance()->Initialize();
         // ------------------------------------------------------------
         // 起動完了時間の確定
         // ------------------------------------------------------------
@@ -145,6 +158,10 @@ namespace MyEngine {
     }
 
     void Framework::Update() {
+#ifdef USE_IMGUI
+        // ライン描画のフレーム開始
+        LineRenderer::GetInstance()->BeginFrame();
+#endif // USE_IMGUI
         // Windowのメッセージ処理
         if (winApp->ProcessMessage()) {
             // ゲームループを抜ける
@@ -172,15 +189,21 @@ namespace MyEngine {
         dxCommon->PreDrawRenderTexture(rtvManager->GetRtvHandle(2), dsvManager->GetDsvDescriptorHeap(), rtvManager->GetkRenderTargetClearValue());
         // シーンマネージャの描画処理
         SceneManager::GetInstance()->Draw();
+#ifdef USE_IMGUI
+        // デバッグライン描画
+        if (CameraManager::GetInstance()->GetActiveCamera()) {
+            LineRenderer::GetInstance()->Draw(CameraManager::GetInstance()->GetActiveCamera()->GetViewProjectionMatrix());
+        }
+#endif // USE_IMGUI
         // レンダーテクスチャをSRVとして使うための状態に遷移
         rtvManager->PostDrawRenderTexture();
         //  DirectXの描画準備。全ての描画に共通のグラフィックスコマンドを積む
         // ここから書き込むバックバッファのインデックスを取得
         UINT backBufferIndex = dxCommon->GetSwapChain()->GetSwapChain()->GetCurrentBackBufferIndex();
         dxCommon->PreDraw(rtvManager->GetRtvHandle(backBufferIndex), dsvManager->GetDsvDescriptorHeap());
-#ifndef USE_IMGUI
-        // Releaseビルド時ポストエフェクト描画（レンダーテクスチャ → 画面） 
-        CopylmageCommon::GetInstance()->Commondrawing(srvManager.get());
+#ifdef USE_IMGUI
+        // エディタモード：Updateで作ったUIデータをここでGPUに転送
+        ImGuiManager::GetInstance()->Draw();
 #else
         // エディタモード：Updateで作ったUIデータをここでGPUに転送
         ImGuiManager::GetInstance()->Draw();

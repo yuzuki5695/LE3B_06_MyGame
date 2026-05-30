@@ -31,6 +31,19 @@ namespace MyEngine {
 		ViewProjectionMatrix = Multiply(viewMatrix, projectionMatrix);
 	}
 
+	Vector3 Camera::GetForward() const {
+		// +Z前方の場合
+		return Normalize({ worldMatrix.m[2][0],worldMatrix.m[2][1],worldMatrix.m[2][2] });
+	}
+
+	Vector3 Camera::GetRight() const {
+		return Normalize({ worldMatrix.m[0][0],worldMatrix.m[0][1],worldMatrix.m[0][2] });
+	}
+
+	Vector3 Camera::GetUp() const {
+		return Normalize({ worldMatrix.m[1][0],worldMatrix.m[1][1],worldMatrix.m[1][2] });
+	}
+
 	void Camera::DrawImGui() {
 #ifdef USE_IMGUI
 		// 開発用UIの処理

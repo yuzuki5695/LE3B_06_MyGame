@@ -373,6 +373,15 @@
     <Filter Include="リソース ファイル\Data\Camera">
       <UniqueIdentifier>{36ce3736-11e8-49f1-bd38-678dbba6bc00}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ソース ファイル\engine\editor\line">
+      <UniqueIdentifier>{70471439-2117-4591-81ea-5ee510ec3807}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\engine\editor\line">
+      <UniqueIdentifier>{70ef6a47-f892-4bb5-a44f-05e3e0180af4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\engine\math\Collision">
+      <UniqueIdentifier>{b5f4c0b7-3989-4f4d-a377-4920cae47c95}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -663,6 +672,12 @@
     <ClCompile Include="application\character\enemy\component\EnemyDeath.cpp">
       <Filter>ソース ファイル\application\character\enemy\component</Filter>
     </ClCompile>
+    <ClCompile Include="engine\editor\line\LineCommon.cpp">
+      <Filter>ソース ファイル\engine\editor\line</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\editor\line\LineRenderer.cpp">
+      <Filter>ソース ファイル\engine\editor\line</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="engine\2d\Sprite.h">
@@ -831,9 +846,6 @@
       <Filter>ヘッダー ファイル\engine\math\Functions</Filter>
     </ClInclude>
     <ClInclude Include="Engine\math\Geometry\Collision.h">
-      <Filter>ヘッダー ファイル\engine\math\Geometry</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\math\Geometry\OBB.h">
       <Filter>ヘッダー ファイル\engine\math\Geometry</Filter>
     </ClInclude>
     <ClInclude Include="Engine\math\Geometry\PrimitiveGenerator.h">
@@ -1087,6 +1099,21 @@
     </ClInclude>
     <ClInclude Include="application\character\enemy\component\EnemyDeath.h">
       <Filter>ヘッダー ファイル\application\character\enemy\component</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\editor\line\LineRenderer.h">
+      <Filter>ヘッダー ファイル\engine\editor\line</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\editor\line\LineTypes.h">
+      <Filter>ヘッダー ファイル\engine\editor\line</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\editor\line\LineCommon.h">
+      <Filter>ヘッダー ファイル\engine\editor\line</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\math\Collision\AABB.h">
+      <Filter>ヘッダー ファイル\engine\math\Collision</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\math\Collision\OBB.h">
+      <Filter>ヘッダー ファイル\engine\math\Collision</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

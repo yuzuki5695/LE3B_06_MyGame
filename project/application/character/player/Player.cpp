@@ -15,6 +15,7 @@
 #include <Enemy.h>
 //#include <ParticleManager.h>
 //#include <ParticleEmitter.h>
+#include <LineRenderer.h>
 // AssetGeneratorからインクルード
 #include <subproject/AssetGenerator/engine/generator/LoadResourceID.h>
 
@@ -50,11 +51,18 @@ namespace MyGame {
         // 状態フラグの初期化
         flags_.isAlive = true;
         flags_.isActive = true;
-
+        // 当たり判定サイズ
+        colliderSize_ = object_->GetScale();
         // コライダー生成
         collider_ = Collider::Create({ .profile = Profile::Player,.obb = CollisionUtils::CreateOBB(object_.get()) });
+        // ラインのサイズをコライダーに合わせる
+        LineRenderer::GetInstance()->SetSize(colliderSize_);
         // 衝突時の処理
         collider_->SetCallback([this](Collider* other) {
+#ifdef USE_IMGUI
+            // Debug用
+            LineRenderer::GetInstance()->SetHit(true);
+#endif // USE_IMGUI
             if (!IsAlive()) { return; }
             ChangeState(std::make_unique<PlayerStateDead>());
             });
@@ -78,8 +86,6 @@ namespace MyGame {
         death_->Initialize();     // 死亡演出の初期化
         // 初期ステートをセットする
         ChangeState(std::make_unique<PlayerStateIdle>());
-        // パーティクルグループ生成
-      //  ParticleManager::GetInstance()->CreateParticleGroup("Particles", "Particle/Particle.png", "Particle.obj", VertexType::Model);
         // ImGuiの登録
         DrawImGui();
     }
@@ -95,29 +101,24 @@ namespace MyGame {
                 SyncWorldTransformByRail();
             }
         }
-
-        //// ==========================
-        //// Particleを1つだけ出す
-        //// ==========================
-        //Transform particleTransform{};
-        //particleTransform.translate = object_->GetTranslate();
-        //particleTransform.scale = { 1.0f,1.0f,1.0f };
-        //particleTransform.rotate = { 0.0f,0.0f,0.0f };
-
-        //ParticleManager::GetInstance()->Emit(
-        //    "Particles",
-        //    particleTransform,
-        //    { 1,1,1,1 },
-        //    1,                  // 1個だけ
-        //    Velocity{},         // 動かない
-        //    0.1f,               // 短寿命
-        //    RandomParameter{}
-        //);
-
         // 各コンポーネントの更新
         targetreticle_->Update();
         target_->Update();
         object_->Update();
+#ifdef USE_IMGUI
+        // LineRendererクラスにある基本のパラメータ
+        const auto& debug = LineRenderer::GetInstance()->GetDebugSettings();
+        // デバッグ表示フラグで表示、非表示
+        if (debug.enable && object_) {
+            LineRenderer::GetInstance()->SetHit(false);
+            // 衝突状態で色変更
+            Vector4 hitColor = debug.isHit ? Vector4{ 1,0,0,1 } : Vector4{ 0,1,0,1 };
+            // 現在のObjectからOBB生成
+            OBB obb = CollisionUtils::CreateOBB(object_.get(), colliderSize_);
+            // ライン描画
+            LineRenderer::GetInstance()->AddOBB(obb, hitColor);
+        }
+#endif // USE_IMGUI
     }
 
     void Player::Draw() {
@@ -206,7 +207,8 @@ namespace MyGame {
             ImGui::ProgressBar(expRate, ImVec2(200.0f, 20.0f));
             // デバッグ用
             if (ImGui::Button("Add EXP +10")) { GainExp(10); }
-
+            // LineRenderer基本パラメータ
+            LineRenderer::GetInstance()->DrawImGui(colliderSize_);
             };
         // オブジェクト情報を登録する
         EditorEntityRegistry::Instance().Register(info);

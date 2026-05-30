@@ -15,7 +15,7 @@ namespace MyEngine {
 		/// <summary>
 		/// 更新処理
 		/// </summary>
-		void Update();		
+		void Update();
 		/// <summary>
 		/// ImGuiの描画処理
 		/// </summary>
@@ -39,8 +39,10 @@ namespace MyEngine {
 		const Vector3& GetRotate() const { return transform.rotate; }
 		Vector3& GetRotate() { return transform.rotate; }            // 書き換え用
 		const Vector3& GetTranslate() const { return transform.translate; }
-		Vector3& GetTranslate() { return transform.translate; }            // 書き換え用
+		Vector3& GetTranslate() { return transform.translate; }            // 書き換え用		
 		Vector3 GetForward() const;
+		Vector3 GetRight() const;
+		Vector3 GetUp() const;
 		// setter
 		void SetRotate(const Vector3& rotate) { this->transform.rotate = rotate; }
 		void SetTranslate(const Vector3& translate) { this->transform.translate = translate; }
