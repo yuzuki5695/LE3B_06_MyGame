@@ -54,7 +54,7 @@ namespace MyGame {
         // 当たり判定サイズ
         colliderSize_ = object_->GetScale();
         // コライダー生成
-        collider_ = Collider::Create({ .profile = Profile::Player,.obb = CollisionUtils::CreateOBB(object_.get()) });
+        collider_ = Collider::Create({ .profile = Profile::Player,.obb = CollisionUtils::CreateOBB(object_.get(),colliderSize_) });
         // ラインのサイズをコライダーに合わせる
         LineRenderer::GetInstance()->SetSize(colliderSize_);
         // 衝突時の処理
