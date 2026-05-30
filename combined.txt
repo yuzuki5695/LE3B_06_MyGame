@@ -6837,7 +6837,7 @@ File Path: project/MyGame.vcxproj.filters
       <Filter>ヘッダー ファイル\engine\math\Collision</Filter>
     </ClInclude>
     <ClInclude Include="application\character\enemy\EnemyListEditor.h">
-      <Filter>ソース ファイル\application\character\enemy</Filter>
+      <Filter>ヘッダー ファイル\application\character\enemy</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -8338,10 +8338,16 @@ namespace MyGame {
         object_->Update();
 #ifdef USE_IMGUI
         const auto& debug = LineRenderer::GetInstance()->GetDebugSettings();
-        if (debug.enable && object_) {
+        if (debug.enable && object_ && collider_) { // collider_の存在チェックを追加
             LineRenderer::GetInstance()->SetHit(false);
             Vector4 hitColor = debug.isHit ? Vector4{ 1,0,0,1 } : Vector4{ 0,1,0,1 };
-            OBB obb = CollisionUtils::CreateOBB(object_.get(), colliderSize_);
+
+            // ========================================================
+            // ★修正：その場でCreateOBBするのではなく、
+            // ステート側でサイズ調整が完了した「コライダーのOBB」をそのまま描画に使う
+            // ========================================================
+            OBB obb = collider_->GetOBB();
+
             LineRenderer::GetInstance()->AddOBB(obb, hitColor);
         }
 #endif // USE_IMGUI
@@ -8352,27 +8358,6 @@ namespace MyGame {
         // オブジェクトの描画
         object_->Draw();
     }
-
-//    void Enemy::DrawImGui() {
-//#ifdef USE_IMGUI
-//        EditorTypes::EditorObjectInfo info;
-//        info.name = "Enemy";                                 // エディタの登録されるオブジェクト名
-//        info.category = EditorTypes::ObjectCategory::Object3D;  // 登録するオブジェクトのカテゴリ
-//        info.objectPtr = object_.get();                       // 扱うオブジェクトのポインタ
-//        info.drawEditor = [this]() {                            // パラメータの情報を登録
-//            /// ======================================
-//            /// (engine側の基本のパラメータ) 
-//            /// ======================================
-//            if (object_) {
-//                object_->DrawImGui("Enemy");
-//            }
-//            // LineRenderer基本パラメータ
-//            LineRenderer::GetInstance()->DrawImGui(colliderSize_);
-//            };
-//        // オブジェクト情報を登録する
-//        EditorEntityRegistry::Instance().Register(info);
-//#endif // USE_IMGUI    
-//    }
 }
 
 ============================================================
@@ -8425,21 +8410,29 @@ namespace MyGame {
 		bool isKilledByPlayer_;
 		bool isDeathStarted_;
 	public: // アクセッサ
+		bool IsSpawned() const { return isSpawned_; }
+		bool IsExpGranted() const { return isExpGranted_; }
+		bool IsKilledByPlayer() const { return isKilledByPlayer_; }
+		bool IsDeathStarted() { return isDeathStarted_; }
 		// getter
 		MyEngine::Transform* GetTransform() { return &object_->GetTransform(); }
 		EnemyAttack* GetAttack() { return attack_.get(); }
 		EnemyDeath* GetDeath() { return death_.get(); }
-		void SetPlayer(Player* player) { player_ = player; }
+		MyEngine::Vector3 GetColliderSize() const { return colliderSize_; }
 		Player* GetPlayer() const { return player_; }
 		uint32_t GetExpReward() const { return expReward_; }
-		bool IsSpawned() const { return isSpawned_; }
+
+		// setter
+		void SetPlayer(Player* player) { player_ = player; }
 		void SetSpawned(bool flag) { isSpawned_ = flag; }
-		bool IsExpGranted() const { return isExpGranted_; }
 		void SetExpGranted(bool flag) { isExpGranted_ = flag; }
-		bool IsKilledByPlayer() const { return isKilledByPlayer_; }
 		void SetKilledByPlayer(bool flag) { isKilledByPlayer_ = flag; }
-		bool IsDeathStarted() { return isDeathStarted_; }
 		void SetDeathStarted(bool flag) { isDeathStarted_ = flag; }
+		void SetColliderSize(const MyEngine::Vector3& size) {
+			colliderSize_ = size;
+			// すでにコライダーが生成されている場合は、そのサイズを即座に同期する
+			if (collider_) { collider_->SetSize(colliderSize_); }
+		}
 	};
 }
 
@@ -8449,9 +8442,11 @@ File Path: project/application/character/enemy/EnemyListEditor.cpp
 #include "EnemyListEditor.h"
 #include <Enemy.h>
 #include <LineRenderer.h>
+#include <EditorEntityRegistry.h>
+#include <EditorTypes.h>
 #ifdef USE_IMGUI
 #include <ImGuiManager.h>
-#endif
+#endif // USE_IMGUI
 
 using namespace MyEngine;
 
@@ -8472,79 +8467,91 @@ namespace MyGame {
     void EnemyListEditor::Finalize() {
         instance.reset();  // `delete` 不要
     }
-
-    void EnemyListEditor::DrawImGui() {
+    void EnemyListEditor::Initialize() {
 #ifdef USE_IMGUI
+        commonScale_ = 1.0f;       // 全敵の共通スケール値
+        //commonExpReward_ = 10;       // 全敵の共通獲得経験値
+        commonColliderSize_ = { 1.0f, 1.0f, 1.0f };        // 全敵の共通コライダーサイズ初期値
 
-        if (!enemies_) {
-            return;
-        }
+        EditorTypes::EditorObjectInfo info;
+        info.name = "Enemy List";                  // Objectメニューに表示される名前
+        info.category = EditorTypes::ObjectCategory::List; // 新設したカテゴリ（またはObject3Dなど既存のものでもOK）
+        info.objectPtr = nullptr;                          // 単一オブジェクトではないためnullptr
+        // ラムダ式に敵リストの情報を閉じ込める
+        info.drawEditor = [this]() {
+            if (!enemies_) {
+                ImGui::Text("Enemy list is not set.");
+                return;
+            }
+            // ========================================================             
+            // 1. 基本ステータス 
+            // ========================================================
+            size_t totalEnemies = enemies_->size();
+            size_t aliveCount = 0;
+            size_t activeCount = 0;
 
-        ImGui::Begin("Enemy Manager");
-        ImGui::Text("Enemy Count : %d", static_cast<int>(enemies_->size()));
-        ImGui::Separator();
-
-        // -----------------------------
-        // 左：敵一覧
-        // -----------------------------
-        ImGui::BeginChild("EnemyList", ImVec2(250, 400), true);
-
-        for (size_t i = 0; i < enemies_->size(); ++i) {
-
-            Enemy* enemy = (*enemies_)[i].get();
-
-            std::string label = "Enemy [" + std::to_string(i) + "]";
-
-            if (!enemy->IsAlive()) {
-                label += " [Dead]";
+            for (const auto& enemy : *enemies_) {
+                if (enemy) {
+                    if (enemy->IsAlive()) { aliveCount++; }
+                    if (enemy->IsActive()) { activeCount++; }
+                }
             }
 
-            if (ImGui::Selectable(label.c_str(), selectedEnemy_ == static_cast<int>(i))) {
-                selectedEnemy_ = static_cast<int>(i);
+            ImGui::SeparatorText("Enemy Pool Status");
+            ImGui::Text("Total Pool Size : %zu", totalEnemies);
+            ImGui::Text("Alive Enemies  : %zu", aliveCount);
+            ImGui::Text("Active Enemies : %zu", activeCount);
+
+            // ========================================================
+            // 2. すべての敵に一括反映させる共通パラメータ設定
+            // ========================================================
+            ImGui::SeparatorText("All Enemy Common Parameters");
+
+            // ① スケール値の編集 (元々のEnemy::DrawImGuiの変形要素に相当)
+           // ImGui::DragFloat("Common Scale", &commonScale_, 0.05f, 0.1f, 10.0f, "%.2f");
+
+            // ② LineRenderer/コライダーの基本パラメータ (Playerと同様の仕組み)
+            ImGui::Text("Common Collider Settings");
+            LineRenderer::GetInstance()->DrawImGui(commonColliderSize_);
+
+            ImGui::Spacing();
+
+            // ★このボタンを押すと、300体すべての敵のパラメータがまとめて書き換わる
+            if (ImGui::Button("Apply parameters to ALL enemies", ImVec2(-1, 30))) {
+                for (auto& enemy : *enemies_) {
+                    if (!enemy) continue;
+
+                    //// スケールの一括変更（Object3dを介して反映）
+                    //if (enemy->GetObject3d()) {
+                    //    enemy->GetObject3d()->SetScale({ commonScale_, commonScale_, commonScale_ });
+                    //}
+
+                    // コライダーサイズの一括変更
+                    enemy->SetColliderSize(commonColliderSize_);
+                }
             }
-        }
 
-        ImGui::EndChild();
+            // ========================================================
+            // 3. リストの簡略表示
+            // ========================================================
+            ImGui::SeparatorText("Simple Enemy Status List");
+            ImGui::BeginChild("EnemyListScroll", ImVec2(0, 150), true);
 
-        ImGui::SameLine();
+            for (size_t i = 0; i < enemies_->size(); ++i) {
+                const auto& enemy = (*enemies_)[i];
+                if (!enemy) continue;
 
-        // -----------------------------
-        // 右：詳細表示
-        // -----------------------------
-        ImGui::BeginChild("EnemyDetail", ImVec2(0, 400), true);
-
-        if (selectedEnemy_ >= 0 &&
-            selectedEnemy_ < enemies_->size()) {
-            Enemy* enemy = (*enemies_)[selectedEnemy_].get();
-
-            auto* object = enemy->GetObject3d();
-
-            if (object) {
-                object->DrawImGui("Enemy");
+                if (enemy->IsAlive()) {
+                    ImGui::Text("[%03zu] ALIVE  | Active: %s", i, enemy->IsActive() ? "ON " : "OFF");
+                } else {
+                    ImGui::TextDisabled("[%03zu] DEAD", i);
+                }
             }
-
-            ImGui::Separator();
-
-            ImGui::Text("Alive : %s",
-                enemy->IsAlive() ? "True" : "False");
-
-            ImGui::Text("Spawned : %s",
-                enemy->IsSpawned() ? "True" : "False");
-
-            ImGui::Text("Exp Reward : %u",
-                enemy->GetExpReward());
-
-            //ImGui::Checkbox("KilledByPlayer", &enemy->GetKilledByPlayer());
-
-            //// Colliderサイズ調整
-            //LineRenderer::GetInstance()->DrawImGui(enemy->GetColliderSize());
-        }
-
-        ImGui::EndChild();
-
-        ImGui::End();
-
-#endif
+            ImGui::EndChild();
+            };
+        // オブジェクト情報を登録する
+        EditorEntityRegistry::Instance().Register(info);
+#endif // USE_IMGUI
     }
 }
 
@@ -8554,6 +8561,7 @@ File Path: project/application/character/enemy/EnemyListEditor.h
 #pragma once
 #include <vector>
 #include <memory>
+#include <Vector3.h>
 
 namespace MyGame {
 
@@ -8572,13 +8580,20 @@ namespace MyGame {
         static EnemyListEditor* GetInstance();
         // 終了
         void Finalize();
-
-        void DrawImGui();
+        /// <summary>
+        /// 初期化処理 
+        /// </summary>
+        void Initialize();
 
     private:
         std::vector<std::unique_ptr<Enemy>>* enemies_ = nullptr;
         int selectedEnemy_ = -1;
-
+        // ======================================================== 
+        // すべての敵に一括反映させるための共通パラメータ用変数        
+        // ========================================================
+        float commonScale_;       // 全敵の共通スケール値
+        MyEngine::Vector3 commonColliderSize_;
+        int commonExpReward_;       // 全敵の共通獲得経験値
     public:
         void SetEnemies(std::vector<std::unique_ptr<Enemy>>* enemies) { enemies_ = enemies; }
     };
@@ -8638,6 +8653,11 @@ namespace MyGame {
                 enemy->ChangeState(std::make_unique<EnemyIdle>());
                 // 出現フラグを立てる              
                 enemy->SetSpawned(true);
+                // スポーンした瞬間に、コライダーの位置（centerもこの spawnPos（出現位置）に同期する！
+                if (enemy->GetCollider()) {
+                    // 現在の天球・オブジェクトの位置関係から正しい初期位置・回転のOBBを作る
+                    enemy->GetCollider()->SetOBB(CollisionUtils::CreateOBB(enemy->GetObject3d(), enemy->GetColliderSize()));
+                }
                 spawned++;
             }
         }
@@ -8652,17 +8672,6 @@ File Path: project/application/character/enemy/EnemySpawner.h
 #include <CameraManager.h>
 #include <Enemy.h>
 #include <random>
-
-//
-///// <summary>
-///// 敵の出現条件（トリガー）を定義する構造体
-///// </summary>
-//struct EnemySpawnTrigger {
-//    Vector3 Position;   // 出現位置
-//    int spawnCount;     // 同時に出現させる数
-//    bool hasSpawned;    // すでに出現済みかどうか
-//    MoveType moveType;  // 敵の移動タイプ
-//};
 
 namespace MyGame {
     class EnemySpawner {
@@ -8908,6 +8917,7 @@ File Path: project/application/character/enemy/state/EnemyState.cpp
 #include <Easing.h>
 #include <Enemy.h>
 #include <CollisionManager.h>
+#include <LineRenderer.h>
 
 using namespace MyEngine;
 using namespace Easing;
@@ -8931,6 +8941,7 @@ namespace MyGame {
                 enemy->SetSpawned(false);
                 // 登録前にOBB更新
                 character.GetCollider()->SetOBB(CollisionUtils::CreateOBB(character.GetObject3d()));
+                character.GetCollider()->SetSize(enemy->GetColliderSize()); // サイズを上書き固定
                 // 当たり判定登録
                 character.RegisterCollider();
                 // BaseCharacter状態からEnemyAlive状態へ遷移
@@ -8967,6 +8978,7 @@ namespace MyGame {
 
             // 毎フレーム当たり判定を更新
             character.GetCollider()->SetOBB(CollisionUtils::CreateOBB(character.GetObject3d()));
+            character.GetCollider()->SetSize(enemy->GetColliderSize()); // サイズを上書き固定
         }
     }
 
@@ -9980,33 +9992,33 @@ namespace MyGame {
     public:
         // 衝突時に呼び出す関数の型定義
         using CollisionCallback = std::function<void(Collider*)>;
-	public: // メンバ関数
-		// コンストラクタとデストラクタ
+    public: // メンバ関数
+        // コンストラクタとデストラクタ
         Collider() = default;
-        virtual ~Collider() = default; 
+        virtual ~Collider() = default;
         /// <summary>
-		/// 衝突が発生したときに呼び出される関数
+        /// 衝突が発生したときに呼び出される関数
         /// </summary>
         /// <param name="other"></param>
         void OnCollision(Collider* other) { if (callback_) { callback_(other); } }
         /// <summary>
-		/// Colliderの生成
+        /// Colliderの生成
         /// </summary>
         /// <param name="info"></param>
         /// <returns></returns>
         static std::unique_ptr<Collider> Create(const ColliderCreateInfo& info) {
             std::unique_ptr<Collider> collider = std::make_unique<Collider>();
-			// プロフィールとOBBをセット
+            // プロフィールとOBBをセット
             collider->attribute_ = info.profile.attribute;
             collider->mask_ = info.profile.mask;
             collider->obb_ = info.obb;
             return collider;
         }
     private: //メンバ変数
-		MyEngine::OBB obb_;                     // 当たり判定のOBB
-		uint32_t attribute_;                    // 属性ビットフィールド
-		uint32_t mask_;                         // 衝突マスクビットフィールド        
-		CollisionCallback callback_ = nullptr;  // 衝突時のコールバック関数
+        MyEngine::OBB obb_;                     // 当たり判定のOBB
+        uint32_t attribute_;                    // 属性ビットフィールド
+        uint32_t mask_;                         // 衝突マスクビットフィールド        
+        CollisionCallback callback_ = nullptr;  // 衝突時のコールバック関数
     public: // アクセッサ
         // getter
         const MyEngine::OBB& GetOBB() const { return obb_; }
@@ -10016,7 +10028,8 @@ namespace MyGame {
         void SetCallback(CollisionCallback callback) { callback_ = callback; }         // コールバック設定
         void SetOBB(const MyEngine::OBB& obb) { obb_ = obb; }
         void SetAttribute(uint32_t attribute) { attribute_ = attribute; }
-        void SetMask(uint32_t mask) { mask_ = mask; }
+        void SetMask(uint32_t mask) { mask_ = mask; }        
+        void SetSize(const MyEngine::Vector3& size) { obb_.halfSize = size; }
     };
 }
 
@@ -11846,24 +11859,24 @@ namespace MyGame {
         // プレイヤー生成,初期化
         player_ = std::make_unique<Player>();
         player_->Initialize();
-		// GamePlayCameraにプレイヤーを渡す(プレイヤ―の位置を確認)
+        // GamePlayCameraにプレイヤーを渡す(プレイヤ―の位置を確認)
         CameraManager::GetInstance()->GetCurrentBehaviorAs<GamePlayCamera>()->SetPlayer(player_.get());
 
         // 敵生成
         const int kEnemyMax = 300;
         for (int i = 0; i < kEnemyMax; i++) {
-			std::unique_ptr<Enemy> enemy = std::make_unique<Enemy>(); // 敵の生成
-			enemy->Initialize(); // 敵の初期化
+            std::unique_ptr<Enemy> enemy = std::make_unique<Enemy>(); // 敵の生成
+            enemy->Initialize(); // 敵の初期化
             enemy->SetActive(false); // 非アクティブ
             enemy->SetSpawned(false); // 出現フラグ
             enemy->SetPlayer(player_.get()); // プレイヤーへの参照をセット
-			enemies_.push_back(std::move(enemy)); // 敵リストに追加
+            enemies_.push_back(std::move(enemy)); // 敵リストに追加
         }
 
         // 敵のSpawner生成,初期化
         enemySpawner_ = std::make_unique<EnemySpawner>();
-		enemySpawner_->SetEnemies(&enemies_);    // 敵リストへの参照をセット
-		enemySpawner_->SetPlayer(player_.get()); // プレイヤーへの参照をセット
+        enemySpawner_->SetEnemies(&enemies_);    // 敵リストへの参照をセット
+        enemySpawner_->SetPlayer(player_.get()); // プレイヤーへの参照をセット
         // imgui        
         EnemyListEditor::GetInstance()->SetEnemies(&enemies_);
 
@@ -11881,10 +11894,14 @@ namespace MyGame {
         }
         // UIマネージャの初期化
         UIManager::GetInstance()->Initialize();
-		// フェードマネージャの初期化(フェードイン開始処理)
+        // フェードマネージャの初期化(フェードイン開始処理)
         FadeManager::GetInstance()->StartFade(FadeType::FadeIn, FadeStyle::SilhouetteExplode, 1.0f);
-		// ゲーム開始イベントの開始
+        // ゲーム開始イベントの開始
         isGameStartEventDone_ = true;
+#ifdef USE_IMGUI
+        // 敵のパラメータ
+        EnemyListEditor::GetInstance()->Initialize();
+#endif // USE_IMGUI
     }
 
     void GamePlayScene::Update() {
@@ -11959,10 +11976,6 @@ namespace MyGame {
         FadeManager::GetInstance()->Update();
 
 #pragma endregion 全てのSprite個々の更新処理
-#ifdef USE_IMGUI
-        // 敵のパラメータ
-        EnemyListEditor::GetInstance()->DrawImGui();
-#endif // USE_IMGUI
     }
 
     void GamePlayScene::Draw() {
@@ -18552,7 +18565,8 @@ namespace MyEngine {
         /// エディタオブジェクトカテゴリ
         enum class ObjectCategory {
             Object3D,  // 3Dオブジェクト
-            Object2D,   // 2Dオブジェクト
+            Object2D,  // 2Dオブジェクト
+            List,      // オブジェクトリスト
             Count
         };
 
@@ -18566,7 +18580,8 @@ namespace MyEngine {
         inline constexpr std::array<CategoryInfo,
             static_cast<size_t>(ObjectCategory::Count)> kCategoryInfos = { {
                 { ObjectCategory::Object3D, "Object.Category3D" },
-                { ObjectCategory::Object2D, "Object.Category2D" }
+                { ObjectCategory::Object2D, "Object.Category2D" },
+                { ObjectCategory::List, "Object.CategoryList" }
             }
         };
 
@@ -18581,7 +18596,8 @@ namespace MyEngine {
         struct CameraEditorInfo {
             std::string name;
             void* cameraPtr = nullptr;
-            std::function<void()> drawEditor;
+            void* objectPtr = nullptr; // 単体ならObject3d*、リストならvector*などを入れる
+            std::function<void()> drawEditor; // ImGui描画コールバック
         };
     }
 }
