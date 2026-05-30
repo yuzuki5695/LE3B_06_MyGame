@@ -68,7 +68,6 @@
     └── └── ├── Geometry/
     └── └── └── ├── Collision.cpp
     └── └── └── ├── Collision.h
-    └── └── └── ├── OBB.h
     └── └── └── ├── PrimitiveGenerator.cpp
     └── └── └── └── PrimitiveGenerator.h
     └── └── └── Transform/
@@ -109,6 +108,8 @@
     └── └── ├── enemy/
     └── └── └── ├── Enemy.cpp
     └── └── └── ├── Enemy.h
+    └── └── └── ├── EnemyListEditor.cpp
+    └── └── └── ├── EnemyListEditor.h
     └── └── └── ├── EnemySpawner.cpp
     └── └── └── ├── EnemySpawner.h
     └── └── └── ├── component/
@@ -269,6 +270,12 @@
     └── └── └──     ├── SceneMenu.h
     └── └── └──     ├── SettingsMenu.cpp
     └── └── └──     └── SettingsMenu.h
+    └── └── ├── line/
+    └── └── └── ├── LineCommon.cpp
+    └── └── └── ├── LineCommon.h
+    └── └── └── ├── LineRenderer.cpp
+    └── └── └── ├── LineRenderer.h
+    └── └── └── └── LineTypes.h
     └── └── └── windows/
     └── └──     ├── ConsoleWindow.cpp
     └── └──     └── ConsoleWindow.h
@@ -278,6 +285,9 @@
     └── └── ├── Input.cpp
     └── └── └── Input.h
     └── ├── math/
+    └── └── ├── Collision/
+    └── └── └── ├── AABB.h
+    └── └── └── └── OBB.h
     └── └── └── Light/
     └── └──     ├── DirectionalLight.h
     └── └──     ├── PointLight.h
@@ -4776,23 +4786,6 @@ namespace MyEngine {
 }
 
 ============================================================
-File Path: project/Engine/math/Geometry/OBB.h
-============================================================
-#pragma once
-#include <Vector3.h>
-
-namespace MyEngine {
-    /// <summary>
-    /// OBB（Oriented Bounding Box）構造体
-    /// </summary>
-    struct OBB {
-        Vector3 center;     // 中心位置（ワールド座標）
-        Vector3 halfSize;   // 各軸方向の半分サイズ（スケール/2）
-        Vector3 axis[3];    // ローカル軸（回転を反映したX,Y,Z単位ベクトル）
-    };
-}
-
-============================================================
 File Path: project/Engine/math/Geometry/PrimitiveGenerator.cpp
 ============================================================
 #include "PrimitiveGenerator.h"
@@ -5306,7 +5299,7 @@ File Path: project/MyGame.vcxproj
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)engine\2d;$(ProjectDir)engine\3d;$(ProjectDir)engine\audio;$(ProjectDir)engine\base;$(ProjectDir)engine\io;$(ProjectDir)engine\math;$(ProjectDir)engine\scene;$(ProjectDir)engine\3d\Particle;$(ProjectDir)engine\camera;$(ProjectDir)engine\base\DirectX;$(ProjectDir)engine\base\Utility;$(ProjectDir)engine\base\DirectX\Core;$(ProjectDir)engine\math\Light;$(ProjectDir)engine\resource;$(ProjectDir)externals\nlohmann;$(ProjectDir)externals\assimp\include;$(ProjectDir)engine\editor;$(ProjectDir)engine\editor\core;$(ProjectDir)engine\editor\console;$(ProjectDir)engine\editor\layout;$(ProjectDir)engine\editor\windows;$(ProjectDir)engine\time;$(ProjectDir)engine\editor\layout\editormenubar;$(ProjectDir)engine\math\Base;$(ProjectDir)engine\math\Geometry;$(ProjectDir)engine\math\Transform;$(ProjectDir)engine\math\Functions;$(ProjectDir)engine\3d\Model;$(ProjectDir)engine\3d\Object;$(ProjectDir)engine\3d\Skybox;$(ProjectDir)engine\base\DirectX\Descriptors;$(ProjectDir)engine\base\DirectX\Pipeline;$(ProjectDir)engine\base\DirectX\Screen;$(ProjectDir)application\scene;$(ProjectDir)application;$(ProjectDir)application\character;$(ProjectDir)application\character\player;$(ProjectDir)application\character\basestate;$(ProjectDir)application\camera;$(ProjectDir)application\loader;$(ProjectDir)application\stage;$(ProjectDir)application\character\player\component;$(ProjectDir)application\character\player\state;$(ProjectDir)application\character\bullet;$(ProjectDir)application\character\bullet\player;$(ProjectDir)application\ui;$(ProjectDir)application\ui\core;$(ProjectDir)application\ui\effect;$(ProjectDir)application\ui\scene;$(ProjectDir)application\ui\effect\fade;$(ProjectDir)application\ui\effect\fade\effects;$(ProjectDir)application\ui\scene\pause;$(ProjectDir)application\event;$(ProjectDir)application\event\events;$(ProjectDir)application\character\enemy;$(ProjectDir)application\character\enemy\component;$(ProjectDir)application\character\enemy\state;$(ProjectDir)application\collision;$(ProjectDir)application\math;$(ProjectDir)application\character\bullet\enemy</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)engine\2d;$(ProjectDir)engine\3d;$(ProjectDir)engine\audio;$(ProjectDir)engine\base;$(ProjectDir)engine\io;$(ProjectDir)engine\math;$(ProjectDir)engine\scene;$(ProjectDir)engine\3d\Particle;$(ProjectDir)engine\camera;$(ProjectDir)engine\base\DirectX;$(ProjectDir)engine\base\Utility;$(ProjectDir)engine\base\DirectX\Core;$(ProjectDir)engine\math\Light;$(ProjectDir)engine\resource;$(ProjectDir)externals\nlohmann;$(ProjectDir)externals\assimp\include;$(ProjectDir)engine\editor;$(ProjectDir)engine\editor\core;$(ProjectDir)engine\editor\console;$(ProjectDir)engine\editor\layout;$(ProjectDir)engine\editor\windows;$(ProjectDir)engine\time;$(ProjectDir)engine\editor\layout\editormenubar;$(ProjectDir)engine\math\Base;$(ProjectDir)engine\math\Geometry;$(ProjectDir)engine\math\Transform;$(ProjectDir)engine\math\Functions;$(ProjectDir)engine\3d\Model;$(ProjectDir)engine\3d\Object;$(ProjectDir)engine\3d\Skybox;$(ProjectDir)engine\base\DirectX\Descriptors;$(ProjectDir)engine\base\DirectX\Pipeline;$(ProjectDir)engine\base\DirectX\Screen;$(ProjectDir)application\scene;$(ProjectDir)application;$(ProjectDir)application\character;$(ProjectDir)application\character\player;$(ProjectDir)application\character\basestate;$(ProjectDir)application\camera;$(ProjectDir)application\loader;$(ProjectDir)application\stage;$(ProjectDir)application\character\player\component;$(ProjectDir)application\character\player\state;$(ProjectDir)application\character\bullet;$(ProjectDir)application\character\bullet\player;$(ProjectDir)application\ui;$(ProjectDir)application\ui\core;$(ProjectDir)application\ui\effect;$(ProjectDir)application\ui\scene;$(ProjectDir)application\ui\effect\fade;$(ProjectDir)application\ui\effect\fade\effects;$(ProjectDir)application\ui\scene\pause;$(ProjectDir)application\event;$(ProjectDir)application\event\events;$(ProjectDir)application\character\enemy;$(ProjectDir)application\character\enemy\component;$(ProjectDir)application\character\enemy\state;$(ProjectDir)application\collision;$(ProjectDir)application\math;$(ProjectDir)application\character\bullet\enemy;$(ProjectDir)engine\editor\line;$(ProjectDir)engine\math\Collision</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
     </ClCompile>
     <Link>
@@ -5347,7 +5340,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)engine\2d;$(ProjectDir)engine\3d;$(ProjectDir)engine\audio;$(ProjectDir)engine\base;$(ProjectDir)engine\io;$(ProjectDir)engine\math;$(ProjectDir)engine\scene;$(ProjectDir)engine\3d\Particle;$(ProjectDir)engine\camera;$(ProjectDir)engine\base\DirectX;$(ProjectDir)engine\base\Utility;$(ProjectDir)engine\base\DirectX\Core;$(ProjectDir)engine\math\Light;$(ProjectDir)engine\resource;$(ProjectDir)externals\nlohmann;$(ProjectDir)externals\assimp\include;$(ProjectDir)engine\editor;$(ProjectDir)engine\editor\core;$(ProjectDir)engine\editor\console;$(ProjectDir)engine\editor\layout;$(ProjectDir)engine\editor\windows;$(ProjectDir)engine\time;$(ProjectDir)engine\editor\layout\editormenubar;$(ProjectDir)engine\math\Base;$(ProjectDir)engine\math\Geometry;$(ProjectDir)engine\math\Transform;$(ProjectDir)engine\math\Functions;$(ProjectDir)engine\3d\Model;$(ProjectDir)engine\3d\Object;$(ProjectDir)engine\3d\Skybox;$(ProjectDir)engine\base\DirectX\Descriptors;$(ProjectDir)engine\base\DirectX\Pipeline;$(ProjectDir)engine\base\DirectX\Screen;$(ProjectDir)application\scene;$(ProjectDir)application;$(ProjectDir)application\character;$(ProjectDir)application\character\player;$(ProjectDir)application\character\basestate;$(ProjectDir)application\camera;$(ProjectDir)application\loader;$(ProjectDir)application\stage;$(ProjectDir)application\character\player\component;$(ProjectDir)application\character\player\state;$(ProjectDir)application\character\bullet;$(ProjectDir)application\character\bullet\player;$(ProjectDir)application\ui;$(ProjectDir)application\ui\core;$(ProjectDir)application\ui\effect;$(ProjectDir)application\ui\scene;$(ProjectDir)application\ui\effect\fade;$(ProjectDir)application\ui\effect\fade\effects;$(ProjectDir)application\ui\scene\pause;$(ProjectDir)application\event;$(ProjectDir)application\event\events;$(ProjectDir)application\character\enemy;$(ProjectDir)application\character\enemy\component;$(ProjectDir)application\character\enemy\state;$(ProjectDir)application\collision;$(ProjectDir)application\math;$(ProjectDir)application\character\bullet\enemy</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)engine\2d;$(ProjectDir)engine\3d;$(ProjectDir)engine\audio;$(ProjectDir)engine\base;$(ProjectDir)engine\io;$(ProjectDir)engine\math;$(ProjectDir)engine\scene;$(ProjectDir)engine\3d\Particle;$(ProjectDir)engine\camera;$(ProjectDir)engine\base\DirectX;$(ProjectDir)engine\base\Utility;$(ProjectDir)engine\base\DirectX\Core;$(ProjectDir)engine\math\Light;$(ProjectDir)engine\resource;$(ProjectDir)externals\nlohmann;$(ProjectDir)externals\assimp\include;$(ProjectDir)engine\editor;$(ProjectDir)engine\editor\core;$(ProjectDir)engine\editor\console;$(ProjectDir)engine\editor\layout;$(ProjectDir)engine\editor\windows;$(ProjectDir)engine\time;$(ProjectDir)engine\editor\layout\editormenubar;$(ProjectDir)engine\math\Base;$(ProjectDir)engine\math\Geometry;$(ProjectDir)engine\math\Transform;$(ProjectDir)engine\math\Functions;$(ProjectDir)engine\3d\Model;$(ProjectDir)engine\3d\Object;$(ProjectDir)engine\3d\Skybox;$(ProjectDir)engine\base\DirectX\Descriptors;$(ProjectDir)engine\base\DirectX\Pipeline;$(ProjectDir)engine\base\DirectX\Screen;$(ProjectDir)application\scene;$(ProjectDir)application;$(ProjectDir)application\character;$(ProjectDir)application\character\player;$(ProjectDir)application\character\basestate;$(ProjectDir)application\camera;$(ProjectDir)application\loader;$(ProjectDir)application\stage;$(ProjectDir)application\character\player\component;$(ProjectDir)application\character\player\state;$(ProjectDir)application\character\bullet;$(ProjectDir)application\character\bullet\player;$(ProjectDir)application\ui;$(ProjectDir)application\ui\core;$(ProjectDir)application\ui\effect;$(ProjectDir)application\ui\scene;$(ProjectDir)application\ui\effect\fade;$(ProjectDir)application\ui\effect\fade\effects;$(ProjectDir)application\ui\scene\pause;$(ProjectDir)application\event;$(ProjectDir)application\event\events;$(ProjectDir)application\character\enemy;$(ProjectDir)application\character\enemy\component;$(ProjectDir)application\character\enemy\state;$(ProjectDir)application\collision;$(ProjectDir)application\math;$(ProjectDir)application\character\bullet\enemy;$(ProjectDir)engine\editor\line;$(ProjectDir)engine\math\Collision</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -5389,6 +5382,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="application\character\enemy\component\EnemyAttack.cpp" />
     <ClCompile Include="application\character\enemy\component\EnemyDeath.cpp" />
     <ClCompile Include="application\character\enemy\Enemy.cpp" />
+    <ClCompile Include="application\character\enemy\EnemyListEditor.cpp" />
     <ClCompile Include="application\character\enemy\EnemySpawner.cpp" />
     <ClCompile Include="application\character\enemy\state\EnemyState.cpp" />
     <ClCompile Include="application\character\player\Component\PlayerAttack.cpp" />
@@ -5444,6 +5438,8 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="engine\editor\layout\editormenubar\ObjectMenu.cpp" />
     <ClCompile Include="engine\editor\layout\editormenubar\SceneMenu.cpp" />
     <ClCompile Include="engine\editor\layout\editormenubar\SettingsMenu.cpp" />
+    <ClCompile Include="engine\editor\line\LineCommon.cpp" />
+    <ClCompile Include="engine\editor\line\LineRenderer.cpp" />
     <ClCompile Include="engine\editor\windows\ConsoleWindow.cpp" />
     <ClCompile Include="engine\io\Controller.cpp" />
     <ClCompile Include="engine\camera\CameraManager.cpp" />
@@ -5492,6 +5488,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\character\enemy\component\EnemyAttack.h" />
     <ClInclude Include="application\character\enemy\component\EnemyDeath.h" />
     <ClInclude Include="application\character\enemy\Enemy.h" />
+    <ClInclude Include="application\character\enemy\EnemyListEditor.h" />
     <ClInclude Include="application\character\enemy\EnemySpawner.h" />
     <ClInclude Include="application\character\enemy\state\EnemyState.h" />
     <ClInclude Include="application\character\player\Component\PlayerAttack.h" />
@@ -5572,6 +5569,9 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="engine\editor\layout\editormenubar\ObjectMenu.h" />
     <ClInclude Include="engine\editor\layout\editormenubar\SceneMenu.h" />
     <ClInclude Include="engine\editor\layout\editormenubar\SettingsMenu.h" />
+    <ClInclude Include="engine\editor\line\LineCommon.h" />
+    <ClInclude Include="engine\editor\line\LineRenderer.h" />
+    <ClInclude Include="engine\editor\line\LineTypes.h" />
     <ClInclude Include="engine\editor\windows\ConsoleWindow.h" />
     <ClInclude Include="engine\camera\CameraDefs.h" />
     <ClInclude Include="engine\io\Controller.h" />
@@ -5589,11 +5589,12 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="Engine\math\Base\Vector2.h" />
     <ClInclude Include="Engine\math\Base\Vector3.h" />
     <ClInclude Include="Engine\math\Base\Vector4.h" />
+    <ClInclude Include="engine\math\Collision\AABB.h" />
+    <ClInclude Include="engine\math\Collision\OBB.h" />
     <ClInclude Include="Engine\math\Functions\Easing.h" />
     <ClInclude Include="Engine\math\Functions\MathUtil.h" />
     <ClInclude Include="Engine\math\Functions\MatrixVector.h" />
     <ClInclude Include="Engine\math\Geometry\Collision.h" />
-    <ClInclude Include="Engine\math\Geometry\OBB.h" />
     <ClInclude Include="Engine\math\Geometry\PrimitiveGenerator.h" />
     <ClInclude Include="engine\math\Light\DirectionalLight.h" />
     <ClInclude Include="engine\math\Light\PointLight.h" />
@@ -6090,6 +6091,15 @@ File Path: project/MyGame.vcxproj.filters
     <Filter Include="リソース ファイル\Data\Camera">
       <UniqueIdentifier>{36ce3736-11e8-49f1-bd38-678dbba6bc00}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ソース ファイル\engine\editor\line">
+      <UniqueIdentifier>{70471439-2117-4591-81ea-5ee510ec3807}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\engine\editor\line">
+      <UniqueIdentifier>{70ef6a47-f892-4bb5-a44f-05e3e0180af4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\engine\math\Collision">
+      <UniqueIdentifier>{b5f4c0b7-3989-4f4d-a377-4920cae47c95}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -6380,6 +6390,15 @@ File Path: project/MyGame.vcxproj.filters
     <ClCompile Include="application\character\enemy\component\EnemyDeath.cpp">
       <Filter>ソース ファイル\application\character\enemy\component</Filter>
     </ClCompile>
+    <ClCompile Include="engine\editor\line\LineCommon.cpp">
+      <Filter>ソース ファイル\engine\editor\line</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\editor\line\LineRenderer.cpp">
+      <Filter>ソース ファイル\engine\editor\line</Filter>
+    </ClCompile>
+    <ClCompile Include="application\character\enemy\EnemyListEditor.cpp">
+      <Filter>ソース ファイル\application\character\enemy</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="engine\2d\Sprite.h">
@@ -6548,9 +6567,6 @@ File Path: project/MyGame.vcxproj.filters
       <Filter>ヘッダー ファイル\engine\math\Functions</Filter>
     </ClInclude>
     <ClInclude Include="Engine\math\Geometry\Collision.h">
-      <Filter>ヘッダー ファイル\engine\math\Geometry</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\math\Geometry\OBB.h">
       <Filter>ヘッダー ファイル\engine\math\Geometry</Filter>
     </ClInclude>
     <ClInclude Include="Engine\math\Geometry\PrimitiveGenerator.h">
@@ -6804,6 +6820,24 @@ File Path: project/MyGame.vcxproj.filters
     </ClInclude>
     <ClInclude Include="application\character\enemy\component\EnemyDeath.h">
       <Filter>ヘッダー ファイル\application\character\enemy\component</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\editor\line\LineRenderer.h">
+      <Filter>ヘッダー ファイル\engine\editor\line</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\editor\line\LineTypes.h">
+      <Filter>ヘッダー ファイル\engine\editor\line</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\editor\line\LineCommon.h">
+      <Filter>ヘッダー ファイル\engine\editor\line</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\math\Collision\AABB.h">
+      <Filter>ヘッダー ファイル\engine\math\Collision</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\math\Collision\OBB.h">
+      <Filter>ヘッダー ファイル\engine\math\Collision</Filter>
+    </ClInclude>
+    <ClInclude Include="application\character\enemy\EnemyListEditor.h">
+      <Filter>ソース ファイル\application\character\enemy</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -8229,6 +8263,9 @@ File Path: project/application/character/enemy/Enemy.cpp
 #include <EnemyState.h>
 #include <CameraManager.h>
 #include <CollisionConfig.h>
+#include <LineRenderer.h>
+#include <EditorEntityRegistry.h>
+#include <EditorTypes.h>
 // AssetGeneratorからインクルード
 #include <subproject/AssetGenerator/engine/generator/LoadResourceID.h>
 
@@ -8236,15 +8273,15 @@ using namespace MyEngine;
 using namespace AssetGen::LoadResourceID::Models;
 
 namespace MyGame {
-    
+
     using namespace CollisionConfig;
 
     Enemy::~Enemy() {}
 
     void Enemy::Finalize() {
-		CollisionManager::GetInstance()->UnregisterCollider(collider_.get()); // 当たり判定の登録解除
-		collider_.reset(); // コライダーの破棄
-		object_.reset();   // 3Dオブジェクトの破棄
+        CollisionManager::GetInstance()->UnregisterCollider(collider_.get()); // 当たり判定の登録解除
+        collider_.reset(); // コライダーの破棄
+        object_.reset();   // 3Dオブジェクトの破棄
     }
 
     void Enemy::Initialize() {
@@ -8259,10 +8296,15 @@ namespace MyGame {
         isExpGranted_ = false; // 経験値付与済みフラグ
         isKilledByPlayer_ = false;
         isDeathStarted_ = false;
+        // 当たり判定サイズ
+        colliderSize_ = object_->GetScale();
         // 当たり判定の生成、初期化
-        collider_ = Collider::Create({ .profile = Profile::Enemy,.obb = CollisionUtils::CreateOBB(object_.get()) });
+        collider_ = Collider::Create({ .profile = Profile::Enemy,.obb = CollisionUtils::CreateOBB(object_.get(),colliderSize_) });
         // 衝突時の処理
         collider_->SetCallback([this](Collider* other) {
+#ifdef USE_IMGUI
+            LineRenderer::GetInstance()->SetHit(true);
+#endif // USE_IMGUI
             // 非アクティブなら無視
             if (!IsActive()) {
                 return;
@@ -8294,6 +8336,15 @@ namespace MyGame {
         state_.Update(*this);
         // オブジェクトの更新
         object_->Update();
+#ifdef USE_IMGUI
+        const auto& debug = LineRenderer::GetInstance()->GetDebugSettings();
+        if (debug.enable && object_) {
+            LineRenderer::GetInstance()->SetHit(false);
+            Vector4 hitColor = debug.isHit ? Vector4{ 1,0,0,1 } : Vector4{ 0,1,0,1 };
+            OBB obb = CollisionUtils::CreateOBB(object_.get(), colliderSize_);
+            LineRenderer::GetInstance()->AddOBB(obb, hitColor);
+        }
+#endif // USE_IMGUI
     }
 
     void Enemy::Draw() {
@@ -8301,6 +8352,27 @@ namespace MyGame {
         // オブジェクトの描画
         object_->Draw();
     }
+
+//    void Enemy::DrawImGui() {
+//#ifdef USE_IMGUI
+//        EditorTypes::EditorObjectInfo info;
+//        info.name = "Enemy";                                 // エディタの登録されるオブジェクト名
+//        info.category = EditorTypes::ObjectCategory::Object3D;  // 登録するオブジェクトのカテゴリ
+//        info.objectPtr = object_.get();                       // 扱うオブジェクトのポインタ
+//        info.drawEditor = [this]() {                            // パラメータの情報を登録
+//            /// ======================================
+//            /// (engine側の基本のパラメータ) 
+//            /// ======================================
+//            if (object_) {
+//                object_->DrawImGui("Enemy");
+//            }
+//            // LineRenderer基本パラメータ
+//            LineRenderer::GetInstance()->DrawImGui(colliderSize_);
+//            };
+//        // オブジェクト情報を登録する
+//        EditorEntityRegistry::Instance().Register(info);
+//#endif // USE_IMGUI    
+//    }
 }
 
 ============================================================
@@ -8345,6 +8417,7 @@ namespace MyGame {
 		std::unique_ptr<EnemyAttack> attack_; // 攻撃ロジックの保持
 		std::unique_ptr<EnemyDeath> death_;   // 死亡演出の保持
 		bool isSpawned_ = false; // 出現フラグ
+		MyEngine::Vector3 colliderSize_;  // 当たり判定のサイズ
 		// プレイヤーへの参照
 		Player* player_ = nullptr;
 		uint32_t expReward_; // 倒した時の経験値
@@ -8368,6 +8441,147 @@ namespace MyGame {
 		bool IsDeathStarted() { return isDeathStarted_; }
 		void SetDeathStarted(bool flag) { isDeathStarted_ = flag; }
 	};
+}
+
+============================================================
+File Path: project/application/character/enemy/EnemyListEditor.cpp
+============================================================
+#include "EnemyListEditor.h"
+#include <Enemy.h>
+#include <LineRenderer.h>
+#ifdef USE_IMGUI
+#include <ImGuiManager.h>
+#endif
+
+using namespace MyEngine;
+
+namespace MyGame {
+
+    // 静的メンバ変数の定義
+    std::unique_ptr<EnemyListEditor> EnemyListEditor::instance = nullptr;
+
+    // シングルトンインスタンスの取得
+    EnemyListEditor* EnemyListEditor::GetInstance() {
+        if (!instance) {
+            instance = std::make_unique<EnemyListEditor>();
+        }
+        return instance.get();
+    }
+
+    // 終了
+    void EnemyListEditor::Finalize() {
+        instance.reset();  // `delete` 不要
+    }
+
+    void EnemyListEditor::DrawImGui() {
+#ifdef USE_IMGUI
+
+        if (!enemies_) {
+            return;
+        }
+
+        ImGui::Begin("Enemy Manager");
+        ImGui::Text("Enemy Count : %d", static_cast<int>(enemies_->size()));
+        ImGui::Separator();
+
+        // -----------------------------
+        // 左：敵一覧
+        // -----------------------------
+        ImGui::BeginChild("EnemyList", ImVec2(250, 400), true);
+
+        for (size_t i = 0; i < enemies_->size(); ++i) {
+
+            Enemy* enemy = (*enemies_)[i].get();
+
+            std::string label = "Enemy [" + std::to_string(i) + "]";
+
+            if (!enemy->IsAlive()) {
+                label += " [Dead]";
+            }
+
+            if (ImGui::Selectable(label.c_str(), selectedEnemy_ == static_cast<int>(i))) {
+                selectedEnemy_ = static_cast<int>(i);
+            }
+        }
+
+        ImGui::EndChild();
+
+        ImGui::SameLine();
+
+        // -----------------------------
+        // 右：詳細表示
+        // -----------------------------
+        ImGui::BeginChild("EnemyDetail", ImVec2(0, 400), true);
+
+        if (selectedEnemy_ >= 0 &&
+            selectedEnemy_ < enemies_->size()) {
+            Enemy* enemy = (*enemies_)[selectedEnemy_].get();
+
+            auto* object = enemy->GetObject3d();
+
+            if (object) {
+                object->DrawImGui("Enemy");
+            }
+
+            ImGui::Separator();
+
+            ImGui::Text("Alive : %s",
+                enemy->IsAlive() ? "True" : "False");
+
+            ImGui::Text("Spawned : %s",
+                enemy->IsSpawned() ? "True" : "False");
+
+            ImGui::Text("Exp Reward : %u",
+                enemy->GetExpReward());
+
+            //ImGui::Checkbox("KilledByPlayer", &enemy->GetKilledByPlayer());
+
+            //// Colliderサイズ調整
+            //LineRenderer::GetInstance()->DrawImGui(enemy->GetColliderSize());
+        }
+
+        ImGui::EndChild();
+
+        ImGui::End();
+
+#endif
+    }
+}
+
+============================================================
+File Path: project/application/character/enemy/EnemyListEditor.h
+============================================================
+#pragma once
+#include <vector>
+#include <memory>
+
+namespace MyGame {
+
+    class Enemy;
+
+    class EnemyListEditor {
+    private:
+        static std::unique_ptr<EnemyListEditor> instance;
+
+        EnemyListEditor(EnemyListEditor&) = delete;
+        EnemyListEditor& operator=(EnemyListEditor&) = delete;
+    public: // メンバ関数
+        EnemyListEditor() = default;
+        ~EnemyListEditor() = default;
+        // シングルトンインスタンスの取得
+        static EnemyListEditor* GetInstance();
+        // 終了
+        void Finalize();
+
+        void DrawImGui();
+
+    private:
+        std::vector<std::unique_ptr<Enemy>>* enemies_ = nullptr;
+        int selectedEnemy_ = -1;
+
+    public:
+        void SetEnemies(std::vector<std::unique_ptr<Enemy>>* enemies) { enemies_ = enemies; }
+    };
 }
 
 ============================================================
@@ -9336,6 +9550,7 @@ File Path: project/application/character/player/Player.cpp
 #include <Enemy.h>
 //#include <ParticleManager.h>
 //#include <ParticleEmitter.h>
+#include <LineRenderer.h>
 // AssetGeneratorからインクルード
 #include <subproject/AssetGenerator/engine/generator/LoadResourceID.h>
 
@@ -9371,11 +9586,18 @@ namespace MyGame {
         // 状態フラグの初期化
         flags_.isAlive = true;
         flags_.isActive = true;
-
+        // 当たり判定サイズ
+        colliderSize_ = object_->GetScale();
         // コライダー生成
-        collider_ = Collider::Create({ .profile = Profile::Player,.obb = CollisionUtils::CreateOBB(object_.get()) });
+        collider_ = Collider::Create({ .profile = Profile::Player,.obb = CollisionUtils::CreateOBB(object_.get(),colliderSize_) });
+        // ラインのサイズをコライダーに合わせる
+        LineRenderer::GetInstance()->SetSize(colliderSize_);
         // 衝突時の処理
         collider_->SetCallback([this](Collider* other) {
+#ifdef USE_IMGUI
+            // Debug用
+            LineRenderer::GetInstance()->SetHit(true);
+#endif // USE_IMGUI
             if (!IsAlive()) { return; }
             ChangeState(std::make_unique<PlayerStateDead>());
             });
@@ -9399,8 +9621,6 @@ namespace MyGame {
         death_->Initialize();     // 死亡演出の初期化
         // 初期ステートをセットする
         ChangeState(std::make_unique<PlayerStateIdle>());
-        // パーティクルグループ生成
-      //  ParticleManager::GetInstance()->CreateParticleGroup("Particles", "Particle/Particle.png", "Particle.obj", VertexType::Model);
         // ImGuiの登録
         DrawImGui();
     }
@@ -9416,29 +9636,24 @@ namespace MyGame {
                 SyncWorldTransformByRail();
             }
         }
-
-        //// ==========================
-        //// Particleを1つだけ出す
-        //// ==========================
-        //Transform particleTransform{};
-        //particleTransform.translate = object_->GetTranslate();
-        //particleTransform.scale = { 1.0f,1.0f,1.0f };
-        //particleTransform.rotate = { 0.0f,0.0f,0.0f };
-
-        //ParticleManager::GetInstance()->Emit(
-        //    "Particles",
-        //    particleTransform,
-        //    { 1,1,1,1 },
-        //    1,                  // 1個だけ
-        //    Velocity{},         // 動かない
-        //    0.1f,               // 短寿命
-        //    RandomParameter{}
-        //);
-
         // 各コンポーネントの更新
         targetreticle_->Update();
         target_->Update();
         object_->Update();
+#ifdef USE_IMGUI
+        // LineRendererクラスにある基本のパラメータ
+        const auto& debug = LineRenderer::GetInstance()->GetDebugSettings();
+        // デバッグ表示フラグで表示、非表示
+        if (debug.enable && object_) {
+            LineRenderer::GetInstance()->SetHit(false);
+            // 衝突状態で色変更
+            Vector4 hitColor = debug.isHit ? Vector4{ 1,0,0,1 } : Vector4{ 0,1,0,1 };
+            // 現在のObjectからOBB生成
+            OBB obb = CollisionUtils::CreateOBB(object_.get(), colliderSize_);
+            // ライン描画
+            LineRenderer::GetInstance()->AddOBB(obb, hitColor);
+        }
+#endif // USE_IMGUI
     }
 
     void Player::Draw() {
@@ -9527,7 +9742,8 @@ namespace MyGame {
             ImGui::ProgressBar(expRate, ImVec2(200.0f, 20.0f));
             // デバッグ用
             if (ImGui::Button("Add EXP +10")) { GainExp(10); }
-
+            // LineRenderer基本パラメータ
+            LineRenderer::GetInstance()->DrawImGui(colliderSize_);
             };
         // オブジェクト情報を登録する
         EditorEntityRegistry::Instance().Register(info);
@@ -9595,6 +9811,7 @@ namespace MyGame {
 	private: // メンバ変数
 		PlayerData data_; // プレイヤーのデータ構造体
 		MyEngine::Transform transform_;
+		MyEngine::Vector3 colliderSize_;  // 当たり判定のサイズ
 		// コライダー
 		std::unique_ptr<Collider> collider_;
 		// 各種コンポーネント
@@ -10028,6 +10245,7 @@ namespace MyGame {
             MyEngine::OBB obb;
             // 中心座標
             obb.center = object->GetTransform().translate;
+            // halfsize
             MyEngine::Vector3 size = object->GetModel()->GetSize();
             // オブジェクトによって倍率を変えたい場合は引数の倍率を変える
             obb.halfSize = {
@@ -11588,6 +11806,7 @@ File Path: project/application/scene/GamePlayScene.cpp
 #include <SpriteCommon.h>
 #include <Object3dCommon.h>
 //#include <ParticleCommon.h>
+//#include <ParticleManager.h>
 #include <CameraManager.h>
 #include <Input.h>
 #include <StageManager.h>
@@ -11599,8 +11818,8 @@ File Path: project/application/scene/GamePlayScene.cpp
 #include <EventManager.h>
 #include <CollisionManager.h>
 #include <CameraDefs.h>
-//#include <ParticleManager.h>
 #include <PlayerState.h>
+#include <EnemyListEditor.h>
 // AssetGeneratorからインクルード
 #include <subproject/AssetGenerator/engine/generator/LoadResourceID.h>
 
@@ -11618,6 +11837,7 @@ namespace MyGame {
         UIManager::GetInstance()->Finalize();     // UIマネージャの終了処理 
         FadeManager::GetInstance()->Finalize();   // フェードマネージャの終了処理
         CollisionManager::GetInstance()->Finalize(); // 衝突マネージャの終了処理
+        EnemyListEditor::GetInstance()->Finalize();
     }
 
     void GamePlayScene::Initialize() {
@@ -11644,6 +11864,8 @@ namespace MyGame {
         enemySpawner_ = std::make_unique<EnemySpawner>();
 		enemySpawner_->SetEnemies(&enemies_);    // 敵リストへの参照をセット
 		enemySpawner_->SetPlayer(player_.get()); // プレイヤーへの参照をセット
+        // imgui        
+        EnemyListEditor::GetInstance()->SetEnemies(&enemies_);
 
         // 最初のスポーン
         player_->SetEnemy(enemies_.empty() ? nullptr : enemies_.front().get());
@@ -11669,12 +11891,12 @@ namespace MyGame {
         // カメラマネージャの更新
         CameraManager::GetInstance()->Update();
 #pragma region 全てのObject3d個々の更新処理      
-		// ポーズメニューのトリガーと更新
+        // ポーズメニューのトリガーと更新
         if (!UIManager::GetInstance()->GetUI<GamePlayUI>()->GetPauseMenu()->IsActive() &&
             Input::GetInstance()->TriggerKey(DIK_TAB)) {
             UIManager::GetInstance()->GetUI<GamePlayUI>()->GetPauseMenu()->SetActive(true);
         }
-		// ポーズがアクティブ中、ゲームの更新を停止してポーズメニューの更新のみ行う
+        // ポーズがアクティブ中、ゲームの更新を停止してポーズメニューの更新のみ行う
         if (UIManager::GetInstance()->GetUI<GamePlayUI>()->GetPauseMenu()->IsActive()) {
             UIManager::GetInstance()->GetUI<GamePlayUI>()->GetPauseMenu()->Update();
             FadeManager::GetInstance()->Update();
@@ -11696,7 +11918,7 @@ namespace MyGame {
             enemy->Update();
         }
 
-		// 死亡した敵の削除
+        // 死亡した敵の削除
         enemies_.erase(std::remove_if(enemies_.begin(), enemies_.end(), [](std::unique_ptr<Enemy>& enemy) {
             if (!enemy->IsAlive()) {
                 enemy->Finalize();
@@ -11707,8 +11929,8 @@ namespace MyGame {
             enemies_.end()
         );
 
-		// カメラのターゲットとプレイヤーをセット（プレイヤーの位置にカメラを追従させるため）
-        CameraManager::GetInstance()->GetCurrentBehaviorAs<GamePlayCamera>()->SetPlayer(player_.get()); 
+        // カメラのターゲットとプレイヤーをセット（プレイヤーの位置にカメラを追従させるため）
+        CameraManager::GetInstance()->GetCurrentBehaviorAs<GamePlayCamera>()->SetPlayer(player_.get());
         // プレイヤーの更新
         player_->Update();
         // 弾の更新
@@ -11737,6 +11959,10 @@ namespace MyGame {
         FadeManager::GetInstance()->Update();
 
 #pragma endregion 全てのSprite個々の更新処理
+#ifdef USE_IMGUI
+        // 敵のパラメータ
+        EnemyListEditor::GetInstance()->DrawImGui();
+#endif // USE_IMGUI
     }
 
     void GamePlayScene::Draw() {
@@ -16775,6 +17001,9 @@ File Path: project/engine/base/Framework.cpp
 #include <EditorManager.h>
 #include <EditorConsole.h>
 #include <TimeSystem.h>
+#include <LineCommon.h>
+#include <LineRenderer.h>
+#include <CameraManager.h>
 
 namespace MyEngine {
     void Framework::Run() {
@@ -16802,6 +17031,10 @@ namespace MyEngine {
         // シーンマネージャの解放
         SceneManager::GetInstance()->Finalize();
         // 基盤システムの解放
+#ifdef USE_IMGUI
+        LineRenderer::GetInstance()->Finalize();
+        LineCommon::GetInstance()->Finalize();
+#endif // USE_IMGUI
         SkyboxCommon::GetInstance()->Finalize();
         ParticleCommon::GetInstance()->Finalize();
         SpriteCommon::GetInstance()->Finalize();
@@ -16889,6 +17122,10 @@ namespace MyEngine {
         CopylmageCommon::GetInstance()->Initialize(dxCommon.get(), srvManager.get(), rtvManager.get(), dsvManager.get());
         // 箱の共通部の初期化
         SkyboxCommon::GetInstance()->Initialize(dxCommon.get(), dsvManager.get());
+#ifdef USE_IMGUI
+        // ライン共通部の初期化
+        LineCommon::GetInstance()->Initialize(dxCommon.get());
+#endif // USE_IMGUI
 #pragma endregion 基盤システムの初期化
 #ifdef USE_IMGUI
         // ------------------------------------------------------------
@@ -16896,6 +17133,8 @@ namespace MyEngine {
         // ------------------------------------------------------------
         // エディタにウィンドウを登録していく
         EditorManager::GetInstance()->Initialize();
+        // Debug用ラインの作成
+        LineRenderer::GetInstance()->Initialize();
         // ------------------------------------------------------------
         // 起動完了時間の確定
         // ------------------------------------------------------------
@@ -16908,6 +17147,10 @@ namespace MyEngine {
     }
 
     void Framework::Update() {
+#ifdef USE_IMGUI
+        // ライン描画のフレーム開始
+        LineRenderer::GetInstance()->BeginFrame();
+#endif // USE_IMGUI
         // Windowのメッセージ処理
         if (winApp->ProcessMessage()) {
             // ゲームループを抜ける
@@ -16935,15 +17178,21 @@ namespace MyEngine {
         dxCommon->PreDrawRenderTexture(rtvManager->GetRtvHandle(2), dsvManager->GetDsvDescriptorHeap(), rtvManager->GetkRenderTargetClearValue());
         // シーンマネージャの描画処理
         SceneManager::GetInstance()->Draw();
+#ifdef USE_IMGUI
+        // デバッグライン描画
+        if (CameraManager::GetInstance()->GetActiveCamera()) {
+            LineRenderer::GetInstance()->Draw(CameraManager::GetInstance()->GetActiveCamera()->GetViewProjectionMatrix());
+        }
+#endif // USE_IMGUI
         // レンダーテクスチャをSRVとして使うための状態に遷移
         rtvManager->PostDrawRenderTexture();
         //  DirectXの描画準備。全ての描画に共通のグラフィックスコマンドを積む
         // ここから書き込むバックバッファのインデックスを取得
         UINT backBufferIndex = dxCommon->GetSwapChain()->GetSwapChain()->GetCurrentBackBufferIndex();
         dxCommon->PreDraw(rtvManager->GetRtvHandle(backBufferIndex), dsvManager->GetDsvDescriptorHeap());
-#ifndef USE_IMGUI
-        // Releaseビルド時ポストエフェクト描画（レンダーテクスチャ → 画面） 
-        CopylmageCommon::GetInstance()->Commondrawing(srvManager.get());
+#ifdef USE_IMGUI
+        // エディタモード：Updateで作ったUIデータをここでGPUに転送
+        ImGuiManager::GetInstance()->Draw();
 #else
         // エディタモード：Updateで作ったUIデータをここでGPUに転送
         ImGuiManager::GetInstance()->Draw();
@@ -17471,6 +17720,19 @@ namespace MyEngine {
 		ViewProjectionMatrix = Multiply(viewMatrix, projectionMatrix);
 	}
 
+	Vector3 Camera::GetForward() const {
+		// +Z前方の場合
+		return Normalize({ worldMatrix.m[2][0],worldMatrix.m[2][1],worldMatrix.m[2][2] });
+	}
+
+	Vector3 Camera::GetRight() const {
+		return Normalize({ worldMatrix.m[0][0],worldMatrix.m[0][1],worldMatrix.m[0][2] });
+	}
+
+	Vector3 Camera::GetUp() const {
+		return Normalize({ worldMatrix.m[1][0],worldMatrix.m[1][1],worldMatrix.m[1][2] });
+	}
+
 	void Camera::DrawImGui() {
 #ifdef USE_IMGUI
 		// 開発用UIの処理
@@ -17500,7 +17762,7 @@ namespace MyEngine {
 		/// <summary>
 		/// 更新処理
 		/// </summary>
-		void Update();		
+		void Update();
 		/// <summary>
 		/// ImGuiの描画処理
 		/// </summary>
@@ -17524,8 +17786,10 @@ namespace MyEngine {
 		const Vector3& GetRotate() const { return transform.rotate; }
 		Vector3& GetRotate() { return transform.rotate; }            // 書き換え用
 		const Vector3& GetTranslate() const { return transform.translate; }
-		Vector3& GetTranslate() { return transform.translate; }            // 書き換え用
+		Vector3& GetTranslate() { return transform.translate; }            // 書き換え用		
 		Vector3 GetForward() const;
+		Vector3 GetRight() const;
+		Vector3 GetUp() const;
 		// setter
 		void SetRotate(const Vector3& rotate) { this->transform.rotate = rotate; }
 		void SetTranslate(const Vector3& translate) { this->transform.translate = translate; }
@@ -19226,6 +19490,589 @@ namespace MyEngine {
 }
 
 ============================================================
+File Path: project/engine/editor/line/LineCommon.cpp
+============================================================
+#include "LineCommon.h"
+#include <ShaderCompiler.h>
+#include <externals/DirectXTex/d3dx12.h>
+#include <Matrix4x4.h>
+
+namespace MyEngine {
+
+	using Microsoft::WRL::ComPtr;
+
+      // 静的メンバ変数の定義
+    std::unique_ptr<LineCommon> LineCommon::instance = nullptr;
+
+    // シングルトンインスタンスの取得
+    LineCommon* LineCommon::GetInstance() {
+        if (!instance) {
+            instance = std::make_unique<LineCommon>();
+        }
+        return instance.get();
+    }
+
+    // 終了
+    void LineCommon::Finalize() {
+        instance.reset();  // `delete` 不要
+    }
+
+	void LineCommon::Initialize(DirectXCommon* dxCommon) {
+		assert(dxCommon);
+		// 引数を受け取ってメンバ変数に記録する
+		dxCommon_ = dxCommon;
+		// パイプラインの生成
+		PipelineGenerate();
+	}
+
+    void LineCommon::Commondrawing() {
+        dxCommon_->GetCommandList()->SetPipelineState(graphicsPipelineState.Get());
+        dxCommon_->GetCommandList()->SetGraphicsRootSignature(rootSignature.Get());
+        dxCommon_->GetCommandList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+    }
+
+	void LineCommon::PipelineGenerate() {
+		// === RootSignature ===
+		CD3DX12_ROOT_PARAMETER rootParams[1];
+
+		// viewProj行列をRootConstantsとして頂点シェーダに渡す
+		rootParams[0].InitAsConstants(sizeof(Matrix4x4) / 4, 0, 0, D3D12_SHADER_VISIBILITY_VERTEX);
+
+		CD3DX12_ROOT_SIGNATURE_DESC rsDesc;
+
+		// 入力アセンブラを使うRootSignatureとして設定する
+		rsDesc.Init(_countof(rootParams), rootParams, 0, nullptr, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
+
+		ComPtr<ID3DBlob> rsBlob;
+		ComPtr<ID3DBlob> errorBlob;
+
+		// RootSignatureをシリアライズする
+		HRESULT hr = D3D12SerializeRootSignature(&rsDesc, D3D_ROOT_SIGNATURE_VERSION_1, &rsBlob, &errorBlob);
+
+		// シリアライズに失敗した場合はエラー内容を出力する
+		if (FAILED(hr)) {
+			if (errorBlob) {
+				OutputDebugStringA((char*)errorBlob->GetBufferPointer());
+			}
+			assert(false);
+		}
+
+		// RootSignatureを作成する
+		hr = dxCommon_->GetDevice()->CreateRootSignature(0, rsBlob->GetBufferPointer(), rsBlob->GetBufferSize(), IID_PPV_ARGS(&rootSignature));
+		assert(SUCCEEDED(hr));
+
+		// === シェーダロード ===
+		// ライン描画用の頂点シェーダとピクセルシェーダを読み込む
+		Microsoft::WRL::ComPtr<IDxcBlob> vsBlob = ShaderCompiler::GetInstance()->CompileShader(L"Resources/shaders/Debug/LineRenderer.VS.hlsl", L"vs_6_0");
+		Microsoft::WRL::ComPtr<IDxcBlob> psBlob = ShaderCompiler::GetInstance()->CompileShader(L"Resources/shaders/Debug/LineRenderer.PS.hlsl", L"ps_6_0");
+
+		// === 頂点レイアウト ===
+		// 1頂点につき、位置と色を持つ
+		D3D12_INPUT_ELEMENT_DESC inputElems[] = {
+			{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT,
+			  0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+			{ "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT,
+			  0, D3D12_APPEND_ALIGNED_ELEMENT,
+			  D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+		};
+
+		// === 4) ラスタライザ / ブレンド / 深度 ===
+		D3D12_RASTERIZER_DESC rastDesc{};
+		rastDesc.FillMode = D3D12_FILL_MODE_SOLID;
+		rastDesc.CullMode = D3D12_CULL_MODE_NONE;
+		rastDesc.FrontCounterClockwise = FALSE;
+		rastDesc.DepthClipEnable = TRUE;
+
+		// アルファブレンドを有効にする
+		D3D12_BLEND_DESC blendDesc{};
+		blendDesc.RenderTarget[0].BlendEnable = TRUE;
+		blendDesc.RenderTarget[0].SrcBlend = D3D12_BLEND_SRC_ALPHA;
+		blendDesc.RenderTarget[0].DestBlend = D3D12_BLEND_INV_SRC_ALPHA;
+		blendDesc.RenderTarget[0].BlendOp = D3D12_BLEND_OP_ADD;
+		blendDesc.RenderTarget[0].SrcBlendAlpha = D3D12_BLEND_ONE;
+		blendDesc.RenderTarget[0].DestBlendAlpha = D3D12_BLEND_ZERO;
+		blendDesc.RenderTarget[0].BlendOpAlpha = D3D12_BLEND_OP_ADD;
+		blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
+
+		// 深度テストを有効にして、3D空間上の位置関係に合わせる
+		D3D12_DEPTH_STENCIL_DESC depthDesc{};
+		depthDesc.DepthEnable = TRUE;
+		depthDesc.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ALL;
+		//depthDesc.DepthEnable = FALSE;
+		//depthDesc.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ZERO;
+		depthDesc.DepthFunc = D3D12_COMPARISON_FUNC_LESS_EQUAL;
+		depthDesc.StencilEnable = FALSE;
+
+		// === 5) PSO 設定 ===
+		D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc{};
+
+		// RootSignatureとシェーダを設定する
+		psoDesc.pRootSignature = rootSignature.Get();
+		psoDesc.InputLayout = { inputElems, _countof(inputElems) };
+		psoDesc.VS = { vsBlob->GetBufferPointer(), vsBlob->GetBufferSize() };
+		psoDesc.PS = { psBlob->GetBufferPointer(), psBlob->GetBufferSize() };
+
+		// 描画状態を設定する
+		psoDesc.RasterizerState = rastDesc;
+		psoDesc.BlendState = blendDesc;
+		psoDesc.DepthStencilState = depthDesc;
+		psoDesc.SampleMask = D3D12_DEFAULT_SAMPLE_MASK;
+
+		// ライン描画用のPRIMITIVETOPOLOGYTYPETRIANGLEにする
+		psoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
+
+		// レンダーターゲットと深度フォーマットを設定する
+		psoDesc.NumRenderTargets = 1;
+		psoDesc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
+		psoDesc.DSVFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
+		psoDesc.SampleDesc.Count = 1;
+
+		// PSOを作成する
+		hr = dxCommon_->GetDevice()->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(&graphicsPipelineState));
+		assert(SUCCEEDED(hr));
+	}
+}
+
+============================================================
+File Path: project/engine/editor/line/LineCommon.h
+============================================================
+#pragma once
+#include <DirectXCommon.h>
+
+namespace MyEngine {
+    /// <summary>
+    /// 
+    /// </summary>
+    class LineCommon {
+    private:
+        static std::unique_ptr<LineCommon> instance;
+
+        LineCommon(LineCommon&) = delete;
+        LineCommon& operator=(LineCommon&) = delete;
+    public: // メンバ関数
+        LineCommon() = default;
+        ~LineCommon() = default;
+
+        // シングルトンインスタンスの取得
+        static LineCommon* GetInstance();
+        // 終了
+        void Finalize();
+        // 初期化
+        void Initialize(DirectXCommon* dxCommon);
+        // 共通描画設定
+		void Commondrawing();
+    private:
+        void PipelineGenerate();
+    private:
+        DirectXCommon* dxCommon_ = nullptr;
+        Microsoft::WRL::ComPtr<ID3D12RootSignature> rootSignature;
+        Microsoft::WRL::ComPtr<ID3D12PipelineState> graphicsPipelineState;
+    public:
+        // getter
+        DirectXCommon* GetDxCommon() const { return  dxCommon_; }
+    };
+}
+
+============================================================
+File Path: project/engine/editor/line/LineRenderer.cpp
+============================================================
+#include "LineRenderer.h"
+#include <LineCommon.h>
+#include <MatrixVector.h>
+#include <CameraManager.h>
+#ifdef USE_IMGUI
+#include <ImGuiManager.h>
+#endif // USE_IMGUI
+
+namespace MyEngine {
+
+    using namespace MatrixVector;
+    using namespace LineTypes;
+
+    // 静的メンバ変数の定義
+    std::unique_ptr<LineRenderer> LineRenderer::instance = nullptr;
+
+    // シングルトンインスタンスの取得
+    LineRenderer* LineRenderer::GetInstance() {
+        if (!instance) {
+            instance = std::make_unique<LineRenderer>();
+        }
+        return instance.get();
+    }
+
+    // 終了
+    void LineRenderer::Finalize() {
+        instance.reset();  // `delete` 不要
+    }
+
+    void LineRenderer::Initialize() {
+#ifdef USE_IMGUI
+        CreateBuffer();
+#endif // USE_IMGUI
+    }
+
+    void LineRenderer::CreateBuffer() {
+#ifdef USE_IMGUI
+        const UINT size = sizeof(LineVertex) * kMaxVertexCount;
+
+        // UploadHeapで作る
+        D3D12_HEAP_PROPERTIES heapProps{};
+        heapProps.Type = D3D12_HEAP_TYPE_UPLOAD;
+
+        D3D12_RESOURCE_DESC resourceDesc{};
+        resourceDesc.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER;
+        resourceDesc.Width = size;
+        resourceDesc.Height = 1;
+        resourceDesc.DepthOrArraySize = 1;
+        resourceDesc.MipLevels = 1;
+        resourceDesc.SampleDesc.Count = 1;
+        resourceDesc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
+
+        HRESULT hr = LineCommon::GetInstance()->GetDxCommon()->GetDevice()->CreateCommittedResource(
+            &heapProps,
+            D3D12_HEAP_FLAG_NONE,
+            &resourceDesc,
+            D3D12_RESOURCE_STATE_GENERIC_READ,
+            nullptr,
+            IID_PPV_ARGS(&vertexResource)
+        );
+
+        assert(SUCCEEDED(hr));
+
+        // Map
+        vertexResource->Map(0, nullptr, reinterpret_cast<void**>(&mappedVertices));
+        // VBView
+        vertexBufferView.BufferLocation = vertexResource->GetGPUVirtualAddress();
+        vertexBufferView.SizeInBytes = size;
+        vertexBufferView.StrideInBytes = sizeof(LineVertex);
+#endif // USE_IMGUI
+    }
+
+    void LineRenderer::Draw(const Matrix4x4& viewProj) {
+#ifdef USE_IMGUI
+        // 頂点がないなら描画しない
+        if (vertexIndex_ == 0) {
+            return;
+        }
+
+        LineCommon::GetInstance()->Commondrawing();
+
+        // viewProjをRootConstantsに渡す
+        LineCommon::GetInstance()->GetDxCommon()->GetCommandList()->SetGraphicsRoot32BitConstants(0, sizeof(Matrix4x4) / 4, &viewProj, 0);
+        LineCommon::GetInstance()->GetDxCommon()->GetCommandList()->IASetVertexBuffers(0, 1, &vertexBufferView);
+        LineCommon::GetInstance()->GetDxCommon()->GetCommandList()->DrawInstanced(vertexIndex_, 1, 0, 0);
+#endif // USE_IMGUI
+    }
+
+    void LineRenderer::BeginFrame() {
+#ifdef USE_IMGUI
+        // 1フレーム分のライン情報をクリアする
+        lines_.clear();
+        vertexIndex_ = 0;
+#endif // USE_IMGUI
+    }
+
+    void LineRenderer::AddLine(const LineData& line) {
+#ifdef USE_IMGUI
+        if (vertexIndex_ + kVerticesPerLine >= kMaxVertexCount) {
+            return;
+        }
+
+        if (!CameraManager::GetInstance()->GetActiveCamera()) { return; }
+
+        //========================
+        // ライン方向
+        //========================
+        Vector3 lineDir = Normalize(line.end - line.start);
+        //========================
+        // カメラ前方向
+        //========================
+        Vector3 cameraForward = CameraManager::GetInstance()->GetActiveCamera()->GetForward();
+        //========================
+        // 板ポリ幅方向
+        //========================
+        Vector3 side = Normalize(Cross(cameraForward, lineDir));
+
+        side *= debug_.thickness * 0.5f;
+
+        //========================
+        // 頂点生成
+        //========================
+        Vector3 v0 = line.start + side;
+        Vector3 v1 = line.end + side;
+        Vector3 v2 = line.start - side;
+        Vector3 v3 = line.end - side;
+
+        // triangle1
+        mappedVertices[vertexIndex_++] = { v0,line.color };
+        mappedVertices[vertexIndex_++] = { v1,line.color };
+        mappedVertices[vertexIndex_++] = { v2,line.color };
+
+        // triangle2
+        mappedVertices[vertexIndex_++] = { v2,line.color };
+        mappedVertices[vertexIndex_++] = { v1,line.color };
+        mappedVertices[vertexIndex_++] = { v3,line.color };
+#endif // USE_IMGUI
+    }
+
+    void LineRenderer::AddAABB(const Vector3& center, const Vector3& size, const Vector4& color) {
+        float hx = size.x * 0.5f;
+        float hy = size.y * 0.5f;
+        float hz = size.z * 0.5f;
+
+        Vector3 p[8] = {
+            {center.x - hx, center.y - hy, center.z - hz},
+            {center.x + hx, center.y - hy, center.z - hz},
+            {center.x - hx, center.y + hy, center.z - hz},
+            {center.x + hx, center.y + hy, center.z - hz},
+
+            {center.x - hx, center.y - hy, center.z + hz},
+            {center.x + hx, center.y - hy, center.z + hz},
+            {center.x - hx, center.y + hy, center.z + hz},
+            {center.x + hx, center.y + hy, center.z + hz},
+        };
+
+        auto add = [&](int a, int b) {AddLine({ p[a],p[b],color }); };
+
+        // front
+        add(0, 1);
+        add(1, 3);
+        add(3, 2);
+        add(2, 0);
+
+        // back
+        add(4, 5);
+        add(5, 7);
+        add(7, 6);
+        add(6, 4);
+
+        // connect
+        add(0, 4);
+        add(1, 5);
+        add(2, 6);
+        add(3, 7);
+    }
+
+    void LineRenderer::AddOBB(const OBB& obb, const Vector4& color) {
+#ifdef USE_IMGUI
+
+        // 軸方向ベクトル（半サイズ反映）
+        Vector3 x = obb.axis[0] * obb.halfSize.x;
+        Vector3 y = obb.axis[1] * obb.halfSize.y;
+        Vector3 z = obb.axis[2] * obb.halfSize.z;
+
+        //=========================
+        // OBBの8頂点生成
+        //=========================
+        Vector3 p[8];
+
+        p[0] = obb.center - x - y - z;
+        p[1] = obb.center + x - y - z;
+        p[2] = obb.center - x + y - z;
+        p[3] = obb.center + x + y - z;
+
+        p[4] = obb.center - x - y + z;
+        p[5] = obb.center + x - y + z;
+        p[6] = obb.center - x + y + z;
+        p[7] = obb.center + x + y + z;
+
+        auto add = [&](int a, int b) {AddLine({ p[a], p[b], color });};
+
+        //=========================
+        // 前面
+        //=========================
+        add(0, 1);
+        add(1, 3);
+        add(3, 2);
+        add(2, 0);
+
+        //=========================
+        // 背面
+        //=========================
+        add(4, 5);
+        add(5, 7);
+        add(7, 6);
+        add(6, 4);
+
+        //=========================
+        // 接続辺
+        //=========================
+        add(0, 4);
+        add(1, 5);
+        add(2, 6);
+        add(3, 7);
+
+#endif
+    }
+
+    void LineRenderer::DrawImGui(Vector3& size) {
+#ifdef USE_IMGUI
+        if (ImGui::TreeNode("LineRenderer")) {
+
+            //--------------------------------
+            // Debug
+            //--------------------------------
+            ImGui::Checkbox("表示、非表示", &debug_.enable);                      // 描画の表示、非表示
+            ImGui::DragFloat3("サイズ", &size.x, 0.01f, 0.1f, 20.0f);     // サイズ
+            //ImGui::ColorEdit4("カラー", &debug_.color.x);                        // カラー
+            ImGui::Separator();        
+            ImGui::Text("当たり判定");
+            if (debug_.isHit) {
+                ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "状態 : ヒット中");
+            } else {
+                ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "状態 : 未ヒット");
+            }
+            //--------------------------------
+            // Line
+            //--------------------------------
+            ImGui::DragFloat("ラインの太さ", &debug_.thickness, 0.0001f, 0.001f, 0.1f);       // 線の太さ調整
+            //-------------------------------- 
+            // Buffer Usage            
+            //--------------------------------
+            const float usageRate = static_cast<float>(vertexIndex_) / static_cast<float>(kMaxVertexCount);
+            char overlay[128];
+            sprintf_s(overlay, "%u / %u 頂点 (%.1f%%)", vertexIndex_, kMaxVertexCount, usageRate * 100.0f);
+            ImGui::Text("頂点バッファ使用率");
+            ImGui::ProgressBar(usageRate, ImVec2(-FLT_MIN, 0.0f), overlay);
+            //--------------------------------
+            // Info
+            //--------------------------------
+            ImGui::Text("ライン数 : %zu", lines_.size());
+            ImGui::Text("頂点数 : %u", vertexIndex_);
+            ImGui::TreePop();
+        }
+#endif // USE_IMGUI
+    }
+}
+
+============================================================
+File Path: project/engine/editor/line/LineRenderer.h
+============================================================
+#pragma once
+#include <vector>
+#include <wrl.h>
+#include <d3d12.h>
+#include <Matrix4x4.h>
+#include <Transform.h>
+#include <memory>
+#include <LineTypes.h>
+#include <OBB.h>
+
+namespace MyEngine {
+    /// <summary>
+    /// 
+    /// </summary>
+    class LineRenderer {
+    public:
+        struct DebugSettings {
+            bool enable = true;                   // デバッグ表示ON/OFF
+            bool isHit = false;                   // 衝突中か
+            Vector3 size = { 1.5f,1.5f,1.5f };    // サイズ
+            Vector4 color = { 0,0,1,1 };          // カラー(初期は緑)
+            float thickness = 0.01f;              // ラインの太さ
+        };
+
+    private:
+        static std::unique_ptr<LineRenderer> instance;
+
+        LineRenderer(LineRenderer&) = delete;
+        LineRenderer& operator=(LineRenderer&) = delete;
+    public: // メンバ関数
+        LineRenderer() = default;
+        ~LineRenderer() = default;
+
+        // シングルトンインスタンスの取得
+        static LineRenderer* GetInstance();
+        // 終了
+        void Finalize();
+        // 初期化
+        void Initialize();
+        // 描画処理
+        void Draw(const Matrix4x4& viewProj);
+        /// <summary>
+        /// フレームの開始
+        /// </summary>
+        void BeginFrame();
+        /// <summary>
+        /// ラインの生成
+        /// </summary>
+        /// <param name="line"></param>
+        void AddLine(const LineTypes::LineData& line);
+        /// <summary>
+        /// ライン生成(AABB)
+        /// </summary>
+        /// <param name="center"></param>
+        /// <param name="size"></param>
+        /// <param name="color"></param>
+        void AddAABB(const Vector3& center, const Vector3& size, const Vector4& color);
+        /// <summary>
+        /// ライン生成(OBB)
+        /// </summary>
+        void AddOBB(const OBB& obb, const Vector4& color);
+        /// <summary>
+        /// imgui描画
+        /// </summary>
+        /// <param name="size"></param>
+        void DrawImGui(Vector3& size);
+    private:
+        /// <summary>
+        /// 頂点リソースの作成とデータの転送
+        /// </summary>
+        void CreateBuffer();
+
+        static constexpr uint32_t kMaxLineCount = 8192;
+        static constexpr uint32_t kVerticesPerLine = 6;
+        static constexpr uint32_t kMaxVertexCount = kMaxLineCount * kVerticesPerLine;
+    private:
+        std::vector<LineTypes::LineData> lines_;
+        uint32_t vertexIndex_ = 0;
+        DebugSettings debug_;
+        // バッファリソース
+        Microsoft::WRL::ComPtr<ID3D12Resource> vertexResource;
+        // バッファリソースの使い道を補足するバッファビュー
+        D3D12_VERTEX_BUFFER_VIEW vertexBufferView;
+        // バッファリソース内のデータを指すポインタ
+        LineTypes::LineVertex* mappedVertices = nullptr;
+    public:
+        // getter
+        float GetThickness() const { return debug_.thickness; }
+        std::vector<LineTypes::LineData> GetLineData() { return lines_; }
+        const DebugSettings& GetDebugSettings() const { return debug_; }
+        // setter
+        void SetThickness(float thickness) { debug_.thickness = thickness; }
+        void SetSize(const Vector3& size) { debug_.size = size; }
+        void SetColor(const Vector4& color) { debug_.color = color; }
+        void SetShow(bool enable) { debug_.enable = enable; }
+        void SetHit(bool hit) { debug_.isHit = hit; }
+    };
+}
+
+============================================================
+File Path: project/engine/editor/line/LineTypes.h
+============================================================
+#pragma once
+#include <Vector3.h>
+#include <Vector4.h>
+
+namespace MyEngine {
+    namespace LineTypes {
+
+        struct LineVertex {
+            Vector3 position;
+            Vector4 color;
+        };
+
+        struct LineData {
+            Vector3 start;
+            Vector3 end;
+            Vector4 color;
+
+            bool isActive = true;
+        };
+    }
+}
+
+============================================================
 File Path: project/engine/editor/windows/ConsoleWindow.cpp
 ============================================================
 #include "ConsoleWindow.h"
@@ -19720,6 +20567,39 @@ namespace MyEngine {
 		void SetMouseInput(bool mouse) { useMouseInput_ = mouse; }
 		const DIMOUSESTATE& GetMouseState() const { return mouseState; }
 	};
+}
+
+============================================================
+File Path: project/engine/math/Collision/AABB.h
+============================================================
+#pragma once
+#include <Vector3.h>
+
+namespace MyEngine {	      
+	/// <summary>
+    /// AABB 構造体
+    /// </summary>
+    struct  AABB {
+		Vector3 center_{};    // ボックスの中心座標（ワールド）
+		Vector3 halfSize_{};  // ボックスの半分のサイズ（各軸方向）
+	};
+}
+
+============================================================
+File Path: project/engine/math/Collision/OBB.h
+============================================================
+#pragma once
+#include <Vector3.h>
+
+namespace MyEngine {
+    /// <summary>
+    /// OBB（Oriented Bounding Box）構造体
+    /// </summary>
+    struct OBB {
+        Vector3 center;     // 中心位置（ワールド座標）
+        Vector3 halfSize;   // 各軸方向の半分サイズ（スケール/2）
+        Vector3 axis[3];    // ローカル軸（回転を反映したX,Y,Z単位ベクトル）
+    };
 }
 
 ============================================================
