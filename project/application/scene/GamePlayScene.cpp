@@ -46,24 +46,24 @@ namespace MyGame {
         // プレイヤー生成,初期化
         player_ = std::make_unique<Player>();
         player_->Initialize();
-		// GamePlayCameraにプレイヤーを渡す(プレイヤ―の位置を確認)
+        // GamePlayCameraにプレイヤーを渡す(プレイヤ―の位置を確認)
         CameraManager::GetInstance()->GetCurrentBehaviorAs<GamePlayCamera>()->SetPlayer(player_.get());
 
         // 敵生成
         const int kEnemyMax = 300;
         for (int i = 0; i < kEnemyMax; i++) {
-			std::unique_ptr<Enemy> enemy = std::make_unique<Enemy>(); // 敵の生成
-			enemy->Initialize(); // 敵の初期化
+            std::unique_ptr<Enemy> enemy = std::make_unique<Enemy>(); // 敵の生成
+            enemy->Initialize(); // 敵の初期化
             enemy->SetActive(false); // 非アクティブ
             enemy->SetSpawned(false); // 出現フラグ
             enemy->SetPlayer(player_.get()); // プレイヤーへの参照をセット
-			enemies_.push_back(std::move(enemy)); // 敵リストに追加
+            enemies_.push_back(std::move(enemy)); // 敵リストに追加
         }
 
         // 敵のSpawner生成,初期化
         enemySpawner_ = std::make_unique<EnemySpawner>();
-		enemySpawner_->SetEnemies(&enemies_);    // 敵リストへの参照をセット
-		enemySpawner_->SetPlayer(player_.get()); // プレイヤーへの参照をセット
+        enemySpawner_->SetEnemies(&enemies_);    // 敵リストへの参照をセット
+        enemySpawner_->SetPlayer(player_.get()); // プレイヤーへの参照をセット
         // imgui        
         EnemyListEditor::GetInstance()->SetEnemies(&enemies_);
 
@@ -81,10 +81,14 @@ namespace MyGame {
         }
         // UIマネージャの初期化
         UIManager::GetInstance()->Initialize();
-		// フェードマネージャの初期化(フェードイン開始処理)
+        // フェードマネージャの初期化(フェードイン開始処理)
         FadeManager::GetInstance()->StartFade(FadeType::FadeIn, FadeStyle::SilhouetteExplode, 1.0f);
-		// ゲーム開始イベントの開始
+        // ゲーム開始イベントの開始
         isGameStartEventDone_ = true;
+#ifdef USE_IMGUI
+        // 敵のパラメータ
+        EnemyListEditor::GetInstance()->Initialize();
+#endif // USE_IMGUI
     }
 
     void GamePlayScene::Update() {
@@ -159,10 +163,6 @@ namespace MyGame {
         FadeManager::GetInstance()->Update();
 
 #pragma endregion 全てのSprite個々の更新処理
-#ifdef USE_IMGUI
-        // 敵のパラメータ
-        EnemyListEditor::GetInstance()->DrawImGui();
-#endif // USE_IMGUI
     }
 
     void GamePlayScene::Draw() {

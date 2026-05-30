@@ -1119,7 +1119,7 @@
       <Filter>ヘッダー ファイル\engine\math\Collision</Filter>
     </ClInclude>
     <ClInclude Include="application\character\enemy\EnemyListEditor.h">
-      <Filter>ソース ファイル\application\character\enemy</Filter>
+      <Filter>ヘッダー ファイル\application\character\enemy</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

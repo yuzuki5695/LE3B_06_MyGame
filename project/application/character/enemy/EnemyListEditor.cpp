@@ -1,9 +1,11 @@
 #include "EnemyListEditor.h"
 #include <Enemy.h>
 #include <LineRenderer.h>
+#include <EditorEntityRegistry.h>
+#include <EditorTypes.h>
 #ifdef USE_IMGUI
 #include <ImGuiManager.h>
-#endif
+#endif // USE_IMGUI
 
 using namespace MyEngine;
 
@@ -24,78 +26,90 @@ namespace MyGame {
     void EnemyListEditor::Finalize() {
         instance.reset();  // `delete` 不要
     }
-
-    void EnemyListEditor::DrawImGui() {
+    void EnemyListEditor::Initialize() {
 #ifdef USE_IMGUI
+        commonScale_ = 1.0f;       // 全敵の共通スケール値
+        //commonExpReward_ = 10;       // 全敵の共通獲得経験値
+        commonColliderSize_ = { 1.0f, 1.0f, 1.0f };        // 全敵の共通コライダーサイズ初期値
 
-        if (!enemies_) {
-            return;
-        }
+        EditorTypes::EditorObjectInfo info;
+        info.name = "Enemy List";                  // Objectメニューに表示される名前
+        info.category = EditorTypes::ObjectCategory::List; // 新設したカテゴリ（またはObject3Dなど既存のものでもOK）
+        info.objectPtr = nullptr;                          // 単一オブジェクトではないためnullptr
+        // ラムダ式に敵リストの情報を閉じ込める
+        info.drawEditor = [this]() {
+            if (!enemies_) {
+                ImGui::Text("Enemy list is not set.");
+                return;
+            }
+            // ========================================================             
+            // 1. 基本ステータス 
+            // ========================================================
+            size_t totalEnemies = enemies_->size();
+            size_t aliveCount = 0;
+            size_t activeCount = 0;
 
-        ImGui::Begin("Enemy Manager");
-        ImGui::Text("Enemy Count : %d", static_cast<int>(enemies_->size()));
-        ImGui::Separator();
-
-        // -----------------------------
-        // 左：敵一覧
-        // -----------------------------
-        ImGui::BeginChild("EnemyList", ImVec2(250, 400), true);
-
-        for (size_t i = 0; i < enemies_->size(); ++i) {
-
-            Enemy* enemy = (*enemies_)[i].get();
-
-            std::string label = "Enemy [" + std::to_string(i) + "]";
-
-            if (!enemy->IsAlive()) {
-                label += " [Dead]";
+            for (const auto& enemy : *enemies_) {
+                if (enemy) {
+                    if (enemy->IsAlive()) { aliveCount++; }
+                    if (enemy->IsActive()) { activeCount++; }
+                }
             }
 
-            if (ImGui::Selectable(label.c_str(), selectedEnemy_ == static_cast<int>(i))) {
-                selectedEnemy_ = static_cast<int>(i);
+            ImGui::SeparatorText("Enemy Pool Status");
+            ImGui::Text("Total Pool Size : %zu", totalEnemies);
+            ImGui::Text("Alive Enemies  : %zu", aliveCount);
+            ImGui::Text("Active Enemies : %zu", activeCount);
+
+            // ========================================================
+            // 2. すべての敵に一括反映させる共通パラメータ設定
+            // ========================================================
+            ImGui::SeparatorText("All Enemy Common Parameters");
+
+            // ① スケール値の編集 (元々のEnemy::DrawImGuiの変形要素に相当)
+           // ImGui::DragFloat("Common Scale", &commonScale_, 0.05f, 0.1f, 10.0f, "%.2f");
+
+            // ② LineRenderer/コライダーの基本パラメータ (Playerと同様の仕組み)
+            ImGui::Text("Common Collider Settings");
+            LineRenderer::GetInstance()->DrawImGui(commonColliderSize_);
+
+            ImGui::Spacing();
+
+            // ★このボタンを押すと、300体すべての敵のパラメータがまとめて書き換わる
+            if (ImGui::Button("Apply parameters to ALL enemies", ImVec2(-1, 30))) {
+                for (auto& enemy : *enemies_) {
+                    if (!enemy) continue;
+
+                    //// スケールの一括変更（Object3dを介して反映）
+                    //if (enemy->GetObject3d()) {
+                    //    enemy->GetObject3d()->SetScale({ commonScale_, commonScale_, commonScale_ });
+                    //}
+
+                    // コライダーサイズの一括変更
+                    enemy->SetColliderSize(commonColliderSize_);
+                }
             }
-        }
 
-        ImGui::EndChild();
+            // ========================================================
+            // 3. リストの簡略表示
+            // ========================================================
+            ImGui::SeparatorText("Simple Enemy Status List");
+            ImGui::BeginChild("EnemyListScroll", ImVec2(0, 150), true);
 
-        ImGui::SameLine();
+            for (size_t i = 0; i < enemies_->size(); ++i) {
+                const auto& enemy = (*enemies_)[i];
+                if (!enemy) continue;
 
-        // -----------------------------
-        // 右：詳細表示
-        // -----------------------------
-        ImGui::BeginChild("EnemyDetail", ImVec2(0, 400), true);
-
-        if (selectedEnemy_ >= 0 &&
-            selectedEnemy_ < enemies_->size()) {
-            Enemy* enemy = (*enemies_)[selectedEnemy_].get();
-
-            auto* object = enemy->GetObject3d();
-
-            if (object) {
-                object->DrawImGui("Enemy");
+                if (enemy->IsAlive()) {
+                    ImGui::Text("[%03zu] ALIVE  | Active: %s", i, enemy->IsActive() ? "ON " : "OFF");
+                } else {
+                    ImGui::TextDisabled("[%03zu] DEAD", i);
+                }
             }
-
-            ImGui::Separator();
-
-            ImGui::Text("Alive : %s",
-                enemy->IsAlive() ? "True" : "False");
-
-            ImGui::Text("Spawned : %s",
-                enemy->IsSpawned() ? "True" : "False");
-
-            ImGui::Text("Exp Reward : %u",
-                enemy->GetExpReward());
-
-            //ImGui::Checkbox("KilledByPlayer", &enemy->GetKilledByPlayer());
-
-            //// Colliderサイズ調整
-            //LineRenderer::GetInstance()->DrawImGui(enemy->GetColliderSize());
-        }
-
-        ImGui::EndChild();
-
-        ImGui::End();
-
-#endif
+            ImGui::EndChild();
+            };
+        // オブジェクト情報を登録する
+        EditorEntityRegistry::Instance().Register(info);
+#endif // USE_IMGUI
     }
 }

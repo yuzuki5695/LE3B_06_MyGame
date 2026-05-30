@@ -6,6 +6,7 @@
 #include <Easing.h>
 #include <Enemy.h>
 #include <CollisionManager.h>
+#include <LineRenderer.h>
 
 using namespace MyEngine;
 using namespace Easing;
@@ -29,6 +30,7 @@ namespace MyGame {
                 enemy->SetSpawned(false);
                 // 登録前にOBB更新
                 character.GetCollider()->SetOBB(CollisionUtils::CreateOBB(character.GetObject3d()));
+                character.GetCollider()->SetSize(enemy->GetColliderSize()); // サイズを上書き固定
                 // 当たり判定登録
                 character.RegisterCollider();
                 // BaseCharacter状態からEnemyAlive状態へ遷移
@@ -65,6 +67,7 @@ namespace MyGame {
 
             // 毎フレーム当たり判定を更新
             character.GetCollider()->SetOBB(CollisionUtils::CreateOBB(character.GetObject3d()));
+            character.GetCollider()->SetSize(enemy->GetColliderSize()); // サイズを上書き固定
         }
     }
 

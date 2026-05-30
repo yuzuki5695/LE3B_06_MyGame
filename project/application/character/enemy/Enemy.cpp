@@ -78,10 +78,16 @@ namespace MyGame {
         object_->Update();
 #ifdef USE_IMGUI
         const auto& debug = LineRenderer::GetInstance()->GetDebugSettings();
-        if (debug.enable && object_) {
+        if (debug.enable && object_ && collider_) { // collider_の存在チェックを追加
             LineRenderer::GetInstance()->SetHit(false);
             Vector4 hitColor = debug.isHit ? Vector4{ 1,0,0,1 } : Vector4{ 0,1,0,1 };
-            OBB obb = CollisionUtils::CreateOBB(object_.get(), colliderSize_);
+
+            // ========================================================
+            // ★修正：その場でCreateOBBするのではなく、
+            // ステート側でサイズ調整が完了した「コライダーのOBB」をそのまま描画に使う
+            // ========================================================
+            OBB obb = collider_->GetOBB();
+
             LineRenderer::GetInstance()->AddOBB(obb, hitColor);
         }
 #endif // USE_IMGUI
@@ -92,25 +98,4 @@ namespace MyGame {
         // オブジェクトの描画
         object_->Draw();
     }
-
-//    void Enemy::DrawImGui() {
-//#ifdef USE_IMGUI
-//        EditorTypes::EditorObjectInfo info;
-//        info.name = "Enemy";                                 // エディタの登録されるオブジェクト名
-//        info.category = EditorTypes::ObjectCategory::Object3D;  // 登録するオブジェクトのカテゴリ
-//        info.objectPtr = object_.get();                       // 扱うオブジェクトのポインタ
-//        info.drawEditor = [this]() {                            // パラメータの情報を登録
-//            /// ======================================
-//            /// (engine側の基本のパラメータ) 
-//            /// ======================================
-//            if (object_) {
-//                object_->DrawImGui("Enemy");
-//            }
-//            // LineRenderer基本パラメータ
-//            LineRenderer::GetInstance()->DrawImGui(colliderSize_);
-//            };
-//        // オブジェクト情報を登録する
-//        EditorEntityRegistry::Instance().Register(info);
-//#endif // USE_IMGUI    
-//    }
 }

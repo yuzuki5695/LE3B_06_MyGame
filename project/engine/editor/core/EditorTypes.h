@@ -15,7 +15,8 @@ namespace MyEngine {
         /// エディタオブジェクトカテゴリ
         enum class ObjectCategory {
             Object3D,  // 3Dオブジェクト
-            Object2D,   // 2Dオブジェクト
+            Object2D,  // 2Dオブジェクト
+            List,      // オブジェクトリスト
             Count
         };
 
@@ -29,7 +30,8 @@ namespace MyEngine {
         inline constexpr std::array<CategoryInfo,
             static_cast<size_t>(ObjectCategory::Count)> kCategoryInfos = { {
                 { ObjectCategory::Object3D, "Object.Category3D" },
-                { ObjectCategory::Object2D, "Object.Category2D" }
+                { ObjectCategory::Object2D, "Object.Category2D" },
+                { ObjectCategory::List, "Object.CategoryList" }
             }
         };
 
@@ -44,7 +46,8 @@ namespace MyEngine {
         struct CameraEditorInfo {
             std::string name;
             void* cameraPtr = nullptr;
-            std::function<void()> drawEditor;
+            void* objectPtr = nullptr; // 単体ならObject3d*、リストならvector*などを入れる
+            std::function<void()> drawEditor; // ImGui描画コールバック
         };
     }
 }

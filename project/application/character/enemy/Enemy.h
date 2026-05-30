@@ -45,20 +45,28 @@ namespace MyGame {
 		bool isKilledByPlayer_;
 		bool isDeathStarted_;
 	public: // アクセッサ
+		bool IsSpawned() const { return isSpawned_; }
+		bool IsExpGranted() const { return isExpGranted_; }
+		bool IsKilledByPlayer() const { return isKilledByPlayer_; }
+		bool IsDeathStarted() { return isDeathStarted_; }
 		// getter
 		MyEngine::Transform* GetTransform() { return &object_->GetTransform(); }
 		EnemyAttack* GetAttack() { return attack_.get(); }
 		EnemyDeath* GetDeath() { return death_.get(); }
-		void SetPlayer(Player* player) { player_ = player; }
+		MyEngine::Vector3 GetColliderSize() const { return colliderSize_; }
 		Player* GetPlayer() const { return player_; }
 		uint32_t GetExpReward() const { return expReward_; }
-		bool IsSpawned() const { return isSpawned_; }
+
+		// setter
+		void SetPlayer(Player* player) { player_ = player; }
 		void SetSpawned(bool flag) { isSpawned_ = flag; }
-		bool IsExpGranted() const { return isExpGranted_; }
 		void SetExpGranted(bool flag) { isExpGranted_ = flag; }
-		bool IsKilledByPlayer() const { return isKilledByPlayer_; }
 		void SetKilledByPlayer(bool flag) { isKilledByPlayer_ = flag; }
-		bool IsDeathStarted() { return isDeathStarted_; }
 		void SetDeathStarted(bool flag) { isDeathStarted_ = flag; }
+		void SetColliderSize(const MyEngine::Vector3& size) {
+			colliderSize_ = size;
+			// すでにコライダーが生成されている場合は、そのサイズを即座に同期する
+			if (collider_) { collider_->SetSize(colliderSize_); }
+		}
 	};
 }

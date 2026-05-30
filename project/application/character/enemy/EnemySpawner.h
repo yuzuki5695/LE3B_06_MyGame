@@ -4,17 +4,6 @@
 #include <Enemy.h>
 #include <random>
 
-//
-///// <summary>
-///// 敵の出現条件（トリガー）を定義する構造体
-///// </summary>
-//struct EnemySpawnTrigger {
-//    Vector3 Position;   // 出現位置
-//    int spawnCount;     // 同時に出現させる数
-//    bool hasSpawned;    // すでに出現済みかどうか
-//    MoveType moveType;  // 敵の移動タイプ
-//};
-
 namespace MyGame {
     class EnemySpawner {
     public:
