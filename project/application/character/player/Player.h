@@ -55,6 +55,7 @@ namespace MyGame {
 	private: // メンバ変数
 		PlayerData data_; // プレイヤーのデータ構造体
 		MyEngine::Transform transform_;
+		MyEngine::Vector3 colliderSize_;  // 当たり判定のサイズ
 		// コライダー
 		std::unique_ptr<Collider> collider_;
 		// 各種コンポーネント
@@ -71,8 +72,6 @@ namespace MyGame {
 		MyEngine::Vector3 baseOffset_;
 		// 参照ポインタ
 		Enemy* enemy_;
-
-		MyEngine::Vector3 colliderSize_;
 		// 経験値・レベル用メンバ変数
 		uint32_t level_ = 1;         // 現在のレベル
 		uint32_t exp_ = 0;           // 現在の経験値
