@@ -82,6 +82,7 @@ namespace MyGame {
 		PlayerReticle* GetReticle() { return reticle_.get(); }
 		PlayerAttack* GetAttack() { return attack_.get(); }
 		PlayerDeath* GetDeath() { return death_.get(); }
+		const MyEngine::Vector3& GetColliderSize() const { return colliderSize_; }
 		const MyEngine::Vector3& GetRotate() const { return object_->GetRotate(); }
 		const MyEngine::Vector3& GetTranslate() const { return object_->GetTranslate(); }
 		const MyEngine::Vector3& GetAimWorldPos() const { return aimWorldPos_; }
@@ -94,6 +95,6 @@ namespace MyGame {
 		void SetAimWorldPos(const MyEngine::Vector3& pos) { aimWorldPos_ = pos; }
 		void SetTranslate(const MyEngine::Vector3& translate) { object_->SetTranslate(translate); }
 		void SetRotate(const MyEngine::Vector3& rotate) { object_->SetRotate(rotate); }
-		void SetEnemy(Enemy* enemy) { enemy_ = enemy; }
+		void SetEnemy(Enemy* enemy) { enemy_ = enemy; }		
 	};
 }

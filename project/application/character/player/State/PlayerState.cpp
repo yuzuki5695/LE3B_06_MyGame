@@ -19,10 +19,7 @@ namespace MyGame {
 
     void PlayerStateMove::Update(BaseCharacter& character) {
         // 必要なコンポーネント
-        Player* player = dynamic_cast<Player*>(&character);
-        if (Input::GetInstance()->PushKey(DIK_Z)) {
-            character.ChangeState(std::make_unique<PlayerStateDead>());
-        }
+        Player* player = dynamic_cast<Player*>(&character); 
 
         // アクティブ中は各更新処理を行う
         if (character.IsActive()) {

@@ -101,6 +101,10 @@ namespace MyGame {
                 SyncWorldTransformByRail();
             }
         }
+
+        if (collider_ && object_) {
+            collider_->SetOBB(CollisionUtils::CreateOBB(object_.get(), colliderSize_));
+        }
         // 各コンポーネントの更新
         targetreticle_->Update();
         target_->Update();
