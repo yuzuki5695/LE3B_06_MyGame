@@ -77,19 +77,13 @@ namespace MyGame {
         // オブジェクトの更新
         object_->Update();
 #ifdef USE_IMGUI
-        //const auto& debug = LineRenderer::GetInstance()->GetDebugSettings();
-        //if (debug.enable && object_ && collider_) { // collider_の存在チェックを追加
-        //    LineRenderer::GetInstance()->SetHit(false);
-        //    Vector4 hitColor = debug.isHit ? Vector4{ 1,0,0,1 } : Vector4{ 0,1,0,1 };
-
-        //    // ========================================================
-        //    // ★修正：その場でCreateOBBするのではなく、
-        //    // ステート側でサイズ調整が完了した「コライダーのOBB」をそのまま描画に使う
-        //    // ========================================================
-        //    OBB obb = collider_->GetOBB();
-
-        //    LineRenderer::GetInstance()->AddOBB(obb, hitColor);
-        //}
+        if (IsActive()) {
+            const auto& debug = LineRenderer::GetInstance()->GetDebugSettings();
+            if (debug.enable && object_) {     
+                Vector4 hitColor = debug.isHit ? Vector4{ 1,0,0,1 } : Vector4{ 0,1,0,1 };
+                LineRenderer::GetInstance()->AddOBB(collider_->GetOBB(), hitColor);
+            }
+        }
 #endif // USE_IMGUI
     }
 

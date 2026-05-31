@@ -28,9 +28,9 @@ namespace MyGame {
                 character.SetActive(true);
                 // 出現フラグをオフにする
                 enemy->SetSpawned(false);
-                //// 登録前にOBB更新
-                //character.GetCollider()->SetOBB(CollisionUtils::CreateOBB(character.GetObject3d()));
-                //character.GetCollider()->SetSize(enemy->GetColliderSize()); // サイズを上書き固定
+                // 登録前にOBB更新
+                character.GetCollider()->SetOBB(CollisionUtils::CreateOBB(character.GetObject3d()));
+                character.GetCollider()->SetSize(enemy->GetColliderSize()); // サイズを上書き固定
                 // 当たり判定登録
                 character.RegisterCollider();
                 // BaseCharacter状態からEnemyAlive状態へ遷移
@@ -63,11 +63,10 @@ namespace MyGame {
             }
 
             // 攻撃処理の更新処理
-            //enemy->GetAttack()->Update(enemy->GetObject3d()->GetTransform(), enemy->GetPlayer()->GetTranslate());
+            enemy->GetAttack()->Update(enemy->GetObject3d()->GetTransform(), enemy->GetPlayer()->GetTranslate());
 
             // 毎フレーム当たり判定を更新
             character.GetCollider()->SetOBB(CollisionUtils::CreateOBB(character.GetObject3d()));
-            character.GetCollider()->SetSize(enemy->GetColliderSize()); // サイズを上書き固定
         }
     }
 

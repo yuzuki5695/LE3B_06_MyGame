@@ -85,7 +85,9 @@ namespace MyGame {
         FadeManager::GetInstance()->StartFade(FadeType::FadeIn, FadeStyle::SilhouetteExplode, 1.0f);
         // ゲーム開始イベントの開始
         isGameStartEventDone_ = true;
+
 #ifdef USE_IMGUI
+        BulletManager::GetInstance()->Initialize();
         // 敵のパラメータ
         EnemyListEditor::GetInstance()->Initialize();
 #endif // USE_IMGUI
