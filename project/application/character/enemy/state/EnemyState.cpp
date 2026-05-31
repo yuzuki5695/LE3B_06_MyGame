@@ -63,7 +63,7 @@ namespace MyGame {
             }
 
             // 攻撃処理の更新処理
-            enemy->GetAttack()->Update(enemy->GetObject3d()->GetTransform(), enemy->GetPlayer()->GetTranslate());
+            enemy->GetAttack()->Update(enemy->GetEnemyType(), enemy->GetObject3d(), enemy->GetPlayer()->GetTranslate());
 
             // 毎フレーム当たり判定を更新
             character.GetCollider()->SetOBB(CollisionUtils::CreateOBB(character.GetObject3d()));

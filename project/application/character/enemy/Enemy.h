@@ -3,6 +3,8 @@
 #include <EnemyAttack.h>
 #include <Collider.h>
 #include <EnemyDeath.h>
+#include <random>
+#include <EnemyType.h>
 
 namespace MyGame {
 
@@ -44,6 +46,10 @@ namespace MyGame {
 		bool isExpGranted_; // 経験値付与済みフラグ
 		bool isKilledByPlayer_;
 		bool isDeathStarted_;
+		
+		EnemyType enemyType_; // 敵のタイプ
+		std::mt19937 randomEngine; // 乱数生成器
+
 	public: // アクセッサ
 		bool IsSpawned() const { return isSpawned_; }
 		bool IsExpGranted() const { return isExpGranted_; }
@@ -55,8 +61,8 @@ namespace MyGame {
 		EnemyDeath* GetDeath() { return death_.get(); }
 		MyEngine::Vector3 GetColliderSize() const { return colliderSize_; }
 		Player* GetPlayer() const { return player_; }
-		uint32_t GetExpReward() const { return expReward_; }
-
+		uint32_t GetExpReward() const { return expReward_; }	
+		EnemyType GetEnemyType() { return enemyType_; }
 		// setter
 		void SetPlayer(Player* player) { player_ = player; }
 		void SetSpawned(bool flag) { isSpawned_ = flag; }

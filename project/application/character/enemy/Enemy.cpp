@@ -63,6 +63,22 @@ namespace MyGame {
             ChangeState(std::make_unique<EnemyDead>());
             });
 
+        // 乱数エンジンを初期化
+        std::random_device rd;
+        randomEngine = std::mt19937(rd());
+        std::uniform_int_distribution<int> enemyTypeDist(0, 1);
+        enemyType_ = static_cast<EnemyType>(enemyTypeDist(randomEngine));
+        // 敵タイプごとの色設定
+        switch (enemyType_) {
+        case EnemyType::Shot:
+            // 通常（白）
+            object_->SetMaterialColor({ 1.0f, 1.0f, 1.0f, 1.0f });
+            break;
+        case EnemyType::Tackle:
+            // 突撃タイプ（赤）
+            object_->SetMaterialColor({ 1.0f, 0.0f, 0.0f, 1.0f });
+            break;
+        }
         // コンポーネントの生成
         attack_ = std::make_unique<EnemyAttack>(); // 攻撃ロジックの生成
         attack_->Initialize();                     // 攻撃ロジックの初期化

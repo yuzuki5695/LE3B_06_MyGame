@@ -1121,6 +1121,9 @@
     <ClInclude Include="application\character\enemy\EnemyListEditor.h">
       <Filter>ヘッダー ファイル\application\character\enemy</Filter>
     </ClInclude>
+    <ClInclude Include="application\character\enemy\EnemyType.h">
+      <Filter>ヘッダー ファイル\application\character\enemy</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Resources\shaders\Sprite\Sprite.PS.hlsl">
