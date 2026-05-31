@@ -28,9 +28,9 @@ namespace MyGame {
                 character.SetActive(true);
                 // 出現フラグをオフにする
                 enemy->SetSpawned(false);
-                // 登録前にOBB更新
-                character.GetCollider()->SetOBB(CollisionUtils::CreateOBB(character.GetObject3d()));
-                character.GetCollider()->SetSize(enemy->GetColliderSize()); // サイズを上書き固定
+                //// 登録前にOBB更新
+                //character.GetCollider()->SetOBB(CollisionUtils::CreateOBB(character.GetObject3d()));
+                //character.GetCollider()->SetSize(enemy->GetColliderSize()); // サイズを上書き固定
                 // 当たり判定登録
                 character.RegisterCollider();
                 // BaseCharacter状態からEnemyAlive状態へ遷移

@@ -49,11 +49,11 @@ namespace MyGame {
                 enemy->ChangeState(std::make_unique<EnemyIdle>());
                 // 出現フラグを立てる              
                 enemy->SetSpawned(true);
-                // スポーンした瞬間に、コライダーの位置（centerもこの spawnPos（出現位置）に同期する！
-                if (enemy->GetCollider()) {
-                    // 現在の天球・オブジェクトの位置関係から正しい初期位置・回転のOBBを作る
-                    enemy->GetCollider()->SetOBB(CollisionUtils::CreateOBB(enemy->GetObject3d(), enemy->GetColliderSize()));
-                }
+                //// スポーンした瞬間に、コライダーの位置（centerもこの spawnPos（出現位置）に同期する！
+                //if (enemy->GetCollider()) {
+                //    // 現在の天球・オブジェクトの位置関係から正しい初期位置・回転のOBBを作る
+                //    enemy->GetCollider()->SetOBB(CollisionUtils::CreateOBB(enemy->GetObject3d(), enemy->GetColliderSize()));
+                //}
                 spawned++;
             }
         }
