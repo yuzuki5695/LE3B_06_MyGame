@@ -19,9 +19,10 @@ namespace MyGame {
         /// 終了処理  
         /// </summary> 
         void Finalize();
-
+        void Initialize();
         void Update();
         void Draw();
+        void DrawImGui();
 
         // プレイヤー弾生成
         void SpawnPlayerBullet(const MyEngine::Transform& transform, const MyEngine::Vector3& velocity);
@@ -30,5 +31,8 @@ namespace MyGame {
 
     private:
         std::vector<std::unique_ptr<BaseBullet>> bullets_;
+        // 共通のコライダーサイズパラメータ
+        MyEngine::Vector3 commonPlayerBulletSize_ = { 1.0f, 1.0f, 1.0f };
+        MyEngine::Vector3 commonEnemyBulletSize_ = { 1.0f, 1.0f, 1.0f };
     };
 }

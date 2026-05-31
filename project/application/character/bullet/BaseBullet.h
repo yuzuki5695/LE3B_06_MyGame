@@ -2,6 +2,7 @@
 #include <Vector3.h>
 #include <memory>
 #include <Object3d.h>
+#include <Collider.h>
 
 namespace MyGame {
     /// <summary>
@@ -40,7 +41,7 @@ namespace MyGame {
         }
 
     protected: // メンバ変数
-		// ポインタ
+        // ポインタ
         std::unique_ptr<MyEngine::Object3d> bullet;
         bool active_ = true;
         MyEngine::Transform transform_; // 現在の位置
@@ -57,5 +58,9 @@ namespace MyGame {
         /// 弾を非アクティブ状態にする（削除対象にする）
         void SetInactive() { active_ = false; }
         void SetTranslate(const MyEngine::Vector3& translate) { bullet->SetTranslate(translate); }
+
+        virtual Collider* GetCollider() const = 0;
+        virtual MyEngine::Vector3 GetColliderSize() const = 0;
+        virtual void SetColliderSize(const MyEngine::Vector3& size) = 0;
     };
 }

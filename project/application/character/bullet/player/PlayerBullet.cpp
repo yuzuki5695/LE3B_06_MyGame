@@ -2,6 +2,7 @@
 #include <ModelManager.h>
 #include <CollisionManager.h>
 #include <CollisionConfig.h>
+#include <LineRenderer.h>
 // AssetGeneratorからインクルード
 #include <subproject/AssetGenerator/engine/generator/LoadResourceID.h>
 
@@ -24,11 +25,20 @@ namespace MyGame {
         // オブジェクト生成
         ModelManager::GetInstance()->LoadModel(Bullet::PlayerBullet);
         bullet = Object3d::Create(Bullet::PlayerBullet, transform_);
-
+        
+        // 当たり判定サイズ 
+        colliderSize_ = bullet->GetScale();
         // コライダー生成
-        collider_ = Collider::Create({ .profile = Profile::PlayerBullet,.obb = CollisionUtils::CreateOBB(bullet.get()) });
+        collider_ = Collider::Create({ .profile = Profile::PlayerBullet,.obb = CollisionUtils::CreateOBB(bullet.get(),colliderSize_) });
         // 衝突時の処理
-        collider_->SetCallback([this](Collider* other) {SetInactive(); });
+        collider_->SetCallback([this](Collider* other) {
+#ifdef USE_IMGUI
+            // Debug用
+            LineRenderer::GetInstance()->SetHit(true);
+#endif // USE_IMGUI
+            SetInactive();
+            }
+        );
         // コライダー登録
         CollisionManager::GetInstance()->RegisterCollider(collider_.get());
 
@@ -56,7 +66,17 @@ namespace MyGame {
         UpdateLifeTime(1.0f / 60.0f); // 仮で60FPS固定
 
         // OBB更新
-        collider_->SetOBB(CollisionUtils::CreateOBB(bullet.get(), { 1.0f,1.0f,1.0f }));
+        collider_->SetOBB(CollisionUtils::CreateOBB(bullet.get(), colliderSize_));
+#ifdef USE_IMGUI
+        if (!active_) {
+            const auto& debug = LineRenderer::GetInstance()->GetDebugSettings();
+            if (debug.enable && bullet && collider_) {
+                LineRenderer::GetInstance()->SetHit(false);
+                Vector4 hitColor = debug.isHit ? Vector4{ 1,0,0,1 } : Vector4{ 0,1,0,1 };
+                LineRenderer::GetInstance()->AddOBB(collider_->GetOBB(), hitColor);
+            }
+        }
+#endif // USE_IMGUI
     }
 
     void PlayerBullet::Draw() {
