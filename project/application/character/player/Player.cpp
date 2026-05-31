@@ -64,7 +64,7 @@ namespace MyGame {
             LineRenderer::GetInstance()->SetHit(true);
 #endif // USE_IMGUI
             if (!IsAlive()) { return; }
-            ChangeState(std::make_unique<PlayerStateDead>());
+           // ChangeState(std::make_unique<PlayerStateDead>());
             });
         // コライダー登録
         CollisionManager::GetInstance()->RegisterCollider(collider_.get());

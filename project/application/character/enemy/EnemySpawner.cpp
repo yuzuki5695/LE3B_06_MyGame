@@ -46,6 +46,7 @@ namespace MyGame {
 
                 Vector3 spawnPos = playerPos + forward * randZ + right * randX + up * randY;
                 enemy->GetObject3d()->SetTranslate(spawnPos);
+                enemy->GetObject3d()->SetRotate({ 0.0f, 0.0f, 0.0f });
                 enemy->ChangeState(std::make_unique<EnemyIdle>());
                 // 出現フラグを立てる              
                 enemy->SetSpawned(true);
