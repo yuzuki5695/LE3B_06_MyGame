@@ -20,6 +20,7 @@
 #include <CameraDefs.h>
 #include <PlayerState.h>
 #include <EnemyListEditor.h>
+#include <LineRenderer.h>
 // AssetGeneratorからインクルード
 #include <subproject/AssetGenerator/engine/generator/LoadResourceID.h>
 
@@ -38,6 +39,7 @@ namespace MyGame {
         FadeManager::GetInstance()->Finalize();   // フェードマネージャの終了処理
         CollisionManager::GetInstance()->Finalize(); // 衝突マネージャの終了処理
         EnemyListEditor::GetInstance()->Finalize();
+        LineRenderer::GetInstance()->Finalize();
     }
 
     void GamePlayScene::Initialize() {
@@ -84,7 +86,7 @@ namespace MyGame {
         // フェードマネージャの初期化(フェードイン開始処理)
         FadeManager::GetInstance()->StartFade(FadeType::FadeIn, FadeStyle::SilhouetteExplode, 1.0f);
         // ゲーム開始イベントの開始
-        isGameStartEventDone_ = true;
+        isGameStartEventDone_ = false;
 
 #ifdef USE_IMGUI
         BulletManager::GetInstance()->Initialize();
@@ -94,27 +96,32 @@ namespace MyGame {
     }
 
     void GamePlayScene::Update() {
+        ////  ゲーム開始前のイベント処理
+        //if (!isGameStartEventDone_) {
+        //    // ゲーム開始イベントの開始
+        //    EventManager::GetInstance()->EventStart(Event::EventState::GameStart);
+        //    EventManager::GetInstance()->Update();
+        //    isGameStartEventDone_ = true;
+        //    CameraManager::GetInstance()->Update();
+        //    return;
+        //}
+
         // カメラマネージャの更新
         CameraManager::GetInstance()->Update();
 #pragma region 全てのObject3d個々の更新処理      
         // ポーズメニューのトリガーと更新
-        if (!UIManager::GetInstance()->GetUI<GamePlayUI>()->GetPauseMenu()->IsActive() &&
-            Input::GetInstance()->TriggerKey(DIK_TAB)) {
+        if (!UIManager::GetInstance()->GetUI<GamePlayUI>()->GetPauseMenu()->IsActive() && Input::GetInstance()->TriggerKey(DIK_TAB)) {
             UIManager::GetInstance()->GetUI<GamePlayUI>()->GetPauseMenu()->SetActive(true);
         }
         // ポーズがアクティブ中、ゲームの更新を停止してポーズメニューの更新のみ行う
         if (UIManager::GetInstance()->GetUI<GamePlayUI>()->GetPauseMenu()->IsActive()) {
             UIManager::GetInstance()->GetUI<GamePlayUI>()->GetPauseMenu()->Update();
             FadeManager::GetInstance()->Update();
+            CameraManager::GetInstance()->GetCurrentBehaviorAs<GamePlayCamera>()->SetPlayer(player_.get());            
+            UIManager::GetInstance()->Update();
             return;
         }
 
-        ////  ゲーム開始前のイベント処理
-        //if (!isGameStartEventDone_) {
-        //    // ゲーム開始イベントの開始
-        //    EventManager::GetInstance()->EventStart(Event::EventState::GameStart);
-        //    isGameStartEventDone_ = true;
-        //}
 
         // 敵スポーン
         enemySpawner_->Update();

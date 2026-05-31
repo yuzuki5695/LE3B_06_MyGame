@@ -19,7 +19,7 @@ namespace MyEngine {
             bool isHit = false;                   // 衝突中か
             Vector3 size = { 1.5f,1.5f,1.5f };    // サイズ
             Vector4 color = { 0,0,1,1 };          // カラー(初期は緑)
-            float thickness = 0.7f;              // ラインの太さ
+            float thickness = 0.07f;              // ラインの太さ
         };
 
     private:
