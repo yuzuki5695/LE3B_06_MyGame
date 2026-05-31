@@ -7871,6 +7871,7 @@ File Path: project/application/character/bullet/BaseBullet.h
 #include <Vector3.h>
 #include <memory>
 #include <Object3d.h>
+#include <Collider.h>
 
 namespace MyGame {
     /// <summary>
@@ -7909,7 +7910,7 @@ namespace MyGame {
         }
 
     protected: // メンバ変数
-		// ポインタ
+        // ポインタ
         std::unique_ptr<MyEngine::Object3d> bullet;
         bool active_ = true;
         MyEngine::Transform transform_; // 現在の位置
@@ -7926,6 +7927,10 @@ namespace MyGame {
         /// 弾を非アクティブ状態にする（削除対象にする）
         void SetInactive() { active_ = false; }
         void SetTranslate(const MyEngine::Vector3& translate) { bullet->SetTranslate(translate); }
+
+        virtual Collider* GetCollider() const = 0;
+        virtual MyEngine::Vector3 GetColliderSize() const = 0;
+        virtual void SetColliderSize(const MyEngine::Vector3& size) = 0;
     };
 }
 
@@ -7935,6 +7940,10 @@ File Path: project/application/character/bullet/BulletManager.cpp
 #include "BulletManager.h"
 #include <PlayerBullet.h>
 #include <EnemyBullet.h>
+#include <EditorEntityRegistry.h>
+#include <EditorTypes.h>
+#include <LineRenderer.h>
+#include <ImGuiManager.h>
 
 using namespace MyEngine;
 
@@ -7960,6 +7969,44 @@ namespace MyGame {
         // インスタンスを削除してnullptrに戻す
         delete instance;
         instance = nullptr;
+    }
+
+    void BulletManager::Initialize() {
+#ifdef USE_IMGUI
+        EditorTypes::EditorObjectInfo info;
+        info.name = "Bullet Manager";                                 // エディタメニューに表示される名前
+        info.category = EditorTypes::ObjectCategory::List;            // リスト/マネジメントカテゴリ
+        info.objectPtr = this;
+        info.drawEditor = [this]() {
+            ImGui::SeparatorText("Player Bullet");
+            // ImGuiでサイズを変更（ドラッグで調整可能に）
+            if (ImGui::DragFloat3("Player Bullet Size", &commonPlayerBulletSize_.x, 0.05f, 0.1f, 10.0f)) {
+                // 値が変わったら、現在画面内に存在するすべての弾に即座に反映
+                for (auto& bullet : bullets_) {
+                    if (bullet && bullet->IsActive()) {
+                        if (PlayerBullet* Player = dynamic_cast<PlayerBullet*>(bullet.get())) {
+                            Player->SetColliderSize(commonPlayerBulletSize_);
+                        }
+                    }
+                }
+            }
+
+            ImGui::SeparatorText("Enemy Bullet Settings");
+            if (ImGui::DragFloat3("Enemy Bullet Size", &commonEnemyBulletSize_.x, 0.05f, 0.1f, 10.0f)) {
+                // 値が変わったら、現在画面内に存在するすべての弾に即座に反映
+                for (auto& bullet : bullets_) {
+                    if (bullet && bullet->IsActive()) {
+                        if (EnemyBullet* Enemy = dynamic_cast<EnemyBullet*>(bullet.get())) {
+                            Enemy->SetColliderSize(commonEnemyBulletSize_);
+                        }
+                    }
+                }
+            }
+
+            };
+        // エディタシステムに登録
+        EditorEntityRegistry::Instance().Register(info);
+#endif // USE_IMGUI
     }
 
     void BulletManager::Update() {
@@ -7991,12 +8038,20 @@ namespace MyGame {
     void BulletManager::SpawnPlayerBullet(const Transform& transform, const Vector3& velocity) {
         std::unique_ptr<BaseBullet> bullet = std::make_unique<PlayerBullet>();
         bullet->Initialize(transform, velocity);
+        // 最新の共通サイズを適用
+        if (PlayerBullet* Player = dynamic_cast<PlayerBullet*>(bullet.get())) {
+            Player->SetColliderSize(commonPlayerBulletSize_);
+        }
         bullets_.push_back(std::move(bullet));
     }
 
     void BulletManager::SpawnEnemyBullet(const MyEngine::Transform& transform, const MyEngine::Vector3& velocity) {
         std::unique_ptr<BaseBullet> bullet = std::make_unique<EnemyBullet>();
         bullet->Initialize(transform, velocity);
+        // 最新の共通サイズを適用
+        if (EnemyBullet* Enemy = dynamic_cast<EnemyBullet*>(bullet.get())) {
+            Enemy->SetColliderSize(commonEnemyBulletSize_);
+        }
         bullets_.push_back(std::move(bullet));
     }
 }
@@ -8025,9 +8080,10 @@ namespace MyGame {
         /// 終了処理  
         /// </summary> 
         void Finalize();
-
+        void Initialize();
         void Update();
         void Draw();
+        void DrawImGui();
 
         // プレイヤー弾生成
         void SpawnPlayerBullet(const MyEngine::Transform& transform, const MyEngine::Vector3& velocity);
@@ -8036,6 +8092,9 @@ namespace MyGame {
 
     private:
         std::vector<std::unique_ptr<BaseBullet>> bullets_;
+        // 共通のコライダーサイズパラメータ
+        MyEngine::Vector3 commonPlayerBulletSize_ = { 1.0f, 1.0f, 1.0f };
+        MyEngine::Vector3 commonEnemyBulletSize_ = { 1.0f, 1.0f, 1.0f };
     };
 }
 
@@ -8046,6 +8105,7 @@ File Path: project/application/character/bullet/enemy/EnemyBullet.cpp
 #include <ModelManager.h>
 #include <CollisionManager.h>
 #include <CollisionConfig.h>
+#include <LineRenderer.h>
 // AssetGeneratorからインクルード
 #include <subproject/AssetGenerator/engine/generator/LoadResourceID.h>
 
@@ -8068,11 +8128,18 @@ namespace MyGame {
         // オブジェクト生成
         ModelManager::GetInstance()->LoadModel(Bullet::EnemyBullet);
         bullet = Object3d::Create(Bullet::EnemyBullet, transform_);
-
+        // 当たり判定サイズ 
+        colliderSize_ = bullet->GetScale();
         // コライダー生成
-        collider_ = Collider::Create({ .profile = Profile::EnemyBullet,.obb = CollisionUtils::CreateOBB(bullet.get()) });
+        collider_ = Collider::Create({ .profile = Profile::EnemyBullet,.obb = CollisionUtils::CreateOBB(bullet.get(),colliderSize_) });
         // 衝突時の処理
-        collider_->SetCallback([this](Collider* other) {SetInactive(); });
+        collider_->SetCallback([this](Collider* other) {
+#ifdef USE_IMGUI
+            // Debug用
+            LineRenderer::GetInstance()->SetHit(true);
+#endif // USE_IMGUI
+            SetInactive(); }
+        );
         // コライダー登録
         CollisionManager::GetInstance()->RegisterCollider(collider_.get());
      
@@ -8098,9 +8165,19 @@ namespace MyGame {
         // ③ 寿命処理
         // =============================
         UpdateLifeTime(1.0f / 60.0f); // 仮で60FPS固定
- 
+
         // OBB更新
-        collider_->SetOBB(CollisionUtils::CreateOBB(bullet.get(), { 1.0f,1.0f,1.0f }));
+        collider_->SetOBB(CollisionUtils::CreateOBB(bullet.get(), colliderSize_));
+#ifdef USE_IMGUI
+        if (!active_) {
+            const auto& debug = LineRenderer::GetInstance()->GetDebugSettings();
+            if (debug.enable && bullet && collider_) {
+                LineRenderer::GetInstance()->SetHit(false);
+                Vector4 hitColor = debug.isHit ? Vector4{ 1,0,0,1 } : Vector4{ 0,1,0,1 };
+                LineRenderer::GetInstance()->AddOBB(collider_->GetOBB(), hitColor);
+            }
+        }
+#endif // USE_IMGUI
     }
 
     void EnemyBullet::Draw() {
@@ -8124,26 +8201,37 @@ namespace MyGame {
     class EnemyBullet : public BaseBullet {
     public: // メンバ関数
         /// <summary>
-		/// 終了処理
+        /// 終了処理
         /// </summary>
         void Finalize() override;
         /// <summary>
-		/// 初期化処理
+        /// 初期化処理
         /// </summary>
         /// <param name="transform"></param>
         /// <param name="velocity"></param>
         void Initialize(const MyEngine::Transform& transform, const MyEngine::Vector3& velocity)  override;
         /// <summary>
-		/// 更新処理
+        /// 更新処理
         /// </summary>
         void Update() override;
         /// <summary>
-		/// 描画処理
+        /// 描画処理
         /// </summary>
         void Draw() override;
     private: // メンバ変数
-		// コライダー
+        // コライダー
         std::unique_ptr<Collider> collider_;
+        MyEngine::Vector3 colliderSize_;
+    public:
+        Collider* GetCollider() const override { return collider_.get(); }
+        void SetColliderSize(const MyEngine::Vector3& size) override { colliderSize_ = size; }
+        MyEngine::Vector3 GetColliderSize() const override { return colliderSize_; }
+        void SetColliderSizelist(const MyEngine::Vector3& size) {
+            colliderSize_ = size;
+            if (collider_) {
+                collider_->SetSize(size);
+            }
+        }
     };
 }
 
@@ -8154,6 +8242,7 @@ File Path: project/application/character/bullet/player/PlayerBullet.cpp
 #include <ModelManager.h>
 #include <CollisionManager.h>
 #include <CollisionConfig.h>
+#include <LineRenderer.h>
 // AssetGeneratorからインクルード
 #include <subproject/AssetGenerator/engine/generator/LoadResourceID.h>
 
@@ -8176,11 +8265,20 @@ namespace MyGame {
         // オブジェクト生成
         ModelManager::GetInstance()->LoadModel(Bullet::PlayerBullet);
         bullet = Object3d::Create(Bullet::PlayerBullet, transform_);
-
+        
+        // 当たり判定サイズ 
+        colliderSize_ = bullet->GetScale();
         // コライダー生成
-        collider_ = Collider::Create({ .profile = Profile::PlayerBullet,.obb = CollisionUtils::CreateOBB(bullet.get()) });
+        collider_ = Collider::Create({ .profile = Profile::PlayerBullet,.obb = CollisionUtils::CreateOBB(bullet.get(),colliderSize_) });
         // 衝突時の処理
-        collider_->SetCallback([this](Collider* other) {SetInactive(); });
+        collider_->SetCallback([this](Collider* other) {
+#ifdef USE_IMGUI
+            // Debug用
+            LineRenderer::GetInstance()->SetHit(true);
+#endif // USE_IMGUI
+            SetInactive();
+            }
+        );
         // コライダー登録
         CollisionManager::GetInstance()->RegisterCollider(collider_.get());
 
@@ -8208,7 +8306,17 @@ namespace MyGame {
         UpdateLifeTime(1.0f / 60.0f); // 仮で60FPS固定
 
         // OBB更新
-        collider_->SetOBB(CollisionUtils::CreateOBB(bullet.get(), { 1.0f,1.0f,1.0f }));
+        collider_->SetOBB(CollisionUtils::CreateOBB(bullet.get(), colliderSize_));
+#ifdef USE_IMGUI
+        if (!active_) {
+            const auto& debug = LineRenderer::GetInstance()->GetDebugSettings();
+            if (debug.enable && bullet && collider_) {
+                LineRenderer::GetInstance()->SetHit(false);
+                Vector4 hitColor = debug.isHit ? Vector4{ 1,0,0,1 } : Vector4{ 0,1,0,1 };
+                LineRenderer::GetInstance()->AddOBB(collider_->GetOBB(), hitColor);
+            }
+        }
+#endif // USE_IMGUI
     }
 
     void PlayerBullet::Draw() {
@@ -8227,31 +8335,42 @@ File Path: project/application/character/bullet/player/PlayerBullet.h
 
 namespace MyGame {
     /// <summary>
-	/// プレイヤーの弾クラス
+    /// プレイヤーの弾クラス
     /// </summary>
     class PlayerBullet : public BaseBullet {
     public: // メンバ関数
         /// <summary>
-		/// 終了処理
+        /// 終了処理
         /// </summary>
         void Finalize() override;
         /// <summary>
-		/// 初期化処理
+        /// 初期化処理
         /// </summary>
         /// <param name="transform"></param>
         /// <param name="velocity"></param>
         void Initialize(const MyEngine::Transform& transform, const MyEngine::Vector3& velocity)  override;
         /// <summary>
-		/// 更新処理
+        /// 更新処理
         /// </summary>
         void Update() override;
         /// <summary>
-		/// 描画処理
+        /// 描画処理
         /// </summary>
         void Draw() override;
     private: // メンバ変数
-		// コライダー
+        // コライダー
         std::unique_ptr<Collider> collider_;
+        MyEngine::Vector3 colliderSize_;
+    public:
+        Collider* GetCollider() const override { return collider_.get(); }
+        void SetColliderSize(const MyEngine::Vector3& size) override { colliderSize_ = size; }
+        MyEngine::Vector3 GetColliderSize() const override { return colliderSize_; }
+        void SetColliderSizelist(const MyEngine::Vector3& size) {
+            colliderSize_ = size;
+            if (collider_) {
+                collider_->SetSize(size);
+            }
+        }
     };
 }
 
@@ -8337,18 +8456,12 @@ namespace MyGame {
         // オブジェクトの更新
         object_->Update();
 #ifdef USE_IMGUI
-        const auto& debug = LineRenderer::GetInstance()->GetDebugSettings();
-        if (debug.enable && object_ && collider_) { // collider_の存在チェックを追加
-            LineRenderer::GetInstance()->SetHit(false);
-            Vector4 hitColor = debug.isHit ? Vector4{ 1,0,0,1 } : Vector4{ 0,1,0,1 };
-
-            // ========================================================
-            // ★修正：その場でCreateOBBするのではなく、
-            // ステート側でサイズ調整が完了した「コライダーのOBB」をそのまま描画に使う
-            // ========================================================
-            OBB obb = collider_->GetOBB();
-
-            LineRenderer::GetInstance()->AddOBB(obb, hitColor);
+        if (IsActive()) {
+            const auto& debug = LineRenderer::GetInstance()->GetDebugSettings();
+            if (debug.enable && object_) {     
+                Vector4 hitColor = debug.isHit ? Vector4{ 1,0,0,1 } : Vector4{ 0,1,0,1 };
+                LineRenderer::GetInstance()->AddOBB(collider_->GetOBB(), hitColor);
+            }
         }
 #endif // USE_IMGUI
     }
@@ -8650,12 +8763,13 @@ namespace MyGame {
 
                 Vector3 spawnPos = playerPos + forward * randZ + right * randX + up * randY;
                 enemy->GetObject3d()->SetTranslate(spawnPos);
+                enemy->GetObject3d()->SetRotate({ 0.0f, 0.0f, 0.0f });
                 enemy->ChangeState(std::make_unique<EnemyIdle>());
                 // 出現フラグを立てる              
                 enemy->SetSpawned(true);
                 // スポーンした瞬間に、コライダーの位置（centerもこの spawnPos（出現位置）に同期する！
                 if (enemy->GetCollider()) {
-                    // 現在の天球・オブジェクトの位置関係から正しい初期位置・回転のOBBを作る
+                    // オブジェクトの位置関係から正しい初期位置・回転のOBBを作る
                     enemy->GetCollider()->SetOBB(CollisionUtils::CreateOBB(enemy->GetObject3d(), enemy->GetColliderSize()));
                 }
                 spawned++;
@@ -8721,7 +8835,7 @@ namespace MyGame {
 		canShoot_ = false;    // 最初は撃てないようにする
         // 最初は即撃てるようにする
         timer_ = coolTime_;
-        speed = 5.0f;
+        speed = 3.0f;
     }
 
     void EnemyAttack::Update(const Transform& transform, const Vector3& aimWorldPos) {
@@ -8974,11 +9088,10 @@ namespace MyGame {
             }
 
             // 攻撃処理の更新処理
-            //enemy->GetAttack()->Update(enemy->GetObject3d()->GetTransform(), enemy->GetPlayer()->GetTranslate());
+            enemy->GetAttack()->Update(enemy->GetObject3d()->GetTransform(), enemy->GetPlayer()->GetTranslate());
 
             // 毎フレーム当たり判定を更新
             character.GetCollider()->SetOBB(CollisionUtils::CreateOBB(character.GetObject3d()));
-            character.GetCollider()->SetSize(enemy->GetColliderSize()); // サイズを上書き固定
         }
     }
 
@@ -9611,7 +9724,7 @@ namespace MyGame {
             LineRenderer::GetInstance()->SetHit(true);
 #endif // USE_IMGUI
             if (!IsAlive()) { return; }
-            ChangeState(std::make_unique<PlayerStateDead>());
+           // ChangeState(std::make_unique<PlayerStateDead>());
             });
         // コライダー登録
         CollisionManager::GetInstance()->RegisterCollider(collider_.get());
@@ -9647,6 +9760,10 @@ namespace MyGame {
             if (!dynamic_cast<PlayerStateDead*>(state_.GetCurrentState())) {
                 SyncWorldTransformByRail();
             }
+        }
+
+        if (collider_ && object_) {
+            collider_->SetOBB(CollisionUtils::CreateOBB(object_.get(), colliderSize_));
         }
         // 各コンポーネントの更新
         targetreticle_->Update();
@@ -9850,6 +9967,7 @@ namespace MyGame {
 		PlayerReticle* GetReticle() { return reticle_.get(); }
 		PlayerAttack* GetAttack() { return attack_.get(); }
 		PlayerDeath* GetDeath() { return death_.get(); }
+		const MyEngine::Vector3& GetColliderSize() const { return colliderSize_; }
 		const MyEngine::Vector3& GetRotate() const { return object_->GetRotate(); }
 		const MyEngine::Vector3& GetTranslate() const { return object_->GetTranslate(); }
 		const MyEngine::Vector3& GetAimWorldPos() const { return aimWorldPos_; }
@@ -9862,7 +9980,7 @@ namespace MyGame {
 		void SetAimWorldPos(const MyEngine::Vector3& pos) { aimWorldPos_ = pos; }
 		void SetTranslate(const MyEngine::Vector3& translate) { object_->SetTranslate(translate); }
 		void SetRotate(const MyEngine::Vector3& rotate) { object_->SetRotate(rotate); }
-		void SetEnemy(Enemy* enemy) { enemy_ = enemy; }
+		void SetEnemy(Enemy* enemy) { enemy_ = enemy; }		
 	};
 }
 
@@ -9908,10 +10026,7 @@ namespace MyGame {
 
     void PlayerStateMove::Update(BaseCharacter& character) {
         // 必要なコンポーネント
-        Player* player = dynamic_cast<Player*>(&character);
-        if (Input::GetInstance()->PushKey(DIK_Z)) {
-            character.ChangeState(std::make_unique<PlayerStateDead>());
-        }
+        Player* player = dynamic_cast<Player*>(&character); 
 
         // アクティブ中は各更新処理を行う
         if (character.IsActive()) {
@@ -11833,6 +11948,7 @@ File Path: project/application/scene/GamePlayScene.cpp
 #include <CameraDefs.h>
 #include <PlayerState.h>
 #include <EnemyListEditor.h>
+#include <LineRenderer.h>
 // AssetGeneratorからインクルード
 #include <subproject/AssetGenerator/engine/generator/LoadResourceID.h>
 
@@ -11851,6 +11967,7 @@ namespace MyGame {
         FadeManager::GetInstance()->Finalize();   // フェードマネージャの終了処理
         CollisionManager::GetInstance()->Finalize(); // 衝突マネージャの終了処理
         EnemyListEditor::GetInstance()->Finalize();
+        LineRenderer::GetInstance()->Finalize();
     }
 
     void GamePlayScene::Initialize() {
@@ -11897,35 +12014,42 @@ namespace MyGame {
         // フェードマネージャの初期化(フェードイン開始処理)
         FadeManager::GetInstance()->StartFade(FadeType::FadeIn, FadeStyle::SilhouetteExplode, 1.0f);
         // ゲーム開始イベントの開始
-        isGameStartEventDone_ = true;
+        isGameStartEventDone_ = false;
+
 #ifdef USE_IMGUI
+        BulletManager::GetInstance()->Initialize();
         // 敵のパラメータ
         EnemyListEditor::GetInstance()->Initialize();
 #endif // USE_IMGUI
     }
 
     void GamePlayScene::Update() {
+        ////  ゲーム開始前のイベント処理
+        //if (!isGameStartEventDone_) {
+        //    // ゲーム開始イベントの開始
+        //    EventManager::GetInstance()->EventStart(Event::EventState::GameStart);
+        //    EventManager::GetInstance()->Update();
+        //    isGameStartEventDone_ = true;
+        //    CameraManager::GetInstance()->Update();
+        //    return;
+        //}
+
         // カメラマネージャの更新
         CameraManager::GetInstance()->Update();
 #pragma region 全てのObject3d個々の更新処理      
         // ポーズメニューのトリガーと更新
-        if (!UIManager::GetInstance()->GetUI<GamePlayUI>()->GetPauseMenu()->IsActive() &&
-            Input::GetInstance()->TriggerKey(DIK_TAB)) {
+        if (!UIManager::GetInstance()->GetUI<GamePlayUI>()->GetPauseMenu()->IsActive() && Input::GetInstance()->TriggerKey(DIK_TAB)) {
             UIManager::GetInstance()->GetUI<GamePlayUI>()->GetPauseMenu()->SetActive(true);
         }
         // ポーズがアクティブ中、ゲームの更新を停止してポーズメニューの更新のみ行う
         if (UIManager::GetInstance()->GetUI<GamePlayUI>()->GetPauseMenu()->IsActive()) {
             UIManager::GetInstance()->GetUI<GamePlayUI>()->GetPauseMenu()->Update();
             FadeManager::GetInstance()->Update();
+            CameraManager::GetInstance()->GetCurrentBehaviorAs<GamePlayCamera>()->SetPlayer(player_.get());            
+            UIManager::GetInstance()->Update();
             return;
         }
 
-        ////  ゲーム開始前のイベント処理
-        //if (!isGameStartEventDone_) {
-        //    // ゲーム開始イベントの開始
-        //    EventManager::GetInstance()->EventStart(Event::EventState::GameStart);
-        //    isGameStartEventDone_ = true;
-        //}
 
         // 敵スポーン
         enemySpawner_->Update();
@@ -19985,7 +20109,7 @@ namespace MyEngine {
             bool isHit = false;                   // 衝突中か
             Vector3 size = { 1.5f,1.5f,1.5f };    // サイズ
             Vector4 color = { 0,0,1,1 };          // カラー(初期は緑)
-            float thickness = 0.01f;              // ラインの太さ
+            float thickness = 0.07f;              // ラインの太さ
         };
 
     private:
