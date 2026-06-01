@@ -112,6 +112,7 @@
     └── └── └── ├── EnemyListEditor.h
     └── └── └── ├── EnemySpawner.cpp
     └── └── └── ├── EnemySpawner.h
+    └── └── └── ├── EnemyType.h
     └── └── └── ├── component/
     └── └── └── └── ├── EnemyAttack.cpp
     └── └── └── └── ├── EnemyAttack.h
@@ -5490,6 +5491,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\character\enemy\Enemy.h" />
     <ClInclude Include="application\character\enemy\EnemyListEditor.h" />
     <ClInclude Include="application\character\enemy\EnemySpawner.h" />
+    <ClInclude Include="application\character\enemy\EnemyType.h" />
     <ClInclude Include="application\character\enemy\state\EnemyState.h" />
     <ClInclude Include="application\character\player\Component\PlayerAttack.h" />
     <ClInclude Include="application\character\player\Component\PlayerDeath.h" />
@@ -6839,6 +6841,9 @@ File Path: project/MyGame.vcxproj.filters
     <ClInclude Include="application\character\enemy\EnemyListEditor.h">
       <Filter>ヘッダー ファイル\application\character\enemy</Filter>
     </ClInclude>
+    <ClInclude Include="application\character\enemy\EnemyType.h">
+      <Filter>ヘッダー ファイル\application\character\enemy</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Resources\shaders\Sprite\Sprite.PS.hlsl">
@@ -7128,10 +7133,11 @@ File Path: project/application/camera/GamePlayCamera.cpp
 #include <MatrixVector.h>
 #include <Easing.h>
 #include <Player.h>
+#include <numbers>
+#include <LineRenderer.h>
 #ifdef min
 #undef min
 #endif
-#include <numbers>
 #ifdef max
 #undef max
 #endif
@@ -7202,6 +7208,14 @@ namespace MyGame {
             UpdateSubCamera();
             break;
         }
+#ifdef _DEBUG
+        if (camera) {
+            LineRenderer::GetInstance()->AddRailLine(GetRailPoints(), { 1.0f, 1.0f, 0.0f, 1.0f });
+            for (const auto& point : GetRailPoints()) {
+                LineRenderer::GetInstance()->AddAABB(point.controlPoint.controlPoint, { 2.0f,2.0f,2.0f }, { 1,0,0,1 });
+            }
+        }
+#endif
     }
 
     void GamePlayCamera::UpdateRailCamera(Camera* camera) {
@@ -7441,6 +7455,11 @@ namespace MyGame {
             if (!bezierdata_ || bezierdata_->points.empty()) { return {}; }
             // 最後の制御点(end)を返す
             return bezierdata_->points.back().controlPoint.controlPoint;
+        }
+        const std::vector<BezierPoint>& GetRailPoints() const {
+            static std::vector<BezierPoint> empty;
+            if (!bezierdata_) { return empty; }
+            return bezierdata_->points;
         }
     };
 }
@@ -8442,6 +8461,22 @@ namespace MyGame {
             ChangeState(std::make_unique<EnemyDead>());
             });
 
+        // 乱数エンジンを初期化
+        std::random_device rd;
+        randomEngine = std::mt19937(rd());
+        std::uniform_int_distribution<int> enemyTypeDist(0, 1);
+        enemyType_ = static_cast<EnemyType>(enemyTypeDist(randomEngine));
+        // 敵タイプごとの色設定
+        switch (enemyType_) {
+        case EnemyType::Shot:
+            // 通常（白）
+            object_->SetMaterialColor({ 1.0f, 1.0f, 1.0f, 1.0f });
+            break;
+        case EnemyType::Tackle:
+            // 突撃タイプ（赤）
+            object_->SetMaterialColor({ 1.0f, 0.0f, 0.0f, 1.0f });
+            break;
+        }
         // コンポーネントの生成
         attack_ = std::make_unique<EnemyAttack>(); // 攻撃ロジックの生成
         attack_->Initialize();                     // 攻撃ロジックの初期化
@@ -8481,6 +8516,8 @@ File Path: project/application/character/enemy/Enemy.h
 #include <EnemyAttack.h>
 #include <Collider.h>
 #include <EnemyDeath.h>
+#include <random>
+#include <EnemyType.h>
 
 namespace MyGame {
 
@@ -8522,6 +8559,10 @@ namespace MyGame {
 		bool isExpGranted_; // 経験値付与済みフラグ
 		bool isKilledByPlayer_;
 		bool isDeathStarted_;
+		
+		EnemyType enemyType_; // 敵のタイプ
+		std::mt19937 randomEngine; // 乱数生成器
+
 	public: // アクセッサ
 		bool IsSpawned() const { return isSpawned_; }
 		bool IsExpGranted() const { return isExpGranted_; }
@@ -8533,8 +8574,8 @@ namespace MyGame {
 		EnemyDeath* GetDeath() { return death_.get(); }
 		MyEngine::Vector3 GetColliderSize() const { return colliderSize_; }
 		Player* GetPlayer() const { return player_; }
-		uint32_t GetExpReward() const { return expReward_; }
-
+		uint32_t GetExpReward() const { return expReward_; }	
+		EnemyType GetEnemyType() { return enemyType_; }
 		// setter
 		void SetPlayer(Player* player) { player_ = player; }
 		void SetSpawned(bool flag) { isSpawned_ = flag; }
@@ -8813,6 +8854,20 @@ namespace MyGame {
 }
 
 ============================================================
+File Path: project/application/character/enemy/EnemyType.h
+============================================================
+#pragma once
+
+namespace MyGame {
+
+    enum class EnemyType {
+        Shot,
+        Tackle
+    };
+
+}
+
+============================================================
 File Path: project/application/character/enemy/component/EnemyAttack.cpp
 ============================================================
 #include "EnemyAttack.h"
@@ -8820,25 +8875,42 @@ File Path: project/application/character/enemy/component/EnemyAttack.cpp
 #include <BulletManager.h>
 #include <MatrixVector.h>
 #include <CameraManager.h>
+#include <Easing.h>
+#include <numbers>
 
 using namespace MyEngine;
 using namespace MatrixVector;
+using namespace Easing;
 
 namespace MyGame {
 
     void EnemyAttack::Initialize() {
         // 初期化
         // 乱数エンジン初期化
-        randomEngine_ = std::mt19937(rd()); 
-		distcooltime_ = std::uniform_real_distribution<float>(2.0f, 5.0f); // クールタイムを設定
+        randomEngine_ = std::mt19937(rd());
+        distcooltime_ = std::uniform_real_distribution<float>(2.0f, 5.0f); // クールタイムを設定
         coolTime_ = distcooltime_(randomEngine_); // 最初のクールタイムをランダムに決定
-		canShoot_ = false;    // 最初は撃てないようにする
+        canShoot_ = false;    // 最初は撃てないようにする
         // 最初は即撃てるようにする
         timer_ = coolTime_;
         speed = 3.0f;
+        state_ = AttackState::Idle;
     }
 
-    void EnemyAttack::Update(const Transform& transform, const Vector3& aimWorldPos) {
+    void EnemyAttack::Update(EnemyType type, Object3d* object, const Vector3& aimWorldPos) {
+
+        switch (type) {
+
+        case EnemyType::Shot: // 弾を撃つ
+            UpdateShot(object, aimWorldPos);
+            break;
+        case EnemyType::Tackle: // 突撃する
+            UpdateTackle(object, aimWorldPos);
+            break;
+        }
+    }
+
+    void EnemyAttack::UpdateShot(Object3d* object, const Vector3& aimWorldPos) {
         // =========================
         // タイマー更新
         // =========================
@@ -8849,36 +8921,89 @@ namespace MyGame {
 
         // 発射したのでタイマーリセット
         timer_ = 0.0f;
-    
         // 次回クールタイムをランダム決定 
         coolTime_ = distcooltime_(randomEngine_);
-
-        // =========================
         // 発射位置（敵の位置）
-        // =========================
-        Vector3 startPos = transform.translate;
-        // =========================
+        Vector3 startPos = object->GetTransform().translate;
         // プレイヤー方向
-        // =========================
-        Vector3 dir = aimWorldPos - startPos;
-        dir = Normalize(dir);
-        // =========================
+        Vector3 dir = Normalize(aimWorldPos - startPos);
+        // yaw / pitch 計算
+        float bulletYaw = atan2f(dir.x, dir.z) + std::numbers::pi_v<float>;
+        float bulletPitch = -asinf(dir.y);
+        // 敵本体をプレイヤーに向かせる
+        Transform enemyTransform = object->GetTransform();
+        enemyTransform.rotate.y = bulletYaw;
+        object->SetRotate(enemyTransform.rotate);
         // 速度
-        // =========================
         Vector3 velocity = dir * speed;
-        // =========================
         // 弾生成
-        // =========================
         Transform bulletTransform;
         bulletTransform.scale = { 1.0f,1.0f,1.0f };
-        bulletTransform.rotate = { 0.0f,0.0f,0.0f };
+        bulletTransform.rotate = { bulletPitch,bulletYaw,0.0f };
         bulletTransform.translate = startPos;
-
         // 弾生成
         BulletManager::GetInstance()->SpawnEnemyBullet(bulletTransform, velocity);
-
         // 発射後は撃てないようにする
         canShoot_ = false;
+    }
+
+    void EnemyAttack::UpdateTackle(Object3d* object, const Vector3& aimWorldPos) {
+        Transform transform = object->GetTransform();
+
+        switch (state_) {
+        case AttackState::Idle: {
+            timer_ += 1.0f / 60.0f;
+
+            if (timer_ >= coolTime_) {
+                timer_ = 0.0f;
+                chargeTimer_ = 0.0f;
+                coolTime_ = distcooltime_(randomEngine_);
+                // プレイヤー方向固定
+                Vector3 dir = Normalize(aimWorldPos - transform.translate);
+                dashVelocity_ = dir * dashSpeed_;
+                dashDistance_ = 0.0f;
+                // 溜め開始位置を保存
+                chargeStartPos_ = transform.translate;
+                state_ = AttackState::Charge;
+            }
+
+            break;
+        }  case AttackState::Charge: {
+
+            chargeTimer_ += 1.0f / 60.0f;
+
+            float t = std::clamp(chargeTimer_ / chargeDuration_, 0.0f, 1.0f);
+
+            // プレイヤー方向
+            Vector3 toPlayer = Normalize(aimWorldPos - chargeStartPos_);
+            // 少し後ろへ引く
+            Vector3 backVec = toPlayer * -2.0f;
+
+            transform.translate = Lerp(chargeStartPos_, chargeStartPos_ + backVec, EaseOutBack(t));
+            // プレイヤーを向く
+            transform.rotate.y = atan2f(toPlayer.x, toPlayer.z);
+            // ドリル回転っぽく
+            transform.rotate.z += dashRotationSpeed_ * t;
+
+            object->SetTranslate(transform.translate);
+            object->SetRotate(transform.rotate);
+            // 溜め完了
+            if (t >= 1.0f) {
+                Vector3 finalDir = Normalize(aimWorldPos - transform.translate);
+                // 方向固定
+                dashVelocity_ = finalDir * dashSpeed_;
+                state_ = AttackState::Dash;
+            }
+            break;
+        }case AttackState::Dash: {
+            transform.translate += dashVelocity_;
+            transform.rotate.z += dashRotationSpeed_;
+
+            object->SetTranslate(transform.translate);
+            object->SetRotate(transform.rotate);
+            break;
+        }
+        }
     }
 }
 
@@ -8888,32 +9013,58 @@ File Path: project/application/character/enemy/component/EnemyAttack.h
 #pragma once
 #include <Object3d.h>
 #include <random>
+#include <EnemyType.h>
 
 namespace MyGame {
+
+    enum class AttackState {
+        Dash,
+        Charge, // 溜め
+        Idle
+    };
+
     /// <summary>
     /// 敵の攻撃クラス
     /// </summary>
     class EnemyAttack {
-	public: // メンバ関数
+    public: // メンバ関数
         /// <summary>
-		/// 初期化処理
+        /// 初期化処理
         /// </summary>
         void Initialize();
         /// <summary>
-		/// 更新処理
+        /// 更新処理
         /// </summary>
         /// <param name="transform"></param>
         /// <param name="aimWorldPos"></param>
-        void Update(const MyEngine::Transform& transform, const MyEngine::Vector3& aimWorldPos);
-	private: // メンバ変数
+        void Update(EnemyType type, MyEngine::Object3d* object, const MyEngine::Vector3& aimWorldPos);
+
+        void UpdateShot(MyEngine::Object3d* object, const MyEngine::Vector3& aimWorldPos);
+
+        void UpdateTackle(MyEngine::Object3d* object, const MyEngine::Vector3& aimWorldPos);
+    private: // メンバ変数
         float timer_ = 0.0f;
         float coolTime_ = 5.0f;   // 発射間隔
-		bool canShoot_; // 発射可能フラグ
+        bool canShoot_; // 発射可能フラグ
         float speed;
-		// 乱数生成器
+        // 乱数生成器
         std::random_device rd;// 乱数生成器
         std::mt19937 randomEngine_;
         std::uniform_real_distribution<float> distcooltime_;
+
+        // 状態遷移
+        AttackState state_;
+
+
+        // 突撃用変数
+        MyEngine::Vector3 dashVelocity_;
+        float dashSpeed_ = 1.5f;
+        float dashDistance_ = 0.0f;
+        float maxDashDistance_ = 25.0f;
+        float dashRotationSpeed_ = 1.5f;
+        float chargeTimer_ = 0.0f;
+        float chargeDuration_ = 1.5f; // 溜め時間
+        MyEngine::Vector3 chargeStartPos_;
     };
 }
 
@@ -9035,6 +9186,7 @@ File Path: project/application/character/enemy/state/EnemyState.cpp
 
 using namespace MyEngine;
 using namespace Easing;
+using namespace MatrixVector;
 
 namespace MyGame {
     void EnemyIdle::Update(BaseCharacter& character) {
@@ -9049,6 +9201,14 @@ namespace MyGame {
             if (t >= 1.0f) {
                 t = 1.0f;
                 character.GetObject3d()->SetScale({ s, s, s });
+                // プレイヤー方向を向く   
+                if (enemy->GetPlayer()) {
+                    Vector3 dir = Normalize(enemy->GetPlayer()->GetTranslate() - character.GetObject3d()->GetTranslate());
+                    float yaw = atan2f(dir.x, dir.z);
+                    Transform transform = character.GetObject3d()->GetTransform();
+                    transform.rotate.y = yaw;
+                    character.GetObject3d()->SetRotate(transform.rotate);
+                }
                 // 出現完了したのでアクティブにする
                 character.SetActive(true);
                 // 出現フラグをオフにする
@@ -9070,25 +9230,20 @@ namespace MyGame {
 
         // アクティブ中またはプレイヤ―が非アクティブ中は各更新処理を行う
         if (character.IsActive() || !enemy->GetPlayer()->IsActive()) {
-            // =========================
             // プレイヤーが追い越したら削除
-            // =========================
             const float kDeleteMargin = 15.0f;
             if (enemy->GetPlayer()->GetTranslate().z > enemy->GetObject3d()->GetTransform().translate.z + kDeleteMargin) {
                 // EnemyDeadへ
                 character.ChangeState(std::make_unique<EnemyDead>());
                 return;
             }
-
-            // =========================
             // プレイヤーが追い越したら攻撃停止
-            // =========================
             if (enemy->GetPlayer()->GetTranslate().z > enemy->GetObject3d()->GetTransform().translate.z) {
                 return;
             }
 
             // 攻撃処理の更新処理
-            enemy->GetAttack()->Update(enemy->GetObject3d()->GetTransform(), enemy->GetPlayer()->GetTranslate());
+            enemy->GetAttack()->Update(enemy->GetEnemyType(), enemy->GetObject3d(), enemy->GetPlayer()->GetTranslate());
 
             // 毎フレーム当たり判定を更新
             character.GetCollider()->SetOBB(CollisionUtils::CreateOBB(character.GetObject3d()));
@@ -9180,93 +9335,83 @@ namespace MyGame {
         timer_ = 0.0f;
     }
 
-    void PlayerAttack::Update(const Transform& playerTransform, const Vector3& aimWorldPos) {
-        // =============================
+    void PlayerAttack::Update(const Transform& playerTransform, const Vector3& aimWorldPos, uint32_t level) {
         // クールタイム更新
-        // =============================
         timer_ -= 1.0f / 60.0f;
 
-        // =============================
-        // 入力チェック
-        // =============================
-        if (Input::GetInstance()->PushKey(DIK_SPACE) && timer_ <= 0.0f) {
+        // 発射可能判定
 
-            Camera* camera = CameraManager::GetInstance()->GetActiveCamera();
+        if (!CanShoot()) {
+            return;
+        }
 
-            if (!camera) {
-                return;
-            }
+        // 発射情報計算
+        ShotData shotData = CalculateShotData(playerTransform, aimWorldPos);
+        // レベル別攻撃
+        FireByLevel(playerTransform.translate, shotData, level);
 
-            //---------------------------------
-            // カメラ回転
-            //---------------------------------
-            Vector3 camRot = camera->GetRotate();
+        // クールタイム
+        timer_ = coolTime_;
+    }
 
-            float camYaw = camRot.y;
-            float camPitch = camRot.x;
+    bool PlayerAttack::CanShoot() const {
+		// スペースキーが押されていて、クールタイムが0以下なら発射可能
+        return Input::GetInstance()->PushKey(DIK_SPACE) && timer_ <= 0.0f;
+    }
 
-            //---------------------------------
-            // カメラ forward
-            //---------------------------------
-            Vector3 camForward = { sinf(camYaw) * cosf(camPitch),-sinf(camPitch),cosf(camYaw) * cosf(camPitch) };
+    void PlayerAttack::SpawnBullet(const Vector3& position, const ShotData& shotData) {
+        Transform bullet;
+        bullet.scale = { 1,1,1 };
+        bullet.rotate = { shotData.pitch,shotData.yaw,0.0f };
+        bullet.translate = position;
+        BulletManager::GetInstance()->SpawnPlayerBullet(bullet, shotData.velocity);
+    }
 
+    PlayerAttack::ShotData PlayerAttack::CalculateShotData(const Transform& playerTransform, const Vector3& aimWorldPos) {
+        ShotData data;
+        // プレイヤー→target方向
+        Vector3 playerPos = playerTransform.translate;
+        Vector3 targetDir = Normalize(aimWorldPos - playerPos);
+        // yaw / pitch
+        data.yaw = atan2f(targetDir.x, targetDir.z);
+        data.pitch = -asinf(targetDir.y);
+        // 発射方向
+        data.direction = {
+            sinf(data.yaw) * cosf(data.pitch),
+            -sinf(data.pitch),
+            cosf(data.yaw) * cosf(data.pitch)
+        };
 
-            camForward = Normalize(camForward);
+        data.direction = Normalize(data.direction);
+        // 弾速度
+        constexpr float speed = 15.0f;
+        data.velocity = data.direction * speed;
+        // プレイヤー右方向
+        data.right = { cosf(data.yaw),0.0f,-sinf(data.yaw) };
+        data.right = Normalize(data.right);
+        return data;
+    }
 
-            //---------------------------------
-            // プレイヤー→target方向
-            //---------------------------------
-            Vector3 playerPos = playerTransform.translate;
+    void PlayerAttack::FireByLevel(const Vector3& playerPos, const ShotData& shotData, uint32_t level) {
+        // Lv1
+        if (level <= 1) {
+            SpawnBullet(playerPos, shotData);
+        }
+        // Lv2
+        else if (level == 2) {
+            constexpr float offset = 1.0f;
+            SpawnBullet(playerPos - shotData.right * offset, shotData);
+            SpawnBullet(playerPos + shotData.right * offset, shotData);
+        }
+        // Lv3
+        else if (level == 3) {
+            constexpr float horizontal = 1.0f;
+            constexpr float vertical = 0.8f;
 
-            Vector3 targetDir = Normalize(aimWorldPos - playerPos);
-
-            //---------------------------------
-            // yaw / pitch算出
-            //---------------------------------
-            float targetYaw = atan2f(targetDir.x, targetDir.z);
-            float targetPitch = -asinf(targetDir.y);
-
-            //---------------------------------
-            // カメラとの差分角
-            //---------------------------------
-            float deltaYaw = targetYaw - camYaw;
-
-            float deltaPitch = targetPitch - camPitch;
-
-            //---------------------------------
-            // 最終弾回転
-            //---------------------------------
-            float bulletYaw = camYaw + deltaYaw;
-            float bulletPitch = camPitch + deltaPitch;
-
-            //---------------------------------
-            // 発射方向再構築
-            //---------------------------------
-            Vector3 bulletDir = { sinf(bulletYaw) * cosf(bulletPitch),-sinf(bulletPitch),cosf(bulletYaw) * cosf(bulletPitch) };
-
-            bulletDir = Normalize(bulletDir);
-
-            //---------------------------------
-            // 弾速度
-            //---------------------------------
-            constexpr float speed = 15.0f;
-
-            Vector3 velocity = bulletDir * speed;
-
-            //---------------------------------
-            // Transform
-            //---------------------------------
-            Transform bulletTransform;
-            bulletTransform.scale = { 1,1,1 };
-            bulletTransform.rotate = { bulletPitch,bulletYaw,0.0f };
-            bulletTransform.translate = playerPos;
-
-            //---------------------------------
-            // 発射
-            //---------------------------------
-            BulletManager::GetInstance()->SpawnPlayerBullet(bulletTransform, velocity);
-            // クールタイム
-            timer_ = coolTime_;
+            Vector3 up = { 0,1,0 };
+            SpawnBullet(playerPos + up * vertical, shotData);
+            SpawnBullet(playerPos - shotData.right * horizontal - up * vertical * 0.5f, shotData);
+            SpawnBullet(playerPos + shotData.right * horizontal - up * vertical * 0.5f, shotData);
         }
     }
 }
@@ -9282,14 +9427,53 @@ namespace MyGame {
     /// プレイヤーの攻撃クラス
     /// </summary>
     class PlayerAttack {
-    public:
-
+	private:
+		// 発射に必要な情報をまとめた構造体
+        struct ShotData { 
+			float yaw;                       // 水平方向の角度（ラジアン）
+			float pitch;                     // 垂直方向の角度（ラジアン）
+			MyEngine::Vector3 direction{};   // 発射方向の単位ベクトル
+			MyEngine::Vector3 velocity{};    // 発射速度ベクトル
+			MyEngine::Vector3 right{};       // プレイヤーの右方向ベクトル
+        };
+	public: // メンバ関数
+        /// <summary>
+		/// 初期化処理
+        /// </summary>
         void Initialize();
-        void Update(const MyEngine::Transform& playerTransform, const MyEngine::Vector3& aimWorldPos);
-
+        /// <summary>
+        /// 更新処理
+        /// </summary>
+        /// <param name="playerTransform">プレイヤーのTransform情報</param>
+        /// <param name="aimWorldPos">狙いのワールド座標</param>
+        /// <param name="level">攻撃レベル</param>
+        void Update(const MyEngine::Transform& playerTransform, const MyEngine::Vector3& aimWorldPos, uint32_t level);
+	private: // 内部関数
+		/// 発射可能かどうかの判定
+        bool CanShoot() const;
+        /// <summary>
+		/// プレイヤーのTransformと狙いのワールド座標から、弾の発射に必要な情報を計算する
+        /// </summary>
+        /// <param name="playerTransform"></param>
+        /// <param name="aimWorldPos"></param>
+        /// <returns></returns>
+        ShotData CalculateShotData(const MyEngine::Transform& playerTransform, const MyEngine::Vector3& aimWorldPos);
+        /// <summary>
+		/// 弾の生成と発射処理
+        /// </summary>
+        /// <param name="position"></param>
+        /// <param name="shotData"></param>
+        void SpawnBullet(const MyEngine::Vector3& position, const ShotData& shotData);
+        /// <summary>
+		/// 攻撃レベルに応じた弾の発射処理
+        /// </summary>
+        /// <param name="playerPos"></param>
+        /// <param name="shotData"></param>
+        /// <param name="level"></param>
+        void FireByLevel(const MyEngine::Vector3& playerPos, const ShotData& shotData, uint32_t level);
     private:
         float coolTime_ = 0.2f;   // 発射間隔
-        float timer_ = 0.0f;
+		float timer_ = 0.0f;      // クールタイム管理用タイマー
     };
 }
 
@@ -9724,7 +9908,7 @@ namespace MyGame {
             LineRenderer::GetInstance()->SetHit(true);
 #endif // USE_IMGUI
             if (!IsAlive()) { return; }
-           // ChangeState(std::make_unique<PlayerStateDead>());
+            // ChangeState(std::make_unique<PlayerStateDead>());
             });
         // コライダー登録
         CollisionManager::GetInstance()->RegisterCollider(collider_.get());
@@ -9752,7 +9936,9 @@ namespace MyGame {
 
     void Player::Update() {
         // ステートの更新
-        state_.Update(*this);
+        if (isStateUpdateEnabled_) {
+            state_.Update(*this);
+        }
 
         // カメラがGamePlayCameraで更新中の場合、プレイヤーのワールド座標をカメラ位置に基づいて更新する
         if (CameraManager::GetInstance()->GetCurrentBehaviorAs<GamePlayCamera>()) {
@@ -9762,7 +9948,7 @@ namespace MyGame {
             }
         }
 
-        if (collider_ && object_) {
+        if (collider_ && object_ && IsActive()) {
             collider_->SetOBB(CollisionUtils::CreateOBB(object_.get(), colliderSize_));
         }
         // 各コンポーネントの更新
@@ -9770,17 +9956,17 @@ namespace MyGame {
         target_->Update();
         object_->Update();
 #ifdef USE_IMGUI
-        // LineRendererクラスにある基本のパラメータ
-        const auto& debug = LineRenderer::GetInstance()->GetDebugSettings();
-        // デバッグ表示フラグで表示、非表示
-        if (debug.enable && object_) {
-            LineRenderer::GetInstance()->SetHit(false);
-            // 衝突状態で色変更
-            Vector4 hitColor = debug.isHit ? Vector4{ 1,0,0,1 } : Vector4{ 0,1,0,1 };
-            // 現在のObjectからOBB生成
-            OBB obb = CollisionUtils::CreateOBB(object_.get(), colliderSize_);
-            // ライン描画
-            LineRenderer::GetInstance()->AddOBB(obb, hitColor);
+        if (IsActive()) {
+            // LineRendererクラスにある基本のパラメータ
+            const auto& debug = LineRenderer::GetInstance()->GetDebugSettings();
+            // デバッグ表示フラグで表示、非表示
+            if (debug.enable && object_) {
+                LineRenderer::GetInstance()->SetHit(false);
+                // 衝突状態で色変更
+                Vector4 hitColor = debug.isHit ? Vector4{ 1,0,0,1 } : Vector4{ 0,1,0,1 };
+                // ライン描画
+                LineRenderer::GetInstance()->AddOBB(collider_->GetOBB(), hitColor);
+            }
         }
 #endif // USE_IMGUI
     }
@@ -9831,13 +10017,31 @@ namespace MyGame {
     }
 
     void Player::CheckLevelUp() {
-        // 経験値が規定値を超えている間、レベルアップを繰り返す
-        while (exp_ >= nextLevelExp_) {
+
+        constexpr uint32_t kMaxLevel = 3;
+
+        // 最大レベルなら経験値加算停止
+        if (level_ >= kMaxLevel) {
+            level_ = kMaxLevel;
+            exp_ = 0;
+            return;
+        }
+
+        // 経験値が規定値を超えている間
+        while (exp_ >= nextLevelExp_ && level_ < kMaxLevel) {
             exp_ -= nextLevelExp_;
             level_++;
-            // 次のレベルへの必要経験値を増加させる
+
+            // 最大レベルになったら打ち切り
+            if (level_ >= kMaxLevel) {
+                level_ = kMaxLevel;
+                exp_ = 0;
+                break;
+            }
+            // 次レベル必要経験値
             nextLevelExp_ = static_cast<uint32_t>(nextLevelExp_ * 1.5f);
-            // レベルアップ演出（エフェクトや音）をここに初期化しても良い
+
+            // レベルアップ演出
         }
     }
 
@@ -9857,20 +10061,18 @@ namespace MyGame {
             /// ======================================
             /// Player Status
             /// ======================================
-            ImGui::SeparatorText("Player Status");
-            // レベル
-            ImGui::Text("Level : %u", level_);
-            // 現在経験値
-            ImGui::Text("EXP : %u / %u", exp_, nextLevelExp_);
-            // 経験値バー
-            float expRate = 0.0f;
-
-            if (nextLevelExp_ > 0) {
-                expRate = static_cast<float>(exp_) / static_cast<float>(nextLevelExp_);
+            if (level_ >= 3) {
+                ImGui::Text("Level : MAX");
+                ImGui::ProgressBar(1.0f, ImVec2(200.0f, 20.0f), "MAX");
+            } else {
+                ImGui::Text("Level : %u", level_);         // レベル
+                ImGui::Text("EXP : %u / %u", exp_, nextLevelExp_);    // 現在経験値
+                float expRate = static_cast<float>(exp_) / static_cast<float>(nextLevelExp_);
+                ImGui::ProgressBar(expRate, ImVec2(200.0f, 20.0f)
+                );
+                // デバッグ用
+                if (ImGui::Button("Add EXP +10")) { GainExp(10); }
             }
-            ImGui::ProgressBar(expRate, ImVec2(200.0f, 20.0f));
-            // デバッグ用
-            if (ImGui::Button("Add EXP +10")) { GainExp(10); }
             // LineRenderer基本パラメータ
             LineRenderer::GetInstance()->DrawImGui(colliderSize_);
             };
@@ -9961,6 +10163,8 @@ namespace MyGame {
 		uint32_t level_ = 1;         // 現在のレベル
 		uint32_t exp_ = 0;           // 現在の経験値
 		uint32_t nextLevelExp_ = 100; // 次のレベルに必要な経験値 (初期値)
+		bool isStateUpdateEnabled_ = true;
+
 	public: // アクセッサ
 		// getter
 		PlayerMove* GetMove() { return move_.get(); }
@@ -9980,7 +10184,8 @@ namespace MyGame {
 		void SetAimWorldPos(const MyEngine::Vector3& pos) { aimWorldPos_ = pos; }
 		void SetTranslate(const MyEngine::Vector3& translate) { object_->SetTranslate(translate); }
 		void SetRotate(const MyEngine::Vector3& rotate) { object_->SetRotate(rotate); }
-		void SetEnemy(Enemy* enemy) { enemy_ = enemy; }		
+		void SetEnemy(Enemy* enemy) { enemy_ = enemy; }
+		void SetStateUpdateEnabled(bool enable) { isStateUpdateEnabled_ = enable; }
 	};
 }
 
@@ -10040,7 +10245,7 @@ namespace MyGame {
             Vector3 worldPos = player->GetReticle()->ScreenToWorld(player->GetReticle()->GetScreenPos(), CameraManager::GetInstance()->GetActiveCamera());
             player->SetAimWorldPos(worldPos);
             player->GetTarget()->SetTranslate(player->GetAimWorldPos());
-            player->GetAttack()->Update(player->GetObject3d()->GetTransform(), player->GetAimWorldPos());
+            player->GetAttack()->Update(player->GetObject3d()->GetTransform(), player->GetAimWorldPos(), player->GetLevel());
         }
     }
 
@@ -11967,7 +12172,6 @@ namespace MyGame {
         FadeManager::GetInstance()->Finalize();   // フェードマネージャの終了処理
         CollisionManager::GetInstance()->Finalize(); // 衝突マネージャの終了処理
         EnemyListEditor::GetInstance()->Finalize();
-        LineRenderer::GetInstance()->Finalize();
     }
 
     void GamePlayScene::Initialize() {
@@ -12015,7 +12219,7 @@ namespace MyGame {
         FadeManager::GetInstance()->StartFade(FadeType::FadeIn, FadeStyle::SilhouetteExplode, 1.0f);
         // ゲーム開始イベントの開始
         isGameStartEventDone_ = false;
-
+        gamened_ = false;
 #ifdef USE_IMGUI
         BulletManager::GetInstance()->Initialize();
         // 敵のパラメータ
@@ -12050,9 +12254,10 @@ namespace MyGame {
             return;
         }
 
-
-        // 敵スポーン
-        enemySpawner_->Update();
+        if (!gamened_) {
+            // 敵スポーン
+            enemySpawner_->Update();
+        }
 
         // 敵更新
         for (std::unique_ptr<Enemy>& enemy : enemies_) {
@@ -12087,6 +12292,23 @@ namespace MyGame {
         if (CameraManager::GetInstance()->GetCurrentBehaviorAs<GamePlayCamera>()->GetFinished()) {
             // フェードアウト
             FadeManager::GetInstance()->SceneChangeFade(SceneName::GAMECLEAR, FadeStyle::SilhouetteExplode, 1.5f);
+            gamened_ = true;
+            //=================================
+            // 全敵削除
+            //=================================
+            for (std::unique_ptr<Enemy>& enemy : enemies_) {
+                if (!enemy) { continue; }
+                enemy->SetActive(false);
+                // コライダー解除
+                if (enemy->GetCollider()) {
+                    CollisionManager::GetInstance()->UnregisterCollider(enemy->GetCollider());
+                }
+                // 削除予約
+                enemy->Destroy();
+            }
+            // プレイヤーのステート更新停止
+            player_->SetStateUpdateEnabled(false);
+            player_->SetActive(false);
         }
 
         // パーティクル更新
@@ -12182,6 +12404,7 @@ namespace MyGame {
 		std::unique_ptr<EnemySpawner> enemySpawner_; // 敵スポーン管理クラス
 		std::vector<std::unique_ptr<Enemy>> enemies_; // 敵キャラクターのリスト
 		bool isGameStartEventDone_; //   ゲーム開始イベントが完了したかどうかのフラグ
+        bool gamened_;
     };
 }
 
@@ -19914,6 +20137,10 @@ namespace MyEngine {
 
     void LineRenderer::AddLine(const LineData& line) {
 #ifdef USE_IMGUI
+        if (!mappedVertices) {
+            return;
+        }
+
         if (vertexIndex_ + kVerticesPerLine >= kMaxVertexCount) {
             return;
         }
@@ -19921,20 +20148,21 @@ namespace MyEngine {
         if (!CameraManager::GetInstance()->GetActiveCamera()) { return; }
 
         //========================
-        // ライン方向
+        //  ライン方向
         //========================
         Vector3 lineDir = Normalize(line.end - line.start);
+
         //========================
         // カメラ前方向
         //========================
         Vector3 cameraForward = CameraManager::GetInstance()->GetActiveCamera()->GetForward();
+
         //========================
         // 板ポリ幅方向
         //========================
         Vector3 side = Normalize(Cross(cameraForward, lineDir));
 
         side *= debug_.thickness * 0.5f;
-
         //========================
         // 頂点生成
         //========================
@@ -20042,6 +20270,66 @@ namespace MyEngine {
         add(2, 6);
         add(3, 7);
 
+#endif 
+    }
+
+    void LineRenderer::AddRailLine(const std::vector<MyGame::BezierPoint>& points, const Vector4& color) {
+#ifdef USE_IMGUI
+        if (points.size() < 2) {
+            return;
+        }
+
+        // 曲線の分割数
+        constexpr uint32_t kSubdivision = 24;
+
+        for (size_t i = 0; i + 1 < points.size(); ++i) {
+
+            const auto& p0 = points[i];
+            const auto& p1 = points[i + 1];
+
+            //--------------------------------------
+            // Cubic Bezier Control Points
+            //--------------------------------------
+            Vector3 P0 = p0.controlPoint.controlPoint;
+            Vector3 P1 = p0.controlPoint.handleRight;
+            Vector3 P2 = p1.controlPoint.handleLeft;
+            Vector3 P3 = p1.controlPoint.controlPoint;
+            // handleが未設定ならcontrolPoint採用
+            if (P1 == Vector3{}) { P1 = P0; }
+            if (P2 == Vector3{}) { P2 = P3; }
+            //--------------------------------------
+            // ハンドルが無い場合対策
+            //--------------------------------------
+
+            // start/endで handle がないケース
+            if (Length(P1) <= 0.0001f) { P1 = P0; }
+            if (Length(P2) <= 0.0001f) { P2 = P3; }
+
+            //--------------------------------------
+            // サンプリング描画
+            //--------------------------------------
+
+            auto Bezier = [](float t, const Vector3& p0, const Vector3& p1, const Vector3& p2, const Vector3& p3) {
+                float u = 1.0f - t;
+
+                float uu = u * u;
+                float uuu = uu * u;
+
+                float tt = t * t;
+                float ttt = tt * t;
+
+                return p0 * uuu + p1 * (3.0f * uu * t) + p2 * (3.0f * u * tt) + p3 * ttt;
+                };
+
+            Vector3 prev = P0;
+
+            for (uint32_t j = 1; j <= kSubdivision; ++j) {
+                float t = static_cast<float>(j) / static_cast<float>(kSubdivision);
+                Vector3 current = Bezier(t, P0, P1, P2, P3);
+                AddLine({ prev,current,color });
+                prev = current;
+            }
+        }
 #endif
     }
 
@@ -20097,6 +20385,7 @@ File Path: project/engine/editor/line/LineRenderer.h
 #include <memory>
 #include <LineTypes.h>
 #include <OBB.h>
+#include <CurveJsonLoader.h>
 
 namespace MyEngine {
     /// <summary>
@@ -20111,7 +20400,6 @@ namespace MyEngine {
             Vector4 color = { 0,0,1,1 };          // カラー(初期は緑)
             float thickness = 0.07f;              // ラインの太さ
         };
-
     private:
         static std::unique_ptr<LineRenderer> instance;
 
@@ -20149,6 +20437,12 @@ namespace MyEngine {
         /// ライン生成(OBB)
         /// </summary>
         void AddOBB(const OBB& obb, const Vector4& color);
+        /// <summary>
+        /// ライン生成(rail)
+        /// </summary>
+        /// <param name="points"></param>
+        /// <param name="color"></param>
+        void AddRailLine(const std::vector<MyGame::BezierPoint>& points, const Vector4& color);
         /// <summary>
         /// imgui描画
         /// </summary>
