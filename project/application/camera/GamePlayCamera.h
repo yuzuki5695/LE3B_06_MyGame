@@ -79,5 +79,10 @@ namespace MyGame {
             // 最後の制御点(end)を返す
             return bezierdata_->points.back().controlPoint.controlPoint;
         }
+        const std::vector<BezierPoint>& GetRailPoints() const {
+            static std::vector<BezierPoint> empty;
+            if (!bezierdata_) { return empty; }
+            return bezierdata_->points;
+        }
     };
 }

@@ -96,6 +96,10 @@ namespace MyEngine {
 
     void LineRenderer::AddLine(const LineData& line) {
 #ifdef USE_IMGUI
+        if (!mappedVertices) {
+            return;
+        }
+
         if (vertexIndex_ + kVerticesPerLine >= kMaxVertexCount) {
             return;
         }
@@ -103,20 +107,21 @@ namespace MyEngine {
         if (!CameraManager::GetInstance()->GetActiveCamera()) { return; }
 
         //========================
-        // ライン方向
+        //  ライン方向
         //========================
         Vector3 lineDir = Normalize(line.end - line.start);
+
         //========================
         // カメラ前方向
         //========================
         Vector3 cameraForward = CameraManager::GetInstance()->GetActiveCamera()->GetForward();
+
         //========================
         // 板ポリ幅方向
         //========================
         Vector3 side = Normalize(Cross(cameraForward, lineDir));
 
         side *= debug_.thickness * 0.5f;
-
         //========================
         // 頂点生成
         //========================
@@ -224,6 +229,66 @@ namespace MyEngine {
         add(2, 6);
         add(3, 7);
 
+#endif 
+    }
+
+    void LineRenderer::AddRailLine(const std::vector<MyGame::BezierPoint>& points, const Vector4& color) {
+#ifdef USE_IMGUI
+        if (points.size() < 2) {
+            return;
+        }
+
+        // 曲線の分割数
+        constexpr uint32_t kSubdivision = 24;
+
+        for (size_t i = 0; i + 1 < points.size(); ++i) {
+
+            const auto& p0 = points[i];
+            const auto& p1 = points[i + 1];
+
+            //--------------------------------------
+            // Cubic Bezier Control Points
+            //--------------------------------------
+            Vector3 P0 = p0.controlPoint.controlPoint;
+            Vector3 P1 = p0.controlPoint.handleRight;
+            Vector3 P2 = p1.controlPoint.handleLeft;
+            Vector3 P3 = p1.controlPoint.controlPoint;
+            // handleが未設定ならcontrolPoint採用
+            if (P1 == Vector3{}) { P1 = P0; }
+            if (P2 == Vector3{}) { P2 = P3; }
+            //--------------------------------------
+            // ハンドルが無い場合対策
+            //--------------------------------------
+
+            // start/endで handle がないケース
+            if (Length(P1) <= 0.0001f) { P1 = P0; }
+            if (Length(P2) <= 0.0001f) { P2 = P3; }
+
+            //--------------------------------------
+            // サンプリング描画
+            //--------------------------------------
+
+            auto Bezier = [](float t, const Vector3& p0, const Vector3& p1, const Vector3& p2, const Vector3& p3) {
+                float u = 1.0f - t;
+
+                float uu = u * u;
+                float uuu = uu * u;
+
+                float tt = t * t;
+                float ttt = tt * t;
+
+                return p0 * uuu + p1 * (3.0f * uu * t) + p2 * (3.0f * u * tt) + p3 * ttt;
+                };
+
+            Vector3 prev = P0;
+
+            for (uint32_t j = 1; j <= kSubdivision; ++j) {
+                float t = static_cast<float>(j) / static_cast<float>(kSubdivision);
+                Vector3 current = Bezier(t, P0, P1, P2, P3);
+                AddLine({ prev,current,color });
+                prev = current;
+            }
+        }
 #endif
     }
 

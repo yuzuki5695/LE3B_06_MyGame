@@ -7,6 +7,7 @@
 #include <memory>
 #include <LineTypes.h>
 #include <OBB.h>
+#include <CurveJsonLoader.h>
 
 namespace MyEngine {
     /// <summary>
@@ -21,7 +22,6 @@ namespace MyEngine {
             Vector4 color = { 0,0,1,1 };          // カラー(初期は緑)
             float thickness = 0.07f;              // ラインの太さ
         };
-
     private:
         static std::unique_ptr<LineRenderer> instance;
 
@@ -59,6 +59,12 @@ namespace MyEngine {
         /// ライン生成(OBB)
         /// </summary>
         void AddOBB(const OBB& obb, const Vector4& color);
+        /// <summary>
+        /// ライン生成(rail)
+        /// </summary>
+        /// <param name="points"></param>
+        /// <param name="color"></param>
+        void AddRailLine(const std::vector<MyGame::BezierPoint>& points, const Vector4& color);
         /// <summary>
         /// imgui描画
         /// </summary>

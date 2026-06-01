@@ -4,10 +4,11 @@
 #include <MatrixVector.h>
 #include <Easing.h>
 #include <Player.h>
+#include <numbers>
+#include <LineRenderer.h>
 #ifdef min
 #undef min
 #endif
-#include <numbers>
 #ifdef max
 #undef max
 #endif
@@ -78,6 +79,14 @@ namespace MyGame {
             UpdateSubCamera();
             break;
         }
+#ifdef _DEBUG
+        if (camera) {
+            LineRenderer::GetInstance()->AddRailLine(GetRailPoints(), { 1.0f, 1.0f, 0.0f, 1.0f });
+            for (const auto& point : GetRailPoints()) {
+                LineRenderer::GetInstance()->AddAABB(point.controlPoint.controlPoint, { 2.0f,2.0f,2.0f }, { 1,0,0,1 });
+            }
+        }
+#endif
     }
 
     void GamePlayCamera::UpdateRailCamera(Camera* camera) {
