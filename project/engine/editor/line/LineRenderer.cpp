@@ -104,32 +104,36 @@ namespace MyEngine {
             return;
         }
 
-        if (!CameraManager::GetInstance()->GetActiveCamera()) { return; }
+        Camera* camera = CameraManager::GetInstance()->GetActiveCamera();
+        if (!camera) {
+            return;
+        }
 
-        //========================
         //  ライン方向
-        //========================
         Vector3 lineDir = Normalize(line.end - line.start);
-
-        //========================
-        // カメラ前方向
-        //========================
-        Vector3 cameraForward = CameraManager::GetInstance()->GetActiveCamera()->GetForward();
-
-        //========================
-        // 板ポリ幅方向
-        //========================
-        Vector3 side = Normalize(Cross(cameraForward, lineDir));
-
+        // ライン中心
         Vector3 center = (line.start + line.end) * 0.5f;
-        Vector3 cameraPos = CameraManager::GetInstance()->GetActiveCamera()->GetTranslate();
-        float distance = Length(center - cameraPos);
-        // 調整値
-        float thicknessScale = std::clamp(distance * 0.03f, 1.0f, 5.0f);
-        side *= debug_.thickness * thicknessScale * 0.5f;
-        //========================
+        // カメラ → ライン方向
+        Vector3 viewDir = Normalize(center - camera->GetTranslate());
+
+        // 板ポリ幅方向      
+        Vector3 side = Cross(viewDir, lineDir);
+        float sideLength = Length(side);
+        // 平行対策
+        if (sideLength < 0.0001f) {
+            side = camera->GetRight();
+        } else {
+            side /= sideLength;
+        }
+        // 距離取得
+        float distance = Length(center - camera->GetTranslate());
+        // 基準太さ
+        constexpr float baseThickness = 0.08f;
+        // 距離スケール（弱め）
+        float thicknessScale = std::clamp(distance * 0.01f, 1.0f, 3.0f);
+        side *= baseThickness * thicknessScale * 0.5f;
+
         // 頂点生成
-        //========================
         Vector3 v0 = line.start + side;
         Vector3 v1 = line.end + side;
         Vector3 v2 = line.start - side;

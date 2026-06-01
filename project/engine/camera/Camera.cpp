@@ -12,7 +12,7 @@ namespace MyEngine {
 		, fovY(0.45f)
 		, aspectRatio(float(WinApp::kClientWidth) / float(WinApp::kClientHeight))
 		, nearClip(0.1f)
-		, farclip(100.0f)
+		, farclip(1000.0f)
 		, worldMatrix(MakeAftineMatrix(transform.scale, transform.rotate, transform.translate))
 		, viewMatrix(Inverse(worldMatrix))
 		, projectionMatrix(MakePerspectiveFovMatrix(fovY, aspectRatio, nearClip, farclip))
