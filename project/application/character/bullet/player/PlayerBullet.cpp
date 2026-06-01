@@ -68,7 +68,7 @@ namespace MyGame {
         // OBB更新
         collider_->SetOBB(CollisionUtils::CreateOBB(bullet.get(), colliderSize_));
 #ifdef USE_IMGUI
-        if (!active_) {
+        if (active_) {
             const auto& debug = LineRenderer::GetInstance()->GetDebugSettings();
             if (debug.enable && bullet && collider_) {
                 LineRenderer::GetInstance()->SetHit(false);
