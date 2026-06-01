@@ -77,14 +77,14 @@ namespace MyGame {
         }
         // Lv2
         else if (level == 2) {
-            constexpr float offset = 1.0f;
+            constexpr float offset = 2.0f;
             SpawnBullet(playerPos - shotData.right * offset, shotData);
             SpawnBullet(playerPos + shotData.right * offset, shotData);
         }
         // Lv3
         else if (level == 3) {
-            constexpr float horizontal = 1.0f;
-            constexpr float vertical = 0.8f;
+            constexpr float horizontal = 2.5f;
+            constexpr float vertical = 1.5f;
 
             Vector3 up = { 0,1,0 };
             SpawnBullet(playerPos + up * vertical, shotData);
