@@ -25,10 +25,39 @@ namespace MyGame {
     }
 
     void Enemy::Initialize() {
+        // 乱数エンジンを初期化
+        std::random_device rd;
+        randomEngine = std::mt19937(rd());
+        std::uniform_int_distribution<int> enemyTypeDist(0, 1);
+        enemyType_ = static_cast<EnemyType>(enemyTypeDist(randomEngine));
+		// モデルパスの選択
+        const char* modelPath = nullptr;
+        switch (enemyType_) {
+        case EnemyType::Shot:
+            modelPath = Character::Enemy;
+            break;
+        case EnemyType::Tackle:
+            modelPath = Character::Enemy;
+            break;
+        }
+
         // モデルの読み込み
-        ModelManager::GetInstance()->LoadModel(Character::Enemy);
+        ModelManager::GetInstance()->LoadModel(modelPath);
         // オブジェクトの生成、初期化
-        object_ = Object3d::Create(Character::Enemy, Transform{ { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f } });
+        object_ = Object3d::Create(modelPath, Transform{ { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f } });
+        
+        // 敵タイプごとの色設定
+        switch (enemyType_) {
+        case EnemyType::Shot:
+            // 通常（白）
+            object_->SetMaterialColor({ 1.0f, 1.0f, 1.0f, 1.0f });
+            break;
+        case EnemyType::Tackle:
+            // 突撃タイプ（赤）
+            object_->SetMaterialColor({ 1.0f, 0.0f, 0.0f, 1.0f });
+            break;
+        }
+
         // 状態フラグの初期化
         flags_.isAlive = true;
         flags_.isActive = false;
@@ -62,23 +91,6 @@ namespace MyGame {
 
             ChangeState(std::make_unique<EnemyDead>());
             });
-
-        // 乱数エンジンを初期化
-        std::random_device rd;
-        randomEngine = std::mt19937(rd());
-        std::uniform_int_distribution<int> enemyTypeDist(0, 1);
-        enemyType_ = static_cast<EnemyType>(enemyTypeDist(randomEngine));
-        // 敵タイプごとの色設定
-        switch (enemyType_) {
-        case EnemyType::Shot:
-            // 通常（白）
-            object_->SetMaterialColor({ 1.0f, 1.0f, 1.0f, 1.0f });
-            break;
-        case EnemyType::Tackle:
-            // 突撃タイプ（赤）
-            object_->SetMaterialColor({ 1.0f, 0.0f, 0.0f, 1.0f });
-            break;
-        }
         // コンポーネントの生成
         attack_ = std::make_unique<EnemyAttack>(); // 攻撃ロジックの生成
         attack_->Initialize();                     // 攻撃ロジックの初期化
