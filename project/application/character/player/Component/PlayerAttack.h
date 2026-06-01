@@ -9,7 +9,7 @@ namespace MyGame {
     public:
 
         void Initialize();
-        void Update(const MyEngine::Transform& playerTransform, const MyEngine::Vector3& aimWorldPos);
+        void Update(const MyEngine::Transform& playerTransform, const MyEngine::Vector3& aimWorldPos, uint32_t level);
 
     private:
         float coolTime_ = 0.2f;   // 発射間隔

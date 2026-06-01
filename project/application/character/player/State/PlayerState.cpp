@@ -33,7 +33,7 @@ namespace MyGame {
             Vector3 worldPos = player->GetReticle()->ScreenToWorld(player->GetReticle()->GetScreenPos(), CameraManager::GetInstance()->GetActiveCamera());
             player->SetAimWorldPos(worldPos);
             player->GetTarget()->SetTranslate(player->GetAimWorldPos());
-            player->GetAttack()->Update(player->GetObject3d()->GetTransform(), player->GetAimWorldPos());
+            player->GetAttack()->Update(player->GetObject3d()->GetTransform(), player->GetAimWorldPos(), player->GetLevel());
         }
     }
 

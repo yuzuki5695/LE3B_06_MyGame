@@ -64,7 +64,7 @@ namespace MyGame {
             LineRenderer::GetInstance()->SetHit(true);
 #endif // USE_IMGUI
             if (!IsAlive()) { return; }
-           // ChangeState(std::make_unique<PlayerStateDead>());
+            // ChangeState(std::make_unique<PlayerStateDead>());
             });
         // コライダー登録
         CollisionManager::GetInstance()->RegisterCollider(collider_.get());
@@ -92,7 +92,9 @@ namespace MyGame {
 
     void Player::Update() {
         // ステートの更新
-        state_.Update(*this);
+        if (isStateUpdateEnabled_) {
+            state_.Update(*this);
+        }
 
         // カメラがGamePlayCameraで更新中の場合、プレイヤーのワールド座標をカメラ位置に基づいて更新する
         if (CameraManager::GetInstance()->GetCurrentBehaviorAs<GamePlayCamera>()) {
@@ -102,7 +104,7 @@ namespace MyGame {
             }
         }
 
-        if (collider_ && object_) {
+        if (collider_ && object_ && IsActive()) {
             collider_->SetOBB(CollisionUtils::CreateOBB(object_.get(), colliderSize_));
         }
         // 各コンポーネントの更新
@@ -110,17 +112,17 @@ namespace MyGame {
         target_->Update();
         object_->Update();
 #ifdef USE_IMGUI
-        // LineRendererクラスにある基本のパラメータ
-        const auto& debug = LineRenderer::GetInstance()->GetDebugSettings();
-        // デバッグ表示フラグで表示、非表示
-        if (debug.enable && object_) {
-            LineRenderer::GetInstance()->SetHit(false);
-            // 衝突状態で色変更
-            Vector4 hitColor = debug.isHit ? Vector4{ 1,0,0,1 } : Vector4{ 0,1,0,1 };
-            // 現在のObjectからOBB生成
-            OBB obb = CollisionUtils::CreateOBB(object_.get(), colliderSize_);
-            // ライン描画
-            LineRenderer::GetInstance()->AddOBB(obb, hitColor);
+        if (IsActive()) {
+            // LineRendererクラスにある基本のパラメータ
+            const auto& debug = LineRenderer::GetInstance()->GetDebugSettings();
+            // デバッグ表示フラグで表示、非表示
+            if (debug.enable && object_) {
+                LineRenderer::GetInstance()->SetHit(false);
+                // 衝突状態で色変更
+                Vector4 hitColor = debug.isHit ? Vector4{ 1,0,0,1 } : Vector4{ 0,1,0,1 };
+                // ライン描画
+                LineRenderer::GetInstance()->AddOBB(collider_->GetOBB(), hitColor);
+            }
         }
 #endif // USE_IMGUI
     }
@@ -171,13 +173,31 @@ namespace MyGame {
     }
 
     void Player::CheckLevelUp() {
-        // 経験値が規定値を超えている間、レベルアップを繰り返す
-        while (exp_ >= nextLevelExp_) {
+
+        constexpr uint32_t kMaxLevel = 3;
+
+        // 最大レベルなら経験値加算停止
+        if (level_ >= kMaxLevel) {
+            level_ = kMaxLevel;
+            exp_ = 0;
+            return;
+        }
+
+        // 経験値が規定値を超えている間
+        while (exp_ >= nextLevelExp_ && level_ < kMaxLevel) {
             exp_ -= nextLevelExp_;
             level_++;
-            // 次のレベルへの必要経験値を増加させる
+
+            // 最大レベルになったら打ち切り
+            if (level_ >= kMaxLevel) {
+                level_ = kMaxLevel;
+                exp_ = 0;
+                break;
+            }
+            // 次レベル必要経験値
             nextLevelExp_ = static_cast<uint32_t>(nextLevelExp_ * 1.5f);
-            // レベルアップ演出（エフェクトや音）をここに初期化しても良い
+
+            // レベルアップ演出
         }
     }
 
@@ -197,20 +217,18 @@ namespace MyGame {
             /// ======================================
             /// Player Status
             /// ======================================
-            ImGui::SeparatorText("Player Status");
-            // レベル
-            ImGui::Text("Level : %u", level_);
-            // 現在経験値
-            ImGui::Text("EXP : %u / %u", exp_, nextLevelExp_);
-            // 経験値バー
-            float expRate = 0.0f;
-
-            if (nextLevelExp_ > 0) {
-                expRate = static_cast<float>(exp_) / static_cast<float>(nextLevelExp_);
+            if (level_ >= 3) {
+                ImGui::Text("Level : MAX");
+                ImGui::ProgressBar(1.0f, ImVec2(200.0f, 20.0f), "MAX");
+            } else {
+                ImGui::Text("Level : %u", level_);         // レベル
+                ImGui::Text("EXP : %u / %u", exp_, nextLevelExp_);    // 現在経験値
+                float expRate = static_cast<float>(exp_) / static_cast<float>(nextLevelExp_);
+                ImGui::ProgressBar(expRate, ImVec2(200.0f, 20.0f)
+                );
+                // デバッグ用
+                if (ImGui::Button("Add EXP +10")) { GainExp(10); }
             }
-            ImGui::ProgressBar(expRate, ImVec2(200.0f, 20.0f));
-            // デバッグ用
-            if (ImGui::Button("Add EXP +10")) { GainExp(10); }
             // LineRenderer基本パラメータ
             LineRenderer::GetInstance()->DrawImGui(colliderSize_);
             };

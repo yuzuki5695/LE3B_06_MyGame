@@ -76,6 +76,8 @@ namespace MyGame {
 		uint32_t level_ = 1;         // 現在のレベル
 		uint32_t exp_ = 0;           // 現在の経験値
 		uint32_t nextLevelExp_ = 100; // 次のレベルに必要な経験値 (初期値)
+		bool isStateUpdateEnabled_ = true;
+
 	public: // アクセッサ
 		// getter
 		PlayerMove* GetMove() { return move_.get(); }
@@ -95,6 +97,7 @@ namespace MyGame {
 		void SetAimWorldPos(const MyEngine::Vector3& pos) { aimWorldPos_ = pos; }
 		void SetTranslate(const MyEngine::Vector3& translate) { object_->SetTranslate(translate); }
 		void SetRotate(const MyEngine::Vector3& rotate) { object_->SetRotate(rotate); }
-		void SetEnemy(Enemy* enemy) { enemy_ = enemy; }		
+		void SetEnemy(Enemy* enemy) { enemy_ = enemy; }
+		void SetStateUpdateEnabled(bool enable) { isStateUpdateEnabled_ = enable; }
 	};
 }
