@@ -10,6 +10,7 @@
 
 using namespace MyEngine;
 using namespace Easing;
+using namespace MatrixVector;
 
 namespace MyGame {
     void EnemyIdle::Update(BaseCharacter& character) {
@@ -24,6 +25,14 @@ namespace MyGame {
             if (t >= 1.0f) {
                 t = 1.0f;
                 character.GetObject3d()->SetScale({ s, s, s });
+                // プレイヤー方向を向く   
+                if (enemy->GetPlayer()) {
+                    Vector3 dir = Normalize(enemy->GetPlayer()->GetTranslate() - character.GetObject3d()->GetTranslate());
+                    float yaw = atan2f(dir.x, dir.z);
+                    Transform transform = character.GetObject3d()->GetTransform();
+                    transform.rotate.y = yaw;
+                    character.GetObject3d()->SetRotate(transform.rotate);
+                }
                 // 出現完了したのでアクティブにする
                 character.SetActive(true);
                 // 出現フラグをオフにする
@@ -45,19 +54,14 @@ namespace MyGame {
 
         // アクティブ中またはプレイヤ―が非アクティブ中は各更新処理を行う
         if (character.IsActive() || !enemy->GetPlayer()->IsActive()) {
-            // =========================
             // プレイヤーが追い越したら削除
-            // =========================
             const float kDeleteMargin = 15.0f;
             if (enemy->GetPlayer()->GetTranslate().z > enemy->GetObject3d()->GetTransform().translate.z + kDeleteMargin) {
                 // EnemyDeadへ
                 character.ChangeState(std::make_unique<EnemyDead>());
                 return;
             }
-
-            // =========================
             // プレイヤーが追い越したら攻撃停止
-            // =========================
             if (enemy->GetPlayer()->GetTranslate().z > enemy->GetObject3d()->GetTransform().translate.z) {
                 return;
             }

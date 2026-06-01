@@ -4,9 +4,10 @@
 #include <EnemyType.h>
 
 namespace MyGame {
-    
+
     enum class AttackState {
-        Dash, 
+        Dash,
+        Charge, // 溜め
         Idle
     };
 
@@ -45,9 +46,12 @@ namespace MyGame {
 
         // 突撃用変数
         MyEngine::Vector3 dashVelocity_;
-        float dashSpeed_ = 0.5f;
+        float dashSpeed_ = 1.5f;
         float dashDistance_ = 0.0f;
         float maxDashDistance_ = 25.0f;
         float dashRotationSpeed_ = 1.5f;
+        float chargeTimer_ = 0.0f;
+        float chargeDuration_ = 1.5f; // 溜め時間
+        MyEngine::Vector3 chargeStartPos_;
     };
 }
