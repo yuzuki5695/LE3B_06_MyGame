@@ -121,7 +121,12 @@ namespace MyEngine {
         //========================
         Vector3 side = Normalize(Cross(cameraForward, lineDir));
 
-        side *= debug_.thickness * 0.5f;
+        Vector3 center = (line.start + line.end) * 0.5f;
+        Vector3 cameraPos = CameraManager::GetInstance()->GetActiveCamera()->GetTranslate();
+        float distance = Length(center - cameraPos);
+        // 調整値
+        float thicknessScale = std::clamp(distance * 0.03f, 1.0f, 5.0f);
+        side *= debug_.thickness * thicknessScale * 0.5f;
         //========================
         // 頂点生成
         //========================
