@@ -32,5 +32,6 @@ namespace MyGame {
 		std::unique_ptr<EnemySpawner> enemySpawner_; // 敵スポーン管理クラス
 		std::vector<std::unique_ptr<Enemy>> enemies_; // 敵キャラクターのリスト
 		bool isGameStartEventDone_; //   ゲーム開始イベントが完了したかどうかのフラグ
+        bool gamened_;
     };
 }

@@ -39,7 +39,6 @@ namespace MyGame {
         FadeManager::GetInstance()->Finalize();   // フェードマネージャの終了処理
         CollisionManager::GetInstance()->Finalize(); // 衝突マネージャの終了処理
         EnemyListEditor::GetInstance()->Finalize();
-        LineRenderer::GetInstance()->Finalize();
     }
 
     void GamePlayScene::Initialize() {
@@ -87,7 +86,7 @@ namespace MyGame {
         FadeManager::GetInstance()->StartFade(FadeType::FadeIn, FadeStyle::SilhouetteExplode, 1.0f);
         // ゲーム開始イベントの開始
         isGameStartEventDone_ = false;
-
+        gamened_ = false;
 #ifdef USE_IMGUI
         BulletManager::GetInstance()->Initialize();
         // 敵のパラメータ
@@ -122,9 +121,10 @@ namespace MyGame {
             return;
         }
 
-
-        // 敵スポーン
-        enemySpawner_->Update();
+        if (!gamened_) {
+            // 敵スポーン
+            enemySpawner_->Update();
+        }
 
         // 敵更新
         for (std::unique_ptr<Enemy>& enemy : enemies_) {
@@ -159,6 +159,23 @@ namespace MyGame {
         if (CameraManager::GetInstance()->GetCurrentBehaviorAs<GamePlayCamera>()->GetFinished()) {
             // フェードアウト
             FadeManager::GetInstance()->SceneChangeFade(SceneName::GAMECLEAR, FadeStyle::SilhouetteExplode, 1.5f);
+            gamened_ = true;
+            //=================================
+            // 全敵削除
+            //=================================
+            for (std::unique_ptr<Enemy>& enemy : enemies_) {
+                if (!enemy) { continue; }
+                enemy->SetActive(false);
+                // コライダー解除
+                if (enemy->GetCollider()) {
+                    CollisionManager::GetInstance()->UnregisterCollider(enemy->GetCollider());
+                }
+                // 削除予約
+                enemy->Destroy();
+            }
+            // プレイヤーのステート更新停止
+            player_->SetStateUpdateEnabled(false);
+            player_->SetActive(false);
         }
 
         // パーティクル更新

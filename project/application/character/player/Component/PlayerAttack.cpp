@@ -17,135 +17,79 @@ namespace MyGame {
         // クールタイム更新
         timer_ -= 1.0f / 60.0f;
 
-        // 入力チェック
-        if (Input::GetInstance()->PushKey(DIK_SPACE) && timer_ <= 0.0f) {
+        // 発射可能判定
 
-            Camera* camera = CameraManager::GetInstance()->GetActiveCamera();
+        if (!CanShoot()) {
+            return;
+        }
 
-            if (!camera) {
-                return;
-            }
+        // 発射情報計算
+        ShotData shotData = CalculateShotData(playerTransform, aimWorldPos);
+        // レベル別攻撃
+        FireByLevel(playerTransform.translate, shotData, level);
 
-            //---------------------------------
-            // カメラ回転
-            //---------------------------------
-            Vector3 camRot = camera->GetRotate();
+        // クールタイム
+        timer_ = coolTime_;
+    }
 
-            float camYaw = camRot.y;
-            float camPitch = camRot.x;
+    bool PlayerAttack::CanShoot() const {
+		// スペースキーが押されていて、クールタイムが0以下なら発射可能
+        return Input::GetInstance()->PushKey(DIK_SPACE) && timer_ <= 0.0f;
+    }
 
-            //---------------------------------
-            // プレイヤー→target方向
-            //---------------------------------
-            Vector3 playerPos = playerTransform.translate;
-            Vector3 targetDir = Normalize(aimWorldPos - playerPos);
+    void PlayerAttack::SpawnBullet(const Vector3& position, const ShotData& shotData) {
+        Transform bullet;
+        bullet.scale = { 1,1,1 };
+        bullet.rotate = { shotData.pitch,shotData.yaw,0.0f };
+        bullet.translate = position;
+        BulletManager::GetInstance()->SpawnPlayerBullet(bullet, shotData.velocity);
+    }
 
-            //---------------------------------
-            // yaw / pitch
-            //---------------------------------
-            float targetYaw = atan2f(targetDir.x, targetDir.z);
-            float targetPitch = -asinf(targetDir.y);
+    PlayerAttack::ShotData PlayerAttack::CalculateShotData(const Transform& playerTransform, const Vector3& aimWorldPos) {
+        ShotData data;
+        // プレイヤー→target方向
+        Vector3 playerPos = playerTransform.translate;
+        Vector3 targetDir = Normalize(aimWorldPos - playerPos);
+        // yaw / pitch
+        data.yaw = atan2f(targetDir.x, targetDir.z);
+        data.pitch = -asinf(targetDir.y);
+        // 発射方向
+        data.direction = {
+            sinf(data.yaw) * cosf(data.pitch),
+            -sinf(data.pitch),
+            cosf(data.yaw) * cosf(data.pitch)
+        };
 
-            //---------------------------------
-            // 最終弾回転
-            //---------------------------------
-            float bulletYaw = targetYaw;
-            float bulletPitch = targetPitch;
+        data.direction = Normalize(data.direction);
+        // 弾速度
+        constexpr float speed = 15.0f;
+        data.velocity = data.direction * speed;
+        // プレイヤー右方向
+        data.right = { cosf(data.yaw),0.0f,-sinf(data.yaw) };
+        data.right = Normalize(data.right);
+        return data;
+    }
 
-            //---------------------------------
-            // 発射方向
-            //---------------------------------
-            Vector3 bulletDir = {
-                sinf(bulletYaw) * cosf(bulletPitch),
-                -sinf(bulletPitch),
-                cosf(bulletYaw) * cosf(bulletPitch)
-            };
+    void PlayerAttack::FireByLevel(const Vector3& playerPos, const ShotData& shotData, uint32_t level) {
+        // Lv1
+        if (level <= 1) {
+            SpawnBullet(playerPos, shotData);
+        }
+        // Lv2
+        else if (level == 2) {
+            constexpr float offset = 1.0f;
+            SpawnBullet(playerPos - shotData.right * offset, shotData);
+            SpawnBullet(playerPos + shotData.right * offset, shotData);
+        }
+        // Lv3
+        else if (level == 3) {
+            constexpr float horizontal = 1.0f;
+            constexpr float vertical = 0.8f;
 
-            bulletDir = Normalize(bulletDir);
-
-            //---------------------------------
-            // プレイヤーの右方向
-            //---------------------------------
-            Vector3 right = { cosf(bulletYaw),0.0f,-sinf(bulletYaw) };
-
-            right = Normalize(right);
-            //---------------------------------
-            // プレイヤーの上方
-            //---------------------------------
-            Vector3 up = { 0.0f,1.0f,0.0f };
-            //---------------------------------
-            // 弾速度
-            //---------------------------------
-            constexpr float speed = 15.0f;
-            Vector3 velocity = bulletDir * speed;
-
-            //---------------------------------
-            // レベル別攻撃
-            //---------------------------------
-
-            // Lv1：1発
-            if (level <= 1) {
-
-                Transform bulletTransform;
-                bulletTransform.scale = { 1,1,1 };
-                bulletTransform.rotate = { bulletPitch,bulletYaw,0.0f };
-                bulletTransform.translate = playerPos;
-
-                BulletManager::GetInstance()->SpawnPlayerBullet(bulletTransform, velocity);
-            }
-            // Lv2以上：左右2発
-            else if (level == 2) {
-
-                constexpr float spreadOffset = 1.0f;
-                Vector3 leftPos = playerPos - right * spreadOffset;
-                Vector3 rightPos = playerPos + right * spreadOffset;
-
-                // 左弾
-                Transform leftBullet;
-                leftBullet.scale = { 1,1,1 };
-                leftBullet.rotate = { bulletPitch,bulletYaw,0.0f };
-                leftBullet.translate = leftPos;
-
-                BulletManager::GetInstance()->SpawnPlayerBullet(leftBullet, velocity);
-
-                // 右弾
-                Transform rightBullet;
-                rightBullet.scale = { 1,1,1 };
-                rightBullet.rotate = { bulletPitch,bulletYaw,0.0f };
-                rightBullet.translate = rightPos;
-
-                BulletManager::GetInstance()->SpawnPlayerBullet(rightBullet, velocity);
-            } else if (level == 3) {
-                constexpr float horizontalOffset = 1.0f;
-                constexpr float verticalOffset = 0.8f;
-                //---------------------------------
-                // 発射位置
-                //---------------------------------
-                // 上
-                Vector3 topPos = playerPos + up * verticalOffset;
-                // 左下
-                Vector3 leftBottomPos = playerPos - right * horizontalOffset - up * verticalOffset * 0.5f;
-                // 右下
-                Vector3 rightBottomPos = playerPos + right * horizontalOffset - up * verticalOffset * 0.5f;
-
-                auto SpawnBullet = [&](const Vector3& pos)
-                    {
-                        Transform bullet;
-                        bullet.scale = { 1,1,1 };
-                        bullet.rotate = { bulletPitch,bulletYaw,0.0f };
-                        bullet.translate = pos;
-
-                        BulletManager::GetInstance()->SpawnPlayerBullet(bullet, velocity);
-                    };
-                SpawnBullet(topPos);
-                SpawnBullet(leftBottomPos);
-                SpawnBullet(rightBottomPos);
-            }
-
-            //---------------------------------
-            // クールタイム
-            //---------------------------------
-            timer_ = coolTime_;
-        } 
+            Vector3 up = { 0,1,0 };
+            SpawnBullet(playerPos + up * vertical, shotData);
+            SpawnBullet(playerPos - shotData.right * horizontal - up * vertical * 0.5f, shotData);
+            SpawnBullet(playerPos + shotData.right * horizontal - up * vertical * 0.5f, shotData);
+        }
     }
 }
