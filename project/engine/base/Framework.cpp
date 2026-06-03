@@ -205,8 +205,8 @@ namespace MyEngine {
         // エディタモード：Updateで作ったUIデータをここでGPUに転送
         ImGuiManager::GetInstance()->Draw();
 #else
-        // エディタモード：Updateで作ったUIデータをここでGPUに転送
-        ImGuiManager::GetInstance()->Draw();
+        // Releaseビルド時ポストエフェクト描画（レンダーテクスチャ → 画面） 
+        CopylmageCommon::GetInstance()->Commondrawing(srvManager.get());
 #endif
     }
 }
