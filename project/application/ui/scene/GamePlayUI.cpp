@@ -18,15 +18,16 @@ using namespace Easing;
 using namespace MatrixVector;
 
 namespace MyGame {
+   
     void GamePlayUI::Initialize() {
         // 操作UIテクスチャ一覧
-        const std::array<const char*, 22> operationTextures = {
+        const std::array<const char*, 25> operationTextures = {
             Operationui::W,Operationui::A,Operationui::S,Operationui::D,
             Operationui::ArrowUp,Operationui::ArrowLeft,Operationui::ArrowDown,
             Operationui::ArrowRight,Operationui::SPACEKey,Operationui::SHIFT,Operationui::W_RED,
             Operationui::A_RED,Operationui::S_RED,Operationui::D_RED,Operationui::ArrowUp_RED,
             Operationui::ArrowLeft_RED,Operationui::ArrowDown_RED,Operationui::ArrowRight_RED,Operationui::SPACEKey_RED,
-            Operationui::SHIFT_RED,Ui::Gage,Ui::Player_ui
+            Operationui::SHIFT_RED,Ui::Gage,Ui::Player_ui,Operationui::LevelGage_Frame,Operationui::LevelGage_Green,Operationui::LevelGage_Yellow
         };
 
         // 操作UIをまとめて読み込み
@@ -61,14 +62,9 @@ namespace MyGame {
 
         // プレイヤーに合わせて表示するUI
         // 背景
-        expBarBack_ = Sprite::Create(Operationui::W, { 110.0f, 360.0f }, 0.0f, { 48.0f, 48.0f });
-        expBarBack_->SetAnchorPoint({ 0.5f,0.5f });
-        // 中身
-        expBarFill_ = Sprite::Create(Operationui::W, { 110.0f, 360.0f }, 0.0f, { 48.0f, 48.0f });
-        expBarFill_->SetAnchorPoint({ 0.5f,0.5f });
-
-        expBarBack_->SetAnchorPoint({ 0.5f,0.5f });
-        expBarFill_->SetAnchorPoint({ 0.0f,0.5f }); // 左基準
+        expBarBack_ = Sprite::Create(Operationui::LevelGage_Frame, { 0.0f, 0.0f }, 0.0f, { 80.0f, 20.0f });
+        // ゲージ部分
+        expBarFill_ = Sprite::Create(Operationui::LevelGage_Green, { 0.0f, 0.0f }, 0.0f, { 80.0f, 20.0f });     
 
         isEventLocked = true;
     }
@@ -111,50 +107,48 @@ namespace MyGame {
 
     void GamePlayUI::UpdatePlayerFollowUI() {
         if (!player_) { return; }
-
+        // カメラの取得
         Camera* camera = CameraManager::GetInstance()->GetActiveCamera();
 
         if (!camera) { return; }
-
         // プレイヤー頭上
         Vector3 worldPos = player_->GetTranslate();
-        worldPos.y += 4.0f;
-
+        worldPos.y += 2.0f;
+        // ワールド座標をNDC座標に変換
         Matrix4x4 view = camera->GetViewMatrix();
+        // プロジェクション行列の取得
         Matrix4x4 projection = camera->GetProjectionMatrix();
-
+        // ビュー行列とプロジェクション行列を掛け合わせて、ワールド座標をNDC座標に変換するための行列を作成
         Matrix4x4 vp = Multiply(view, projection);
-
-        Vector3 clipPos = TransformPoint(worldPos, vp);
-
-        // 背面
-        if (clipPos.z <= 0.0f) {
-            expBarBack_->SetColor({ 1,1,1,0 });
-            expBarFill_->SetColor({ 1,1,1,0 });
-            return;
-        }
-
-        expBarBack_->SetColor({ 1,1,1,1 });
-        expBarFill_->SetColor({ 1,1,1,1 });
-
+        // ワールド座標をNDC座標に変換する関数を呼び出す
+        Vector3 ndcPos = TransformPoint(worldPos, vp);
+        // NDC座標をスクリーン座標に変換
         constexpr float screenWidth = 1280.0f;
         constexpr float screenHeight = 720.0f;
-
+        // NDC座標は[-1, 1]の範囲なので、スクリーン座標に変換する
         Vector2 screenPos;
-        screenPos.x = (clipPos.x + 1.0f) * 0.5f * screenWidth;
-        screenPos.y = (1.0f - clipPos.y) * 0.5f * screenHeight;
-
-        // 背景位置
-        expBarBack_->SetPosition(screenPos);
-
-        // Fillは左端合わせ
-        constexpr float barWidth = 80.0f;
-
-        float ratio = static_cast<float>(player_->GetExp()) / static_cast<float>(player_->GetNextLevelExp());
-        ratio = std::clamp(ratio, 0.0f, 1.0f);
-        expBarFill_->SetSize({ barWidth * ratio,10.0f });
-        // 左寄せ位置
-        expBarFill_->SetPosition({ screenPos.x - barWidth * 0.5f,screenPos.y });
+        screenPos.x = (ndcPos.x + 1.0f) * 0.5f * screenWidth;
+        screenPos.y = (1.0f - ndcPos.y) * 0.5f * screenHeight;
+        // UI表示位置補正
+        Vector2 offset = { -40.0f,15.0f };
+        Vector2 finalPos = screenPos + offset;
+        // 位置更新
+        expBarBack_->SetPosition(finalPos);               
+        expBarFill_->SetPosition({ finalPos.x,finalPos.y });
+        // 経験値割合
+        constexpr float kMaxBarWidth = 80.0f;
+        constexpr float kBarHeight = 20.0f;
+        float expRatio = static_cast<float>(player_->GetExp()) / static_cast<float>(player_->GetNextLevelExp());
+        expRatio = std::clamp(expRatio, 0.0f, 1.0f);
+        // サイズ変更
+        float currentWidth = kMaxBarWidth * expRatio;
+        expBarFill_->SetSize({ currentWidth,kBarHeight });
+        // 最大時黄色化
+        if (expRatio >= 1.0f) {
+            expBarFill_->SetTexture(Operationui::LevelGage_Yellow);
+        } else {
+            expBarFill_->SetTexture(Operationui::LevelGage_Green);
+        }
     }
             
     void GamePlayUI::UpdateStageProgressUI() {

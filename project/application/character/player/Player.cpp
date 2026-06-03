@@ -34,6 +34,7 @@ namespace MyGame {
     void Player::Finalize() {
         collider_.reset(); // コライダーの破棄
         object_.reset();   // 3Dオブジェクトの破棄
+		CollisionManager::GetInstance()->UnregisterCollider(collider_.get()); // コライダーの登録解除
     }
 
     void Player::Initialize() {
