@@ -6,6 +6,7 @@
 #include <EnemySpawner.h>
 
 namespace MyGame {
+
     /// <summary>
     /// 実際のゲームプレイを行うシーン。
     /// </summary>
@@ -27,11 +28,17 @@ namespace MyGame {
         /// 描画処理
         /// </summary>
         void Draw() override;
+
+	private: // 内部関数
+        // ゲーム開始イベントの更新処理
+        void StartEvent(); 
+		// ゲーム終了イベントの更新処理
+        void GameEnd();
     private: // メンバ変数
-		std::unique_ptr <Player> player_;            // プレイヤー
-		std::unique_ptr<EnemySpawner> enemySpawner_; // 敵スポーン管理クラス
-		std::vector<std::unique_ptr<Enemy>> enemies_; // 敵キャラクターのリスト
-		bool isGameStartEventDone_; //   ゲーム開始イベントが完了したかどうかのフラグ
+        std::unique_ptr <Player> player_;            // プレイヤー
+        std::unique_ptr<EnemySpawner> enemySpawner_; // 敵スポーン管理クラス
+        std::vector<std::unique_ptr<Enemy>> enemies_; // 敵キャラクターのリスト
+        bool isGameStartEventDone_; //   ゲーム開始イベントが完了したかどうかのフラグ
         bool gamened_;
     };
 }

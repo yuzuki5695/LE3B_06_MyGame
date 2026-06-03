@@ -32,13 +32,14 @@ using namespace AssetGen::LoadResourceID::Textures;
 namespace MyGame {
 
     void GamePlayScene::Finalize() {
-        BulletManager::GetInstance()->Finalize(); // 弾マネージャの終了処理
-        StageManager::GetInstance()->Finalize();  // ステージマネージャの終了処理
-        CameraManager::GetInstance()->Finalize(); // カメラマネージャの終了処理
-        UIManager::GetInstance()->Finalize();     // UIマネージャの終了処理 
-        FadeManager::GetInstance()->Finalize();   // フェードマネージャの終了処理
+        BulletManager::GetInstance()->Finalize();    // 弾マネージャの終了処理
+        StageManager::GetInstance()->Finalize();     // ステージマネージャの終了処理
+        CameraManager::GetInstance()->Finalize();    // カメラマネージャの終了処理
+        UIManager::GetInstance()->Finalize();        // UIマネージャの終了処理 
+        FadeManager::GetInstance()->Finalize();      // フェードマネージャの終了処理
         CollisionManager::GetInstance()->Finalize(); // 衝突マネージャの終了処理
-        EnemyListEditor::GetInstance()->Finalize();
+        EventManager::GetInstance()->Finalize();     // イベントマネージャの終了処理
+        EnemyListEditor::GetInstance()->Finalize();  // 敵リストエディタの終了処理
     }
 
     void GamePlayScene::Initialize() {
@@ -74,15 +75,12 @@ namespace MyGame {
 
         // ステージマネージャの初期化
         StageManager::GetInstance()->Initialize();
+        // クリアゲートの位置をレールカメラの終点に設定
         StageManager::GetInstance()->SetClearwallTranslate(CameraManager::GetInstance()->GetCurrentBehaviorAs<GamePlayCamera>()->GetRailEndPosition());
-
-        // UIにプレイヤーの情報を渡す
-        GamePlayUI* gameplayUI = UIManager::GetInstance()->GetUI<GamePlayUI>();
-        if (gameplayUI) {
-            gameplayUI->SetPlayer(player_.get());
-        }
         // UIマネージャの初期化
         UIManager::GetInstance()->Initialize();
+        // ゲームUIにプレイヤーの情報を渡す
+        UIManager::GetInstance()->GetUI<GamePlayUI>()->SetPlayer(player_.get());
         // フェードマネージャの初期化(フェードイン開始処理)
         FadeManager::GetInstance()->StartFade(FadeType::FadeIn, FadeStyle::SilhouetteExplode, 1.0f);
         // ゲーム開始イベントの開始
@@ -96,45 +94,13 @@ namespace MyGame {
     }
 
     void GamePlayScene::Update() {
-        //  ゲーム開始前のイベント処理
-        if (!isGameStartEventDone_) {
-            // まだイベントが存在しないなら開始
-            if (!EventManager::GetInstance()->IsActive()) {
-                // ゲーム開始イベントの開始
-                EventManager::GetInstance()->EventStart(Event::EventState::GameStart);
-            }
-            isGameStartEventDone_ = true;
-        }
 
-        // イベント終了判定
-        if (!EventManager::GetInstance()->IsActive()) {
-            // レールカメラの挙動に切り替える
-            CameraManager::GetInstance()->GetCurrentBehaviorAs<GamePlayCamera>()->SetCameraState(CameraState::Follow);
-            // プレイヤーのイベントロックを解除して操作可能にする
-            player_->SetEventLocked(false);
-            // 敵スポーンのイベントロックを解除してスポーン開始
-            enemySpawner_->SetEventLocked(false);
-
-            // ポーズがアクティブでない状態でTabキーが押されたらポーズメニューをアクティブにする
-            if (!UIManager::GetInstance()->GetUI<GamePlayUI>()->GetPauseMenu()->IsActive() && Input::GetInstance()->TriggerKey(DIK_TAB)) {
-                UIManager::GetInstance()->GetUI<GamePlayUI>()->GetPauseMenu()->SetActive(true);
-            }
-            // ポーズがアクティブ中、他の更新を停止してポーズメニューの更新を行う
-            if (UIManager::GetInstance()->GetUI<GamePlayUI>()->GetPauseMenu()->IsActive()) {
-                // フェードマネージャの更新
-                FadeManager::GetInstance()->Update();
-                // カメラのターゲットとプレイヤーをセット（プレイヤーの位置にカメラを追従させるため）
-                CameraManager::GetInstance()->GetCurrentBehaviorAs<GamePlayCamera>()->SetPlayer(player_.get());
-                // ポーズメニューの更新
-                UIManager::GetInstance()->GetUI<GamePlayUI>()->GetPauseMenu()->Update();
-                UIManager::GetInstance()->Update();
-                return;
-            }
-        }
+        // ゲーム開始イベントの更新処理
+        StartEvent();
 
         // カメラマネージャの更新
         CameraManager::GetInstance()->Update();
-#pragma region 全てのObject3d個々の更新処理      
+#pragma region 全てのObject3d個々の更新処理
 
         if (!gamened_) {
             // 敵スポーン
@@ -170,28 +136,8 @@ namespace MyGame {
         // 全ての衝突をチェック 
         CollisionManager::GetInstance()->CheckAllCollisions();
 
-        // ゲームクリアの条件をチェック
-        if (CameraManager::GetInstance()->GetCurrentBehaviorAs<GamePlayCamera>()->GetFinished()) {
-            // フェードアウト
-            FadeManager::GetInstance()->SceneChangeFade(SceneName::GAMECLEAR, FadeStyle::SilhouetteExplode, 1.5f);
-            gamened_ = true;
-            //=================================
-            // 全敵削除
-            //=================================
-            for (std::unique_ptr<Enemy>& enemy : enemies_) {
-                if (!enemy) { continue; }
-                enemy->SetActive(false);
-                // コライダー解除
-                if (enemy->GetCollider()) {
-                    CollisionManager::GetInstance()->UnregisterCollider(enemy->GetCollider());
-                }
-                // 削除予約
-                enemy->Destroy();
-            }
-            // プレイヤーのステート更新停止
-            player_->SetStateUpdateEnabled(false);
-            player_->SetActive(false);
-        }
+		// ゲーム終了イベントの更新処理
+        GameEnd();
 
         // パーティクル更新
    //     ParticleManager::GetInstance()->Update();
@@ -235,7 +181,7 @@ namespace MyGame {
 #pragma region 全てのSprite個々の描画処理 
         // Spriteの描画準備。Spriteの描画に共通のグラフィックスコマンドを積む
         SpriteCommon::GetInstance()->Commondrawing();
-    
+
         // プレイヤーのスプライト描画
         player_->DrawSprite();
 
@@ -246,5 +192,68 @@ namespace MyGame {
         // イベントマネージャの描画
         EventManager::GetInstance()->Draw2D();
 #pragma endregion 全てのSprite個々の描画処理
+    }
+
+    void GamePlayScene::StartEvent() {
+        if (!isGameStartEventDone_) {
+            // まだイベントが開始していないならゲーム開始イベントの処理
+            if (!EventManager::GetInstance()->IsActive()) {
+                // ゲーム開始イベントの開始
+                EventManager::GetInstance()->EventStart(Event::EventState::GameStart);
+            }
+            isGameStartEventDone_ = true;
+        }
+
+        // イベント終了判定
+        if (!EventManager::GetInstance()->IsActive()) {
+            // レールカメラの挙動に切り替える
+            CameraManager::GetInstance()->GetCurrentBehaviorAs<GamePlayCamera>()->SetCameraState(CameraState::Follow);
+            // プレイヤーのイベントロックを解除して操作可能にする
+            player_->SetEventLocked(false);
+            // 敵スポーンのイベントロックを解除してスポーン開始
+            enemySpawner_->SetEventLocked(false);
+            // UIのイベントロックを解除して操作UIを更新する
+            UIManager::GetInstance()->GetUI<GamePlayUI>()->SetEventLocked(false);
+            // ポーズがアクティブでない状態でTabキーが押されたらポーズメニューをアクティブにする
+            if (!UIManager::GetInstance()->GetUI<GamePlayUI>()->GetPauseMenu()->IsActive() && Input::GetInstance()->TriggerKey(DIK_TAB)) {
+                UIManager::GetInstance()->GetUI<GamePlayUI>()->GetPauseMenu()->SetActive(true);
+            }
+            // ポーズがアクティブ中、他の更新を停止してポーズメニューの更新を行う
+            if (UIManager::GetInstance()->GetUI<GamePlayUI>()->GetPauseMenu()->IsActive()) {
+                // フェードマネージャの更新
+                FadeManager::GetInstance()->Update();
+                // カメラのターゲットとプレイヤーをセット（プレイヤーの位置にカメラを追従させるため）
+                CameraManager::GetInstance()->GetCurrentBehaviorAs<GamePlayCamera>()->SetPlayer(player_.get());
+                // ポーズメニューの更新
+                UIManager::GetInstance()->GetUI<GamePlayUI>()->GetPauseMenu()->Update();
+                UIManager::GetInstance()->Update();
+                return;
+            }
+        }
+    }
+
+    void GamePlayScene::GameEnd() {
+        // ゲームクリアの条件をチェック
+        if (CameraManager::GetInstance()->GetCurrentBehaviorAs<GamePlayCamera>()->GetFinished()) {
+            // フェードアウト
+            FadeManager::GetInstance()->SceneChangeFade(SceneName::GAMECLEAR, FadeStyle::SilhouetteExplode, 1.5f);
+            gamened_ = true;
+            //=================================
+            // 全敵削除
+            //=================================
+            for (std::unique_ptr<Enemy>& enemy : enemies_) {
+                if (!enemy) { continue; }
+                enemy->SetActive(false);
+                // コライダー解除
+                if (enemy->GetCollider()) {
+                    CollisionManager::GetInstance()->UnregisterCollider(enemy->GetCollider());
+                }
+                // 削除予約
+                enemy->Destroy();
+            }
+            // プレイヤーのステート更新停止
+            player_->SetStateUpdateEnabled(false);
+            player_->SetActive(false);
+        }
     }
 }
