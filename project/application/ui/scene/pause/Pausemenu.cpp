@@ -189,8 +189,8 @@ namespace MyGame {
         // コマンド実行中は選択処理をしない
         if (!isCommandRunning_) {
 
-            // 下
-            if (Input::GetInstance()->TriggerKey(DIK_DOWN)) {
+            // 上 
+            if (Input::GetInstance()->TriggerKey(DIK_UP)) {
                 selectedIndex_++;
                 if (!isOperationMode_ && selectedIndex_ == static_cast<uint32_t>(PauseCommand::Turnback)) {
                     selectedIndex_ = 0;
@@ -201,8 +201,8 @@ namespace MyGame {
                 UpdateArrowPositions();
             }
 
-            // 上
-            if (Input::GetInstance()->TriggerKey(DIK_UP)) {
+            // 下
+            if (Input::GetInstance()->TriggerKey(DIK_DOWN)) {
                 if (selectedIndex_ == 0) {
                     selectedIndex_ = kMaxCommand - 1;
                 } else {

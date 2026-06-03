@@ -13,9 +13,9 @@ namespace MyGame {
         /// <param name="transform"></param>
         /// <param name="speedMultiplier"></param>
         void Update(MyEngine::Transform& transform, float speedMultiplier);
-		// 傾きの更新
+        // 傾きの更新
         void UpdateTilt(const MyEngine::Vector3& moveInput);
-		// ダッシュの状態を更新する
+        // ダッシュの状態を更新する
         void UpdateDash();
 
     private: // 内部変数
@@ -34,15 +34,17 @@ namespace MyGame {
         float coolDownTimer_ = 0.0f;
 
         // 調整用
-		const float kDashDuration = 0.5f; // ダッシュの持続時間
-		const float kCoolDownTime = 3.0f; // ダッシュ後のクールダウン時間
-		const float kDashSpeedMult = 2.0f; // ダッシュ中の速度倍率
+        const float kDashDuration = 0.5f; // ダッシュの持続時間
+        const float kCoolDownTime = 3.0f; // ダッシュ後のクールダウン時間
+        const float kDashSpeedMult = 2.0f; // ダッシュ中の速度倍率
 
-		float extraRotationZ_ = 0.0f; // ダッシュ中の追加回転量
-		float speedMultiplier_ = 1.0f; // 通常時の速度倍率
+        float extraRotationZ_ = 0.0f; // ダッシュ中の追加回転量
+        float speedMultiplier_ = 1.0f; // 通常時の速度倍率
 
     public:
         const MyEngine::Vector3& GetRelativePos() const { return relativePos_; }
-        const bool& GetDashing() const { return isDashing_; }
+        const bool& GetDashing() const { return isDashing_; }        
+        bool CanDash() const { return coolDownTimer_ <= 0.0f && !isDashing_; }
+        float GetCoolDownTimer() const { return coolDownTimer_; }
     };
 }

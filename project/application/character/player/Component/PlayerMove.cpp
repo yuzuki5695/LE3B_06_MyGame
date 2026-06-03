@@ -82,11 +82,11 @@ namespace MyGame {
 
 			float progress = std::clamp(dashTimer_ / kDashDuration, 0.0f, 1.0f);
 
-			// 🔥 回転（1回転）
+			// 回転（1回転）
 			float totalRotation = 2.0f * std::numbers::pi_v<float>;
 			extraRotationZ_ = totalRotation * progress;
 
-			// 🔥 速度（常に2倍でもOK）
+			// 速度（常に2倍でもOK）
 			speedMultiplier_ = kDashSpeedMult;
 
 			// 終了

@@ -48,9 +48,10 @@ namespace MyGame {
 
         bool uiProgressStarted_ = false;  // ステージ進行度UIのアニメーションが開始したかどうかのフラグ
         bool uiProgressFinished_ = false; // ステージ進行度UIのアニメーションが完了したかどうかのフラグ
-
+        bool isEventLocked;
     public: // アクセッサ
         Pausemenu* GetPauseMenu() const { return pausemenu_.get(); }
         void SetPlayer(Player* player) { player_ = player; }
+        void SetEventLocked(bool flag) { isEventLocked = flag; }
     };
 }

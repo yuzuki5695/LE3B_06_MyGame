@@ -36,24 +36,24 @@ namespace MyGame {
 
         // ステージ進行度UIの生成
         gage_ = Sprite::Create(Ui::Gage, Vector2{ 380.0f, 10.0f }, 0.0f, Vector2{ 500.0f,30.0f });
-		// プレイヤー位置UIの生成
+        // プレイヤー位置UIの生成
         player_ui_ = Sprite::Create(Ui::Player_ui, Vector2{ 380.0f, 12.3f }, 0.0f, Vector2{ 25.0f,25.0f });
 
-		// 操作UIの生成
+        // 操作UIの生成
         Vector2 size = { 40.0f, 40.0f };
         Vector2 center = { 85.0f, 470.0f };
         CreateWASDUI(center, size, 4.0f, 25.0f);
 
-		//  操作UIの初期サイズを保存
+        //  操作UIの初期サイズを保存
         for (auto& ui : uis_) {
             uiOriginalSizes_.push_back(ui->GetSize());
             ui->SetAnchorPoint({ 0.5f, 0.5f });
             ui->SetSize({ 0.0f, 0.0f });
         }
-		
-		isAnimating_ = true; // アニメーション開始フラグ
-		timer_ = 0.0f; // アニメーション開始からの経過時間
-		duration_ = 0.5f; // 0.5秒でアニメーションが完了するように設定
+
+        isAnimating_ = true; // アニメーション開始フラグ
+        timer_ = 0.0f; // アニメーション開始からの経過時間
+        duration_ = 0.5f; // 0.5秒でアニメーションが完了するように設定
 
         // ポーズメニューの初期化、生成
         pausemenu_ = std::make_unique<Pausemenu>();
@@ -62,6 +62,8 @@ namespace MyGame {
         // プレイヤーに合わせて表示するUI
         expFollowUI_ = Sprite::Create(Operationui::W, Vector2{ 110.0f, 360.0f }, 0.0f, Vector2{ 48.0f,48.0f });
         expFollowUI_->SetAnchorPoint({ 0.5f,0.5f });
+
+        isEventLocked = true;
     }
 
     void GamePlayUI::Update() {
@@ -203,6 +205,9 @@ namespace MyGame {
     }
 
     void GamePlayUI::UpdateControlUI() {
+        // イベントロック中はUIの状態を更新しない
+        if (isEventLocked) { return; }
+
         Input* input = Input::GetInstance();
         // === WASD ===
         uis_[0]->SetTexture(input->PushKey(DIK_W) ? Operationui::W_RED : Operationui::W);
@@ -219,22 +224,24 @@ namespace MyGame {
         // === SPACE / SHIFT ===
         uis_[8]->SetTexture(input->PushKey(DIK_SPACE) ? Operationui::SPACEKey_RED : Operationui::SPACEKey);
 
-        if (!player_) return;
-        bool canDash = player_->GetMove()->GetDashing();
-
-        if (!canDash) {
-            // 【クールタイム中 または ダッシュ演出中】
-            // キー入力に関係なく、強制的に「赤（使用不可/リキャスト中）」を表示
+        // 1. ダッシュ中
+        if (player_->GetMove()->GetDashing()) {
             uis_[9]->SetTexture(Operationui::SHIFT_RED);
-            uis_[9]->SetColor({ 0.3f, 0.3f, 0.3f, 1.0f });
-        } else {
-            // 【ダッシュ準備完了】
-            uis_[9]->SetColor({ 1.0f, 1.0f, 1.0f, 1.0f });
-            // 通常時：SHIFT（白など）、押している間：SHIFT_RED（赤）
+            // 明度100%
+            uis_[9]->SetColor({ 1,1,1,1 });
+        }
+        // 2. クールタイム中
+        else if (!player_->GetMove()->CanDash()) {
+            uis_[9]->SetTexture(Operationui::SHIFT);
+            // 半透明・暗く
+            uis_[9]->SetColor({ 0.5f,0.5f,0.5f,0.3f });
+        }
+        // 3. 準備完了
+        else {
+            uis_[9]->SetColor({ 1.0f,1.0f,1.0f,1.0f });
             uis_[9]->SetTexture(input->PushKey(DIK_LSHIFT) ? Operationui::SHIFT_RED : Operationui::SHIFT);
         }
     }
-
     
     void GamePlayUI::UpdateControlUIAnimation() {
         if (!isAnimating_) return;
