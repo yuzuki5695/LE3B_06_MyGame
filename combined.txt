@@ -5316,8 +5316,7 @@ File Path: project/MyGame.vcxproj
 copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dxil.dll"</Command>
     </PostBuildEvent>
     <PreBuildEvent>
-      <Command>
-      </Command>
+      <Command>"$(SolutionDir)..\generated\outputs\$(Configuration)\AssetGenerator.exe" "$(SolutionDir).. "</Command>
     </PreBuildEvent>
     <CustomBuildStep>
       <Command>"$(SolutionDir)..\generated\outputs\$(Configuration)\AssetGenerator.exe" "$(SolutionDir).."</Command>
@@ -5358,8 +5357,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
 copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dxil.dll"</Command>
     </PostBuildEvent>
     <PreBuildEvent>
-      <Command>
-      </Command>
+      <Command>"$(SolutionDir)..\generated\outputs\$(Configuration)\AssetGenerator.exe" "$(SolutionDir).. "</Command>
     </PreBuildEvent>
     <CustomBuildStep>
       <Command>"$(SolutionDir)..\generated\outputs\$(Configuration)\AssetGenerator.exe" "$(SolutionDir).."</Command>
@@ -9923,6 +9921,7 @@ namespace MyGame {
     void Player::Finalize() {
         collider_.reset(); // コライダーの破棄
         object_.reset();   // 3Dオブジェクトの破棄
+		CollisionManager::GetInstance()->UnregisterCollider(collider_.get()); // コライダーの登録解除
     }
 
     void Player::Initialize() {
@@ -12252,11 +12251,14 @@ namespace MyGame {
     void GamePlayScene::Initialize() {
         // カメラマネージャの初期化
         CameraManager::GetInstance()->Initialize(SceneName::GAMEPLAY);
+
         // プレイヤー生成,初期化
         player_ = std::make_unique<Player>();
         player_->Initialize();
         // GamePlayCameraにプレイヤーを渡す(プレイヤ―の位置を確認)
         CameraManager::GetInstance()->GetCurrentBehaviorAs<GamePlayCamera>()->SetPlayer(player_.get());
+		// 前フレームの経験値を初期化
+        prevPlayerExp_ = player_->GetExp();
 
         // 敵生成
         const int kEnemyMax = 300;
@@ -12301,9 +12303,55 @@ namespace MyGame {
     }
 
     void GamePlayScene::Update() {
+		// ゲーム開始イベントの開始判定
+        if (!isGameStartEventDone_ && CameraManager::GetInstance()->GetCameraState().state == CameraDefs::CameraState::Default) {
+            // ゲーム開始イベントの開始
+            EventManager::GetInstance()->EventStart(Event::EventState::GameStart);
+            isGameStartEventDone_ = true;
+        }
 
-        // ゲーム開始イベントの更新処理
-        StartEvent();
+        // イベント終了判定
+        if (!EventManager::GetInstance()->IsActive()) {
+            if (isGameStartEventDone_) {
+                // レールカメラの挙動に切り替える
+                CameraManager::GetInstance()->GetCurrentBehaviorAs<GamePlayCamera>()->SetCameraState(CameraState::Follow);
+                // プレイヤーのイベントロックを解除して操作可能にする
+                player_->SetEventLocked(false);
+                // 敵スポーンのイベントロックを解除してスポーン開始
+                enemySpawner_->SetEventLocked(false);
+                // UIのイベントロックを解除して操作UIを更新する
+                UIManager::GetInstance()->GetUI<GamePlayUI>()->SetEventLocked(false);
+                // EXPバーを表示
+                UIManager::GetInstance()->GetUI<GamePlayUI>()->SetExpBarVisible(true);
+                isGameStartEventDone_ = false;
+            }
+
+            // ポーズがアクティブでない状態でTabキーが押されたらポーズメニューをアクティブにする
+            if (!UIManager::GetInstance()->GetUI<GamePlayUI>()->GetPauseMenu()->IsActive() && Input::GetInstance()->TriggerKey(DIK_TAB)) {
+                UIManager::GetInstance()->GetUI<GamePlayUI>()->GetPauseMenu()->SetActive(true);
+            }
+
+            // ポーズがアクティブ中、他の更新を停止してポーズメニューの更新を行う
+            if (UIManager::GetInstance()->GetUI<GamePlayUI>()->GetPauseMenu()->IsActive()) {
+                // フェードマネージャの更新
+                FadeManager::GetInstance()->Update();
+                // カメラのターゲットとプレイヤーをセット（プレイヤーの位置にカメラを追従させるため）
+                CameraManager::GetInstance()->GetCurrentBehaviorAs<GamePlayCamera>()->SetPlayer(player_.get());
+                // ポーズメニューの更新
+                UIManager::GetInstance()->GetUI<GamePlayUI>()->GetPauseMenu()->Update();
+                UIManager::GetInstance()->Update();
+                player_->SetEventLocked(true);
+                enemySpawner_->SetEventLocked(true);
+                UIManager::GetInstance()->GetUI<GamePlayUI>()->SetEventLocked(true);
+                UIManager::GetInstance()->GetUI<GamePlayUI>()->SetExpBarVisible(false);
+                return;
+            } else if (!UIManager::GetInstance()->GetUI<GamePlayUI>()->GetPauseMenu()->IsActive()) {
+                player_->SetEventLocked(false);
+                enemySpawner_->SetEventLocked(false);
+                UIManager::GetInstance()->GetUI<GamePlayUI>()->SetEventLocked(false);
+                UIManager::GetInstance()->GetUI<GamePlayUI>()->SetExpBarVisible(true);
+            }
+        }
 
         // カメラマネージャの更新
         CameraManager::GetInstance()->Update();
@@ -12334,6 +12382,13 @@ namespace MyGame {
         CameraManager::GetInstance()->GetCurrentBehaviorAs<GamePlayCamera>()->SetPlayer(player_.get());
         // プレイヤーの更新
         player_->Update();
+        // EXP増加検知
+        if (player_->GetExp() > prevPlayerExp_) {
+            UIManager::GetInstance()->GetUI<GamePlayUI>()->ShowExpBar();
+        }
+        // 毎フレーム最後に同期
+        prevPlayerExp_ = player_->GetExp();
+
         // 弾の更新
         BulletManager::GetInstance()->Update();
         // ステージマネージャの更新
@@ -12401,44 +12456,6 @@ namespace MyGame {
 #pragma endregion 全てのSprite個々の描画処理
     }
 
-    void GamePlayScene::StartEvent() {
-        if (!isGameStartEventDone_) {
-            // まだイベントが開始していないならゲーム開始イベントの処理
-            if (!EventManager::GetInstance()->IsActive()) {
-                // ゲーム開始イベントの開始
-                EventManager::GetInstance()->EventStart(Event::EventState::GameStart);
-            }
-            isGameStartEventDone_ = true;
-        }
-
-        // イベント終了判定
-        if (!EventManager::GetInstance()->IsActive()) {
-            // レールカメラの挙動に切り替える
-            CameraManager::GetInstance()->GetCurrentBehaviorAs<GamePlayCamera>()->SetCameraState(CameraState::Follow);
-            // プレイヤーのイベントロックを解除して操作可能にする
-            player_->SetEventLocked(false);
-            // 敵スポーンのイベントロックを解除してスポーン開始
-            enemySpawner_->SetEventLocked(false);
-            // UIのイベントロックを解除して操作UIを更新する
-            UIManager::GetInstance()->GetUI<GamePlayUI>()->SetEventLocked(false);
-            // ポーズがアクティブでない状態でTabキーが押されたらポーズメニューをアクティブにする
-            if (!UIManager::GetInstance()->GetUI<GamePlayUI>()->GetPauseMenu()->IsActive() && Input::GetInstance()->TriggerKey(DIK_TAB)) {
-                UIManager::GetInstance()->GetUI<GamePlayUI>()->GetPauseMenu()->SetActive(true);
-            }
-            // ポーズがアクティブ中、他の更新を停止してポーズメニューの更新を行う
-            if (UIManager::GetInstance()->GetUI<GamePlayUI>()->GetPauseMenu()->IsActive()) {
-                // フェードマネージャの更新
-                FadeManager::GetInstance()->Update();
-                // カメラのターゲットとプレイヤーをセット（プレイヤーの位置にカメラを追従させるため）
-                CameraManager::GetInstance()->GetCurrentBehaviorAs<GamePlayCamera>()->SetPlayer(player_.get());
-                // ポーズメニューの更新
-                UIManager::GetInstance()->GetUI<GamePlayUI>()->GetPauseMenu()->Update();
-                UIManager::GetInstance()->Update();
-                return;
-            }
-        }
-    }
-
     void GamePlayScene::GameEnd() {
         // ゲームクリアの条件をチェック
         if (CameraManager::GetInstance()->GetCurrentBehaviorAs<GamePlayCamera>()->GetFinished()) {
@@ -12500,8 +12517,8 @@ namespace MyGame {
         void Draw() override;
 
 	private: // 内部関数
-        // ゲーム開始イベントの更新処理
-        void StartEvent(); 
+        //// ゲーム開始イベントの更新処理
+        //void StartEvent(); 
 		// ゲーム終了イベントの更新処理
         void GameEnd();
     private: // メンバ変数
@@ -12510,6 +12527,7 @@ namespace MyGame {
         std::vector<std::unique_ptr<Enemy>> enemies_; // 敵キャラクターのリスト
         bool isGameStartEventDone_; //   ゲーム開始イベントが完了したかどうかのフラグ
         bool gamened_;
+		uint32_t prevPlayerExp_; // 前フレームのプレイヤーの経験値
     };
 }
 
@@ -13954,15 +13972,16 @@ using namespace Easing;
 using namespace MatrixVector;
 
 namespace MyGame {
+   
     void GamePlayUI::Initialize() {
         // 操作UIテクスチャ一覧
-        const std::array<const char*, 22> operationTextures = {
+        const std::array<const char*, 25> operationTextures = {
             Operationui::W,Operationui::A,Operationui::S,Operationui::D,
             Operationui::ArrowUp,Operationui::ArrowLeft,Operationui::ArrowDown,
             Operationui::ArrowRight,Operationui::SPACEKey,Operationui::SHIFT,Operationui::W_RED,
             Operationui::A_RED,Operationui::S_RED,Operationui::D_RED,Operationui::ArrowUp_RED,
             Operationui::ArrowLeft_RED,Operationui::ArrowDown_RED,Operationui::ArrowRight_RED,Operationui::SPACEKey_RED,
-            Operationui::SHIFT_RED,Ui::Gage,Ui::Player_ui
+            Operationui::SHIFT_RED,Ui::Gage,Ui::Player_ui,Operationui::LevelGage_Frame,Operationui::LevelGage_Green,Operationui::LevelGage_Yellow
         };
 
         // 操作UIをまとめて読み込み
@@ -13996,9 +14015,16 @@ namespace MyGame {
         pausemenu_->Initialize();
 
         // プレイヤーに合わせて表示するUI
-        expFollowUI_ = Sprite::Create(Operationui::W, Vector2{ 110.0f, 360.0f }, 0.0f, Vector2{ 48.0f,48.0f });
-        expFollowUI_->SetAnchorPoint({ 0.5f,0.5f });
-
+        // 背景
+        expBarBack_ = Sprite::Create(Operationui::LevelGage_Frame, { 0.0f, 0.0f }, 0.0f, { 80.0f, 20.0f });
+        expBarBack_->SetColor({ 1,1,1,0 });
+        // ゲージ部分
+        expBarFill_ = Sprite::Create(Operationui::LevelGage_Green, { 0.0f, 0.0f }, 0.0f, { 80.0f, 20.0f });
+        expBarFill_->SetColor({ 1,1,1,0 });
+        isExpBarVisible_ = false;
+        expBarAlpha_ = 1.0f;         // 最大明度
+        expBarTimer_ = 0.0f;        // タイマーリセット
+        expBarDuration_ = 2.0f;     // 表示時間
         isEventLocked = true;
     }
 
@@ -14013,9 +14039,12 @@ namespace MyGame {
         UpdateControlUI();        
         // プレイヤー位置UIの更新
         UpdatePlayerFollowUI();
+		// EXPバーのフェード更新
+        UpdateExpBarFade();
         gage_->Update();
         player_ui_->Update();
-        expFollowUI_->Update();
+        expBarBack_->Update();
+        expBarFill_->Update();
         for (std::unique_ptr<Sprite>& ui : uis_) {
             ui->Update();
         }
@@ -14028,8 +14057,11 @@ namespace MyGame {
         gage_->Draw();
 		// プレイヤー位置UIの描画
         player_ui_->Draw();
-		// プレイヤーに合わせて表示するUIの描画
-        //expFollowUI_->Draw();
+        if (isExpBarVisible_) {
+            // プレイヤーに合わせて表示するUIの描画
+            expBarBack_->Draw();
+            expBarFill_->Draw();
+        }
         // 操作UIの描画
         for (std::unique_ptr<Sprite>& ui : uis_) {
             ui->Draw();
@@ -14038,37 +14070,82 @@ namespace MyGame {
 
     void GamePlayUI::UpdatePlayerFollowUI() {
         if (!player_) { return; }
-
+        // カメラの取得
         Camera* camera = CameraManager::GetInstance()->GetActiveCamera();
 
         if (!camera) { return; }
-
         // プレイヤー頭上
         Vector3 worldPos = player_->GetTranslate();
-        worldPos.y += 3.0f;
-
-        // ViewProjection
+        worldPos.y += 2.0f;
+        // ワールド座標をNDC座標に変換
         Matrix4x4 view = camera->GetViewMatrix();
+        // プロジェクション行列の取得
         Matrix4x4 projection = camera->GetProjectionMatrix();
-        Matrix4x4 viewProjection = Multiply(view, projection);
-        // ワールド→クリップ空間
-        Vector3 clipPos = TransformPoint(worldPos, viewProjection);
-        // 背面なら非表示
-        if (clipPos.z <= 0.0f) {
-            expFollowUI_->SetColor({ 1,1,1,0 });
-            return;
-        }
-
-        expFollowUI_->SetColor({ 1,1,1,1 });
+        // ビュー行列とプロジェクション行列を掛け合わせて、ワールド座標をNDC座標に変換するための行列を作成
+        Matrix4x4 vp = Multiply(view, projection);
+        // ワールド座標をNDC座標に変換する関数を呼び出す
+        Vector3 ndcPos = TransformPoint(worldPos, vp);
+        // NDC座標をスクリーン座標に変換
         constexpr float screenWidth = 1280.0f;
         constexpr float screenHeight = 720.0f;
-        // NDC → Screen
+        // NDC座標は[-1, 1]の範囲なので、スクリーン座標に変換する
         Vector2 screenPos;
-        screenPos.x = (clipPos.x + 1.0f) * 0.5f * screenWidth;
-        screenPos.y = (1.0f - clipPos.y) * 0.5f * screenHeight;
-        expFollowUI_->SetPosition(screenPos);
+        screenPos.x = (ndcPos.x + 1.0f) * 0.5f * screenWidth;
+        screenPos.y = (1.0f - ndcPos.y) * 0.5f * screenHeight;
+        // UI表示位置補正
+        Vector2 offset = { -40.0f,15.0f };
+        Vector2 finalPos = screenPos + offset;
+        // 位置更新
+        expBarBack_->SetPosition(finalPos);               
+        expBarFill_->SetPosition({ finalPos.x,finalPos.y });
+        // 経験値割合
+        constexpr float kMaxBarWidth = 80.0f;
+        constexpr float kBarHeight = 20.0f;
+        float expRatio = static_cast<float>(player_->GetExp()) / static_cast<float>(player_->GetNextLevelExp());
+        expRatio = std::clamp(expRatio, 0.0f, 1.0f);
+        // サイズ変更
+        float currentWidth = kMaxBarWidth * expRatio;
+        expBarFill_->SetSize({ currentWidth,kBarHeight });
+        // 最大時黄色化
+        if (expRatio >= 1.0f) {
+            expBarFill_->SetTexture(Operationui::LevelGage_Yellow);
+        } else {
+            expBarFill_->SetTexture(Operationui::LevelGage_Green);
+        }
+    } 
+
+    void GamePlayUI::ShowExpBar() {
+        isExpBarVisible_ = true;
+        // 明度最大
+        expBarAlpha_ = 1.0f;
+        // タイマー初期化
+        expBarTimer_ = 0.0f;
+        // 即反映
+        expBarBack_->SetColor({ 1.0f,1.0f,1.0f,expBarAlpha_ });
+        expBarFill_->SetColor({ 1.0f,1.0f,1.0f,expBarAlpha_ });
     }
-            
+
+    void GamePlayUI::UpdateExpBarFade() {
+        if (!isExpBarVisible_) { return; }
+        constexpr float fadeDuration = 2.0f;
+        expBarTimer_ += 1.0f / 60.0f;
+        float t = expBarTimer_ / fadeDuration;
+        t = std::clamp(t, 0.0f, 1.0f);
+
+        // 1 → 0
+        expBarAlpha_ = 1.0f - t;
+        expBarBack_->SetColor({ 1,1,1,expBarAlpha_ });
+        expBarFill_->SetColor({ 1,1,1,expBarAlpha_ });
+
+        // 完全終了
+        if (t >= 1.0f) {
+            isExpBarVisible_ = false;
+            expBarAlpha_ = 0.0f;
+            expBarBack_->SetColor({ 1,1,1,0 });
+            expBarFill_->SetColor({ 1,1,1,0 });
+        }
+    }
+
     void GamePlayUI::UpdateStageProgressUI() {
         // マネージャ経由で「今のカメラ挙動」から進捗を直接もらう
         float progress = CameraManager::GetInstance()->GetCurrentBehaviorAs<GamePlayCamera>()->GetProgress();
@@ -14230,6 +14307,8 @@ namespace MyGame {
         /// 描画処理
         /// </summary>
         void Draw() override;
+
+        void ShowExpBar();
     private: // プレイベートメンバ関数
         void UpdateStageProgressUI();
         // UI生成用の内部関数
@@ -14240,13 +14319,14 @@ namespace MyGame {
         void UpdateControlUIAnimation();
         // プレイヤーの位置に追従するUIの更新
         void UpdatePlayerFollowUI();
+		// EXPバーのフェード更新
+        void UpdateExpBarFade();
     private: // メンバ変数
         Player* player_ = nullptr; // プレイヤーへの参照
         std::unique_ptr<Pausemenu> pausemenu_; // ポーズメニュー
         std::vector<std::unique_ptr<MyEngine::Sprite>> uis_; // 操作UIのスプライトリスト
         std::unique_ptr <MyEngine::Sprite> gage_;       // ステージ進行度を示すUI
         std::unique_ptr <MyEngine::Sprite> player_ui_;  // プレイヤー位置を示すUI
-        std::unique_ptr<MyEngine::Sprite> expFollowUI_; // プレイヤーの経験値獲得に合わせて表示するUI
         std::vector<MyEngine::Vector2> uiOriginalSizes_; // 操作UIの元のサイズを保存するリスト
         bool isAnimating_;   // 操作UIのアニメーション中かどうかのフラグ
         float timer_;  // 操作UIのアニメーション開始からの経過時間
@@ -14255,10 +14335,20 @@ namespace MyGame {
         bool uiProgressStarted_ = false;  // ステージ進行度UIのアニメーションが開始したかどうかのフラグ
         bool uiProgressFinished_ = false; // ステージ進行度UIのアニメーションが完了したかどうかのフラグ
         bool isEventLocked;
+
+        // EXPバー関連
+        std::unique_ptr<MyEngine::Sprite> expBarBack_;
+        std::unique_ptr<MyEngine::Sprite> expBarFill_;
+        bool isExpBarVisible_;   // 表示状態
+        float expBarAlpha_;     // フェード
+        float expBarTimer_;     // 表示タイマー
+        float expBarDuration_;     // 表示時間
     public: // アクセッサ
         Pausemenu* GetPauseMenu() const { return pausemenu_.get(); }
         void SetPlayer(Player* player) { player_ = player; }
         void SetEventLocked(bool flag) { isEventLocked = flag; }
+        void SetExpBarVisible(bool flag) { isExpBarVisible_ = flag; }
+
     };
 }
 
@@ -71711,16 +71801,26 @@ void AssetGenerator::Run(int argc, char* argv[]) {
 }
 
 bool AssetGenerator::NeedsUpdate(const fs::path& resourceRoot, const fs::path& headerPath) {
+    // 出力先のファイル（JSONやヘッダー）が存在しないなら、必ず更新が必要
     if (!fs::exists(headerPath)) return true;
-
-    auto lastHeaderUpdate = fs::last_write_time(headerPath);
-
-    // Resourcesフォルダ内を再帰的に見て、一つでもヘッダーより新しいファイルがあれば実行
-    for (const auto& entry : fs::recursive_directory_iterator(resourceRoot)) {
-        if (entry.last_write_time() > lastHeaderUpdate) {
-            return true;
+    // スキャン対象のリソースフォルダが存在しない場合は処理できないのでスキップ
+    if (!fs::exists(resourceRoot)) return false;
+    // 出力ファイルの最終更新日時を取得
+    std::filesystem::file_time_type lastHeaderUpdate = fs::last_write_time(headerPath);
+    // Resources内のフォルダ自身や、中のファイルを全検査
+    try {
+        for (const std::filesystem::directory_entry& entry : fs::recursive_directory_iterator(resourceRoot)) {
+            // フォルダ内のどれか1つでも、出力ファイルより新しいタイムスタンプを持っていれば「更新が必要」
+            if (fs::last_write_time(entry.path()) > lastHeaderUpdate) {
+                return true;
+            }
         }
     }
+    catch (const std::exception& e) {
+        std::cerr << "[AssetGenerator] タイムスタンプ確認中にエラー: " << e.what() << std::endl;
+        return true;
+    }
+    // すべてのファイルが出力ファイルより古い＝変更なし
     return false;
 }
 
@@ -71745,7 +71845,7 @@ void AssetGenerator::Initialize(int argc, char* argv[]) {
 
     std::cout << "[AssetGenerator] Root: " << rootPath.string() << std::endl;
 
-    // 1. リソース（データの入出力）
+    // リソース（データの入出力）
     resourceRoot_ = rootPath / "Resources";
     outputDir_ = resourceRoot_ / "Data/Resource";
     rulesJsonPath_ = outputDir_ / "Rules.json";
@@ -71761,30 +71861,44 @@ void AssetGenerator::Initialize(int argc, char* argv[]) {
 }
 
 void AssetGenerator::Execute() {
-    // 1. ルール設定の読み込み
+    // ルール設定の読み込み
     // どのフォルダをスキャンし、どのJSONに出力するかを決定する
     if (!ruleLoader_->Load(rulesJsonPath_)) {
         std::cerr << "エラー: Rules.json の読み込みに失敗しました。パス: " << rulesJsonPath_ << std::endl;
         return;
     }
 
-    // 2. ディレクトリ走査と中間JSONの更新
-    // 物理ファイルの状態を確認し、Textures.json 等を最新状態にする
+    // ディレクトリ走査と中間JSONの更新
     ResourceMapper mapper(resourceRoot_, outputDir_);
-    mapper.UpdateByRules(ruleLoader_->GetRules());
 
-    // 3. ID定義の集計
-    // 手順2で生成・更新された各JSONを巡回し、プログラムで使用するIDリストをメモリ上に構築する
-    assetLoader_->Clear(); // 既存のリストをクリア
-    for (const auto& rule : ruleLoader_->GetRules()) {
-        // ルールに基づき、出力されたJSONファイル（例：Models.json）を特定
-        fs::path generatedJsonPath = outputDir_ / rule.output;
+    std::cout << "[AssetGenerator] リソースの変更チェックを開始します..." << std::endl;
 
-        // 階層構造を持つJSONを解析し、AssetDefinitionとして蓄積
-        assetLoader_->LoadGeneratedJson(generatedJsonPath);
+    for (const ExportRule& rule : ruleLoader_->GetRules()) {
+        // rule.dir: スキャン対象フォルダ (例: Resources/Textures)
+        // rule.output: 出力先JSON (例: generated/Textures.json)
+
+        // 出力ファイルがすでに存在し、かつ対象フォルダ内にそれより新しいファイルがなければスキップ
+        if (!NeedsUpdate(rule.dir, rule.output)) {
+            std::cout << " -> スキップ (変更なし): " << rule.dir.filename().string() << " -> " << rule.output.filename().string() << std::endl;
+            continue;
+        }
+
+        // 変更があった場合、またはJSONが存在しない場合のみ処理を実行
+        std::cout << " -> 更新を検知 (処理を実行): " << rule.dir.filename().string() << std::endl;
+        mapper.UpdateSingle(rule.dir, rule.extensions, rule.output);
     }
 
-    // 4. C++コード（ヘッダファイル）の自動生成
+    // ID定義
+    // 手順2で生成・更新された各JSONを巡回し、プログラムで使用するIDリストをメモリ上に構築する
+    assetLoader_->Clear(); // 既存のリストをクリア
+    for (const ExportRule& rule : ruleLoader_->GetRules()) {
+        // 生成されたJSONを読み込む処理(LoadGeneratedJson)を行う
+        if (fs::exists(rule.output)) {
+            assetLoader_->LoadGeneratedJson(rule.output);
+        }
+    }
+
+    // ヘッダファイの自動生成
     // 全てのアセット情報から、プログラムで利用するID定数群を出力する
     CodeGenerator::GenerateResourceIDHeader(assetLoader_->GetAssets(), assetInfoPath_ / "LoadResourceID.h");
 }
@@ -72359,6 +72473,9 @@ namespace LoadResourceID {
             constexpr const char* A_RED = "Textures/Operationui/A_RED.png";
             constexpr const char* D = "Textures/Operationui/D.png";
             constexpr const char* D_RED = "Textures/Operationui/D_RED.png";
+            constexpr const char* LevelGage_Frame = "Textures/Operationui/LevelGage_Frame.png";
+            constexpr const char* LevelGage_Green = "Textures/Operationui/LevelGage_Green.png";
+            constexpr const char* LevelGage_Yellow = "Textures/Operationui/LevelGage_Yellow.png";
             constexpr const char* S = "Textures/Operationui/S.png";
             constexpr const char* SHIFT = "Textures/Operationui/SHIFT.png";
             constexpr const char* SHIFT_RED = "Textures/Operationui/SHIFT_RED.png";
@@ -72395,8 +72512,6 @@ namespace LoadResourceID {
             constexpr const char* titile_04 = "Textures/Ui/titile_04.png";
             constexpr const char* titile_05 = "Textures/Ui/titile_05.png";
             constexpr const char* titile_06 = "Textures/Ui/titile_06.png";
-            constexpr const char* titile_07 = "Textures/Ui/titile_07.png";
-            constexpr const char* Title = "Textures/Ui/Title.png";
             constexpr const char* UI_01 = "Textures/Ui/UI_01.png";
             constexpr const char* UI_02 = "Textures/Ui/UI_02.png";
         } // namespace Ui
