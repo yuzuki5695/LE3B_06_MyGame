@@ -49,6 +49,9 @@ namespace LoadResourceID {
             constexpr const char* A_RED = "Textures/Operationui/A_RED.png";
             constexpr const char* D = "Textures/Operationui/D.png";
             constexpr const char* D_RED = "Textures/Operationui/D_RED.png";
+            constexpr const char* LevelGage_Frame = "Textures/Operationui/LevelGage_Frame.png";
+            constexpr const char* LevelGage_Green = "Textures/Operationui/LevelGage_Green.png";
+            constexpr const char* LevelGage_Yellow = "Textures/Operationui/LevelGage_Yellow.png";
             constexpr const char* S = "Textures/Operationui/S.png";
             constexpr const char* SHIFT = "Textures/Operationui/SHIFT.png";
             constexpr const char* SHIFT_RED = "Textures/Operationui/SHIFT_RED.png";
@@ -85,8 +88,6 @@ namespace LoadResourceID {
             constexpr const char* titile_04 = "Textures/Ui/titile_04.png";
             constexpr const char* titile_05 = "Textures/Ui/titile_05.png";
             constexpr const char* titile_06 = "Textures/Ui/titile_06.png";
-            constexpr const char* titile_07 = "Textures/Ui/titile_07.png";
-            constexpr const char* Title = "Textures/Ui/Title.png";
             constexpr const char* UI_01 = "Textures/Ui/UI_01.png";
             constexpr const char* UI_02 = "Textures/Ui/UI_02.png";
         } // namespace Ui

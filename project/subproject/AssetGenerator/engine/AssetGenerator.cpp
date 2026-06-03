@@ -23,16 +23,26 @@ void AssetGenerator::Run(int argc, char* argv[]) {
 }
 
 bool AssetGenerator::NeedsUpdate(const fs::path& resourceRoot, const fs::path& headerPath) {
+    // 出力先のファイル（JSONやヘッダー）が存在しないなら、必ず更新が必要
     if (!fs::exists(headerPath)) return true;
-
-    auto lastHeaderUpdate = fs::last_write_time(headerPath);
-
-    // Resourcesフォルダ内を再帰的に見て、一つでもヘッダーより新しいファイルがあれば実行
-    for (const auto& entry : fs::recursive_directory_iterator(resourceRoot)) {
-        if (entry.last_write_time() > lastHeaderUpdate) {
-            return true;
+    // スキャン対象のリソースフォルダが存在しない場合は処理できないのでスキップ
+    if (!fs::exists(resourceRoot)) return false;
+    // 出力ファイルの最終更新日時を取得
+    std::filesystem::file_time_type lastHeaderUpdate = fs::last_write_time(headerPath);
+    // Resources内のフォルダ自身や、中のファイルを全検査
+    try {
+        for (const std::filesystem::directory_entry& entry : fs::recursive_directory_iterator(resourceRoot)) {
+            // フォルダ内のどれか1つでも、出力ファイルより新しいタイムスタンプを持っていれば「更新が必要」
+            if (fs::last_write_time(entry.path()) > lastHeaderUpdate) {
+                return true;
+            }
         }
     }
+    catch (const std::exception& e) {
+        std::cerr << "[AssetGenerator] タイムスタンプ確認中にエラー: " << e.what() << std::endl;
+        return true;
+    }
+    // すべてのファイルが出力ファイルより古い＝変更なし
     return false;
 }
 
@@ -57,7 +67,7 @@ void AssetGenerator::Initialize(int argc, char* argv[]) {
 
     std::cout << "[AssetGenerator] Root: " << rootPath.string() << std::endl;
 
-    // 1. リソース（データの入出力）
+    // リソース（データの入出力）
     resourceRoot_ = rootPath / "Resources";
     outputDir_ = resourceRoot_ / "Data/Resource";
     rulesJsonPath_ = outputDir_ / "Rules.json";
@@ -73,30 +83,44 @@ void AssetGenerator::Initialize(int argc, char* argv[]) {
 }
 
 void AssetGenerator::Execute() {
-    // 1. ルール設定の読み込み
+    // ルール設定の読み込み
     // どのフォルダをスキャンし、どのJSONに出力するかを決定する
     if (!ruleLoader_->Load(rulesJsonPath_)) {
         std::cerr << "エラー: Rules.json の読み込みに失敗しました。パス: " << rulesJsonPath_ << std::endl;
         return;
     }
 
-    // 2. ディレクトリ走査と中間JSONの更新
-    // 物理ファイルの状態を確認し、Textures.json 等を最新状態にする
+    // ディレクトリ走査と中間JSONの更新
     ResourceMapper mapper(resourceRoot_, outputDir_);
-    mapper.UpdateByRules(ruleLoader_->GetRules());
 
-    // 3. ID定義の集計
-    // 手順2で生成・更新された各JSONを巡回し、プログラムで使用するIDリストをメモリ上に構築する
-    assetLoader_->Clear(); // 既存のリストをクリア
-    for (const auto& rule : ruleLoader_->GetRules()) {
-        // ルールに基づき、出力されたJSONファイル（例：Models.json）を特定
-        fs::path generatedJsonPath = outputDir_ / rule.output;
+    std::cout << "[AssetGenerator] リソースの変更チェックを開始します..." << std::endl;
 
-        // 階層構造を持つJSONを解析し、AssetDefinitionとして蓄積
-        assetLoader_->LoadGeneratedJson(generatedJsonPath);
+    for (const ExportRule& rule : ruleLoader_->GetRules()) {
+        // rule.dir: スキャン対象フォルダ (例: Resources/Textures)
+        // rule.output: 出力先JSON (例: generated/Textures.json)
+
+        // 出力ファイルがすでに存在し、かつ対象フォルダ内にそれより新しいファイルがなければスキップ
+        if (!NeedsUpdate(rule.dir, rule.output)) {
+            std::cout << " -> スキップ (変更なし): " << rule.dir.filename().string() << " -> " << rule.output.filename().string() << std::endl;
+            continue;
+        }
+
+        // 変更があった場合、またはJSONが存在しない場合のみ処理を実行
+        std::cout << " -> 更新を検知 (処理を実行): " << rule.dir.filename().string() << std::endl;
+        mapper.UpdateSingle(rule.dir, rule.extensions, rule.output);
     }
 
-    // 4. C++コード（ヘッダファイル）の自動生成
+    // ID定義
+    // 手順2で生成・更新された各JSONを巡回し、プログラムで使用するIDリストをメモリ上に構築する
+    assetLoader_->Clear(); // 既存のリストをクリア
+    for (const ExportRule& rule : ruleLoader_->GetRules()) {
+        // 生成されたJSONを読み込む処理(LoadGeneratedJson)を行う
+        if (fs::exists(rule.output)) {
+            assetLoader_->LoadGeneratedJson(rule.output);
+        }
+    }
+
+    // ヘッダファイの自動生成
     // 全てのアセット情報から、プログラムで利用するID定数群を出力する
     CodeGenerator::GenerateResourceIDHeader(assetLoader_->GetAssets(), assetInfoPath_ / "LoadResourceID.h");
 }

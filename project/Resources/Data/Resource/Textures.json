@@ -21,6 +21,9 @@
                 "Textures/Operationui/A_RED.png",
                 "Textures/Operationui/D.png",
                 "Textures/Operationui/D_RED.png",
+                "Textures/Operationui/LevelGage_Frame.png",
+                "Textures/Operationui/LevelGage_Green.png",
+                "Textures/Operationui/LevelGage_Yellow.png",
                 "Textures/Operationui/S.png",
                 "Textures/Operationui/SHIFT.png",
                 "Textures/Operationui/SHIFT_RED.png",
@@ -57,8 +60,6 @@
                 "Textures/Ui/titile_04.png",
                 "Textures/Ui/titile_05.png",
                 "Textures/Ui/titile_06.png",
-                "Textures/Ui/titile_07.png",
-                "Textures/Ui/Title.png",
                 "Textures/Ui/UI_01.png",
                 "Textures/Ui/UI_02.png"
             ],
