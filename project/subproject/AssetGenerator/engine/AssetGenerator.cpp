@@ -39,7 +39,8 @@ bool AssetGenerator::NeedsUpdate(const fs::path& resourceRoot, const fs::path& h
         }
     }
     catch (const std::exception& e) {
-        std::cerr << "[AssetGenerator] タイムスタンプ確認中にエラー: " << e.what() << std::endl;
+		// ディレクトリの走査中にエラーが発生した場合は更新が必要とみなす
+        std::cerr << "Warning: Exception during directory scan: " << e.what() << std::endl;
         return true;
     }
     // すべてのファイルが出力ファイルより古い＝変更なし
@@ -86,14 +87,14 @@ void AssetGenerator::Execute() {
     // ルール設定の読み込み
     // どのフォルダをスキャンし、どのJSONに出力するかを決定する
     if (!ruleLoader_->Load(rulesJsonPath_)) {
-        std::cerr << "エラー: Rules.json の読み込みに失敗しました。パス: " << rulesJsonPath_ << std::endl;
+        std::cerr << "Error: Failed to load rule file: " << rulesJsonPath_ << std::endl;
         return;
     }
 
     // ディレクトリ走査と中間JSONの更新
     ResourceMapper mapper(resourceRoot_, outputDir_);
 
-    std::cout << "[AssetGenerator] リソースの変更チェックを開始します..." << std::endl;
+    std::cout << "[AssetGenerator] Checking for resource changes..." << std::endl;
 
     for (const ExportRule& rule : ruleLoader_->GetRules()) {
         // rule.dir: スキャン対象フォルダ (例: Resources/Textures)
@@ -101,12 +102,12 @@ void AssetGenerator::Execute() {
 
         // 出力ファイルがすでに存在し、かつ対象フォルダ内にそれより新しいファイルがなければスキップ
         if (!NeedsUpdate(rule.dir, rule.output)) {
-            std::cout << " -> スキップ (変更なし): " << rule.dir.filename().string() << " -> " << rule.output.filename().string() << std::endl;
+            std::cout << " -> Skipped (No changes): " << rule.dir.filename().string() << " -> " << rule.output.filename().string() << std::endl;
             continue;
         }
 
         // 変更があった場合、またはJSONが存在しない場合のみ処理を実行
-        std::cout << " -> 更新を検知 (処理を実行): " << rule.dir.filename().string() << std::endl;
+        std::cout << " -> Changes detected (Updating JSON): " << rule.dir.filename().string() << std::endl;
         mapper.UpdateSingle(rule.dir, rule.extensions, rule.output);
     }
 

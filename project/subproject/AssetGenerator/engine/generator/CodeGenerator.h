@@ -6,11 +6,11 @@
 
 namespace AssetGen {
     /// <summary>
-    /// C++コード（ヘッダファイル）の自動生成を担当するクラス
+    /// ヘッダファイルの自動生成を担当するクラス
     /// </summary>
     class CodeGenerator {
 	public: // メンバ関数
-
+		// ツリー構造のノード
         struct Node {
             std::map<std::string, Node> children;
             std::vector<const AssetDefinition*> assets;
@@ -31,11 +31,13 @@ namespace AssetGen {
         /// <summary>
         /// ノードを再帰的に走査して namespace とアセット定義を書き出す
         /// </summary>
-        static void WriteNode(std::ofstream& ofs, const Node& node, int indent);
+        // std::ofstream から std::ostream に変更して stringstream 等も扱えるようにする
+        static void WriteNode(std::ostream& os, const Node& node, int indent);
 
         /// <summary>
         /// ヘッダファイルの本体を書き出す
         /// </summary>
-        static void WriteHeader(std::ofstream& ofs, const std::map<std::string, Node>& categoryTrees);
+        // std::ofstream から std::ostream に変更
+        static void WriteHeader(std::ostream& os, const std::map<std::string, Node>& categoryTrees);
     };
 }

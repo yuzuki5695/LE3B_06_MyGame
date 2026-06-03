@@ -1,10 +1,23 @@
 #pragma once
 
+/**
+ * @file LoadResourceID.h
+ * @brief Automatically generated resource identifiers. DO NOT EDIT DIRECTLY.
+ */
+
 namespace AssetGen {
 namespace LoadResourceID {
+
+    // ==========================================================
+    // Category: Audio
+    // ==========================================================
     namespace Audio {
         constexpr const char* Alarm01 = "Audio/Alarm01.wav";
     } // namespace Audio
+
+    // ==========================================================
+    // Category: Models
+    // ==========================================================
     namespace Models {
         namespace Bullet {
             constexpr const char* EnemyBullet = "Models/Bullet/EnemyBullet/EnemyBullet.obj";
@@ -28,6 +41,10 @@ namespace LoadResourceID {
             constexpr const char* Shockwave = "Models/Particles/Shockwave/Shockwave.obj";
         } // namespace Particles
     } // namespace Models
+
+    // ==========================================================
+    // Category: Textures
+    // ==========================================================
     namespace Textures {
         namespace Event {
             constexpr const char* Black = "Textures/Event/Black.png";
@@ -100,5 +117,6 @@ namespace LoadResourceID {
             constexpr const char* rostock_laage_airport_4k = "Textures/stage/rostock_laage_airport_4k.dds";
         } // namespace stage
     } // namespace Textures
+
 } // namespace LoadResourceID
 } // namespace AssetGen
