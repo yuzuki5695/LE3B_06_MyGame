@@ -40,5 +40,6 @@ namespace MyGame {
         std::vector<std::unique_ptr<Enemy>> enemies_; // 敵キャラクターのリスト
         bool isGameStartEventDone_; //   ゲーム開始イベントが完了したかどうかのフラグ
         bool gamened_;
+		uint32_t prevPlayerExp_; // 前フレームのプレイヤーの経験値
     };
 }

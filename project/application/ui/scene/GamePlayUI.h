@@ -24,6 +24,8 @@ namespace MyGame {
         /// 描画処理
         /// </summary>
         void Draw() override;
+
+        void ShowExpBar();
     private: // プレイベートメンバ関数
         void UpdateStageProgressUI();
         // UI生成用の内部関数
@@ -34,6 +36,8 @@ namespace MyGame {
         void UpdateControlUIAnimation();
         // プレイヤーの位置に追従するUIの更新
         void UpdatePlayerFollowUI();
+		// EXPバーのフェード更新
+        void UpdateExpBarFade();
     private: // メンバ変数
         Player* player_ = nullptr; // プレイヤーへの参照
         std::unique_ptr<Pausemenu> pausemenu_; // ポーズメニュー
@@ -49,11 +53,18 @@ namespace MyGame {
         bool uiProgressFinished_ = false; // ステージ進行度UIのアニメーションが完了したかどうかのフラグ
         bool isEventLocked;
 
+        // EXPバー関連
         std::unique_ptr<MyEngine::Sprite> expBarBack_;
         std::unique_ptr<MyEngine::Sprite> expBarFill_;
+        bool isExpBarVisible_;   // 表示状態
+        float expBarAlpha_;     // フェード
+        float expBarTimer_;     // 表示タイマー
+        float expBarDuration_;     // 表示時間
     public: // アクセッサ
         Pausemenu* GetPauseMenu() const { return pausemenu_.get(); }
         void SetPlayer(Player* player) { player_ = player; }
         void SetEventLocked(bool flag) { isEventLocked = flag; }
+        void SetExpBarVisible(bool flag) { isExpBarVisible_ = flag; }
+
     };
 }

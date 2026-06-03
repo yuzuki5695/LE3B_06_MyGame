@@ -63,9 +63,14 @@ namespace MyGame {
         // プレイヤーに合わせて表示するUI
         // 背景
         expBarBack_ = Sprite::Create(Operationui::LevelGage_Frame, { 0.0f, 0.0f }, 0.0f, { 80.0f, 20.0f });
+        expBarBack_->SetColor({ 1,1,1,0 });
         // ゲージ部分
-        expBarFill_ = Sprite::Create(Operationui::LevelGage_Green, { 0.0f, 0.0f }, 0.0f, { 80.0f, 20.0f });     
-
+        expBarFill_ = Sprite::Create(Operationui::LevelGage_Green, { 0.0f, 0.0f }, 0.0f, { 80.0f, 20.0f });
+        expBarFill_->SetColor({ 1,1,1,0 });
+        isExpBarVisible_ = false;
+        expBarAlpha_ = 1.0f;         // 最大明度
+        expBarTimer_ = 0.0f;        // タイマーリセット
+        expBarDuration_ = 2.0f;     // 表示時間
         isEventLocked = true;
     }
 
@@ -80,6 +85,8 @@ namespace MyGame {
         UpdateControlUI();        
         // プレイヤー位置UIの更新
         UpdatePlayerFollowUI();
+		// EXPバーのフェード更新
+        UpdateExpBarFade();
         gage_->Update();
         player_ui_->Update();
         expBarBack_->Update();
@@ -96,9 +103,11 @@ namespace MyGame {
         gage_->Draw();
 		// プレイヤー位置UIの描画
         player_ui_->Draw();
-		// プレイヤーに合わせて表示するUIの描画
-        expBarBack_->Draw();
-        expBarFill_->Draw();
+        if (isExpBarVisible_) {
+            // プレイヤーに合わせて表示するUIの描画
+            expBarBack_->Draw();
+            expBarFill_->Draw();
+        }
         // 操作UIの描画
         for (std::unique_ptr<Sprite>& ui : uis_) {
             ui->Draw();
@@ -149,8 +158,40 @@ namespace MyGame {
         } else {
             expBarFill_->SetTexture(Operationui::LevelGage_Green);
         }
+    } 
+
+    void GamePlayUI::ShowExpBar() {
+        isExpBarVisible_ = true;
+        // 明度最大
+        expBarAlpha_ = 1.0f;
+        // タイマー初期化
+        expBarTimer_ = 0.0f;
+        // 即反映
+        expBarBack_->SetColor({ 1.0f,1.0f,1.0f,expBarAlpha_ });
+        expBarFill_->SetColor({ 1.0f,1.0f,1.0f,expBarAlpha_ });
     }
-            
+
+    void GamePlayUI::UpdateExpBarFade() {
+        if (!isExpBarVisible_) { return; }
+        constexpr float fadeDuration = 2.0f;
+        expBarTimer_ += 1.0f / 60.0f;
+        float t = expBarTimer_ / fadeDuration;
+        t = std::clamp(t, 0.0f, 1.0f);
+
+        // 1 → 0
+        expBarAlpha_ = 1.0f - t;
+        expBarBack_->SetColor({ 1,1,1,expBarAlpha_ });
+        expBarFill_->SetColor({ 1,1,1,expBarAlpha_ });
+
+        // 完全終了
+        if (t >= 1.0f) {
+            isExpBarVisible_ = false;
+            expBarAlpha_ = 0.0f;
+            expBarBack_->SetColor({ 1,1,1,0 });
+            expBarFill_->SetColor({ 1,1,1,0 });
+        }
+    }
+
     void GamePlayUI::UpdateStageProgressUI() {
         // マネージャ経由で「今のカメラ挙動」から進捗を直接もらう
         float progress = CameraManager::GetInstance()->GetCurrentBehaviorAs<GamePlayCamera>()->GetProgress();
