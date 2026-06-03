@@ -30,8 +30,8 @@ namespace MyGame {
         void Draw() override;
 
 	private: // 内部関数
-        // ゲーム開始イベントの更新処理
-        void StartEvent(); 
+        //// ゲーム開始イベントの更新処理
+        //void StartEvent(); 
 		// ゲーム終了イベントの更新処理
         void GameEnd();
     private: // メンバ変数
