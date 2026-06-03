@@ -60,8 +60,15 @@ namespace MyGame {
         pausemenu_->Initialize();
 
         // プレイヤーに合わせて表示するUI
-        expFollowUI_ = Sprite::Create(Operationui::W, Vector2{ 110.0f, 360.0f }, 0.0f, Vector2{ 48.0f,48.0f });
-        expFollowUI_->SetAnchorPoint({ 0.5f,0.5f });
+        // 背景
+        expBarBack_ = Sprite::Create(Operationui::W, { 110.0f, 360.0f }, 0.0f, { 48.0f, 48.0f });
+        expBarBack_->SetAnchorPoint({ 0.5f,0.5f });
+        // 中身
+        expBarFill_ = Sprite::Create(Operationui::W, { 110.0f, 360.0f }, 0.0f, { 48.0f, 48.0f });
+        expBarFill_->SetAnchorPoint({ 0.5f,0.5f });
+
+        expBarBack_->SetAnchorPoint({ 0.5f,0.5f });
+        expBarFill_->SetAnchorPoint({ 0.0f,0.5f }); // 左基準
 
         isEventLocked = true;
     }
@@ -79,7 +86,8 @@ namespace MyGame {
         UpdatePlayerFollowUI();
         gage_->Update();
         player_ui_->Update();
-        expFollowUI_->Update();
+        expBarBack_->Update();
+        expBarFill_->Update();
         for (std::unique_ptr<Sprite>& ui : uis_) {
             ui->Update();
         }
@@ -93,7 +101,8 @@ namespace MyGame {
 		// プレイヤー位置UIの描画
         player_ui_->Draw();
 		// プレイヤーに合わせて表示するUIの描画
-        //expFollowUI_->Draw();
+        expBarBack_->Draw();
+        expBarFill_->Draw();
         // 操作UIの描画
         for (std::unique_ptr<Sprite>& ui : uis_) {
             ui->Draw();
@@ -109,28 +118,43 @@ namespace MyGame {
 
         // プレイヤー頭上
         Vector3 worldPos = player_->GetTranslate();
-        worldPos.y += 3.0f;
+        worldPos.y += 4.0f;
 
-        // ViewProjection
         Matrix4x4 view = camera->GetViewMatrix();
         Matrix4x4 projection = camera->GetProjectionMatrix();
-        Matrix4x4 viewProjection = Multiply(view, projection);
-        // ワールド→クリップ空間
-        Vector3 clipPos = TransformPoint(worldPos, viewProjection);
-        // 背面なら非表示
+
+        Matrix4x4 vp = Multiply(view, projection);
+
+        Vector3 clipPos = TransformPoint(worldPos, vp);
+
+        // 背面
         if (clipPos.z <= 0.0f) {
-            expFollowUI_->SetColor({ 1,1,1,0 });
+            expBarBack_->SetColor({ 1,1,1,0 });
+            expBarFill_->SetColor({ 1,1,1,0 });
             return;
         }
 
-        expFollowUI_->SetColor({ 1,1,1,1 });
+        expBarBack_->SetColor({ 1,1,1,1 });
+        expBarFill_->SetColor({ 1,1,1,1 });
+
         constexpr float screenWidth = 1280.0f;
         constexpr float screenHeight = 720.0f;
-        // NDC → Screen
+
         Vector2 screenPos;
         screenPos.x = (clipPos.x + 1.0f) * 0.5f * screenWidth;
         screenPos.y = (1.0f - clipPos.y) * 0.5f * screenHeight;
-        expFollowUI_->SetPosition(screenPos);
+
+        // 背景位置
+        expBarBack_->SetPosition(screenPos);
+
+        // Fillは左端合わせ
+        constexpr float barWidth = 80.0f;
+
+        float ratio = static_cast<float>(player_->GetExp()) / static_cast<float>(player_->GetNextLevelExp());
+        ratio = std::clamp(ratio, 0.0f, 1.0f);
+        expBarFill_->SetSize({ barWidth * ratio,10.0f });
+        // 左寄せ位置
+        expBarFill_->SetPosition({ screenPos.x - barWidth * 0.5f,screenPos.y });
     }
             
     void GamePlayUI::UpdateStageProgressUI() {

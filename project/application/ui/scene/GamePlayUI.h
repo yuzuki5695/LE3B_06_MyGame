@@ -40,7 +40,6 @@ namespace MyGame {
         std::vector<std::unique_ptr<MyEngine::Sprite>> uis_; // 操作UIのスプライトリスト
         std::unique_ptr <MyEngine::Sprite> gage_;       // ステージ進行度を示すUI
         std::unique_ptr <MyEngine::Sprite> player_ui_;  // プレイヤー位置を示すUI
-        std::unique_ptr<MyEngine::Sprite> expFollowUI_; // プレイヤーの経験値獲得に合わせて表示するUI
         std::vector<MyEngine::Vector2> uiOriginalSizes_; // 操作UIの元のサイズを保存するリスト
         bool isAnimating_;   // 操作UIのアニメーション中かどうかのフラグ
         float timer_;  // 操作UIのアニメーション開始からの経過時間
@@ -49,6 +48,9 @@ namespace MyGame {
         bool uiProgressStarted_ = false;  // ステージ進行度UIのアニメーションが開始したかどうかのフラグ
         bool uiProgressFinished_ = false; // ステージ進行度UIのアニメーションが完了したかどうかのフラグ
         bool isEventLocked;
+
+        std::unique_ptr<MyEngine::Sprite> expBarBack_;
+        std::unique_ptr<MyEngine::Sprite> expBarFill_;
     public: // アクセッサ
         Pausemenu* GetPauseMenu() const { return pausemenu_.get(); }
         void SetPlayer(Player* player) { player_ = player; }
