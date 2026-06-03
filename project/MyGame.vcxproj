@@ -131,7 +131,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="application\character\player\PlayerMove.cpp" />
     <ClCompile Include="application\character\player\PlayerReticle.cpp" />
     <ClCompile Include="application\character\player\PlayerWeapon.cpp" />
-    <ClCompile Include="application\collision\CollisionManager.cpp" />
     <ClCompile Include="application\fade\FadeManager.cpp" />
     <ClCompile Include="application\loader\CharacterLoader.cpp" />
     <ClCompile Include="application\loader\CurveJsonLoader.cpp" />
@@ -228,7 +227,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\character\player\PlayerMove.h" />
     <ClInclude Include="application\character\player\PlayerReticle.h" />
     <ClInclude Include="application\character\player\PlayerWeapon.h" />
-    <ClInclude Include="application\collision\CollisionManager.h" />
     <ClInclude Include="application\fade\FadeManager.h" />
     <ClInclude Include="application\loader\CharacterLoader.h" />
     <ClInclude Include="application\loader\CurveJsonLoader.h" />
