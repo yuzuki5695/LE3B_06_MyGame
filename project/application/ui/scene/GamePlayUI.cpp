@@ -15,9 +15,10 @@
 using namespace MyEngine;
 using namespace AssetGen::LoadResourceID::Textures;
 using namespace Easing;
+using namespace MatrixVector;
 
 namespace MyGame {
-    void GamePlayUI::Initialize() { 
+    void GamePlayUI::Initialize() {
         // 操作UIテクスチャ一覧
         const std::array<const char*, 22> operationTextures = {
             Operationui::W,Operationui::A,Operationui::S,Operationui::D,
@@ -33,40 +34,50 @@ namespace MyGame {
             TextureManager::GetInstance()->LoadTexture(texture);
         }
 
+        // ステージ進行度UIの生成
         gage_ = Sprite::Create(Ui::Gage, Vector2{ 380.0f, 10.0f }, 0.0f, Vector2{ 500.0f,30.0f });
+		// プレイヤー位置UIの生成
         player_ui_ = Sprite::Create(Ui::Player_ui, Vector2{ 380.0f, 12.3f }, 0.0f, Vector2{ 25.0f,25.0f });
 
-        // 2. UI生成
+		// 操作UIの生成
         Vector2 size = { 40.0f, 40.0f };
         Vector2 center = { 85.0f, 470.0f };
         CreateWASDUI(center, size, 4.0f, 25.0f);
 
-        // 3. 初期状態設定（サイズ0）
+		//  操作UIの初期サイズを保存
         for (auto& ui : uis_) {
             uiOriginalSizes_.push_back(ui->GetSize());
             ui->SetAnchorPoint({ 0.5f, 0.5f });
             ui->SetSize({ 0.0f, 0.0f });
         }
+		
+		isAnimating_ = true; // アニメーション開始フラグ
+		timer_ = 0.0f; // アニメーション開始からの経過時間
+		duration_ = 0.5f; // 0.5秒でアニメーションが完了するように設定
 
-        isAnimating_ = true;
-        timer_ = 0.0f;
-        duration_ = 0.5f;
-
+        // ポーズメニューの初期化、生成
         pausemenu_ = std::make_unique<Pausemenu>();
         pausemenu_->Initialize();
+
+        // プレイヤーに合わせて表示するUI
+        expFollowUI_ = Sprite::Create(Operationui::W, Vector2{ 110.0f, 360.0f }, 0.0f, Vector2{ 48.0f,48.0f });
+        expFollowUI_->SetAnchorPoint({ 0.5f,0.5f });
     }
 
     void GamePlayUI::Update() {
-		// ポーズ画面の更新
+        // ポーズ画面の更新
         pausemenu_->Update();
-
+        // ステージ進行度UIの更新
         UpdateStageProgressUI();
-
+        // 操作UIのアニメーション更新
+        UpdateControlUIAnimation();
+        // 操作UIの更新
+        UpdateControlUI();        
+        // プレイヤー位置UIの更新
+        UpdatePlayerFollowUI();
         gage_->Update();
         player_ui_->Update();
-
-        UpdateControlUIAnimation();
-        UpdateControlUI();
+        expFollowUI_->Update();
         for (std::unique_ptr<Sprite>& ui : uis_) {
             ui->Update();
         }
@@ -75,15 +86,51 @@ namespace MyGame {
     void GamePlayUI::Draw() {
 		// ポーズ画面の描画
         pausemenu_->Draw();
-
+		// ステージ進行度UIの描画
         gage_->Draw();
+		// プレイヤー位置UIの描画
         player_ui_->Draw();
-
+		// プレイヤーに合わせて表示するUIの描画
+        //expFollowUI_->Draw();
+        // 操作UIの描画
         for (std::unique_ptr<Sprite>& ui : uis_) {
             ui->Draw();
         }
     }
 
+    void GamePlayUI::UpdatePlayerFollowUI() {
+        if (!player_) { return; }
+
+        Camera* camera = CameraManager::GetInstance()->GetActiveCamera();
+
+        if (!camera) { return; }
+
+        // プレイヤー頭上
+        Vector3 worldPos = player_->GetTranslate();
+        worldPos.y += 3.0f;
+
+        // ViewProjection
+        Matrix4x4 view = camera->GetViewMatrix();
+        Matrix4x4 projection = camera->GetProjectionMatrix();
+        Matrix4x4 viewProjection = Multiply(view, projection);
+        // ワールド→クリップ空間
+        Vector3 clipPos = TransformPoint(worldPos, viewProjection);
+        // 背面なら非表示
+        if (clipPos.z <= 0.0f) {
+            expFollowUI_->SetColor({ 1,1,1,0 });
+            return;
+        }
+
+        expFollowUI_->SetColor({ 1,1,1,1 });
+        constexpr float screenWidth = 1280.0f;
+        constexpr float screenHeight = 720.0f;
+        // NDC → Screen
+        Vector2 screenPos;
+        screenPos.x = (clipPos.x + 1.0f) * 0.5f * screenWidth;
+        screenPos.y = (1.0f - clipPos.y) * 0.5f * screenHeight;
+        expFollowUI_->SetPosition(screenPos);
+    }
+            
     void GamePlayUI::UpdateStageProgressUI() {
         // マネージャ経由で「今のカメラ挙動」から進捗を直接もらう
         float progress = CameraManager::GetInstance()->GetCurrentBehaviorAs<GamePlayCamera>()->GetProgress();

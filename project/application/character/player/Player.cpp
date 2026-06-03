@@ -91,11 +91,18 @@ namespace MyGame {
     }
 
     void Player::Update() {
-        // ステートの更新
-        if (isStateUpdateEnabled_) {
-            state_.Update(*this);
+		// イベントロックされていない場合のみ更新処理を行う
+        if (!IsEventLocked()) {
+            // ステートの更新
+            if (isStateUpdateEnabled_) {
+                state_.Update(*this);
+            }
+			// コライダーのOBBをプレイヤーオブジェクトの現在の状態に合わせて更新
+            if (collider_ && object_ && IsActive()) {
+                collider_->SetOBB(CollisionUtils::CreateOBB(object_.get(), colliderSize_));
+            }
         }
-
+        
         // カメラがGamePlayCameraで更新中の場合、プレイヤーのワールド座標をカメラ位置に基づいて更新する
         if (CameraManager::GetInstance()->GetCurrentBehaviorAs<GamePlayCamera>()) {
             // 死亡状態ではないなら
@@ -104,10 +111,7 @@ namespace MyGame {
             }
         }
 
-        if (collider_ && object_ && IsActive()) {
-            collider_->SetOBB(CollisionUtils::CreateOBB(object_.get(), colliderSize_));
-        }
-        // 各コンポーネントの更新
+        // 各オブジェクト更新
         targetreticle_->Update();
         target_->Update();
         object_->Update();

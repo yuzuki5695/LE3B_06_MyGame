@@ -7,9 +7,10 @@
 namespace MyGame {
 	// キャラクターの状態を管理するフラグ構造体    
     struct CharacterFlags {
-		bool isAlive = true;                // 生存フラグ（falseなら削除対象）
-		bool isActive = false;              // 活動フラグ（falseなら更新・描画処理をスキップ）
-		bool isColliderRegistered = false;  // 当たり判定がCollisionManagerに登録されているか
+        bool isAlive = true;                // 生存フラグ（falseなら削除対象）
+        bool isActive = false;              // 活動フラグ（falseなら更新・描画処理をスキップ）
+        bool isColliderRegistered = false;  // 当たり判定がCollisionManagerに登録されているか
+        bool isEventLocked = true;          // イベントロックフラグ（falseならイベント処理を受けない）
     };
 
     /// <summary>
@@ -63,9 +64,11 @@ namespace MyGame {
         Collider* GetCollider() const { return collider_.get(); }
         bool IsAlive() const { return flags_.isAlive; }
         bool IsActive() const { return flags_.isActive; }
+        bool IsEventLocked() const { return flags_.isEventLocked; }
         // setter
         void SetAlive(bool flag) { flags_.isAlive = flag; }
         void SetActive(bool flag) { flags_.isActive = flag; }
+        void SetEventLocked(bool flag) { flags_.isEventLocked = flag; }
 
         // 削除予約
         void Destroy() { flags_.isAlive = false; }

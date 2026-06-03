@@ -51,6 +51,6 @@ namespace MyGame {
     }
 
     bool EventManager::IsActive() const {
-        return currentEvent_ != nullptr;
+        return currentEvent_ && !currentEvent_->IsFinished();
     }
 }

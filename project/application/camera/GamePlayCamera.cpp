@@ -24,7 +24,7 @@ namespace MyGame {
     void GamePlayCamera::Initialize(Camera* camera) {
         // カメラのステートを設定
         stateData_.type = CameraType::Main;
-        stateData_.state = CameraState::Follow;
+        stateData_.state = CameraState::Default;
         // ベジェカーブのJSONデータ読み込み
         Jsondata_ = std::make_unique<CurveJsonLoader>();
         // ベジェ制御点の読み込み
@@ -67,6 +67,9 @@ namespace MyGame {
         if (!camera) return;
 
         switch (stateData_.state) {
+        case CameraState::Default: // 待機状態
+
+            break;
         case CameraState::Follow:     // レールカメラの更新
             // レールカメラの更新
             UpdateRailCamera(camera);

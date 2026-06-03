@@ -28,13 +28,23 @@ namespace MyGame {
     /// </summary>
     class StartEvent : public IEvent {
     public: // メンバ関数
-
+        /// <summary>
+		/// 初期化処理
+        /// </summary>
         void Initialize() override;
+        /// <summary>
+		/// 更新処理
+        /// </summary>
         void Update() override;
+        /// <summary>
+		/// 2D描画処理
+        /// </summary>
         void Draw2D() override;
-
-        bool IsFinished() const override { return isFinished_; }
-
+        /// <summary>
+		/// スプライトのIDを指定して構造体を返す関数
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         SpriteUnit* FindSprite(SpriteID id);
     private: // メンバ変数
         // スプライトの構造体のリスト
@@ -47,6 +57,6 @@ namespace MyGame {
         float phaseDuration_ = 1.0f;  // 現在のフェーズの目標時間（秒）
         bool timefige_ = false;
         float closeSpeed_ = 17.0f;
-        bool isFinished_ = false;
+
     };
 }

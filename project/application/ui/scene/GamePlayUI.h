@@ -8,45 +8,49 @@ namespace MyGame {
     class Player;
 
     /// <summary>
-	/// ゲームプレイシーンのUIを管理するクラス
+    /// ゲームプレイシーンのUIを管理するクラス
     /// </summary>
     class GamePlayUI : public BaseUI {
     public: // メンバ関数
         /// <summary>
-		/// 初期化処理
+        /// 初期化処理
         /// </summary>
         void Initialize() override;
         /// <summary>
-		/// 更新処理
+        /// 更新処理
         /// </summary>
         void Update() override;
         /// <summary>
-		/// 描画処理
+        /// 描画処理
         /// </summary>
         void Draw() override;
-        void SetPlayer(Player* player) { player_ = player; }
     private: // プレイベートメンバ関数
         void UpdateStageProgressUI();
         // UI生成用の内部関数
         void CreateWASDUI(const MyEngine::Vector2& baseCenter, const  MyEngine::Vector2& size, float keySpacing, float groupSpacing);
         // 更新処理の細分化
         void UpdateControlUI();
+        // UIアニメーションの更新
         void UpdateControlUIAnimation();
+        // プレイヤーの位置に追従するUIの更新
+        void UpdatePlayerFollowUI();
     private: // メンバ変数
-        std::unique_ptr<Pausemenu> pausemenu_;
-        std::vector<std::unique_ptr<MyEngine::Sprite>> uis_;
-        std::vector<MyEngine::Vector2> uiOriginalSizes_;
-        Player* player_ = nullptr;
-        bool isAnimating_;
-        float timer_;
-        float duration_;
+        Player* player_ = nullptr; // プレイヤーへの参照
+        std::unique_ptr<Pausemenu> pausemenu_; // ポーズメニュー
+        std::vector<std::unique_ptr<MyEngine::Sprite>> uis_; // 操作UIのスプライトリスト
+        std::unique_ptr <MyEngine::Sprite> gage_;       // ステージ進行度を示すUI
+        std::unique_ptr <MyEngine::Sprite> player_ui_;  // プレイヤー位置を示すUI
+        std::unique_ptr<MyEngine::Sprite> expFollowUI_; // プレイヤーの経験値獲得に合わせて表示するUI
+        std::vector<MyEngine::Vector2> uiOriginalSizes_; // 操作UIの元のサイズを保存するリスト
+        bool isAnimating_;   // 操作UIのアニメーション中かどうかのフラグ
+        float timer_;  // 操作UIのアニメーション開始からの経過時間
+        float duration_;  // 操作UIのアニメーションにかける時間
 
-        std::unique_ptr <MyEngine::Sprite> gage_;
-        std::unique_ptr <MyEngine::Sprite> player_ui_;
-    
-        bool uiProgressStarted_ = false;
-        bool uiProgressFinished_ = false;
-        public: // アクセッサ
-         Pausemenu* GetPauseMenu() const { return pausemenu_.get(); }
+        bool uiProgressStarted_ = false;  // ステージ進行度UIのアニメーションが開始したかどうかのフラグ
+        bool uiProgressFinished_ = false; // ステージ進行度UIのアニメーションが完了したかどうかのフラグ
+
+    public: // アクセッサ
+        Pausemenu* GetPauseMenu() const { return pausemenu_.get(); }
+        void SetPlayer(Player* player) { player_ = player; }
     };
 }

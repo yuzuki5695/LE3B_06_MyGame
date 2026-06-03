@@ -2,15 +2,30 @@
 #include <EventTypes.h>
 
 namespace MyGame {
-
+    /// <summary>
+	/// イベントのインターフェースクラス
+    /// </summary>
     class IEvent {
-    public:
+	public: // メンバ関数       
+		/// デストラクタ        
         virtual ~IEvent() = default;
-
+        /// <summary>
+		/// 初期化処理
+        /// </summary>
         virtual void Initialize() = 0;
+        /// <summary>
+		/// 更新処理
+        /// </summary>
         virtual void Update() = 0;
+        /// <summary>
+		/// 2D描画処理
+        /// </summary>
         virtual void Draw2D() = 0;
-
-        virtual bool IsFinished() const = 0;
+       
+		/// イベントの終了判定        
+        bool IsFinished() const { return isFinished_; }
+	protected: 
+        // イベントの終了フラグ		
+        bool isFinished_ = false;
     };
 }

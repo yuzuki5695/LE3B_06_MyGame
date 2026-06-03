@@ -8,7 +8,17 @@ using namespace MatrixVector;
 
 namespace MyGame {
 
+    void EnemySpawner::Initialize() {
+        spawnInterval_ = 3.0f;   // 何秒ごと
+        spawnTimer_ = 0.0f;
+        spawnCount_ = 3;           // 1回で出す数
+        isEventLocked_ = true;
+    }
+
     void EnemySpawner::Update() {
+        // イベント中はスポーン停止
+        if (isEventLocked_) { return; }
+        
         spawnTimer_ += 1.0f / 60.0f;
 
         if (spawnTimer_ >= spawnInterval_) {

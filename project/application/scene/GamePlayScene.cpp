@@ -63,9 +63,10 @@ namespace MyGame {
 
         // 敵のSpawner生成,初期化
         enemySpawner_ = std::make_unique<EnemySpawner>();
+        enemySpawner_->Initialize();
         enemySpawner_->SetEnemies(&enemies_);    // 敵リストへの参照をセット
         enemySpawner_->SetPlayer(player_.get()); // プレイヤーへの参照をセット
-        // imgui        
+        // imgui
         EnemyListEditor::GetInstance()->SetEnemies(&enemies_);
 
         // 最初のスポーン
@@ -95,31 +96,45 @@ namespace MyGame {
     }
 
     void GamePlayScene::Update() {
-        ////  ゲーム開始前のイベント処理
-        //if (!isGameStartEventDone_) {
-        //    // ゲーム開始イベントの開始
-        //    EventManager::GetInstance()->EventStart(Event::EventState::GameStart);
-        //    EventManager::GetInstance()->Update();
-        //    isGameStartEventDone_ = true;
-        //    CameraManager::GetInstance()->Update();
-        //    return;
-        //}
+        //  ゲーム開始前のイベント処理
+        if (!isGameStartEventDone_) {
+            // まだイベントが存在しないなら開始
+            if (!EventManager::GetInstance()->IsActive()) {
+                // ゲーム開始イベントの開始
+                EventManager::GetInstance()->EventStart(Event::EventState::GameStart);
+            }
+            isGameStartEventDone_ = true;
+        }
+
+        // イベント終了判定
+        if (!EventManager::GetInstance()->IsActive()) {
+            // レールカメラの挙動に切り替える
+            CameraManager::GetInstance()->GetCurrentBehaviorAs<GamePlayCamera>()->SetCameraState(CameraState::Follow);
+            // プレイヤーのイベントロックを解除して操作可能にする
+            player_->SetEventLocked(false);
+            // 敵スポーンのイベントロックを解除してスポーン開始
+            enemySpawner_->SetEventLocked(false);
+
+            // ポーズがアクティブでない状態でTabキーが押されたらポーズメニューをアクティブにする
+            if (!UIManager::GetInstance()->GetUI<GamePlayUI>()->GetPauseMenu()->IsActive() && Input::GetInstance()->TriggerKey(DIK_TAB)) {
+                UIManager::GetInstance()->GetUI<GamePlayUI>()->GetPauseMenu()->SetActive(true);
+            }
+            // ポーズがアクティブ中、他の更新を停止してポーズメニューの更新を行う
+            if (UIManager::GetInstance()->GetUI<GamePlayUI>()->GetPauseMenu()->IsActive()) {
+                // フェードマネージャの更新
+                FadeManager::GetInstance()->Update();
+                // カメラのターゲットとプレイヤーをセット（プレイヤーの位置にカメラを追従させるため）
+                CameraManager::GetInstance()->GetCurrentBehaviorAs<GamePlayCamera>()->SetPlayer(player_.get());
+                // ポーズメニューの更新
+                UIManager::GetInstance()->GetUI<GamePlayUI>()->GetPauseMenu()->Update();
+                UIManager::GetInstance()->Update();
+                return;
+            }
+        }
 
         // カメラマネージャの更新
         CameraManager::GetInstance()->Update();
 #pragma region 全てのObject3d個々の更新処理      
-        // ポーズメニューのトリガーと更新
-        if (!UIManager::GetInstance()->GetUI<GamePlayUI>()->GetPauseMenu()->IsActive() && Input::GetInstance()->TriggerKey(DIK_TAB)) {
-            UIManager::GetInstance()->GetUI<GamePlayUI>()->GetPauseMenu()->SetActive(true);
-        }
-        // ポーズがアクティブ中、ゲームの更新を停止してポーズメニューの更新のみ行う
-        if (UIManager::GetInstance()->GetUI<GamePlayUI>()->GetPauseMenu()->IsActive()) {
-            UIManager::GetInstance()->GetUI<GamePlayUI>()->GetPauseMenu()->Update();
-            FadeManager::GetInstance()->Update();
-            CameraManager::GetInstance()->GetCurrentBehaviorAs<GamePlayCamera>()->SetPlayer(player_.get());            
-            UIManager::GetInstance()->Update();
-            return;
-        }
 
         if (!gamened_) {
             // 敵スポーン

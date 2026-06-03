@@ -157,7 +157,7 @@ namespace MyGame {
                 if (mission->alpha <= 0.7f)
                     back->alpha -= 0.05f;
                 if (back->alpha <= 0.0f && mission->alpha <= 0.0f) {
-                    IsFinished();
+                    isFinished_ = true;
                 }
             }
 
