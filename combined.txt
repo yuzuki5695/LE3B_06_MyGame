@@ -6057,20 +6057,11 @@ File Path: project/MyGame.vcxproj.filters
     <Filter Include="ヘッダー ファイル\application\event\events">
       <UniqueIdentifier>{a2847793-7a47-4891-9eda-151abbd5ed6b}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ソース ファイル\application\character\enemy">
-      <UniqueIdentifier>{6d2ebea2-d3dc-4a0a-9c39-3854b9d085de}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ヘッダー ファイル\application\character\enemy">
       <UniqueIdentifier>{739f3c13-18b6-476e-879f-2fde424d73ca}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ソース ファイル\application\character\enemy\state">
-      <UniqueIdentifier>{6d94b9cb-96ee-4526-b7ec-ce6afec336ba}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ヘッダー ファイル\application\character\enemy\state">
       <UniqueIdentifier>{57fe5f60-6f9d-44b0-ab63-0a1df7c193c5}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ソース ファイル\application\character\enemy\component">
-      <UniqueIdentifier>{61879419-1938-46bf-9a6b-528d1c6d651e}</UniqueIdentifier>
     </Filter>
     <Filter Include="ヘッダー ファイル\application\character\enemy\component">
       <UniqueIdentifier>{18f2c5c4-0141-4785-b141-ac5711b02f69}</UniqueIdentifier>
@@ -6101,6 +6092,15 @@ File Path: project/MyGame.vcxproj.filters
     </Filter>
     <Filter Include="ヘッダー ファイル\engine\math\Collision">
       <UniqueIdentifier>{b5f4c0b7-3989-4f4d-a377-4920cae47c95}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\application\character\player\enemy">
+      <UniqueIdentifier>{6d2ebea2-d3dc-4a0a-9c39-3854b9d085de}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\application\character\player\enemy\state">
+      <UniqueIdentifier>{6d94b9cb-96ee-4526-b7ec-ce6afec336ba}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\application\character\player\enemy\component">
+      <UniqueIdentifier>{61879419-1938-46bf-9a6b-528d1c6d651e}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -6342,13 +6342,13 @@ File Path: project/MyGame.vcxproj.filters
       <Filter>ソース ファイル\application\event\events</Filter>
     </ClCompile>
     <ClCompile Include="application\character\enemy\Enemy.cpp">
-      <Filter>ソース ファイル\application\character\enemy</Filter>
+      <Filter>ソース ファイル\application\character\player\enemy</Filter>
     </ClCompile>
     <ClCompile Include="application\character\enemy\state\EnemyState.cpp">
-      <Filter>ソース ファイル\application\character\enemy\state</Filter>
+      <Filter>ソース ファイル\application\character\player\enemy\state</Filter>
     </ClCompile>
     <ClCompile Include="application\character\enemy\EnemySpawner.cpp">
-      <Filter>ソース ファイル\application\character\enemy</Filter>
+      <Filter>ソース ファイル\application\character\player\enemy</Filter>
     </ClCompile>
     <ClCompile Include="application\camera\GameOverCamera.cpp">
       <Filter>ソース ファイル\application\camera</Filter>
@@ -6372,7 +6372,7 @@ File Path: project/MyGame.vcxproj.filters
       <Filter>ソース ファイル\application\character\bullet</Filter>
     </ClCompile>
     <ClCompile Include="application\character\enemy\component\EnemyAttack.cpp">
-      <Filter>ソース ファイル\application\character\enemy\component</Filter>
+      <Filter>ソース ファイル\application\character\player\enemy\component</Filter>
     </ClCompile>
     <ClCompile Include="application\ui\scene\GameClearUI.cpp">
       <Filter>ソース ファイル\application\ui\scene</Filter>
@@ -6390,7 +6390,7 @@ File Path: project/MyGame.vcxproj.filters
       <Filter>ソース ファイル\application\ui\scene</Filter>
     </ClCompile>
     <ClCompile Include="application\character\enemy\component\EnemyDeath.cpp">
-      <Filter>ソース ファイル\application\character\enemy\component</Filter>
+      <Filter>ソース ファイル\application\character\player\enemy\component</Filter>
     </ClCompile>
     <ClCompile Include="engine\editor\line\LineCommon.cpp">
       <Filter>ソース ファイル\engine\editor\line</Filter>
@@ -6399,7 +6399,7 @@ File Path: project/MyGame.vcxproj.filters
       <Filter>ソース ファイル\engine\editor\line</Filter>
     </ClCompile>
     <ClCompile Include="application\character\enemy\EnemyListEditor.cpp">
-      <Filter>ソース ファイル\application\character\enemy</Filter>
+      <Filter>ソース ファイル\application\character\player\enemy</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -7153,7 +7153,7 @@ namespace MyGame {
     void GamePlayCamera::Initialize(Camera* camera) {
         // カメラのステートを設定
         stateData_.type = CameraType::Main;
-        stateData_.state = CameraState::Follow;
+        stateData_.state = CameraState::Default;
         // ベジェカーブのJSONデータ読み込み
         Jsondata_ = std::make_unique<CurveJsonLoader>();
         // ベジェ制御点の読み込み
@@ -7196,6 +7196,9 @@ namespace MyGame {
         if (!camera) return;
 
         switch (stateData_.state) {
+        case CameraState::Default: // 待機状態
+
+            break;
         case CameraState::Follow:     // レールカメラの更新
             // レールカメラの更新
             UpdateRailCamera(camera);
@@ -7692,9 +7695,10 @@ File Path: project/application/character/BaseCharacter.h
 namespace MyGame {
 	// キャラクターの状態を管理するフラグ構造体    
     struct CharacterFlags {
-		bool isAlive = true;                // 生存フラグ（falseなら削除対象）
-		bool isActive = false;              // 活動フラグ（falseなら更新・描画処理をスキップ）
-		bool isColliderRegistered = false;  // 当たり判定がCollisionManagerに登録されているか
+        bool isAlive = true;                // 生存フラグ（falseなら削除対象）
+        bool isActive = false;              // 活動フラグ（falseなら更新・描画処理をスキップ）
+        bool isColliderRegistered = false;  // 当たり判定がCollisionManagerに登録されているか
+        bool isEventLocked = true;          // イベントロックフラグ（falseならイベント処理を受けない）
     };
 
     /// <summary>
@@ -7748,9 +7752,11 @@ namespace MyGame {
         Collider* GetCollider() const { return collider_.get(); }
         bool IsAlive() const { return flags_.isAlive; }
         bool IsActive() const { return flags_.isActive; }
+        bool IsEventLocked() const { return flags_.isEventLocked; }
         // setter
         void SetAlive(bool flag) { flags_.isAlive = flag; }
         void SetActive(bool flag) { flags_.isActive = flag; }
+        void SetEventLocked(bool flag) { flags_.isEventLocked = flag; }
 
         // 削除予約
         void Destroy() { flags_.isAlive = false; }
@@ -8188,7 +8194,7 @@ namespace MyGame {
         // OBB更新
         collider_->SetOBB(CollisionUtils::CreateOBB(bullet.get(), colliderSize_));
 #ifdef USE_IMGUI
-        if (!active_) {
+        if (active_) {
             const auto& debug = LineRenderer::GetInstance()->GetDebugSettings();
             if (debug.enable && bullet && collider_) {
                 LineRenderer::GetInstance()->SetHit(false);
@@ -8327,7 +8333,7 @@ namespace MyGame {
         // OBB更新
         collider_->SetOBB(CollisionUtils::CreateOBB(bullet.get(), colliderSize_));
 #ifdef USE_IMGUI
-        if (!active_) {
+        if (active_) {
             const auto& debug = LineRenderer::GetInstance()->GetDebugSettings();
             if (debug.enable && bullet && collider_) {
                 LineRenderer::GetInstance()->SetHit(false);
@@ -8423,10 +8429,39 @@ namespace MyGame {
     }
 
     void Enemy::Initialize() {
+        // 乱数エンジンを初期化
+        std::random_device rd;
+        randomEngine = std::mt19937(rd());
+        std::uniform_int_distribution<int> enemyTypeDist(0, 1);
+        enemyType_ = static_cast<EnemyType>(enemyTypeDist(randomEngine));
+		// モデルパスの選択
+        const char* modelPath = nullptr;
+        switch (enemyType_) {
+        case EnemyType::Shot:
+            modelPath = Character::Enemy;
+            break;
+        case EnemyType::Tackle:
+            modelPath = Character::Enemy;
+            break;
+        }
+
         // モデルの読み込み
-        ModelManager::GetInstance()->LoadModel(Character::Enemy);
+        ModelManager::GetInstance()->LoadModel(modelPath);
         // オブジェクトの生成、初期化
-        object_ = Object3d::Create(Character::Enemy, Transform{ { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f } });
+        object_ = Object3d::Create(modelPath, Transform{ { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f } });
+        
+        // 敵タイプごとの色設定
+        switch (enemyType_) {
+        case EnemyType::Shot:
+            // 通常（白）
+            object_->SetMaterialColor({ 1.0f, 1.0f, 1.0f, 1.0f });
+            break;
+        case EnemyType::Tackle:
+            // 突撃タイプ（赤）
+            object_->SetMaterialColor({ 1.0f, 0.0f, 0.0f, 1.0f });
+            break;
+        }
+
         // 状態フラグの初期化
         flags_.isAlive = true;
         flags_.isActive = false;
@@ -8460,23 +8495,6 @@ namespace MyGame {
 
             ChangeState(std::make_unique<EnemyDead>());
             });
-
-        // 乱数エンジンを初期化
-        std::random_device rd;
-        randomEngine = std::mt19937(rd());
-        std::uniform_int_distribution<int> enemyTypeDist(0, 1);
-        enemyType_ = static_cast<EnemyType>(enemyTypeDist(randomEngine));
-        // 敵タイプごとの色設定
-        switch (enemyType_) {
-        case EnemyType::Shot:
-            // 通常（白）
-            object_->SetMaterialColor({ 1.0f, 1.0f, 1.0f, 1.0f });
-            break;
-        case EnemyType::Tackle:
-            // 突撃タイプ（赤）
-            object_->SetMaterialColor({ 1.0f, 0.0f, 0.0f, 1.0f });
-            break;
-        }
         // コンポーネントの生成
         attack_ = std::make_unique<EnemyAttack>(); // 攻撃ロジックの生成
         attack_->Initialize();                     // 攻撃ロジックの初期化
@@ -8766,7 +8784,17 @@ using namespace MatrixVector;
 
 namespace MyGame {
 
+    void EnemySpawner::Initialize() {
+        spawnInterval_ = 3.0f;   // 何秒ごと
+        spawnTimer_ = 0.0f;
+        spawnCount_ = 3;           // 1回で出す数
+        isEventLocked_ = true;
+    }
+
     void EnemySpawner::Update() {
+        // イベント中はスポーン停止
+        if (isEventLocked_) { return; }
+        
         spawnTimer_ += 1.0f / 60.0f;
 
         if (spawnTimer_ >= spawnInterval_) {
@@ -8829,27 +8857,42 @@ File Path: project/application/character/enemy/EnemySpawner.h
 #include <random>
 
 namespace MyGame {
-    class EnemySpawner {
-    public:
-           void Update();
-           
-           void SpawnEnemies(int count);
 
-           void SetEnemies(std::vector<std::unique_ptr<Enemy>>* enemies) {
-               enemies_ = enemies;
-           }
-           void SetPlayer(Player* player) { player_ = player; }
-    private:
+    // 前方宣言
+    //class Player;
+
+    /// <summary>
+	/// 敵のスポーンを管理するクラス
+    /// </summary>
+    class EnemySpawner {
+    public: // メンバ関数
+        /// <summary>
+		/// 初期化処理 
+		/// </summary>
+        void Initialize();
+        /// <summary>
+        /// 更新処理
+        /// </summary>
+        void Update();
+        /// <summary>
+        /// 敵のスポーン処理
+        /// </summary>
+        /// <param name="count"></param>
+        void SpawnEnemies(int count);
+	private: // メンバ変数
         float spawnInterval_ = 3.0f;   // 何秒ごと
         float spawnTimer_ = 0.0f;
         int spawnCount_ = 3;           // 1回で出す数
         std::vector<std::unique_ptr<Enemy>>* enemies_ = nullptr;
-            
+
         std::mt19937 randomEngine;               // 乱数生成器
 
         Player* player_ = nullptr;
-        //CameraManager* cameraManager_ = nullptr;
-
+        bool isEventLocked_ = false;
+    public:
+        void SetEnemies(std::vector<std::unique_ptr<Enemy>>* enemies) { enemies_ = enemies; }
+        void SetPlayer(Player* player) { player_ = player; }
+        void SetEventLocked(bool flag) { isEventLocked_ = flag; }
     };
 }
 
@@ -9399,14 +9442,14 @@ namespace MyGame {
         }
         // Lv2
         else if (level == 2) {
-            constexpr float offset = 1.0f;
+            constexpr float offset = 2.0f;
             SpawnBullet(playerPos - shotData.right * offset, shotData);
             SpawnBullet(playerPos + shotData.right * offset, shotData);
         }
         // Lv3
         else if (level == 3) {
-            constexpr float horizontal = 1.0f;
-            constexpr float vertical = 0.8f;
+            constexpr float horizontal = 2.5f;
+            constexpr float vertical = 1.5f;
 
             Vector3 up = { 0,1,0 };
             SpawnBullet(playerPos + up * vertical, shotData);
@@ -9650,11 +9693,11 @@ namespace MyGame {
 
 			float progress = std::clamp(dashTimer_ / kDashDuration, 0.0f, 1.0f);
 
-			// 🔥 回転（1回転）
+			// 回転（1回転）
 			float totalRotation = 2.0f * std::numbers::pi_v<float>;
 			extraRotationZ_ = totalRotation * progress;
 
-			// 🔥 速度（常に2倍でもOK）
+			// 速度（常に2倍でもOK）
 			speedMultiplier_ = kDashSpeedMult;
 
 			// 終了
@@ -9691,9 +9734,9 @@ namespace MyGame {
         /// <param name="transform"></param>
         /// <param name="speedMultiplier"></param>
         void Update(MyEngine::Transform& transform, float speedMultiplier);
-		// 傾きの更新
+        // 傾きの更新
         void UpdateTilt(const MyEngine::Vector3& moveInput);
-		// ダッシュの状態を更新する
+        // ダッシュの状態を更新する
         void UpdateDash();
 
     private: // 内部変数
@@ -9712,16 +9755,18 @@ namespace MyGame {
         float coolDownTimer_ = 0.0f;
 
         // 調整用
-		const float kDashDuration = 0.5f; // ダッシュの持続時間
-		const float kCoolDownTime = 3.0f; // ダッシュ後のクールダウン時間
-		const float kDashSpeedMult = 2.0f; // ダッシュ中の速度倍率
+        const float kDashDuration = 0.5f; // ダッシュの持続時間
+        const float kCoolDownTime = 3.0f; // ダッシュ後のクールダウン時間
+        const float kDashSpeedMult = 2.0f; // ダッシュ中の速度倍率
 
-		float extraRotationZ_ = 0.0f; // ダッシュ中の追加回転量
-		float speedMultiplier_ = 1.0f; // 通常時の速度倍率
+        float extraRotationZ_ = 0.0f; // ダッシュ中の追加回転量
+        float speedMultiplier_ = 1.0f; // 通常時の速度倍率
 
     public:
         const MyEngine::Vector3& GetRelativePos() const { return relativePos_; }
-        const bool& GetDashing() const { return isDashing_; }
+        const bool& GetDashing() const { return isDashing_; }        
+        bool CanDash() const { return coolDownTimer_ <= 0.0f && !isDashing_; }
+        float GetCoolDownTimer() const { return coolDownTimer_; }
     };
 }
 
@@ -9935,11 +9980,18 @@ namespace MyGame {
     }
 
     void Player::Update() {
-        // ステートの更新
-        if (isStateUpdateEnabled_) {
-            state_.Update(*this);
+		// イベントロックされていない場合のみ更新処理を行う
+        if (!IsEventLocked()) {
+            // ステートの更新
+            if (isStateUpdateEnabled_) {
+                state_.Update(*this);
+            }
+			// コライダーのOBBをプレイヤーオブジェクトの現在の状態に合わせて更新
+            if (collider_ && object_ && IsActive()) {
+                collider_->SetOBB(CollisionUtils::CreateOBB(object_.get(), colliderSize_));
+            }
         }
-
+        
         // カメラがGamePlayCameraで更新中の場合、プレイヤーのワールド座標をカメラ位置に基づいて更新する
         if (CameraManager::GetInstance()->GetCurrentBehaviorAs<GamePlayCamera>()) {
             // 死亡状態ではないなら
@@ -9948,10 +10000,7 @@ namespace MyGame {
             }
         }
 
-        if (collider_ && object_ && IsActive()) {
-            collider_->SetOBB(CollisionUtils::CreateOBB(object_.get(), colliderSize_));
-        }
-        // 各コンポーネントの更新
+        // 各オブジェクト更新
         targetreticle_->Update();
         target_->Update();
         object_->Update();
@@ -10660,7 +10709,7 @@ namespace MyGame {
     }
 
     bool EventManager::IsActive() const {
-        return currentEvent_ != nullptr;
+        return currentEvent_ && !currentEvent_->IsFinished();
     }
 }
 
@@ -10747,16 +10796,31 @@ File Path: project/application/event/IEvent.h
 #include <EventTypes.h>
 
 namespace MyGame {
-
+    /// <summary>
+	/// イベントのインターフェースクラス
+    /// </summary>
     class IEvent {
-    public:
+	public: // メンバ関数       
+		/// デストラクタ        
         virtual ~IEvent() = default;
-
+        /// <summary>
+		/// 初期化処理
+        /// </summary>
         virtual void Initialize() = 0;
+        /// <summary>
+		/// 更新処理
+        /// </summary>
         virtual void Update() = 0;
+        /// <summary>
+		/// 2D描画処理
+        /// </summary>
         virtual void Draw2D() = 0;
-
-        virtual bool IsFinished() const = 0;
+       
+		/// イベントの終了判定        
+        bool IsFinished() const { return isFinished_; }
+	protected: 
+        // イベントの終了フラグ		
+        bool isFinished_ = false;
     };
 }
 
@@ -10922,7 +10986,7 @@ namespace MyGame {
                 if (mission->alpha <= 0.7f)
                     back->alpha -= 0.05f;
                 if (back->alpha <= 0.0f && mission->alpha <= 0.0f) {
-                    IsFinished();
+                    isFinished_ = true;
                 }
             }
 
@@ -10988,13 +11052,23 @@ namespace MyGame {
     /// </summary>
     class StartEvent : public IEvent {
     public: // メンバ関数
-
+        /// <summary>
+		/// 初期化処理
+        /// </summary>
         void Initialize() override;
+        /// <summary>
+		/// 更新処理
+        /// </summary>
         void Update() override;
+        /// <summary>
+		/// 2D描画処理
+        /// </summary>
         void Draw2D() override;
-
-        bool IsFinished() const override { return isFinished_; }
-
+        /// <summary>
+		/// スプライトのIDを指定して構造体を返す関数
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         SpriteUnit* FindSprite(SpriteID id);
     private: // メンバ変数
         // スプライトの構造体のリスト
@@ -11007,7 +11081,7 @@ namespace MyGame {
         float phaseDuration_ = 1.0f;  // 現在のフェーズの目標時間（秒）
         bool timefige_ = false;
         float closeSpeed_ = 17.0f;
-        bool isFinished_ = false;
+
     };
 }
 
@@ -12165,13 +12239,14 @@ using namespace AssetGen::LoadResourceID::Textures;
 namespace MyGame {
 
     void GamePlayScene::Finalize() {
-        BulletManager::GetInstance()->Finalize(); // 弾マネージャの終了処理
-        StageManager::GetInstance()->Finalize();  // ステージマネージャの終了処理
-        CameraManager::GetInstance()->Finalize(); // カメラマネージャの終了処理
-        UIManager::GetInstance()->Finalize();     // UIマネージャの終了処理 
-        FadeManager::GetInstance()->Finalize();   // フェードマネージャの終了処理
+        BulletManager::GetInstance()->Finalize();    // 弾マネージャの終了処理
+        StageManager::GetInstance()->Finalize();     // ステージマネージャの終了処理
+        CameraManager::GetInstance()->Finalize();    // カメラマネージャの終了処理
+        UIManager::GetInstance()->Finalize();        // UIマネージャの終了処理 
+        FadeManager::GetInstance()->Finalize();      // フェードマネージャの終了処理
         CollisionManager::GetInstance()->Finalize(); // 衝突マネージャの終了処理
-        EnemyListEditor::GetInstance()->Finalize();
+        EventManager::GetInstance()->Finalize();     // イベントマネージャの終了処理
+        EnemyListEditor::GetInstance()->Finalize();  // 敵リストエディタの終了処理
     }
 
     void GamePlayScene::Initialize() {
@@ -12196,9 +12271,10 @@ namespace MyGame {
 
         // 敵のSpawner生成,初期化
         enemySpawner_ = std::make_unique<EnemySpawner>();
+        enemySpawner_->Initialize();
         enemySpawner_->SetEnemies(&enemies_);    // 敵リストへの参照をセット
         enemySpawner_->SetPlayer(player_.get()); // プレイヤーへの参照をセット
-        // imgui        
+        // imgui
         EnemyListEditor::GetInstance()->SetEnemies(&enemies_);
 
         // 最初のスポーン
@@ -12206,15 +12282,12 @@ namespace MyGame {
 
         // ステージマネージャの初期化
         StageManager::GetInstance()->Initialize();
+        // クリアゲートの位置をレールカメラの終点に設定
         StageManager::GetInstance()->SetClearwallTranslate(CameraManager::GetInstance()->GetCurrentBehaviorAs<GamePlayCamera>()->GetRailEndPosition());
-
-        // UIにプレイヤーの情報を渡す
-        GamePlayUI* gameplayUI = UIManager::GetInstance()->GetUI<GamePlayUI>();
-        if (gameplayUI) {
-            gameplayUI->SetPlayer(player_.get());
-        }
         // UIマネージャの初期化
         UIManager::GetInstance()->Initialize();
+        // ゲームUIにプレイヤーの情報を渡す
+        UIManager::GetInstance()->GetUI<GamePlayUI>()->SetPlayer(player_.get());
         // フェードマネージャの初期化(フェードイン開始処理)
         FadeManager::GetInstance()->StartFade(FadeType::FadeIn, FadeStyle::SilhouetteExplode, 1.0f);
         // ゲーム開始イベントの開始
@@ -12228,31 +12301,13 @@ namespace MyGame {
     }
 
     void GamePlayScene::Update() {
-        ////  ゲーム開始前のイベント処理
-        //if (!isGameStartEventDone_) {
-        //    // ゲーム開始イベントの開始
-        //    EventManager::GetInstance()->EventStart(Event::EventState::GameStart);
-        //    EventManager::GetInstance()->Update();
-        //    isGameStartEventDone_ = true;
-        //    CameraManager::GetInstance()->Update();
-        //    return;
-        //}
+
+        // ゲーム開始イベントの更新処理
+        StartEvent();
 
         // カメラマネージャの更新
         CameraManager::GetInstance()->Update();
-#pragma region 全てのObject3d個々の更新処理      
-        // ポーズメニューのトリガーと更新
-        if (!UIManager::GetInstance()->GetUI<GamePlayUI>()->GetPauseMenu()->IsActive() && Input::GetInstance()->TriggerKey(DIK_TAB)) {
-            UIManager::GetInstance()->GetUI<GamePlayUI>()->GetPauseMenu()->SetActive(true);
-        }
-        // ポーズがアクティブ中、ゲームの更新を停止してポーズメニューの更新のみ行う
-        if (UIManager::GetInstance()->GetUI<GamePlayUI>()->GetPauseMenu()->IsActive()) {
-            UIManager::GetInstance()->GetUI<GamePlayUI>()->GetPauseMenu()->Update();
-            FadeManager::GetInstance()->Update();
-            CameraManager::GetInstance()->GetCurrentBehaviorAs<GamePlayCamera>()->SetPlayer(player_.get());            
-            UIManager::GetInstance()->Update();
-            return;
-        }
+#pragma region 全てのObject3d個々の更新処理
 
         if (!gamened_) {
             // 敵スポーン
@@ -12288,28 +12343,8 @@ namespace MyGame {
         // 全ての衝突をチェック 
         CollisionManager::GetInstance()->CheckAllCollisions();
 
-        // ゲームクリアの条件をチェック
-        if (CameraManager::GetInstance()->GetCurrentBehaviorAs<GamePlayCamera>()->GetFinished()) {
-            // フェードアウト
-            FadeManager::GetInstance()->SceneChangeFade(SceneName::GAMECLEAR, FadeStyle::SilhouetteExplode, 1.5f);
-            gamened_ = true;
-            //=================================
-            // 全敵削除
-            //=================================
-            for (std::unique_ptr<Enemy>& enemy : enemies_) {
-                if (!enemy) { continue; }
-                enemy->SetActive(false);
-                // コライダー解除
-                if (enemy->GetCollider()) {
-                    CollisionManager::GetInstance()->UnregisterCollider(enemy->GetCollider());
-                }
-                // 削除予約
-                enemy->Destroy();
-            }
-            // プレイヤーのステート更新停止
-            player_->SetStateUpdateEnabled(false);
-            player_->SetActive(false);
-        }
+		// ゲーム終了イベントの更新処理
+        GameEnd();
 
         // パーティクル更新
    //     ParticleManager::GetInstance()->Update();
@@ -12353,7 +12388,7 @@ namespace MyGame {
 #pragma region 全てのSprite個々の描画処理 
         // Spriteの描画準備。Spriteの描画に共通のグラフィックスコマンドを積む
         SpriteCommon::GetInstance()->Commondrawing();
-    
+
         // プレイヤーのスプライト描画
         player_->DrawSprite();
 
@@ -12364,6 +12399,69 @@ namespace MyGame {
         // イベントマネージャの描画
         EventManager::GetInstance()->Draw2D();
 #pragma endregion 全てのSprite個々の描画処理
+    }
+
+    void GamePlayScene::StartEvent() {
+        if (!isGameStartEventDone_) {
+            // まだイベントが開始していないならゲーム開始イベントの処理
+            if (!EventManager::GetInstance()->IsActive()) {
+                // ゲーム開始イベントの開始
+                EventManager::GetInstance()->EventStart(Event::EventState::GameStart);
+            }
+            isGameStartEventDone_ = true;
+        }
+
+        // イベント終了判定
+        if (!EventManager::GetInstance()->IsActive()) {
+            // レールカメラの挙動に切り替える
+            CameraManager::GetInstance()->GetCurrentBehaviorAs<GamePlayCamera>()->SetCameraState(CameraState::Follow);
+            // プレイヤーのイベントロックを解除して操作可能にする
+            player_->SetEventLocked(false);
+            // 敵スポーンのイベントロックを解除してスポーン開始
+            enemySpawner_->SetEventLocked(false);
+            // UIのイベントロックを解除して操作UIを更新する
+            UIManager::GetInstance()->GetUI<GamePlayUI>()->SetEventLocked(false);
+            // ポーズがアクティブでない状態でTabキーが押されたらポーズメニューをアクティブにする
+            if (!UIManager::GetInstance()->GetUI<GamePlayUI>()->GetPauseMenu()->IsActive() && Input::GetInstance()->TriggerKey(DIK_TAB)) {
+                UIManager::GetInstance()->GetUI<GamePlayUI>()->GetPauseMenu()->SetActive(true);
+            }
+            // ポーズがアクティブ中、他の更新を停止してポーズメニューの更新を行う
+            if (UIManager::GetInstance()->GetUI<GamePlayUI>()->GetPauseMenu()->IsActive()) {
+                // フェードマネージャの更新
+                FadeManager::GetInstance()->Update();
+                // カメラのターゲットとプレイヤーをセット（プレイヤーの位置にカメラを追従させるため）
+                CameraManager::GetInstance()->GetCurrentBehaviorAs<GamePlayCamera>()->SetPlayer(player_.get());
+                // ポーズメニューの更新
+                UIManager::GetInstance()->GetUI<GamePlayUI>()->GetPauseMenu()->Update();
+                UIManager::GetInstance()->Update();
+                return;
+            }
+        }
+    }
+
+    void GamePlayScene::GameEnd() {
+        // ゲームクリアの条件をチェック
+        if (CameraManager::GetInstance()->GetCurrentBehaviorAs<GamePlayCamera>()->GetFinished()) {
+            // フェードアウト
+            FadeManager::GetInstance()->SceneChangeFade(SceneName::GAMECLEAR, FadeStyle::SilhouetteExplode, 1.5f);
+            gamened_ = true;
+            //=================================
+            // 全敵削除
+            //=================================
+            for (std::unique_ptr<Enemy>& enemy : enemies_) {
+                if (!enemy) { continue; }
+                enemy->SetActive(false);
+                // コライダー解除
+                if (enemy->GetCollider()) {
+                    CollisionManager::GetInstance()->UnregisterCollider(enemy->GetCollider());
+                }
+                // 削除予約
+                enemy->Destroy();
+            }
+            // プレイヤーのステート更新停止
+            player_->SetStateUpdateEnabled(false);
+            player_->SetActive(false);
+        }
     }
 }
 
@@ -12378,6 +12476,7 @@ File Path: project/application/scene/GamePlayScene.h
 #include <EnemySpawner.h>
 
 namespace MyGame {
+
     /// <summary>
     /// 実際のゲームプレイを行うシーン。
     /// </summary>
@@ -12399,11 +12498,17 @@ namespace MyGame {
         /// 描画処理
         /// </summary>
         void Draw() override;
+
+	private: // 内部関数
+        // ゲーム開始イベントの更新処理
+        void StartEvent(); 
+		// ゲーム終了イベントの更新処理
+        void GameEnd();
     private: // メンバ変数
-		std::unique_ptr <Player> player_;            // プレイヤー
-		std::unique_ptr<EnemySpawner> enemySpawner_; // 敵スポーン管理クラス
-		std::vector<std::unique_ptr<Enemy>> enemies_; // 敵キャラクターのリスト
-		bool isGameStartEventDone_; //   ゲーム開始イベントが完了したかどうかのフラグ
+        std::unique_ptr <Player> player_;            // プレイヤー
+        std::unique_ptr<EnemySpawner> enemySpawner_; // 敵スポーン管理クラス
+        std::vector<std::unique_ptr<Enemy>> enemies_; // 敵キャラクターのリスト
+        bool isGameStartEventDone_; //   ゲーム開始イベントが完了したかどうかのフラグ
         bool gamened_;
     };
 }
@@ -13846,9 +13951,10 @@ File Path: project/application/ui/scene/GamePlayUI.cpp
 using namespace MyEngine;
 using namespace AssetGen::LoadResourceID::Textures;
 using namespace Easing;
+using namespace MatrixVector;
 
 namespace MyGame {
-    void GamePlayUI::Initialize() { 
+    void GamePlayUI::Initialize() {
         // 操作UIテクスチャ一覧
         const std::array<const char*, 22> operationTextures = {
             Operationui::W,Operationui::A,Operationui::S,Operationui::D,
@@ -13864,40 +13970,52 @@ namespace MyGame {
             TextureManager::GetInstance()->LoadTexture(texture);
         }
 
+        // ステージ進行度UIの生成
         gage_ = Sprite::Create(Ui::Gage, Vector2{ 380.0f, 10.0f }, 0.0f, Vector2{ 500.0f,30.0f });
+        // プレイヤー位置UIの生成
         player_ui_ = Sprite::Create(Ui::Player_ui, Vector2{ 380.0f, 12.3f }, 0.0f, Vector2{ 25.0f,25.0f });
 
-        // 2. UI生成
+        // 操作UIの生成
         Vector2 size = { 40.0f, 40.0f };
         Vector2 center = { 85.0f, 470.0f };
         CreateWASDUI(center, size, 4.0f, 25.0f);
 
-        // 3. 初期状態設定（サイズ0）
+        //  操作UIの初期サイズを保存
         for (auto& ui : uis_) {
             uiOriginalSizes_.push_back(ui->GetSize());
             ui->SetAnchorPoint({ 0.5f, 0.5f });
             ui->SetSize({ 0.0f, 0.0f });
         }
 
-        isAnimating_ = true;
-        timer_ = 0.0f;
-        duration_ = 0.5f;
+        isAnimating_ = true; // アニメーション開始フラグ
+        timer_ = 0.0f; // アニメーション開始からの経過時間
+        duration_ = 0.5f; // 0.5秒でアニメーションが完了するように設定
 
+        // ポーズメニューの初期化、生成
         pausemenu_ = std::make_unique<Pausemenu>();
         pausemenu_->Initialize();
+
+        // プレイヤーに合わせて表示するUI
+        expFollowUI_ = Sprite::Create(Operationui::W, Vector2{ 110.0f, 360.0f }, 0.0f, Vector2{ 48.0f,48.0f });
+        expFollowUI_->SetAnchorPoint({ 0.5f,0.5f });
+
+        isEventLocked = true;
     }
 
     void GamePlayUI::Update() {
-		// ポーズ画面の更新
+        // ポーズ画面の更新
         pausemenu_->Update();
-
+        // ステージ進行度UIの更新
         UpdateStageProgressUI();
-
+        // 操作UIのアニメーション更新
+        UpdateControlUIAnimation();
+        // 操作UIの更新
+        UpdateControlUI();        
+        // プレイヤー位置UIの更新
+        UpdatePlayerFollowUI();
         gage_->Update();
         player_ui_->Update();
-
-        UpdateControlUIAnimation();
-        UpdateControlUI();
+        expFollowUI_->Update();
         for (std::unique_ptr<Sprite>& ui : uis_) {
             ui->Update();
         }
@@ -13906,15 +14024,51 @@ namespace MyGame {
     void GamePlayUI::Draw() {
 		// ポーズ画面の描画
         pausemenu_->Draw();
-
+		// ステージ進行度UIの描画
         gage_->Draw();
+		// プレイヤー位置UIの描画
         player_ui_->Draw();
-
+		// プレイヤーに合わせて表示するUIの描画
+        //expFollowUI_->Draw();
+        // 操作UIの描画
         for (std::unique_ptr<Sprite>& ui : uis_) {
             ui->Draw();
         }
     }
 
+    void GamePlayUI::UpdatePlayerFollowUI() {
+        if (!player_) { return; }
+
+        Camera* camera = CameraManager::GetInstance()->GetActiveCamera();
+
+        if (!camera) { return; }
+
+        // プレイヤー頭上
+        Vector3 worldPos = player_->GetTranslate();
+        worldPos.y += 3.0f;
+
+        // ViewProjection
+        Matrix4x4 view = camera->GetViewMatrix();
+        Matrix4x4 projection = camera->GetProjectionMatrix();
+        Matrix4x4 viewProjection = Multiply(view, projection);
+        // ワールド→クリップ空間
+        Vector3 clipPos = TransformPoint(worldPos, viewProjection);
+        // 背面なら非表示
+        if (clipPos.z <= 0.0f) {
+            expFollowUI_->SetColor({ 1,1,1,0 });
+            return;
+        }
+
+        expFollowUI_->SetColor({ 1,1,1,1 });
+        constexpr float screenWidth = 1280.0f;
+        constexpr float screenHeight = 720.0f;
+        // NDC → Screen
+        Vector2 screenPos;
+        screenPos.x = (clipPos.x + 1.0f) * 0.5f * screenWidth;
+        screenPos.y = (1.0f - clipPos.y) * 0.5f * screenHeight;
+        expFollowUI_->SetPosition(screenPos);
+    }
+            
     void GamePlayUI::UpdateStageProgressUI() {
         // マネージャ経由で「今のカメラ挙動」から進捗を直接もらう
         float progress = CameraManager::GetInstance()->GetCurrentBehaviorAs<GamePlayCamera>()->GetProgress();
@@ -13987,6 +14141,9 @@ namespace MyGame {
     }
 
     void GamePlayUI::UpdateControlUI() {
+        // イベントロック中はUIの状態を更新しない
+        if (isEventLocked) { return; }
+
         Input* input = Input::GetInstance();
         // === WASD ===
         uis_[0]->SetTexture(input->PushKey(DIK_W) ? Operationui::W_RED : Operationui::W);
@@ -14003,22 +14160,24 @@ namespace MyGame {
         // === SPACE / SHIFT ===
         uis_[8]->SetTexture(input->PushKey(DIK_SPACE) ? Operationui::SPACEKey_RED : Operationui::SPACEKey);
 
-        if (!player_) return;
-        bool canDash = player_->GetMove()->GetDashing();
-
-        if (!canDash) {
-            // 【クールタイム中 または ダッシュ演出中】
-            // キー入力に関係なく、強制的に「赤（使用不可/リキャスト中）」を表示
+        // 1. ダッシュ中
+        if (player_->GetMove()->GetDashing()) {
             uis_[9]->SetTexture(Operationui::SHIFT_RED);
-            uis_[9]->SetColor({ 0.3f, 0.3f, 0.3f, 1.0f });
-        } else {
-            // 【ダッシュ準備完了】
-            uis_[9]->SetColor({ 1.0f, 1.0f, 1.0f, 1.0f });
-            // 通常時：SHIFT（白など）、押している間：SHIFT_RED（赤）
+            // 明度100%
+            uis_[9]->SetColor({ 1,1,1,1 });
+        }
+        // 2. クールタイム中
+        else if (!player_->GetMove()->CanDash()) {
+            uis_[9]->SetTexture(Operationui::SHIFT);
+            // 半透明・暗く
+            uis_[9]->SetColor({ 0.5f,0.5f,0.5f,0.3f });
+        }
+        // 3. 準備完了
+        else {
+            uis_[9]->SetColor({ 1.0f,1.0f,1.0f,1.0f });
             uis_[9]->SetTexture(input->PushKey(DIK_LSHIFT) ? Operationui::SHIFT_RED : Operationui::SHIFT);
         }
     }
-
     
     void GamePlayUI::UpdateControlUIAnimation() {
         if (!isAnimating_) return;
@@ -14055,46 +14214,51 @@ namespace MyGame {
     class Player;
 
     /// <summary>
-	/// ゲームプレイシーンのUIを管理するクラス
+    /// ゲームプレイシーンのUIを管理するクラス
     /// </summary>
     class GamePlayUI : public BaseUI {
     public: // メンバ関数
         /// <summary>
-		/// 初期化処理
+        /// 初期化処理
         /// </summary>
         void Initialize() override;
         /// <summary>
-		/// 更新処理
+        /// 更新処理
         /// </summary>
         void Update() override;
         /// <summary>
-		/// 描画処理
+        /// 描画処理
         /// </summary>
         void Draw() override;
-        void SetPlayer(Player* player) { player_ = player; }
     private: // プレイベートメンバ関数
         void UpdateStageProgressUI();
         // UI生成用の内部関数
         void CreateWASDUI(const MyEngine::Vector2& baseCenter, const  MyEngine::Vector2& size, float keySpacing, float groupSpacing);
         // 更新処理の細分化
         void UpdateControlUI();
+        // UIアニメーションの更新
         void UpdateControlUIAnimation();
+        // プレイヤーの位置に追従するUIの更新
+        void UpdatePlayerFollowUI();
     private: // メンバ変数
-        std::unique_ptr<Pausemenu> pausemenu_;
-        std::vector<std::unique_ptr<MyEngine::Sprite>> uis_;
-        std::vector<MyEngine::Vector2> uiOriginalSizes_;
-        Player* player_ = nullptr;
-        bool isAnimating_;
-        float timer_;
-        float duration_;
+        Player* player_ = nullptr; // プレイヤーへの参照
+        std::unique_ptr<Pausemenu> pausemenu_; // ポーズメニュー
+        std::vector<std::unique_ptr<MyEngine::Sprite>> uis_; // 操作UIのスプライトリスト
+        std::unique_ptr <MyEngine::Sprite> gage_;       // ステージ進行度を示すUI
+        std::unique_ptr <MyEngine::Sprite> player_ui_;  // プレイヤー位置を示すUI
+        std::unique_ptr<MyEngine::Sprite> expFollowUI_; // プレイヤーの経験値獲得に合わせて表示するUI
+        std::vector<MyEngine::Vector2> uiOriginalSizes_; // 操作UIの元のサイズを保存するリスト
+        bool isAnimating_;   // 操作UIのアニメーション中かどうかのフラグ
+        float timer_;  // 操作UIのアニメーション開始からの経過時間
+        float duration_;  // 操作UIのアニメーションにかける時間
 
-        std::unique_ptr <MyEngine::Sprite> gage_;
-        std::unique_ptr <MyEngine::Sprite> player_ui_;
-    
-        bool uiProgressStarted_ = false;
-        bool uiProgressFinished_ = false;
-        public: // アクセッサ
-         Pausemenu* GetPauseMenu() const { return pausemenu_.get(); }
+        bool uiProgressStarted_ = false;  // ステージ進行度UIのアニメーションが開始したかどうかのフラグ
+        bool uiProgressFinished_ = false; // ステージ進行度UIのアニメーションが完了したかどうかのフラグ
+        bool isEventLocked;
+    public: // アクセッサ
+        Pausemenu* GetPauseMenu() const { return pausemenu_.get(); }
+        void SetPlayer(Player* player) { player_ = player; }
+        void SetEventLocked(bool flag) { isEventLocked = flag; }
     };
 }
 
@@ -14510,8 +14674,8 @@ namespace MyGame {
         // コマンド実行中は選択処理をしない
         if (!isCommandRunning_) {
 
-            // 下
-            if (Input::GetInstance()->TriggerKey(DIK_DOWN)) {
+            // 上 
+            if (Input::GetInstance()->TriggerKey(DIK_UP)) {
                 selectedIndex_++;
                 if (!isOperationMode_ && selectedIndex_ == static_cast<uint32_t>(PauseCommand::Turnback)) {
                     selectedIndex_ = 0;
@@ -14522,8 +14686,8 @@ namespace MyGame {
                 UpdateArrowPositions();
             }
 
-            // 上
-            if (Input::GetInstance()->TriggerKey(DIK_UP)) {
+            // 下
+            if (Input::GetInstance()->TriggerKey(DIK_DOWN)) {
                 if (selectedIndex_ == 0) {
                     selectedIndex_ = kMaxCommand - 1;
                 } else {
@@ -18061,7 +18225,7 @@ namespace MyEngine {
 		, fovY(0.45f)
 		, aspectRatio(float(WinApp::kClientWidth) / float(WinApp::kClientHeight))
 		, nearClip(0.1f)
-		, farclip(100.0f)
+		, farclip(1000.0f)
 		, worldMatrix(MakeAftineMatrix(transform.scale, transform.rotate, transform.translate))
 		, viewMatrix(Inverse(worldMatrix))
 		, projectionMatrix(MakePerspectiveFovMatrix(fovY, aspectRatio, nearClip, farclip))
@@ -20145,27 +20309,36 @@ namespace MyEngine {
             return;
         }
 
-        if (!CameraManager::GetInstance()->GetActiveCamera()) { return; }
+        Camera* camera = CameraManager::GetInstance()->GetActiveCamera();
+        if (!camera) {
+            return;
+        }
 
-        //========================
         //  ライン方向
-        //========================
         Vector3 lineDir = Normalize(line.end - line.start);
+        // ライン中心
+        Vector3 center = (line.start + line.end) * 0.5f;
+        // カメラ → ライン方向
+        Vector3 viewDir = Normalize(center - camera->GetTranslate());
 
-        //========================
-        // カメラ前方向
-        //========================
-        Vector3 cameraForward = CameraManager::GetInstance()->GetActiveCamera()->GetForward();
+        // 板ポリ幅方向      
+        Vector3 side = Cross(viewDir, lineDir);
+        float sideLength = Length(side);
+        // 平行対策
+        if (sideLength < 0.0001f) {
+            side = camera->GetRight();
+        } else {
+            side /= sideLength;
+        }
+        // 距離取得
+        float distance = Length(center - camera->GetTranslate());
+        // 基準太さ
+        constexpr float baseThickness = 0.08f;
+        // 距離スケール（弱め）
+        float thicknessScale = std::clamp(distance * 0.01f, 1.0f, 3.0f);
+        side *= baseThickness * thicknessScale * 0.5f;
 
-        //========================
-        // 板ポリ幅方向
-        //========================
-        Vector3 side = Normalize(Cross(cameraForward, lineDir));
-
-        side *= debug_.thickness * 0.5f;
-        //========================
         // 頂点生成
-        //========================
         Vector3 v0 = line.start + side;
         Vector3 v1 = line.end + side;
         Vector3 v2 = line.start - side;
