@@ -118,15 +118,18 @@ namespace MyGame {
         object_->Update();
 #ifdef USE_IMGUI
         if (IsActive()) {
-            // LineRendererクラスにある基本のパラメータ
-            const auto& debug = LineRenderer::GetInstance()->GetDebugSettings();
-            // デバッグ表示フラグで表示、非表示
-            if (debug.enable && object_) {
-                LineRenderer::GetInstance()->SetHit(false);
-                // 衝突状態で色変更
-                Vector4 hitColor = debug.isHit ? Vector4{ 1,0,0,1 } : Vector4{ 0,1,0,1 };
-                // ライン描画
-                LineRenderer::GetInstance()->AddOBB(collider_->GetOBB(), hitColor);
+			// ライン表示はGamePlayCameraのときのみ
+            if (CameraManager::GetInstance()->GetCurrentBehaviorAs<GamePlayCamera>()) {
+                // LineRendererクラスにある基本のパラメータ
+                const auto& debug = LineRenderer::GetInstance()->GetDebugSettings();
+                // デバッグ表示フラグで表示、非表示
+                if (debug.enable && object_) {
+                    LineRenderer::GetInstance()->SetHit(false);
+                    // 衝突状態で色変更
+                    Vector4 hitColor = debug.isHit ? Vector4{ 1,0,0,1 } : Vector4{ 0,1,0,1 };
+                    // ライン描画
+                    LineRenderer::GetInstance()->AddOBB(collider_->GetOBB(), hitColor);
+                }
             }
         }
 #endif // USE_IMGUI
