@@ -5,8 +5,8 @@
 #include <SkyboxCommon.h>
 #include <SpriteCommon.h>
 #include <Object3dCommon.h>
-//#include <ParticleCommon.h>
-//#include <ParticleManager.h>
+#include <ParticleCommon.h>
+#include <ParticleManager.h>
 #include <CameraManager.h>
 #include <Input.h>
 #include <StageManager.h>
@@ -27,7 +27,7 @@
 using namespace MyEngine;
 using namespace CameraDefs;
 using namespace AssetGen;
-using namespace AssetGen::LoadResourceID::Textures;
+using namespace AssetGen::LoadResourceID::Models;
 
 namespace MyGame {
 
@@ -40,6 +40,7 @@ namespace MyGame {
         CollisionManager::GetInstance()->Finalize(); // 衝突マネージャの終了処理
         EventManager::GetInstance()->Finalize();     // イベントマネージャの終了処理
         EnemyListEditor::GetInstance()->Finalize();  // 敵リストエディタの終了処理
+        ParticleManager::GetInstance()->Finalize();  // パーティクルマネージャの開放
     }
 
     void GamePlayScene::Initialize() {
@@ -51,7 +52,7 @@ namespace MyGame {
         player_->Initialize();
         // GamePlayCameraにプレイヤーを渡す(プレイヤ―の位置を確認)
         CameraManager::GetInstance()->GetCurrentBehaviorAs<GamePlayCamera>()->SetPlayer(player_.get());
-		// 前フレームの経験値を初期化
+        // 前フレームの経験値を初期化
         prevPlayerExp_ = player_->GetExp();
 
         // 敵生成
@@ -94,21 +95,45 @@ namespace MyGame {
         // 敵のパラメータ
         EnemyListEditor::GetInstance()->Initialize();
 #endif // USE_IMGUI
+
+        // パーティクルグループ生成
+        ParticleManager::GetInstance()->CreateParticleGroup("Particles", "Particle.png", "Particle.obj", VertexType::Model);
+        // =========================
+       // エミッター生成
+       // =========================
+        Transform emitterTransform{};
+        emitterTransform.translate = { 0.0f, 3.0f, 10.0f };
+        emitterTransform.scale = { 1.0f, 1.0f, 1.0f };
+
+        Velocity velocity{};
+        velocity.translate = { 0.0f, 0.05f, 0.0f }; // 上方向に飛ぶ
+        velocity.rotate = { 0.0f, 0.0f, 0.0f };
+        velocity.scale = { 0.0f, 0.0f, 0.0f };
+
+        particleEmitter_ = std::make_unique<ParticleEmitter>(
+            "Particles",     // ParticleGroup名
+            10,              // 一度に出す数
+            emitterTransform,
+            Vector4{ 1,1,1,1 },// 色
+            1.0f,            // 発生間隔
+            0.0f,            // 現在時間
+            velocity
+        );
     }
 
     void GamePlayScene::Update() {
-		// ゲーム開始イベントの開始判定
-        if (!isGameStartEventDone_ && CameraManager::GetInstance()->GetCameraState().state == CameraDefs::CameraState::Default) {
-            // ゲーム開始イベントの開始
-            EventManager::GetInstance()->EventStart(Event::EventState::GameStart);
-            isGameStartEventDone_ = true;
-        }
+		//// ゲーム開始イベントの開始判定
+  //      if (!isGameStartEventDone_ && CameraManager::GetInstance()->GetCameraState().state == CameraDefs::CameraState::Default) {
+  //          // ゲーム開始イベントの開始
+  //          EventManager::GetInstance()->EventStart(Event::EventState::GameStart);
+  //          isGameStartEventDone_ = true;
+  //      }
 
         // イベント終了判定
         if (!EventManager::GetInstance()->IsActive()) {
             if (isGameStartEventDone_) {
                 // レールカメラの挙動に切り替える
-                CameraManager::GetInstance()->GetCurrentBehaviorAs<GamePlayCamera>()->SetCameraState(CameraState::Follow);
+               // CameraManager::GetInstance()->GetCurrentBehaviorAs<GamePlayCamera>()->SetCameraState(CameraState::Follow);
                 // プレイヤーのイベントロックを解除して操作可能にする
                 player_->SetEventLocked(false);
                 // 敵スポーンのイベントロックを解除してスポーン開始
@@ -149,6 +174,7 @@ namespace MyGame {
 
         // カメラマネージャの更新
         CameraManager::GetInstance()->Update();
+        particleEmitter_->Update();
 #pragma region 全てのObject3d個々の更新処理
 
         if (!gamened_) {
@@ -196,7 +222,7 @@ namespace MyGame {
         GameEnd();
 
         // パーティクル更新
-   //     ParticleManager::GetInstance()->Update();
+        ParticleManager::GetInstance()->Update();
 #pragma endregion 全てのObject3d個々の更新処理
 
 #pragma region 全てのSprite個々の更新処理
@@ -230,8 +256,8 @@ namespace MyGame {
         // ステージマネージャの描画
         StageManager::GetInstance()->Draw();
         // パーティクルの描画準備。パーティクルの描画に共通のグラフィックスコマンドを積む 
-       // ParticleCommon::GetInstance()->Commondrawing();
-       // ParticleManager::GetInstance()->Draw();
+        ParticleCommon::GetInstance()->Commondrawing(); 
+        ParticleManager::GetInstance()->Draw();
 #pragma endregion 全てのObject3d個々の描画処理
 
 #pragma region 全てのSprite個々の描画処理 

@@ -4,6 +4,7 @@
 #include <Player.h>
 #include <Enemy.h>
 #include <EnemySpawner.h>
+#include <ParticleEmitter.h>
 
 namespace MyGame {
 
@@ -29,10 +30,10 @@ namespace MyGame {
         /// </summary>
         void Draw() override;
 
-	private: // 内部関数
+    private: // 内部関数
         //// ゲーム開始イベントの更新処理
         //void StartEvent(); 
-		// ゲーム終了イベントの更新処理
+        // ゲーム終了イベントの更新処理
         void GameEnd();
     private: // メンバ変数
         std::unique_ptr <Player> player_;            // プレイヤー
@@ -40,7 +41,8 @@ namespace MyGame {
         std::vector<std::unique_ptr<Enemy>> enemies_; // 敵キャラクターのリスト
         bool isGameStartEventDone_; //   ゲーム開始イベントが完了したかどうかのフラグ
         bool gamened_;
-		uint32_t prevPlayerExp_; // 前フレームのプレイヤーの経験値
-		bool isFirstExpGainIgnored_ = false; // 経験値の初期化が完了したかどうかのフラグ
+        uint32_t prevPlayerExp_; // 前フレームのプレイヤーの経験値
+        bool isFirstExpGainIgnored_ = false; // 経験値の初期化が完了したかどうかのフラグ
+        std::unique_ptr<ParticleEmitter> particleEmitter_;
     };
 }

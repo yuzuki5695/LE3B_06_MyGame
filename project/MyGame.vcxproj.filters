@@ -414,9 +414,6 @@
     <ClCompile Include="engine\3d\Particle\ParticleCommon.cpp">
       <Filter>ソース ファイル\engine\3d\Particle</Filter>
     </ClCompile>
-    <ClCompile Include="engine\3d\Particle\ParticleEmitter.cpp">
-      <Filter>ソース ファイル\engine\3d\Particle</Filter>
-    </ClCompile>
     <ClCompile Include="engine\3d\Particle\ParticleManager.cpp">
       <Filter>ソース ファイル\engine\3d\Particle</Filter>
     </ClCompile>
@@ -681,6 +678,9 @@
     <ClCompile Include="application\character\enemy\EnemyListEditor.cpp">
       <Filter>ソース ファイル\application\character\player\enemy</Filter>
     </ClCompile>
+    <ClCompile Include="application\particle\ParticleEmitter.cpp">
+      <Filter>ソース ファイル\application</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="engine\2d\Sprite.h">
@@ -714,9 +714,6 @@
       <Filter>ヘッダー ファイル\engine\scene</Filter>
     </ClInclude>
     <ClInclude Include="engine\3d\Particle\ParticleCommon.h">
-      <Filter>ヘッダー ファイル\engine\3d\Particle</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\3d\Particle\ParticleEmitter.h">
       <Filter>ヘッダー ファイル\engine\3d\Particle</Filter>
     </ClInclude>
     <ClInclude Include="engine\3d\Particle\ParticleManager.h">
@@ -876,15 +873,6 @@
       <Filter>ヘッダー ファイル\engine\3d\Object</Filter>
     </ClInclude>
     <ClInclude Include="Engine\3d\Particle\ParticleData.h">
-      <Filter>ヘッダー ファイル\engine\3d\Particle</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\3d\Particle\ParticleGroup.h">
-      <Filter>ヘッダー ファイル\engine\3d\Particle</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\3d\Particle\ParticleRandomData.h">
-      <Filter>ヘッダー ファイル\engine\3d\Particle</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\3d\Particle\RandomParameter.h">
       <Filter>ヘッダー ファイル\engine\3d\Particle</Filter>
     </ClInclude>
     <ClInclude Include="Engine\scene\SceneName.h">
@@ -1123,6 +1111,9 @@
     </ClInclude>
     <ClInclude Include="application\character\enemy\EnemyType.h">
       <Filter>ヘッダー ファイル\application\character\enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="application\particle\ParticleEmitter.h">
+      <Filter>ソース ファイル\application</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -5,9 +5,7 @@
 #include <Vector2.h>
 #include <Model.h>
 #include <ParticleModel.h>
-#include <RandomParameter.h>
-#include <ParticleRandomData.h>
-#include <ParticleGroup.h>
+#include <ParticleData.h>
 
 namespace MyEngine {
 	// 3Dオブジェクト共通部
@@ -36,14 +34,10 @@ namespace MyEngine {
 		void CreateParticleGroup(const std::string& name, const std::string& textureFilepath, const std::string& filename, VertexType vertexType);
 
 		// 発生
-		void Emit(const std::string& name, const Transform& transform, const Vector4& color, uint32_t count, const Velocity& velocity, float lifetime, const RandomParameter& randomParameter);
+		void Emit(const std::string& name, const Transform& transform, const Vector4& color, uint32_t count, const Velocity& velocity, float lifetime);
 
 		void SetParticleGroupTexture(const std::string& name, const std::string& textureFilepath);
 		void SetParticleGroupModel(const std::string& name, const std::string& modelFilepath);
-
-		void DebugUpdata();
-
-		ParticleRandomData GenerateRandomParticleData(const RandomParameter& param, const Velocity& baseVelocity, float baseLifetime, std::mt19937& randomEngine);
 
 		void ClearAll();
 

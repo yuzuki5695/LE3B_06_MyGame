@@ -215,7 +215,7 @@ namespace MyEngine {
         }
     }
 
-    void ParticleManager::Emit(const std::string& name, const Transform& transform, const Vector4& color, uint32_t count, const Velocity& velocity, float lifetime, const RandomParameter& randomParameter) {
+    void ParticleManager::Emit(const std::string& name, const Transform& transform, const Vector4& color, uint32_t count, const Velocity& velocity, float lifetime) {
 
         auto it = particleGroups.find(name);
         if (it == particleGroups.end()) {
@@ -232,49 +232,22 @@ namespace MyEngine {
         if (count == 0) return;
 
         for (uint32_t i = 0; i < count; ++i) {
-            ParticleRandomData randData = GenerateRandomParticleData(randomParameter, velocity, lifetime, randomEngine);
-
             Particle newParticle;
-            newParticle.transform.translate = { transform.translate.x + randData.offset.x, transform.translate.y + randData.offset.y, transform.translate.z + randData.offset.z };
-            newParticle.transform.rotate = { transform.rotate.x + randData.rotation.x, transform.rotate.y + randData.rotation.y, transform.rotate.z + randData.rotation.z };
-            newParticle.transform.scale = { transform.scale.x + randData.scale.x, transform.scale.y + randData.scale.y, transform.scale.z + randData.scale.z };
-            newParticle.color = { color.x + randData.color.x,color.y + randData.color.y ,color.z + randData.color.z ,color.w };
-            newParticle.lifetime = randData.lifetime;
+            newParticle.transform.translate = { transform.translate.x, transform.translate.y, transform.translate.z };
+            newParticle.transform.rotate = { transform.rotate.x, transform.rotate.y, transform.rotate.z };
+            newParticle.transform.scale = { transform.scale.x, transform.scale.y, transform.scale.z };
+            newParticle.color = { color.x, color.y, color.z, color.w };
+            newParticle.lifetime = lifetime;
             newParticle.currentTime = 0.0f;
-            newParticle.Velocity.translate = randData.velocity.translate;
-            newParticle.Velocity.rotate = randData.velocity.rotate;
-            newParticle.Velocity.scale = randData.velocity.scale;
-
+            newParticle.Velocity.translate = velocity.translate;
+            newParticle.Velocity.rotate = velocity.rotate;
+            newParticle.Velocity.scale = velocity.scale;
             newParticle.useGravity = (name == "Firework");
             // 作成したパーティクルをパーティクルリストに追加
             group.particles.push_back(newParticle);
         }
         // 描画で使用するインスタンス数を更新
         group.kNumInstance = static_cast<uint32_t>(group.particles.size());
-    }
-
-    void ParticleManager::DebugUpdata() {
-#ifdef USE_IMGUI
-        // ウィンドウサイズを指定
-        ImGui::Begin("Particle");
-        // 全パーティクルグループの合計数を表示
-        int totalCount = 0;
-        for (const auto& [name, group] : particleGroups) {
-            totalCount += static_cast<int>(group.particles.size());
-        }
-        ImGui::SliderInt("MaxInstanceCount", (int*)&MaxInstanceCount, 0, 1000);
-        ImGui::Text("Max Particles: %u", MaxInstanceCount);
-        ImGui::Text("Current Total Particles: %d", totalCount);
-
-        // 各グループごとの詳細も表示（任意）
-        for (const auto& [name, group] : particleGroups) {
-            ImGui::Separator();
-            ImGui::Text("Group: %s", name.c_str());
-            ImGui::Text("  Particles: %zu", group.particles.size());
-            ImGui::Text("  Instances: %u", group.kNumInstance);
-        }
-        ImGui::End();
-#endif // USE_IMGUI
     }
 
     void ParticleManager::SetParticleGroupTexture(const std::string& name, const std::string& textureFilepath) {
@@ -313,47 +286,5 @@ namespace MyEngine {
             it->second.model->SetVertexType(VertexType::Model); // 必要なら別途引数で指定
             it->second.model->Initialize(dxCommon_, modelFilepath);
         }
-    }
-
-    ParticleRandomData ParticleManager::GenerateRandomParticleData(const RandomParameter& param, const Velocity& baseVelocity, float baseLifetime, std::mt19937& randomEngine) {
-        // ランダム分布の定義
-        std::uniform_real_distribution<float> distX(param.offsetMin.x, param.offsetMax.x);
-        std::uniform_real_distribution<float> distY(param.offsetMin.y, param.offsetMax.y);
-        std::uniform_real_distribution<float> distZ(param.offsetMin.z, param.offsetMax.z);
-
-        std::uniform_real_distribution<float> distRotateX(param.rotateMin.x, param.rotateMax.x);
-        std::uniform_real_distribution<float> distRotateY(param.rotateMin.y, param.rotateMax.y);
-        std::uniform_real_distribution<float> distRotateZ(param.rotateMin.z, param.rotateMax.z);
-
-        std::uniform_real_distribution<float> distScaleX(param.scaleMin.x, param.scaleMax.x);
-        std::uniform_real_distribution<float> distScaleY(param.scaleMin.y, param.scaleMax.y);
-        std::uniform_real_distribution<float> distScaleZ(param.scaleMin.z, param.scaleMax.z);
-
-        std::uniform_real_distribution<float> distVeltranslateX(param.velocityMin.translate.x, param.velocityMax.translate.x);
-        std::uniform_real_distribution<float> distVeltranslateY(param.velocityMin.translate.y, param.velocityMax.translate.y);
-        std::uniform_real_distribution<float> distVeltranslateZ(param.velocityMin.translate.z, param.velocityMax.translate.z);
-
-        std::uniform_real_distribution<float> distVelrotateX(param.velocityMin.rotate.x, param.velocityMax.rotate.x);
-        std::uniform_real_distribution<float> distVelrotateY(param.velocityMin.rotate.y, param.velocityMax.rotate.y);
-        std::uniform_real_distribution<float> distVelrotateZ(param.velocityMin.rotate.z, param.velocityMax.rotate.z);
-
-        std::uniform_real_distribution<float> distVelscaleX(param.velocityMin.scale.x, param.velocityMax.scale.x);
-        std::uniform_real_distribution<float> distVelscaleY(param.velocityMin.scale.y, param.velocityMax.scale.y);
-        std::uniform_real_distribution<float> distVelscaleZ(param.velocityMin.scale.z, param.velocityMax.scale.z);
-
-        std::uniform_real_distribution<float> distLifetime(param.lifetimeMin, param.lifetimeMax);
-        std::uniform_real_distribution<float> distColor(param.colorMin, param.colorMax);
-
-        ParticleRandomData data;
-        data.offset = { distX(randomEngine), distY(randomEngine), distZ(randomEngine) };
-        data.rotation = { distRotateX(randomEngine), distRotateY(randomEngine), distRotateZ(randomEngine) };
-        data.scale = { distScaleX(randomEngine), distScaleY(randomEngine), distScaleZ(randomEngine) };
-        data.velocity.translate = { baseVelocity.translate.x + distVeltranslateX(randomEngine), baseVelocity.translate.y + distVeltranslateY(randomEngine), baseVelocity.translate.z + distVeltranslateZ(randomEngine) };
-        data.velocity.rotate = { baseVelocity.rotate.x + distVelrotateX(randomEngine), baseVelocity.rotate.y + distVelrotateY(randomEngine), baseVelocity.rotate.z + distVelrotateZ(randomEngine) };
-        data.velocity.scale = { baseVelocity.scale.x + distVelscaleX(randomEngine), baseVelocity.scale.y + distVelscaleY(randomEngine), baseVelocity.scale.z + distVelscaleZ(randomEngine) };
-        data.lifetime = baseLifetime + distLifetime(randomEngine);
-        data.color = { distColor(randomEngine), distColor(randomEngine), distColor(randomEngine), 1.0f };
-
-        return data;
     }
 }

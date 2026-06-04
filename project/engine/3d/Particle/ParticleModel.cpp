@@ -27,7 +27,7 @@ namespace MyEngine {
         MaterialGenerate();
         // 頂点データの作成
         if (vertexType_ == VertexType::Model) { // モデルの頂点データを作成
-            modelData = LoadObjFile("Resources/Particle", filename);
+            modelData = LoadObjFile("Resources", filename);
             VertexDataModel();  // 頂点データコピー
             //.objの参照しているテクスチャ読み込み
             TextureManager::GetInstance()->LoadTexture(modelData.material.textureFilePath);
