@@ -69,8 +69,8 @@ namespace MyGame {
         expBarFill_->SetColor({ 1,1,1,0 });
         isExpBarVisible_ = false;
         expBarAlpha_ = 1.0f;         // 最大明度
-        expBarTimer_ = 0.0f;        // タイマーリセット
         expBarDuration_ = 2.0f;     // 表示時間
+        expBarTimer_ = expBarDuration_; // タイマー(初回は最大にしておく)
         isEventLocked = true;
     }
 
@@ -164,14 +164,8 @@ namespace MyGame {
         isExpBarVisible_ = true;
         // 明度最大
         expBarAlpha_ = 1.0f;
-        // 初回だけ即終了
-        if (isFirstExpBar_) {
-            expBarTimer_ = expBarDuration_;
-            isFirstExpBar_ = false;
-        } else {
-            // 通常
-            expBarTimer_ = 0.0f;
-        }
+        // タイマー初期化
+        expBarTimer_ = 0.0f;
         // 即反映
         expBarBack_->SetColor({ 1.0f,1.0f,1.0f,expBarAlpha_ });
         expBarFill_->SetColor({ 1.0f,1.0f,1.0f,expBarAlpha_ });
