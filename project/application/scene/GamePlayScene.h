@@ -41,5 +41,6 @@ namespace MyGame {
         bool isGameStartEventDone_; //   ゲーム開始イベントが完了したかどうかのフラグ
         bool gamened_;
 		uint32_t prevPlayerExp_; // 前フレームのプレイヤーの経験値
+		bool isFirstExpGainIgnored_ = false; // 経験値の初期化が完了したかどうかのフラグ
     };
 }

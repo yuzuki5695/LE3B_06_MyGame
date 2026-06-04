@@ -48,10 +48,10 @@ namespace MyGame {
 		/// ImGuiの描画処理
 		/// </summary>
 		void DrawImGui();
-
+		// 経験値獲得とレベルアップの処理
 		void GainExp(uint32_t exp);
+		// レベルアップの条件をチェックし、レベルアップが必要な場合はレベルと必要経験値を更新する
 		void CheckLevelUp();
-
 	private: // メンバ変数
 		PlayerData data_; // プレイヤーのデータ構造体
 		MyEngine::Transform transform_;
@@ -75,9 +75,8 @@ namespace MyGame {
 		// 経験値・レベル用メンバ変数
 		uint32_t level_ = 1;         // 現在のレベル
 		uint32_t exp_ = 0;           // 現在の経験値
-		uint32_t nextLevelExp_ = 100; // 次のレベルに必要な経験値 (初期値)
+		uint32_t nextLevelExp_ = 70; // 次のレベルに必要な経験値
 		bool isStateUpdateEnabled_ = true;
-
 	public: // アクセッサ
 		// getter
 		PlayerMove* GetMove() { return move_.get(); }

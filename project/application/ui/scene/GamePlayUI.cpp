@@ -164,8 +164,14 @@ namespace MyGame {
         isExpBarVisible_ = true;
         // 明度最大
         expBarAlpha_ = 1.0f;
-        // タイマー初期化
-        expBarTimer_ = 0.0f;
+        // 初回だけ即終了
+        if (isFirstExpBar_) {
+            expBarTimer_ = expBarDuration_;
+            isFirstExpBar_ = false;
+        } else {
+            // 通常
+            expBarTimer_ = 0.0f;
+        }
         // 即反映
         expBarBack_->SetColor({ 1.0f,1.0f,1.0f,expBarAlpha_ });
         expBarFill_->SetColor({ 1.0f,1.0f,1.0f,expBarAlpha_ });

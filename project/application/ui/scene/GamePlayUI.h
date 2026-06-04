@@ -36,7 +36,7 @@ namespace MyGame {
         void UpdateControlUIAnimation();
         // プレイヤーの位置に追従するUIの更新
         void UpdatePlayerFollowUI();
-		// EXPバーのフェード更新
+        // EXPバーのフェード更新
         void UpdateExpBarFade();
     private: // メンバ変数
         Player* player_ = nullptr; // プレイヤーへの参照
@@ -60,6 +60,7 @@ namespace MyGame {
         float expBarAlpha_;     // フェード
         float expBarTimer_;     // 表示タイマー
         float expBarDuration_;     // 表示時間
+        bool isFirstExpBar_ = true;
     public: // アクセッサ
         Pausemenu* GetPauseMenu() const { return pausemenu_.get(); }
         void SetPlayer(Player* player) { player_ = player; }
