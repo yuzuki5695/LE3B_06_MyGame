@@ -17,8 +17,8 @@ void AssetGenerator::Run(int argc, char* argv[]) {
         Finalize();
     }
     catch (const std::exception& e) {
-        // 実行中に発生したエラーを標準エラー出力に表示
-        std::cerr << "エラー: " << e.what() << std::endl;
+		// 例外が発生した場合はエラーメッセージを表示して終了
+        std::cerr << "[AssetGenerator] Error: " << e.what() << std::endl;
     }
 }
 
@@ -49,11 +49,6 @@ bool AssetGenerator::NeedsUpdate(const fs::path& resourceRoot, const fs::path& h
 
 void AssetGenerator::Initialize(int argc, char* argv[]) {
     std::setlocale(LC_ALL, "japanese");
-	// 事前に更新が必要かチェックして、不要なら早期リターン
-    if (!NeedsUpdate(resourceRoot_, assetInfoPath_ / "LoadResourceID.h")) {
-        return;
-    }
-
     fs::path rootPath;
 
     if (argc > 1) {
@@ -68,16 +63,12 @@ void AssetGenerator::Initialize(int argc, char* argv[]) {
 
     std::cout << "[AssetGenerator] Root: " << rootPath.string() << std::endl;
 
-    // リソース（データの入出力）
+    // パス初期化
     resourceRoot_ = rootPath / "Resources";
     outputDir_ = resourceRoot_ / "Data/Resource";
     rulesJsonPath_ = outputDir_ / "Rules.json";
     assetInfoPath_ = rootPath / "subproject/AssetGenerator/engine/generator";
 
-    // 念のため、書き出し先のフォルダが存在するかチェックし、なければ作る
-    if (!fs::exists(assetInfoPath_)) {
-        fs::create_directories(assetInfoPath_);
-    }
     // 各機能コンポーネントをインスタンス化
     ruleLoader_ = std::make_unique<RuleLoader>(resourceRoot_, outputDir_);
     assetLoader_ = std::make_unique<AssetInfoLoader>();
@@ -85,10 +76,23 @@ void AssetGenerator::Initialize(int argc, char* argv[]) {
 
 void AssetGenerator::Execute() {
     // ルール設定の読み込み
-    // どのフォルダをスキャンし、どのJSONに出力するかを決定する
     if (!ruleLoader_->Load(rulesJsonPath_)) {
         std::cerr << "Error: Failed to load rule file: " << rulesJsonPath_ << std::endl;
         return;
+    }
+
+    // 全体として更新が必要かここで初めてチェックする
+    fs::path headerPath = assetInfoPath_ / "LoadResourceID.h";
+    bool headerExists = fs::exists(headerPath);
+
+    // 全体の更新が必要ない、かつヘッダーが既に存在していれば、各JSONのチェックまで安全にスキップして終了できる
+    if (!NeedsUpdate(resourceRoot_, headerPath)) {
+        std::cout << "[AssetGenerator] Everything is up-to-date. Skipping process." << std::endl;
+        return;
+    }
+
+    if (!fs::exists(assetInfoPath_)) {
+        fs::create_directories(assetInfoPath_);
     }
 
     // ディレクトリ走査と中間JSONの更新

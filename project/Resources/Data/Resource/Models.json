@@ -57,23 +57,18 @@
                     "Models/Object/Tile/Tile.png"
                 ]
             },
-            "Particles": {
-                "Particle": [
-                    "Models/Particles/Particle/Particle.mtl",
-                    "Models/Particles/Particle/Particle.obj",
-                    "Models/Particles/Particle/Particle.png"
-                ],
-                "Particle_02": [
-                    "Models/Particles/Particle_02/Particle_02.mtl",
-                    "Models/Particles/Particle_02/Particle_02.obj",
-                    "Models/Particles/Particle_02/Particle_02.png"
-                ],
-                "Shockwave": [
-                    "Models/Particles/Shockwave/Shockwave.mtl",
-                    "Models/Particles/Shockwave/Shockwave.obj",
-                    "Models/Particles/Shockwave/Shockwave.png"
-                ]
-            }
+            "Particles": [
+                "Models/Particles/Particle.mtl",
+                "Models/Particles/Particle.obj",
+                "Models/Particles/Particle.png",
+                "Models/Particles/Particle_02.mtl",
+                "Models/Particles/Particle_02.obj",
+                "Models/Particles/Particle_02.png",
+                "Models/Particles/Player.obj",
+                "Models/Particles/Shockwave.mtl",
+                "Models/Particles/Shockwave.obj",
+                "Models/Particles/Shockwave.png"
+            ]
         }
     }
 }

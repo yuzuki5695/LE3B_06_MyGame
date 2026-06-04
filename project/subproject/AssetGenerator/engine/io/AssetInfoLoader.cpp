@@ -75,7 +75,7 @@ void AssetInfoLoader::ParseRecursive(const nlohmann::json& j, const std::string&
                 /// <summary>
                 /// カテゴリごとに対象拡張子を制限
                 /// </summary>
-                if (category == "Models" && ext != ".obj") continue;
+                if (category == "Models" && ext != ".obj" && ext != ".png") continue;
                 if (category == "Textures" && ext != ".png" && ext != ".dds") continue;
                 if (category == "Audio" && ext != ".wav") continue;
 
@@ -89,7 +89,14 @@ void AssetInfoLoader::ParseRecursive(const nlohmann::json& j, const std::string&
                 asset.category = category;
                 asset.path = filePath; // パスはそのまま "Textures/..." を使う
                 asset.subFolders = idHierarchy; // 名前空間用にはカテゴリを除いた階層を渡す
-                asset.id = p.stem().string();
+                // 基本のファイル名を取得
+                std::string baseId = p.stem().string();
+                // Modelsフォルダ内の画像ファイルは、IDの衝突を防ぐために末尾にTexをつける
+                if (category == "Models" && (ext == ".png")) {
+                    asset.id = baseId + "_Tex";
+                } else {
+                    asset.id = baseId;
+                }
 
                 // 重複チェック用キーも新しい階層で生成
                 std::string uniqueKey = category;

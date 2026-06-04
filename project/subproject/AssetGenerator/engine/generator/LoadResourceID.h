@@ -21,24 +21,38 @@ namespace LoadResourceID {
     namespace Models {
         namespace Bullet {
             constexpr const char* EnemyBullet = "Models/Bullet/EnemyBullet/EnemyBullet.obj";
+            constexpr const char* EnemyBullet_Tex = "Models/Bullet/EnemyBullet/EnemyBullet.png";
             constexpr const char* PlayerBullet = "Models/Bullet/PlayerBullet/PlayerBullet.obj";
+            constexpr const char* PlayerBullet_Tex = "Models/Bullet/PlayerBullet/PlayerBullet.png";
         } // namespace Bullet
         namespace Character {
             constexpr const char* Enemy = "Models/Character/Enemy/Enemy.obj";
+            constexpr const char* Enemy_Tex = "Models/Character/Enemy/Enemy.png";
             constexpr const char* Player = "Models/Character/Player/Player.obj";
+            constexpr const char* Player_Tex = "Models/Character/Player/Player.png";
             constexpr const char* parts_01 = "Models/Character/parts_01/parts_01.obj";
+            constexpr const char* parts_01_Tex = "Models/Character/parts_01/parts_01.png";
             constexpr const char* parts_02 = "Models/Character/parts_02/parts_02.obj";
+            constexpr const char* parts_02_Tex = "Models/Character/parts_02/parts_02.png";
             constexpr const char* parts_03 = "Models/Character/parts_03/parts_03.obj";
+            constexpr const char* parts_03_Tex = "Models/Character/parts_03/parts_03.png";
             constexpr const char* parts_04 = "Models/Character/parts_04/parts_04.obj";
+            constexpr const char* parts_04_Tex = "Models/Character/parts_04/parts_04.png";
         } // namespace Character
         namespace Object {
             constexpr const char* goal = "Models/Object/Goal/goal.obj";
+            constexpr const char* goal_Tex = "Models/Object/Goal/goal.png";
             constexpr const char* Tile = "Models/Object/Tile/Tile.obj";
+            constexpr const char* Tile_Tex = "Models/Object/Tile/Tile.png";
         } // namespace Object
         namespace Particles {
-            constexpr const char* Particle = "Models/Particles/Particle/Particle.obj";
-            constexpr const char* Particle_02 = "Models/Particles/Particle_02/Particle_02.obj";
-            constexpr const char* Shockwave = "Models/Particles/Shockwave/Shockwave.obj";
+            constexpr const char* Particle = "Models/Particles/Particle.obj";
+            constexpr const char* Particle_Tex = "Models/Particles/Particle.png";
+            constexpr const char* Particle_02 = "Models/Particles/Particle_02.obj";
+            constexpr const char* Particle_02_Tex = "Models/Particles/Particle_02.png";
+            constexpr const char* Player = "Models/Particles/Player.obj";
+            constexpr const char* Shockwave = "Models/Particles/Shockwave.obj";
+            constexpr const char* Shockwave_Tex = "Models/Particles/Shockwave.png";
         } // namespace Particles
     } // namespace Models
 
