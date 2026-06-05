@@ -80,7 +80,7 @@
 copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dxil.dll"</Command>
     </PostBuildEvent>
     <PreBuildEvent>
-      <Command>"$(SolutionDir)..\generated\outputs\$(Configuration)\AssetGenerator.exe" "$(SolutionDir).. "</Command>
+      <Command>"$(SolutionDir)..\generated\outputs\$(Configuration)\AssetGenerator.exe" "$(SolutionDir).."</Command>
     </PreBuildEvent>
     <CustomBuildStep>
       <Command>"$(SolutionDir)..\generated\outputs\$(Configuration)\AssetGenerator.exe" "$(SolutionDir).."</Command>
@@ -121,7 +121,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
 copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dxil.dll"</Command>
     </PostBuildEvent>
     <PreBuildEvent>
-      <Command>"$(SolutionDir)..\generated\outputs\$(Configuration)\AssetGenerator.exe" "$(SolutionDir).. "</Command>
+      <Command>"$(SolutionDir)..\generated\outputs\$(Configuration)\AssetGenerator.exe" "$(SolutionDir).."</Command>
     </PreBuildEvent>
     <CustomBuildStep>
       <Command>"$(SolutionDir)..\generated\outputs\$(Configuration)\AssetGenerator.exe" "$(SolutionDir).."</Command>

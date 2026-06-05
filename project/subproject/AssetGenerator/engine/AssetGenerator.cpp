@@ -64,8 +64,8 @@ void AssetGenerator::Initialize(int argc, char* argv[]) {
     std::cout << "[AssetGenerator] Root: " << rootPath.string() << std::endl;
 
     // パス初期化
-    resourceRoot_ = rootPath / "Resources";
-    outputDir_ = resourceRoot_ / "Data/Resource";
+    resourceRoot_ = rootPath / "project" / "Resources";
+    outputDir_ = resourceRoot_ / "Data" / "Resource";
     rulesJsonPath_ = outputDir_ / "Rules.json";
     assetInfoPath_ = rootPath / "subproject/AssetGenerator/engine/generator";
 
