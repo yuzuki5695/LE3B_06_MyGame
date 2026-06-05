@@ -102,7 +102,7 @@ namespace MyGame {
        // エミッター生成
        // =========================
         Transform emitterTransform{};
-        emitterTransform.translate = { 0.0f, 3.0f, 10.0f };
+        emitterTransform.translate = { 0.0f, 0.0f, 30.0f };
         emitterTransform.scale = { 1.0f, 1.0f, 1.0f };
 
         Velocity velocity{};
