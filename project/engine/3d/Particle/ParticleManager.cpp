@@ -56,7 +56,7 @@ namespace MyEngine {
         particleInfoResource_->Map(0, nullptr, reinterpret_cast<void**>(&particleInfoData_));
     }
 
-    
+
     void ParticleManager::CameraForGPUGenerate() {
         // カメラ用リソースを作る
         cameraResource = CreateBufferResource(particleCommon_->GetDxCommon()->GetDevice(), sizeof(CameraData));
@@ -90,48 +90,43 @@ namespace MyEngine {
         cameraData->projection = activeCamera->GetProjectionMatrix();
         cameraData->billboard = billboardMatrix;
 
-         //----------------------------------------
-         // DescriptorHeap設定
-         //----------------------------------------
+        // ─── 💡 追加：マネージャ直接の自動発生処理 ───
+        if (isAutoEmitActive_) {
+            emitTimer_ += 1.0f / 60.0f; // 1フレーム分の時間を進める
+            if (emitTimer_ >= emitFrequency_) {
+                emitTimer_ = 0.0f; // タイマーリセット
+                // 自分自身の Emit を直接呼び出す
+                Emit(autoEmitGroup_, emitTransform_, emitColor_, emitCount_, emitVelocity_, emitParticleLifetime_);
+            }
+        }
+
+        //--------------------------------------
+        // DescriptorHeap設定
+        //----------------------------------------
         srvmanager_->PreDraw();
 
         particleCommon_->CommandCompute();
 
         for (auto& [name, group] : particleGroups) {
-            if (group.kNumInstance == 0) {
-                continue;
-            }
-
             //----------------------------------------
             // UAV設定
             //----------------------------------------
             srvmanager_->SetComputeRootDescriptorTable(0, group.uavIndex);
 
-            particleInfoData_->particleCount = group.kNumInstance;
+            particleInfoData_->particleCount = MaxInstanceCount;
             dxCommon_->GetCommandList()->SetComputeRootConstantBufferView(1, particleInfoResource_->GetGPUVirtualAddress());
 
             //----------------------------------------
             // Dispatch
             //----------------------------------------
-            uint32_t threadGroupCount = (group.kNumInstance + 255) / 256;
+            uint32_t threadGroupCount = (MaxInstanceCount + 255) / 256;
             dxCommon_->GetCommandList()->Dispatch(threadGroupCount, 1, 1);
-            // UAV barrier
-            CD3DX12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::UAV(group.Resource.Get());
-            dxCommon_->GetCommandList()->ResourceBarrier(1, &barrier);
-            // UAV → SRV
-            CD3DX12_RESOURCE_BARRIER transition =
-                CD3DX12_RESOURCE_BARRIER::Transition(group.Resource.Get(), D3D12_RESOURCE_STATE_UNORDERED_ACCESS, D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE | D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
-            dxCommon_->GetCommandList()->ResourceBarrier(1, &transition);
         }
     }
 
     void ParticleManager::Draw() {
         // パーティクルグループごとに描画処理を行う
         for (const auto& [name, particleGroup] : particleGroups) {
-            // インスタンス数が0の場合は描画しない
-            if (particleGroup.kNumInstance == 0) {
-                continue;
-            }
             // モデルに必要なバッファをバインド（頂点バッファや定数バッファなど）
             particleGroup.model->Draw();
             // インスタンシングデータの SRV を設定（テクスチャファイルのパスを指定）
@@ -141,12 +136,7 @@ namespace MyEngine {
 
             dxCommon_->GetCommandList()->SetGraphicsRootConstantBufferView(3, cameraResource->GetGPUVirtualAddress());
             // 描画（インスタンシング）を実行
-            dxCommon_->GetCommandList()->DrawInstanced(static_cast<UINT>(particleGroup.model->GetVertexCount()), static_cast<UINT>(particleGroup.kNumInstance), 0, 0);
-
-            // SRV → UAV
-            CD3DX12_RESOURCE_BARRIER barrier =
-                CD3DX12_RESOURCE_BARRIER::Transition(particleGroup.Resource.Get(), D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE | D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE, D3D12_RESOURCE_STATE_UNORDERED_ACCESS);
-            dxCommon_->GetCommandList()->ResourceBarrier(1, &barrier);
+            dxCommon_->GetCommandList()->DrawInstanced(static_cast<UINT>(particleGroup.model->GetVertexCount()), static_cast<UINT>(MaxInstanceCount), 0, 0);
         }
     }
 
@@ -180,7 +170,6 @@ namespace MyEngine {
             // 新しいパーティクルグループにテクスチャパスとインデックスを設定
             newGroup.materialData.textureFilePath = textureFilepath;
             newGroup.materialData.textureindex = TextureManager::GetInstance()->GetSrvIndex("Resources/" + textureFilepath);
-            newGroup.kNumInstance = 0;
             // GPU StructuredBuffer
             newGroup.Resource = CreateStructuredBufferResource(dxCommon_->GetDevice(), sizeof(ParticleForGPU) * MaxInstanceCount);
             // CPU UploadBuffer            
@@ -193,25 +182,30 @@ namespace MyEngine {
             //----------------------------------------     
             for (uint32_t i = 0; i < MaxInstanceCount; ++i) {
                 auto& particle = newGroup.particleData[i];
+                particle.translate = { 0.0f, 0.0f, 0.0f };
+                particle.pad0 = 0.0f; // 💡 追加
+                particle.rotate = { 0.0f, 0.0f, 0.0f };
+                particle.pad1 = 0.0f; // 💡 追加
+                particle.scale = { 1.0f, 1.0f, 1.0f };
+                particle.pad2 = 0.0f; // 💡 追加
 
-                particle.translate = { 0,0,0 };
-                particle.rotate = { 0,0,0 };
-                particle.scale = { 1,1,1 };
+                particle.color = { 1.0f, 1.0f, 1.0f, 0.0f };
 
-                particle.color = { 1,1,1,0 };
-
-                particle.velocityTranslate = { 0,0,0 };
-                particle.velocityRotate = { 0,0,0 };
-                particle.velocityScale = { 0,0,0 };
+                particle.velocityTranslate = { 0.0f, 0.0f, 0.0f };
+                particle.pad3 = 0.0f; // 💡 追加
+                particle.velocityRotate = { 0.0f, 0.0f, 0.0f };
+                particle.pad4 = 0.0f; // 💡 追加
+                particle.velocityScale = { 0.0f, 0.0f, 0.0f };
+                particle.pad5 = 0.0f; // 💡 追加
 
                 particle.lifetime = 0.0f;
                 particle.currentTime = 0.0f;
                 particle.useGravity = 0;
+                particle.pad6 = 0.0f; // 💡 追加
             }
 
             // 初回コピー       
             dxCommon_->GetCommandList()->CopyBufferRegion(newGroup.Resource.Get(), 0, newGroup.uploadResource.Get(), 0, sizeof(ParticleForGPU) * MaxInstanceCount);
-            // SRV
             // インスタンスバッファ用のSRVを割り当て、インデックスを記録
             newGroup.srvindex = srvmanager_->Allocate();
             // 構造体バッファ用のSRVを作成
@@ -231,60 +225,28 @@ namespace MyEngine {
 
         ParticleGroup& group = it->second;
 
-        size_t currentParticleCount = group.particles.size();
-        if (currentParticleCount + count > MaxInstanceCount) {
-            count = static_cast<uint32_t>(MaxInstanceCount - currentParticleCount);
-        }
-
-        if (count == 0) return;
-
+        // GPU側のバッファ（にマップされたCPUアドレス）に直接書き込む
         for (uint32_t i = 0; i < count; ++i) {
-            Particle newParticle;
-            newParticle.transform.translate = { transform.translate.x, transform.translate.y, transform.translate.z };
-            newParticle.transform.rotate = { transform.rotate.x, transform.rotate.y, transform.rotate.z };
-            newParticle.transform.scale = { transform.scale.x, transform.scale.y, transform.scale.z };
-            newParticle.color = { color.x, color.y, color.z, color.w };
-            newParticle.lifetime = lifetime;
-            newParticle.currentTime = 0.0f;
-            newParticle.Velocity.translate = velocity.translate;
-            newParticle.Velocity.rotate = velocity.rotate;
-            newParticle.Velocity.scale = velocity.scale;
-            newParticle.useGravity = (name == "Firework");
+            // 配列の最大数を超えたら0に戻る（古いものから順に上書き）
+            uint32_t index = group.lastAllocatedIndex;
+            group.lastAllocatedIndex = (group.lastAllocatedIndex + 1) % MaxInstanceCount;
 
-            // 作成したパーティクルをパーティクルリストに追加
-            group.particles.push_back(newParticle);
-
-            //--------------------------------
-            // GPUへ初期値コピー            
-            //--------------------------------
-            uint32_t index = static_cast<uint32_t>(group.particles.size() - 1);
             auto& gpu = group.particleData[index];
 
+            // 初期値のセット
             gpu.translate = transform.translate;
             gpu.rotate = transform.rotate;
             gpu.scale = transform.scale;
             gpu.color = color;
-
             gpu.velocityTranslate = velocity.translate;
             gpu.velocityRotate = velocity.rotate;
             gpu.velocityScale = velocity.scale;
             gpu.lifetime = lifetime;
-            gpu.currentTime = 0.0f;
-            gpu.useGravity = newParticle.useGravity ? 1 : 0;
-        }
-        // 描画で使用するインスタンス数を更新
-        group.kNumInstance = static_cast<uint32_t>(group.particles.size());
-        {
-            CD3DX12_RESOURCE_BARRIER barrier =
-                CD3DX12_RESOURCE_BARRIER::Transition(group.Resource.Get(), D3D12_RESOURCE_STATE_UNORDERED_ACCESS, D3D12_RESOURCE_STATE_COPY_DEST);
-            dxCommon_->GetCommandList()->ResourceBarrier(1, &barrier);
-        }
-        // GPUへ一括コピー
-        dxCommon_->GetCommandList()->CopyBufferRegion(group.Resource.Get(), 0, group.uploadResource.Get(), 0, sizeof(ParticleForGPU) * MaxInstanceCount);
-        {
-            CD3DX12_RESOURCE_BARRIER barrier =
-                CD3DX12_RESOURCE_BARRIER::Transition(group.Resource.Get(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_UNORDERED_ACCESS);
-            dxCommon_->GetCommandList()->ResourceBarrier(1, &barrier);
-        }
+            gpu.currentTime = 0.0f; // ★ 0からスタート（生存フラグを兼ねる）
+            gpu.useGravity = (name == "Firework") ? 1 : 0;
+            // ─── 💡 【復活】新しく出た1つ分だけを即座にGPUに送り込む ───
+            UINT64 offset = static_cast<UINT64>(sizeof(ParticleForGPU)) * index;
+            dxCommon_->GetCommandList()->CopyBufferRegion(group.Resource.Get(), offset, group.uploadResource.Get(), offset, sizeof(ParticleForGPU));
+       }    
     }
 }

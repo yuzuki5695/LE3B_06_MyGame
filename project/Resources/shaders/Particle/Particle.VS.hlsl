@@ -51,16 +51,20 @@ VertexShaderOutput main(VertexShaderInput input, uint32_t instanceId : SV_Instan
     VertexShaderOutput output;
 
     ParticleForGRU particle = gParticle[instanceId];
-
+    // ★ 寿命に達している、または未生成のものは完全に潰す（描画しない）
+    if (particle.lifetime <= 0.0f || particle.currentTime >= particle.lifetime)
+    {
+        output.position = float4(0.0f, 0.0f, 0.0f, 0.0f);
+        output.texcoord = float2(0.0f, 0.0f);
+        output.color = float4(0.0f, 0.0f, 0.0f, 0.0f);
+        return output;
+    }
+        
     float4 pos = input.position;
-    //--------------------------------------
     // Scale
-    //--------------------------------------
     pos.xyz *= particle.scale;
 
-    //--------------------------------------
     // Rotate ZXY
-    //--------------------------------------
     float cx = cos(particle.rotate.x);
     float sx = sin(particle.rotate.x);
 
@@ -90,25 +94,16 @@ VertexShaderOutput main(VertexShaderInput input, uint32_t instanceId : SV_Instan
 
     pos.xyz = yRot;
 
-    //--------------------------------------
     // Billboard
-    //--------------------------------------
     pos = mul(pos, billboard);
-
-    //--------------------------------------
     // Translate
-    //--------------------------------------
     pos.xyz += particle.translate;
 
-    //--------------------------------------
     // View Projection
-    //--------------------------------------
     pos = mul(pos, view);
     pos = mul(pos, projection);
 
-    //--------------------------------------
     // Output
-    //--------------------------------------
     output.position = pos;
     output.texcoord = input.texcoord;
     output.color = particle.color;

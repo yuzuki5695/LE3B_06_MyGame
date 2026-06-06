@@ -27,17 +27,6 @@ namespace MyEngine {
 		float padding[3];
 	};
 
-	// パーティクル
-	struct Particle {
-		Transform transform;
-		Velocity Velocity;
-		float lifetime;
-		float currentTime;
-		Vector4 color;
-		Vector4 startColor; // 発生時の元色を保持する
-		bool useGravity = false;
-	};
-
 	struct ParticleForGPU {
 		Vector3 translate;
 		float pad0;
@@ -69,12 +58,14 @@ namespace MyEngine {
 	struct ParticleGroup {
 		std::unique_ptr<ParticleModel> model;                  // パーティクルモデル
 		MaterialData materialData;                             // マテリアルデータ(テクスチャファイルパスとテクスチャ用SRVインデックス)
-		std::list<Particle> particles;                         // パーティクルのリスト
+		
 		uint32_t srvindex;                                     // インスタンシング用SRVインデックス
 		uint32_t uavIndex;                                     // インスタンシング用UAVインデックス
+		
 		Microsoft::WRL::ComPtr <ID3D12Resource> Resource;      // インスタンシングリソース 
-		Microsoft::WRL::ComPtr<ID3D12Resource> uploadResource;
-		uint32_t kNumInstance;                                 // インスタンス数
+		Microsoft::WRL::ComPtr<ID3D12Resource> uploadResource;	
+		
 		ParticleForGPU* particleData = nullptr;
+		uint32_t lastAllocatedIndex = 0;
 	};
 }
