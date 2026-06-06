@@ -161,7 +161,7 @@ namespace MyEngine {
         }
     }
 
-    void ParticleManager::CreateParticleGroup(const std::string& name, const std::string& textureFilepath, const std::string& filename, VertexType vertexType) {
+    void ParticleManager::CreateParticleGroup(const std::string& name, const std::string& textureFilepath, const std::string& filename) {
         // すでにテクスチャがロードされているか確認
         if (!TextureManager::GetInstance()->IsTextureLoaded(textureFilepath)) {
             // マテリアルのテクスチャファイルをロード
@@ -184,9 +184,7 @@ namespace MyEngine {
         } else {
             // 新しいパーティクルグループを作成
             ParticleGroup& newGroup = particleGroups[name];
-            newGroup.model = std::make_unique<ParticleModel>();
-            // 頂点タイプをセット
-            newGroup.model->SetVertexType(vertexType);
+            newGroup.model = std::make_unique<ParticleModel>();            
             // モデルの初期化
             newGroup.model->Initialize(dxCommon_, filename);
 
@@ -283,7 +281,6 @@ namespace MyEngine {
         } else {
             // モデルがなければ新たに作成して初期化
             it->second.model = std::make_unique<ParticleModel>();
-            it->second.model->SetVertexType(VertexType::Model); // 必要なら別途引数で指定
             it->second.model->Initialize(dxCommon_, modelFilepath);
         }
     }

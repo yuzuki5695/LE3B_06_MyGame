@@ -18,38 +18,21 @@ using namespace MyEngine::PrimitiveGenerator;
 using namespace MyEngine::ResourceFactory;
 
 namespace MyEngine {
+
     void ParticleModel::Initialize(DirectXCommon* birectxcommon, const std::string& filename) {
         // NULL検出
         assert(birectxcommon);
         // メンバ変数に記録
         this->dxCommon_ = birectxcommon;
         // マテリアルの生成と初期化
-        MaterialGenerate();
-        // 頂点データの作成
-        if (vertexType_ == VertexType::Model) { // モデルの頂点データを作成
-            modelData = LoadObjFile("Resources", filename);
-            VertexDataModel();  // 頂点データコピー
-            //.objの参照しているテクスチャ読み込み
-            TextureManager::GetInstance()->LoadTexture(modelData.material.textureFilePath);
-            // 読み込んだテクスチャの番号を取得
-            modelData.material.textureindex = TextureManager::GetInstance()->GetSrvIndex(modelData.material.textureFilePath);
-        } else if (vertexType_ == VertexType::Ring) { // リングの頂点データを作成
-            VertexDataRing();
-        } else if (vertexType_ == VertexType::Sphere) { // 球の頂点データを作成
-            VertexDataSphere();
-        } else if (vertexType_ == VertexType::Cylinder) { // 円柱の頂点データを作成
-            VertexDataCylinder();
-        } else if (vertexType_ == VertexType::Star) { // 星の頂点データを作成
-            VertexDataStar();
-        } else if (vertexType_ == VertexType::Spiral) { // スパイラル状の頂点データを作成
-            VertexDataSpiral();
-        } else if (vertexType_ == VertexType::Circle) { // サークルの頂点データを作成
-            VertexDataCircle();
-        } else if (vertexType_ == VertexType::Box) { // 正方形の頂点データを作成
-            VertexDataBox();
-        } else if (vertexType_ == VertexType::Cloud) { // 正方形の頂点データを作成
-            VertexDataCloud();
-        }
+        MaterialGenerate();        
+        modelData = LoadObjFile("Resources", filename);
+        CreateVertexBuffer();
+        std::memcpy(vertexData, modelData.vertices.data(), sizeof(VertexData) * modelData.vertices.size());
+        //.objの参照しているテクスチャ読み込み
+        TextureManager::GetInstance()->LoadTexture(modelData.material.textureFilePath);
+        // 読み込んだテクスチャの番号を取得
+        modelData.material.textureindex = TextureManager::GetInstance()->GetSrvIndex(modelData.material.textureFilePath);
     }
 
     void ParticleModel::Draw() {
@@ -71,75 +54,7 @@ namespace MyEngine {
         vertexBufferView.StrideInBytes = sizeof(VertexData);
         // 頂点リソースにデータを書き込むためのアドレスを取得
         vertexResource->Map(0, nullptr, reinterpret_cast<void**>(&vertexData));
-    }
 
-    void ParticleModel::VertexDataModel() {
-        // 共通の頂点バッファビュー処理
-        CreateVertexBuffer();
-        std::memcpy(vertexData, modelData.vertices.data(), sizeof(VertexData) * modelData.vertices.size());
-    }
-
-    void ParticleModel::VertexDataRing() {
-        const uint32_t kRingDivide = 32;
-        const float kOuterRadius = 1.0f;
-        const float kInnerRadius = 0.2f;
-        vertexCount = kRingDivide * 6;
-        // 頂点数を計算
-        modelData.vertices.resize(vertexCount);
-        // 共通の頂点バッファビュー処理
-        CreateVertexBuffer();
-        // 頂点データ生成
-        modelData.vertices = DrawRing(vertexData, kRingDivide, kOuterRadius, kInnerRadius);
-    }
-
-    void ParticleModel::VertexDataSphere() {
-        const uint32_t kSubdivision = 16;
-        vertexCount = kSubdivision * kSubdivision * 6;
-        // 頂点数を計算
-        modelData.vertices.resize(vertexCount);
-        // 共通の頂点バッファビュー処理
-        CreateVertexBuffer();
-        // 頂点データ生成
-        modelData.vertices = DrawSphere(kSubdivision, vertexData);
-    }
-
-    void ParticleModel::VertexDataCylinder() {
-        const uint32_t kCylinderDivide = 32;
-        const float kTopRadius = 1.0f;
-        const float kBottomRadius = 1.0f;
-        const float kHeight = 3.0f;
-        const float radianPerDivide = 2.0f * std::numbers::pi_v<float> / float(kCylinderDivide);
-        vertexCount = kCylinderDivide * 6;
-        // 頂点数を計算
-        modelData.vertices.resize(vertexCount);
-        // 共通の頂点バッファビュー処理
-        CreateVertexBuffer();
-        // 頂点データ生成
-        modelData.vertices = DrawCylinder(vertexData, kCylinderDivide, kTopRadius, kBottomRadius, kHeight);
-    }
-
-    void ParticleModel::VertexDataStar() {
-        const uint32_t kNumPoints = 5;  // 星の先端数
-        const float kOuterRadius = 1.0f;
-        const float kInnerRadius = 0.5f;
-        vertexCount = kNumPoints * 6;
-        // 頂点数を計算
-        modelData.vertices.resize(vertexCount);
-        // 共通の頂点バッファビュー処理
-        CreateVertexBuffer();
-        // 頂点データ生成
-        modelData.vertices = DrawStar(vertexData, kNumPoints, kOuterRadius, kInnerRadius);
-    }
-
-    void ParticleModel::VertexDataSpiral() {
-        uint32_t kSpiralDiv = 100;
-        vertexCount = kSpiralDiv + 1;
-        // 頂点数を計算
-        modelData.vertices.resize(vertexCount);
-        // 共通の頂点バッファビュー処理
-        CreateVertexBuffer();
-        // 頂点データ生成
-        DrawSpiral(kSpiralDiv, 5.0f, 10.0f, 3, vertexData);
     }
 
     void ParticleModel::MaterialGenerate() {
@@ -151,17 +66,6 @@ namespace MyEngine {
         materialData->color = { 1.0f, 1.0f, 1.0f, 1.0f };
         materialData->enableLighting = true;
         materialData->uvTransform = MakeIdentity4x4();
-    }
-
-    void ParticleModel::VertexDataCircle() {
-        const uint32_t kSegmentCount = 64;
-        const float kRadius = 1.0f;
-        // 頂点数は線で円を構成するので segmentCount+1（ループ閉じ）
-        vertexCount = (kSegmentCount + 1);
-        modelData.vertices.resize(vertexCount);
-        // 頂点バッファ作成
-        CreateVertexBuffer();
-        modelData.vertices = DrawCircle(vertexData, kSegmentCount, kRadius);
     }
 
     MaterialData ParticleModel::LoadMaterialTemplateFile(const std::string& directoryPath, const std::string& filename) {
@@ -185,38 +89,6 @@ namespace MyEngine {
             }
         }
         return materialDate;
-    }
-
-    void ParticleModel::VertexDataCloud() {
-        const int kCloudParts = 10; // 雲の構成要素（円）の数
-        const float kRadius = 1.0f; // 各円の半径
-        const float kSpread = 1.5f; // 雲の広がり
-
-        std::vector<VertexData> cloudVertices;
-
-        for (int i = 0; i < kCloudParts; ++i) {
-            // ランダムな位置に円を配置
-            float offsetX = ((rand() % 100) / 100.0f - 0.5f) * kSpread * 2.0f;
-            float offsetY = ((rand() % 100) / 100.0f - 0.5f) * kSpread * 2.0f;
-
-            // 各円の頂点を生成
-            std::vector<VertexData> part = GenerateCircle(offsetX, offsetY, 0.0f, kRadius, 32);
-            cloudVertices.insert(cloudVertices.end(), part.begin(), part.end());
-        }
-
-        vertexCount = static_cast<int>(cloudVertices.size());
-        modelData.vertices = cloudVertices;
-
-        CreateVertexBuffer();
-        std::memcpy(vertexData, modelData.vertices.data(), sizeof(VertexData) * vertexCount);
-    }
-
-
-    void ParticleModel::VertexDataBox() {
-        vertexCount = 36; // 立方体は常に36頂点
-        modelData.vertices.resize(vertexCount);
-        CreateVertexBuffer();
-        modelData.vertices = DrawBox(vertexData);
     }
 
     ModelData ParticleModel::LoadObjFile(const std::string& directoryPath, const std::string& filename) {

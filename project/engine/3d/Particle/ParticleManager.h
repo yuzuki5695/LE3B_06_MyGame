@@ -31,7 +31,7 @@ namespace MyEngine {
 		void Draw();
 
 		// パーティクルグループの作成
-		void CreateParticleGroup(const std::string& name, const std::string& textureFilepath, const std::string& filename, VertexType vertexType);
+		void CreateParticleGroup(const std::string& name, const std::string& textureFilepath, const std::string& filename);
 
 		// 発生
 		void Emit(const std::string& name, const Transform& transform, const Vector4& color, uint32_t count, const Velocity& velocity, float lifetime);

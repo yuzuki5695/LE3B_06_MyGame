@@ -4,43 +4,28 @@
 #include <PrimitiveGenerator.h>
 
 namespace MyEngine {
-	enum class VertexType {
-		Model,
-		Ring,
-		Sphere,
-		Cylinder,
-		Star,
-		Spiral,
-		Circle,
-		Box,
-		Cloud,
-	};
-
-	// パーティクルモデル
-	class ParticleModel
-	{
-	public:
-		// 初期化
+	/// <summary>
+	/// パーティクルモデル
+	/// </summary>
+	class ParticleModel	{
+	public: // メンバ関数
+		/// <summary>
+		/// 初期化
+		/// </summary>
+		/// <param name="birectxcommon"></param>
+		/// <param name="filename"></param>
 		void Initialize(DirectXCommon* birectxcommon, const std::string& filename);
-		// 描画処理
+		/// <summary>
+		/// 描画処理
+		/// </summary>
 		void Draw();
-
-	private:
+	private: // 内部関数
 		// .mtlファイルの読み取り
 		static MaterialData LoadMaterialTemplateFile(const std::string& directoryPath, const std::string& filename);
 		// .objファイルの読み取り
 		static ModelData LoadObjFile(const std::string& directoryPath, const std::string& filename);
 		// 頂点データ作成
-		void CreateVertexBuffer();        // 共通処理にする
-		void VertexDataModel();
-		void VertexDataRing();
-		void VertexDataSphere();
-		void VertexDataStar();
-		void VertexDataCylinder();
-		void VertexDataSpiral();
-		void VertexDataCircle();
-		void VertexDataBox();
-		void VertexDataCloud();
+		void CreateVertexBuffer();
 		// マテリアル
 		void MaterialGenerate();
 	private:
@@ -56,16 +41,8 @@ namespace MyEngine {
 		Material* materialData = nullptr;
 		// バッファリソースの使い道を補足するバッファビュー
 		D3D12_VERTEX_BUFFER_VIEW vertexBufferView;
-
-		VertexType vertexType_ = VertexType::Model;
-
 		uint32_t vertexCount; // 頂点数
-	public:
-
+	public: // アクセッサ
 		size_t GetVertexCount() const { return modelData.vertices.size(); }
-
-
-		void SetVertexType(VertexType type) { vertexType_ = type; }
-
 	};
 }
