@@ -108,9 +108,8 @@ namespace MyGame {
         velocity.translate = { 0.01f, 0.05f, 0.0f }; // 上方向に飛ぶ
         velocity.rotate = { 0.0f, 0.0f, 0.0f };
         velocity.scale = { 0.0f, 0.0f, 0.0f };
-        
-        // マネージャに直接設定を投げ込む（1.0f間隔で発生、パーティクルの寿命は2.0f など任意で調整）
-        ParticleManager::GetInstance()->SetAutoEmit(
+
+        particleEmitter_ = std::make_unique<ParticleEmitter>(
             "Particles",       // グループ名
             emitterTransform,  // 発生座標
             Vector4{ 1.0f, 1.0f, 1.0f, 1.0f }, // 色
@@ -119,16 +118,6 @@ namespace MyGame {
             0.5f,              // 🌟 発生間隔（frequency）
             1.5f               // 🌟 パーティクル個体の寿命（lifetime）
         );
-
-        //particleEmitter_ = std::make_unique<ParticleEmitter>(
-        //    "Particles",     // ParticleGroup名
-        //    10,              // 一度に出す数
-        //    emitterTransform,
-        //    Vector4{ 1.0f,1.0f,1.0f,1.0f },// 色
-        //    1.0f,            // 発生間隔
-        //    0.0f,            // 現在時間
-        //    velocity
-        //);
     }
 
     void GamePlayScene::Update() {
@@ -184,7 +173,7 @@ namespace MyGame {
 
         // カメラマネージャの更新
         CameraManager::GetInstance()->Update();
-       // particleEmitter_->Update();
+        particleEmitter_->Update();
 #pragma region 全てのObject3d個々の更新処理
 
         if (!gamened_) {
