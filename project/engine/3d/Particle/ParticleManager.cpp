@@ -52,6 +52,8 @@ namespace MyEngine {
         backToFrontMatrix = MakeRotateYMatrix(std::numbers::pi_v<float>);
         // カメラリソースの生成、初期化
         CameraForGPUGenerate();
+        particleInfoResource_ = CreateBufferResource(dxCommon_->GetDevice(), sizeof(ParticleInfo));
+        particleInfoResource_->Map(0, nullptr, reinterpret_cast<void**>(&particleInfoData_));
     }
 
     
@@ -99,10 +101,15 @@ namespace MyEngine {
             if (group.kNumInstance == 0) {
                 continue;
             }
+
             //----------------------------------------
             // UAV設定
             //----------------------------------------
             srvmanager_->SetComputeRootDescriptorTable(0, group.uavIndex);
+
+            particleInfoData_->particleCount = group.kNumInstance;
+            dxCommon_->GetCommandList()->SetComputeRootConstantBufferView(1, particleInfoResource_->GetGPUVirtualAddress());
+
             //----------------------------------------
             // Dispatch
             //----------------------------------------

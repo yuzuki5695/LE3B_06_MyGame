@@ -29,11 +29,26 @@ struct ParticleData
 
 RWStructuredBuffer<ParticleData> gParticle : register(u0);
 
+cbuffer ParticleInfo : register(b0)
+{
+    uint particleCount;
+    float3 padding;
+};
+    
+
 [numthreads(256, 1, 1)]
 void main(uint3 DTid : SV_DispatchThreadID)
 {
     uint index = DTid.x;
-
+       
+    //----------------------------------
+    // 範囲外アクセス防止
+    //----------------------------------
+    if (index >= particleCount)
+    {
+        return;
+    }
+    
     //----------------------------------
     // currentTime
     //----------------------------------

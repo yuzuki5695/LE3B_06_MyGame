@@ -22,6 +22,11 @@ namespace MyEngine {
 		Matrix4x4 billboard;
 	};
 
+	struct ParticleInfo {
+		uint32_t particleCount;
+		float padding[3];
+	};
+
 	// パーティクル
 	struct Particle {
 		Transform transform;

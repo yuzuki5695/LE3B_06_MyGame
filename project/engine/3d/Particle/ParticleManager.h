@@ -57,6 +57,8 @@ namespace MyEngine {
 
 		Microsoft::WRL::ComPtr<ID3D12Resource> cameraResource;	
 		CameraData* cameraData = nullptr;
+		Microsoft::WRL::ComPtr<ID3D12Resource> particleInfoResource_;
+		ParticleInfo* particleInfoData_ = nullptr;
 	public: // アクセッサ
 		// getter
 		ParticleGroup& GetGroup(const std::string& name) {

@@ -231,12 +231,16 @@ namespace MyEngine {
         //----------------------------------------
         // RootParameter
         //----------------------------------------
-        D3D12_ROOT_PARAMETER rootParameters[1] = {};
+        D3D12_ROOT_PARAMETER rootParameters[2] = {};
 
         rootParameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
         rootParameters[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
         rootParameters[0].DescriptorTable.pDescriptorRanges = descriptorRange;
         rootParameters[0].DescriptorTable.NumDescriptorRanges = 1;
+
+        rootParameters[1].ParameterType =    D3D12_ROOT_PARAMETER_TYPE_CBV;
+        rootParameters[1].ShaderVisibility =    D3D12_SHADER_VISIBILITY_ALL;
+        rootParameters[1].Descriptor.ShaderRegister = 0;
 
         //----------------------------------------
         // RootSignatureDesc
