@@ -40,7 +40,6 @@ namespace MyGame {
         CollisionManager::GetInstance()->Finalize(); // 衝突マネージャの終了処理
         EventManager::GetInstance()->Finalize();     // イベントマネージャの終了処理
         EnemyListEditor::GetInstance()->Finalize();  // 敵リストエディタの終了処理
-        ParticleManager::GetInstance()->Finalize();  // パーティクルマネージャの開放
     }
 
     void GamePlayScene::Initialize() {
@@ -97,7 +96,7 @@ namespace MyGame {
 #endif // USE_IMGUI
 
         // パーティクルグループ生成
-        ParticleManager::GetInstance()->CreateParticleGroup("Particles", "Particle.png", "Particle.obj", VertexType::Model);
+        ParticleManager::GetInstance()->CreateParticleGroup("Particles", "Particle.png", "Particle.obj");
         // =========================
        // エミッター生成
        // =========================
