@@ -7,25 +7,26 @@ using namespace MyEngine;
 
 namespace MyGame {
 
-	ParticleEmitter::ParticleEmitter(const std::string& name, const uint32_t count, const Transform& transform, const Vector4& color, const float lifetime, const float currentTime, const Velocity& Velocity) {
-		name_ = name;//名前
-		this->count = count;//count
-		transform_ = transform;//位置
-		this->color = color; // カラー
-		frequency = lifetime;//寿命
-		frequencyTime = currentTime;//現在の寿命
-		velocity_ = Velocity; // 風の強さ
+	ParticleEmitter::ParticleEmitter(const std::string& name, const Transform& transform, const Vector4& color, const uint32_t count, const Velocity& Velocity, const float frequency, const float lifetime) {
+		this->name_ = name;//名前
+		this->transform_ = transform;//位置
+		this->count = count; // カラー
+		this->color = color; // count
+		this->velocity_ = Velocity; // 風の強さ
+		this->frequency = frequency;    //寿命
+		this->frequencyTime = lifetime;//現在の寿命
+		isAutoEmit_ = true;
+		emitTimer_ = 0.0f;
 	}
 
 	void ParticleEmitter::Update() {
-		// 時間を進める
-		frequencyTime += 1.0f / 60.0f;
-
 		// isAutoEmit_ が true のとき、自動発生処理
 		if (isAutoEmit_) {
+			// 時間を進める
+			emitTimer_ += 1.0f / 60.0f;
 			// 発生間隔を超えたら Emit 実行
-			if (frequencyTime >= frequency) {
-				frequencyTime = 0.0f; // リセット
+			if (emitTimer_ >= frequency) {
+				emitTimer_ = 0.0f; // リセット
 				Emit(); // パーティクル発生
 			}
 		}
@@ -33,6 +34,6 @@ namespace MyGame {
 
 	void ParticleEmitter::Emit() {
 		//パーティクルを発生
-		ParticleManager::GetInstance()->Emit(name_, transform_, color, count, velocity_, frequency);
+		ParticleManager::GetInstance()->Emit(name_, transform_, color, count, velocity_, frequencyTime);
 	}
 }

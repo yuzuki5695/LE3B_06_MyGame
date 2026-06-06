@@ -10,7 +10,15 @@ namespace MyGame {
 	class ParticleEmitter {
 	public:
 		//ほとんどのメンバ変数をコンストラクタの引数として受け取り、メンバ変数に代入する
-		ParticleEmitter(const std::string& name, const uint32_t count, const MyEngine::Transform& transform, const MyEngine::Vector4& color, const float lifetime, const float currentTime, const MyEngine::Velocity& Velocity);
+		ParticleEmitter(
+			const std::string& name,
+			const MyEngine::Transform& transform,
+			const MyEngine::Vector4& color,
+			const uint32_t count,
+			const MyEngine::Velocity& Velocity,
+			const float frequency,
+			const float lifetime
+		);
 		// 更新処理
 		void Update();
 		// パーティクル発生
@@ -30,14 +38,18 @@ namespace MyGame {
 		float frequency;
 		// 現在の寿命
 		float frequencyTime;
+		// 現在の経過タイマー
+		float emitTimer_;
 		// 自動発生するかどうかの
 		bool isAutoEmit_ = true;
-		// テクスチャ変更フラグ
-		bool isTextureChange_ = false;
-		// テクスチャリスト
-		static std::vector<std::string> textureList_;
-		// 選択中のモデルインデックス
-		int textureIndex_ = 0;
+
+
+		//// テクスチャ変更フラグ
+		//bool isTextureChange_ = false;
+		//// テクスチャリスト
+		//static std::vector<std::string> textureList_;
+		//// 選択中のモデルインデックス
+		//int textureIndex_ = 0;
 	public:
 		float GetfrequencyTime() { return frequencyTime; }
 	};
