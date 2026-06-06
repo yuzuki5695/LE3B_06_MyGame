@@ -6,6 +6,7 @@
 #include <Model.h>
 #include <ParticleModel.h>
 #include <ParticleData.h>
+#include <ParticleCommon.h>
 
 namespace MyEngine {
 	// 3Dオブジェクト共通部
@@ -24,7 +25,7 @@ namespace MyEngine {
 		// 終了
 		void Finalize();
 		// 初期化
-		void Initialize(DirectXCommon* birectxcommon, SrvManager* srvmanager);
+		void Initialize(DirectXCommon* birectxcommon, SrvManager* srvmanager, ParticleCommon* particleCommon);
 		// 更新処理
 		void Update();
 		// 描画処理
@@ -36,15 +37,15 @@ namespace MyEngine {
 		// 発生
 		void Emit(const std::string& name, const Transform& transform, const Vector4& color, uint32_t count, const Velocity& velocity, float lifetime);
 
-		void SetParticleGroupTexture(const std::string& name, const std::string& textureFilepath);
-		void SetParticleGroupModel(const std::string& name, const std::string& modelFilepath);
-
 		void ClearAll();
+
+		void CameraForGPUGenerate();
 
 	private: // メンバ変数
 		// ポインタ
 		DirectXCommon* dxCommon_;
 		SrvManager* srvmanager_;
+		ParticleCommon* particleCommon_;
 		// ランダムエンジン
 		std::mt19937 randomEngine;
 		//最大インスタンス
@@ -54,7 +55,9 @@ namespace MyEngine {
 		// パーティクルグループコンテナ
 		std::unordered_map<std::string, ParticleGroup> particleGroups;
 
-	public:
+		Microsoft::WRL::ComPtr<ID3D12Resource> cameraResource;	
+		CameraData* cameraData = nullptr;
+	public: // アクセッサ
 		// getter
 		ParticleGroup& GetGroup(const std::string& name) {
 			assert(particleGroups.count(name));

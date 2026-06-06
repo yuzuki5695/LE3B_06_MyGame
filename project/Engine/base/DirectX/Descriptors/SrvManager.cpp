@@ -69,6 +69,18 @@ namespace MyEngine {
 		directXCommon->GetDevice()->CreateShaderResourceView(pResource.Get(), &srvDesc, GetCPUDescriptorHandle(srvIndex));
 	}
 
+	void SrvManager::CreateUAVForStructuredBuffer(uint32_t uavIndex, ComPtr<ID3D12Resource> pResource, UINT numElements, UINT structureByteStride) {	
+		// UAV設定
+		D3D12_UNORDERED_ACCESS_VIEW_DESC uavDesc{};
+		uavDesc.ViewDimension = D3D12_UAV_DIMENSION_BUFFER;
+		uavDesc.Format = DXGI_FORMAT_UNKNOWN;
+		uavDesc.Buffer.NumElements = numElements;
+		uavDesc.Buffer.StructureByteStride = structureByteStride;
+		uavDesc.Buffer.Flags = D3D12_BUFFER_UAV_FLAG_NONE;	
+		// UAV生成
+		directXCommon->GetDevice()->CreateUnorderedAccessView(pResource.Get(), nullptr, &uavDesc, GetCPUDescriptorHandle(uavIndex));
+	}
+
 	uint32_t  SrvManager::CreateSRVForRenderTexture(ComPtr<ID3D12Resource> resource) {
 		uint32_t index = Allocate();
 		// SRVの設定
@@ -90,6 +102,10 @@ namespace MyEngine {
 
 	void SrvManager::SetGraphicsRootDescriptorTable(UINT RootParameterIndex, uint32_t srvIndex) {
 		directXCommon->GetCommandList()->SetGraphicsRootDescriptorTable(RootParameterIndex, GetGPUDescriptorHandle(srvIndex));
+	}
+
+	void SrvManager::SetComputeRootDescriptorTable(UINT RootParameterIndex, uint32_t srvIndex) {
+		directXCommon->GetCommandList()->SetComputeRootDescriptorTable(RootParameterIndex, GetGPUDescriptorHandle(srvIndex));
 	}
 
 	bool SrvManager::TextureDataCheck() {

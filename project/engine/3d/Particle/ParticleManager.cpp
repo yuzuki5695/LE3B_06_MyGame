@@ -37,109 +37,84 @@ namespace MyEngine {
         particleGroups.clear();   // 全てのパーティクルグループを削除
     }
 
-    void ParticleManager::Initialize(DirectXCommon* birectxcommon, SrvManager* srvmanager) {
+    void ParticleManager::Initialize(DirectXCommon* birectxcommon, SrvManager* srvmanager, ParticleCommon* particleCommon) {
         // NULL検出
         assert(birectxcommon);
         assert(srvmanager);
         // メンバ変数に記録
         this->dxCommon_ = birectxcommon;
         this->srvmanager_ = srvmanager;
+        this->particleCommon_ = particleCommon;
         // 乱数エンジンを初期化
         std::random_device rd;// 乱数生成器
         randomEngine = std::mt19937(rd());
         //ビルボード行列作成
         backToFrontMatrix = MakeRotateYMatrix(std::numbers::pi_v<float>);
+        // カメラリソースの生成、初期化
+        CameraForGPUGenerate();
+    }
+
+    
+    void ParticleManager::CameraForGPUGenerate() {
+        // カメラ用リソースを作る
+        cameraResource = CreateBufferResource(particleCommon_->GetDxCommon()->GetDevice(), sizeof(CameraData));
+        // 書き込むためのアドレスを取得
+        cameraResource->Map(0, nullptr, reinterpret_cast<void**>(&cameraData));
+        // カメラを CameraManager 経由で取得
+        cameraData->view = MakeIdentity4x4();
+        cameraData->projection = MakeIdentity4x4();
+        cameraData->billboard = MakeIdentity4x4();
     }
 
     void ParticleManager::Update() {
-        Matrix4x4 billboardMatrix;
-        Matrix4x4 viewMatrix;
-        Matrix4x4 projectionMatrix;
         // カメラを CameraManager 経由で取得
         Camera* activeCamera = CameraManager::GetInstance()->GetActiveCamera();
-        if (activeCamera) {
-            // カメラのワールド行列を取得し、ビルボード行列を計算
-            billboardMatrix = Multiply(backToFrontMatrix, activeCamera->GetWorldMatrix());  // 修正: GetWorldMatrix
-            // カメラからビュー行列とプロジェクション行列を取得
-            viewMatrix = activeCamera->GetViewMatrix();
-            projectionMatrix = activeCamera->GetProjectionMatrix();
-        } else {
-            // カメラがない場合の処理（必要であれば）
-        }
+        if (!activeCamera) { return; }
 
+        //=========================================================
+        // カメラ行列更新（GPUへ渡す）
+        //=========================================================
+
+        //----------------------------------------
+        // billboard更新
+        //----------------------------------------
+        Matrix4x4 billboardMatrix = Multiply(backToFrontMatrix, activeCamera->GetWorldMatrix());
         // パーティクルの位置をカメラの方向に合わせるために設定
         billboardMatrix.m[3][0] = 0.0f;
         billboardMatrix.m[3][1] = 0.0f;
         billboardMatrix.m[3][2] = 0.0f;
 
-        // 各パーティクルグループの処理
+        cameraData->view = activeCamera->GetViewMatrix();
+        cameraData->projection = activeCamera->GetProjectionMatrix();
+        cameraData->billboard = billboardMatrix;
+
+         //----------------------------------------
+         // DescriptorHeap設定
+         //----------------------------------------
+        srvmanager_->PreDraw();
+
+        particleCommon_->CommandCompute();
+
         for (auto& [name, group] : particleGroups) {
-            group.kNumInstance = 0;
-            for (auto particleIterator = group.particles.begin(); particleIterator != group.particles.end();) {
-                // パーティクルの現在の時間を増加させる
-                (*particleIterator).currentTime += 1.0f / 60.0f;  // 60fpsで時間をカウントアップ
-
-                // パーティクルの寿命が尽きたら削除
-                if ((*particleIterator).currentTime >= (*particleIterator).lifetime) {
-                    particleIterator = group.particles.erase(particleIterator);  // パーティクル削除
-                    continue;
-                }
-
-                // 透明度の更新（時間に基づいてフェード）
-                float alpha = 1.0f - (*particleIterator).currentTime / (*particleIterator).lifetime;
-                (*particleIterator).color.w = alpha;
-
-
-                if (particleIterator->useGravity) {
-                    particleIterator->Velocity.translate.y -= 0.003f; // 重力として速度に加える
-                }
-
-
-                // 速度を足す
-                // 座標
-                particleIterator->transform.translate.x += particleIterator->Velocity.translate.x;
-                particleIterator->transform.translate.y += particleIterator->Velocity.translate.y;
-                particleIterator->transform.translate.z += particleIterator->Velocity.translate.z;
-                // 回転
-                particleIterator->transform.rotate.x += particleIterator->Velocity.rotate.x;
-                particleIterator->transform.rotate.y += particleIterator->Velocity.rotate.y;
-                particleIterator->transform.rotate.z += particleIterator->Velocity.rotate.z;
-                // サイズ
-                particleIterator->transform.scale.x += particleIterator->Velocity.scale.x;
-                particleIterator->transform.scale.y += particleIterator->Velocity.scale.y;
-                particleIterator->transform.scale.z += particleIterator->Velocity.scale.z;
-
-                // world行列の計算
-                Matrix4x4 scaleMatrix = MakeScaleMatrix((*particleIterator).transform.scale);
-                // 回転行列を各軸ごとに作成して合成
-                Matrix4x4 rotateXMatrix = MakeRotateXMatrix((*particleIterator).transform.rotate.x);
-                Matrix4x4 rotateYMatrix = MakeRotateYMatrix((*particleIterator).transform.rotate.y);
-                Matrix4x4 rotateZMatrix = MakeRotateZMatrix((*particleIterator).transform.rotate.z);
-                // 回転順序: Z → X → Y（用途により調整）
-                Matrix4x4 rotateMatrix = Multiply(Multiply(rotateZMatrix, rotateXMatrix), rotateYMatrix);
-                Matrix4x4 translateMatrix = MakeTranslateMatrix((*particleIterator).transform.translate);
-                // SRT順にビルボードを含めて合成
-                Matrix4x4 worldMatrix = Multiply(Multiply(Multiply(scaleMatrix, rotateMatrix), billboardMatrix), translateMatrix);
-
-                // worldViewProjection行列の計算
-                Matrix4x4 viewProjectionMatrix = Multiply(viewMatrix, projectionMatrix);
-                Matrix4x4 worldViewProjectionMatrix = Multiply(worldMatrix, viewProjectionMatrix);
-
-                // ★ 正しく格納
-                group.instanceData[group.kNumInstance].WVP = worldViewProjectionMatrix;
-                group.instanceData[group.kNumInstance].World = worldMatrix;
-                group.instanceData[group.kNumInstance].color = particleIterator->color;
-                ++group.kNumInstance;
-
-                ++particleIterator;
+            if (group.kNumInstance == 0) {
+                continue;
             }
-
-            // 未使用領域のクリアは「描画数より後ろ」だけ
-            for (uint32_t i = group.kNumInstance; i < MaxInstanceCount; ++i) {
-                group.instanceData[i].color = { 0,0,0,0 };
-                group.instanceData[i].WVP = MakeIdentity4x4();
-                group.instanceData[i].World = MakeIdentity4x4();
-            }
+            //----------------------------------------
+            // UAV設定
+            //----------------------------------------
+            srvmanager_->SetComputeRootDescriptorTable(0, group.uavIndex);
+            //----------------------------------------
+            // Dispatch
+            //----------------------------------------
+            uint32_t threadGroupCount = (group.kNumInstance + 255) / 256;
+            dxCommon_->GetCommandList()->Dispatch(threadGroupCount, 1, 1);
+            // UAV barrier
+            CD3DX12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::UAV(group.Resource.Get());
+            dxCommon_->GetCommandList()->ResourceBarrier(1, &barrier);
+            // UAV → SRV
+            CD3DX12_RESOURCE_BARRIER transition =
+                CD3DX12_RESOURCE_BARRIER::Transition(group.Resource.Get(), D3D12_RESOURCE_STATE_UNORDERED_ACCESS, D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE | D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
+            dxCommon_->GetCommandList()->ResourceBarrier(1, &transition);
         }
     }
 
@@ -156,8 +131,15 @@ namespace MyEngine {
             srvmanager_->SetGraphicsRootDescriptorTable(1, particleGroup.srvindex);
             // SRVで画像を表示
             srvmanager_->SetGraphicsRootDescriptorTable(2, particleGroup.materialData.textureindex);
+
+            dxCommon_->GetCommandList()->SetGraphicsRootConstantBufferView(3, cameraResource->GetGPUVirtualAddress());
             // 描画（インスタンシング）を実行
             dxCommon_->GetCommandList()->DrawInstanced(static_cast<UINT>(particleGroup.model->GetVertexCount()), static_cast<UINT>(particleGroup.kNumInstance), 0, 0);
+
+            // SRV → UAV
+            CD3DX12_RESOURCE_BARRIER barrier =
+                CD3DX12_RESOURCE_BARRIER::Transition(particleGroup.Resource.Get(), D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE | D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE, D3D12_RESOURCE_STATE_UNORDERED_ACCESS);
+            dxCommon_->GetCommandList()->ResourceBarrier(1, &barrier);
         }
     }
 
@@ -184,32 +166,52 @@ namespace MyEngine {
         } else {
             // 新しいパーティクルグループを作成
             ParticleGroup& newGroup = particleGroups[name];
-            newGroup.model = std::make_unique<ParticleModel>();            
-            // モデルの初期化
+            // モデルの生成、初期化
+            newGroup.model = std::make_unique<ParticleModel>();
             newGroup.model->Initialize(dxCommon_, filename);
 
             // 新しいパーティクルグループにテクスチャパスとインデックスを設定
             newGroup.materialData.textureFilePath = textureFilepath;
             newGroup.materialData.textureindex = TextureManager::GetInstance()->GetSrvIndex("Resources/" + textureFilepath);
             newGroup.kNumInstance = 0;
+            // GPU StructuredBuffer
+            newGroup.Resource = CreateStructuredBufferResource(dxCommon_->GetDevice(), sizeof(ParticleForGPU) * MaxInstanceCount);
+            // CPU UploadBuffer            
+            newGroup.uploadResource = CreateBufferResource(dxCommon_->GetDevice(), sizeof(ParticleForGPU) * MaxInstanceCount);
+            // Map (CPU側だけ)
+            newGroup.uploadResource->Map(0, nullptr, reinterpret_cast<void**>(&newGroup.particleData));
 
-            // インスタンス用のリソースバッファを作成
-            newGroup.Resource = CreateBufferResource(dxCommon_->GetDevice(), sizeof(InstanceData) * MaxInstanceCount);
-            newGroup.instanceData = nullptr;
-            newGroup.Resource->Map(0, nullptr, reinterpret_cast<void**>(&newGroup.instanceData));
+            //---------------------------------------- 
+            // 初期化
+            //----------------------------------------     
+            for (uint32_t i = 0; i < MaxInstanceCount; ++i) {
+                auto& particle = newGroup.particleData[i];
 
-            // インスタンスデータを初期化
-            for (uint32_t index = 0; index < MaxInstanceCount; ++index) {
-                newGroup.instanceData[index].WVP = MakeIdentity4x4();
-                newGroup.instanceData[index].World = MakeIdentity4x4();
-                newGroup.instanceData[index].color = { 1.0f, 1.0f, 1.0f, 0.0f }; // 透明
+                particle.translate = { 0,0,0 };
+                particle.rotate = { 0,0,0 };
+                particle.scale = { 1,1,1 };
+
+                particle.color = { 1,1,1,0 };
+
+                particle.velocityTranslate = { 0,0,0 };
+                particle.velocityRotate = { 0,0,0 };
+                particle.velocityScale = { 0,0,0 };
+
+                particle.lifetime = 0.0f;
+                particle.currentTime = 0.0f;
+                particle.useGravity = 0;
             }
-            // 書き込み後にリソースをアンマップ
-            newGroup.Resource->Unmap(0, nullptr);
+
+            // 初回コピー       
+            dxCommon_->GetCommandList()->CopyBufferRegion(newGroup.Resource.Get(), 0, newGroup.uploadResource.Get(), 0, sizeof(ParticleForGPU) * MaxInstanceCount);
+            // SRV
             // インスタンスバッファ用のSRVを割り当て、インデックスを記録
             newGroup.srvindex = srvmanager_->Allocate();
             // 構造体バッファ用のSRVを作成
-            srvmanager_->CreateSRVforStructuredBuffer(newGroup.srvindex, newGroup.Resource.Get(), MaxInstanceCount, sizeof(InstanceData));
+            srvmanager_->CreateSRVforStructuredBuffer(newGroup.srvindex, newGroup.Resource.Get(), MaxInstanceCount, sizeof(ParticleForGPU));
+            // UAV
+            newGroup.uavIndex = srvmanager_->Allocate();
+            srvmanager_->CreateUAVForStructuredBuffer(newGroup.uavIndex, newGroup.Resource.Get(), MaxInstanceCount, sizeof(ParticleForGPU));
         }
     }
 
@@ -241,47 +243,41 @@ namespace MyEngine {
             newParticle.Velocity.rotate = velocity.rotate;
             newParticle.Velocity.scale = velocity.scale;
             newParticle.useGravity = (name == "Firework");
+
             // 作成したパーティクルをパーティクルリストに追加
             group.particles.push_back(newParticle);
+
+            //--------------------------------
+            // GPUへ初期値コピー            
+            //--------------------------------
+            uint32_t index = static_cast<uint32_t>(group.particles.size() - 1);
+            auto& gpu = group.particleData[index];
+
+            gpu.translate = transform.translate;
+            gpu.rotate = transform.rotate;
+            gpu.scale = transform.scale;
+            gpu.color = color;
+
+            gpu.velocityTranslate = velocity.translate;
+            gpu.velocityRotate = velocity.rotate;
+            gpu.velocityScale = velocity.scale;
+            gpu.lifetime = lifetime;
+            gpu.currentTime = 0.0f;
+            gpu.useGravity = newParticle.useGravity ? 1 : 0;
         }
         // 描画で使用するインスタンス数を更新
         group.kNumInstance = static_cast<uint32_t>(group.particles.size());
-    }
-
-    void ParticleManager::SetParticleGroupTexture(const std::string& name, const std::string& textureFilepath) {
-        auto it = particleGroups.find(name);
-        if (it == particleGroups.end()) {
-            throw std::runtime_error("Particle group not found: " + name);
+        {
+            CD3DX12_RESOURCE_BARRIER barrier =
+                CD3DX12_RESOURCE_BARRIER::Transition(group.Resource.Get(), D3D12_RESOURCE_STATE_UNORDERED_ACCESS, D3D12_RESOURCE_STATE_COPY_DEST);
+            dxCommon_->GetCommandList()->ResourceBarrier(1, &barrier);
         }
-
-        // テクスチャがすでに読み込まれていなければ読み込む
-        if (!TextureManager::GetInstance()->IsTextureLoaded(textureFilepath)) {
-            TextureManager::GetInstance()->LoadTexture(textureFilepath);
-        }
-
-        it->second.materialData.textureFilePath = textureFilepath;
-        it->second.materialData.textureindex = TextureManager::GetInstance()->GetSrvIndex(textureFilepath);
-    }
-
-    void ParticleManager::SetParticleGroupModel(const std::string& name, const std::string& modelFilepath) {
-        auto it = particleGroups.find(name);
-        if (it == particleGroups.end()) {
-            throw std::runtime_error("Particle group not found: " + name);
-        }
-
-        // モデルがまだ読み込まれていない場合は読み込む
-        if (!ModelManager::GetInstance()->FindModel(modelFilepath)) {
-            ModelManager::GetInstance()->LoadModel(modelFilepath);
-        }
-
-        // モデル差し替え
-        if (it->second.model) {
-            // モデルが既に存在する場合は再初期化する
-            it->second.model->Initialize(dxCommon_, modelFilepath);
-        } else {
-            // モデルがなければ新たに作成して初期化
-            it->second.model = std::make_unique<ParticleModel>();
-            it->second.model->Initialize(dxCommon_, modelFilepath);
+        // GPUへ一括コピー
+        dxCommon_->GetCommandList()->CopyBufferRegion(group.Resource.Get(), 0, group.uploadResource.Get(), 0, sizeof(ParticleForGPU) * MaxInstanceCount);
+        {
+            CD3DX12_RESOURCE_BARRIER barrier =
+                CD3DX12_RESOURCE_BARRIER::Transition(group.Resource.Get(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_UNORDERED_ACCESS);
+            dxCommon_->GetCommandList()->ResourceBarrier(1, &barrier);
         }
     }
 }
