@@ -40,6 +40,7 @@ namespace MyEngine {
 		void ClearAll();
 
 		void CameraForGPUGenerate();
+	
 		void SetAutoEmit(const std::string& name, const Transform& transform, const Vector4& color, uint32_t count, const Velocity& velocity, float frequency, float lifetime) {
 			autoEmitGroup_ = name;
 			emitTransform_ = transform;

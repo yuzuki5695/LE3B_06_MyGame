@@ -90,16 +90,6 @@ namespace MyEngine {
         cameraData->projection = activeCamera->GetProjectionMatrix();
         cameraData->billboard = billboardMatrix;
 
-        // ─── 💡 追加：マネージャ直接の自動発生処理 ───
-        if (isAutoEmitActive_) {
-            emitTimer_ += 1.0f / 60.0f; // 1フレーム分の時間を進める
-            if (emitTimer_ >= emitFrequency_) {
-                emitTimer_ = 0.0f; // タイマーリセット
-                // 自分自身の Emit を直接呼び出す
-                Emit(autoEmitGroup_, emitTransform_, emitColor_, emitCount_, emitVelocity_, emitParticleLifetime_);
-            }
-        }
-
         //--------------------------------------
         // DescriptorHeap設定
         //----------------------------------------
@@ -247,6 +237,6 @@ namespace MyEngine {
             // ─── 💡 【復活】新しく出た1つ分だけを即座にGPUに送り込む ───
             UINT64 offset = static_cast<UINT64>(sizeof(ParticleForGPU)) * index;
             dxCommon_->GetCommandList()->CopyBufferRegion(group.Resource.Get(), offset, group.uploadResource.Get(), offset, sizeof(ParticleForGPU));
-       }    
+        }
     }
 }
