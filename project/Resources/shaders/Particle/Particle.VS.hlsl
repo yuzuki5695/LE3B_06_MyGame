@@ -28,6 +28,8 @@ struct ParticleForGRU
     float currentTime;
     uint useGravity;
     float pad6;
+    float startAlpha;
+    float pad7[3];
 };
 
 cbuffer CameraData : register(b1)
@@ -106,7 +108,6 @@ VertexShaderOutput main(VertexShaderInput input, uint32_t instanceId : SV_Instan
     // Output
     output.position = pos;
     output.texcoord = input.texcoord;
-    output.color = particle.color;
-
+    output.color = particle.color;   
     return output;
 }

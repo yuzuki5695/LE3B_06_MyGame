@@ -33,6 +33,8 @@ namespace MyEngine {
         GraphicsPipelineGenerate();
         // 
         ComputePipelineGenerate();
+        
+        SpawnPipelineGenerate();
     }
 
     void ParticleCommon::Commondrawing() {
@@ -44,9 +46,17 @@ namespace MyEngine {
     }
 
     void ParticleCommon::CommandCompute() {
-    
+
         dxCommon_->GetCommandList()->SetComputeRootSignature(computeRootSignature.Get());
         dxCommon_->GetCommandList()->SetPipelineState(computePipelineState.Get());
+    }
+
+    void ParticleCommon::CommandSpawn() {
+        assert(spawnRootSignature);
+        assert(spawnPipelineState);
+     
+        dxCommon_->GetCommandList()->SetComputeRootSignature(spawnRootSignature.Get());
+        dxCommon_->GetCommandList()->SetPipelineState(spawnPipelineState.Get());
     }
 
     void ParticleCommon::RootSignatureGenerate() {
@@ -238,8 +248,8 @@ namespace MyEngine {
         rootParameters[0].DescriptorTable.pDescriptorRanges = descriptorRange;
         rootParameters[0].DescriptorTable.NumDescriptorRanges = 1;
 
-        rootParameters[1].ParameterType =    D3D12_ROOT_PARAMETER_TYPE_CBV;
-        rootParameters[1].ShaderVisibility =    D3D12_SHADER_VISIBILITY_ALL;
+        rootParameters[1].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
+        rootParameters[1].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
         rootParameters[1].Descriptor.ShaderRegister = 0;
 
         //----------------------------------------
@@ -281,7 +291,6 @@ namespace MyEngine {
         // Shader Compile
         //----------------------------------------
         ComPtr<IDxcBlob> computeShaderBlob = ShaderCompiler::GetInstance()->CompileShader(L"Resources/shaders/Particle/Particle.CS.hlsl", L"cs_6_0");
-
         assert(computeShaderBlob != nullptr);
 
         //----------------------------------------
@@ -295,6 +304,67 @@ namespace MyEngine {
         // Create PSO
         //----------------------------------------
         hr = dxCommon_->GetDevice()->CreateComputePipelineState(&desc, IID_PPV_ARGS(&computePipelineState));
+        assert(SUCCEEDED(hr));
+    }
+
+    void ParticleCommon::SpawnRootSignatureGenerate() {
+        HRESULT hr;
+
+        D3D12_DESCRIPTOR_RANGE range[1] = {};
+        range[0].BaseShaderRegister = 0;
+        range[0].NumDescriptors = 1;
+        range[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_UAV;
+        range[0].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
+
+        D3D12_ROOT_PARAMETER rootParameters[3] = {};
+
+        // u0
+        rootParameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
+        rootParameters[0].DescriptorTable.pDescriptorRanges = range;
+        rootParameters[0].DescriptorTable.NumDescriptorRanges = 1;
+
+        // b0 SpawnInfo
+        rootParameters[1].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
+        rootParameters[1].Descriptor.ShaderRegister = 0;
+
+        // b1 SpawnParticle
+        rootParameters[2].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
+        rootParameters[2].Descriptor.ShaderRegister = 1;
+
+        D3D12_ROOT_SIGNATURE_DESC desc{};
+
+        desc.Flags = D3D12_ROOT_SIGNATURE_FLAG_NONE;
+        desc.pParameters = rootParameters;
+        desc.NumParameters = _countof(rootParameters);
+
+        ComPtr<ID3DBlob> signatureBlob;
+        ComPtr<ID3DBlob> errorBlob;
+
+        hr = D3D12SerializeRootSignature(&desc, D3D_ROOT_SIGNATURE_VERSION_1, &signatureBlob, &errorBlob);
+        assert(SUCCEEDED(hr));
+        hr = dxCommon_->GetDevice()->CreateRootSignature(0, signatureBlob->GetBufferPointer(), signatureBlob->GetBufferSize(), IID_PPV_ARGS(&spawnRootSignature));
+        assert(SUCCEEDED(hr));
+    }
+
+    void ParticleCommon::SpawnPipelineGenerate() {
+        HRESULT hr;
+
+        SpawnRootSignatureGenerate();
+
+        ComPtr<IDxcBlob>  shader = ShaderCompiler::GetInstance()->CompileShader(L"Resources/shaders/Particle/ParticleSpawn.CS.hlsl", L"cs_6_0");
+        assert(shader != nullptr);
+
+        D3D12_COMPUTE_PIPELINE_STATE_DESC desc{};
+
+        desc.pRootSignature = spawnRootSignature.Get();
+        desc.CS =
+        {
+            shader->GetBufferPointer(),
+            shader->GetBufferSize()
+        };
+
+        hr = dxCommon_->GetDevice()->CreateComputePipelineState(&desc, IID_PPV_ARGS(&spawnPipelineState));
+
         assert(SUCCEEDED(hr));
     }
 }

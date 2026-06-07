@@ -1168,6 +1168,9 @@
     <FxCompile Include="Resources\shaders\Particle\Particle.CS.hlsl">
       <Filter>リソース ファイル\shaders\Particle</Filter>
     </FxCompile>
+    <FxCompile Include="Resources\shaders\Particle\ParticleSpawn.CS.hlsl">
+      <Filter>リソース ファイル\shaders\Particle</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\shaders\Sprite\Sprite.hlsli">

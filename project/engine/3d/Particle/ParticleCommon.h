@@ -28,6 +28,9 @@ namespace MyEngine {
 		void Commondrawing();
 
 		void CommandCompute();
+		
+		void CommandSpawn();
+
 	private:
 		// ルートシグネチャの生成
 		void RootSignatureGenerate();
@@ -36,6 +39,9 @@ namespace MyEngine {
 
 		void ComputeRootSignatureGenerate();
 		void ComputePipelineGenerate();
+
+		void SpawnRootSignatureGenerate();
+		void SpawnPipelineGenerate();
 	private:
 		// ポインタ
 		DirectXCommon* dxCommon_;
@@ -47,6 +53,11 @@ namespace MyEngine {
 
 		Microsoft::WRL::ComPtr <ID3D12RootSignature> computeRootSignature = nullptr;
 		Microsoft::WRL::ComPtr <ID3D12PipelineState> computePipelineState = nullptr;
+
+		// Spawn
+		Microsoft::WRL::ComPtr<ID3D12RootSignature> spawnRootSignature = nullptr;
+		Microsoft::WRL::ComPtr<ID3D12PipelineState> spawnPipelineState = nullptr;
+
 	public:
 		// setter
 		void SetDefaultCamera(Camera* camera) { this->defaultCamera = camera; }

@@ -52,10 +52,15 @@ namespace MyEngine {
         backToFrontMatrix = MakeRotateYMatrix(std::numbers::pi_v<float>);
         // カメラリソースの生成、初期化
         CameraForGPUGenerate();
+
         particleInfoResource_ = CreateBufferResource(dxCommon_->GetDevice(), sizeof(ParticleInfo));
         particleInfoResource_->Map(0, nullptr, reinterpret_cast<void**>(&particleInfoData_));
-    }
+        spawnParticleResource_ = CreateBufferResource(dxCommon_->GetDevice(), sizeof(SpawnParticleGPU));
+        spawnParticleResource_->Map(0, nullptr, reinterpret_cast<void**>(&spawnParticleData_));
+        spawnInfoResource_ = CreateBufferResource(dxCommon_->GetDevice(), sizeof(SpawnInfo));
+        spawnInfoResource_->Map(0, nullptr, reinterpret_cast<void**>(&spawnInfoData_));
 
+    }
 
     void ParticleManager::CameraForGPUGenerate() {
         // カメラ用リソースを作る
@@ -95,6 +100,11 @@ namespace MyEngine {
         //----------------------------------------
         srvmanager_->PreDraw();
 
+        //--------------------------------
+        // SpawnQueue処理
+        //--------------------------------
+        ProcessSpawnRequests();
+
         particleCommon_->CommandCompute();
 
         for (auto& [name, group] : particleGroups) {
@@ -111,12 +121,19 @@ namespace MyEngine {
             //----------------------------------------
             uint32_t threadGroupCount = (MaxInstanceCount + 255) / 256;
             dxCommon_->GetCommandList()->Dispatch(threadGroupCount, 1, 1);
+
+            UAVBarrier(group.Resource.Get());
         }
     }
 
     void ParticleManager::Draw() {
         // パーティクルグループごとに描画処理を行う
-        for (const auto& [name, particleGroup] : particleGroups) {
+        for (auto& [name, particleGroup] : particleGroups) {
+            //--------------------------------
+            // UAV -> SRV
+            //--------------------------------
+           // TransitionParticleBuffer(particleGroup, D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE);
+
             // モデルに必要なバッファをバインド（頂点バッファや定数バッファなど）
             particleGroup.model->Draw();
             // インスタンシングデータの SRV を設定（テクスチャファイルのパスを指定）
@@ -162,39 +179,41 @@ namespace MyEngine {
             newGroup.materialData.textureindex = TextureManager::GetInstance()->GetSrvIndex("Resources/" + textureFilepath);
             // GPU StructuredBuffer
             newGroup.Resource = CreateStructuredBufferResource(dxCommon_->GetDevice(), sizeof(ParticleForGPU) * MaxInstanceCount);
+            newGroup.currentState = D3D12_RESOURCE_STATE_COMMON;
             // CPU UploadBuffer            
             newGroup.uploadResource = CreateBufferResource(dxCommon_->GetDevice(), sizeof(ParticleForGPU) * MaxInstanceCount);
-            // Map (CPU側だけ)
-            newGroup.uploadResource->Map(0, nullptr, reinterpret_cast<void**>(&newGroup.particleData));
+            // ─── 💡 【修正】Mapの部分と初期化ループ
+            if (SUCCEEDED(newGroup.uploadResource->Map(0, nullptr, reinterpret_cast<void**>(&newGroup.particleData)))) {
+                for (uint32_t i = 0; i < MaxInstanceCount; ++i) {
+                    newGroup.particleData[i].translate = { 0.0f, 0.0f, 0.0f };
+                    newGroup.particleData[i].pad0 = 0.0f;
+                    newGroup.particleData[i].rotate = { 0.0f, 0.0f, 0.0f };
+                    newGroup.particleData[i].pad1 = 0.0f;
+                    newGroup.particleData[i].scale = { 0.0f, 0.0f, 0.0f }; // ★初期値を0にしておくとVSで描画されず安全です
+                    newGroup.particleData[i].pad2 = 0.0f;
 
-            //---------------------------------------- 
-            // 初期化
-            //----------------------------------------     
-            for (uint32_t i = 0; i < MaxInstanceCount; ++i) {
-                auto& particle = newGroup.particleData[i];
-                particle.translate = { 0.0f, 0.0f, 0.0f };
-                particle.pad0 = 0.0f; // 💡 追加
-                particle.rotate = { 0.0f, 0.0f, 0.0f };
-                particle.pad1 = 0.0f; // 💡 追加
-                particle.scale = { 1.0f, 1.0f, 1.0f };
-                particle.pad2 = 0.0f; // 💡 追加
+                    newGroup.particleData[i].color = { 0.0f, 0.0f, 0.0f, 0.0f };
 
-                particle.color = { 1.0f, 1.0f, 1.0f, 0.0f };
+                    newGroup.particleData[i].velocityTranslate = { 0.0f, 0.0f, 0.0f };
+                    newGroup.particleData[i].pad3 = 0.0f;
+                    newGroup.particleData[i].velocityRotate = { 0.0f, 0.0f, 0.0f };
+                    newGroup.particleData[i].pad4 = 0.0f;
+                    newGroup.particleData[i].velocityScale = { 0.0f, 0.0f, 0.0f };
+                    newGroup.particleData[i].pad5 = 0.0f;
 
-                particle.velocityTranslate = { 0.0f, 0.0f, 0.0f };
-                particle.pad3 = 0.0f; // 💡 追加
-                particle.velocityRotate = { 0.0f, 0.0f, 0.0f };
-                particle.pad4 = 0.0f; // 💡 追加
-                particle.velocityScale = { 0.0f, 0.0f, 0.0f };
-                particle.pad5 = 0.0f; // 💡 追加
-
-                particle.lifetime = 0.0f;
-                particle.currentTime = 0.0f;
-                particle.useGravity = 0;
-                particle.pad6 = 0.0f; // 💡 追加
+                    newGroup.particleData[i].lifetime = 0.0f;    // ★ 0.0f にして未使用状態にする
+                    newGroup.particleData[i].currentTime = 0.0f;
+                    newGroup.particleData[i].useGravity = 0;
+                    newGroup.particleData[i].pad6 = 0.0f;
+                    newGroup.particleData[i].startAlpha = 0.0f;
+                    newGroup.particleData[i].pad7[0] = 0.0f;
+                    newGroup.particleData[i].pad7[1] = 0.0f;
+                    newGroup.particleData[i].pad7[2] = 0.0f;
+                }
+                // 書き込みが終わったら Unmap する
+                newGroup.uploadResource->Unmap(0, nullptr);
             }
-
-            // 初回コピー       
+            // コピー
             dxCommon_->GetCommandList()->CopyBufferRegion(newGroup.Resource.Get(), 0, newGroup.uploadResource.Get(), 0, sizeof(ParticleForGPU) * MaxInstanceCount);
             // インスタンスバッファ用のSRVを割り当て、インデックスを記録
             newGroup.srvindex = srvmanager_->Allocate();
@@ -206,37 +225,94 @@ namespace MyEngine {
         }
     }
 
-    void ParticleManager::Emit(const std::string& name, const Transform& transform, const Vector4& color, uint32_t count, const Velocity& velocity, float lifetime) {
+    void ParticleManager::Emit(const std::string& name, const ParticleSpawnData& spawnData) {
+        spawnRequests_.push_back({ name,spawnData });
+    }
+    
+    void ParticleManager::ProcessSpawnRequests() {
+        for (const auto& request : spawnRequests_) {
+            SpawnParticle(request);
+        }
+        spawnRequests_.clear();
+    }
 
-        auto it = particleGroups.find(name);
+    void ParticleManager::SpawnParticle(const SpawnRequest& request) {
+        auto it = particleGroups.find(request.groupName);
+
         if (it == particleGroups.end()) {
-            throw std::runtime_error("Particle group not found: " + name);
+            return;
         }
 
         ParticleGroup& group = it->second;
+        const auto& spawnData = request.spawnData;
 
-        // GPU側のバッファ（にマップされたCPUアドレス）に直接書き込む
-        for (uint32_t i = 0; i < count; ++i) {
-            // 配列の最大数を超えたら0に戻る（古いものから順に上書き）
+        for (uint32_t i = 0; i < spawnData.count; ++i) {
             uint32_t index = group.lastAllocatedIndex;
-            group.lastAllocatedIndex = (group.lastAllocatedIndex + 1) % MaxInstanceCount;
 
-            auto& gpu = group.particleData[index];
+            group.lastAllocatedIndex = (index + 1) % MaxInstanceCount;
 
-            // 初期値のセット
-            gpu.translate = transform.translate;
-            gpu.rotate = transform.rotate;
-            gpu.scale = transform.scale;
-            gpu.color = color;
-            gpu.velocityTranslate = velocity.translate;
-            gpu.velocityRotate = velocity.rotate;
-            gpu.velocityScale = velocity.scale;
-            gpu.lifetime = lifetime;
-            gpu.currentTime = 0.0f; // ★ 0からスタート（生存フラグを兼ねる）
-            gpu.useGravity = (name == "Firework") ? 1 : 0;
-            // ─── 💡 【復活】新しく出た1つ分だけを即座にGPUに送り込む ───
-            UINT64 offset = static_cast<UINT64>(sizeof(ParticleForGPU)) * index;
-            dxCommon_->GetCommandList()->CopyBufferRegion(group.Resource.Get(), offset, group.uploadResource.Get(), offset, sizeof(ParticleForGPU));
+            //--------------------------------
+            // GPUへSpawn情報送信
+            //--------------------------------
+            // Transform
+            spawnParticleData_->translate = spawnData.transform.translate;
+            spawnParticleData_->rotate = spawnData.transform.rotate;
+            spawnParticleData_->scale = spawnData.transform.scale;
+            // Color
+            spawnParticleData_->color = spawnData.color;
+
+            // Velocity
+            spawnParticleData_->velocityTranslate = spawnData.velocity.translate;
+            spawnParticleData_->velocityRotate = spawnData.velocity.rotate;
+            spawnParticleData_->velocityScale = spawnData.velocity.scale;
+
+            // Other
+            spawnParticleData_->lifetime = spawnData.lifetime;
+
+            spawnParticleData_->useGravity = spawnData.useGravity ? 1u : 0u;
+
+            //--------------------------------
+            // index
+            //--------------------------------
+            spawnInfoData_->spawnIndex = index;
+
+            //--------------------------------
+            // SpawnCS Dispatch
+            //--------------------------------
+
+            particleCommon_->CommandSpawn();
+
+            //   TransitionParticleBuffer(group, D3D12_RESOURCE_STATE_UNORDERED_ACCESS);
+
+            srvmanager_->SetComputeRootDescriptorTable(0, group.uavIndex);
+
+            dxCommon_->GetCommandList()->SetComputeRootConstantBufferView(1, spawnInfoResource_->GetGPUVirtualAddress());
+            dxCommon_->GetCommandList()->SetComputeRootConstantBufferView(2, spawnParticleResource_->GetGPUVirtualAddress());
+            dxCommon_->GetCommandList()->Dispatch(1, 1, 1);
+            UAVBarrier(group.Resource.Get());
         }
+    }
+
+    void ParticleManager::TransitionParticleBuffer(ParticleGroup& group, D3D12_RESOURCE_STATES after) {
+        if (group.currentState == after) {
+            return;
+        }
+        D3D12_RESOURCE_BARRIER barrier{};
+        barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+        barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
+        barrier.Transition.pResource = group.Resource.Get();
+        barrier.Transition.StateBefore =   group.currentState;
+        barrier.Transition.StateAfter = after;
+        barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
+
+        dxCommon_->GetCommandList()->ResourceBarrier(1, &barrier);
+        group.currentState = after;
+    }
+
+    void ParticleManager::UAVBarrier(ID3D12Resource* resource) {
+        D3D12_RESOURCE_BARRIER barrier{};
+        barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_UAV;
+        barrier.UAV.pResource = resource;
+        dxCommon_->GetCommandList()->ResourceBarrier(1, &barrier);
     }
 }

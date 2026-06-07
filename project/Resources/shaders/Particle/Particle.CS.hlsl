@@ -25,6 +25,8 @@ struct ParticleData
     float currentTime;
     uint useGravity;
     float pad6;
+    float startAlpha;
+    float pad7[3];
 };
 
 RWStructuredBuffer<ParticleData> gParticle : register(u0);
@@ -53,10 +55,11 @@ void main(uint3 DTid : SV_DispatchThreadID)
     
     // currentTime
     gParticle[index].currentTime += 1.0f / 60.0f;
-    // alpha fade
-    float alpha = 1.0f - gParticle[index].currentTime / gParticle[index].lifetime;
-    gParticle[index].color.a = alpha;
-
+    // 生存率(1→0)
+    float lifeRate = 1.0f - gParticle[index].currentTime / gParticle[index].lifetime;
+    // 初期アルファを維持しながらフェード
+    gParticle[index].color.a = gParticle[index].startAlpha * lifeRate;
+    
     // 寿命に達したらデータを完全にゼロクリアして、次回VSで絶対に描画されないようにする
     if (gParticle[index].currentTime >= gParticle[index].lifetime)
     {
@@ -67,7 +70,7 @@ void main(uint3 DTid : SV_DispatchThreadID)
     // --- 以下、移動・重力計算（変更なし） ---
     if (gParticle[index].useGravity)
     {
-        gParticle[index].velocityTranslate.y -= 0.003f;
+        //gParticle[index].velocityTranslate.y -= 0.003f;
     }
     gParticle[index].translate += gParticle[index].velocityTranslate;
     gParticle[index].rotate += gParticle[index].velocityRotate;

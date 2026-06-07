@@ -109,15 +109,15 @@ namespace MyGame {
         velocity.rotate = { 0.0f, 0.0f, 0.0f };
         velocity.scale = { 0.0f, 0.0f, 0.0f };
 
-        particleEmitter_ = std::make_unique<ParticleEmitter>(
-            "Particles",       // グループ名
-            emitterTransform,  // 発生座標
-            Vector4{ 1.0f, 1.0f, 1.0f, 1.0f }, // 色
-            10,                // 一度に出す数
-            velocity,          // 速度
-            0.5f,              // 🌟 発生間隔（frequency）
-            1.5f               // 🌟 パーティクル個体の寿命（lifetime）
-        );
+        ParticleSpawnData spawnData;
+        spawnData.transform = emitterTransform;
+        spawnData.color = { 1.0f, 1.0f, 1.0f, 1.0f };
+        spawnData.count = 1;
+        spawnData.velocity = velocity;
+        spawnData.lifetime = 1.5f;
+        spawnData.useGravity = false;
+      
+        particleEmitter_ = std::make_unique<ParticleEmitter>("Particles", spawnData, 1.0f);
     }
 
     void GamePlayScene::Update() {
