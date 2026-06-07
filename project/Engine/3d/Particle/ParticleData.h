@@ -10,6 +10,12 @@
 
 namespace MyEngine {
 
+	// ゲーム全体の最大パーティクルグループ数の目安（必要に応じて増やしてOK）
+    static const uint32_t MaxGroupCount = 64; 
+
+    // ゲーム全体で1フレームにスポーンできる合計数の器（多めに4096などにしておく）
+    static const uint32_t MaxSpawnRequestCount = 4096;
+
 	struct Velocity {
 		Vector3 translate;
 		Vector3 rotate;
@@ -48,13 +54,37 @@ namespace MyEngine {
 		float startAlpha;		float pad7[3];
 	};
 		 
+	// ★ GPU一括スポーン要求構造体（128バイト固定）
+	struct SpawnRequestGPU {
+		Vector3 translate;          float pad0;  // 16バイト
+		Vector3 rotate;             float pad1;  // 16バイト
+		Vector3 scale;              float pad2;  // 16バイト
+		Vector4 color;                           // 16バイト
+		Vector3 velocityTranslate;  float pad3;  // 16バイト
+		Vector3 velocityRotate;     float pad4;  // 16バイト
+		Vector3 velocityScale;      float pad5;  // 16バイト
+
+		// 最後の16バイトブロック
+		float lifetime;                          // 4バイト
+		uint32_t useGravity;                     // 4バイト
+		uint32_t targetIndex;                    // 4バイト ★これがズレていた
+		float padding;                           // 4バイト
+	};
+
+	// ★ 定数バッファは1個あたり256バイトの器として確保する
+	struct GroupSpawnCB {
+		uint32_t startRequestIndex; // 4バイト
+		uint32_t spawnCount;        // 4バイト
+		float padding[62];          // ★ 4 * 62 = 248バイト (合計 4 + 4 + 248 = 256バイト)
+	};
+
 	struct SpawnParticleGPU {
 		Vector3 translate;		float pad0;
 		Vector3 rotate;		float pad1;
 		Vector3 scale;		float pad2;
 		Vector4 color;
 
-		Vector3 velocityTranslate;		float pad3;
+		Vector3 velocityTranslate;  float pad3;
 		Vector3 velocityRotate;		float pad4;
 		Vector3 velocityScale;		float pad5;
 
@@ -62,6 +92,7 @@ namespace MyEngine {
 		uint32_t useGravity;
 		float pad6[2];
 	};
+
 
 	// パーティクルグループ
 	struct ParticleGroup {

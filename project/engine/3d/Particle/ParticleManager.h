@@ -61,13 +61,17 @@ namespace MyEngine {
 		CameraData* cameraData = nullptr;
 		Microsoft::WRL::ComPtr<ID3D12Resource> particleInfoResource_;
 		ParticleInfo* particleInfoData_ = nullptr;
-		
-		Microsoft::WRL::ComPtr<ID3D12Resource> spawnParticleResource_;
-		Microsoft::WRL::ComPtr<ID3D12Resource> spawnInfoResource_;
-		SpawnParticleGPU* spawnParticleData_ = nullptr;
-		SpawnInfo* spawnInfoData_ = nullptr;
 
 		std::vector<SpawnRequest> spawnRequests_;
+
+
+		// 全グループ共通の巨大なスポーン要求バッファ（StructuredBuffer用）
+		Microsoft::WRL::ComPtr<ID3D12Resource> spawnListResource_;
+		SpawnRequestGPU* spawnListData_ = nullptr; // Mapポインタ
+
+		// グループごとに範囲を伝えるための定数バッファ
+		Microsoft::WRL::ComPtr<ID3D12Resource> groupSpawnCBResource_;
+		GroupSpawnCB* groupSpawnCBData_ = nullptr; // Mapポインタ
 
 	public: // アクセッサ
 		// getter

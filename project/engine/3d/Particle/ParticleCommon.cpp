@@ -328,8 +328,8 @@ namespace MyEngine {
         rootParameters[1].Descriptor.ShaderRegister = 0;
 
         // b1 SpawnParticle
-        rootParameters[2].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
-        rootParameters[2].Descriptor.ShaderRegister = 1;
+        rootParameters[2].ParameterType = D3D12_ROOT_PARAMETER_TYPE_SRV; // CBVからSRVに変更
+        rootParameters[2].Descriptor.ShaderRegister = 0;                 // t0 に変更
 
         D3D12_ROOT_SIGNATURE_DESC desc{};
 
