@@ -1631,14 +1631,14 @@ File Path: project/Engine/3d/Particle/ParticleData.h
 #include <memory>
 
 namespace MyEngine {
+
 	struct Velocity {
 		Vector3 translate;
 		Vector3 rotate;
 		Vector3 scale;
 	};
 	
-	struct CameraData
-	{
+	struct CameraData {
 		Matrix4x4 view;
 		Matrix4x4 projection;
 		Matrix4x4 billboard;
@@ -1650,45 +1650,32 @@ namespace MyEngine {
 	};
 
 	struct ParticleForGPU {
-		Vector3 translate;
-		float pad0;
-
-		Vector3 rotate;
-		float pad1;
-
-		Vector3 scale;
-		float pad2;
-
+		// トランスフォーム
+		Vector3 translate;  float pad0;
+		Vector3 rotate;		float pad1;
+		Vector3 scale;		float pad2;
+		// カラー
 		Vector4 color;
-
-		Vector3 velocityTranslate;
-		float pad3;
-
-		Vector3 velocityRotate;
-		float pad4;
-
-		Vector3 velocityScale;
-		float pad5;
+		// 
+		Vector3 velocityTranslate;  float pad3;
+		Vector3 velocityRotate;		float pad4;
+		Vector3 velocityScale;		float pad5;
 
 		float lifetime;
 		float currentTime;
-		uint32_t useGravity;
-		float pad6;
+		uint32_t useGravity;		float pad6;
 	};
 
 	// パーティクルグループ
 	struct ParticleGroup {
-		std::unique_ptr<ParticleModel> model;                  // パーティクルモデル
-		MaterialData materialData;                             // マテリアルデータ(テクスチャファイルパスとテクスチャ用SRVインデックス)
-		
-		uint32_t srvindex;                                     // インスタンシング用SRVインデックス
-		uint32_t uavIndex;                                     // インスタンシング用UAVインデックス
-		
-		Microsoft::WRL::ComPtr <ID3D12Resource> Resource;      // インスタンシングリソース 
-		Microsoft::WRL::ComPtr<ID3D12Resource> uploadResource;	
-		
-		ParticleForGPU* particleData = nullptr;
-		uint32_t lastAllocatedIndex = 0;
+		std::unique_ptr<ParticleModel> model;                    // パーティクルモデル
+		MaterialData materialData;                               // マテリアルデータ(テクスチャファイルパスとテクスチャ用SRVインデックス)	
+		Microsoft::WRL::ComPtr <ID3D12Resource> Resource;        // インスタンシングリソース 
+		Microsoft::WRL::ComPtr<ID3D12Resource> uploadResource;	 // 
+		uint32_t srvindex;                                       // インスタンシング用SRVインデックス
+		uint32_t uavIndex;                                       // インスタンシング用UAVインデックス			
+		ParticleForGPU* particleData = nullptr;                  // 
+		uint32_t lastAllocatedIndex = 0;                         // 
 	};
 }
 
@@ -11503,25 +11490,26 @@ using namespace MyEngine;
 
 namespace MyGame {
 
-	ParticleEmitter::ParticleEmitter(const std::string& name, const uint32_t count, const Transform& transform, const Vector4& color, const float lifetime, const float currentTime, const Velocity& Velocity) {
-		name_ = name;//名前
-		this->count = count;//count
-		transform_ = transform;//位置
-		this->color = color; // カラー
-		frequency = lifetime;//寿命
-		frequencyTime = currentTime;//現在の寿命
-		velocity_ = Velocity; // 風の強さ
+	ParticleEmitter::ParticleEmitter(const std::string& name, const Transform& transform, const Vector4& color, const uint32_t count, const Velocity& Velocity, const float frequency, const float lifetime) {
+		this->name_ = name;//名前
+		this->transform_ = transform;//位置
+		this->count = count; // カラー
+		this->color = color; // count
+		this->velocity_ = Velocity; // 風の強さ
+		this->frequency = frequency;    //寿命
+		this->frequencyTime = lifetime;//現在の寿命
+		isAutoEmit_ = true;
+		emitTimer_ = 0.0f;
 	}
 
 	void ParticleEmitter::Update() {
-		// 時間を進める
-		frequencyTime += 1.0f / 60.0f;
-
 		// isAutoEmit_ が true のとき、自動発生処理
 		if (isAutoEmit_) {
+			// 時間を進める
+			emitTimer_ += 1.0f / 60.0f;
 			// 発生間隔を超えたら Emit 実行
-			if (frequencyTime >= frequency) {
-				frequencyTime = 0.0f; // リセット
+			if (emitTimer_ >= frequency) {
+				emitTimer_ = 0.0f; // リセット
 				Emit(); // パーティクル発生
 			}
 		}
@@ -11529,7 +11517,7 @@ namespace MyGame {
 
 	void ParticleEmitter::Emit() {
 		//パーティクルを発生
-		ParticleManager::GetInstance()->Emit(name_, transform_, color, count, velocity_, frequency);
+		ParticleManager::GetInstance()->Emit(name_, transform_, color, count, velocity_, frequencyTime);
 	}
 }
 
@@ -11548,7 +11536,15 @@ namespace MyGame {
 	class ParticleEmitter {
 	public:
 		//ほとんどのメンバ変数をコンストラクタの引数として受け取り、メンバ変数に代入する
-		ParticleEmitter(const std::string& name, const uint32_t count, const MyEngine::Transform& transform, const MyEngine::Vector4& color, const float lifetime, const float currentTime, const MyEngine::Velocity& Velocity);
+		ParticleEmitter(
+			const std::string& name,
+			const MyEngine::Transform& transform,
+			const MyEngine::Vector4& color,
+			const uint32_t count,
+			const MyEngine::Velocity& Velocity,
+			const float frequency,
+			const float lifetime
+		);
 		// 更新処理
 		void Update();
 		// パーティクル発生
@@ -11568,14 +11564,18 @@ namespace MyGame {
 		float frequency;
 		// 現在の寿命
 		float frequencyTime;
+		// 現在の経過タイマー
+		float emitTimer_;
 		// 自動発生するかどうかの
 		bool isAutoEmit_ = true;
-		// テクスチャ変更フラグ
-		bool isTextureChange_ = false;
-		// テクスチャリスト
-		static std::vector<std::string> textureList_;
-		// 選択中のモデルインデックス
-		int textureIndex_ = 0;
+
+
+		//// テクスチャ変更フラグ
+		//bool isTextureChange_ = false;
+		//// テクスチャリスト
+		//static std::vector<std::string> textureList_;
+		//// 選択中のモデルインデックス
+		//int textureIndex_ = 0;
 	public:
 		float GetfrequencyTime() { return frequencyTime; }
 	};
@@ -12250,9 +12250,8 @@ namespace MyGame {
         velocity.translate = { 0.01f, 0.05f, 0.0f }; // 上方向に飛ぶ
         velocity.rotate = { 0.0f, 0.0f, 0.0f };
         velocity.scale = { 0.0f, 0.0f, 0.0f };
-        
-        // マネージャに直接設定を投げ込む（1.0f間隔で発生、パーティクルの寿命は2.0f など任意で調整）
-        ParticleManager::GetInstance()->SetAutoEmit(
+
+        particleEmitter_ = std::make_unique<ParticleEmitter>(
             "Particles",       // グループ名
             emitterTransform,  // 発生座標
             Vector4{ 1.0f, 1.0f, 1.0f, 1.0f }, // 色
@@ -12261,16 +12260,6 @@ namespace MyGame {
             0.5f,              // 🌟 発生間隔（frequency）
             1.5f               // 🌟 パーティクル個体の寿命（lifetime）
         );
-
-        //particleEmitter_ = std::make_unique<ParticleEmitter>(
-        //    "Particles",     // ParticleGroup名
-        //    10,              // 一度に出す数
-        //    emitterTransform,
-        //    Vector4{ 1.0f,1.0f,1.0f,1.0f },// 色
-        //    1.0f,            // 発生間隔
-        //    0.0f,            // 現在時間
-        //    velocity
-        //);
     }
 
     void GamePlayScene::Update() {
@@ -12326,7 +12315,7 @@ namespace MyGame {
 
         // カメラマネージャの更新
         CameraManager::GetInstance()->Update();
-       // particleEmitter_->Update();
+        particleEmitter_->Update();
 #pragma region 全てのObject3d個々の更新処理
 
         if (!gamened_) {
@@ -16203,16 +16192,6 @@ namespace MyEngine {
         cameraData->projection = activeCamera->GetProjectionMatrix();
         cameraData->billboard = billboardMatrix;
 
-        // ─── 💡 追加：マネージャ直接の自動発生処理 ───
-        if (isAutoEmitActive_) {
-            emitTimer_ += 1.0f / 60.0f; // 1フレーム分の時間を進める
-            if (emitTimer_ >= emitFrequency_) {
-                emitTimer_ = 0.0f; // タイマーリセット
-                // 自分自身の Emit を直接呼び出す
-                Emit(autoEmitGroup_, emitTransform_, emitColor_, emitCount_, emitVelocity_, emitParticleLifetime_);
-            }
-        }
-
         //--------------------------------------
         // DescriptorHeap設定
         //----------------------------------------
@@ -16360,7 +16339,7 @@ namespace MyEngine {
             // ─── 💡 【復活】新しく出た1つ分だけを即座にGPUに送り込む ───
             UINT64 offset = static_cast<UINT64>(sizeof(ParticleForGPU)) * index;
             dxCommon_->GetCommandList()->CopyBufferRegion(group.Resource.Get(), offset, group.uploadResource.Get(), offset, sizeof(ParticleForGPU));
-       }    
+        }
     }
 }
 
@@ -16409,6 +16388,7 @@ namespace MyEngine {
 		void ClearAll();
 
 		void CameraForGPUGenerate();
+	
 		void SetAutoEmit(const std::string& name, const Transform& transform, const Vector4& color, uint32_t count, const Velocity& velocity, float frequency, float lifetime) {
 			autoEmitGroup_ = name;
 			emitTransform_ = transform;
