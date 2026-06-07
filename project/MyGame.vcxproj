@@ -177,6 +177,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="Engine\3d\Model\ModelCommon.cpp" />
     <ClCompile Include="Engine\3d\Object\Object3d.cpp" />
     <ClCompile Include="Engine\3d\Object\Object3dCommon.cpp" />
+    <ClCompile Include="engine\3d\Particle\ParticleGroupfactory.cpp" />
     <ClCompile Include="Engine\3d\Skybox\Skybox.cpp" />
     <ClCompile Include="Engine\3d\Skybox\SkyboxCommon.cpp" />
     <ClCompile Include="Engine\base\CopylmageCommon.cpp" />
@@ -300,6 +301,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="Engine\3d\Object\Object3d.h" />
     <ClInclude Include="Engine\3d\Object\Object3dCommon.h" />
     <ClInclude Include="Engine\3d\Particle\ParticleData.h" />
+    <ClInclude Include="engine\3d\Particle\ParticleGroupfactory.h" />
     <ClInclude Include="Engine\3d\Skybox\Skybox.h" />
     <ClInclude Include="Engine\3d\Skybox\SkyboxCommon.h" />
     <ClInclude Include="Engine\base\CopylmageCommon.h" />

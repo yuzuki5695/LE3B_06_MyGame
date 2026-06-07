@@ -38,9 +38,10 @@ namespace MyEngine {
 		void ClearAll();
 	private: // 内部関数
 		void CameraForGPUGenerate();
+		void ParticleInfoBufferGenerate();  // ★追加：パーティクル基本情報のバッファ生成
+		void SpawnListBufferGenerate();     // ★追加：全グループ共通のスポーン要求バッファ生成
+		void GroupSpawnCBufferGenerate();   // ★追加：グループごとの範囲伝達用定数バッファ生成
 		void ProcessSpawnRequests();
-		void SpawnParticle(const SpawnRequest& request);
-		void UploadParticleBuffers();
 		void TransitionParticleBuffer(ParticleGroup& group, D3D12_RESOURCE_STATES after);
 		void UAVBarrier(ID3D12Resource* resource);
 	private: // メンバ変数
@@ -58,21 +59,15 @@ namespace MyEngine {
 		std::unordered_map<std::string, ParticleGroup> particleGroups;
 
 		Microsoft::WRL::ComPtr<ID3D12Resource> cameraResource;
-		CameraData* cameraData = nullptr;
 		Microsoft::WRL::ComPtr<ID3D12Resource> particleInfoResource_;
-		ParticleInfo* particleInfoData_ = nullptr;
-
-		std::vector<SpawnRequest> spawnRequests_;
-
-
-		// 全グループ共通の巨大なスポーン要求バッファ（StructuredBuffer用）
 		Microsoft::WRL::ComPtr<ID3D12Resource> spawnListResource_;
-		SpawnRequestGPU* spawnListData_ = nullptr; // Mapポインタ
-
-		// グループごとに範囲を伝えるための定数バッファ
 		Microsoft::WRL::ComPtr<ID3D12Resource> groupSpawnCBResource_;
-		GroupSpawnCB* groupSpawnCBData_ = nullptr; // Mapポインタ
-
+		CameraData* cameraData = nullptr;
+		ParticleInfo* particleInfoData_ = nullptr;
+		SpawnRequestGPU* spawnListData_ = nullptr;
+		GroupSpawnCB* groupSpawnCBData_ = nullptr;
+	
+		std::vector<SpawnRequest> spawnRequests_;
 	public: // アクセッサ
 		// getter
 		ParticleGroup& GetGroup(const std::string& name) {

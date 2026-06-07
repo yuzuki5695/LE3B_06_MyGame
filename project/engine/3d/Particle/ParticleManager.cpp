@@ -11,12 +11,15 @@
 #endif // USE_IMGUI
 #include <ResourceFactory.h>
 #include <CameraManager.h>
+#include <ParticleGroupfactory.h>
 
 using namespace Microsoft::WRL;
-using namespace MyEngine::MatrixVector;
-using namespace MyEngine::ResourceFactory;
 
 namespace MyEngine {
+
+    using namespace MatrixVector;
+    using namespace ResourceFactory;
+
     // 静的メンバ変数の定義
     std::unique_ptr<ParticleManager> ParticleManager::instance = nullptr;
 
@@ -50,19 +53,11 @@ namespace MyEngine {
         randomEngine = std::mt19937(rd());
         //ビルボード行列作成
         backToFrontMatrix = MakeRotateYMatrix(std::numbers::pi_v<float>);
-        // カメラリソースの生成、初期化
-        CameraForGPUGenerate();
-
-        particleInfoResource_ = CreateBufferResource(dxCommon_->GetDevice(), sizeof(ParticleInfo));
-        particleInfoResource_->Map(0, nullptr, reinterpret_cast<void**>(&particleInfoData_));
-
-
-        spawnListResource_ = CreateBufferResource(dxCommon_->GetDevice(), sizeof(SpawnRequestGPU) * MaxSpawnRequestCount);
-        spawnListResource_->Map(0, nullptr, reinterpret_cast<void**>(&spawnListData_));
-
-        // ★ 最大グループ数分の配列として定数バッファを大きく確保する
-        groupSpawnCBResource_ = CreateBufferResource(dxCommon_->GetDevice(), sizeof(GroupSpawnCB) * MaxGroupCount);
-        groupSpawnCBResource_->Map(0, nullptr, reinterpret_cast<void**>(&groupSpawnCBData_));
+        // 各種 GPU リソース・バッファの生成と初期化          
+        CameraForGPUGenerate();       // カメラ用
+        ParticleInfoBufferGenerate(); // パーティクル情報用
+        SpawnListBufferGenerate();    // スポーン要求リスト用
+        GroupSpawnCBufferGenerate();  // グループスポーン定数バッファ用
     }
 
     void ParticleManager::CameraForGPUGenerate() {
@@ -76,6 +71,24 @@ namespace MyEngine {
         cameraData->billboard = MakeIdentity4x4();
     }
 
+    void ParticleManager::ParticleInfoBufferGenerate() {
+        // 最大インスタンス数などを Compute Shader に伝えるためのバッファ
+        particleInfoResource_ = CreateBufferResource(dxCommon_->GetDevice(), sizeof(ParticleInfo));
+        particleInfoResource_->Map(0, nullptr, reinterpret_cast<void**>(&particleInfoData_));
+    }
+
+    void ParticleManager::SpawnListBufferGenerate() {
+        // 1フレーム中に発生した全グループのスポーンリクエストを一時的に集約するバッファ
+        spawnListResource_ = CreateBufferResource(dxCommon_->GetDevice(), sizeof(SpawnRequestGPU) * MaxSpawnRequestCount);
+        spawnListResource_->Map(0, nullptr, reinterpret_cast<void**>(&spawnListData_));
+    }
+
+    void ParticleManager::GroupSpawnCBufferGenerate() {
+        // 各グループが上の「SpawnList」のどこから何個読み込めばいいかのインデックス情報を格納
+        groupSpawnCBResource_ = CreateBufferResource(dxCommon_->GetDevice(), sizeof(GroupSpawnCB) * MaxGroupCount);
+        groupSpawnCBResource_->Map(0, nullptr, reinterpret_cast<void**>(&groupSpawnCBData_));
+    }
+
     void ParticleManager::Update() {
         // カメラを CameraManager 経由で取得
         Camera* activeCamera = CameraManager::GetInstance()->GetActiveCamera();
@@ -85,9 +98,7 @@ namespace MyEngine {
         // カメラ行列更新（GPUへ渡す）
         //=========================================================
 
-        //----------------------------------------
         // billboard更新
-        //----------------------------------------
         Matrix4x4 billboardMatrix = Multiply(backToFrontMatrix, activeCamera->GetWorldMatrix());
         // パーティクルの位置をカメラの方向に合わせるために設定
         billboardMatrix.m[3][0] = 0.0f;
@@ -98,25 +109,18 @@ namespace MyEngine {
         cameraData->projection = activeCamera->GetProjectionMatrix();
         cameraData->billboard = billboardMatrix;
 
-
-        //--------------------------------------
         // DescriptorHeap設定
-        //----------------------------------------
         srvmanager_->PreDraw();
 
         // 💡【追加】Compute Shaderを実行する前に、リソースをUAV状態に遷移させる
         for (auto& [name, group] : particleGroups) {
             TransitionParticleBuffer(group, D3D12_RESOURCE_STATE_UNORDERED_ACCESS);
         }
-        //--------------------------------
-        // SpawnQueue処理
-        //--------------------------------
+
+        // SpawnQueue処理       
         ProcessSpawnRequests();
 
-        //=========================================================
-        // 💡【追加】生成CS と 更新CS の間のハザードを防ぐUAVバリア
-        //=========================================================
-        // 生成（Spawn）処理が完全に終わるまで、次の更新（Update）処理をGPU側で待機させます。
+        // 生成CS と 更新CS の間のハザードを防ぐUAVバリア
         if (!particleGroups.empty()) {
             std::vector<D3D12_RESOURCE_BARRIER> spawnBarriers;
             spawnBarriers.reserve(particleGroups.size());
@@ -167,84 +171,14 @@ namespace MyEngine {
     }
 
     void ParticleManager::CreateParticleGroup(const std::string& name, const std::string& textureFilepath, const std::string& filename) {
-        // すでにテクスチャがロードされているか確認
-        if (!TextureManager::GetInstance()->IsTextureLoaded(textureFilepath)) {
-            // マテリアルのテクスチャファイルをロード
-            TextureManager::GetInstance()->LoadTexture(textureFilepath);
+        // 1. まずファクトリーを介してテクスチャをロード＆既存チェック（自分自身のマップのアドレスを渡す）
+        // すでに存在するか、テクスチャの更新が終わっていればここで return される
+        if (ParticleGroupfactory::GetInstance()->Initialize(name, textureFilepath, &particleGroups)) {
+            return;
         }
 
-        // パーティクルグループ名が既に存在するかチェック
-        auto it = particleGroups.find(name);
-        if (it != particleGroups.end()) {
-            // 名前が一致するグループが存在する場合、そのグループのテクスチャが一致するか確認
-            if (it->second.materialData.textureFilePath == textureFilepath) {
-                // テクスチャが一致する場合、既存のグループを再利用
-                return;
-            } else {
-                // テクスチャが異なる場合、既存のグループを更新
-                it->second.materialData.textureFilePath = textureFilepath;
-                it->second.materialData.textureindex = TextureManager::GetInstance()->GetSrvIndex(textureFilepath);
-                // 必要に応じてリソースの再割り当てなどを行うことができます
-            }
-        } else {
-            // 新しいパーティクルグループを作成
-            ParticleGroup& newGroup = particleGroups[name];
-            // モデルの生成、初期化
-            newGroup.model = std::make_unique<ParticleModel>();
-            newGroup.model->Initialize(dxCommon_, filename);
-
-            // 新しいパーティクルグループにテクスチャパスとインデックスを設定
-            newGroup.materialData.textureFilePath = textureFilepath;
-            newGroup.materialData.textureindex = TextureManager::GetInstance()->GetSrvIndex("Resources/" + textureFilepath);
-            // GPU StructuredBuffer
-            newGroup.Resource = CreateStructuredBufferResource(dxCommon_->GetDevice(), sizeof(ParticleForGPU) * MaxInstanceCount);
-
-            newGroup.currentState = D3D12_RESOURCE_STATE_COMMON;
-
-            // CPU UploadBuffer            
-            newGroup.uploadResource = CreateBufferResource(dxCommon_->GetDevice(), sizeof(ParticleForGPU) * MaxInstanceCount);
-            // ─── 💡 【修正】Mapの部分と初期化ループ
-            if (SUCCEEDED(newGroup.uploadResource->Map(0, nullptr, reinterpret_cast<void**>(&newGroup.particleData)))) {
-                for (uint32_t i = 0; i < MaxInstanceCount; ++i) {
-                    newGroup.particleData[i].translate = { 0.0f, 0.0f, 0.0f };
-                    newGroup.particleData[i].pad0 = 0.0f;
-                    newGroup.particleData[i].rotate = { 0.0f, 0.0f, 0.0f };
-                    newGroup.particleData[i].pad1 = 0.0f;
-                    newGroup.particleData[i].scale = { 0.0f, 0.0f, 0.0f }; // ★初期値を0にしておくとVSで描画されず安全です
-                    newGroup.particleData[i].pad2 = 0.0f;
-
-                    newGroup.particleData[i].color = { 0.0f, 0.0f, 0.0f, 0.0f };
-
-                    newGroup.particleData[i].velocityTranslate = { 0.0f, 0.0f, 0.0f };
-                    newGroup.particleData[i].pad3 = 0.0f;
-                    newGroup.particleData[i].velocityRotate = { 0.0f, 0.0f, 0.0f };
-                    newGroup.particleData[i].pad4 = 0.0f;
-                    newGroup.particleData[i].velocityScale = { 0.0f, 0.0f, 0.0f };
-                    newGroup.particleData[i].pad5 = 0.0f;
-
-                    newGroup.particleData[i].lifetime = 0.0f;    // ★ 0.0f にして未使用状態にする
-                    newGroup.particleData[i].currentTime = 0.0f;
-                    newGroup.particleData[i].useGravity = 0;
-                    newGroup.particleData[i].pad6 = 0.0f;
-                    newGroup.particleData[i].startAlpha = 0.0f;
-                    newGroup.particleData[i].pad7[0] = 0.0f;
-                    newGroup.particleData[i].pad7[1] = 0.0f;
-                    newGroup.particleData[i].pad7[2] = 0.0f;
-                }
-                // 書き込みが終わったら Unmap する
-                newGroup.uploadResource->Unmap(0, nullptr);
-            }
-            // コピー
-            dxCommon_->GetCommandList()->CopyBufferRegion(newGroup.Resource.Get(), 0, newGroup.uploadResource.Get(), 0, sizeof(ParticleForGPU) * MaxInstanceCount);
-            newGroup.currentState = D3D12_RESOURCE_STATE_COPY_DEST;
-            // インスタンスバッファ用のSRVを割り当て、インデックスを記録
-            newGroup.srvindex = srvmanager_->Allocate();
-            // 構造体バッファ用のSRVを作成
-            srvmanager_->CreateSRVforStructuredBuffer(newGroup.srvindex, newGroup.Resource.Get(), MaxInstanceCount, sizeof(ParticleForGPU));
-            // UAV
-            newGroup.uavIndex = srvmanager_->Allocate();
-            srvmanager_->CreateUAVForStructuredBuffer(newGroup.uavIndex, newGroup.Resource.Get(), MaxInstanceCount, sizeof(ParticleForGPU));
-        }
+        // 2. 既存になかった場合のみ、新規グループをファクトリーに丸投げして新規グループを追加
+        particleGroups[name] = ParticleGroupfactory::GetInstance()->CreateNewGroup(dxCommon_, srvmanager_, filename, textureFilepath, MaxInstanceCount);
     }
 
     void ParticleManager::Emit(const std::string& name, const ParticleSpawnData& spawnData) {
@@ -264,7 +198,7 @@ namespace MyEngine {
         // -------------------------------------------------------------
         // 1. 全てのリクエストを「CPU上で」一つの連続した配列に超高速で詰め込む
         // -------------------------------------------------------------
-// 1. CPU上での詰め込み処理（上限を MaxSpawnRequestCount に）
+        // 1. CPU上での詰め込み処理（上限を MaxSpawnRequestCount に）
         for (const auto& request : spawnRequests_) {
             auto it = particleGroups.find(request.groupName);
             if (it == particleGroups.end()) { continue; }

@@ -681,6 +681,9 @@
     <ClCompile Include="application\particle\ParticleEmitter.cpp">
       <Filter>ソース ファイル\application</Filter>
     </ClCompile>
+    <ClCompile Include="engine\3d\Particle\ParticleGroupfactory.cpp">
+      <Filter>ソース ファイル\engine\3d\Particle</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="engine\2d\Sprite.h">
@@ -1114,6 +1117,9 @@
     </ClInclude>
     <ClInclude Include="application\particle\ParticleEmitter.h">
       <Filter>ソース ファイル\application</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\3d\Particle\ParticleGroupfactory.h">
+      <Filter>ヘッダー ファイル\engine\3d\Particle</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
