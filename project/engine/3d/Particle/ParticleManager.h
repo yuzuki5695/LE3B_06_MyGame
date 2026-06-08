@@ -52,7 +52,7 @@ namespace MyEngine {
 		// ランダムエンジン
 		std::mt19937 randomEngine;
 		//最大インスタンス
-		uint32_t MaxInstanceCount = 1500;
+		uint32_t MaxInstanceCount = 10000;
 		//ビルボード行列
 		Matrix4x4 backToFrontMatrix;
 		// パーティクルグループコンテナ
@@ -66,7 +66,6 @@ namespace MyEngine {
 		ParticleInfo* particleInfoData_ = nullptr;
 		SpawnRequestGPU* spawnListData_ = nullptr;
 		GroupSpawnCB* groupSpawnCBData_ = nullptr;
-	
 		std::vector<SpawnRequest> spawnRequests_;
 	public: // アクセッサ
 		// getter
@@ -76,5 +75,24 @@ namespace MyEngine {
 		}
 		uint32_t GetMaxInstanceCount() const { return MaxInstanceCount; }
 
+
+		float Rand(float minVal, float maxVal) { // 💡マクロとの衝突を防ぐため引数名変更
+			std::uniform_real_distribution<float> dist(minVal, maxVal);
+			return dist(randomEngine);
+		}
+		Vector3 RandVec3(const RandomRange<Vector3>& r) { return { this->Rand(r.min.x, r.max.x), this->Rand(r.min.y, r.max.y), this->Rand(r.min.z, r.max.z) }; }
+		float SafeRand(const RandomRange<float>& r, float baseValue) {
+			if (r.min == 0.0f && r.max == 0.0f) { return baseValue; }
+			return this->Rand(r.min, r.max);
+		}
+
+		bool IsEnabled(const RandomRange<float>& r) { return !(r.min == 0.0f && r.max == 0.0f); }      
+		Vector3 SafeRandVec3(const RandomRange<Vector3>& r) {
+			return {
+				(r.min.x == r.max.x) ? r.min.x : this->Rand(r.min.x, r.max.x),
+				(r.min.y == r.max.y) ? r.min.y : this->Rand(r.min.y, r.max.y),
+				(r.min.z == r.max.z) ? r.min.z : this->Rand(r.min.z, r.max.z)
+			};
+		}
 	};
 }

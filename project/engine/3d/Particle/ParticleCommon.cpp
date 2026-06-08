@@ -290,7 +290,7 @@ namespace MyEngine {
         //----------------------------------------
         // Shader Compile
         //----------------------------------------
-        ComPtr<IDxcBlob> computeShaderBlob = ShaderCompiler::GetInstance()->CompileShader(L"Resources/shaders/Particle/Particle.CS.hlsl", L"cs_6_0");
+        ComPtr<IDxcBlob> computeShaderBlob = ShaderCompiler::GetInstance()->CompileShader(L"Resources/shaders/Particle/ParticleUpdate.CS.hlsl", L"cs_6_0");
         assert(computeShaderBlob != nullptr);
 
         //----------------------------------------

@@ -195,10 +195,7 @@ namespace MyEngine {
         struct ActiveGroupSpawn { ParticleGroup* group; uint32_t startIndex; uint32_t count; };
         std::vector<ActiveGroupSpawn> activeSpawns;
 
-        // -------------------------------------------------------------
-        // 1. 全てのリクエストを「CPU上で」一つの連続した配列に超高速で詰め込む
-        // -------------------------------------------------------------
-        // 1. CPU上での詰め込み処理（上限を MaxSpawnRequestCount に）
+        // 1. CPU上での詰め込み処理
         for (const auto& request : spawnRequests_) {
             auto it = particleGroups.find(request.groupName);
             if (it == particleGroups.end()) { continue; }
@@ -207,10 +204,12 @@ namespace MyEngine {
             const auto& spawnData = request.spawnData;
             uint32_t groupStartIndex = totalRequestCount;
 
-            for (uint32_t i = 0; i < spawnData.count; ++i) {
-                if (totalRequestCount >= MaxSpawnRequestCount) { break; } // 広げた上限
+            // 💡 定数バッファやバリアの限界(MaxGroupCount)を超えるグループ数の要求が来たら、それ以上は次フレームに回すか破棄する安全弁
+            if (activeSpawns.size() >= MaxGroupCount) { break; }
 
-                // 配列の現在の位置に直接代入（CPU上での単なるメモリ書き込みなので超高速）
+            for (uint32_t i = 0; i < spawnData.count; ++i) {
+                if (totalRequestCount >= MaxSpawnRequestCount) { break; }
+
                 SpawnRequestGPU& dst = spawnListData_[totalRequestCount];
                 dst.translate = spawnData.transform.translate;
                 dst.rotate = spawnData.transform.rotate;
@@ -222,42 +221,35 @@ namespace MyEngine {
                 dst.lifetime = spawnData.lifetime;
                 dst.useGravity = spawnData.useGravity ? 1u : 0u;
 
-                // ★ リングバッファのインデックス計算をここでやり、GPUに指示する
                 dst.targetIndex = group.lastAllocatedIndex;
                 group.lastAllocatedIndex = (group.lastAllocatedIndex + 1) % MaxInstanceCount;
-
                 totalRequestCount++;
             }
 
-            // このグループで実際に処理する個数
             uint32_t groupSpawnCount = totalRequestCount - groupStartIndex;
             if (groupSpawnCount > 0) {
                 activeSpawns.push_back({ &group, groupStartIndex, groupSpawnCount });
             }
         }
 
-        // リクエストキューをクリア（CPU側の仕事はこれだけで終了！）
         spawnRequests_.clear();
         if (activeSpawns.empty()) { return; }
 
         // 2. GPUへ命令発行
         particleCommon_->CommandSpawn();
 
-        uint32_t cbCBVIndex = 0; // ループごとに定数バッファの書き込み先インデックスをずらす
+        uint32_t cbCBVIndex = 0;
 
         for (const auto& spawn : activeSpawns) {
             if (cbCBVIndex >= MaxGroupCount) { break; }
 
-            // ★ 重要：同じメモリを上書きせず、配列の別々の要素に書き込む！
             groupSpawnCBData_[cbCBVIndex].startRequestIndex = spawn.startIndex;
             groupSpawnCBData_[cbCBVIndex].spawnCount = spawn.count;
 
             srvmanager_->SetComputeRootDescriptorTable(0, spawn.group->uavIndex);
 
-            // ★ 重要：定数バッファの参照アドレスを、グループの個数分（バイトサイズ分）ずらしてGPUに渡す！
             D3D12_GPU_VIRTUAL_ADDRESS cbvAddress = groupSpawnCBResource_->GetGPUVirtualAddress() + (cbCBVIndex * sizeof(GroupSpawnCB));
             dxCommon_->GetCommandList()->SetComputeRootConstantBufferView(1, cbvAddress);
-
             dxCommon_->GetCommandList()->SetComputeRootShaderResourceView(2, spawnListResource_->GetGPUVirtualAddress());
 
             uint32_t threadGroupCount = (spawn.count + 63) / 64;
@@ -266,17 +258,21 @@ namespace MyEngine {
             cbCBVIndex++;
         }
 
-        // ★ 重要：UAVバリアは各ループで足止めせず、全グループの命令を投げ終えた後に「1回だけ」まとめて張る！
-        // これにより、GPUは全グループのスポーン処理を完全に並列（同時）に実行できます。
-        D3D12_RESOURCE_BARRIER barriers[MaxGroupCount];
-        uint32_t barrierCount = 0;
+        // 💡 【修正ポイント】固定配列から std::vector による動的確保に変更
+        // これにより、要素数がいくつになってもメモリを突き破る（オーバーフローする）ことがなくなります
+        std::vector<D3D12_RESOURCE_BARRIER> barriers;
+        barriers.reserve(activeSpawns.size());
+
         for (const auto& spawn : activeSpawns) {
-            barriers[barrierCount].Type = D3D12_RESOURCE_BARRIER_TYPE_UAV;
-            barriers[barrierCount].Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
-            barriers[barrierCount].UAV.pResource = spawn.group->Resource.Get();
-            barrierCount++;
+            D3D12_RESOURCE_BARRIER barrier{};
+            barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_UAV;
+            barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
+            barrier.UAV.pResource = spawn.group->Resource.Get();
+            barriers.push_back(barrier);
         }
-        dxCommon_->GetCommandList()->ResourceBarrier(barrierCount, barriers);
+
+        // APIには vector の先頭ポインタとサイズを渡す
+        dxCommon_->GetCommandList()->ResourceBarrier(static_cast<UINT>(barriers.size()), barriers.data());
     }
 
     void ParticleManager::TransitionParticleBuffer(ParticleGroup& group, D3D12_RESOURCE_STATES after) {

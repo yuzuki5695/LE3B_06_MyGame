@@ -95,29 +95,9 @@ namespace MyGame {
         EnemyListEditor::GetInstance()->Initialize();
 #endif // USE_IMGUI
 
-        // パーティクルグループ生成
-        ParticleManager::GetInstance()->CreateParticleGroup("Particles", "Particle.png", "Particle.obj");
-        // =========================
-       // エミッター生成
-       // =========================
-        Transform emitterTransform{};
-        emitterTransform.translate = { 0.0f, 0.0f, 30.0f };
-        emitterTransform.scale = { 1.0f, 1.0f, 1.0f };
-
-        Velocity velocity{};
-        velocity.translate = { 0.01f, 0.05f, 0.0f }; // 上方向に飛ぶ
-        velocity.rotate = { 0.0f, 0.0f, 0.0f };
-        velocity.scale = { 0.0f, 0.0f, 0.0f };
-
-        ParticleSpawnData spawnData;
-        spawnData.transform = emitterTransform;
-        spawnData.color = { 1.0f, 1.0f, 1.0f, 1.0f };
-        spawnData.count = 1;
-        spawnData.velocity = velocity;
-        spawnData.lifetime = 1.5f;
-        spawnData.useGravity = false;
-      
-        particleEmitter_ = std::make_unique<ParticleEmitter>("Particles", spawnData, 1.0f);
+        // パーティクルの生死、初期化
+        particle_ = std::make_unique<GamePlayparticle>();
+        particle_->Initialize(player_->GetObject3d());
     }
 
     void GamePlayScene::Update() {
@@ -132,7 +112,7 @@ namespace MyGame {
         if (!EventManager::GetInstance()->IsActive()) {
             if (isGameStartEventDone_) {
                 // レールカメラの挙動に切り替える
-               // CameraManager::GetInstance()->GetCurrentBehaviorAs<GamePlayCamera>()->SetCameraState(CameraState::Follow);
+                CameraManager::GetInstance()->GetCurrentBehaviorAs<GamePlayCamera>()->SetCameraState(CameraState::Follow);
                 // プレイヤーのイベントロックを解除して操作可能にする
                 player_->SetEventLocked(false);
                 // 敵スポーンのイベントロックを解除してスポーン開始
@@ -173,7 +153,7 @@ namespace MyGame {
 
         // カメラマネージャの更新
         CameraManager::GetInstance()->Update();
-        particleEmitter_->Update();
+        particle_->Update();
 #pragma region 全てのObject3d個々の更新処理
 
         if (!gamened_) {

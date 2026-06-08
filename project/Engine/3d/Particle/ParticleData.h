@@ -13,8 +13,8 @@ namespace MyEngine {
 	// ゲーム全体の最大パーティクルグループ数の目安（必要に応じて増やしてOK）
     static const uint32_t MaxGroupCount = 64; 
 
-    // ゲーム全体で1フレームにスポーンできる合計数の器（多めに4096などにしておく）
-    static const uint32_t MaxSpawnRequestCount = 4096;
+    // ゲーム全体で1フレームにスポーンできる合計数の器
+    static const uint32_t MaxSpawnRequestCount = 4000;
 
 	struct Velocity {
 		Vector3 translate;
@@ -106,8 +106,27 @@ namespace MyEngine {
 		D3D12_RESOURCE_STATES currentState;
 		ParticleForGPU* particleData = nullptr;
 	};
-	 
-	struct ParticleSpawnData {
+
+	 template<typename T>
+	 struct RandomRange { T min{};    T max{};    bool enable = false; };
+
+	 struct ParticleSpawnRandom {
+		 RandomRange<Vector3> translate;
+		 RandomRange<Vector3> rotate;
+		 RandomRange<Vector3> scale;
+
+		 RandomRange<Vector4> color;
+
+		 RandomRange<Vector3> velocityTranslate;
+		 RandomRange<Vector3> velocityRotate;
+		 RandomRange<Vector3> velocityScale;
+
+		 RandomRange<float> lifetime;
+
+		 RandomRange<uint32_t> count;
+	 };
+
+	 struct ParticleSpawnData {
 		Transform transform;
 		Vector4 color = { 1.0f,1.0f,1.0f,1.0f };
 		Velocity velocity{};

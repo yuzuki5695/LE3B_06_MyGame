@@ -373,20 +373,20 @@
     <Filter Include="ヘッダー ファイル\engine\math\Collision">
       <UniqueIdentifier>{b5f4c0b7-3989-4f4d-a377-4920cae47c95}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ソース ファイル\application\character\player\enemy">
+    <Filter Include="ソース ファイル\application\character\enemy">
       <UniqueIdentifier>{6d2ebea2-d3dc-4a0a-9c39-3854b9d085de}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ソース ファイル\application\character\player\enemy\state">
+    <Filter Include="ソース ファイル\application\character\enemy\state">
       <UniqueIdentifier>{6d94b9cb-96ee-4526-b7ec-ce6afec336ba}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ソース ファイル\application\character\player\enemy\component">
+    <Filter Include="ソース ファイル\application\character\enemy\component">
       <UniqueIdentifier>{61879419-1938-46bf-9a6b-528d1c6d651e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\application\particle">
+      <UniqueIdentifier>{40c09667-1f82-4909-80fe-b08524414507}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="engine\2d\Sprite.cpp">
       <Filter>ソース ファイル\engine\2d</Filter>
     </ClCompile>
@@ -619,13 +619,13 @@
       <Filter>ソース ファイル\application\event\events</Filter>
     </ClCompile>
     <ClCompile Include="application\character\enemy\Enemy.cpp">
-      <Filter>ソース ファイル\application\character\player\enemy</Filter>
+      <Filter>ソース ファイル\application\character\enemy</Filter>
     </ClCompile>
     <ClCompile Include="application\character\enemy\state\EnemyState.cpp">
-      <Filter>ソース ファイル\application\character\player\enemy\state</Filter>
+      <Filter>ソース ファイル\application\character\enemy\state</Filter>
     </ClCompile>
     <ClCompile Include="application\character\enemy\EnemySpawner.cpp">
-      <Filter>ソース ファイル\application\character\player\enemy</Filter>
+      <Filter>ソース ファイル\application\character\enemy</Filter>
     </ClCompile>
     <ClCompile Include="application\camera\GameOverCamera.cpp">
       <Filter>ソース ファイル\application\camera</Filter>
@@ -649,7 +649,7 @@
       <Filter>ソース ファイル\application\character\bullet</Filter>
     </ClCompile>
     <ClCompile Include="application\character\enemy\component\EnemyAttack.cpp">
-      <Filter>ソース ファイル\application\character\player\enemy\component</Filter>
+      <Filter>ソース ファイル\application\character\enemy\component</Filter>
     </ClCompile>
     <ClCompile Include="application\ui\scene\GameClearUI.cpp">
       <Filter>ソース ファイル\application\ui\scene</Filter>
@@ -667,7 +667,7 @@
       <Filter>ソース ファイル\application\ui\scene</Filter>
     </ClCompile>
     <ClCompile Include="application\character\enemy\component\EnemyDeath.cpp">
-      <Filter>ソース ファイル\application\character\player\enemy\component</Filter>
+      <Filter>ソース ファイル\application\character\enemy\component</Filter>
     </ClCompile>
     <ClCompile Include="engine\editor\line\LineCommon.cpp">
       <Filter>ソース ファイル\engine\editor\line</Filter>
@@ -676,13 +676,19 @@
       <Filter>ソース ファイル\engine\editor\line</Filter>
     </ClCompile>
     <ClCompile Include="application\character\enemy\EnemyListEditor.cpp">
-      <Filter>ソース ファイル\application\character\player\enemy</Filter>
-    </ClCompile>
-    <ClCompile Include="application\particle\ParticleEmitter.cpp">
-      <Filter>ソース ファイル\application</Filter>
+      <Filter>ソース ファイル\application\character\enemy</Filter>
     </ClCompile>
     <ClCompile Include="engine\3d\Particle\ParticleGroupfactory.cpp">
       <Filter>ソース ファイル\engine\3d\Particle</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="application\particle\ParticleEmitter.cpp">
+      <Filter>ソース ファイル\application\particle</Filter>
+    </ClCompile>
+    <ClCompile Include="application\particle\GamePlayparticle.cpp">
+      <Filter>ソース ファイル\application\particle</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1115,11 +1121,14 @@
     <ClInclude Include="application\character\enemy\EnemyType.h">
       <Filter>ヘッダー ファイル\application\character\enemy</Filter>
     </ClInclude>
-    <ClInclude Include="application\particle\ParticleEmitter.h">
-      <Filter>ソース ファイル\application</Filter>
-    </ClInclude>
     <ClInclude Include="engine\3d\Particle\ParticleGroupfactory.h">
       <Filter>ヘッダー ファイル\engine\3d\Particle</Filter>
+    </ClInclude>
+    <ClInclude Include="application\particle\ParticleEmitter.h">
+      <Filter>ソース ファイル\application\particle</Filter>
+    </ClInclude>
+    <ClInclude Include="application\particle\GamePlayparticle.h">
+      <Filter>ソース ファイル\application\particle</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1171,7 +1180,7 @@
     <FxCompile Include="Resources\shaders\Object3d\Object3d.VS.hlsl">
       <Filter>リソース ファイル\shaders\Object3d</Filter>
     </FxCompile>
-    <FxCompile Include="Resources\shaders\Particle\Particle.CS.hlsl">
+    <FxCompile Include="Resources\shaders\Particle\ParticleUpdate.CS.hlsl">
       <Filter>リソース ファイル\shaders\Particle</Filter>
     </FxCompile>
     <FxCompile Include="Resources\shaders\Particle\ParticleSpawn.CS.hlsl">
