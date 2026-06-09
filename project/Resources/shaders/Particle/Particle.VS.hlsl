@@ -21,7 +21,7 @@ VertexShaderOutput main(VertexShaderInput input, uint32_t instanceId : SV_Instan
     VertexShaderOutput output;
 
     ParticleData particle = gParticle[instanceId];
-    // ★ 寿命に達している、または未生成のものは完全に潰す（描画しない）
+    // 寿命に達している、または未生成のものは完全に潰す（描画しない）
     if (particle.lifetime <= 0.0f || particle.currentTime >= particle.lifetime)
     {
         output.position = float4(0.0f, 0.0f, 0.0f, 0.0f);
@@ -30,25 +30,23 @@ VertexShaderOutput main(VertexShaderInput input, uint32_t instanceId : SV_Instan
         return output;
     }
         
-    float4 pos = input.position;
-    // Scale
-    pos.xyz *= particle.scale;
+    // 1. ローカル座標系での変形（Scale）
+    float4 localPos = input.position;
+    localPos.xyz *= particle.scale;
 
-    // Rotate ZXY
+    // 2. ローカル座標系での回転（ZXY Rotation）
     float cx = cos(particle.rotate.x);
     float sx = sin(particle.rotate.x);
-
     float cy = cos(particle.rotate.y);
     float sy = sin(particle.rotate.y);
-
     float cz = cos(particle.rotate.z);
     float sz = sin(particle.rotate.z);
 
     // Z rotation
     float3 zRot;
-    zRot.x = pos.x * cz - pos.y * sz;
-    zRot.y = pos.x * sz + pos.y * cz;
-    zRot.z = pos.z;
+    zRot.x = localPos.x * cz - localPos.y * sz;
+    zRot.y = localPos.x * sz + localPos.y * cz;
+    zRot.z = localPos.z;
 
     // X rotation
     float3 xRot;
@@ -62,20 +60,22 @@ VertexShaderOutput main(VertexShaderInput input, uint32_t instanceId : SV_Instan
     yRot.y = xRot.y;
     yRot.z = -xRot.x * sy + xRot.z * cy;
 
-    pos.xyz = yRot;
+    localPos.xyz = yRot;
 
-    // Billboard
-    pos = mul(pos, billboard);
-    // Translate
-    pos.xyz += particle.translate;
+    // 3. 【重要】移動する前にビルボードを適用（モデルの中心を中心にカメラを向く）
+    // w成分を1.0に保つため、float4として行列乗算を行います
+    float4 worldPos = mul(billboard, localPos);
 
-    // View Projection
-    pos = mul(pos, view);
-    pos = mul(pos, projection);
+    // 4. ワールド空間への配置（Translate）
+    worldPos.xyz += particle.translate;
 
-    // Output
-    output.position = pos;
+    // 5. ビュー・プロジェクション変換
+    float4 finalPos = mul(worldPos, view);
+    finalPos = mul(finalPos, projection);
+
+    // 出力
+    output.position = finalPos;
     output.texcoord = input.texcoord;
-    output.color = particle.color;   
+    output.color = particle.color;
     return output;
 }
