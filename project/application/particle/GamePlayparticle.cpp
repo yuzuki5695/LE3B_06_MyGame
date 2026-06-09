@@ -12,7 +12,8 @@ namespace MyGame {
         // =========================
         Transform emitterTransform{};
         emitterTransform.translate = target->GetTranslate();
-        emitterTransform.scale = { 0.0f, 0.0f, 0.0f };
+        emitterTransform.translate.z += 30.0f;
+        emitterTransform.scale = { 1.0f, 1.0f, 1.0f };
 
         Velocity velocity{};
         velocity.translate = { 0.01f, 0.05f, 0.0f }; // 上方向に飛ぶ
@@ -29,9 +30,7 @@ namespace MyGame {
 
         // 位置のばらつき
         random_.count = { 1, 5, true };
-        random_.translate = { { -3.0f, -3.0f, -3.0f },{ 3.0f, 3.0f, 3.0f },true };
-        random_.scale = { { 0.0f, 0.0f, 0.0f },{ 1.0f, 1.0f, 1.0f },true };
-        random_.lifetime = { 0.3f, 3.0f, true };
+        random_.translate = { { -3.0f, 0.0f, 0.0f },{ 3.0f, 0.0f, 0.0f },true };
         particleEmitter_ = std::make_unique<ParticleEmitter>("Particles", spawnData, random_, 1.0f);
     }
 

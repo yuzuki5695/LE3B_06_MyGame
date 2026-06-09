@@ -52,7 +52,7 @@ namespace MyEngine {
 		// ランダムエンジン
 		std::mt19937 randomEngine;
 		//最大インスタンス
-		uint32_t MaxInstanceCount = 10000;
+		uint32_t MaxInstanceCount = 1000;
 		//ビルボード行列
 		Matrix4x4 backToFrontMatrix;
 		// パーティクルグループコンテナ
