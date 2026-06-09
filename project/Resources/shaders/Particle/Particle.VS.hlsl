@@ -1,37 +1,5 @@
 #include "Particle.hlsli"
 
-struct ParticleForGRU
-{
-    float3 translate;
-    float pad0;
-
-    float3 rotate;
-    float pad1;
-
-    float3 scale;
-    float pad2;
-
-    float4 color;
-    
-    
-    // 追加
-    float3 velocityTranslate;
-    float pad3;
-
-    float3 velocityRotate;
-    float pad4;
-
-    float3 velocityScale;
-    float pad5;
-
-    float lifetime;
-    float currentTime;
-    uint useGravity;
-    float pad6;
-    float startAlpha;
-    float pad7[3];
-};
-
 cbuffer CameraData : register(b1)
 {
     float4x4 view;
@@ -39,7 +7,7 @@ cbuffer CameraData : register(b1)
     float4x4 billboard;
 };
 
-StructuredBuffer<ParticleForGRU> gParticle : register(t0);
+StructuredBuffer<ParticleData> gParticle : register(t0);
 
 struct VertexShaderInput
 {
@@ -52,7 +20,7 @@ VertexShaderOutput main(VertexShaderInput input, uint32_t instanceId : SV_Instan
 {
     VertexShaderOutput output;
 
-    ParticleForGRU particle = gParticle[instanceId];
+    ParticleData particle = gParticle[instanceId];
     // ★ 寿命に達している、または未生成のものは完全に潰す（描画しない）
     if (particle.lifetime <= 0.0f || particle.currentTime >= particle.lifetime)
     {
