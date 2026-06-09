@@ -31,37 +31,46 @@ namespace MyEngine {
         dsvManager_ = dsvManager;
         // グラフィックスパイプラインの生成
         GraphicsPipelineGenerate();
-        // 
-        ComputePipelineGenerate();
-        
+        UpdatePipelineGenerate();
         SpawnPipelineGenerate();
     }
 
     void ParticleCommon::Commondrawing() {
         // RootSignatureを設定。PSOに設定しているけど別途設定が必要
-        dxCommon_->GetCommandList()->SetGraphicsRootSignature(rootSignature.Get());
-        dxCommon_->GetCommandList()->SetPipelineState(graphicsPipelineState.Get());
+        dxCommon_->GetCommandList()->SetGraphicsRootSignature(graphicsPipeline_.rootSignature.Get());
+        dxCommon_->GetCommandList()->SetPipelineState(graphicsPipeline_.pipelineState.Get());
         // 形状を設定。PSOに設定しているものとはまた別。同じものを設定する
         dxCommon_->GetCommandList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
     }
 
-    void ParticleCommon::CommandCompute() {
-
-        dxCommon_->GetCommandList()->SetComputeRootSignature(computeRootSignature.Get());
-        dxCommon_->GetCommandList()->SetPipelineState(computePipelineState.Get());
+    void ParticleCommon::CommandUpdate() {
+        // RootSignatureを設定。PSOに設定しているけど別途設定が必要
+        dxCommon_->GetCommandList()->SetComputeRootSignature(updatePipeline_.rootSignature.Get());
+        dxCommon_->GetCommandList()->SetPipelineState(updatePipeline_.pipelineState.Get());
     }
 
     void ParticleCommon::CommandSpawn() {
-        assert(spawnRootSignature);
-        assert(spawnPipelineState);
-     
-        dxCommon_->GetCommandList()->SetComputeRootSignature(spawnRootSignature.Get());
-        dxCommon_->GetCommandList()->SetPipelineState(spawnPipelineState.Get());
+        // RootSignatureを設定。PSOに設定しているけど別途設定が必要 
+        dxCommon_->GetCommandList()->SetComputeRootSignature(spawnPipeline_.rootSignature.Get());
+        dxCommon_->GetCommandList()->SetPipelineState(spawnPipeline_.pipelineState.Get());
+    }
+
+    void ParticleCommon::CreateRootSignature(ID3D12Device* device, const D3D12_ROOT_SIGNATURE_DESC& desc, ComPtr<ID3D12RootSignature>& rootSignature) {
+        HRESULT hr;
+        // シリアライズしてバイナリにする
+        ComPtr <ID3DBlob> signatureBlob = nullptr;
+        ComPtr <ID3DBlob> errorBlob = nullptr;
+        hr = D3D12SerializeRootSignature(&desc, D3D_ROOT_SIGNATURE_VERSION_1, &signatureBlob, &errorBlob);
+        if (FAILED(hr)) {
+            Logger::Log(reinterpret_cast<char*>(errorBlob->GetBufferPointer()));
+            assert(false);
+        }
+        // バイナリを元に作成
+        hr = device->CreateRootSignature(0, signatureBlob->GetBufferPointer(), signatureBlob->GetBufferSize(), IID_PPV_ARGS(&rootSignature));
+        assert(SUCCEEDED(hr));
     }
 
     void ParticleCommon::RootSignatureGenerate() {
-
-        HRESULT hr;
 
         /*----------------------------------------------------------------------------------*/
         /*---------------------------------DescriptorRange作成-------------------------------*/
@@ -124,25 +133,14 @@ namespace MyEngine {
         descriptionRootSignature.pStaticSamplers = staticSamplers;
         descriptionRootSignature.NumStaticSamplers = _countof(staticSamplers);
 
-        /*----------------------------------------------------------------------------------*/
-        /*-------------------------シリアライズしてバイナリにする--------------------------------*/
-        /*----------------------------------------------------------------------------------*/
-        ComPtr <ID3DBlob> signatureBlob = nullptr;
-        ComPtr <ID3DBlob> errorBlob = nullptr;
-        hr = D3D12SerializeRootSignature(&descriptionRootSignature, D3D_ROOT_SIGNATURE_VERSION_1, &signatureBlob, &errorBlob);
-        if (FAILED(hr)) {
-            Logger::Log(reinterpret_cast<char*>(errorBlob->GetBufferPointer()));
-            assert(false);
-        }
-        // バイナリを元に作成
-        hr = dxCommon_->GetDevice()->CreateRootSignature(0, signatureBlob->GetBufferPointer(), signatureBlob->GetBufferSize(), IID_PPV_ARGS(&rootSignature));
-        assert(SUCCEEDED(hr));
+        // ルートシグネチャの作成
+        CreateRootSignature(dxCommon_->GetDevice().Get(), descriptionRootSignature, graphicsPipeline_.rootSignature);
     }
 
     void ParticleCommon::GraphicsPipelineGenerate() {
+        HRESULT hr;
         // ルートシグネチャの生成
         RootSignatureGenerate();
-        HRESULT hr;
 
         /*----------------------------------------------------------------------------------*/
         /*---------------------------------InputLayout設定-----------------------------------*/
@@ -202,7 +200,7 @@ namespace MyEngine {
         /*-------------------------------------PSO生成----------------------------------------*/
         /*-----------------------------------------------------------------------------------*/
         D3D12_GRAPHICS_PIPELINE_STATE_DESC graphicsPipelineStateDesc{};
-        graphicsPipelineStateDesc.pRootSignature = rootSignature.Get();   // RootSignature
+        graphicsPipelineStateDesc.pRootSignature = graphicsPipeline_.rootSignature.Get();   // RootSignature
         graphicsPipelineStateDesc.InputLayout = inputLayoutDesc;    // InputLayout
         graphicsPipelineStateDesc.VS = { vertexShaderBlob->GetBufferPointer(),vertexShaderBlob->GetBufferSize() };  // VertexShader
         graphicsPipelineStateDesc.PS = { pixelShaderBlob->GetBufferPointer(),pixelShaderBlob->GetBufferSize() };    // PixelShader
@@ -221,28 +219,19 @@ namespace MyEngine {
         graphicsPipelineStateDesc.DSVFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
 
         // 実際に生成
-        hr = dxCommon_->GetDevice()->CreateGraphicsPipelineState(&graphicsPipelineStateDesc, IID_PPV_ARGS(&graphicsPipelineState));
+        hr = dxCommon_->GetDevice()->CreateGraphicsPipelineState(&graphicsPipelineStateDesc, IID_PPV_ARGS(&graphicsPipeline_.pipelineState));
         assert(SUCCEEDED(hr));
     }
-
-    void ParticleCommon::ComputeRootSignatureGenerate() {
-        HRESULT hr;
-
-        //----------------------------------------
+   
+    void ParticleCommon::UpdateRootSignatureGenerate() {
         // UAV DescriptorRange
-        //----------------------------------------
         D3D12_DESCRIPTOR_RANGE descriptorRange[1] = {};
-
         descriptorRange[0].BaseShaderRegister = 0; // u0
         descriptorRange[0].NumDescriptors = 1;
         descriptorRange[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_UAV;
         descriptorRange[0].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
-
-        //----------------------------------------
         // RootParameter
-        //----------------------------------------
         D3D12_ROOT_PARAMETER rootParameters[2] = {};
-
         rootParameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
         rootParameters[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
         rootParameters[0].DescriptorTable.pDescriptorRanges = descriptorRange;
@@ -251,65 +240,33 @@ namespace MyEngine {
         rootParameters[1].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
         rootParameters[1].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
         rootParameters[1].Descriptor.ShaderRegister = 0;
-
-        //----------------------------------------
         // RootSignatureDesc
-        //----------------------------------------
         D3D12_ROOT_SIGNATURE_DESC desc{};
         desc.Flags = D3D12_ROOT_SIGNATURE_FLAG_NONE;
         desc.pParameters = rootParameters;
         desc.NumParameters = _countof(rootParameters);
-
-        //----------------------------------------
-        // Serialize
-        //----------------------------------------
-        ComPtr<ID3DBlob> signatureBlob;
-        ComPtr<ID3DBlob> errorBlob;
-
-        hr = D3D12SerializeRootSignature(&desc, D3D_ROOT_SIGNATURE_VERSION_1, &signatureBlob, &errorBlob);
-
-        if (FAILED(hr)) {
-            Logger::Log(reinterpret_cast<char*>(errorBlob->GetBufferPointer()));
-            assert(false);
-        }
-
-        //----------------------------------------
-        // Create
-        //----------------------------------------
-        hr = dxCommon_->GetDevice()->CreateRootSignature(0, signatureBlob->GetBufferPointer(), signatureBlob->GetBufferSize(), IID_PPV_ARGS(&computeRootSignature));
-        assert(SUCCEEDED(hr));
+       
+        // ルートシグネチャの作成
+        CreateRootSignature(dxCommon_->GetDevice().Get(), desc,updatePipeline_.rootSignature);
     }
 
-    void ParticleCommon::ComputePipelineGenerate() {
+    void ParticleCommon::UpdatePipelineGenerate() {
         HRESULT hr;
-        //----------------------------------------
-        // RootSignature
-        //----------------------------------------
-        ComputeRootSignatureGenerate();
-
-        //----------------------------------------
+        // ルートシグネチャの生成
+        UpdateRootSignatureGenerate();
         // Shader Compile
-        //----------------------------------------
         ComPtr<IDxcBlob> computeShaderBlob = ShaderCompiler::GetInstance()->CompileShader(L"Resources/shaders/Particle/ParticleUpdate.CS.hlsl", L"cs_6_0");
         assert(computeShaderBlob != nullptr);
-
-        //----------------------------------------
         // PSO Desc
-        //----------------------------------------
         D3D12_COMPUTE_PIPELINE_STATE_DESC desc{};
-        desc.pRootSignature = computeRootSignature.Get();
+        desc.pRootSignature = updatePipeline_.rootSignature.Get();
         desc.CS = { computeShaderBlob->GetBufferPointer(),computeShaderBlob->GetBufferSize() };
-
-        //----------------------------------------
-        // Create PSO
-        //----------------------------------------
-        hr = dxCommon_->GetDevice()->CreateComputePipelineState(&desc, IID_PPV_ARGS(&computePipelineState));
+        // 実際に生成
+        hr = dxCommon_->GetDevice()->CreateComputePipelineState(&desc, IID_PPV_ARGS(&updatePipeline_.pipelineState));
         assert(SUCCEEDED(hr));
     }
 
     void ParticleCommon::SpawnRootSignatureGenerate() {
-        HRESULT hr;
-
         D3D12_DESCRIPTOR_RANGE range[1] = {};
         range[0].BaseShaderRegister = 0;
         range[0].NumDescriptors = 1;
@@ -317,7 +274,6 @@ namespace MyEngine {
         range[0].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
 
         D3D12_ROOT_PARAMETER rootParameters[3] = {};
-
         // u0
         rootParameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
         rootParameters[0].DescriptorTable.pDescriptorRanges = range;
@@ -332,39 +288,27 @@ namespace MyEngine {
         rootParameters[2].Descriptor.ShaderRegister = 0;                 // t0 に変更
 
         D3D12_ROOT_SIGNATURE_DESC desc{};
-
         desc.Flags = D3D12_ROOT_SIGNATURE_FLAG_NONE;
         desc.pParameters = rootParameters;
         desc.NumParameters = _countof(rootParameters);
 
-        ComPtr<ID3DBlob> signatureBlob;
-        ComPtr<ID3DBlob> errorBlob;
-
-        hr = D3D12SerializeRootSignature(&desc, D3D_ROOT_SIGNATURE_VERSION_1, &signatureBlob, &errorBlob);
-        assert(SUCCEEDED(hr));
-        hr = dxCommon_->GetDevice()->CreateRootSignature(0, signatureBlob->GetBufferPointer(), signatureBlob->GetBufferSize(), IID_PPV_ARGS(&spawnRootSignature));
-        assert(SUCCEEDED(hr));
+        // ルートシグネチャの作成
+        CreateRootSignature(dxCommon_->GetDevice().Get(), desc, spawnPipeline_.rootSignature);
     }
 
     void ParticleCommon::SpawnPipelineGenerate() {
         HRESULT hr;
-
+        // ルートシグネチャの生成
         SpawnRootSignatureGenerate();
-
+        // Shader Compile
         ComPtr<IDxcBlob>  shader = ShaderCompiler::GetInstance()->CompileShader(L"Resources/shaders/Particle/ParticleSpawn.CS.hlsl", L"cs_6_0");
         assert(shader != nullptr);
-
+        // PSO Desc
         D3D12_COMPUTE_PIPELINE_STATE_DESC desc{};
-
-        desc.pRootSignature = spawnRootSignature.Get();
-        desc.CS =
-        {
-            shader->GetBufferPointer(),
-            shader->GetBufferSize()
-        };
-
-        hr = dxCommon_->GetDevice()->CreateComputePipelineState(&desc, IID_PPV_ARGS(&spawnPipelineState));
-
+        desc.pRootSignature = spawnPipeline_.rootSignature.Get();
+        desc.CS = { shader->GetBufferPointer(), shader->GetBufferSize() };
+        // 実際に生成
+        hr = dxCommon_->GetDevice()->CreateComputePipelineState(&desc, IID_PPV_ARGS(&spawnPipeline_.pipelineState));
         assert(SUCCEEDED(hr));
     }
 }

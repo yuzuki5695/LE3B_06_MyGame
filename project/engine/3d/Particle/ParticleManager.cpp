@@ -136,7 +136,7 @@ namespace MyEngine {
             dxCommon_->GetCommandList()->ResourceBarrier(static_cast<UINT>(spawnBarriers.size()), spawnBarriers.data());
         }
 
-        particleCommon_->CommandCompute();
+        particleCommon_->CommandUpdate();
 
         for (auto& [name, group] : particleGroups) {
             if (group.lastAllocatedIndex == 0) { continue; }

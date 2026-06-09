@@ -6,9 +6,14 @@ namespace MyEngine {
 	// 前方宣言
 	class DsvManager;
 
+	// パイプライン（RootSignature & PSO）をセットで管理する構造体
+	struct Pipeline {
+		Microsoft::WRL::ComPtr<ID3D12RootSignature> rootSignature = nullptr;
+		Microsoft::WRL::ComPtr<ID3D12PipelineState> pipelineState = nullptr;
+	};
+
 	// 3Dオブジェクト共通部
-	class ParticleCommon
-	{
+	class ParticleCommon {
 	private:
 		static std::unique_ptr<ParticleCommon> instance;
 
@@ -26,38 +31,29 @@ namespace MyEngine {
 		void Initialize(DirectXCommon* dxCommon, DsvManager* dsvManager);
 		// 共通描画設定
 		void Commondrawing();
-
-		void CommandCompute();
-		
+		void CommandUpdate();
 		void CommandSpawn();
-
-	private:
+	private: // 内部関数
+		// 各パイプラインの生成関数
 		// ルートシグネチャの生成
 		void RootSignatureGenerate();
+		void UpdatePipelineGenerate();
+		void SpawnPipelineGenerate();
 		// グラフィックスパイプラインの生成
 		void GraphicsPipelineGenerate();
-
-		void ComputeRootSignatureGenerate();
-		void ComputePipelineGenerate();
-
+		void UpdateRootSignatureGenerate();
 		void SpawnRootSignatureGenerate();
-		void SpawnPipelineGenerate();
-	private:
+		// RootSignature生成の共通処理
+		void CreateRootSignature(ID3D12Device* device, const D3D12_ROOT_SIGNATURE_DESC& desc, Microsoft::WRL::ComPtr<ID3D12RootSignature>& rootSignature);
+	private: // メンバ変数
 		// ポインタ
 		DirectXCommon* dxCommon_;
 		DsvManager* dsvManager_;
-		Camera* defaultCamera = nullptr;
-		// RootSignature
-		Microsoft::WRL::ComPtr <ID3D12RootSignature> rootSignature = nullptr;
-		Microsoft::WRL::ComPtr <ID3D12PipelineState> graphicsPipelineState = nullptr;
-
-		Microsoft::WRL::ComPtr <ID3D12RootSignature> computeRootSignature = nullptr;
-		Microsoft::WRL::ComPtr <ID3D12PipelineState> computePipelineState = nullptr;
-
-		// Spawn
-		Microsoft::WRL::ComPtr<ID3D12RootSignature> spawnRootSignature = nullptr;
-		Microsoft::WRL::ComPtr<ID3D12PipelineState> spawnPipelineState = nullptr;
-
+		Camera* defaultCamera = nullptr;		
+		// 各パイプラインのインスタンス
+        Pipeline graphicsPipeline_;
+		Pipeline updatePipeline_;
+        Pipeline spawnPipeline_;
 	public:
 		// setter
 		void SetDefaultCamera(Camera* camera) { this->defaultCamera = camera; }
