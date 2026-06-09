@@ -110,5 +110,7 @@ namespace MyEngine {
         uint32_t lastAllocatedIndex = 0;
         D3D12_RESOURCE_STATES currentState;
         ParticleForGPU* particleData = nullptr;
+
+        uint32_t activeInstanceCount = 0;
     };
 }

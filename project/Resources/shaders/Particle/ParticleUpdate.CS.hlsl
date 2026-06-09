@@ -14,13 +14,11 @@ void main(uint3 DTid : SV_DispatchThreadID)
     uint index = DTid.x;
     if (index >= particleCount)
         return;
-
-    // 寿命が 0 以下の未使用バッファ、またはすでに寿命が尽きているものは完全にスルー
-    if (gParticle[index].lifetime <= 0.0f || gParticle[index].currentTime >= gParticle[index].lifetime)
+    
+    // 💡 既に完全に死亡していて、スケールもクリア済みのものは「何もしないで即座に抜ける」
+    // これにより、UAVへの無駄なメモリ書き込み（Store操作）がゼロになり、GPUの電力が大幅に下がります
+    if (gParticle[index].lifetime <= 0.0f || (gParticle[index].currentTime >= gParticle[index].lifetime && gParticle[index].scale.x == 0.0f))
     {
-        // 念のため、未使用・寿命切れのものは描画されないようにスケールとアルファを完全に0にしておく
-        gParticle[index].scale = float3(0.0f, 0.0f, 0.0f);
-        gParticle[index].color.a = 0.0f;
         return;
     }
     

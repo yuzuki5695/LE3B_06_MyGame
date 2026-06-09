@@ -103,8 +103,8 @@ namespace MyEngine {
         // パーティクルの位置をカメラの方向に合わせるために設定
         billboardMatrix.m[3][0] = 0.0f;
         billboardMatrix.m[3][1] = 0.0f;
-        billboardMatrix.m[3][2] = 0.0f; 
-        cameraData->billboard = billboardMatrix;        
+        billboardMatrix.m[3][2] = 0.0f;
+        cameraData->billboard = billboardMatrix;
 
         // DescriptorHeap設定
         srvmanager_->PreDraw();
@@ -134,13 +134,19 @@ namespace MyEngine {
         std::vector<ID3D12Resource*> updateResources;
 
         for (auto& [name, group] : particleGroups) {
-            if (group.lastAllocatedIndex == 0) { continue; }
+            //            if (group.lastAllocatedIndex == 0) { continue; }
+            if (group.lastAllocatedIndex == 0 && group.activeInstanceCount == 0) { continue; }
 
             srvmanager_->SetComputeRootDescriptorTable(0, group.uavIndex);
-            particleInfoData_->particleCount = MaxInstanceCount;
+            // 💡 常に MaxInstanceCount ではなく、これまでに割り当てられた最大インデックス（またはMax）までに制限       
+            // 一度でもMaxまで回ったらMaxInstanceCountになりますが、未使用時はlastAllocatedIndex付近に絞れます
+            uint32_t processCount = (group.lastAllocatedIndex > group.activeInstanceCount) ? group.lastAllocatedIndex : group.activeInstanceCount;
+            if (processCount == 0) processCount = MaxInstanceCount; // 安全策
+            particleInfoData_->particleCount = processCount;
+
             dxCommon_->GetCommandList()->SetComputeRootConstantBufferView(1, particleInfoResource_->GetGPUVirtualAddress());
 
-            uint32_t threadGroupCount = (MaxInstanceCount + 255) / 256;
+            uint32_t threadGroupCount = (processCount + 255) / 256;
             dxCommon_->GetCommandList()->Dispatch(threadGroupCount, 1, 1);
             updateResources.push_back(group.Resource.Get());
         }
@@ -153,18 +159,20 @@ namespace MyEngine {
     void ParticleManager::Draw() {
         // パーティクルグループごとに描画処理を行う
         for (auto& [name, particleGroup] : particleGroups) {
+            // 1つも生成されていない（インデックスが0）なら、描画処理そのものをスキップしてGPUを休ませる
+            if (particleGroup.lastAllocatedIndex == 0) { continue; }
             // UAV -> SRV
             TransitionParticleBuffer(particleGroup, D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE);
             // インスタンシングデータの SRV を設定（テクスチャファイルのパスを指定）
             srvmanager_->SetGraphicsRootDescriptorTable(1, particleGroup.srvindex);
             // SRVで画像を表示
             srvmanager_->SetGraphicsRootDescriptorTable(2, particleGroup.materialData.textureindex);
-
+            // カメラ用定数バッファをセット
             dxCommon_->GetCommandList()->SetGraphicsRootConstantBufferView(3, cameraResource->GetGPUVirtualAddress());
             // モデルに必要なバッファをバインド（頂点バッファや定数バッファなど）
             particleGroup.model->Draw();
             // 描画（インスタンシング）を実行
-            dxCommon_->GetCommandList()->DrawInstanced(static_cast<UINT>(particleGroup.model->GetVertexCount()), static_cast<UINT>(MaxInstanceCount), 0, 0);
+            dxCommon_->GetCommandList()->DrawInstanced(static_cast<UINT>(particleGroup.model->GetVertexCount()), static_cast<UINT>(particleGroup.lastAllocatedIndex), 0, 0);
         }
     }
 
