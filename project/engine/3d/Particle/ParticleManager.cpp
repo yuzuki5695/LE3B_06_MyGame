@@ -90,22 +90,21 @@ namespace MyEngine {
     }
 
     void ParticleManager::Update() {
+        Matrix4x4 billboardMatrix;
+
         // カメラを CameraManager 経由で取得
         Camera* activeCamera = CameraManager::GetInstance()->GetActiveCamera();
         if (!activeCamera) { return; }
 
         // カメラ行列更新（GPUへ渡す）
-
-        // billboard更新
-        Matrix4x4 billboardMatrix = Multiply(backToFrontMatrix, activeCamera->GetWorldMatrix());
+        billboardMatrix = Multiply(backToFrontMatrix, activeCamera->GetWorldMatrix());
+        cameraData->view = activeCamera->GetViewMatrix();
+        cameraData->projection = activeCamera->GetProjectionMatrix();
         // パーティクルの位置をカメラの方向に合わせるために設定
         billboardMatrix.m[3][0] = 0.0f;
         billboardMatrix.m[3][1] = 0.0f;
-        billboardMatrix.m[3][2] = 0.0f;
-
-        cameraData->view = activeCamera->GetViewMatrix();
-        cameraData->projection = activeCamera->GetProjectionMatrix();
-        cameraData->billboard = billboardMatrix;
+        billboardMatrix.m[3][2] = 0.0f; 
+        cameraData->billboard = billboardMatrix;        
 
         // DescriptorHeap設定
         srvmanager_->PreDraw();
