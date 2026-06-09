@@ -38,12 +38,18 @@ namespace MyEngine {
 		void ClearAll();
 	private: // 内部関数
 		void CameraForGPUGenerate();
-		void ParticleInfoBufferGenerate();  // ★追加：パーティクル基本情報のバッファ生成
-		void SpawnListBufferGenerate();     // ★追加：全グループ共通のスポーン要求バッファ生成
-		void GroupSpawnCBufferGenerate();   // ★追加：グループごとの範囲伝達用定数バッファ生成
-		void ProcessSpawnRequests();
-		void TransitionParticleBuffer(ParticleGroup& group, D3D12_RESOURCE_STATES after);
-		void UAVBarrier(ID3D12Resource* resource);
+		void ParticleInfoBufferGenerate();  // パーティクル基本情報のバッファ生成
+		void SpawnListBufferGenerate();     // 全グループ共通のスポーン要求バッファ生成
+		void GroupSpawnCBufferGenerate();   // グループごとの範囲伝達用定数バッファ生成
+		// ProcessSpawnRequests から分割した段階的な関数群
+        struct ActiveGroupSpawn { ParticleGroup* group; uint32_t startIndex; uint32_t count; }; 
+        // 要求を1つのリニアな配列（CommandQueue）に詰め込み、各グループの生成範囲を特定する (CPU処理)
+        uint32_t BuildSpawnRequests(std::vector<ActiveGroupSpawn>& outActiveSpawns);
+        // 構築されたリクエストを基に、実際にComputeShaderのDispatchを実行する (GPU処理)
+        void DispatchSpawnCommands(const std::vector<ActiveGroupSpawn>& activeSpawns);
+        // リソース遷移・バリア関連（共通化）
+        void TransitionParticleBuffer(ParticleGroup& group, D3D12_RESOURCE_STATES after);
+        void PipelineUAVBarriers(const std::vector<ID3D12Resource*>& resources);
 	private: // メンバ変数
 		// ポインタ
 		DirectXCommon* dxCommon_;
@@ -66,6 +72,7 @@ namespace MyEngine {
 		ParticleInfo* particleInfoData_ = nullptr;
 		SpawnRequestGPU* spawnListData_ = nullptr;
 		GroupSpawnCB* groupSpawnCBData_ = nullptr;
+
 		std::vector<SpawnRequest> spawnRequests_;
 	public: // アクセッサ
 		// getter
