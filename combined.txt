@@ -160,6 +160,8 @@
 └── └── └── ├── Spline.cpp
 └── └── └── └── Spline.h
 └── └── ├── particle/
+└── └── └── ├── GamePlayparticle.cpp
+└── └── └── ├── GamePlayparticle.h
 └── └── └── ├── ParticleEmitter.cpp
 └── └── └── └── ParticleEmitter.h
 └── └── ├── scene/
@@ -211,6 +213,8 @@
 └── └── └── └── Particle/
 └── └── └──     ├── ParticleCommon.cpp
 └── └── └──     ├── ParticleCommon.h
+└── └── └──     ├── ParticleGroupfactory.cpp
+└── └── └──     ├── ParticleGroupfactory.h
 └── └── └──     ├── ParticleManager.cpp
 └── └── └──     ├── ParticleManager.h
 └── └── └──     ├── ParticleModel.cpp
@@ -1632,51 +1636,107 @@ File Path: project/Engine/3d/Particle/ParticleData.h
 
 namespace MyEngine {
 
-	struct Velocity {
-		Vector3 translate;
-		Vector3 rotate;
-		Vector3 scale;
-	};
-	
-	struct CameraData {
-		Matrix4x4 view;
-		Matrix4x4 projection;
-		Matrix4x4 billboard;
-	};
+    // ゲーム全体の最大パーティクルグループ数の目安（必要に応じて増やしてOK）
+    static const uint32_t MaxGroupCount = 64;
 
-	struct ParticleInfo {
-		uint32_t particleCount;
-		float padding[3];
-	};
+    // ゲーム全体で1フレームにスポーンできる合計数の器
+    static const uint32_t MaxSpawnRequestCount = 4000;
 
-	struct ParticleForGPU {
-		// トランスフォーム
-		Vector3 translate;  float pad0;
-		Vector3 rotate;		float pad1;
-		Vector3 scale;		float pad2;
-		// カラー
-		Vector4 color;
-		// 
-		Vector3 velocityTranslate;  float pad3;
-		Vector3 velocityRotate;		float pad4;
-		Vector3 velocityScale;		float pad5;
+    struct CameraData {
+        Matrix4x4 view;
+        Matrix4x4 projection;
+        Matrix4x4 billboard;
+    };
 
-		float lifetime;
-		float currentTime;
-		uint32_t useGravity;		float pad6;
-	};
+    struct ParticleInfo {
+        uint32_t particleCount;
+        float padding[3];
+    };
 
-	// パーティクルグループ
-	struct ParticleGroup {
-		std::unique_ptr<ParticleModel> model;                    // パーティクルモデル
-		MaterialData materialData;                               // マテリアルデータ(テクスチャファイルパスとテクスチャ用SRVインデックス)	
-		Microsoft::WRL::ComPtr <ID3D12Resource> Resource;        // インスタンシングリソース 
-		Microsoft::WRL::ComPtr<ID3D12Resource> uploadResource;	 // 
-		uint32_t srvindex;                                       // インスタンシング用SRVインデックス
-		uint32_t uavIndex;                                       // インスタンシング用UAVインデックス			
-		ParticleForGPU* particleData = nullptr;                  // 
-		uint32_t lastAllocatedIndex = 0;                         // 
-	};
+    struct ParticleForGPU {
+        Vector3 translate;          float pad0;
+        Vector3 rotate;             float pad1;
+        Vector3 scale;              float pad2;
+        Vector4 color;
+        Vector3 velocityTranslate;  float pad3;
+        Vector3 velocityRotate;     float pad4;
+        Vector3 velocityScale;      float pad5;
+        float lifetime;
+        float currentTime;
+        uint32_t useGravity;        float pad6;
+        float startAlpha;           float pad7[3];
+    };
+
+    struct SpawnRequestGPU {
+        Vector3 translate;          float pad0;
+        Vector3 rotate;             float pad1;
+        Vector3 scale;              float pad2;
+        Vector4 color;
+        Vector3 velocityTranslate;  float pad3;
+        Vector3 velocityRotate;     float pad4;
+        Vector3 velocityScale;      float pad5;
+        float lifetime;
+        uint32_t useGravity;
+        uint32_t targetIndex;
+        float padding;
+    };
+
+    struct GroupSpawnCB {
+        uint32_t startRequestIndex;
+        uint32_t spawnCount;
+        float padding[62]; // 256バイト境界合わせ
+    };
+
+     template<typename T>
+	 struct RandomRange { T min{};    T max{};    bool enable = false; };
+     struct ParticleSpawnRandom {
+         RandomRange<Vector3> translate;
+         RandomRange<Vector3> rotate;
+         RandomRange<Vector3> scale;
+
+         RandomRange<Vector4> color;
+
+         RandomRange<Vector3> velocityTranslate;
+         RandomRange<Vector3> velocityRotate;
+         RandomRange<Vector3> velocityScale;
+
+         RandomRange<float> lifetime;
+         RandomRange<uint32_t> count;
+     };
+
+    // ─── CPU・システム内管理用構造体 ───
+
+    struct Velocity {
+        Vector3 translate;
+        Vector3 rotate;
+        Vector3 scale;
+    };
+
+    struct ParticleSpawnData {
+        Transform transform;
+        Vector4 color = { 1.0f, 1.0f, 1.0f, 1.0f };
+        Velocity velocity{};
+        float lifetime = 1.0f;
+        uint32_t count = 1;
+        bool useGravity = false;
+    };
+
+    struct SpawnRequest {
+        std::string groupName;
+        ParticleSpawnData spawnData;
+    };
+
+    struct ParticleGroup {
+        std::unique_ptr<ParticleModel> model;                    // パーティクルモデル
+        MaterialData materialData;                               // マテリアルデータ(テクスチャファイルパスとテクスチャ用SRVインデックス)	
+        Microsoft::WRL::ComPtr <ID3D12Resource> Resource;        // インスタンシングリソース 
+        Microsoft::WRL::ComPtr <ID3D12Resource> uploadResource;        // インスタンシングリソース 
+        uint32_t srvindex;                                       // インスタンシング用SRVインデックス
+        uint32_t uavIndex;                                       // インスタンシング用UAVインデックス
+        uint32_t lastAllocatedIndex = 0;
+        D3D12_RESOURCE_STATES currentState;
+        ParticleForGPU* particleData = nullptr;
+    };
 }
 
 ============================================================
@@ -5233,6 +5293,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="application\loader\CurveJsonLoader.cpp" />
     <ClCompile Include="application\loader\PlayerDataLoader.cpp" />
     <ClCompile Include="application\math\Spline.cpp" />
+    <ClCompile Include="application\particle\GamePlayparticle.cpp" />
     <ClCompile Include="application\particle\ParticleEmitter.cpp" />
     <ClCompile Include="application\scene\GameOverScene.cpp" />
     <ClCompile Include="application\scene\GamePlayScene.cpp" />
@@ -5249,6 +5310,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="Engine\3d\Model\ModelCommon.cpp" />
     <ClCompile Include="Engine\3d\Object\Object3d.cpp" />
     <ClCompile Include="Engine\3d\Object\Object3dCommon.cpp" />
+    <ClCompile Include="engine\3d\Particle\ParticleGroupfactory.cpp" />
     <ClCompile Include="Engine\3d\Skybox\Skybox.cpp" />
     <ClCompile Include="Engine\3d\Skybox\SkyboxCommon.cpp" />
     <ClCompile Include="Engine\base\CopylmageCommon.cpp" />
@@ -5347,6 +5409,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\loader\CurveJsonLoader.h" />
     <ClInclude Include="application\loader\PlayerDataLoader.h" />
     <ClInclude Include="application\math\Spline.h" />
+    <ClInclude Include="application\particle\GamePlayparticle.h" />
     <ClInclude Include="application\particle\ParticleEmitter.h" />
     <ClInclude Include="application\scene\GameClearScene.h" />
     <ClInclude Include="application\scene\GameOverScene.h" />
@@ -5372,6 +5435,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="Engine\3d\Object\Object3d.h" />
     <ClInclude Include="Engine\3d\Object\Object3dCommon.h" />
     <ClInclude Include="Engine\3d\Particle\ParticleData.h" />
+    <ClInclude Include="engine\3d\Particle\ParticleGroupfactory.h" />
     <ClInclude Include="Engine\3d\Skybox\Skybox.h" />
     <ClInclude Include="Engine\3d\Skybox\SkyboxCommon.h" />
     <ClInclude Include="Engine\base\CopylmageCommon.h" />
@@ -5516,7 +5580,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </FxCompile>
-    <FxCompile Include="Resources\shaders\Particle\Particle.CS.hlsl">
+    <FxCompile Include="Resources\shaders\Particle\ParticleUpdate.CS.hlsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </FxCompile>
@@ -5525,6 +5589,10 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </FxCompile>
     <FxCompile Include="Resources\shaders\Particle\Particle.VS.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="Resources\shaders\Particle\ParticleSpawn.CS.hlsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </FxCompile>
@@ -5928,20 +5996,20 @@ File Path: project/MyGame.vcxproj.filters
     <Filter Include="ヘッダー ファイル\engine\math\Collision">
       <UniqueIdentifier>{b5f4c0b7-3989-4f4d-a377-4920cae47c95}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ソース ファイル\application\character\player\enemy">
+    <Filter Include="ソース ファイル\application\character\enemy">
       <UniqueIdentifier>{6d2ebea2-d3dc-4a0a-9c39-3854b9d085de}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ソース ファイル\application\character\player\enemy\state">
+    <Filter Include="ソース ファイル\application\character\enemy\state">
       <UniqueIdentifier>{6d94b9cb-96ee-4526-b7ec-ce6afec336ba}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ソース ファイル\application\character\player\enemy\component">
+    <Filter Include="ソース ファイル\application\character\enemy\component">
       <UniqueIdentifier>{61879419-1938-46bf-9a6b-528d1c6d651e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\application\particle">
+      <UniqueIdentifier>{40c09667-1f82-4909-80fe-b08524414507}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="engine\2d\Sprite.cpp">
       <Filter>ソース ファイル\engine\2d</Filter>
     </ClCompile>
@@ -6174,13 +6242,13 @@ File Path: project/MyGame.vcxproj.filters
       <Filter>ソース ファイル\application\event\events</Filter>
     </ClCompile>
     <ClCompile Include="application\character\enemy\Enemy.cpp">
-      <Filter>ソース ファイル\application\character\player\enemy</Filter>
+      <Filter>ソース ファイル\application\character\enemy</Filter>
     </ClCompile>
     <ClCompile Include="application\character\enemy\state\EnemyState.cpp">
-      <Filter>ソース ファイル\application\character\player\enemy\state</Filter>
+      <Filter>ソース ファイル\application\character\enemy\state</Filter>
     </ClCompile>
     <ClCompile Include="application\character\enemy\EnemySpawner.cpp">
-      <Filter>ソース ファイル\application\character\player\enemy</Filter>
+      <Filter>ソース ファイル\application\character\enemy</Filter>
     </ClCompile>
     <ClCompile Include="application\camera\GameOverCamera.cpp">
       <Filter>ソース ファイル\application\camera</Filter>
@@ -6204,7 +6272,7 @@ File Path: project/MyGame.vcxproj.filters
       <Filter>ソース ファイル\application\character\bullet</Filter>
     </ClCompile>
     <ClCompile Include="application\character\enemy\component\EnemyAttack.cpp">
-      <Filter>ソース ファイル\application\character\player\enemy\component</Filter>
+      <Filter>ソース ファイル\application\character\enemy\component</Filter>
     </ClCompile>
     <ClCompile Include="application\ui\scene\GameClearUI.cpp">
       <Filter>ソース ファイル\application\ui\scene</Filter>
@@ -6222,7 +6290,7 @@ File Path: project/MyGame.vcxproj.filters
       <Filter>ソース ファイル\application\ui\scene</Filter>
     </ClCompile>
     <ClCompile Include="application\character\enemy\component\EnemyDeath.cpp">
-      <Filter>ソース ファイル\application\character\player\enemy\component</Filter>
+      <Filter>ソース ファイル\application\character\enemy\component</Filter>
     </ClCompile>
     <ClCompile Include="engine\editor\line\LineCommon.cpp">
       <Filter>ソース ファイル\engine\editor\line</Filter>
@@ -6231,10 +6299,19 @@ File Path: project/MyGame.vcxproj.filters
       <Filter>ソース ファイル\engine\editor\line</Filter>
     </ClCompile>
     <ClCompile Include="application\character\enemy\EnemyListEditor.cpp">
-      <Filter>ソース ファイル\application\character\player\enemy</Filter>
+      <Filter>ソース ファイル\application\character\enemy</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\3d\Particle\ParticleGroupfactory.cpp">
+      <Filter>ソース ファイル\engine\3d\Particle</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="application\particle\ParticleEmitter.cpp">
-      <Filter>ソース ファイル\application</Filter>
+      <Filter>ソース ファイル\application\particle</Filter>
+    </ClCompile>
+    <ClCompile Include="application\particle\GamePlayparticle.cpp">
+      <Filter>ソース ファイル\application\particle</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -6667,8 +6744,14 @@ File Path: project/MyGame.vcxproj.filters
     <ClInclude Include="application\character\enemy\EnemyType.h">
       <Filter>ヘッダー ファイル\application\character\enemy</Filter>
     </ClInclude>
+    <ClInclude Include="engine\3d\Particle\ParticleGroupfactory.h">
+      <Filter>ヘッダー ファイル\engine\3d\Particle</Filter>
+    </ClInclude>
     <ClInclude Include="application\particle\ParticleEmitter.h">
-      <Filter>ソース ファイル\application</Filter>
+      <Filter>ソース ファイル\application\particle</Filter>
+    </ClInclude>
+    <ClInclude Include="application\particle\GamePlayparticle.h">
+      <Filter>ソース ファイル\application\particle</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -6720,7 +6803,10 @@ File Path: project/MyGame.vcxproj.filters
     <FxCompile Include="Resources\shaders\Object3d\Object3d.VS.hlsl">
       <Filter>リソース ファイル\shaders\Object3d</Filter>
     </FxCompile>
-    <FxCompile Include="Resources\shaders\Particle\Particle.CS.hlsl">
+    <FxCompile Include="Resources\shaders\Particle\ParticleUpdate.CS.hlsl">
+      <Filter>リソース ファイル\shaders\Particle</Filter>
+    </FxCompile>
+    <FxCompile Include="Resources\shaders\Particle\ParticleSpawn.CS.hlsl">
       <Filter>リソース ファイル\shaders\Particle</Filter>
     </FxCompile>
   </ItemGroup>
@@ -11479,45 +11565,172 @@ namespace MyGame::Math::Spline {
 }
 
 ============================================================
+File Path: project/application/particle/GamePlayparticle.cpp
+============================================================
+#include "GamePlayparticle.h"
+using namespace MyEngine;
+
+
+namespace MyGame {
+
+    void GamePlayparticle::Initialize(Object3d* target) {
+        // パーティクルグループ生成
+        ParticleManager::GetInstance()->CreateParticleGroup("Particles", "Particle.png", "Particle.obj");
+        // =========================
+        // エミッター生成
+        // =========================
+        Transform emitterTransform{};
+        emitterTransform.translate = target->GetTranslate();
+        emitterTransform.translate.z += 30.0f;
+        emitterTransform.scale = { 1.0f, 1.0f, 1.0f };
+
+        Velocity velocity{};
+        velocity.translate = { 0.01f, 0.05f, 0.0f }; // 上方向に飛ぶ
+        velocity.rotate = { 0.0f, 0.0f, 0.0f };
+        velocity.scale = { 0.0f, 0.0f, 0.0f };
+
+        ParticleSpawnData spawnData;
+        spawnData.transform = emitterTransform;
+        spawnData.color = { 1.0f, 1.0f, 1.0f, 1.0f };
+        spawnData.count = 5;
+        spawnData.velocity = velocity;
+        spawnData.lifetime = 1.5f;
+        spawnData.useGravity = false;
+
+        // 位置のばらつき
+        random_.count = { 1, 5, true };
+        random_.translate = { { -3.0f, 0.0f, 0.0f },{ 3.0f, 0.0f, 0.0f },true };
+        particleEmitter_ = std::make_unique<ParticleEmitter>("Particles", spawnData, random_, 1.0f);
+    }
+
+    void GamePlayparticle::Update() {
+
+        particleEmitter_->Update();
+    }
+}
+
+============================================================
+File Path: project/application/particle/GamePlayparticle.h
+============================================================
+#pragma once
+#include <ParticleEmitter.h>
+#include <Object3d.h>
+
+namespace MyGame {
+    class GamePlayparticle {
+    public:
+        /// <summary>
+        /// 初期化処理
+        /// </summary>
+        void Initialize(MyEngine::Object3d* target);
+        /// <summary>
+        /// 毎フレームの更新処理
+        /// </summary>
+        void Update();
+
+
+    private:;
+        std::unique_ptr<ParticleEmitter> particleEmitter_;
+        MyEngine::ParticleSpawnRandom random_;
+    };
+}
+
+============================================================
 File Path: project/application/particle/ParticleEmitter.cpp
 ============================================================
 #include "ParticleEmitter.h"
-#include "TextureManager.h"
-#include <ParticleManager.h>
-#include <cmath>
+#ifdef min
+#undef min
+#endif
+#ifdef max
+#undef max
+#endif
 
 using namespace MyEngine;
 
 namespace MyGame {
 
-	ParticleEmitter::ParticleEmitter(const std::string& name, const Transform& transform, const Vector4& color, const uint32_t count, const Velocity& Velocity, const float frequency, const float lifetime) {
-		this->name_ = name;//名前
-		this->transform_ = transform;//位置
-		this->count = count; // カラー
-		this->color = color; // count
-		this->velocity_ = Velocity; // 風の強さ
-		this->frequency = frequency;    //寿命
-		this->frequencyTime = lifetime;//現在の寿命
+
+	ParticleEmitter::ParticleEmitter(const std::string& name, const MyEngine::ParticleSpawnData& spawnData, const MyEngine::ParticleSpawnRandom& random, float emitInterval) {
+		name_ = name;
+		spawnData_ = spawnData;
+		random_ = random;
+		emitInterval_ = emitInterval;
 		isAutoEmit_ = true;
 		emitTimer_ = 0.0f;
 	}
 
 	void ParticleEmitter::Update() {
-		// isAutoEmit_ が true のとき、自動発生処理
-		if (isAutoEmit_) {
-			// 時間を進める
-			emitTimer_ += 1.0f / 60.0f;
-			// 発生間隔を超えたら Emit 実行
-			if (emitTimer_ >= frequency) {
-				emitTimer_ = 0.0f; // リセット
-				Emit(); // パーティクル発生
-			}
+		if (!isAutoEmit_) {
+			return;
+		}
+
+		emitTimer_ += 1.0f / 60.0f;
+
+		if (emitTimer_ >= emitInterval_) {
+
+			emitTimer_ = 0.0f;
+
+			Emit();
 		}
 	}
 
 	void ParticleEmitter::Emit() {
-		//パーティクルを発生
-		ParticleManager::GetInstance()->Emit(name_, transform_, color, count, velocity_, frequencyTime);
+		auto& pm = *ParticleManager::GetInstance();
+
+		uint32_t emitCount = spawnData_.count;
+
+		// 発生数のランダム適用
+		if (random_.count.enable) {
+			// 💡 引数を明示的に float にキャストして pm.Rand に渡します
+			emitCount = static_cast<uint32_t>(pm.Rand(static_cast<float>(random_.count.min), static_cast<float>(random_.count.max)));
+		}
+
+		emitCount = std::max(1u, emitCount);
+
+		for (uint32_t i = 0; i < emitCount; i++) {
+			ParticleSpawnData data = BuildSpawnData(pm);
+			pm.Emit(name_, data);
+		}
+	}
+
+	ParticleSpawnData ParticleEmitter::BuildSpawnData(ParticleManager& pm) {
+		ParticleSpawnData data = spawnData_;
+
+		// 各トランスフォームのランダム適用
+		if (random_.translate.enable)
+			data.transform.translate += pm.SafeRandVec3({ random_.translate.min, random_.translate.max });
+
+		if (random_.rotate.enable)
+			data.transform.rotate += pm.SafeRandVec3({ random_.rotate.min, random_.rotate.max });
+
+		if (random_.scale.enable)
+			data.transform.scale += pm.SafeRandVec3({ random_.scale.min, random_.scale.max });
+		
+		// 速度のランダム適用
+		if (random_.velocityTranslate.enable) {	
+			data.velocity.translate += pm.SafeRandVec3(random_.velocityTranslate);
+		}
+		if (random_.velocityRotate.enable) {
+			data.velocity.rotate += pm.SafeRandVec3(random_.velocityRotate);
+		}
+		if (random_.velocityScale.enable) {
+			data.velocity.scale += pm.SafeRandVec3(random_.velocityScale);
+		}
+
+		// カラーのランダム適用
+		if (random_.color.enable) {
+			data.color.x = pm.Rand(random_.color.min.x, random_.color.max.x);
+			data.color.y = pm.Rand(random_.color.min.y, random_.color.max.y);
+			data.color.z = pm.Rand(random_.color.min.z, random_.color.max.z);
+			data.color.w = pm.Rand(random_.color.min.w, random_.color.max.w);
+		}
+
+		// 寿命のランダム適用
+		if (random_.lifetime.enable)
+			data.lifetime = pm.Rand(random_.lifetime.min, random_.lifetime.max);
+
+		return data;
 	}
 }
 
@@ -11530,54 +11743,37 @@ File Path: project/application/particle/ParticleEmitter.h
 #include <vector>
 #include <Transform.h>
 #include <ParticleManager.h>
+#include <random>
 
 namespace MyGame {
 	// パーティクル発生器
 	class ParticleEmitter {
 	public:
-		//ほとんどのメンバ変数をコンストラクタの引数として受け取り、メンバ変数に代入する
-		ParticleEmitter(
-			const std::string& name,
-			const MyEngine::Transform& transform,
-			const MyEngine::Vector4& color,
-			const uint32_t count,
-			const MyEngine::Velocity& Velocity,
-			const float frequency,
-			const float lifetime
-		);
+
+		ParticleEmitter(const std::string& name, const MyEngine::ParticleSpawnData& spawnData, const MyEngine::ParticleSpawnRandom& random, float emitInterval);
+
 		// 更新処理
 		void Update();
 		// パーティクル発生
 		void Emit();
+		void SetInterval(float interval) { emitInterval_ = interval; }
+
+		MyEngine::ParticleSpawnData BuildSpawnData(MyEngine::ParticleManager& pm);
 	private:
 		// 名前
 		std::string name_;
-		// 座標
-		MyEngine::Transform transform_;
-		// カラー
-		MyEngine::Vector4 color;
-		// 数
-		uint32_t count;
-		// 風の強さ
-		MyEngine::Velocity velocity_;
-		// 寿命
-		float frequency;
-		// 現在の寿命
-		float frequencyTime;
-		// 現在の経過タイマー
-		float emitTimer_;
-		// 自動発生するかどうかの
+		// 発生データ
+		MyEngine::ParticleSpawnData spawnData_;
+		std::mt19937 rng_;
+		MyEngine::ParticleSpawnRandom random_;
+		// 発生間隔
+		float emitInterval_ = 0.1f;
+		// タイマー
+		float emitTimer_ = 0.0f;
+		// 自動発生
 		bool isAutoEmit_ = true;
-
-
-		//// テクスチャ変更フラグ
-		//bool isTextureChange_ = false;
-		//// テクスチャリスト
-		//static std::vector<std::string> textureList_;
-		//// 選択中のモデルインデックス
-		//int textureIndex_ = 0;
 	public:
-		float GetfrequencyTime() { return frequencyTime; }
+
 	};
 }
 
@@ -12237,29 +12433,9 @@ namespace MyGame {
         EnemyListEditor::GetInstance()->Initialize();
 #endif // USE_IMGUI
 
-        // パーティクルグループ生成
-        ParticleManager::GetInstance()->CreateParticleGroup("Particles", "Particle.png", "Particle.obj");
-        // =========================
-       // エミッター生成
-       // =========================
-        Transform emitterTransform{};
-        emitterTransform.translate = { 0.0f, 0.0f, 30.0f };
-        emitterTransform.scale = { 1.0f, 1.0f, 1.0f };
-
-        Velocity velocity{};
-        velocity.translate = { 0.01f, 0.05f, 0.0f }; // 上方向に飛ぶ
-        velocity.rotate = { 0.0f, 0.0f, 0.0f };
-        velocity.scale = { 0.0f, 0.0f, 0.0f };
-
-        particleEmitter_ = std::make_unique<ParticleEmitter>(
-            "Particles",       // グループ名
-            emitterTransform,  // 発生座標
-            Vector4{ 1.0f, 1.0f, 1.0f, 1.0f }, // 色
-            10,                // 一度に出す数
-            velocity,          // 速度
-            0.5f,              // 🌟 発生間隔（frequency）
-            1.5f               // 🌟 パーティクル個体の寿命（lifetime）
-        );
+        // パーティクルの生死、初期化
+        particle_ = std::make_unique<GamePlayparticle>();
+        particle_->Initialize(player_->GetObject3d());
     }
 
     void GamePlayScene::Update() {
@@ -12274,7 +12450,7 @@ namespace MyGame {
         if (!EventManager::GetInstance()->IsActive()) {
             if (isGameStartEventDone_) {
                 // レールカメラの挙動に切り替える
-               // CameraManager::GetInstance()->GetCurrentBehaviorAs<GamePlayCamera>()->SetCameraState(CameraState::Follow);
+                CameraManager::GetInstance()->GetCurrentBehaviorAs<GamePlayCamera>()->SetCameraState(CameraState::Follow);
                 // プレイヤーのイベントロックを解除して操作可能にする
                 player_->SetEventLocked(false);
                 // 敵スポーンのイベントロックを解除してスポーン開始
@@ -12315,7 +12491,7 @@ namespace MyGame {
 
         // カメラマネージャの更新
         CameraManager::GetInstance()->Update();
-        particleEmitter_->Update();
+        particle_->Update();
 #pragma region 全てのObject3d個々の更新処理
 
         if (!gamened_) {
@@ -12452,7 +12628,7 @@ File Path: project/application/scene/GamePlayScene.h
 #include <Player.h>
 #include <Enemy.h>
 #include <EnemySpawner.h>
-#include <ParticleEmitter.h>
+#include <GamePlayparticle.h>
 
 namespace MyGame {
 
@@ -12484,14 +12660,16 @@ namespace MyGame {
         // ゲーム終了イベントの更新処理
         void GameEnd();
     private: // メンバ変数
-        std::unique_ptr <Player> player_;            // プレイヤー
+        std::unique_ptr<Player> player_;            // プレイヤー
         std::unique_ptr<EnemySpawner> enemySpawner_; // 敵スポーン管理クラス
         std::vector<std::unique_ptr<Enemy>> enemies_; // 敵キャラクターのリスト
         bool isGameStartEventDone_; //   ゲーム開始イベントが完了したかどうかのフラグ
         bool gamened_;
         uint32_t prevPlayerExp_; // 前フレームのプレイヤーの経験値
         bool isFirstExpGainIgnored_ = false; // 経験値の初期化が完了したかどうかのフラグ
-        std::unique_ptr<ParticleEmitter> particleEmitter_;
+
+        std::unique_ptr<GamePlayparticle> particle_;
+
     };
 }
 
@@ -15768,27 +15946,46 @@ namespace MyEngine {
         dsvManager_ = dsvManager;
         // グラフィックスパイプラインの生成
         GraphicsPipelineGenerate();
-        // 
-        ComputePipelineGenerate();
+        UpdatePipelineGenerate();
+        SpawnPipelineGenerate();
     }
 
     void ParticleCommon::Commondrawing() {
         // RootSignatureを設定。PSOに設定しているけど別途設定が必要
-        dxCommon_->GetCommandList()->SetGraphicsRootSignature(rootSignature.Get());
-        dxCommon_->GetCommandList()->SetPipelineState(graphicsPipelineState.Get());
+        dxCommon_->GetCommandList()->SetGraphicsRootSignature(graphicsPipeline_.rootSignature.Get());
+        dxCommon_->GetCommandList()->SetPipelineState(graphicsPipeline_.pipelineState.Get());
         // 形状を設定。PSOに設定しているものとはまた別。同じものを設定する
         dxCommon_->GetCommandList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
     }
 
-    void ParticleCommon::CommandCompute() {
-    
-        dxCommon_->GetCommandList()->SetComputeRootSignature(computeRootSignature.Get());
-        dxCommon_->GetCommandList()->SetPipelineState(computePipelineState.Get());
+    void ParticleCommon::CommandUpdate() {
+        // RootSignatureを設定。PSOに設定しているけど別途設定が必要
+        dxCommon_->GetCommandList()->SetComputeRootSignature(updatePipeline_.rootSignature.Get());
+        dxCommon_->GetCommandList()->SetPipelineState(updatePipeline_.pipelineState.Get());
+    }
+
+    void ParticleCommon::CommandSpawn() {
+        // RootSignatureを設定。PSOに設定しているけど別途設定が必要 
+        dxCommon_->GetCommandList()->SetComputeRootSignature(spawnPipeline_.rootSignature.Get());
+        dxCommon_->GetCommandList()->SetPipelineState(spawnPipeline_.pipelineState.Get());
+    }
+
+    void ParticleCommon::CreateRootSignature(ID3D12Device* device, const D3D12_ROOT_SIGNATURE_DESC& desc, ComPtr<ID3D12RootSignature>& rootSignature) {
+        HRESULT hr;
+        // シリアライズしてバイナリにする
+        ComPtr <ID3DBlob> signatureBlob = nullptr;
+        ComPtr <ID3DBlob> errorBlob = nullptr;
+        hr = D3D12SerializeRootSignature(&desc, D3D_ROOT_SIGNATURE_VERSION_1, &signatureBlob, &errorBlob);
+        if (FAILED(hr)) {
+            Logger::Log(reinterpret_cast<char*>(errorBlob->GetBufferPointer()));
+            assert(false);
+        }
+        // バイナリを元に作成
+        hr = device->CreateRootSignature(0, signatureBlob->GetBufferPointer(), signatureBlob->GetBufferSize(), IID_PPV_ARGS(&rootSignature));
+        assert(SUCCEEDED(hr));
     }
 
     void ParticleCommon::RootSignatureGenerate() {
-
-        HRESULT hr;
 
         /*----------------------------------------------------------------------------------*/
         /*---------------------------------DescriptorRange作成-------------------------------*/
@@ -15851,25 +16048,14 @@ namespace MyEngine {
         descriptionRootSignature.pStaticSamplers = staticSamplers;
         descriptionRootSignature.NumStaticSamplers = _countof(staticSamplers);
 
-        /*----------------------------------------------------------------------------------*/
-        /*-------------------------シリアライズしてバイナリにする--------------------------------*/
-        /*----------------------------------------------------------------------------------*/
-        ComPtr <ID3DBlob> signatureBlob = nullptr;
-        ComPtr <ID3DBlob> errorBlob = nullptr;
-        hr = D3D12SerializeRootSignature(&descriptionRootSignature, D3D_ROOT_SIGNATURE_VERSION_1, &signatureBlob, &errorBlob);
-        if (FAILED(hr)) {
-            Logger::Log(reinterpret_cast<char*>(errorBlob->GetBufferPointer()));
-            assert(false);
-        }
-        // バイナリを元に作成
-        hr = dxCommon_->GetDevice()->CreateRootSignature(0, signatureBlob->GetBufferPointer(), signatureBlob->GetBufferSize(), IID_PPV_ARGS(&rootSignature));
-        assert(SUCCEEDED(hr));
+        // ルートシグネチャの作成
+        CreateRootSignature(dxCommon_->GetDevice().Get(), descriptionRootSignature, graphicsPipeline_.rootSignature);
     }
 
     void ParticleCommon::GraphicsPipelineGenerate() {
+        HRESULT hr;
         // ルートシグネチャの生成
         RootSignatureGenerate();
-        HRESULT hr;
 
         /*----------------------------------------------------------------------------------*/
         /*---------------------------------InputLayout設定-----------------------------------*/
@@ -15929,7 +16115,7 @@ namespace MyEngine {
         /*-------------------------------------PSO生成----------------------------------------*/
         /*-----------------------------------------------------------------------------------*/
         D3D12_GRAPHICS_PIPELINE_STATE_DESC graphicsPipelineStateDesc{};
-        graphicsPipelineStateDesc.pRootSignature = rootSignature.Get();   // RootSignature
+        graphicsPipelineStateDesc.pRootSignature = graphicsPipeline_.rootSignature.Get();   // RootSignature
         graphicsPipelineStateDesc.InputLayout = inputLayoutDesc;    // InputLayout
         graphicsPipelineStateDesc.VS = { vertexShaderBlob->GetBufferPointer(),vertexShaderBlob->GetBufferSize() };  // VertexShader
         graphicsPipelineStateDesc.PS = { pixelShaderBlob->GetBufferPointer(),pixelShaderBlob->GetBufferSize() };    // PixelShader
@@ -15948,90 +16134,96 @@ namespace MyEngine {
         graphicsPipelineStateDesc.DSVFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
 
         // 実際に生成
-        hr = dxCommon_->GetDevice()->CreateGraphicsPipelineState(&graphicsPipelineStateDesc, IID_PPV_ARGS(&graphicsPipelineState));
+        hr = dxCommon_->GetDevice()->CreateGraphicsPipelineState(&graphicsPipelineStateDesc, IID_PPV_ARGS(&graphicsPipeline_.pipelineState));
         assert(SUCCEEDED(hr));
     }
-
-    void ParticleCommon::ComputeRootSignatureGenerate() {
-        HRESULT hr;
-
-        //----------------------------------------
+   
+    void ParticleCommon::UpdateRootSignatureGenerate() {
         // UAV DescriptorRange
-        //----------------------------------------
         D3D12_DESCRIPTOR_RANGE descriptorRange[1] = {};
-
         descriptorRange[0].BaseShaderRegister = 0; // u0
         descriptorRange[0].NumDescriptors = 1;
         descriptorRange[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_UAV;
         descriptorRange[0].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
-
-        //----------------------------------------
         // RootParameter
-        //----------------------------------------
         D3D12_ROOT_PARAMETER rootParameters[2] = {};
-
         rootParameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
         rootParameters[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
         rootParameters[0].DescriptorTable.pDescriptorRanges = descriptorRange;
         rootParameters[0].DescriptorTable.NumDescriptorRanges = 1;
 
-        rootParameters[1].ParameterType =    D3D12_ROOT_PARAMETER_TYPE_CBV;
-        rootParameters[1].ShaderVisibility =    D3D12_SHADER_VISIBILITY_ALL;
+        rootParameters[1].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
+        rootParameters[1].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
+        rootParameters[1].Descriptor.ShaderRegister = 0;
+        // RootSignatureDesc
+        D3D12_ROOT_SIGNATURE_DESC desc{};
+        desc.Flags = D3D12_ROOT_SIGNATURE_FLAG_NONE;
+        desc.pParameters = rootParameters;
+        desc.NumParameters = _countof(rootParameters);
+       
+        // ルートシグネチャの作成
+        CreateRootSignature(dxCommon_->GetDevice().Get(), desc,updatePipeline_.rootSignature);
+    }
+
+    void ParticleCommon::UpdatePipelineGenerate() {
+        HRESULT hr;
+        // ルートシグネチャの生成
+        UpdateRootSignatureGenerate();
+        // Shader Compile
+        ComPtr<IDxcBlob> computeShaderBlob = ShaderCompiler::GetInstance()->CompileShader(L"Resources/shaders/Particle/ParticleUpdate.CS.hlsl", L"cs_6_0");
+        assert(computeShaderBlob != nullptr);
+        // PSO Desc
+        D3D12_COMPUTE_PIPELINE_STATE_DESC desc{};
+        desc.pRootSignature = updatePipeline_.rootSignature.Get();
+        desc.CS = { computeShaderBlob->GetBufferPointer(),computeShaderBlob->GetBufferSize() };
+        // 実際に生成
+        hr = dxCommon_->GetDevice()->CreateComputePipelineState(&desc, IID_PPV_ARGS(&updatePipeline_.pipelineState));
+        assert(SUCCEEDED(hr));
+    }
+
+    void ParticleCommon::SpawnRootSignatureGenerate() {
+        D3D12_DESCRIPTOR_RANGE range[1] = {};
+        range[0].BaseShaderRegister = 0;
+        range[0].NumDescriptors = 1;
+        range[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_UAV;
+        range[0].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
+
+        D3D12_ROOT_PARAMETER rootParameters[3] = {};
+        // u0
+        rootParameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
+        rootParameters[0].DescriptorTable.pDescriptorRanges = range;
+        rootParameters[0].DescriptorTable.NumDescriptorRanges = 1;
+
+        // b0 SpawnInfo
+        rootParameters[1].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
         rootParameters[1].Descriptor.ShaderRegister = 0;
 
-        //----------------------------------------
-        // RootSignatureDesc
-        //----------------------------------------
+        // b1 SpawnParticle
+        rootParameters[2].ParameterType = D3D12_ROOT_PARAMETER_TYPE_SRV; // CBVからSRVに変更
+        rootParameters[2].Descriptor.ShaderRegister = 0;                 // t0 に変更
+
         D3D12_ROOT_SIGNATURE_DESC desc{};
         desc.Flags = D3D12_ROOT_SIGNATURE_FLAG_NONE;
         desc.pParameters = rootParameters;
         desc.NumParameters = _countof(rootParameters);
 
-        //----------------------------------------
-        // Serialize
-        //----------------------------------------
-        ComPtr<ID3DBlob> signatureBlob;
-        ComPtr<ID3DBlob> errorBlob;
-
-        hr = D3D12SerializeRootSignature(&desc, D3D_ROOT_SIGNATURE_VERSION_1, &signatureBlob, &errorBlob);
-
-        if (FAILED(hr)) {
-            Logger::Log(reinterpret_cast<char*>(errorBlob->GetBufferPointer()));
-            assert(false);
-        }
-
-        //----------------------------------------
-        // Create
-        //----------------------------------------
-        hr = dxCommon_->GetDevice()->CreateRootSignature(0, signatureBlob->GetBufferPointer(), signatureBlob->GetBufferSize(), IID_PPV_ARGS(&computeRootSignature));
-        assert(SUCCEEDED(hr));
+        // ルートシグネチャの作成
+        CreateRootSignature(dxCommon_->GetDevice().Get(), desc, spawnPipeline_.rootSignature);
     }
 
-    void ParticleCommon::ComputePipelineGenerate() {
+    void ParticleCommon::SpawnPipelineGenerate() {
         HRESULT hr;
-        //----------------------------------------
-        // RootSignature
-        //----------------------------------------
-        ComputeRootSignatureGenerate();
-
-        //----------------------------------------
+        // ルートシグネチャの生成
+        SpawnRootSignatureGenerate();
         // Shader Compile
-        //----------------------------------------
-        ComPtr<IDxcBlob> computeShaderBlob = ShaderCompiler::GetInstance()->CompileShader(L"Resources/shaders/Particle/Particle.CS.hlsl", L"cs_6_0");
-
-        assert(computeShaderBlob != nullptr);
-
-        //----------------------------------------
+        ComPtr<IDxcBlob>  shader = ShaderCompiler::GetInstance()->CompileShader(L"Resources/shaders/Particle/ParticleSpawn.CS.hlsl", L"cs_6_0");
+        assert(shader != nullptr);
         // PSO Desc
-        //----------------------------------------
         D3D12_COMPUTE_PIPELINE_STATE_DESC desc{};
-        desc.pRootSignature = computeRootSignature.Get();
-        desc.CS = { computeShaderBlob->GetBufferPointer(),computeShaderBlob->GetBufferSize() };
-
-        //----------------------------------------
-        // Create PSO
-        //----------------------------------------
-        hr = dxCommon_->GetDevice()->CreateComputePipelineState(&desc, IID_PPV_ARGS(&computePipelineState));
+        desc.pRootSignature = spawnPipeline_.rootSignature.Get();
+        desc.CS = { shader->GetBufferPointer(), shader->GetBufferSize() };
+        // 実際に生成
+        hr = dxCommon_->GetDevice()->CreateComputePipelineState(&desc, IID_PPV_ARGS(&spawnPipeline_.pipelineState));
         assert(SUCCEEDED(hr));
     }
 }
@@ -16047,9 +16239,14 @@ namespace MyEngine {
 	// 前方宣言
 	class DsvManager;
 
+	// パイプライン（RootSignature & PSO）をセットで管理する構造体
+	struct Pipeline {
+		Microsoft::WRL::ComPtr<ID3D12RootSignature> rootSignature = nullptr;
+		Microsoft::WRL::ComPtr<ID3D12PipelineState> pipelineState = nullptr;
+	};
+
 	// 3Dオブジェクト共通部
-	class ParticleCommon
-	{
+	class ParticleCommon {
 	private:
 		static std::unique_ptr<ParticleCommon> instance;
 
@@ -16067,33 +16264,173 @@ namespace MyEngine {
 		void Initialize(DirectXCommon* dxCommon, DsvManager* dsvManager);
 		// 共通描画設定
 		void Commondrawing();
-
-		void CommandCompute();
-	private:
+		void CommandUpdate();
+		void CommandSpawn();
+	private: // 内部関数
+		// 各パイプラインの生成関数
 		// ルートシグネチャの生成
 		void RootSignatureGenerate();
+		void UpdatePipelineGenerate();
+		void SpawnPipelineGenerate();
 		// グラフィックスパイプラインの生成
 		void GraphicsPipelineGenerate();
-
-		void ComputeRootSignatureGenerate();
-		void ComputePipelineGenerate();
-	private:
+		void UpdateRootSignatureGenerate();
+		void SpawnRootSignatureGenerate();
+		// RootSignature生成の共通処理
+		void CreateRootSignature(ID3D12Device* device, const D3D12_ROOT_SIGNATURE_DESC& desc, Microsoft::WRL::ComPtr<ID3D12RootSignature>& rootSignature);
+	private: // メンバ変数
 		// ポインタ
 		DirectXCommon* dxCommon_;
 		DsvManager* dsvManager_;
-		Camera* defaultCamera = nullptr;
-		// RootSignature
-		Microsoft::WRL::ComPtr <ID3D12RootSignature> rootSignature = nullptr;
-		Microsoft::WRL::ComPtr <ID3D12PipelineState> graphicsPipelineState = nullptr;
-
-		Microsoft::WRL::ComPtr <ID3D12RootSignature> computeRootSignature = nullptr;
-		Microsoft::WRL::ComPtr <ID3D12PipelineState> computePipelineState = nullptr;
+		Camera* defaultCamera = nullptr;		
+		// 各パイプラインのインスタンス
+        Pipeline graphicsPipeline_;
+		Pipeline updatePipeline_;
+        Pipeline spawnPipeline_;
 	public:
 		// setter
 		void SetDefaultCamera(Camera* camera) { this->defaultCamera = camera; }
 		// getter
 		DirectXCommon* GetDxCommon() const { return  dxCommon_; }
 		Camera* GetDefaultCamera() const { return defaultCamera; }
+	};
+}
+
+
+============================================================
+File Path: project/engine/3d/Particle/ParticleGroupfactory.cpp
+============================================================
+#include "ParticleGroupfactory.h"
+#include <DirectXCommon.h>
+#include <SrvManager.h>
+#include <TextureManager.h>
+#include <ResourceFactory.h>
+
+namespace MyEngine {
+
+    using namespace ResourceFactory;
+
+    // 静的メンバ変数の定義
+    std::unique_ptr<ParticleGroupfactory> ParticleGroupfactory::instance = nullptr;
+
+    // シングルトンインスタンスの取得
+    ParticleGroupfactory* ParticleGroupfactory::GetInstance() {
+        if (!instance) {
+            instance = std::make_unique<ParticleGroupfactory>();
+        }
+        return instance.get();
+    }
+
+    // 終了
+    void ParticleGroupfactory::Finalize() {
+        instance.reset();  // `delete` 不要
+    }
+
+    bool ParticleGroupfactory::Initialize(const std::string& name, const std::string& textureFilepath, std::unordered_map<std::string, ParticleGroup>* particleGroups) {
+        assert(particleGroups); // NULLチェック
+
+        // すでにテクスチャがロードされているか確認
+        if (!TextureManager::GetInstance()->IsTextureLoaded(textureFilepath)) {
+            TextureManager::GetInstance()->LoadTexture(textureFilepath);
+        }
+
+        // 2. 重複チェック
+        auto it = particleGroups->find(name);
+        if (it != particleGroups->end()) {
+            if (it->second.materialData.textureFilePath == textureFilepath) {
+                return true; // 既存のものをそのまま再利用するので、新規作成は不要
+            } else {
+                // テクスチャが異なる場合の更新処理（本物のマップデータを書き換える）
+                it->second.materialData.textureFilePath = textureFilepath;
+                it->second.materialData.textureindex = TextureManager::GetInstance()->GetSrvIndex(textureFilepath);
+                return true; // 更新が完了したので、新規作成は不要
+            }
+        }
+
+        return false; // 既存に存在しないため、新規作成が必要
+    }
+
+    ParticleGroup ParticleGroupfactory::CreateNewGroup(DirectXCommon* dxCommon, SrvManager* srvManager, const std::string& filename, const std::string& textureFilepath, uint32_t maxInstanceCount) {
+        ParticleGroup newGroup;
+
+        // 1. モデルの生成、初期化
+        newGroup.model = std::make_unique<ParticleModel>();
+        newGroup.model->Initialize(dxCommon, filename);
+
+        // 2. テクスチャパスとインデックスを設定
+        newGroup.materialData.textureFilePath = textureFilepath;
+        newGroup.materialData.textureindex = TextureManager::GetInstance()->GetSrvIndex("Resources/" + textureFilepath);
+
+        // 3. GPU StructuredBuffer 生成
+        newGroup.Resource = ResourceFactory::CreateStructuredBufferResource(dxCommon->GetDevice(), sizeof(ParticleForGPU) * maxInstanceCount);
+        newGroup.currentState = D3D12_RESOURCE_STATE_COMMON;
+
+        // 4. CPU UploadBuffer 生成 & ゼロクリア
+        newGroup.uploadResource = ResourceFactory::CreateBufferResource(dxCommon->GetDevice(), sizeof(ParticleForGPU) * maxInstanceCount);
+
+        if (SUCCEEDED(newGroup.uploadResource->Map(0, nullptr, reinterpret_cast<void**>(&newGroup.particleData)))) {
+            std::memset(newGroup.particleData, 0, sizeof(ParticleForGPU) * maxInstanceCount);
+            newGroup.uploadResource->Unmap(0, nullptr);
+        }
+
+        // 5. GPU側リソースへ初期データをコピー
+        dxCommon->GetCommandList()->CopyBufferRegion(
+            newGroup.Resource.Get(), 0, newGroup.uploadResource.Get(), 0, sizeof(ParticleForGPU) * maxInstanceCount
+        );
+        newGroup.currentState = D3D12_RESOURCE_STATE_COPY_DEST;
+
+        // 6. SRV の割り当てと作成
+        newGroup.srvindex = srvManager->Allocate();
+        srvManager->CreateSRVforStructuredBuffer(newGroup.srvindex, newGroup.Resource.Get(), maxInstanceCount, sizeof(ParticleForGPU));
+
+        // 7. UAV の割り当てと作成
+        newGroup.uavIndex = srvManager->Allocate();
+        srvManager->CreateUAVForStructuredBuffer(newGroup.uavIndex, newGroup.Resource.Get(), maxInstanceCount, sizeof(ParticleForGPU));
+
+        // 初期化済みのグループを返す
+        return newGroup;
+    }
+}
+
+============================================================
+File Path: project/engine/3d/Particle/ParticleGroupfactory.h
+============================================================
+#pragma once
+#include <string>
+#include <memory>
+#include <d3d12.h>
+#include <wrl/client.h>
+#include <Vector4.h> // 必要に応じて
+#include <MatrixVector.h>
+#include <ParticleModel.h>
+#include <ParticleData.h>
+
+namespace MyEngine {
+    // マネージャ側で使う前方宣言
+    class DirectXCommon;
+    class SrvManager;
+
+	class ParticleGroupfactory {
+	private:
+		static std::unique_ptr<ParticleGroupfactory> instance;
+
+		ParticleGroupfactory(ParticleGroupfactory&) = delete;
+		ParticleGroupfactory& operator=(ParticleGroupfactory&) = delete;
+	public: // メンバ関数
+		ParticleGroupfactory() = default;
+		~ParticleGroupfactory() = default;
+
+		// シングルトンインスタンスの取得
+		static ParticleGroupfactory* GetInstance();
+		// 終了
+		void Finalize();
+
+		// 戻り値：true = 既存のものを再利用・更新した（新規作成不要） / false = 既存になし（新規作成が必要）
+		bool Initialize(const std::string& name, const std::string& textureFilepath, std::unordered_map<std::string, ParticleGroup>* particleGroups);
+
+		// ─── 💡 【追加】グループを生成して初期化まで完了したオブジェクトを返す関数 ───
+		ParticleGroup CreateNewGroup(DirectXCommon* dxCommon, SrvManager* srvManager, const std::string& filename, const std::string& textureFilepath, uint32_t maxInstanceCount);
+
 	};
 }
 
@@ -16113,12 +16450,15 @@ File Path: project/engine/3d/Particle/ParticleManager.cpp
 #endif // USE_IMGUI
 #include <ResourceFactory.h>
 #include <CameraManager.h>
+#include <ParticleGroupfactory.h>
 
 using namespace Microsoft::WRL;
-using namespace MyEngine::MatrixVector;
-using namespace MyEngine::ResourceFactory;
 
 namespace MyEngine {
+
+    using namespace MatrixVector;
+    using namespace ResourceFactory;
+
     // 静的メンバ変数の定義
     std::unique_ptr<ParticleManager> ParticleManager::instance = nullptr;
 
@@ -16152,12 +16492,12 @@ namespace MyEngine {
         randomEngine = std::mt19937(rd());
         //ビルボード行列作成
         backToFrontMatrix = MakeRotateYMatrix(std::numbers::pi_v<float>);
-        // カメラリソースの生成、初期化
-        CameraForGPUGenerate();
-        particleInfoResource_ = CreateBufferResource(dxCommon_->GetDevice(), sizeof(ParticleInfo));
-        particleInfoResource_->Map(0, nullptr, reinterpret_cast<void**>(&particleInfoData_));
+        // 各種 GPU リソース・バッファの生成と初期化          
+        CameraForGPUGenerate();       // カメラ用
+        ParticleInfoBufferGenerate(); // パーティクル情報用
+        SpawnListBufferGenerate();    // スポーン要求リスト用
+        GroupSpawnCBufferGenerate();  // グループスポーン定数バッファ用
     }
-
 
     void ParticleManager::CameraForGPUGenerate() {
         // カメラ用リソースを作る
@@ -16170,175 +16510,216 @@ namespace MyEngine {
         cameraData->billboard = MakeIdentity4x4();
     }
 
+    void ParticleManager::ParticleInfoBufferGenerate() {
+        // 最大インスタンス数などを Compute Shader に伝えるためのバッファ
+        particleInfoResource_ = CreateBufferResource(dxCommon_->GetDevice(), sizeof(ParticleInfo));
+        particleInfoResource_->Map(0, nullptr, reinterpret_cast<void**>(&particleInfoData_));
+    }
+
+    void ParticleManager::SpawnListBufferGenerate() {
+        // 1フレーム中に発生した全グループのスポーンリクエストを一時的に集約するバッファ
+        spawnListResource_ = CreateBufferResource(dxCommon_->GetDevice(), sizeof(SpawnRequestGPU) * MaxSpawnRequestCount);
+        spawnListResource_->Map(0, nullptr, reinterpret_cast<void**>(&spawnListData_));
+    }
+
+    void ParticleManager::GroupSpawnCBufferGenerate() {
+        // 各グループが上の「SpawnList」のどこから何個読み込めばいいかのインデックス情報を格納
+        groupSpawnCBResource_ = CreateBufferResource(dxCommon_->GetDevice(), sizeof(GroupSpawnCB) * MaxGroupCount);
+        groupSpawnCBResource_->Map(0, nullptr, reinterpret_cast<void**>(&groupSpawnCBData_));
+    }
+
     void ParticleManager::Update() {
+        Matrix4x4 billboardMatrix;
+
         // カメラを CameraManager 経由で取得
         Camera* activeCamera = CameraManager::GetInstance()->GetActiveCamera();
         if (!activeCamera) { return; }
 
-        //=========================================================
         // カメラ行列更新（GPUへ渡す）
-        //=========================================================
-
-        //----------------------------------------
-        // billboard更新
-        //----------------------------------------
-        Matrix4x4 billboardMatrix = Multiply(backToFrontMatrix, activeCamera->GetWorldMatrix());
+        billboardMatrix = Multiply(backToFrontMatrix, activeCamera->GetWorldMatrix());
+        cameraData->view = activeCamera->GetViewMatrix();
+        cameraData->projection = activeCamera->GetProjectionMatrix();
         // パーティクルの位置をカメラの方向に合わせるために設定
         billboardMatrix.m[3][0] = 0.0f;
         billboardMatrix.m[3][1] = 0.0f;
-        billboardMatrix.m[3][2] = 0.0f;
+        billboardMatrix.m[3][2] = 0.0f; 
+        cameraData->billboard = billboardMatrix;        
 
-        cameraData->view = activeCamera->GetViewMatrix();
-        cameraData->projection = activeCamera->GetProjectionMatrix();
-        cameraData->billboard = billboardMatrix;
-
-        //--------------------------------------
         // DescriptorHeap設定
-        //----------------------------------------
         srvmanager_->PreDraw();
 
-        particleCommon_->CommandCompute();
+        // リソースを一括でUAV状態へ遷移
+        for (auto& [name, group] : particleGroups) {
+            TransitionParticleBuffer(group, D3D12_RESOURCE_STATE_UNORDERED_ACCESS);
+        }
+
+        // スポーンキューキューの蓄積・Dispatch処理
+        std::vector<ActiveGroupSpawn> activeSpawns;
+        uint32_t totalRequests = BuildSpawnRequests(activeSpawns);
+
+        if (totalRequests > 0 && !activeSpawns.empty()) {
+            // 前フェーズとの衝突を防ぐため、対象リソースのUAVバリアを一括適用
+            std::vector<ID3D12Resource*> targetResources;
+            for (const auto& spawn : activeSpawns) { targetResources.push_back(spawn.group->Resource.Get()); }
+            PipelineUAVBarriers(targetResources);
+            // スポーン処理のDispatch
+            DispatchSpawnCommands(activeSpawns);
+            // スポーン完了後に次のUpdate（シミュレーション）へ繋ぐバリア
+            PipelineUAVBarriers(targetResources);
+        }
+
+        // パーティクルの動き・寿命等のシミュレーション更新 (Update CS)
+        particleCommon_->CommandUpdate();
+        std::vector<ID3D12Resource*> updateResources;
 
         for (auto& [name, group] : particleGroups) {
-            //----------------------------------------
-            // UAV設定
-            //----------------------------------------
-            srvmanager_->SetComputeRootDescriptorTable(0, group.uavIndex);
+            if (group.lastAllocatedIndex == 0) { continue; }
 
+            srvmanager_->SetComputeRootDescriptorTable(0, group.uavIndex);
             particleInfoData_->particleCount = MaxInstanceCount;
             dxCommon_->GetCommandList()->SetComputeRootConstantBufferView(1, particleInfoResource_->GetGPUVirtualAddress());
 
-            //----------------------------------------
-            // Dispatch
-            //----------------------------------------
             uint32_t threadGroupCount = (MaxInstanceCount + 255) / 256;
             dxCommon_->GetCommandList()->Dispatch(threadGroupCount, 1, 1);
+            updateResources.push_back(group.Resource.Get());
+        }
+
+        if (!updateResources.empty()) {
+            PipelineUAVBarriers(updateResources);
         }
     }
 
     void ParticleManager::Draw() {
         // パーティクルグループごとに描画処理を行う
-        for (const auto& [name, particleGroup] : particleGroups) {
-            // モデルに必要なバッファをバインド（頂点バッファや定数バッファなど）
-            particleGroup.model->Draw();
+        for (auto& [name, particleGroup] : particleGroups) {
+            // UAV -> SRV
+            TransitionParticleBuffer(particleGroup, D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE);
             // インスタンシングデータの SRV を設定（テクスチャファイルのパスを指定）
             srvmanager_->SetGraphicsRootDescriptorTable(1, particleGroup.srvindex);
             // SRVで画像を表示
             srvmanager_->SetGraphicsRootDescriptorTable(2, particleGroup.materialData.textureindex);
 
             dxCommon_->GetCommandList()->SetGraphicsRootConstantBufferView(3, cameraResource->GetGPUVirtualAddress());
+            // モデルに必要なバッファをバインド（頂点バッファや定数バッファなど）
+            particleGroup.model->Draw();
             // 描画（インスタンシング）を実行
             dxCommon_->GetCommandList()->DrawInstanced(static_cast<UINT>(particleGroup.model->GetVertexCount()), static_cast<UINT>(MaxInstanceCount), 0, 0);
         }
     }
 
     void ParticleManager::CreateParticleGroup(const std::string& name, const std::string& textureFilepath, const std::string& filename) {
-        // すでにテクスチャがロードされているか確認
-        if (!TextureManager::GetInstance()->IsTextureLoaded(textureFilepath)) {
-            // マテリアルのテクスチャファイルをロード
-            TextureManager::GetInstance()->LoadTexture(textureFilepath);
+        // 1. まずファクトリーを介してテクスチャをロード＆既存チェック（自分自身のマップのアドレスを渡す）
+        // すでに存在するか、テクスチャの更新が終わっていればここで return される
+        if (ParticleGroupfactory::GetInstance()->Initialize(name, textureFilepath, &particleGroups)) {
+            return;
         }
 
-        // パーティクルグループ名が既に存在するかチェック
-        auto it = particleGroups.find(name);
-        if (it != particleGroups.end()) {
-            // 名前が一致するグループが存在する場合、そのグループのテクスチャが一致するか確認
-            if (it->second.materialData.textureFilePath == textureFilepath) {
-                // テクスチャが一致する場合、既存のグループを再利用
-                return;
-            } else {
-                // テクスチャが異なる場合、既存のグループを更新
-                it->second.materialData.textureFilePath = textureFilepath;
-                it->second.materialData.textureindex = TextureManager::GetInstance()->GetSrvIndex(textureFilepath);
-                // 必要に応じてリソースの再割り当てなどを行うことができます
-            }
-        } else {
-            // 新しいパーティクルグループを作成
-            ParticleGroup& newGroup = particleGroups[name];
-            // モデルの生成、初期化
-            newGroup.model = std::make_unique<ParticleModel>();
-            newGroup.model->Initialize(dxCommon_, filename);
+        // 2. 既存になかった場合のみ、新規グループをファクトリーに丸投げして新規グループを追加
+        particleGroups[name] = ParticleGroupfactory::GetInstance()->CreateNewGroup(dxCommon_, srvmanager_, filename, textureFilepath, MaxInstanceCount);
+    }
 
-            // 新しいパーティクルグループにテクスチャパスとインデックスを設定
-            newGroup.materialData.textureFilePath = textureFilepath;
-            newGroup.materialData.textureindex = TextureManager::GetInstance()->GetSrvIndex("Resources/" + textureFilepath);
-            // GPU StructuredBuffer
-            newGroup.Resource = CreateStructuredBufferResource(dxCommon_->GetDevice(), sizeof(ParticleForGPU) * MaxInstanceCount);
-            // CPU UploadBuffer            
-            newGroup.uploadResource = CreateBufferResource(dxCommon_->GetDevice(), sizeof(ParticleForGPU) * MaxInstanceCount);
-            // Map (CPU側だけ)
-            newGroup.uploadResource->Map(0, nullptr, reinterpret_cast<void**>(&newGroup.particleData));
+    void ParticleManager::Emit(const std::string& name, const ParticleSpawnData& spawnData) {
+        spawnRequests_.push_back({ name,spawnData });
+    }
 
-            //---------------------------------------- 
-            // 初期化
-            //----------------------------------------     
-            for (uint32_t i = 0; i < MaxInstanceCount; ++i) {
-                auto& particle = newGroup.particleData[i];
-                particle.translate = { 0.0f, 0.0f, 0.0f };
-                particle.pad0 = 0.0f; // 💡 追加
-                particle.rotate = { 0.0f, 0.0f, 0.0f };
-                particle.pad1 = 0.0f; // 💡 追加
-                particle.scale = { 1.0f, 1.0f, 1.0f };
-                particle.pad2 = 0.0f; // 💡 追加
+    uint32_t ParticleManager::BuildSpawnRequests(std::vector<ActiveGroupSpawn>& outActiveSpawns) {
+        if (spawnRequests_.empty()) { return 0; }
 
-                particle.color = { 1.0f, 1.0f, 1.0f, 0.0f };
+        uint32_t totalRequestCount = 0;
 
-                particle.velocityTranslate = { 0.0f, 0.0f, 0.0f };
-                particle.pad3 = 0.0f; // 💡 追加
-                particle.velocityRotate = { 0.0f, 0.0f, 0.0f };
-                particle.pad4 = 0.0f; // 💡 追加
-                particle.velocityScale = { 0.0f, 0.0f, 0.0f };
-                particle.pad5 = 0.0f; // 💡 追加
+        for (const auto& request : spawnRequests_) {
+            auto it = particleGroups.find(request.groupName);
+            if (it == particleGroups.end()) { continue; }
+            if (outActiveSpawns.size() >= MaxGroupCount) { break; }
 
-                particle.lifetime = 0.0f;
-                particle.currentTime = 0.0f;
-                particle.useGravity = 0;
-                particle.pad6 = 0.0f; // 💡 追加
+            ParticleGroup& group = it->second;
+            const auto& spawnData = request.spawnData;
+            uint32_t groupStartIndex = totalRequestCount;
+
+            for (uint32_t i = 0; i < spawnData.count; ++i) {
+                if (totalRequestCount >= MaxSpawnRequestCount) { break; }
+
+                SpawnRequestGPU& dst = spawnListData_[totalRequestCount];
+                dst.translate = spawnData.transform.translate;
+                dst.rotate = spawnData.transform.rotate;
+                dst.scale = spawnData.transform.scale;
+                dst.color = spawnData.color;
+                dst.velocityTranslate = spawnData.velocity.translate;
+                dst.velocityRotate = spawnData.velocity.rotate;
+                dst.velocityScale = spawnData.velocity.scale;
+                dst.lifetime = spawnData.lifetime;
+                dst.useGravity = spawnData.useGravity ? 1u : 0u;
+
+                dst.targetIndex = group.lastAllocatedIndex;
+                group.lastAllocatedIndex = (group.lastAllocatedIndex + 1) % MaxInstanceCount;
+                totalRequestCount++;
             }
 
-            // 初回コピー       
-            dxCommon_->GetCommandList()->CopyBufferRegion(newGroup.Resource.Get(), 0, newGroup.uploadResource.Get(), 0, sizeof(ParticleForGPU) * MaxInstanceCount);
-            // インスタンスバッファ用のSRVを割り当て、インデックスを記録
-            newGroup.srvindex = srvmanager_->Allocate();
-            // 構造体バッファ用のSRVを作成
-            srvmanager_->CreateSRVforStructuredBuffer(newGroup.srvindex, newGroup.Resource.Get(), MaxInstanceCount, sizeof(ParticleForGPU));
-            // UAV
-            newGroup.uavIndex = srvmanager_->Allocate();
-            srvmanager_->CreateUAVForStructuredBuffer(newGroup.uavIndex, newGroup.Resource.Get(), MaxInstanceCount, sizeof(ParticleForGPU));
+            uint32_t groupSpawnCount = totalRequestCount - groupStartIndex;
+            if (groupSpawnCount > 0) {
+                outActiveSpawns.push_back({ &group, groupStartIndex, groupSpawnCount });
+            }
+        }
+
+        spawnRequests_.clear();
+        return totalRequestCount;
+    }
+
+    void ParticleManager::DispatchSpawnCommands(const std::vector<ActiveGroupSpawn>& activeSpawns) {
+        particleCommon_->CommandSpawn();
+        uint32_t cbCBVIndex = 0;
+
+        for (const auto& spawn : activeSpawns) {
+            if (cbCBVIndex >= MaxGroupCount) { break; }
+
+            groupSpawnCBData_[cbCBVIndex].startRequestIndex = spawn.startIndex;
+            groupSpawnCBData_[cbCBVIndex].spawnCount = spawn.count;
+
+            srvmanager_->SetComputeRootDescriptorTable(0, spawn.group->uavIndex);
+            D3D12_GPU_VIRTUAL_ADDRESS cbvAddress = groupSpawnCBResource_->GetGPUVirtualAddress() + (cbCBVIndex * sizeof(GroupSpawnCB));
+            dxCommon_->GetCommandList()->SetComputeRootConstantBufferView(1, cbvAddress);
+            dxCommon_->GetCommandList()->SetComputeRootShaderResourceView(2, spawnListResource_->GetGPUVirtualAddress());
+
+            uint32_t threadGroupCount = (spawn.count + 63) / 64;
+            dxCommon_->GetCommandList()->Dispatch(threadGroupCount, 1, 1);
+
+            cbCBVIndex++;
         }
     }
 
-    void ParticleManager::Emit(const std::string& name, const Transform& transform, const Vector4& color, uint32_t count, const Velocity& velocity, float lifetime) {
+    void ParticleManager::TransitionParticleBuffer(ParticleGroup& group, D3D12_RESOURCE_STATES after) {
+        if (group.currentState == after) {
+            return;
+        }
+        D3D12_RESOURCE_BARRIER barrier{};
+        barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+        barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
+        barrier.Transition.pResource = group.Resource.Get();
+        barrier.Transition.StateBefore = group.currentState;
+        barrier.Transition.StateAfter = after;
+        barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
 
-        auto it = particleGroups.find(name);
-        if (it == particleGroups.end()) {
-            throw std::runtime_error("Particle group not found: " + name);
+        dxCommon_->GetCommandList()->ResourceBarrier(1, &barrier);
+        group.currentState = after;
+    }
+
+    void ParticleManager::PipelineUAVBarriers(const std::vector<ID3D12Resource*>& resources) {
+        if (resources.empty()) { return; }
+
+        std::vector<D3D12_RESOURCE_BARRIER> barriers;
+        barriers.reserve(resources.size());
+
+        for (auto* resource : resources) {
+            if (!resource) { continue; }
+            D3D12_RESOURCE_BARRIER barrier{};
+            barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_UAV;
+            barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
+            barrier.UAV.pResource = resource;
+            barriers.push_back(barrier);
         }
 
-        ParticleGroup& group = it->second;
-
-        // GPU側のバッファ（にマップされたCPUアドレス）に直接書き込む
-        for (uint32_t i = 0; i < count; ++i) {
-            // 配列の最大数を超えたら0に戻る（古いものから順に上書き）
-            uint32_t index = group.lastAllocatedIndex;
-            group.lastAllocatedIndex = (group.lastAllocatedIndex + 1) % MaxInstanceCount;
-
-            auto& gpu = group.particleData[index];
-
-            // 初期値のセット
-            gpu.translate = transform.translate;
-            gpu.rotate = transform.rotate;
-            gpu.scale = transform.scale;
-            gpu.color = color;
-            gpu.velocityTranslate = velocity.translate;
-            gpu.velocityRotate = velocity.rotate;
-            gpu.velocityScale = velocity.scale;
-            gpu.lifetime = lifetime;
-            gpu.currentTime = 0.0f; // ★ 0からスタート（生存フラグを兼ねる）
-            gpu.useGravity = (name == "Firework") ? 1 : 0;
-            // ─── 💡 【復活】新しく出た1つ分だけを即座にGPUに送り込む ───
-            UINT64 offset = static_cast<UINT64>(sizeof(ParticleForGPU)) * index;
-            dxCommon_->GetCommandList()->CopyBufferRegion(group.Resource.Get(), offset, group.uploadResource.Get(), offset, sizeof(ParticleForGPU));
+        if (!barriers.empty()) {
+            dxCommon_->GetCommandList()->ResourceBarrier(static_cast<UINT>(barriers.size()), barriers.data());
         }
     }
 }
@@ -16378,30 +16759,26 @@ namespace MyEngine {
 		void Update();
 		// 描画処理
 		void Draw();
-
 		// パーティクルグループの作成
 		void CreateParticleGroup(const std::string& name, const std::string& textureFilepath, const std::string& filename);
-
 		// 発生
-		void Emit(const std::string& name, const Transform& transform, const Vector4& color, uint32_t count, const Velocity& velocity, float lifetime);
+		void Emit(const std::string& name, const ParticleSpawnData& spawnData);
 
 		void ClearAll();
-
+	private: // 内部関数
 		void CameraForGPUGenerate();
-	
-		void SetAutoEmit(const std::string& name, const Transform& transform, const Vector4& color, uint32_t count, const Velocity& velocity, float frequency, float lifetime) {
-			autoEmitGroup_ = name;
-			emitTransform_ = transform;
-			emitColor_ = color;
-			emitCount_ = count;
-			emitVelocity_ = velocity;
-			emitFrequency_ = frequency;
-			emitParticleLifetime_ = lifetime;
-			isAutoEmitActive_ = true;
-			emitTimer_ = 0.0f;
-		}
-
-		void StopAutoEmit() { isAutoEmitActive_ = false; }
+		void ParticleInfoBufferGenerate();  // パーティクル基本情報のバッファ生成
+		void SpawnListBufferGenerate();     // 全グループ共通のスポーン要求バッファ生成
+		void GroupSpawnCBufferGenerate();   // グループごとの範囲伝達用定数バッファ生成
+		// ProcessSpawnRequests から分割した段階的な関数群
+        struct ActiveGroupSpawn { ParticleGroup* group; uint32_t startIndex; uint32_t count; }; 
+        // 要求を1つのリニアな配列（CommandQueue）に詰め込み、各グループの生成範囲を特定する (CPU処理)
+        uint32_t BuildSpawnRequests(std::vector<ActiveGroupSpawn>& outActiveSpawns);
+        // 構築されたリクエストを基に、実際にComputeShaderのDispatchを実行する (GPU処理)
+        void DispatchSpawnCommands(const std::vector<ActiveGroupSpawn>& activeSpawns);
+        // リソース遷移・バリア関連（共通化）
+        void TransitionParticleBuffer(ParticleGroup& group, D3D12_RESOURCE_STATES after);
+        void PipelineUAVBarriers(const std::vector<ID3D12Resource*>& resources);
 	private: // メンバ変数
 		// ポインタ
 		DirectXCommon* dxCommon_;
@@ -16410,28 +16787,22 @@ namespace MyEngine {
 		// ランダムエンジン
 		std::mt19937 randomEngine;
 		//最大インスタンス
-		uint32_t MaxInstanceCount = 1500;
+		uint32_t MaxInstanceCount = 1000;
 		//ビルボード行列
 		Matrix4x4 backToFrontMatrix;
 		// パーティクルグループコンテナ
 		std::unordered_map<std::string, ParticleGroup> particleGroups;
 
 		Microsoft::WRL::ComPtr<ID3D12Resource> cameraResource;
-		CameraData* cameraData = nullptr;
 		Microsoft::WRL::ComPtr<ID3D12Resource> particleInfoResource_;
+		Microsoft::WRL::ComPtr<ID3D12Resource> spawnListResource_;
+		Microsoft::WRL::ComPtr<ID3D12Resource> groupSpawnCBResource_;
+		CameraData* cameraData = nullptr;
 		ParticleInfo* particleInfoData_ = nullptr;
+		SpawnRequestGPU* spawnListData_ = nullptr;
+		GroupSpawnCB* groupSpawnCBData_ = nullptr;
 
-
-		// 💡 追加：自動発生用の管理変数群
-		bool isAutoEmitActive_ = false;
-		std::string autoEmitGroup_;
-		Transform emitTransform_;
-		Vector4 emitColor_ = { 1.0f, 1.0f, 1.0f, 1.0f };
-		uint32_t emitCount_ = 0;
-		Velocity emitVelocity_;
-		float emitFrequency_ = 0.0f;       // 発生間隔（秒）
-		float emitTimer_ = 0.0f;           // 現在の経過タイマー
-		float emitParticleLifetime_ = 0.0f;// 生成するパーティクル自体の寿命
+		std::vector<SpawnRequest> spawnRequests_;
 	public: // アクセッサ
 		// getter
 		ParticleGroup& GetGroup(const std::string& name) {
@@ -16440,6 +16811,25 @@ namespace MyEngine {
 		}
 		uint32_t GetMaxInstanceCount() const { return MaxInstanceCount; }
 
+
+		float Rand(float minVal, float maxVal) { // 💡マクロとの衝突を防ぐため引数名変更
+			std::uniform_real_distribution<float> dist(minVal, maxVal);
+			return dist(randomEngine);
+		}
+		Vector3 RandVec3(const RandomRange<Vector3>& r) { return { this->Rand(r.min.x, r.max.x), this->Rand(r.min.y, r.max.y), this->Rand(r.min.z, r.max.z) }; }
+		float SafeRand(const RandomRange<float>& r, float baseValue) {
+			if (r.min == 0.0f && r.max == 0.0f) { return baseValue; }
+			return this->Rand(r.min, r.max);
+		}
+
+		bool IsEnabled(const RandomRange<float>& r) { return !(r.min == 0.0f && r.max == 0.0f); }      
+		Vector3 SafeRandVec3(const RandomRange<Vector3>& r) {
+			return {
+				(r.min.x == r.max.x) ? r.min.x : this->Rand(r.min.x, r.max.x),
+				(r.min.y == r.max.y) ? r.min.y : this->Rand(r.min.y, r.max.y),
+				(r.min.z == r.max.z) ? r.min.z : this->Rand(r.min.z, r.max.z)
+			};
+		}
 	};
 }
 
