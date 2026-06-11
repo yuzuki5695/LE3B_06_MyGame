@@ -79,18 +79,6 @@
       <Command>copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxcompiler.dll" "$(TargetDir)dxcompiler.dll"
 copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dxil.dll"</Command>
     </PostBuildEvent>
-    <PreBuildEvent>
-      <Command>"$(SolutionDir)..\generated\outputs\$(Configuration)\AssetGenerator.exe" "$(SolutionDir).."</Command>
-    </PreBuildEvent>
-    <CustomBuildStep>
-      <Command>"$(SolutionDir)..\generated\outputs\$(Configuration)\AssetGenerator.exe" "$(SolutionDir).."</Command>
-    </CustomBuildStep>
-    <CustomBuildStep>
-      <Message>Checking and generating resource IDs</Message>
-    </CustomBuildStep>
-    <CustomBuildStep>
-      <Outputs>$(SolutionDir)subproject\AssetGenerator\engine\generator\LoadResourceID.h;%(Outputs)</Outputs>
-    </CustomBuildStep>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>

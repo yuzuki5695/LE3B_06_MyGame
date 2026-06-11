@@ -121,7 +121,9 @@ namespace MyEngine {
         if (totalRequests > 0 && !activeSpawns.empty()) {
             // 前フェーズとの衝突を防ぐため、対象リソースのUAVバリアを一括適用
             std::vector<ID3D12Resource*> targetResources;
-            for (const auto& spawn : activeSpawns) { targetResources.push_back(spawn.group->Resource.Get()); }
+            for (const auto& spawn : activeSpawns) {
+                targetResources.push_back(spawn.group->Resource.Get());
+            }
             PipelineUAVBarriers(targetResources);
             // スポーン処理のDispatch
             DispatchSpawnCommands(activeSpawns);
