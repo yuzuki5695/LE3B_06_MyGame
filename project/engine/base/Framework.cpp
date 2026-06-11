@@ -70,6 +70,10 @@ namespace MyEngine {
         srvManager.reset();
         // DirectXの解放
         dxCommon.reset();
+        // 音声再生の開放
+        SoundPlayer::GetInstance()->Finalize();
+        // 音声読み込みの開放
+        SoundLoader::GetInstance()->Finalize();
         // WindowsAPIの解放
         winApp.reset();
         //リソースリークチェック
