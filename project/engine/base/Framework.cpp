@@ -136,11 +136,11 @@ namespace MyEngine {
         // 箱の共通部の初期化
         SkyboxCommon::GetInstance()->Initialize(dxCommon.get(), dsvManager.get());
 #ifdef USE_IMGUI
-        // パーティクルマネージャの初期化
-        ParticleManager::GetInstance()->Initialize(dxCommon.get(), srvManager.get(),ParticleCommon::GetInstance());
         // ライン共通部の初期化
         LineCommon::GetInstance()->Initialize(dxCommon.get());
 #endif // USE_IMGUI
+        // パーティクルマネージャの初期化
+        ParticleManager::GetInstance()->Initialize(dxCommon.get(), srvManager.get(),ParticleCommon::GetInstance());
 #pragma endregion 基盤システムの初期化
 #ifdef USE_IMGUI
         // ------------------------------------------------------------
