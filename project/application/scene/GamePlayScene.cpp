@@ -94,19 +94,15 @@ namespace MyGame {
         // 敵のパラメータ
         EnemyListEditor::GetInstance()->Initialize();
 #endif // USE_IMGUI
-
-        // パーティクルの生死、初期化
-        particle_ = std::make_unique<GamePlayparticle>();
-        particle_->Initialize(player_->GetObject3d());
     }
 
     void GamePlayScene::Update() {
-		//// ゲーム開始イベントの開始判定
-  //      if (!isGameStartEventDone_ && CameraManager::GetInstance()->GetCameraState().state == CameraDefs::CameraState::Default) {
-  //          // ゲーム開始イベントの開始
-  //          EventManager::GetInstance()->EventStart(Event::EventState::GameStart);
-  //          isGameStartEventDone_ = true;
-  //      }
+		// ゲーム開始イベントの開始判定
+        if (!isGameStartEventDone_ && CameraManager::GetInstance()->GetCameraState().state == CameraDefs::CameraState::Default) {
+            // ゲーム開始イベントの開始
+            EventManager::GetInstance()->EventStart(Event::EventState::GameStart);
+            isGameStartEventDone_ = true;
+        }
 
         // イベント終了判定
         if (!EventManager::GetInstance()->IsActive()) {
@@ -153,7 +149,6 @@ namespace MyGame {
 
         // カメラマネージャの更新
         CameraManager::GetInstance()->Update();
-        particle_->Update();
 #pragma region 全てのObject3d個々の更新処理
 
         if (!gamened_) {
@@ -236,7 +231,6 @@ namespace MyGame {
         StageManager::GetInstance()->Draw();
         // パーティクルの描画準備。パーティクルの描画に共通のグラフィックスコマンドを積む 
         ParticleCommon::GetInstance()->Commondrawing(); 
-        ParticleManager::GetInstance()->Draw();
 #pragma endregion 全てのObject3d個々の描画処理
 
 #pragma region 全てのSprite個々の描画処理 

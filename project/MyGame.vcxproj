@@ -149,8 +149,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="application\loader\CurveJsonLoader.cpp" />
     <ClCompile Include="application\loader\PlayerDataLoader.cpp" />
     <ClCompile Include="application\math\Spline.cpp" />
-    <ClCompile Include="application\particle\GamePlayparticle.cpp" />
-    <ClCompile Include="application\particle\ParticleEmitter.cpp" />
     <ClCompile Include="application\scene\GameOverScene.cpp" />
     <ClCompile Include="application\scene\GamePlayScene.cpp" />
     <ClCompile Include="application\scene\TitleScene.cpp" />
@@ -265,8 +263,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\loader\CurveJsonLoader.h" />
     <ClInclude Include="application\loader\PlayerDataLoader.h" />
     <ClInclude Include="application\math\Spline.h" />
-    <ClInclude Include="application\particle\GamePlayparticle.h" />
-    <ClInclude Include="application\particle\ParticleEmitter.h" />
     <ClInclude Include="application\scene\GameClearScene.h" />
     <ClInclude Include="application\scene\GameOverScene.h" />
     <ClInclude Include="application\scene\GamePlayScene.h" />
