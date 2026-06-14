@@ -15,7 +15,7 @@ namespace MyEngine {
         sceneFactory_ = std::make_unique<SceneFactory>();
         SceneManager::GetInstance()->SetSceneFactory(sceneFactory_.get());
         // シーンマネージャに最初のシーンをセット
-        SceneManager::GetInstance()->ChangeScene(SceneName::TITLE);
+        SceneManager::GetInstance()->ChangeScene(SceneName::GAMEPLAY);
     }
 
     void MyGame::Update() {

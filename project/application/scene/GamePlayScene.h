@@ -4,9 +4,9 @@
 #include <Player.h>
 #include <Enemy.h>
 #include <EnemySpawner.h>
+#include <GamePlayparticle.h>
 
 namespace MyGame {
-
     /// <summary>
     /// 実際のゲームプレイを行うシーン。
     /// </summary>
@@ -42,5 +42,7 @@ namespace MyGame {
         bool gamened_;
         uint32_t prevPlayerExp_; // 前フレームのプレイヤーの経験値
         bool isFirstExpGainIgnored_ = false; // 経験値の初期化が完了したかどうかのフラグ
+
+        std::unique_ptr<GamePlayparticle> particle_;
     };
 }

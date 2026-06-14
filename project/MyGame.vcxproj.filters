@@ -382,6 +382,9 @@
     <Filter Include="ソース ファイル\application\character\enemy\component">
       <UniqueIdentifier>{61879419-1938-46bf-9a6b-528d1c6d651e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ソース ファイル\application\particle">
+      <UniqueIdentifier>{efaedea6-9d87-4ac4-bb84-b5db6f72475b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="engine\2d\Sprite.cpp">
@@ -680,6 +683,12 @@
     </ClCompile>
     <ClCompile Include="main.cpp">
       <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="application\particle\ParticleEmitter.cpp">
+      <Filter>ソース ファイル\application\particle</Filter>
+    </ClCompile>
+    <ClCompile Include="application\particle\GamePlayparticle.cpp">
+      <Filter>ソース ファイル\application\particle</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1114,6 +1123,12 @@
     </ClInclude>
     <ClInclude Include="engine\3d\Particle\ParticleGroupfactory.h">
       <Filter>ヘッダー ファイル\engine\3d\Particle</Filter>
+    </ClInclude>
+    <ClInclude Include="application\particle\ParticleEmitter.h">
+      <Filter>ソース ファイル\application\particle</Filter>
+    </ClInclude>
+    <ClInclude Include="application\particle\GamePlayparticle.h">
+      <Filter>ソース ファイル\application\particle</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
