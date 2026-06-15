@@ -6,10 +6,12 @@ namespace MyGame {
 
     void GamePlayparticle::Initialize(Object3d* target) {
         // パーティクルグループ生成
-        ParticleManager::GetInstance()->CreateParticleGroup("Particles", "Particle.png", "Particle.obj", 1000);
-        // =========================
-        // エミッター生成
-        // =========================
+        //ParticleManager::GetInstance()->CreateParticleGroup("Firework", "Models/Particles/Particle.png", "Models/Particles/Particle.obj", 300);
+        //ParticleManager::GetInstance()->CreateParticleGroup("Shockwave", "Models/Particles/Shockwave.png", "Models/Particles/Shockwave.obj", 300);     
+
+        ParticleManager::GetInstance()->CreateParticleGroup("Particles", "Models/Particles/Particle.png", "Models/Particles/Particle.obj", 300);
+
+        // エミッター生成     
         Transform emitterTransform{};
         emitterTransform.translate = target->GetTranslate();
         emitterTransform.translate.z += 30.0f;
