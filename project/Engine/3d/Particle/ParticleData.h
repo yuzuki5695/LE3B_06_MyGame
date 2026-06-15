@@ -10,7 +10,7 @@
 
 namespace MyEngine {
 
-    // ゲーム全体の最大パーティクルグループ数の目安（必要に応じて増やしてOK）
+    // ゲーム全体の最大パーティクルグループ数の目安
     static const uint32_t MaxGroupCount = 64;
 
     // ゲーム全体で1フレームにスポーンできる合計数の器
@@ -38,6 +38,8 @@ namespace MyEngine {
         float lifetime;
         float currentTime;
         uint32_t useGravity;        float pad6;
+        uint32_t isAlive;
+
         float startAlpha;           float pad7[3];
     };
 
@@ -46,12 +48,13 @@ namespace MyEngine {
         Vector3 rotate;             float pad1;
         Vector3 scale;              float pad2;
         Vector4 color;
+
         Vector3 velocityTranslate;  float pad3;
         Vector3 velocityRotate;     float pad4;
         Vector3 velocityScale;      float pad5;
+
         float lifetime;
         uint32_t useGravity;
-        uint32_t targetIndex;
         float padding;
     };
 
@@ -61,22 +64,22 @@ namespace MyEngine {
         float padding[62]; // 256バイト境界合わせ
     };
 
-     template<typename T>
-	 struct RandomRange { T min{};    T max{};    bool enable = false; };
-     struct ParticleSpawnRandom {
-         RandomRange<Vector3> translate;
-         RandomRange<Vector3> rotate;
-         RandomRange<Vector3> scale;
+    template<typename T>
+    struct RandomRange { T min{};    T max{};    bool enable = false; };
+    struct ParticleSpawnRandom {
+        RandomRange<Vector3> translate;
+        RandomRange<Vector3> rotate;
+        RandomRange<Vector3> scale;
 
-         RandomRange<Vector4> color;
+        RandomRange<Vector4> color;
 
-         RandomRange<Vector3> velocityTranslate;
-         RandomRange<Vector3> velocityRotate;
-         RandomRange<Vector3> velocityScale;
+        RandomRange<Vector3> velocityTranslate;
+        RandomRange<Vector3> velocityRotate;
+        RandomRange<Vector3> velocityScale;
 
-         RandomRange<float> lifetime;
-         RandomRange<uint32_t> count;
-     };
+        RandomRange<float> lifetime;
+        RandomRange<uint32_t> count;
+    };
 
     // ─── CPU・システム内管理用構造体 ───
 
@@ -105,12 +108,20 @@ namespace MyEngine {
         MaterialData materialData;                               // マテリアルデータ(テクスチャファイルパスとテクスチャ用SRVインデックス)	
         Microsoft::WRL::ComPtr <ID3D12Resource> Resource;        // インスタンシングリソース 
         Microsoft::WRL::ComPtr <ID3D12Resource> uploadResource;        // インスタンシングリソース 
+        uint32_t maxInstanceCount = 0;  // 最大インスタンス数
         uint32_t srvindex;                                       // インスタンシング用SRVインデックス
         uint32_t uavIndex;                                       // インスタンシング用UAVインデックス
-        uint32_t lastAllocatedIndex = 0;
-        D3D12_RESOURCE_STATES currentState;
-        ParticleForGPU* particleData = nullptr;
 
-        uint32_t activeInstanceCount = 0;
+        D3D12_RESOURCE_STATES particleState = D3D12_RESOURCE_STATE_COMMON;
+        // FreeList
+        Microsoft::WRL::ComPtr<ID3D12Resource> freeListResource;
+        Microsoft::WRL::ComPtr<ID3D12Resource> freeListUpload;
+        D3D12_RESOURCE_STATES freeListState = D3D12_RESOURCE_STATE_COMMON;
+        uint32_t freeListUavIndex = 0;
+        // FreeCounter
+        Microsoft::WRL::ComPtr<ID3D12Resource> freeCounterResource;
+        Microsoft::WRL::ComPtr<ID3D12Resource> counterUpload;
+        D3D12_RESOURCE_STATES freeCounterState = D3D12_RESOURCE_STATE_COMMON;
+        uint32_t freeCounterUavIndex = 0;
     };
 }

@@ -136,21 +136,21 @@ namespace MyEngine {
         std::vector<ID3D12Resource*> updateResources;
 
         for (auto& [name, group] : particleGroups) {
-            //            if (group.lastAllocatedIndex == 0) { continue; }
-            if (group.lastAllocatedIndex == 0 && group.activeInstanceCount == 0) { continue; }
-
+            particleInfoData_->particleCount = group.maxInstanceCount;
+            // root0 : particle
             srvmanager_->SetComputeRootDescriptorTable(0, group.uavIndex);
-            // 💡 常に MaxInstanceCount ではなく、これまでに割り当てられた最大インデックス（またはMax）までに制限       
-            // 一度でもMaxまで回ったらMaxInstanceCountになりますが、未使用時はlastAllocatedIndex付近に絞れます
-            uint32_t processCount = (group.lastAllocatedIndex > group.activeInstanceCount) ? group.lastAllocatedIndex : group.activeInstanceCount;
-            if (processCount == 0) processCount = MaxInstanceCount; // 安全策
-            particleInfoData_->particleCount = processCount;
+            // root1 : freeList
+            srvmanager_->SetComputeRootDescriptorTable(1, group.freeListUavIndex);
+            // root2 : freeCounter
+            srvmanager_->SetComputeRootDescriptorTable(2, group.freeCounterUavIndex);
+            // root3 : ParticleInfo
+            dxCommon_->GetCommandList()->SetComputeRootConstantBufferView(3, particleInfoResource_->GetGPUVirtualAddress());
 
-            dxCommon_->GetCommandList()->SetComputeRootConstantBufferView(1, particleInfoResource_->GetGPUVirtualAddress());
-
-            uint32_t threadGroupCount = (processCount + 255) / 256;
+            uint32_t threadGroupCount = (group.maxInstanceCount + 255) / 256;
             dxCommon_->GetCommandList()->Dispatch(threadGroupCount, 1, 1);
             updateResources.push_back(group.Resource.Get());
+            updateResources.push_back(group.freeListResource.Get());
+            updateResources.push_back(group.freeCounterResource.Get());
         }
 
         if (!updateResources.empty()) {
@@ -161,10 +161,8 @@ namespace MyEngine {
     void ParticleManager::Draw() {
         // パーティクルグループごとに描画処理を行う
         for (auto& [name, particleGroup] : particleGroups) {
-            // 1つも生成されていない（インデックスが0）なら、描画処理そのものをスキップしてGPUを休ませる
-            if (particleGroup.lastAllocatedIndex == 0) { continue; }
             // UAV -> SRV
-            TransitionParticleBuffer(particleGroup, D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE);
+            TransitionToDrawState(particleGroup);
             // インスタンシングデータの SRV を設定（テクスチャファイルのパスを指定）
             srvmanager_->SetGraphicsRootDescriptorTable(1, particleGroup.srvindex);
             // SRVで画像を表示
@@ -173,12 +171,13 @@ namespace MyEngine {
             dxCommon_->GetCommandList()->SetGraphicsRootConstantBufferView(3, cameraResource->GetGPUVirtualAddress());
             // モデルに必要なバッファをバインド（頂点バッファや定数バッファなど）
             particleGroup.model->Draw();
-            // 描画（インスタンシング）を実行
-            dxCommon_->GetCommandList()->DrawInstanced(static_cast<UINT>(particleGroup.model->GetVertexCount()), static_cast<UINT>(particleGroup.lastAllocatedIndex), 0, 0);
+            // 描画（インスタンシング）を実行       
+//            dxCommon_->GetCommandList()->DrawInstanced(static_cast<UINT>(particleGroup.model->GetVertexCount()), static_cast<UINT>(particleGroup.lastAllocatedIndex), 0, 0);
+            dxCommon_->GetCommandList()->DrawInstanced(static_cast<UINT>(particleGroup.model->GetVertexCount()), static_cast<UINT>(particleGroup.maxInstanceCount), 0, 0);
         }
     }
 
-    void ParticleManager::CreateParticleGroup(const std::string& name, const std::string& textureFilepath, const std::string& filename) {
+    void ParticleManager::CreateParticleGroup(const std::string& name, const std::string& textureFilepath, const std::string& filename, const uint32_t& MaxInstanceCount) {
         // 1. まずファクトリーを介してテクスチャをロード＆既存チェック（自分自身のマップのアドレスを渡す）
         // すでに存在するか、テクスチャの更新が終わっていればここで return される
         if (ParticleGroupfactory::GetInstance()->Initialize(name, textureFilepath, &particleGroups)) {
@@ -214,15 +213,16 @@ namespace MyEngine {
                 dst.translate = spawnData.transform.translate;
                 dst.rotate = spawnData.transform.rotate;
                 dst.scale = spawnData.transform.scale;
+
                 dst.color = spawnData.color;
+
                 dst.velocityTranslate = spawnData.velocity.translate;
                 dst.velocityRotate = spawnData.velocity.rotate;
                 dst.velocityScale = spawnData.velocity.scale;
+
                 dst.lifetime = spawnData.lifetime;
                 dst.useGravity = spawnData.useGravity ? 1u : 0u;
 
-                dst.targetIndex = group.lastAllocatedIndex;
-                group.lastAllocatedIndex = (group.lastAllocatedIndex + 1) % MaxInstanceCount;
                 totalRequestCount++;
             }
 
@@ -245,12 +245,27 @@ namespace MyEngine {
 
             groupSpawnCBData_[cbCBVIndex].startRequestIndex = spawn.startIndex;
             groupSpawnCBData_[cbCBVIndex].spawnCount = spawn.count;
-
+            //---------------------------------
+            // RootParameter Bind            
+            //---------------------------------
+            // root0 : u0 particle
             srvmanager_->SetComputeRootDescriptorTable(0, spawn.group->uavIndex);
+            // root1 : u1 freeList
+            srvmanager_->SetComputeRootDescriptorTable(1, spawn.group->freeListUavIndex);
+            // root2 : u2 freeCounter
+            srvmanager_->SetComputeRootDescriptorTable(2, spawn.group->freeCounterUavIndex);
+            //---------------------------------
+            // root3 : b0 GroupSpawnCB            
+            //---------------------------------
             D3D12_GPU_VIRTUAL_ADDRESS cbvAddress = groupSpawnCBResource_->GetGPUVirtualAddress() + (cbCBVIndex * sizeof(GroupSpawnCB));
-            dxCommon_->GetCommandList()->SetComputeRootConstantBufferView(1, cbvAddress);
-            dxCommon_->GetCommandList()->SetComputeRootShaderResourceView(2, spawnListResource_->GetGPUVirtualAddress());
-
+            dxCommon_->GetCommandList()->SetComputeRootConstantBufferView(3, cbvAddress);
+            //---------------------------------
+            // root4 : t0 SpawnRequest
+            //---------------------------------            
+            dxCommon_->GetCommandList()->SetComputeRootShaderResourceView(4, spawnListResource_->GetGPUVirtualAddress());
+            //---------------------------------
+            // Dispatch
+            //---------------------------------
             uint32_t threadGroupCount = (spawn.count + 63) / 64;
             dxCommon_->GetCommandList()->Dispatch(threadGroupCount, 1, 1);
 
@@ -259,19 +274,119 @@ namespace MyEngine {
     }
 
     void ParticleManager::TransitionParticleBuffer(ParticleGroup& group, D3D12_RESOURCE_STATES after) {
-        if (group.currentState == after) {
+        std::vector<D3D12_RESOURCE_BARRIER> barriers;
+        //---------------------------------
+        // Particle Buffer
+        //---------------------------------
+        if (group.particleState != after) {
+            D3D12_RESOURCE_BARRIER barrier{};
+            barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+            barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
+            barrier.Transition.pResource = group.Resource.Get();
+            barrier.Transition.StateBefore = group.particleState;
+            barrier.Transition.StateAfter = after;
+            barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
+            barriers.push_back(barrier);
+            group.particleState = after;
+        }
+        //---------------------------------
+        // FreeList
+        //---------------------------------
+        if (group.freeListState != after) {
+            D3D12_RESOURCE_BARRIER freelistbarrier{};
+            freelistbarrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+            freelistbarrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
+            freelistbarrier.Transition.pResource = group.freeListResource.Get();
+            freelistbarrier.Transition.StateBefore = group.freeListState;
+            freelistbarrier.Transition.StateAfter = after;
+            freelistbarrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
+            barriers.push_back(freelistbarrier);
+            group.freeListState = after;
+        }
+        //---------------------------------
+        // FreeCounter
+        //---------------------------------
+        if (group.freeCounterState != after) {
+            D3D12_RESOURCE_BARRIER freecounterbarrier{};
+            freecounterbarrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+            freecounterbarrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
+            freecounterbarrier.Transition.pResource = group.freeCounterResource.Get();
+            freecounterbarrier.Transition.StateBefore = group.freeCounterState;
+            freecounterbarrier.Transition.StateAfter = after;
+            freecounterbarrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
+            barriers.push_back(freecounterbarrier);
+            group.freeCounterState = after;
+        }
+
+        // Barrier 実行        
+        if (!barriers.empty()) {
+            dxCommon_->GetCommandList()->ResourceBarrier(static_cast<UINT>(barriers.size()), barriers.data());
+        }
+    }
+
+    void ParticleManager::TransitionParticleState(ParticleGroup& group, D3D12_RESOURCE_STATES after) {
+        if (group.particleState == after) {
             return;
         }
+
         D3D12_RESOURCE_BARRIER barrier{};
         barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
-        barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
         barrier.Transition.pResource = group.Resource.Get();
-        barrier.Transition.StateBefore = group.currentState;
+        barrier.Transition.StateBefore = group.particleState;
         barrier.Transition.StateAfter = after;
         barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
-
         dxCommon_->GetCommandList()->ResourceBarrier(1, &barrier);
-        group.currentState = after;
+        group.particleState = after;
+    }
+    void ParticleManager::TransitionToDrawState(ParticleGroup& group) {
+        std::vector<D3D12_RESOURCE_BARRIER> barriers;
+
+        //---------------------------------
+        // ParticleBuffer
+        //---------------------------------
+        D3D12_RESOURCE_STATES drawState = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE | D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE;
+        if (group.particleState != drawState) {
+            D3D12_RESOURCE_BARRIER b{};
+            b.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+            b.Transition.pResource = group.Resource.Get();
+            b.Transition.StateBefore = group.particleState;
+            b.Transition.StateAfter = drawState;
+            b.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
+            barriers.push_back(b);
+            group.particleState = drawState;
+        }
+
+        //---------------------------------
+        // FreeList
+        //---------------------------------
+        if (group.freeListState != D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE) {
+            D3D12_RESOURCE_BARRIER b{};
+            b.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+            b.Transition.pResource = group.freeListResource.Get();
+            b.Transition.StateBefore = group.freeListState;
+            b.Transition.StateAfter = D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE;
+            b.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
+            barriers.push_back(b);
+            group.freeListState = D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE;
+        }
+
+        //---------------------------------
+        // FreeCounter
+        //---------------------------------
+        if (group.freeCounterState != D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE) {
+            D3D12_RESOURCE_BARRIER b{};
+            b.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+            b.Transition.pResource = group.freeCounterResource.Get();
+            b.Transition.StateBefore = group.freeCounterState;
+            b.Transition.StateAfter = D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE;
+            b.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
+            barriers.push_back(b);
+            group.freeCounterState = D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE;
+        }
+
+        if (!barriers.empty()) {
+            dxCommon_->GetCommandList()->ResourceBarrier((UINT)barriers.size(), barriers.data());
+        }
     }
 
     void ParticleManager::PipelineUAVBarriers(const std::vector<ID3D12Resource*>& resources) {

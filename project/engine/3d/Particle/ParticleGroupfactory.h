@@ -9,9 +9,9 @@
 #include <ParticleData.h>
 
 namespace MyEngine {
-    // マネージャ側で使う前方宣言
-    class DirectXCommon;
-    class SrvManager;
+	// マネージャ側で使う前方宣言
+	class DirectXCommon;
+	class SrvManager;
 
 	class ParticleGroupfactory {
 	private:
@@ -33,6 +33,5 @@ namespace MyEngine {
 
 		// ─── 💡 【追加】グループを生成して初期化まで完了したオブジェクトを返す関数 ───
 		ParticleGroup CreateNewGroup(DirectXCommon* dxCommon, SrvManager* srvManager, const std::string& filename, const std::string& textureFilepath, uint32_t maxInstanceCount);
-
 	};
 }

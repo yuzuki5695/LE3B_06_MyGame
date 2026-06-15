@@ -28,6 +28,7 @@ struct ParticleData
     float currentTime;
     uint useGravity;
     float pad6;
+    uint isAlive;
 
     float startAlpha;
     float pad7[3];
@@ -54,6 +55,5 @@ struct SpawnRequestGPU
     // 最後の16バイトブロック
     float lifetime; // 4バイト
     uint useGravity; // 4バイト
-    uint targetIndex; // 4バイト ★ここをC++と完全一致させる
     float padding; // 4バイト
 };

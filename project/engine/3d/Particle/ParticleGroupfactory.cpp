@@ -54,28 +54,59 @@ namespace MyEngine {
         // 1. モデルの生成、初期化
         newGroup.model = std::make_unique<ParticleModel>();
         newGroup.model->Initialize(dxCommon, filename);
-
         // 2. テクスチャパスとインデックスを設定
         newGroup.materialData.textureFilePath = textureFilepath;
         newGroup.materialData.textureindex = TextureManager::GetInstance()->GetSrvIndex("Resources/" + textureFilepath);
+        
+        // 最大インスタンスの設定
+        newGroup.maxInstanceCount = maxInstanceCount;
 
         // 3. GPU StructuredBuffer 生成
-        newGroup.Resource = ResourceFactory::CreateStructuredBufferResource(dxCommon->GetDevice(), sizeof(ParticleForGPU) * maxInstanceCount);
-        newGroup.currentState = D3D12_RESOURCE_STATE_COMMON;
+        newGroup.Resource = CreateStructuredBufferResource(dxCommon->GetDevice(), sizeof(ParticleForGPU) * maxInstanceCount);
+        newGroup.particleState = D3D12_RESOURCE_STATE_COMMON;
 
         // 4. CPU UploadBuffer 生成 & ゼロクリア
-        newGroup.uploadResource = ResourceFactory::CreateBufferResource(dxCommon->GetDevice(), sizeof(ParticleForGPU) * maxInstanceCount);
-
-        if (SUCCEEDED(newGroup.uploadResource->Map(0, nullptr, reinterpret_cast<void**>(&newGroup.particleData)))) {
-            std::memset(newGroup.particleData, 0, sizeof(ParticleForGPU) * maxInstanceCount);
-            newGroup.uploadResource->Unmap(0, nullptr);
-        }
+        newGroup.uploadResource = CreateBufferResource(dxCommon->GetDevice(), sizeof(ParticleForGPU) * maxInstanceCount);
 
         // 5. GPU側リソースへ初期データをコピー
-        dxCommon->GetCommandList()->CopyBufferRegion(
-            newGroup.Resource.Get(), 0, newGroup.uploadResource.Get(), 0, sizeof(ParticleForGPU) * maxInstanceCount
-        );
-        newGroup.currentState = D3D12_RESOURCE_STATE_COPY_DEST;
+        dxCommon->GetCommandList()->CopyBufferRegion(newGroup.Resource.Get(), 0, newGroup.uploadResource.Get(), 0, sizeof(ParticleForGPU) * maxInstanceCount);
+        newGroup.particleState = D3D12_RESOURCE_STATE_COPY_DEST;
+        //=====================================
+        // FreeList 初期化
+        //=====================================
+        newGroup.freeListResource = CreateStructuredBufferResource(dxCommon->GetDevice(), sizeof(uint32_t) * maxInstanceCount);
+        newGroup.freeListState = D3D12_RESOURCE_STATE_COMMON;
+        newGroup.freeListUavIndex = srvManager->Allocate();
+        srvManager->CreateUAVForStructuredBuffer(newGroup.freeListUavIndex, newGroup.freeListResource.Get(), maxInstanceCount, sizeof(uint32_t));
+        std::vector<uint32_t> freeListInit(maxInstanceCount);
+        for (uint32_t i = 0; i < maxInstanceCount; ++i) {
+            freeListInit[i] = i;
+        }
+
+        // Upload
+        newGroup.freeListUpload = CreateBufferResource(dxCommon->GetDevice(), sizeof(uint32_t) * maxInstanceCount);
+        void* mapped = nullptr;
+        newGroup.freeListUpload->Map(0, nullptr, &mapped);
+        memcpy(mapped, freeListInit.data(), sizeof(uint32_t) * maxInstanceCount);
+        newGroup.freeListUpload->Unmap(0, nullptr);
+        dxCommon->GetCommandList()->CopyBufferRegion(newGroup.freeListResource.Get(), 0, newGroup.freeListUpload.Get(), 0, sizeof(uint32_t) * maxInstanceCount);
+        newGroup.freeListState = D3D12_RESOURCE_STATE_COPY_DEST;
+        //=====================================
+        // Counter 初期化
+        //=====================================
+        newGroup.freeCounterResource = CreateStructuredBufferResource(dxCommon->GetDevice(), sizeof(uint32_t));
+        newGroup.freeCounterState = D3D12_RESOURCE_STATE_COMMON;
+        newGroup.freeCounterUavIndex = srvManager->Allocate();
+        srvManager->CreateUAVForStructuredBuffer(newGroup.freeCounterUavIndex, newGroup.freeCounterResource.Get(), 1, sizeof(uint32_t));
+        uint32_t initialCount = maxInstanceCount;
+        // Upload
+        newGroup.counterUpload = CreateBufferResource(dxCommon->GetDevice(), sizeof(uint32_t));
+        mapped = nullptr;
+        newGroup.counterUpload->Map(0, nullptr, &mapped);
+        memcpy(mapped, &initialCount, sizeof(uint32_t));
+        newGroup.counterUpload->Unmap(0, nullptr);
+        dxCommon->GetCommandList()->CopyBufferRegion(newGroup.freeCounterResource.Get(), 0, newGroup.counterUpload.Get(), 0, sizeof(uint32_t));
+        newGroup.freeCounterState = D3D12_RESOURCE_STATE_COPY_DEST;
 
         // 6. SRV の割り当てと作成
         newGroup.srvindex = srvManager->Allocate();

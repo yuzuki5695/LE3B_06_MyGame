@@ -6,7 +6,7 @@ namespace MyGame {
 
     void GamePlayparticle::Initialize(Object3d* target) {
         // パーティクルグループ生成
-        ParticleManager::GetInstance()->CreateParticleGroup("Particles", "Particle.png", "Particle.obj");
+        ParticleManager::GetInstance()->CreateParticleGroup("Particles", "Particle.png", "Particle.obj", 1000);
         // =========================
         // エミッター生成
         // =========================

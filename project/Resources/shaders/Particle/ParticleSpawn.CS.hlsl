@@ -2,6 +2,10 @@
 
 RWStructuredBuffer<ParticleData> gParticle : register(u0);
 
+// 空きインデックス管理
+RWStructuredBuffer<uint> gFreeList : register(u1);
+RWStructuredBuffer<uint> gFreeCounter : register(u2);
+
 // b0: 今回のグループの描画範囲
 cbuffer GroupSpawnCB : register(b0)
 {
@@ -21,24 +25,38 @@ void main(uint3 DTid : SV_DispatchThreadID)
     {
         return;
     }
-
     // 全体配列から、自分のスレッドが担当するスポーン要求データを取得
     uint requestIndex = gStartRequestIndex + DTid.x;
     SpawnRequestGPU request = gSpawnRequests[requestIndex];
-
-    // 要求データ内に仕込まれている、上書き対象のパーティクルインデックスを取得
-    uint pIndex = request.targetIndex;
-
-    // メインバッファへ一斉書き込み
+    
+    //-----------------------------------
+    // FreeList から index を取得
+    //-----------------------------------
+    uint freeCountBefore;
+    InterlockedAdd(gFreeCounter[0], -1, freeCountBefore);
+    // 空きなし
+    if (freeCountBefore == 0)
+    {
+        return;
+    }    
+    // 空き index 取得
+    uint pIndex = gFreeList[freeCountBefore - 1];
+    //-----------------------------------
+    // Particle 初期化
+    //-----------------------------------  
     gParticle[pIndex].translate = request.translate;
     gParticle[pIndex].rotate = request.rotate;
     gParticle[pIndex].scale = request.scale;
+
     gParticle[pIndex].color = request.color;
+
     gParticle[pIndex].velocityTranslate = request.velocityTranslate;
     gParticle[pIndex].velocityRotate = request.velocityRotate;
     gParticle[pIndex].velocityScale = request.velocityScale;
+
     gParticle[pIndex].lifetime = request.lifetime;
     gParticle[pIndex].currentTime = 0.0f;
     gParticle[pIndex].useGravity = request.useGravity;
+    gParticle[pIndex].isAlive = 1;
     gParticle[pIndex].startAlpha = request.color.a;
 }

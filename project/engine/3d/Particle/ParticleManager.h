@@ -31,7 +31,7 @@ namespace MyEngine {
 		// 描画処理
 		void Draw();
 		// パーティクルグループの作成
-		void CreateParticleGroup(const std::string& name, const std::string& textureFilepath, const std::string& filename);
+		void CreateParticleGroup(const std::string& name, const std::string& textureFilepath, const std::string& filename, const uint32_t& MaxInstanceCount);
 		// 発生
 		void Emit(const std::string& name, const ParticleSpawnData& spawnData);
 
@@ -49,7 +49,9 @@ namespace MyEngine {
         void DispatchSpawnCommands(const std::vector<ActiveGroupSpawn>& activeSpawns);
         // リソース遷移・バリア関連（共通化）
         void TransitionParticleBuffer(ParticleGroup& group, D3D12_RESOURCE_STATES after);
-        void PipelineUAVBarriers(const std::vector<ID3D12Resource*>& resources);
+		void TransitionParticleState(ParticleGroup& group, D3D12_RESOURCE_STATES after);
+		void TransitionToDrawState(ParticleGroup& group);
+		void PipelineUAVBarriers(const std::vector<ID3D12Resource*>& resources);
 	private: // メンバ変数
 		// ポインタ
 		DirectXCommon* dxCommon_;
@@ -57,8 +59,6 @@ namespace MyEngine {
 		ParticleCommon* particleCommon_;
 		// ランダムエンジン
 		std::mt19937 randomEngine;
-		//最大インスタンス
-		uint32_t MaxInstanceCount = 10000;
 		//ビルボード行列
 		Matrix4x4 backToFrontMatrix;
 		// パーティクルグループコンテナ
@@ -80,8 +80,6 @@ namespace MyEngine {
 			assert(particleGroups.count(name));
 			return particleGroups[name];
 		}
-		uint32_t GetMaxInstanceCount() const { return MaxInstanceCount; }
-
 
 		float Rand(float minVal, float maxVal) { // 💡マクロとの衝突を防ぐため引数名変更
 			std::uniform_real_distribution<float> dist(minVal, maxVal);
