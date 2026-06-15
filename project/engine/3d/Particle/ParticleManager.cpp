@@ -171,8 +171,7 @@ namespace MyEngine {
             dxCommon_->GetCommandList()->SetGraphicsRootConstantBufferView(3, cameraResource->GetGPUVirtualAddress());
             // モデルに必要なバッファをバインド（頂点バッファや定数バッファなど）
             particleGroup.model->Draw();
-            // 描画（インスタンシング）を実行       
-//            dxCommon_->GetCommandList()->DrawInstanced(static_cast<UINT>(particleGroup.model->GetVertexCount()), static_cast<UINT>(particleGroup.lastAllocatedIndex), 0, 0);
+            // 描画（インスタンシング）を実行
             dxCommon_->GetCommandList()->DrawInstanced(static_cast<UINT>(particleGroup.model->GetVertexCount()), static_cast<UINT>(particleGroup.maxInstanceCount), 0, 0);
         }
     }

@@ -11,6 +11,7 @@
 #include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>
 #include <assimp/scene.h>
+#include <filesystem> 
 
 using namespace Microsoft::WRL;
 using namespace MyEngine::MatrixVector;
@@ -25,7 +26,7 @@ namespace MyEngine {
         // メンバ変数に記録
         this->dxCommon_ = birectxcommon;
         // マテリアルの生成と初期化
-        MaterialGenerate();        
+        MaterialGenerate();
         modelData = LoadObjFile("Resources", filename);
         CreateVertexBuffer();
         std::memcpy(vertexData, modelData.vertices.data(), sizeof(VertexData) * modelData.vertices.size());
@@ -99,6 +100,9 @@ namespace MyEngine {
         std::string filePath(directoryPath + "/" + filename); // ファイルを開く
         const aiScene* scene = importer.ReadFile(filePath.c_str(), aiProcess_Triangulate | aiProcess_FlipUVs);
         assert(scene->HasMeshes()); // メッシュがないのは対応しない
+        // OBJの親フォルダ取得
+        std::filesystem::path objPath = std::filesystem::path(directoryPath) / filename;
+        std::filesystem::path modelDirectory = objPath.parent_path();
 
         // 3. Meshを解析する
         for (size_t meshIndex = 0; meshIndex < scene->mNumMeshes; ++meshIndex) {
@@ -134,7 +138,7 @@ namespace MyEngine {
             if (material->GetTextureCount(aiTextureType_DIFFUSE) != 0) {
                 aiString textureFilePath;
                 material->GetTexture(aiTextureType_DIFFUSE, 0, &textureFilePath);
-                modelData.material.textureFilePath = directoryPath + "/" + textureFilePath.C_Str();
+                modelData.material.textureFilePath = (modelDirectory / textureFilePath.C_Str()).generic_string();
             }
         }
 
