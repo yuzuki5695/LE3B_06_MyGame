@@ -123,6 +123,8 @@ namespace MyEngine {
             std::vector<ID3D12Resource*> targetResources;
             for (const auto& spawn : activeSpawns) {
                 targetResources.push_back(spawn.group->Resource.Get());
+                targetResources.push_back(spawn.group->freeListResource.Get());
+                targetResources.push_back(spawn.group->freeCounterResource.Get());
             }
             PipelineUAVBarriers(targetResources);
             // スポーン処理のDispatch
@@ -146,7 +148,7 @@ namespace MyEngine {
             // root3 : ParticleInfo
             dxCommon_->GetCommandList()->SetComputeRootConstantBufferView(3, particleInfoResource_->GetGPUVirtualAddress());
 
-            uint32_t threadGroupCount = (group.maxInstanceCount + 255) / 256;
+            int32_t threadGroupCount = (group.maxInstanceCount + 255) / 256;
             dxCommon_->GetCommandList()->Dispatch(threadGroupCount, 1, 1);
             updateResources.push_back(group.Resource.Get());
             updateResources.push_back(group.freeListResource.Get());

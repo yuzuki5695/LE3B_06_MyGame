@@ -47,7 +47,7 @@ void main(uint3 DTid : SV_DispatchThreadID)
         //---------------------------------
         // FreeListへ返却
         //---------------------------------
-        uint freeIndex;
+        int freeIndex;
         InterlockedAdd(gFreeCounter[0], 1, freeIndex);
         gFreeList[freeIndex] = index;
         return;

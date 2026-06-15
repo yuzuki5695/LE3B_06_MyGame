@@ -4,7 +4,7 @@ RWStructuredBuffer<ParticleData> gParticle : register(u0);
 
 // 空きインデックス管理
 RWStructuredBuffer<uint> gFreeList : register(u1);
-RWStructuredBuffer<uint> gFreeCounter : register(u2);
+RWStructuredBuffer<int> gFreeCounter : register(u2);
 
 // b0: 今回のグループの描画範囲
 cbuffer GroupSpawnCB : register(b0)
@@ -32,13 +32,13 @@ void main(uint3 DTid : SV_DispatchThreadID)
     //-----------------------------------
     // FreeList から index を取得
     //-----------------------------------
-    uint freeCountBefore;
+    int freeCountBefore;
     InterlockedAdd(gFreeCounter[0], -1, freeCountBefore);
-    // 空きなし
-    if (freeCountBefore == 0)
-    {
+    if (freeCountBefore <= 0)
+    { 
+        InterlockedAdd(gFreeCounter[0], 1);
         return;
-    }    
+    } 
     // 空き index 取得
     uint pIndex = gFreeList[freeCountBefore - 1];
     //-----------------------------------

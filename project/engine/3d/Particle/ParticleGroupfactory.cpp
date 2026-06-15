@@ -57,7 +57,7 @@ namespace MyEngine {
         // 2. テクスチャパスとインデックスを設定
         newGroup.materialData.textureFilePath = textureFilepath;
         newGroup.materialData.textureindex = TextureManager::GetInstance()->GetSrvIndex("Resources/" + textureFilepath);
-        
+
         // 最大インスタンスの設定
         newGroup.maxInstanceCount = maxInstanceCount;
 
@@ -67,7 +67,10 @@ namespace MyEngine {
 
         // 4. CPU UploadBuffer 生成 & ゼロクリア
         newGroup.uploadResource = CreateBufferResource(dxCommon->GetDevice(), sizeof(ParticleForGPU) * maxInstanceCount);
-
+        void* mapped = nullptr;
+        newGroup.uploadResource->Map(0, nullptr, &mapped);
+        memset(mapped, 0, sizeof(ParticleForGPU) * maxInstanceCount);
+        newGroup.uploadResource->Unmap(0, nullptr);
         // 5. GPU側リソースへ初期データをコピー
         dxCommon->GetCommandList()->CopyBufferRegion(newGroup.Resource.Get(), 0, newGroup.uploadResource.Get(), 0, sizeof(ParticleForGPU) * maxInstanceCount);
         newGroup.particleState = D3D12_RESOURCE_STATE_COPY_DEST;
@@ -85,7 +88,7 @@ namespace MyEngine {
 
         // Upload
         newGroup.freeListUpload = CreateBufferResource(dxCommon->GetDevice(), sizeof(uint32_t) * maxInstanceCount);
-        void* mapped = nullptr;
+        mapped = nullptr;
         newGroup.freeListUpload->Map(0, nullptr, &mapped);
         memcpy(mapped, freeListInit.data(), sizeof(uint32_t) * maxInstanceCount);
         newGroup.freeListUpload->Unmap(0, nullptr);
