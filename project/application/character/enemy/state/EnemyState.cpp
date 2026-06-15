@@ -96,6 +96,10 @@ namespace MyGame {
         // 演出終了
         // =====================
         if (enemy->GetDeath()->IsFinished()) {
+            // パーティクル未生成なら生成要求
+            if (!enemy->HasSpawnedDeathParticle()) {
+                enemy->SetSpawnedDeathParticle(true);
+            }
             // プレイヤーに倒されたら経験値付与
             // 経験値は1回だけ
             if (!enemy->IsExpGranted() && enemy->IsKilledByPlayer()) {

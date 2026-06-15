@@ -1,22 +1,23 @@
 #pragma once
-#include <ParticleEmitter.h>
-#include <Object3d.h>
+#include <SceneParticleBase.h>
 
 namespace MyGame {
-    class GamePlayparticle {
+ 
+    class GamePlayParticle : public SceneParticleBase {
     public:
-        /// <summary>
-        /// 初期化処理
-        /// </summary>
-        void Initialize(MyEngine::Object3d* target);
-        /// <summary>
-        /// 毎フレームの更新処理
-        /// </summary>
-        void Update();
+        void Initialize() override;
+        void Update() override;
 
+    private:
+        std::vector<MyEngine::Vector3> explosionQueue_;
 
-    private:;
-        std::unique_ptr<ParticleEmitter> particleEmitter_;
-        MyEngine::ParticleSpawnRandom random_;
+        std::unique_ptr<BaseEmitter> explosionEmitter_;
+		MyEngine::ParticleSpawnData explosionspawndata_{};
+        MyEngine::ParticleSpawnRandom explosionRandom_;
+
+        //MyEngine::ParticleSpawnRandom shockwaveRandom_;
+        //std::unique_ptr<BaseEmitter> shockwaveEmitter_;
+    public:
+        void AddExplosion(const MyEngine::Vector3& pos) { explosionQueue_.push_back(pos); }
     };
 }

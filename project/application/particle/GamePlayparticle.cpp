@@ -1,43 +1,39 @@
-#include "GamePlayparticle.h"
-using namespace MyEngine;
+#include "GamePlayParticle.h"
 
+using namespace MyEngine;
 
 namespace MyGame {
 
-    void GamePlayparticle::Initialize(Object3d* target) {
-        // パーティクルグループ生成
-        //ParticleManager::GetInstance()->CreateParticleGroup("Firework", "Models/Particles/Particle.png", "Models/Particles/Particle.obj", 300);
-        //ParticleManager::GetInstance()->CreateParticleGroup("Shockwave", "Models/Particles/Shockwave.png", "Models/Particles/Shockwave.obj", 300);     
+	void GamePlayParticle::Initialize() {
+		ParticleManager::GetInstance()->CreateParticleGroup("Explosion", "Models/Particles/Particle.png", "Models/Particles/Particle.obj", 300);
+		ParticleManager::GetInstance()->CreateParticleGroup("Shockwave", "Models/Particles/Shockwave.png", "Models/Particles/Shockwave.obj", 300);
+		
+		explosionspawndata_.transform = { { 0.0f,0.0f,0.0f },{ 0.0f,0.0f,0.0f },{ 0.1f,0.1f,0.1f }};
+		explosionspawndata_.count = 5;
+	
+		explosionRandom_.count = { 10, 15, true };
+		explosionRandom_.scale = { {0.06f,0.06f,0.06f}, {0.1f,0.1f,0.1f}, true };
+		explosionRandom_.velocityTranslate = { {-0.1f,-0.1f,-0.1f}, { 0.15f, 0.2f, 0.1f}, true };
 
-        ParticleManager::GetInstance()->CreateParticleGroup("Particles", "Models/Particles/Particle.png", "Models/Particles/Particle.obj", 300);
+		explosionEmitter_ = std::make_unique<BaseEmitter>("Explosion", explosionspawndata_, explosionRandom_);
+		//	
+		//shockwaveRandom_.count = { 2, 5, true };
+		//shockwaveRandom_.scale = { {0.2f,0.2f,0.2f}, {0.3f,0.3f,0.3f}, true };
+		//shockwaveRandom_.rotate = { {0.0f,0.0f,0.0f}, {0.0f,0.0f,360.0f}, true };
+		//shockwaveRandom_.velocityScale = { {0.0f,0.0f,0.0f} ,{0.006f,0.006f,0.006f},true };
 
-        // エミッター生成     
-        Transform emitterTransform{};
-        emitterTransform.translate = target->GetTranslate();
-        emitterTransform.translate.z += 30.0f;
-        emitterTransform.scale = { 1.0f, 1.0f, 1.0f };
+		//shockwaveEmitter_ = std::make_unique<BaseEmitter>("Shockwave", spawnData, shockwaveRandom_);
+	}
 
-        Velocity velocity{};
-        velocity.translate = { 0.01f, 0.05f, 0.0f }; // 上方向に飛ぶ
-        velocity.rotate = { 0.0f, 0.0f, 0.0f };
-        velocity.scale = { 0.0f, 0.0f, 0.0f };
+	void GamePlayParticle::Update() {
 
-        ParticleSpawnData spawnData;
-        spawnData.transform = emitterTransform;
-        spawnData.color = { 1.0f, 1.0f, 1.0f, 1.0f };
-        spawnData.count = 5;
-        spawnData.velocity = velocity;
-        spawnData.lifetime = 1.5f;
-        spawnData.useGravity = false;
+		for (const auto& pos : explosionQueue_) {
+			explosionEmitter_->SetPosition(pos);
+			explosionEmitter_->Emit();
+			//shockwaveEmitter_->SetPosition(pos);
+			//shockwaveEmitter_->Emit();
+		}
 
-        // 位置のばらつき
-        random_.count = { 1, 5, true };
-        random_.translate = { { -3.0f, 0.0f, 0.0f },{ 3.0f, 0.0f, 0.0f },true };
-        particleEmitter_ = std::make_unique<ParticleEmitter>("Particles", spawnData, random_, 1.0f);
-    }
-
-    void GamePlayparticle::Update() {
-
-        particleEmitter_->Update();
-    }
+		explosionQueue_.clear();
+	}
 }

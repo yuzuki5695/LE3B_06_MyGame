@@ -385,6 +385,9 @@
     <Filter Include="ソース ファイル\application\particle">
       <UniqueIdentifier>{efaedea6-9d87-4ac4-bb84-b5db6f72475b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ヘッダー ファイル\application\particle">
+      <UniqueIdentifier>{3838ab31-c1d2-49eb-a8b2-940f6d7c6a5c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="engine\2d\Sprite.cpp">
@@ -684,7 +687,7 @@
     <ClCompile Include="main.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="application\particle\ParticleEmitter.cpp">
+    <ClCompile Include="application\particle\BaseEmitter.cpp">
       <Filter>ソース ファイル\application\particle</Filter>
     </ClCompile>
     <ClCompile Include="application\particle\GamePlayparticle.cpp">
@@ -1124,11 +1127,14 @@
     <ClInclude Include="engine\3d\Particle\ParticleGroupfactory.h">
       <Filter>ヘッダー ファイル\engine\3d\Particle</Filter>
     </ClInclude>
-    <ClInclude Include="application\particle\ParticleEmitter.h">
-      <Filter>ソース ファイル\application\particle</Filter>
+    <ClInclude Include="application\particle\BaseEmitter.h">
+      <Filter>ヘッダー ファイル\application\particle</Filter>
     </ClInclude>
     <ClInclude Include="application\particle\GamePlayparticle.h">
-      <Filter>ソース ファイル\application\particle</Filter>
+      <Filter>ヘッダー ファイル\application\particle</Filter>
+    </ClInclude>
+    <ClInclude Include="application\particle\SceneParticleBase.h">
+      <Filter>ヘッダー ファイル\application\particle</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

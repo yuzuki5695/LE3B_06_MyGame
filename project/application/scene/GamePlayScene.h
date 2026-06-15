@@ -43,6 +43,6 @@ namespace MyGame {
         uint32_t prevPlayerExp_; // 前フレームのプレイヤーの経験値
         bool isFirstExpGainIgnored_ = false; // 経験値の初期化が完了したかどうかのフラグ
 
-        std::unique_ptr<GamePlayparticle> particle_;
+        std::unique_ptr<GamePlayParticle> particle_;
     };
 }

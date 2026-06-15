@@ -96,19 +96,19 @@ namespace MyGame {
 #endif // USE_IMGUI
 
         // パーティクルの生死、初期化
-        particle_ = std::make_unique<GamePlayparticle>();
-        particle_->Initialize(player_->GetObject3d());
+        particle_ = std::make_unique<GamePlayParticle>();
+        particle_->Initialize();
     }
 
     void GamePlayScene::Update() {
-		//// ゲーム開始イベントの開始判定
-  //      if (!isGameStartEventDone_ && CameraManager::GetInstance()->GetCameraState().state == CameraDefs::CameraState::Default) {
-  //          // ゲーム開始イベントの開始
-  //          EventManager::GetInstance()->EventStart(Event::EventState::GameStart);
-  //          isGameStartEventDone_ = true;
-  //      }
-
-        // イベント終了判定
+		// ゲーム開始イベントの開始判定
+        if (!isGameStartEventDone_ && CameraManager::GetInstance()->GetCameraState().state == CameraDefs::CameraState::Default) {
+            // ゲーム開始イベントの開始
+            EventManager::GetInstance()->EventStart(Event::EventState::GameStart);
+            isGameStartEventDone_ = true;
+        }
+ 
+        //  イベント終了判定
         if (!EventManager::GetInstance()->IsActive()) {
             if (isGameStartEventDone_) {
                 // レールカメラの挙動に切り替える
@@ -163,6 +163,11 @@ namespace MyGame {
         // 敵更新
         for (std::unique_ptr<Enemy>& enemy : enemies_) {
             enemy->Update();
+            // 死亡パーティクル生成
+            if (enemy->HasSpawnedDeathParticle()) {
+                particle_->AddExplosion(enemy->GetObject3d()->GetTranslate());
+                enemy->SetSpawnedDeathParticle(false);
+            }
         }
 
         // 死亡した敵の削除

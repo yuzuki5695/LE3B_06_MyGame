@@ -1,4 +1,4 @@
-#include "ParticleEmitter.h"
+#include "BaseEmitter.h"
 #ifdef min
 #undef min
 #endif
@@ -10,53 +10,29 @@ using namespace MyEngine;
 
 namespace MyGame {
 
+    BaseEmitter::BaseEmitter(const std::string& name, const ParticleSpawnData& spawnData, const ParticleSpawnRandom& random) {
+        name_ = name;
+        spawnData_ = spawnData;
+        random_ = random;
+    }
 
-	ParticleEmitter::ParticleEmitter(const std::string& name, const MyEngine::ParticleSpawnData& spawnData, const MyEngine::ParticleSpawnRandom& random, float emitInterval) {
-		name_ = name;
-		spawnData_ = spawnData;
-		random_ = random;
-		emitInterval_ = emitInterval;
-		isAutoEmit_ = true;
-		emitTimer_ = 0.0f;
-	}
-
-	void ParticleEmitter::Update() {
-		if (!isAutoEmit_) {
-			return;
-		}
-
-		emitTimer_ += 1.0f / 60.0f;
-
-		if (emitTimer_ >= emitInterval_) {
-
-			emitTimer_ = 0.0f;
-
-			Emit();
-		}
-	}
-
-	void ParticleEmitter::Emit() {
-		auto& pm = *ParticleManager::GetInstance();
-
-		uint32_t emitCount = spawnData_.count;
+    void BaseEmitter::Emit() {
+        uint32_t emitCount = spawnData_.count;
 
 		// 発生数のランダム適用
 		if (random_.count.enable) {
-			// 💡 引数を明示的に float にキャストして pm.Rand に渡します
-			emitCount = static_cast<uint32_t>(pm.Rand(static_cast<float>(random_.count.min), static_cast<float>(random_.count.max)));
+			emitCount = static_cast<uint32_t>(ParticleManager::GetInstance()->Rand(static_cast<float>(random_.count.min), static_cast<float>(random_.count.max)));
 		}
 
-		emitCount = std::max(1u, emitCount);
-
+        emitCount = std::max(1u, emitCount);
 		for (uint32_t i = 0; i < emitCount; i++) {
-			ParticleSpawnData data = BuildSpawnData(pm);
-			pm.Emit(name_, data);
+			ParticleSpawnData data = BuildSpawnData(*ParticleManager::GetInstance());
+			ParticleManager::GetInstance()->Emit(name_, data);
 		}
-	}
+    }
 
-	ParticleSpawnData ParticleEmitter::BuildSpawnData(ParticleManager& pm) {
+	ParticleSpawnData BaseEmitter::BuildSpawnData(ParticleManager& pm) {
 		ParticleSpawnData data = spawnData_;
-
 		// 各トランスフォームのランダム適用
 		if (random_.translate.enable)
 			data.transform.translate += pm.SafeRandVec3({ random_.translate.min, random_.translate.max });
@@ -66,9 +42,9 @@ namespace MyGame {
 
 		if (random_.scale.enable)
 			data.transform.scale += pm.SafeRandVec3({ random_.scale.min, random_.scale.max });
-		
+
 		// 速度のランダム適用
-		if (random_.velocityTranslate.enable) {	
+		if (random_.velocityTranslate.enable) {
 			data.velocity.translate += pm.SafeRandVec3(random_.velocityTranslate);
 		}
 		if (random_.velocityRotate.enable) {
