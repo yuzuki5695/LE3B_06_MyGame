@@ -133,4 +133,16 @@ namespace MyGame {
         Vector3 toEnemy = Normalize(pos - camera->GetTranslate());
         return Dot(camera->GetForward(), toEnemy) < 0.0f;
     }
+    bool Enemy::HasPassedCamera() const {
+        auto* gameCamera = CameraManager::GetInstance()->GetCurrentBehaviorAs<GamePlayCamera>();
+        if (!gameCamera) {
+            return false;
+        }
+        Vector3 camPos = gameCamera->GetRailPosition();
+        Vector3 camForward = gameCamera->GetForward();
+        Vector3 toEnemy = object_->GetTransform().translate - camPos;
+        float front = Dot(toEnemy, camForward);
+
+        return front < -10.0f;
+    }
 }

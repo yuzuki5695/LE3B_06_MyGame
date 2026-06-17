@@ -89,5 +89,7 @@ namespace MyGame {
 		}
 		void RequestDeathParticle() { deathParticleRequested_ = true; }
 		bool ShouldAutoDestroy() const;
+		bool HasPassedCamera() const;
+
 	};
 }

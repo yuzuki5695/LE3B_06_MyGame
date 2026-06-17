@@ -54,22 +54,10 @@ namespace MyGame {
 
         // アクティブ中またはプレイヤ―が非アクティブ中は各更新処理を行う
         if (character.IsActive() || !enemy->GetPlayer()->IsActive()) {
-            //// プレイヤーが追い越したら削除
-            //const float kDeleteMargin = 15.0f;
-            //if (enemy->GetPlayer()->GetTranslate().z > enemy->GetObject3d()->GetTransform().translate.z + kDeleteMargin) {
-            //    // EnemyDeadへ
-            //    enemy->SetDeathType(Enemy::DeathType::System);
-            //    character.ChangeState(std::make_unique<EnemyDead>());
-            //    return;
-            //}
-            if (enemy->ShouldAutoDestroy()) {
+            
+            if (enemy->HasPassedCamera()) {
                 enemy->SetDeathType(Enemy::DeathType::System);
                 character.ChangeState(std::make_unique<EnemyDead>());
-                return;
-            }
-
-            // プレイヤーを追い越したら攻撃停止
-            if (enemy->GetPlayer()->GetTranslate().z > enemy->GetObject3d()->GetTransform().translate.z) {
                 return;
             }
 
