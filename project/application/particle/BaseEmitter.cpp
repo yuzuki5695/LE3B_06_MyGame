@@ -63,8 +63,13 @@ namespace MyGame {
 		}
 
 		// 寿命のランダム適用
-		if (random_.lifetime.enable)
+		if (random_.lifetime.enable) {
 			data.lifetime = pm.Rand(random_.lifetime.min, random_.lifetime.max);
+		}
+
+		if (random_.stopTime.enable) {
+			data.stopTime = pm.Rand(random_.stopTime.min, random_.stopTime.max);
+		}
 
 		return data;
 	}

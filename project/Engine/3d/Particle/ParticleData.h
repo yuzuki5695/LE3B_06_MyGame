@@ -9,6 +9,11 @@
 #include <memory>
 
 namespace MyEngine {
+    enum class ParticleBehavior : uint32_t {
+        Normal = 0,
+        Explosion = 1,
+        Attract = 2,
+    };
 
     // ゲーム全体の最大パーティクルグループ数の目安
     static const uint32_t MaxGroupCount = 64;
@@ -26,6 +31,10 @@ namespace MyEngine {
         uint32_t particleCount;
         float padding[3];
     };
+    struct AttractInfo {
+        Vector3 targetPosition;
+        float deltaTime;
+    };
 
     struct ParticleForGPU {
         Vector3 translate;          float pad0;
@@ -37,10 +46,20 @@ namespace MyEngine {
         Vector3 velocityScale;      float pad5;
         float lifetime;
         float currentTime;
-        uint32_t useGravity;        float pad6;
+        uint32_t useGravity;
         uint32_t isAlive;
 
-        float startAlpha;           float pad7[3];
+        //------------------------
+        // behavior
+        //------------------------
+        uint32_t behaviorType;
+        uint32_t state;
+
+        float stopTime;
+        float startAlpha;
+
+        Vector3 targetPosition;
+        float pad6;
     };
 
     struct SpawnRequestGPU {
@@ -56,6 +75,12 @@ namespace MyEngine {
         float lifetime;
         uint32_t useGravity;
         float padding;
+        //--------------------------------
+        // behavior
+        //--------------------------------
+        uint32_t behaviorType = static_cast<uint32_t>(ParticleBehavior::Normal);
+        float stopTime = 0.0f;
+        Vector3 targetPosition = { 0,0,0 };
     };
 
     struct GroupSpawnCB {
@@ -79,6 +104,10 @@ namespace MyEngine {
 
         RandomRange<float> lifetime;
         RandomRange<uint32_t> count;
+        //-------------------------
+        // behavior random
+        //-------------------------
+        RandomRange<float> stopTime;
     };
 
     // ─── CPU・システム内管理用構造体 ───
@@ -96,6 +125,12 @@ namespace MyEngine {
         float lifetime = 1.0f;
         uint32_t count = 1;
         bool useGravity = false;
+        //--------------------------------
+        // behavior
+        //--------------------------------
+        ParticleBehavior behavior = ParticleBehavior::Normal;
+        float stopTime = 0.0f;
+        Vector3 targetPosition = { 0,0,0 };
     };
 
     struct SpawnRequest {

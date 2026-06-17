@@ -34,13 +34,16 @@ namespace MyEngine {
 		void CreateParticleGroup(const std::string& name, const std::string& textureFilepath, const std::string& filename, const uint32_t& MaxInstanceCount);
 		// 発生
 		void Emit(const std::string& name, const ParticleSpawnData& spawnData);
-
+		
+		void SetTargetPositionAll(const Vector3& target);
+		
 		void ClearAll();
 	private: // 内部関数
 		void CameraForGPUGenerate();
 		void ParticleInfoBufferGenerate();  // パーティクル基本情報のバッファ生成
 		void SpawnListBufferGenerate();     // 全グループ共通のスポーン要求バッファ生成
 		void GroupSpawnCBufferGenerate();   // グループごとの範囲伝達用定数バッファ生成
+		void AttractInfoResourceCBufferGenerate();
 		// ProcessSpawnRequests から分割した段階的な関数群
         struct ActiveGroupSpawn { ParticleGroup* group; uint32_t startIndex; uint32_t count; }; 
         // 要求を1つのリニアな配列（CommandQueue）に詰め込み、各グループの生成範囲を特定する (CPU処理)
@@ -68,11 +71,14 @@ namespace MyEngine {
 		Microsoft::WRL::ComPtr<ID3D12Resource> particleInfoResource_;
 		Microsoft::WRL::ComPtr<ID3D12Resource> spawnListResource_;
 		Microsoft::WRL::ComPtr<ID3D12Resource> groupSpawnCBResource_;
+		Microsoft::WRL::ComPtr<ID3D12Resource> attractInfoResource_;
 		CameraData* cameraData = nullptr;
 		ParticleInfo* particleInfoData_ = nullptr;
 		SpawnRequestGPU* spawnListData_ = nullptr;
 		GroupSpawnCB* groupSpawnCBData_ = nullptr;
+		AttractInfo* attractInfoData_ = nullptr;
 
+		Vector3 attractTargetPosition_ = { 0.0f,0.0f,0.0f };
 		std::vector<SpawnRequest> spawnRequests_;
 	public: // アクセッサ
 		// getter
@@ -99,5 +105,6 @@ namespace MyEngine {
 				(r.min.z == r.max.z) ? r.min.z : this->Rand(r.min.z, r.max.z)
 			};
 		}
+		void SetAttractTargetPosition(const Vector3& target) { attractTargetPosition_ = target; }
 	};
 }

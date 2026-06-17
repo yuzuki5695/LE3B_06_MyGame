@@ -27,11 +27,18 @@ struct ParticleData
     float lifetime;
     float currentTime;
     uint useGravity;
-    float pad6;
     uint isAlive;
+    //--------------------------------
+    // behavior
+    //--------------------------------
+    uint behaviorType;
+    uint state;
 
+    float stopTime;
     float startAlpha;
-    float pad7[3];
+
+    float3 targetPosition;
+    float pad6;
 };
 
 struct SpawnRequestGPU
@@ -56,4 +63,11 @@ struct SpawnRequestGPU
     float lifetime; // 4バイト
     uint useGravity; // 4バイト
     float padding; // 4バイト
+    //--------------------------------
+    // 追加
+    //--------------------------------
+    uint behaviorType;
+    float stopTime;
+    float3 targetPosition;
+    float pad6;
 };

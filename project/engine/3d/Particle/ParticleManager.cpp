@@ -58,6 +58,7 @@ namespace MyEngine {
         ParticleInfoBufferGenerate(); // パーティクル情報用
         SpawnListBufferGenerate();    // スポーン要求リスト用
         GroupSpawnCBufferGenerate();  // グループスポーン定数バッファ用
+        AttractInfoResourceCBufferGenerate();
     }
 
     void ParticleManager::CameraForGPUGenerate() {
@@ -88,6 +89,11 @@ namespace MyEngine {
         groupSpawnCBResource_ = CreateBufferResource(dxCommon_->GetDevice(), sizeof(GroupSpawnCB) * MaxGroupCount);
         groupSpawnCBResource_->Map(0, nullptr, reinterpret_cast<void**>(&groupSpawnCBData_));
     }
+    void ParticleManager::AttractInfoResourceCBufferGenerate() {
+        // 各グループが上の「SpawnList」のどこから何個読み込めばいいかのインデックス情報を格納
+        attractInfoResource_ = CreateBufferResource(dxCommon_->GetDevice(), sizeof(AttractInfo) * MaxGroupCount);
+        attractInfoResource_->Map(0, nullptr, reinterpret_cast<void**>(&attractInfoData_));
+    }
 
     void ParticleManager::Update() {
         Matrix4x4 billboardMatrix;
@@ -105,6 +111,11 @@ namespace MyEngine {
         billboardMatrix.m[3][1] = 0.0f;
         billboardMatrix.m[3][2] = 0.0f;
         cameraData->billboard = billboardMatrix;
+        //---------------------------------
+        // Attract情報更新
+        //---------------------------------
+        attractInfoData_->targetPosition = attractTargetPosition_;
+        attractInfoData_->deltaTime = 1.0f / 60.0f;
 
         // DescriptorHeap設定
         srvmanager_->PreDraw();
@@ -147,7 +158,8 @@ namespace MyEngine {
             srvmanager_->SetComputeRootDescriptorTable(2, group.freeCounterUavIndex);
             // root3 : ParticleInfo
             dxCommon_->GetCommandList()->SetComputeRootConstantBufferView(3, particleInfoResource_->GetGPUVirtualAddress());
-
+            // root4 : AttractInfo
+            dxCommon_->GetCommandList()->SetComputeRootConstantBufferView(4, attractInfoResource_->GetGPUVirtualAddress());
             int32_t threadGroupCount = (group.maxInstanceCount + 255) / 256;
             dxCommon_->GetCommandList()->Dispatch(threadGroupCount, 1, 1);
             updateResources.push_back(group.Resource.Get());
@@ -223,6 +235,14 @@ namespace MyEngine {
 
                 dst.lifetime = spawnData.lifetime;
                 dst.useGravity = spawnData.useGravity ? 1u : 0u;
+                //-------------------------
+                // behavior
+                //-------------------------
+                dst.behaviorType = static_cast<uint32_t>(spawnData.behavior);
+                // stopTime
+                dst.stopTime = spawnData.stopTime;
+                // target
+                dst.targetPosition = spawnData.targetPosition;
 
                 totalRequestCount++;
             }

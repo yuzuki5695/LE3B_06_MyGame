@@ -246,7 +246,7 @@ namespace MyEngine {
         //---------------------------------
         // RootParameter
         //---------------------------------
-        D3D12_ROOT_PARAMETER rootParameters[4] = {};
+        D3D12_ROOT_PARAMETER rootParameters[5] = {};
         // root0 : u0 Particle
         rootParameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
         rootParameters[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
@@ -266,7 +266,10 @@ namespace MyEngine {
         rootParameters[3].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
         rootParameters[3].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
         rootParameters[3].Descriptor.ShaderRegister = 0;
-
+        // root4 : b1 AttractInfo
+        rootParameters[4].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
+        rootParameters[4].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
+        rootParameters[4].Descriptor.ShaderRegister = 1;
         // RootSignatureDesc
         D3D12_ROOT_SIGNATURE_DESC desc{};
         desc.Flags = D3D12_ROOT_SIGNATURE_FLAG_NONE;

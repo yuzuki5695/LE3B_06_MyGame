@@ -202,7 +202,10 @@ namespace MyGame {
 		// ゲーム終了イベントの更新処理
         GameEnd();
 
+        // エミッターマネージャの更新
         SceneEmitterManager::GetInstance()->Update();
+        // プレイヤーをセット
+        ParticleManager::GetInstance()->SetAttractTargetPosition(player_->GetWorldPosition());
         // パーティクル更新
         ParticleManager::GetInstance()->Update();
 #pragma endregion 全てのObject3d個々の更新処理

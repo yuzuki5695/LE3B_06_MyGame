@@ -35,10 +35,10 @@ void main(uint3 DTid : SV_DispatchThreadID)
     int freeCountBefore;
     InterlockedAdd(gFreeCounter[0], -1, freeCountBefore);
     if (freeCountBefore <= 0)
-    { 
+    {
         InterlockedAdd(gFreeCounter[0], 1);
         return;
-    } 
+    }
     // 空き index 取得
     uint pIndex = gFreeList[freeCountBefore - 1];
     //-----------------------------------
@@ -59,4 +59,11 @@ void main(uint3 DTid : SV_DispatchThreadID)
     gParticle[pIndex].useGravity = request.useGravity;
     gParticle[pIndex].isAlive = 1;
     gParticle[pIndex].startAlpha = request.color.a;
+    //-----------------------------
+    // behavior 初期化
+    //-----------------------------
+    gParticle[pIndex].behaviorType = request.behaviorType;
+    gParticle[pIndex].state = 0;
+    gParticle[pIndex].stopTime = request.stopTime;
+    gParticle[pIndex].targetPosition = float3(0, 0, 0);
 }
