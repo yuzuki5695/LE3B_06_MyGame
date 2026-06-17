@@ -9,71 +9,67 @@ using namespace MathUtil;
 using namespace MatrixVector;
 
 namespace MyGame {
-    void PlayerReticle::UpdateInput() {
+
+    void PlayerReticle::Update() {
         Input* input = Input::GetInstance();
-
-        Vector2 move = { 0.0f, 0.0f };
-
-        // ← → ↑ ↓
-        if (input->PushKey(DIK_LEFT))  move.x -= 1.0f;
-        if (input->PushKey(DIK_RIGHT)) move.x += 1.0f;
-        if (input->PushKey(DIK_UP))    move.y -= 1.0f;
-        if (input->PushKey(DIK_DOWN))  move.y += 1.0f;
-
-        // 正規化（斜め移動対策）
-        if (move.x != 0.0f || move.y != 0.0f) {
-            float len = sqrtf(move.x * move.x + move.y * move.y);
-            move.x /= len;
-            move.y /= len;
+        if (input->PushKey(DIK_LEFT)) {
+            offset_.x -= kMoveSpeed;
         }
 
-        // 速度適用
-        screenPos_.x += move.x * moveSpeed_;
-        screenPos_.y += move.y * moveSpeed_;
+        if (input->PushKey(DIK_RIGHT)) {
+            offset_.x += kMoveSpeed;
+        }
 
-        // 画面外制限
-        screenPos_.x = std::clamp(screenPos_.x, 0.0f, 1280.0f);
-        screenPos_.y = std::clamp(screenPos_.y, 0.0f, 720.0f);
+        if (input->PushKey(DIK_UP)) {
+            offset_.y += kMoveSpeed;
+        }
+
+        if (input->PushKey(DIK_DOWN)) {
+            offset_.y -= kMoveSpeed;
+        }
+
+        offset_.x = std::clamp(offset_.x, -kMaxOffsetX, kMaxOffsetX);
+        offset_.y = std::clamp(offset_.y, -kMaxOffsetY, kMaxOffsetY);
     }
 
-    Vector3 PlayerReticle::ScreenToWorld(const Vector2& screenPos, Camera* camera) {
+    Vector2 PlayerReticle::WorldToScreen(const Vector3& worldPos, Camera* camera) {
         if (!camera) {
             return {};
         }
 
-        // ----------------------------
-        // スクリーン中心基準
-        // ----------------------------
-        float offsetX = screenPos.x - 640.0f;
-        float offsetY = screenPos.y - 360.0f;
+        const Matrix4x4& vp = camera->GetViewProjectionMatrix();
 
-        // 感度
-        constexpr float scale = 0.08f;
-        // カメラ回転
-        Vector3 camRot = camera->GetRotate();
+        Vector4 clip = {
+            worldPos.x * vp.m[0][0] +
+            worldPos.y * vp.m[1][0] +
+            worldPos.z * vp.m[2][0] +
+            vp.m[3][0],
 
-        float yaw = camRot.y;
-        float pitch = camRot.x;
+            worldPos.x * vp.m[0][1] +
+            worldPos.y * vp.m[1][1] +
+            worldPos.z * vp.m[2][1] +
+            vp.m[3][1],
 
-        // カメラ基底
-        Vector3 forward = { sinf(yaw) * cosf(pitch),-sinf(pitch),cosf(yaw) * cosf(pitch) };
+            worldPos.x * vp.m[0][2] +
+            worldPos.y * vp.m[1][2] +
+            worldPos.z * vp.m[2][2] +
+            vp.m[3][2],
 
-        forward = Normalize(forward);
+            worldPos.x * vp.m[0][3] +
+            worldPos.y * vp.m[1][3] +
+            worldPos.z * vp.m[2][3] +
+            vp.m[3][3]
+        };
 
-        Vector3 worldUp = { 0,1,0 };
-        Vector3 right = Normalize(Cross(worldUp, forward));
-        Vector3 up = Normalize(Cross(forward, right));
+        if (clip.w == 0.0f) {
+            return {};
+        }
 
-        // ----------------------------
-        // レティクルの
-        // カメラローカル位置
-        // ----------------------------
-        Vector3 relative = { offsetX * scale,-offsetY * scale,150.0f };
-        // ----------------------------
-        // カメラ空間→ワールド
-        // ----------------------------
-        Vector3 targetPos = camera->GetTranslate() + right * relative.x + up * relative.y + forward * relative.z;
-
-        return targetPos;
+        clip.x /= clip.w;
+        clip.y /= clip.w;
+        Vector2 screen;
+        screen.x = (clip.x * 0.5f + 0.5f) * 1280.0f;
+        screen.y = (-clip.y * 0.5f + 0.5f) * 720.0f;
+        return screen;
     }
 }

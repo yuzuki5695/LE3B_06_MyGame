@@ -12,10 +12,8 @@
 #include <EditorEntityRegistry.h>
 #include <EditorTypes.h>
 #include <CollisionConfig.h>
-#include <Enemy.h>
-//#include <ParticleManager.h>
-//#include <ParticleEmitter.h>
 #include <LineRenderer.h>
+#include <Enemy.h>
 // AssetGeneratorからインクルード
 #include <subproject/AssetGenerator/engine/generator/LoadResourceID.h>
 
@@ -71,8 +69,7 @@ namespace MyGame {
         CollisionManager::GetInstance()->RegisterCollider(collider_.get());
 
         // ターゲットオブジェクトの生成、初期化
-        targettransform_ = { {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 30.0f} };
-        target_ = Object3d::Create(Character::Player, targettransform_);
+        target_ = Object3d::Create(Character::Player, { {0.1f, 0.1f, 0.1f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f} });
 
         // レティクル初期化
         targetreticle_ = Sprite::Create(Ui::Target, Vector2{ 640.0f, 360.0f }, 0.0f, Vector2{ 100.0f, 100.0f });
@@ -138,6 +135,7 @@ namespace MyGame {
     void Player::Draw() {
         // 描画処理
         object_->Draw();
+        //target_->Draw();
     }
 
     void Player::DrawSprite() {
@@ -170,9 +168,15 @@ namespace MyGame {
         // プレイヤーローカル座標        
         Vector3 relative = { move_->GetRelativePos().x,move_->GetRelativePos().y + baseOffset_.y,baseOffset_.z };
         // カメラ向きへ変換
-        Vector3 finalPos = camPos + right * relative.x + up * relative.y + forward * relative.z;
+        Vector3 playerPos = camPos + right * relative.x + up * relative.y + forward * relative.z;
         // プレイヤーオブジェクトの座標を更新
-        object_->SetTranslate(finalPos);
+        object_->SetTranslate(playerPos);
+        // Targetをプレイヤー前方に配置
+        constexpr float kTargetDistance = 30.0f;
+        Vector3 targetPos = playerPos + forward * kTargetDistance + right * reticle_->GetOffset().x + up * reticle_->GetOffset().y;
+        target_->SetTranslate(targetPos);
+        Vector2 screenPos = reticle_->WorldToScreen(target_->GetTranslate(), active);
+        targetreticle_->SetPosition(screenPos);
     }
     
     Vector3 Player::GetExpTargetPosition() const {

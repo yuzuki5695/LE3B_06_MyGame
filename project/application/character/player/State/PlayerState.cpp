@@ -25,15 +25,12 @@ namespace MyGame {
         if (character.IsActive()) {
             // 移動処理の実行
             player->GetMove()->Update(player->GetObject3d()->GetTransform(), 0.17f);
-            // 入力でレティクル移動
-            player->GetReticle()->UpdateInput();
-            // スプライト位置更新
-            player->GetSprite()->SetPosition(player->GetReticle()->GetScreenPos());
-            // ワールド座標に変換
-            Vector3 worldPos = player->GetReticle()->ScreenToWorld(player->GetReticle()->GetScreenPos(), CameraManager::GetInstance()->GetActiveCamera());
-            player->SetAimWorldPos(worldPos);
-            player->GetTarget()->SetTranslate(player->GetAimWorldPos());
-            player->GetAttack()->Update(player->GetObject3d()->GetTransform(), player->GetAimWorldPos(), player->GetLevel());
+            // プレイヤー画面座標
+            Vector2 playerScreenPos = { 640.0f + player->GetMove()->GetRelativePos().x, 360.0f + player->GetMove()->GetRelativePos().y };
+            // レティクル更新
+            player->GetReticle()->Update();
+            // 攻撃の更新
+            player->GetAttack()->Update(player->GetObject3d()->GetTransform(), player->GetTarget()->GetTranslate(), player->GetLevel());
         }
     }
 

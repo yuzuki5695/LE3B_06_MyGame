@@ -6,22 +6,22 @@
 
 namespace MyGame {
     /// <summary>
-    /// プレイヤーのレティクル（照準）計算クラス
-    /// 3D空間上のターゲット位置の計算と、それを2D画面上のスプライトへ変換する機能を持つ。
+    /// プレイヤーのレティクルクラス
     /// </summary>
     class PlayerReticle {
     public:
 
-        void UpdateInput();
+        void Update();
 
-        MyEngine::Vector3 ScreenToWorld(const MyEngine::Vector2& screenPos, MyEngine::Camera* camera);
-
+        MyEngine::Vector2 WorldToScreen(const MyEngine::Vector3& worldPos, MyEngine::Camera* camera);
     private:
-        MyEngine::Vector2 screenPos_ = { 640.0f, 360.0f }; // 画面中央
-        float moveSpeed_ = 10.0f;
-        const float kForwardDistance = 2.0f; // プレイヤーからどれくらい前方に配置するか
+        static constexpr float kMaxOffsetX = 10.0f;
+        static constexpr float kMaxOffsetY = 4.0f;
+    private:
+        MyEngine::Vector2 offset_ = { 0.0f, 0.0f };
+        static constexpr float kMoveSpeed = 0.2f;
     public:
-        const MyEngine::Vector2& GetScreenPos() const { return screenPos_; }
+        const MyEngine::Vector2& GetOffset() const { return offset_; }
 
     };
 }

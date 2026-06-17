@@ -66,8 +66,6 @@ namespace MyGame {
 
 		std::unique_ptr <MyEngine::Sprite> targetreticle_; // レティクル用スプライト
 		std::unique_ptr <MyEngine::Object3d> target_; // ターゲット用3Dオブジェクト
-		MyEngine::Transform targettransform_;
-		MyEngine::Vector3 aimWorldPos_; // 
 		// カメラの位置調整用オフセット
 		MyEngine::Vector3 baseOffset_;
 		// 参照ポインタ
@@ -86,7 +84,6 @@ namespace MyGame {
 		const MyEngine::Vector3& GetColliderSize() const { return colliderSize_; }
 		const MyEngine::Vector3& GetRotate() const { return object_->GetRotate(); }
 		const MyEngine::Vector3& GetTranslate() const { return object_->GetTranslate(); }
-		const MyEngine::Vector3& GetAimWorldPos() const { return aimWorldPos_; }
 		MyEngine::Vector3 GetExpTargetPosition() const;
 		MyEngine::Vector3 GetWorldPosition() const { return object_->GetTranslate() + MyEngine::Vector3{ 0.0f, 1.0f, 0.5f }; }
 		MyEngine::Sprite* GetSprite() { return targetreticle_.get(); }
@@ -95,7 +92,6 @@ namespace MyGame {
 		uint32_t GetExp() const { return exp_; }
 		uint32_t GetNextLevelExp() const { return nextLevelExp_; }
 		// setter
-		void SetAimWorldPos(const MyEngine::Vector3& pos) { aimWorldPos_ = pos; }
 		void SetTranslate(const MyEngine::Vector3& translate) { object_->SetTranslate(translate); }
 		void SetRotate(const MyEngine::Vector3& rotate) { object_->SetRotate(rotate); }
 		void SetEnemy(Enemy* enemy) { enemy_ = enemy; }
