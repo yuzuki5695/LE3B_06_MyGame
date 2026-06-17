@@ -174,6 +174,24 @@ namespace MyGame {
         // プレイヤーオブジェクトの座標を更新
         object_->SetTranslate(finalPos);
     }
+    
+    Vector3 Player::GetExpTargetPosition() const {
+        if (!object_) { return {}; }
+        Vector3 pos = object_->GetTranslate();
+        if (!CameraManager::GetInstance()->GetActiveCamera()) {
+            return pos;
+        }
+        Vector3 camRot = CameraManager::GetInstance()->GetActiveCamera()->GetRotate();
+        float yaw = camRot.y;
+        float pitch = camRot.x;
+        Vector3 forward = { sinf(yaw) * cosf(pitch), -sinf(pitch), cosf(yaw) * cosf(pitch) };
+        forward = Normalize(forward);
+        // 少し上
+        pos.y += 1.5f;
+        // プレイヤー前方へ寄せる
+        pos += forward * 2.0f;
+        return pos;
+    }
 
     void Player::GainExp(uint32_t exp) {
         exp_ += exp;

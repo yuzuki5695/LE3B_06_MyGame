@@ -87,6 +87,8 @@ namespace MyGame {
 		const MyEngine::Vector3& GetRotate() const { return object_->GetRotate(); }
 		const MyEngine::Vector3& GetTranslate() const { return object_->GetTranslate(); }
 		const MyEngine::Vector3& GetAimWorldPos() const { return aimWorldPos_; }
+		MyEngine::Vector3 GetExpTargetPosition() const;
+		
 		MyEngine::Sprite* GetSprite() { return targetreticle_.get(); }
 		MyEngine::Object3d* GetTarget() { return target_.get(); }
 		uint32_t GetLevel() const { return level_; }

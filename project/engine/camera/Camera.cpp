@@ -51,4 +51,26 @@ namespace MyEngine {
 		ImGui::DragFloat3("Rotate", &transform.rotate.x, 0.0001f);
 #endif // USE_IMGUI
 	}
+
+	bool Camera::IsInFrustum(const Vector3& worldPos, float margin) const {
+		Vector4 clipPos = MultiplyM4xV4(ViewProjectionMatrix, Vector4{ worldPos.x, worldPos.y, worldPos.z, 1.0f });
+
+		// カメラ後方
+		if (clipPos.w <= 0.0f) {
+			return false;
+		}
+
+		// NDC化
+		clipPos.x /= clipPos.w;
+		clipPos.y /= clipPos.w;
+		clipPos.z /= clipPos.w;
+
+		return
+			clipPos.x >= -1.0f - margin &&
+			clipPos.x <= 1.0f + margin &&
+			clipPos.y >= -1.0f - margin &&
+			clipPos.y <= 1.0f + margin &&
+			clipPos.z >= 0.0f &&
+			clipPos.z <= 1.0f + margin;
+	}
 }

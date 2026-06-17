@@ -34,7 +34,7 @@ namespace MyGame {
         // サブカメラ登録
         CameraManager::GetInstance()->GetCameraSet().AddSubCamera("Sub", std::move(subCam));
 
-        speed_ = 0.5f;
+        speed_ = 0.3f;
         currentSegment_ = 0;
         prevForward_ = { 0,0,1 };
         lookAheadDistance_ = 180.0f;

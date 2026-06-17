@@ -11,6 +11,7 @@
 
 using namespace MyEngine;
 using namespace AssetGen::LoadResourceID::Models;
+using namespace MatrixVector;
 
 namespace MyGame {
 
@@ -30,7 +31,7 @@ namespace MyGame {
         randomEngine = std::mt19937(rd());
         std::uniform_int_distribution<int> enemyTypeDist(0, 1);
         enemyType_ = static_cast<EnemyType>(enemyTypeDist(randomEngine));
-		// モデルパスの選択
+        // モデルパスの選択
         const char* modelPath = nullptr;
         switch (enemyType_) {
         case EnemyType::Shot:
@@ -45,7 +46,7 @@ namespace MyGame {
         ModelManager::GetInstance()->LoadModel(modelPath);
         // オブジェクトの生成、初期化
         object_ = Object3d::Create(modelPath, Transform{ { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f } });
-        
+
         // 敵タイプごとの色設定
         switch (enemyType_) {
         case EnemyType::Shot:
@@ -65,6 +66,8 @@ namespace MyGame {
         isExpGranted_ = false; // 経験値付与済みフラグ
         isKilledByPlayer_ = false;
         isDeathStarted_ = false;
+        deathParticleRequested_ = false;
+        deathType_ = DeathType::None;
         // 当たり判定サイズ
         colliderSize_ = object_->GetScale();
         // 当たり判定の生成、初期化
@@ -87,9 +90,9 @@ namespace MyGame {
             // プレイヤー弾に当たった場合
             if (other->GetAttribute() & CollisionConfig::Attribute::PlayerBullet) {
                 SetKilledByPlayer(true);
+                SetDeathType(DeathType::Player);
+                ChangeState(std::make_unique<EnemyDead>());
             }
-
-            ChangeState(std::make_unique<EnemyDead>());
             });
         // コンポーネントの生成
         attack_ = std::make_unique<EnemyAttack>(); // 攻撃ロジックの生成
@@ -107,7 +110,7 @@ namespace MyGame {
 #ifdef USE_IMGUI
         if (IsActive()) {
             const auto& debug = LineRenderer::GetInstance()->GetDebugSettings();
-            if (debug.enable && object_) {     
+            if (debug.enable && object_) {
                 Vector4 hitColor = debug.isHit ? Vector4{ 1,0,0,1 } : Vector4{ 0,1,0,1 };
                 LineRenderer::GetInstance()->AddOBB(collider_->GetOBB(), hitColor);
             }
@@ -119,5 +122,15 @@ namespace MyGame {
         if (!IsAlive()) { return; }
         // オブジェクトの描画
         object_->Draw();
+    }
+
+    bool Enemy::ShouldAutoDestroy() const {
+        Camera* camera = CameraManager::GetInstance()->GetActiveCamera();
+        Vector3 pos = object_->GetTranslate();
+        if (camera->IsInFrustum(pos)) {
+            return false;
+        }
+        Vector3 toEnemy = Normalize(pos - camera->GetTranslate());
+        return Dot(camera->GetForward(), toEnemy) < 0.0f;
     }
 }

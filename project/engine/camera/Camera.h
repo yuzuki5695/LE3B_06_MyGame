@@ -43,6 +43,7 @@ namespace MyEngine {
 		Vector3 GetForward() const;
 		Vector3 GetRight() const;
 		Vector3 GetUp() const;
+		bool IsInFrustum(const Vector3& worldPos, float margin = 0.2f) const;
 		// setter
 		void SetRotate(const Vector3& rotate) { this->transform.rotate = rotate; }
 		void SetTranslate(const Vector3& translate) { this->transform.translate = translate; }

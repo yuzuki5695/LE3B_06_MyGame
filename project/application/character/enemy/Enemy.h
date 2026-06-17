@@ -13,6 +13,12 @@ namespace MyGame {
 	/// 敵キャラクタークラス
 	/// </summary>
 	class Enemy : public BaseCharacter {
+	public:
+		enum class DeathType {
+			None,
+			Player,
+			System
+		};
 	public:// メンバ関数
 		// デストラクタ
 		~Enemy() override;
@@ -47,7 +53,9 @@ namespace MyGame {
 
 		EnemyType enemyType_; // 敵のタイプ
 		std::mt19937 randomEngine; // 乱数生成器
-		bool hasSpawnedDeathParticle_ = false;
+
+		bool deathParticleRequested_;
+		DeathType deathType_;
 	public: // アクセッサ
 		bool IsSpawned() const { return isSpawned_; }
 		bool IsExpGranted() const { return isExpGranted_; }
@@ -61,7 +69,7 @@ namespace MyGame {
 		Player* GetPlayer() const { return player_; }
 		uint32_t GetExpReward() const { return expReward_; }
 		EnemyType GetEnemyType() { return enemyType_; }
-
+		DeathType GetDeathType() const { return deathType_; }
 		// setter
 		void SetPlayer(Player* player) { player_ = player; }
 		void SetSpawned(bool flag) { isSpawned_ = flag; }
@@ -73,8 +81,13 @@ namespace MyGame {
 			// すでにコライダーが生成されている場合は、そのサイズを即座に同期する
 			if (collider_) { collider_->SetSize(colliderSize_); }
 		}
-
-		bool HasSpawnedDeathParticle() const { return hasSpawnedDeathParticle_; }
-		void SetSpawnedDeathParticle(bool flag) { hasSpawnedDeathParticle_ = flag; }
+		void SetDeathType(DeathType type) { deathType_ = type; }
+		bool ConsumeDeathParticleRequest() {
+			if (!deathParticleRequested_) return false;
+			deathParticleRequested_ = false;
+			return true;
+		}
+		void RequestDeathParticle() { deathParticleRequested_ = true; }
+		bool ShouldAutoDestroy() const;
 	};
 }

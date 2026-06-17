@@ -54,14 +54,21 @@ namespace MyGame {
 
         // アクティブ中またはプレイヤ―が非アクティブ中は各更新処理を行う
         if (character.IsActive() || !enemy->GetPlayer()->IsActive()) {
-            // プレイヤーが追い越したら削除
-            const float kDeleteMargin = 15.0f;
-            if (enemy->GetPlayer()->GetTranslate().z > enemy->GetObject3d()->GetTransform().translate.z + kDeleteMargin) {
-                // EnemyDeadへ
+            //// プレイヤーが追い越したら削除
+            //const float kDeleteMargin = 15.0f;
+            //if (enemy->GetPlayer()->GetTranslate().z > enemy->GetObject3d()->GetTransform().translate.z + kDeleteMargin) {
+            //    // EnemyDeadへ
+            //    enemy->SetDeathType(Enemy::DeathType::System);
+            //    character.ChangeState(std::make_unique<EnemyDead>());
+            //    return;
+            //}
+            if (enemy->ShouldAutoDestroy()) {
+                enemy->SetDeathType(Enemy::DeathType::System);
                 character.ChangeState(std::make_unique<EnemyDead>());
                 return;
             }
-            // プレイヤーが追い越したら攻撃停止
+
+            // プレイヤーを追い越したら攻撃停止
             if (enemy->GetPlayer()->GetTranslate().z > enemy->GetObject3d()->GetTransform().translate.z) {
                 return;
             }
@@ -77,8 +84,16 @@ namespace MyGame {
     void EnemyDead::Update(BaseCharacter& character) {
         // 必要なコンポーネント
         Enemy* enemy = dynamic_cast<Enemy*>(&character);
-        //  if (character.IsAlive()) {
-
+        // ========================= 
+        // システム死亡は即消し 
+        // =========================
+        if (enemy->GetDeathType() == Enemy::DeathType::System) {
+            character.Destroy();
+            return;
+        } 
+        // =========================
+        // プレイヤーの弾による死亡のみ演出
+        // =========================
         if (!enemy->IsDeathStarted()) {
             enemy->SetDeathStarted(true);
             // 当たり判定解除
@@ -96,10 +111,11 @@ namespace MyGame {
         // 演出終了
         // =====================
         if (enemy->GetDeath()->IsFinished()) {
-            // パーティクル未生成なら生成要求
-            if (!enemy->HasSpawnedDeathParticle()) {
-                enemy->SetSpawnedDeathParticle(true);
+            if (enemy->GetDeathType() == Enemy::DeathType::Player) {
+                enemy->RequestDeathParticle();
+                enemy->SetDeathType(Enemy::DeathType::None);
             }
+
             // プレイヤーに倒されたら経験値付与
             // 経験値は1回だけ
             if (!enemy->IsExpGranted() && enemy->IsKilledByPlayer()) {

@@ -693,6 +693,12 @@
     <ClCompile Include="application\particle\GamePlayparticle.cpp">
       <Filter>ソース ファイル\application\particle</Filter>
     </ClCompile>
+    <ClCompile Include="application\particle\ExperienceParticle.cpp">
+      <Filter>ソース ファイル\application\particle</Filter>
+    </ClCompile>
+    <ClCompile Include="application\particle\SceneEmitterManager.cpp">
+      <Filter>ソース ファイル\application\particle</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="engine\2d\Sprite.h">
@@ -1134,6 +1140,12 @@
       <Filter>ヘッダー ファイル\application\particle</Filter>
     </ClInclude>
     <ClInclude Include="application\particle\SceneParticleBase.h">
+      <Filter>ヘッダー ファイル\application\particle</Filter>
+    </ClInclude>
+    <ClInclude Include="application\particle\ExperienceParticle.h">
+      <Filter>ヘッダー ファイル\application\particle</Filter>
+    </ClInclude>
+    <ClInclude Include="application\particle\SceneEmitterManager.h">
       <Filter>ヘッダー ファイル\application\particle</Filter>
     </ClInclude>
   </ItemGroup>

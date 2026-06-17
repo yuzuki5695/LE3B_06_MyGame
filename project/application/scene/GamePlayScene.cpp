@@ -21,6 +21,7 @@
 #include <PlayerState.h>
 #include <EnemyListEditor.h>
 #include <LineRenderer.h>
+#include <SceneEmitterManager.h>
 // AssetGeneratorからインクルード
 #include <subproject/AssetGenerator/engine/generator/LoadResourceID.h>
 
@@ -40,6 +41,7 @@ namespace MyGame {
         CollisionManager::GetInstance()->Finalize(); // 衝突マネージャの終了処理
         EventManager::GetInstance()->Finalize();     // イベントマネージャの終了処理
         EnemyListEditor::GetInstance()->Finalize();  // 敵リストエディタの終了処理
+        SceneEmitterManager::GetInstance()->Finalize(); // パーティクルエミッターマネージャの終了処理
     }
 
     void GamePlayScene::Initialize() {
@@ -93,21 +95,19 @@ namespace MyGame {
         BulletManager::GetInstance()->Initialize();
         // 敵のパラメータ
         EnemyListEditor::GetInstance()->Initialize();
-#endif // USE_IMGUI
-
-        // パーティクルの生死、初期化
-        particle_ = std::make_unique<GamePlayParticle>();
-        particle_->Initialize();
+#endif // USE_IMGUI     
+        // パーティクルエミッターの初期化
+        SceneEmitterManager::GetInstance()->Initialize();
     }
 
     void GamePlayScene::Update() {
-		// ゲーム開始イベントの開始判定
+        // ゲーム開始イベントの開始判定
         if (!isGameStartEventDone_ && CameraManager::GetInstance()->GetCameraState().state == CameraDefs::CameraState::Default) {
             // ゲーム開始イベントの開始
             EventManager::GetInstance()->EventStart(Event::EventState::GameStart);
             isGameStartEventDone_ = true;
         }
- 
+
         //  イベント終了判定
         if (!EventManager::GetInstance()->IsActive()) {
             if (isGameStartEventDone_) {
@@ -163,10 +163,8 @@ namespace MyGame {
         // 敵更新
         for (std::unique_ptr<Enemy>& enemy : enemies_) {
             enemy->Update();
-            // 死亡パーティクル生成
-            if (enemy->HasSpawnedDeathParticle()) {
-                particle_->AddExplosion(enemy->GetObject3d()->GetTranslate());
-                enemy->SetSpawnedDeathParticle(false);
+            if (enemy->ConsumeDeathParticleRequest()) {
+                SceneEmitterManager::GetInstance()->GetEmitter<GamePlayParticle>()->AddExplosion(enemy->GetObject3d()->GetTranslate());
             }
         }
 
@@ -204,7 +202,7 @@ namespace MyGame {
 		// ゲーム終了イベントの更新処理
         GameEnd();
 
-        particle_->Update();
+        SceneEmitterManager::GetInstance()->Update();
         // パーティクル更新
         ParticleManager::GetInstance()->Update();
 #pragma endregion 全てのObject3d個々の更新処理
