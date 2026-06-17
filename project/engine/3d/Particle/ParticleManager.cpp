@@ -53,46 +53,14 @@ namespace MyEngine {
         randomEngine = std::mt19937(rd());
         //ビルボード行列作成
         backToFrontMatrix = MakeRotateYMatrix(std::numbers::pi_v<float>);
-        // 各種 GPU リソース・バッファの生成と初期化          
-        CameraForGPUGenerate();       // カメラ用
-        ParticleInfoBufferGenerate(); // パーティクル情報用
-        SpawnListBufferGenerate();    // スポーン要求リスト用
-        GroupSpawnCBufferGenerate();  // グループスポーン定数バッファ用
-        AttractInfoResourceCBufferGenerate();
-    }
-
-    void ParticleManager::CameraForGPUGenerate() {
-        // カメラ用リソースを作る
-        cameraResource = CreateBufferResource(particleCommon_->GetDxCommon()->GetDevice(), sizeof(CameraData));
-        // 書き込むためのアドレスを取得
-        cameraResource->Map(0, nullptr, reinterpret_cast<void**>(&cameraData));
-        // カメラを CameraManager 経由で取得
-        cameraData->view = MakeIdentity4x4();
-        cameraData->projection = MakeIdentity4x4();
-        cameraData->billboard = MakeIdentity4x4();
-    }
-
-    void ParticleManager::ParticleInfoBufferGenerate() {
-        // 最大インスタンス数などを Compute Shader に伝えるためのバッファ
-        particleInfoResource_ = CreateBufferResource(dxCommon_->GetDevice(), sizeof(ParticleInfo));
-        particleInfoResource_->Map(0, nullptr, reinterpret_cast<void**>(&particleInfoData_));
-    }
-
-    void ParticleManager::SpawnListBufferGenerate() {
-        // 1フレーム中に発生した全グループのスポーンリクエストを一時的に集約するバッファ
-        spawnListResource_ = CreateBufferResource(dxCommon_->GetDevice(), sizeof(SpawnRequestGPU) * MaxSpawnRequestCount);
-        spawnListResource_->Map(0, nullptr, reinterpret_cast<void**>(&spawnListData_));
-    }
-
-    void ParticleManager::GroupSpawnCBufferGenerate() {
-        // 各グループが上の「SpawnList」のどこから何個読み込めばいいかのインデックス情報を格納
-        groupSpawnCBResource_ = CreateBufferResource(dxCommon_->GetDevice(), sizeof(GroupSpawnCB) * MaxGroupCount);
-        groupSpawnCBResource_->Map(0, nullptr, reinterpret_cast<void**>(&groupSpawnCBData_));
-    }
-    void ParticleManager::AttractInfoResourceCBufferGenerate() {
-        // 各グループが上の「SpawnList」のどこから何個読み込めばいいかのインデックス情報を格納
-        attractInfoResource_ = CreateBufferResource(dxCommon_->GetDevice(), sizeof(AttractInfo) * MaxGroupCount);
-        attractInfoResource_->Map(0, nullptr, reinterpret_cast<void**>(&attractInfoData_));
+        // 各種 GPU リソース・バッファの生成と初期化
+        std::function<Microsoft::WRL::ComPtr<ID3D12Resource>(ID3D12Device*, size_t) > createBuffer = [this](ID3D12Device* device, size_t size) {
+            return CreateBufferResource(device, size);            };
+        cameraBuffer_.Create(dxCommon_->GetDevice().Get(), createBuffer);
+        particleInfoBuffer_.Create(dxCommon_->GetDevice().Get(), createBuffer);
+        spawnListBuffer_.Create(dxCommon_->GetDevice().Get(), createBuffer, MaxSpawnRequestCount);
+        groupSpawnBuffer_.Create(dxCommon_->GetDevice().Get(), createBuffer, MaxGroupCount);
+        attractInfoBuffer_.Create(dxCommon_->GetDevice().Get(), createBuffer, MaxGroupCount);
     }
 
     void ParticleManager::Update() {
@@ -104,18 +72,18 @@ namespace MyEngine {
 
         // カメラ行列更新（GPUへ渡す）
         billboardMatrix = Multiply(backToFrontMatrix, activeCamera->GetWorldMatrix());
-        cameraData->view = activeCamera->GetViewMatrix();
-        cameraData->projection = activeCamera->GetProjectionMatrix();
+        cameraBuffer_->view = activeCamera->GetViewMatrix();
+        cameraBuffer_->projection = activeCamera->GetProjectionMatrix();
         // パーティクルの位置をカメラの方向に合わせるために設定
         billboardMatrix.m[3][0] = 0.0f;
         billboardMatrix.m[3][1] = 0.0f;
         billboardMatrix.m[3][2] = 0.0f;
-        cameraData->billboard = billboardMatrix;
+        cameraBuffer_->billboard = billboardMatrix;
         //---------------------------------
         // Attract情報更新
         //---------------------------------
-        attractInfoData_->targetPosition = attractTargetPosition_;
-        attractInfoData_->deltaTime = 1.0f / 60.0f;
+        attractInfoBuffer_->targetPosition = attractTargetPosition_;
+        attractInfoBuffer_->deltaTime = 1.0f / 60.0f;
 
         // DescriptorHeap設定
         srvmanager_->PreDraw();
@@ -149,7 +117,7 @@ namespace MyEngine {
         std::vector<ID3D12Resource*> updateResources;
 
         for (auto& [name, group] : particleGroups) {
-            particleInfoData_->particleCount = group.maxInstanceCount;
+            particleInfoBuffer_->particleCount = group.maxInstanceCount;
             // root0 : particle
             srvmanager_->SetComputeRootDescriptorTable(0, group.uavIndex);
             // root1 : freeList
@@ -157,9 +125,9 @@ namespace MyEngine {
             // root2 : freeCounter
             srvmanager_->SetComputeRootDescriptorTable(2, group.freeCounterUavIndex);
             // root3 : ParticleInfo
-            dxCommon_->GetCommandList()->SetComputeRootConstantBufferView(3, particleInfoResource_->GetGPUVirtualAddress());
+            dxCommon_->GetCommandList()->SetComputeRootConstantBufferView(3, particleInfoBuffer_.GetGPUVirtualAddress());
             // root4 : AttractInfo
-            dxCommon_->GetCommandList()->SetComputeRootConstantBufferView(4, attractInfoResource_->GetGPUVirtualAddress());
+            dxCommon_->GetCommandList()->SetComputeRootConstantBufferView(4, attractInfoBuffer_.GetGPUVirtualAddress());
             int32_t threadGroupCount = (group.maxInstanceCount + 255) / 256;
             dxCommon_->GetCommandList()->Dispatch(threadGroupCount, 1, 1);
             updateResources.push_back(group.Resource.Get());
@@ -182,7 +150,7 @@ namespace MyEngine {
             // SRVで画像を表示
             srvmanager_->SetGraphicsRootDescriptorTable(2, particleGroup.materialData.textureindex);
             // カメラ用定数バッファをセット
-            dxCommon_->GetCommandList()->SetGraphicsRootConstantBufferView(3, cameraResource->GetGPUVirtualAddress());
+            dxCommon_->GetCommandList()->SetGraphicsRootConstantBufferView(3, cameraBuffer_.GetGPUVirtualAddress());
             // モデルに必要なバッファをバインド（頂点バッファや定数バッファなど）
             particleGroup.model->Draw();
             // 描画（インスタンシング）を実行
@@ -222,7 +190,7 @@ namespace MyEngine {
             for (uint32_t i = 0; i < spawnData.count; ++i) {
                 if (totalRequestCount >= MaxSpawnRequestCount) { break; }
 
-                SpawnRequestGPU& dst = spawnListData_[totalRequestCount];
+                SpawnRequestGPU& dst = spawnListBuffer_.data[totalRequestCount];
                 dst.translate = spawnData.transform.translate;
                 dst.rotate = spawnData.transform.rotate;
                 dst.scale = spawnData.transform.scale;
@@ -264,8 +232,8 @@ namespace MyEngine {
         for (const auto& spawn : activeSpawns) {
             if (cbCBVIndex >= MaxGroupCount) { break; }
 
-            groupSpawnCBData_[cbCBVIndex].startRequestIndex = spawn.startIndex;
-            groupSpawnCBData_[cbCBVIndex].spawnCount = spawn.count;
+            groupSpawnBuffer_.GetData()[cbCBVIndex].startRequestIndex = spawn.startIndex;
+            groupSpawnBuffer_.GetData()[cbCBVIndex].spawnCount = spawn.count;
             //---------------------------------
             // RootParameter Bind            
             //---------------------------------
@@ -278,12 +246,12 @@ namespace MyEngine {
             //---------------------------------
             // root3 : b0 GroupSpawnCB            
             //---------------------------------
-            D3D12_GPU_VIRTUAL_ADDRESS cbvAddress = groupSpawnCBResource_->GetGPUVirtualAddress() + (cbCBVIndex * sizeof(GroupSpawnCB));
+            D3D12_GPU_VIRTUAL_ADDRESS cbvAddress = groupSpawnBuffer_.GetGPUVirtualAddress() + (cbCBVIndex * sizeof(GroupSpawnCB));
             dxCommon_->GetCommandList()->SetComputeRootConstantBufferView(3, cbvAddress);
             //---------------------------------
             // root4 : t0 SpawnRequest
             //---------------------------------            
-            dxCommon_->GetCommandList()->SetComputeRootShaderResourceView(4, spawnListResource_->GetGPUVirtualAddress());
+            dxCommon_->GetCommandList()->SetComputeRootShaderResourceView(4, spawnListBuffer_.GetGPUVirtualAddress());
             //---------------------------------
             // Dispatch
             //---------------------------------

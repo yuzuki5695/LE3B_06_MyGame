@@ -1148,6 +1148,9 @@
     <ClInclude Include="application\particle\SceneEmitterManager.h">
       <Filter>ヘッダー ファイル\application\particle</Filter>
     </ClInclude>
+    <ClInclude Include="engine\3d\Particle\MappedBuffer.h">
+      <Filter>ヘッダー ファイル\application\particle</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Resources\shaders\Sprite\Sprite.PS.hlsl">

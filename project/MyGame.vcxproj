@@ -295,6 +295,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="Engine\3d\Model\ModelData.h" />
     <ClInclude Include="Engine\3d\Object\Object3d.h" />
     <ClInclude Include="Engine\3d\Object\Object3dCommon.h" />
+    <ClInclude Include="engine\3d\Particle\MappedBuffer.h" />
     <ClInclude Include="Engine\3d\Particle\ParticleData.h" />
     <ClInclude Include="engine\3d\Particle\ParticleGroupfactory.h" />
     <ClInclude Include="Engine\3d\Skybox\Skybox.h" />

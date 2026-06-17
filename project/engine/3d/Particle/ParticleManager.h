@@ -7,6 +7,7 @@
 #include <ParticleModel.h>
 #include <ParticleData.h>
 #include <ParticleCommon.h>
+#include <MappedBuffer.h>
 
 namespace MyEngine {
 	// 3Dオブジェクト共通部
@@ -34,24 +35,17 @@ namespace MyEngine {
 		void CreateParticleGroup(const std::string& name, const std::string& textureFilepath, const std::string& filename, const uint32_t& MaxInstanceCount);
 		// 発生
 		void Emit(const std::string& name, const ParticleSpawnData& spawnData);
-		
-		void SetTargetPositionAll(const Vector3& target);
-		
+
 		void ClearAll();
 	private: // 内部関数
-		void CameraForGPUGenerate();
-		void ParticleInfoBufferGenerate();  // パーティクル基本情報のバッファ生成
-		void SpawnListBufferGenerate();     // 全グループ共通のスポーン要求バッファ生成
-		void GroupSpawnCBufferGenerate();   // グループごとの範囲伝達用定数バッファ生成
-		void AttractInfoResourceCBufferGenerate();
 		// ProcessSpawnRequests から分割した段階的な関数群
-        struct ActiveGroupSpawn { ParticleGroup* group; uint32_t startIndex; uint32_t count; }; 
-        // 要求を1つのリニアな配列（CommandQueue）に詰め込み、各グループの生成範囲を特定する (CPU処理)
-        uint32_t BuildSpawnRequests(std::vector<ActiveGroupSpawn>& outActiveSpawns);
-        // 構築されたリクエストを基に、実際にComputeShaderのDispatchを実行する (GPU処理)
-        void DispatchSpawnCommands(const std::vector<ActiveGroupSpawn>& activeSpawns);
-        // リソース遷移・バリア関連（共通化）
-        void TransitionParticleBuffer(ParticleGroup& group, D3D12_RESOURCE_STATES after);
+		struct ActiveGroupSpawn { ParticleGroup* group; uint32_t startIndex; uint32_t count; };
+		// 要求を1つのリニアな配列（CommandQueue）に詰め込み、各グループの生成範囲を特定する (CPU処理)
+		uint32_t BuildSpawnRequests(std::vector<ActiveGroupSpawn>& outActiveSpawns);
+		// 構築されたリクエストを基に、実際にComputeShaderのDispatchを実行する (GPU処理)
+		void DispatchSpawnCommands(const std::vector<ActiveGroupSpawn>& activeSpawns);
+		// リソース遷移・バリア関連（共通化）
+		void TransitionParticleBuffer(ParticleGroup& group, D3D12_RESOURCE_STATES after);
 		void TransitionParticleState(ParticleGroup& group, D3D12_RESOURCE_STATES after);
 		void TransitionToDrawState(ParticleGroup& group);
 		void PipelineUAVBarriers(const std::vector<ID3D12Resource*>& resources);
@@ -67,16 +61,11 @@ namespace MyEngine {
 		// パーティクルグループコンテナ
 		std::unordered_map<std::string, ParticleGroup> particleGroups;
 
-		Microsoft::WRL::ComPtr<ID3D12Resource> cameraResource;
-		Microsoft::WRL::ComPtr<ID3D12Resource> particleInfoResource_;
-		Microsoft::WRL::ComPtr<ID3D12Resource> spawnListResource_;
-		Microsoft::WRL::ComPtr<ID3D12Resource> groupSpawnCBResource_;
-		Microsoft::WRL::ComPtr<ID3D12Resource> attractInfoResource_;
-		CameraData* cameraData = nullptr;
-		ParticleInfo* particleInfoData_ = nullptr;
-		SpawnRequestGPU* spawnListData_ = nullptr;
-		GroupSpawnCB* groupSpawnCBData_ = nullptr;
-		AttractInfo* attractInfoData_ = nullptr;
+		MappedBuffer<CameraData> cameraBuffer_;
+		MappedBuffer<ParticleInfo> particleInfoBuffer_;
+		MappedBuffer<SpawnRequestGPU> spawnListBuffer_;
+		MappedBuffer<GroupSpawnCB> groupSpawnBuffer_;
+		MappedBuffer<AttractInfo> attractInfoBuffer_;
 
 		Vector3 attractTargetPosition_ = { 0.0f,0.0f,0.0f };
 		std::vector<SpawnRequest> spawnRequests_;
@@ -97,7 +86,7 @@ namespace MyEngine {
 			return this->Rand(r.min, r.max);
 		}
 
-		bool IsEnabled(const RandomRange<float>& r) { return !(r.min == 0.0f && r.max == 0.0f); }      
+		bool IsEnabled(const RandomRange<float>& r) { return !(r.min == 0.0f && r.max == 0.0f); }
 		Vector3 SafeRandVec3(const RandomRange<Vector3>& r) {
 			return {
 				(r.min.x == r.max.x) ? r.min.x : this->Rand(r.min.x, r.max.x),
