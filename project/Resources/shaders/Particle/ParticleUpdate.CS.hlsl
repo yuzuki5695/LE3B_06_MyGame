@@ -71,6 +71,13 @@ void UpdateAttract(uint index)
         float3 toTarget = gTargetPosition - gParticle[index].translate;
         float dist = length(toTarget);
 
+        float3 dir = normalize(toTarget);
+        // 遠いほど速い
+        float speed = lerp(1.0f, 8.0f, saturate(dist / 10.0f));
+        // 目標速度へ補間
+        gParticle[index].velocityTranslate = lerp(gParticle[index].velocityTranslate, dir * speed, 0.12f);
+        // 移動
+        gParticle[index].translate += gParticle[index].velocityTranslate;
         // プレイヤーに近づいたら消す
         if (dist < 0.5f)
         {
@@ -83,34 +90,6 @@ void UpdateAttract(uint index)
             gFreeList[freeIndex] = index;
             return;
         }
-
-        // 向き
-        float3 dir = normalize(toTarget);
-        // 距離で加速
-        float t = saturate(dist / 8.0f);
-        float targetSpeed = lerp(0.2f, 5.0f, t);
-        // 加速度
-        gParticle[index].velocityTranslate += dir * 0.35f;
-        // 速度制限
-        float len = length(gParticle[index].velocityTranslate);
-        if (len > targetSpeed)
-        {
-            gParticle[index].velocityTranslate = normalize(gParticle[index].velocityTranslate) * targetSpeed;
-        }
-        // 螺旋演出
-        float time = gParticle[index].currentTime;
-        // プレイヤー方向に対する横ベクトル
-        float3 side = normalize(cross(dir, float3(0, 1, 0)));
-        // 円運動
-        float swirlPower = saturate(dist / 5.0f);
-        float3 swirl = side * sin(time * 18.0f + index * 0.35f) * 0.25f * swirlPower;
-        // 最終移動
-        gParticle[index].translate += gParticle[index].velocityTranslate + swirl;
-        // 回転
-        gParticle[index].rotate.z += 0.12f;
-        // 吸われるほど縮小
-        float shrink = saturate(dist / 6.0f);
-        gParticle[index].scale *= lerp(0.94f, 1.0f, shrink);
     }
 }
 
