@@ -21,7 +21,7 @@ namespace MyGame {
         canShoot_ = false;    // 最初は撃てないようにする
         // 最初は即撃てるようにする
         timer_ = coolTime_;
-        speed = 3.0f;
+        speed = 2.0f;
         state_ = AttackState::Idle;
     }
 

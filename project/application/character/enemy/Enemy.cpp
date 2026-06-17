@@ -45,7 +45,7 @@ namespace MyGame {
         // モデルの読み込み
         ModelManager::GetInstance()->LoadModel(modelPath);
         // オブジェクトの生成、初期化
-        object_ = Object3d::Create(modelPath, Transform{ { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f } });
+        object_ = Object3d::Create(modelPath, Transform{ { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, -9999.0f } });
 
         // 敵タイプごとの色設定
         switch (enemyType_) {
