@@ -1,6 +1,7 @@
 #pragma once
 #include <Transform.h>
 #include <ParticleManager.h>
+#include <MatrixVector.h>
 
 namespace MyGame {
 
@@ -25,7 +26,10 @@ namespace MyGame {
         MyEngine::ParticleSpawnRandom random_;
     public:
         MyEngine::ParticleSpawnData& GetSpawnData() { return spawnData_; }
-      
-        virtual void SetPosition(const MyEngine::Vector3& pos) { spawnData_.transform.translate = pos; }
+        MyEngine::Transform& GetTransform() { return spawnData_.transform; } 
+        MyEngine::Vector3& GetTranslate() { return spawnData_.transform.translate; }
+
+        virtual void SetTranslate(MyEngine::Vector3 translate) { spawnData_.transform.translate = translate; }
+        virtual void SetDirection(const MyEngine::Vector3& dir) { spawnData_.velocity.translate = MyEngine::MatrixVector::Normalize(dir); }
     };
 }

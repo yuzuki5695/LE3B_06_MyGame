@@ -203,6 +203,10 @@ namespace MyGame {
         GameEnd();
 
         // エミッターマネージャの更新
+        Vector3 forward = CameraManager::GetInstance()->GetActiveCamera()->GetForward();
+        SceneEmitterManager::GetInstance()->SetForward(forward);
+        SceneEmitterManager::GetInstance()->SetWorldPosition(player_->GetWorldPosition());
+        // エミッターマネージャの更新
         SceneEmitterManager::GetInstance()->Update();
         // プレイヤーをセット
         ParticleManager::GetInstance()->SetAttractTargetPosition(player_->GetWorldPosition());

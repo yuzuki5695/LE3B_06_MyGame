@@ -41,12 +41,14 @@ namespace MyGame {
         /// <param name="パーティクルの">パーティクルのインスタンスの所有権</param>
         void AddUI(const std::string& sceneName, std::unique_ptr<SceneParticleBase> emitter);
         /// <summary>
-        /// 管理している全UIの破棄
+        /// 管理している全パーティクルの破棄
         /// </summary>
         void Clear();
     private: // メンバ変数
         // 現在のシーンで有効なUIインスタンスを保持するリスト
         std::vector<std::unique_ptr<SceneParticleBase>> emitterlist_;
+        MyEngine::Vector3 objectforward_;
+        MyEngine::Vector3 worldfposition_;
     public:
         template <typename T>
         T* GetEmitter() {
@@ -58,5 +60,10 @@ namespace MyGame {
             }
             return nullptr;
         }
+        MyEngine::Vector3 GetForward() { return objectforward_; }
+        MyEngine::Vector3 GetWorldPosition() { return worldfposition_; }
+
+        void SetWorldPosition(const MyEngine::Vector3& position) { worldfposition_ = position; }
+        void SetForward(const MyEngine::Vector3& forward) { objectforward_ = forward; }
     };
 }
