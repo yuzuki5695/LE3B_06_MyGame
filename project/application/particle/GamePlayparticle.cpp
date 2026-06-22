@@ -57,6 +57,23 @@ namespace MyGame {
 			explosionEmitter_->SetTranslate(pos);
 			explosionEmitter_->Emit();
 		}
+		
+		for (auto itr = expOrbs_.begin(); itr != expOrbs_.end();) {
+			Vector3 target = player_->GetWorldPosition();
+			Vector3 diff = target - itr->position;
+			float dist = Length(diff);
+			if (dist > 0.01f) {
+				itr->position += Normalize(diff) * 0.3f;
+			}
+
+			if (dist < 10.0f) {
+				player_->GainExp(itr->exp);
+
+				itr = expOrbs_.erase(itr);
+			} else {
+				++itr;
+			}
+		}
 
 		explosionQueue_.clear();
 		// プレイヤートレイル
@@ -68,10 +85,12 @@ namespace MyGame {
 		}
 	}
 
-	void GamePlayParticle::AddExplosion(const Vector3& pos) {
+	void GamePlayParticle::AddExplosion(const Vector3& pos, uint32_t exp) {
+		// 見た目
 		explosionQueue_.push_back(pos);
+		// 当たり判定用
+		expOrbs_.push_back({ pos, exp });
 	}
-
 	void GamePlayParticle::EmitPlayerTrail() {
 		Vector3 pos =  SceneEmitterManager::GetInstance()->GetWorldPosition();
 		Vector3 dir = SceneEmitterManager::GetInstance()->GetForward();

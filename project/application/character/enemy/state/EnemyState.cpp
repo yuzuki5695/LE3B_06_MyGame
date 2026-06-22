@@ -100,17 +100,10 @@ namespace MyGame {
         // =====================
         if (enemy->GetDeath()->IsFinished()) {
             if (enemy->GetDeathType() == Enemy::DeathType::Player) {
+                // パーティクルの処理をオンにする
                 enemy->RequestDeathParticle();
+                // 一度だけ伝えたいのでNoneに変える
                 enemy->SetDeathType(Enemy::DeathType::None);
-            }
-
-            // プレイヤーに倒されたら経験値付与
-            // 経験値は1回だけ
-            if (!enemy->IsExpGranted() && enemy->IsKilledByPlayer()) {
-                if (enemy->GetPlayer()) {
-                    enemy->GetPlayer()->GainExp(enemy->GetExpReward());
-                }
-                enemy->SetExpGranted(true);
             }
             // 死んだらフラグを立てる
             character.Destroy();

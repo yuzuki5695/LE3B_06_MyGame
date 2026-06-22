@@ -63,7 +63,7 @@ namespace MyGame {
             LineRenderer::GetInstance()->SetHit(true);
 #endif // USE_IMGUI
             if (!IsAlive()) { return; }
-             //ChangeState(std::make_unique<PlayerStateDead>());
+            //ChangeState(std::make_unique<PlayerStateDead>());
             });
         // コライダー登録
         CollisionManager::GetInstance()->RegisterCollider(collider_.get());
@@ -75,6 +75,11 @@ namespace MyGame {
         targetreticle_ = Sprite::Create(Ui::Target, Vector2{ 640.0f, 360.0f }, 0.0f, Vector2{ 100.0f, 100.0f });
         targetreticle_->SetTextureSize(Vector2{ 512.0f, 512.0f });
         targetreticle_->SetAnchorPoint(Vector2{ 0.5f, 0.5f }); // 中心基準
+
+        level_ = 1;         // 現在のレベル
+        exp_ = 0;           // 現在の経験値
+        nextLevelExp_ = 70; // 次のレベルに必要な経験値
+        isStateUpdateEnabled_ = true;
 
         // コンポーネントの生成
         move_ = std::make_unique<PlayerMove>();          // 移動ロジックの生成

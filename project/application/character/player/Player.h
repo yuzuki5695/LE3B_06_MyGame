@@ -71,10 +71,10 @@ namespace MyGame {
 		// 参照ポインタ
 		Enemy* enemy_;
 		// 経験値・レベル用メンバ変数
-		uint32_t level_ = 1;         // 現在のレベル
-		uint32_t exp_ = 0;           // 現在の経験値
-		uint32_t nextLevelExp_ = 70; // 次のレベルに必要な経験値
-		bool isStateUpdateEnabled_ = true;
+		uint32_t level_;         // 現在のレベル
+		uint32_t exp_;           // 現在の経験値
+		uint32_t nextLevelExp_; // 次のレベルに必要な経験値
+		bool isStateUpdateEnabled_;
 	public: // アクセッサ
 		// getter
 		PlayerMove* GetMove() { return move_.get(); }

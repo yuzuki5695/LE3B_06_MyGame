@@ -98,6 +98,7 @@ namespace MyGame {
 #endif // USE_IMGUI     
         // パーティクルエミッターの初期化
         SceneEmitterManager::GetInstance()->Initialize();
+        SceneEmitterManager::GetInstance()->GetEmitter<GamePlayParticle>()->SetPlayer(player_.get());
     }
 
     void GamePlayScene::Update() {
@@ -164,7 +165,7 @@ namespace MyGame {
         for (std::unique_ptr<Enemy>& enemy : enemies_) {
             enemy->Update();
             if (enemy->ConsumeDeathParticleRequest()) {
-                SceneEmitterManager::GetInstance()->GetEmitter<GamePlayParticle>()->AddExplosion(enemy->GetObject3d()->GetTranslate());
+                SceneEmitterManager::GetInstance()->GetEmitter<GamePlayParticle>()->AddExplosion(enemy->GetObject3d()->GetTranslate(), enemy->GetExpReward());
             }
         }
 
@@ -189,7 +190,6 @@ namespace MyGame {
         }
         // 毎フレーム最後に同期
         prevPlayerExp_ = player_->GetExp();
-
         // 弾の更新
         BulletManager::GetInstance()->Update();
         // ステージマネージャの更新
@@ -202,6 +202,7 @@ namespace MyGame {
 		// ゲーム終了イベントの更新処理
         GameEnd();
 
+        SceneEmitterManager::GetInstance()->GetEmitter<GamePlayParticle>()->SetPlayer(player_.get());
         // エミッターマネージャの更新
         Vector3 forward = CameraManager::GetInstance()->GetActiveCamera()->GetForward();
         SceneEmitterManager::GetInstance()->SetForward(forward);
