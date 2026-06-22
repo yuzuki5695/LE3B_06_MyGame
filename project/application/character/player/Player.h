@@ -71,10 +71,13 @@ namespace MyGame {
 		// 参照ポインタ
 		Enemy* enemy_;
 		// 経験値・レベル用メンバ変数
+		uint32_t kMaxLevel;      // 最大レベル
 		uint32_t level_;         // 現在のレベル
 		uint32_t exp_;           // 現在の経験値
 		uint32_t nextLevelExp_; // 次のレベルに必要な経験値
 		bool isStateUpdateEnabled_;
+		bool isLevelUpRequested_;
+
 	public: // アクセッサ
 		// getter
 		PlayerMove* GetMove() { return move_.get(); }
@@ -89,6 +92,7 @@ namespace MyGame {
 		MyEngine::Sprite* GetSprite() { return targetreticle_.get(); }
 		MyEngine::Object3d* GetTarget() { return target_.get(); }
 		uint32_t GetLevel() const { return level_; }
+		uint32_t GetMaxLevel() const { return kMaxLevel; }
 		uint32_t GetExp() const { return exp_; }
 		uint32_t GetNextLevelExp() const { return nextLevelExp_; }
 		MyEngine::Vector3 GetForward() const;
@@ -97,5 +101,6 @@ namespace MyGame {
 		void SetRotate(const MyEngine::Vector3& rotate) { object_->SetRotate(rotate); }
 		void SetEnemy(Enemy* enemy) { enemy_ = enemy; }
 		void SetStateUpdateEnabled(bool enable) { isStateUpdateEnabled_ = enable; }
+		bool ConsumeLevelUpRequest();
 	};
 }

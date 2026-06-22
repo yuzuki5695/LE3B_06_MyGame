@@ -21,13 +21,13 @@ namespace MyGame {
    
     void GamePlayUI::Initialize() {
         // 操作UIテクスチャ一覧
-        const std::array<const char*, 25> operationTextures = {
+        const std::array<const char*, 26> operationTextures = {
             Operationui::W,Operationui::A,Operationui::S,Operationui::D,
             Operationui::ArrowUp,Operationui::ArrowLeft,Operationui::ArrowDown,
             Operationui::ArrowRight,Operationui::SPACEKey,Operationui::SHIFT,Operationui::W_RED,
             Operationui::A_RED,Operationui::S_RED,Operationui::D_RED,Operationui::ArrowUp_RED,
             Operationui::ArrowLeft_RED,Operationui::ArrowDown_RED,Operationui::ArrowRight_RED,Operationui::SPACEKey_RED,
-            Operationui::SHIFT_RED,Ui::Gage,Ui::Player_ui,Operationui::LevelGage_Frame,Operationui::LevelGage_Green,Operationui::LevelGage_Yellow
+            Operationui::SHIFT_RED,Ui::Gage,Ui::Player_ui,Operationui::LevelGage_Frame,Operationui::LevelGage_Green,Operationui::LevelGage_Yellow,Event::start
         };
 
         // 操作UIをまとめて読み込み
@@ -72,6 +72,12 @@ namespace MyGame {
         expBarDuration_ = 2.0f;     // 表示時間
         expBarTimer_ = expBarDuration_; // タイマー(初回は最大にしておく)
         isEventLocked = true;
+
+        levelup_ = Sprite::Create(Operationui::LevelGage_Green, { 0.0f, 0.0f }, 0.0f, { 80.0f, 20.0f });
+        levelup_->SetAnchorPoint({ 0.5f, 0.5f });
+        isLevelUpVisible_ = false;
+        levelUpAlpha_ = 0.0f;
+        levelUpTimer_ = 0.0f;
     }
 
     void GamePlayUI::Update() {
@@ -82,35 +88,60 @@ namespace MyGame {
         // 操作UIのアニメーション更新
         UpdateControlUIAnimation();
         // 操作UIの更新
-        UpdateControlUI();        
+        UpdateControlUI();
         // プレイヤー位置UIの更新
         UpdatePlayerFollowUI();
-		// EXPバーのフェード更新
+        // EXPバーのフェード更新
         UpdateExpBarFade();
+        // レベルアップUIの更新
+        UpdateLevelUpFade();
         gage_->Update();
         player_ui_->Update();
         expBarBack_->Update();
         expBarFill_->Update();
+        levelup_->Update();
         for (std::unique_ptr<Sprite>& ui : uis_) {
             ui->Update();
         }
     }
 
     void GamePlayUI::Draw() {
-		// ポーズ画面の描画
+        // ポーズ画面の描画
         pausemenu_->Draw();
-		// ステージ進行度UIの描画
+        // ステージ進行度UIの描画
         gage_->Draw();
-		// プレイヤー位置UIの描画
+        // プレイヤー位置UIの描画
         player_ui_->Draw();
         if (isExpBarVisible_) {
             // プレイヤーに合わせて表示するUIの描画
             expBarBack_->Draw();
             expBarFill_->Draw();
         }
+       // if (isLevelUpVisible_) {
+            levelup_->Draw();
+        //}
         // 操作UIの描画
         for (std::unique_ptr<Sprite>& ui : uis_) {
             ui->Draw();
+        }
+    }
+
+    void GamePlayUI::UpdateLevelUpFade() {
+        if (!isLevelUpVisible_) {
+            return;
+        }
+        constexpr float fadeDuration = 2.0f;
+        levelUpTimer_ += 1.0f / 60.0f;
+        float t = levelUpTimer_ / fadeDuration;
+        t = std::clamp(t, 0.0f, 1.0f);
+        levelUpAlpha_ = 1.0f - t;
+        levelup_->SetColor({ 1.0f, 1.0f, 1.0f, levelUpAlpha_ });
+        float scale = Lerp(1.3f, 1.0f, t);
+        levelup_->SetSize({ 200.0f * scale, 50.0f * scale });
+
+        if (t >= 1.0f) {
+            isLevelUpVisible_ = false;
+            levelup_->SetColor({ 1,1,1,0 });
         }
     }
 
@@ -144,6 +175,8 @@ namespace MyGame {
         // 位置更新
         expBarBack_->SetPosition(finalPos);               
         expBarFill_->SetPosition({ finalPos.x,finalPos.y });
+        // レベルアップUIの座標更新
+        levelup_->SetPosition({ finalPos.x + 40.0f, finalPos.y - 40.0f });
         // 経験値割合
         constexpr float kMaxBarWidth = 80.0f;
         constexpr float kBarHeight = 20.0f;
@@ -169,6 +202,22 @@ namespace MyGame {
         // 即反映
         expBarBack_->SetColor({ 1.0f,1.0f,1.0f,expBarAlpha_ });
         expBarFill_->SetColor({ 1.0f,1.0f,1.0f,expBarAlpha_ });
+    }
+
+    void GamePlayUI::ShowLevelUp(bool isMaxLevel) {
+        isLevelUpVisible_ = true;
+        levelUpAlpha_ = 1.0f;
+        levelUpTimer_ = 0.0f;
+        // 初期サイズは1.3倍
+        levelup_->SetSize({ 260.0f,65.0f });
+        levelup_->SetColor({ 1,1,1,1 });
+        // 表示位置記録
+        levelUpBasePos_ = levelup_->GetPosition();
+        if (isMaxLevel) {
+            levelup_->SetTexture(Operationui::LevelGage_Yellow);
+        } else {
+            levelup_->SetTexture(Operationui::LevelGage_Green);
+        }
     }
 
     void GamePlayUI::UpdateExpBarFade() {

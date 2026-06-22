@@ -188,6 +188,11 @@ namespace MyGame {
         if (player_->GetExp() > prevPlayerExp_) {
             UIManager::GetInstance()->GetUI<GamePlayUI>()->ShowExpBar();
         }
+        // レベルアップ通知
+        if (player_->ConsumeLevelUpRequest()) {
+            bool isMax = player_->GetLevel() >= player_->GetMaxLevel();
+            UIManager::GetInstance()->GetUI<GamePlayUI>()->ShowLevelUp(isMax);
+        }
         // 毎フレーム最後に同期
         prevPlayerExp_ = player_->GetExp();
         // 弾の更新

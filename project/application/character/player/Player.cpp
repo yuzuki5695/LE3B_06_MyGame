@@ -76,10 +76,12 @@ namespace MyGame {
         targetreticle_->SetTextureSize(Vector2{ 512.0f, 512.0f });
         targetreticle_->SetAnchorPoint(Vector2{ 0.5f, 0.5f }); // 中心基準
 
+        kMaxLevel = 3;      // 最大レベル
         level_ = 1;         // 現在のレベル
         exp_ = 0;           // 現在の経験値
         nextLevelExp_ = 70; // 次のレベルに必要な経験値
         isStateUpdateEnabled_ = true;
+        isLevelUpRequested_ = false;
 
         // コンポーネントの生成
         move_ = std::make_unique<PlayerMove>();          // 移動ロジックの生成
@@ -209,8 +211,6 @@ namespace MyGame {
 
     void Player::CheckLevelUp() {
 
-        constexpr uint32_t kMaxLevel = 3;
-
         // 最大レベルなら経験値加算停止
         if (level_ >= kMaxLevel) {
             level_ = kMaxLevel;
@@ -223,6 +223,9 @@ namespace MyGame {
             exp_ -= nextLevelExp_;
             level_++;
 
+            // レベルアップ通知
+            isLevelUpRequested_ = true;
+
             // 最大レベルになったら打ち切り
             if (level_ >= kMaxLevel) {
                 level_ = kMaxLevel;
@@ -231,8 +234,6 @@ namespace MyGame {
             }
             // 次レベル必要経験値
             nextLevelExp_ = static_cast<uint32_t>(nextLevelExp_ * 1.5f);
-
-            // レベルアップ演出
         }
     }
 
@@ -243,6 +244,11 @@ namespace MyGame {
         float pitch = rot.x;
         Vector3 forward = { sinf(yaw) * cosf(pitch), -sinf(pitch), cosf(yaw) * cosf(pitch) };
         return Normalize(forward);
+    }
+    bool Player::ConsumeLevelUpRequest() {
+        bool result = isLevelUpRequested_;
+        isLevelUpRequested_ = false;
+        return result;
     }
 
     void Player::DrawImGui() {

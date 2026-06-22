@@ -25,7 +25,9 @@ namespace MyGame {
         /// </summary>
         void Draw() override;
 
-        void ShowExpBar();
+        void ShowExpBar();       
+        void ShowLevelUp(bool isMaxLevel);
+
     private: // プレイベートメンバ関数
         void UpdateStageProgressUI();
         // UI生成用の内部関数
@@ -38,6 +40,8 @@ namespace MyGame {
         void UpdatePlayerFollowUI();
         // EXPバーのフェード更新
         void UpdateExpBarFade();
+        // レベルアップUIの更新
+        void UpdateLevelUpFade();
     private: // メンバ変数
         Player* player_ = nullptr; // プレイヤーへの参照
         std::unique_ptr<Pausemenu> pausemenu_; // ポーズメニュー
@@ -53,7 +57,7 @@ namespace MyGame {
         bool uiProgressFinished_ = false; // ステージ進行度UIのアニメーションが完了したかどうかのフラグ
         bool isEventLocked;
 
-        // EXPバー関連
+        // 経験値関連
         std::unique_ptr<MyEngine::Sprite> expBarBack_;
         std::unique_ptr<MyEngine::Sprite> expBarFill_;
         bool isExpBarVisible_;   // 表示状態
@@ -61,11 +65,16 @@ namespace MyGame {
         float expBarTimer_;     // 表示タイマー
         float expBarDuration_;     // 表示時間
         bool isFirstExpBar_ = true;
+        // レベルアップ通知用UI
+        std::unique_ptr<MyEngine::Sprite> levelup_;
+        MyEngine::Vector2 levelUpBasePos_;
+        bool isLevelUpVisible_;
+        float levelUpAlpha_;
+        float levelUpTimer_;
     public: // アクセッサ
         Pausemenu* GetPauseMenu() const { return pausemenu_.get(); }
         void SetPlayer(Player* player) { player_ = player; }
         void SetEventLocked(bool flag) { isEventLocked = flag; }
         void SetExpBarVisible(bool flag) { isExpBarVisible_ = flag; }
-
     };
 }
