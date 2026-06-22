@@ -91,6 +91,7 @@ namespace MyGame {
 		uint32_t GetLevel() const { return level_; }
 		uint32_t GetExp() const { return exp_; }
 		uint32_t GetNextLevelExp() const { return nextLevelExp_; }
+		MyEngine::Vector3 GetForward() const;
 		// setter
 		void SetTranslate(const MyEngine::Vector3& translate) { object_->SetTranslate(translate); }
 		void SetRotate(const MyEngine::Vector3& rotate) { object_->SetRotate(rotate); }

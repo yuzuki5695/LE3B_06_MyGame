@@ -47,8 +47,6 @@ namespace MyGame {
     private: // メンバ変数
         // 現在のシーンで有効なUIインスタンスを保持するリスト
         std::vector<std::unique_ptr<SceneParticleBase>> emitterlist_;
-        MyEngine::Vector3 objectforward_;
-        MyEngine::Vector3 worldfposition_;
     public:
         template <typename T>
         T* GetEmitter() {
@@ -60,10 +58,5 @@ namespace MyGame {
             }
             return nullptr;
         }
-        MyEngine::Vector3 GetForward() { return objectforward_; }
-        MyEngine::Vector3 GetWorldPosition() { return worldfposition_; }
-
-        void SetWorldPosition(const MyEngine::Vector3& position) { worldfposition_ = position; }
-        void SetForward(const MyEngine::Vector3& forward) { objectforward_ = forward; }
     };
 }

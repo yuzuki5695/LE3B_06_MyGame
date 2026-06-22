@@ -236,6 +236,15 @@ namespace MyGame {
         }
     }
 
+    Vector3 Player::GetForward() const {
+        Camera* active = CameraManager::GetInstance()->GetActiveCamera();
+        Vector3 rot = active->GetRotate();
+        float yaw = rot.y;
+        float pitch = rot.x;
+        Vector3 forward = { sinf(yaw) * cosf(pitch), -sinf(pitch), cosf(yaw) * cosf(pitch) };
+        return Normalize(forward);
+    }
+
     void Player::DrawImGui() {
 #ifdef USE_IMGUI
         EditorTypes::EditorObjectInfo info;

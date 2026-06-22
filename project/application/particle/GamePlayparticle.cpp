@@ -91,17 +91,13 @@ namespace MyGame {
 		// 当たり判定用
 		expOrbs_.push_back({ pos, exp });
 	}
+
 	void GamePlayParticle::EmitPlayerTrail() {
-		Vector3 pos =  SceneEmitterManager::GetInstance()->GetWorldPosition();
-		Vector3 dir = SceneEmitterManager::GetInstance()->GetForward();
+		Vector3 pos = player_->GetWorldPosition();
+		Vector3 forward = player_->GetForward();
 
-		Vector3 emitPos = pos - dir * 1.5f;
-		emitPos.y -= 0.5f;
-		emitPos.z += 0.5f;
-
-		playeremitter_->SetTranslate(emitPos);
-		playeremitter_->SetDirection(-dir);
+		playeremitter_->SetTranslate(pos - forward * 1.5f);
+		playeremitter_->SetDirection(-forward);
 		playeremitter_->Emit();
-
 	}
 }

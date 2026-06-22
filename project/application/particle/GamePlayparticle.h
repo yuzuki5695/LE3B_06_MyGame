@@ -11,13 +11,20 @@ namespace MyGame {
             MyEngine::Vector3 position;
             uint32_t exp;
         };
-    public:
-        void Initialize() override;
-        void Update() override;
+    public: // メンバ関数
+		/// <summary>
+		/// 初期化処理 
+		/// </summary>
+		void Initialize() override;
+		/// <summary>
+		/// 更新処理
+		/// </summary>
+		void Update() override;
 
+        void AddExplosion(const MyEngine::Vector3& pos, uint32_t exp);
         void EmitPlayerTrail();
 
-    private:
+    private: // メンバ変数
         std::vector<MyEngine::Vector3> explosionQueue_;
 
         std::unique_ptr<BaseEmitter> explosionEmitter_;
@@ -33,9 +40,6 @@ namespace MyGame {
         std::vector<ExpOrb> expOrbs_;
 
     public:
-        //        void AddExplosion(const MyEngine::Vector3& pos);
-        void AddExplosion(const MyEngine::Vector3& pos, uint32_t exp);
-
-        void SetPlayer(Player* player) { player_ = player; }
+        void SetPlayer(Player* player) { player_ = player; }	
     };
 }
