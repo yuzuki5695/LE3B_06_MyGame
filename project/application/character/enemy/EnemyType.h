@@ -3,8 +3,7 @@
 namespace MyGame {
 
     enum class EnemyType {
-        Shot,
-        Tackle
+        Shot,    // 弾発射タイプ
+        Tackle   // 突撃タイプ
     };
-
 }

@@ -20,17 +20,19 @@ using namespace MatrixVector;
 namespace MyGame {
    
     void GamePlayUI::Initialize() {
-        // 操作UIテクスチャ一覧
-        const std::array<const char*, 26> operationTextures = {
+        // UIテクスチャ一覧
+        const std::array<const char*, 28> operationTextures = {
             Operationui::W,Operationui::A,Operationui::S,Operationui::D,
             Operationui::ArrowUp,Operationui::ArrowLeft,Operationui::ArrowDown,
             Operationui::ArrowRight,Operationui::SPACEKey,Operationui::SHIFT,Operationui::W_RED,
             Operationui::A_RED,Operationui::S_RED,Operationui::D_RED,Operationui::ArrowUp_RED,
             Operationui::ArrowLeft_RED,Operationui::ArrowDown_RED,Operationui::ArrowRight_RED,Operationui::SPACEKey_RED,
-            Operationui::SHIFT_RED,Ui::Gage,Ui::Player_ui,Operationui::LevelGage_Frame,Operationui::LevelGage_Green,Operationui::LevelGage_Yellow,Event::start
+            Operationui::SHIFT_RED,Ui::Gage,Ui::Player_ui,Operationui::LevelGage_Frame,Operationui::LevelGage_Green,
+            Operationui::LevelGage_Yellow,Event::start,Operationui::Levelup,Operationui::Levelmax
         };
 
-        // 操作UIをまとめて読み込み
+
+        // UIをまとめて読み込み
         for (const auto& texture : operationTextures) {
             TextureManager::GetInstance()->LoadTexture(texture);
         }
@@ -73,7 +75,7 @@ namespace MyGame {
         expBarTimer_ = expBarDuration_; // タイマー(初回は最大にしておく)
         isEventLocked = true;
 
-        levelup_ = Sprite::Create(Operationui::LevelGage_Green, { 0.0f, 0.0f }, 0.0f, { 80.0f, 20.0f });
+        levelup_ = Sprite::Create(Operationui::Levelup, { 0.0f, 0.0f }, 0.0f, { 150.0f, 100.0f });
         levelup_->SetAnchorPoint({ 0.5f, 0.5f });
         isLevelUpVisible_ = false;
         levelUpAlpha_ = 0.0f;
@@ -117,9 +119,9 @@ namespace MyGame {
             expBarBack_->Draw();
             expBarFill_->Draw();
         }
-       // if (isLevelUpVisible_) {
+        if (isLevelUpVisible_) {
             levelup_->Draw();
-        //}
+        }
         // 操作UIの描画
         for (std::unique_ptr<Sprite>& ui : uis_) {
             ui->Draw();
@@ -137,8 +139,6 @@ namespace MyGame {
         levelUpAlpha_ = 1.0f - t;
         levelup_->SetColor({ 1.0f, 1.0f, 1.0f, levelUpAlpha_ });
         float scale = Lerp(1.3f, 1.0f, t);
-        levelup_->SetSize({ 200.0f * scale, 50.0f * scale });
-
         if (t >= 1.0f) {
             isLevelUpVisible_ = false;
             levelup_->SetColor({ 1,1,1,0 });
@@ -209,14 +209,14 @@ namespace MyGame {
         levelUpAlpha_ = 1.0f;
         levelUpTimer_ = 0.0f;
         // 初期サイズは1.3倍
-        levelup_->SetSize({ 260.0f,65.0f });
+        levelup_->SetSize({ 150.0f,100.0f });
         levelup_->SetColor({ 1,1,1,1 });
         // 表示位置記録
         levelUpBasePos_ = levelup_->GetPosition();
         if (isMaxLevel) {
-            levelup_->SetTexture(Operationui::LevelGage_Yellow);
+            levelup_->SetTexture(Operationui::Levelmax);
         } else {
-            levelup_->SetTexture(Operationui::LevelGage_Green);
+            levelup_->SetTexture(Operationui::Levelup);
         }
     }
 
