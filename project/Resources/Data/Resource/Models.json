@@ -19,6 +19,11 @@
                     "Models/Character/Enemy/Enemy.obj",
                     "Models/Character/Enemy/Enemy.png"
                 ],
+                "Enemy_02": [
+                    "Models/Character/Enemy_02/Enemy_02.mtl",
+                    "Models/Character/Enemy_02/Enemy_02.obj",
+                    "Models/Character/Enemy_02/Enemy_02.png"
+                ],
                 "Player": [
                     "Models/Character/Player/Player.mtl",
                     "Models/Character/Player/Player.obj",

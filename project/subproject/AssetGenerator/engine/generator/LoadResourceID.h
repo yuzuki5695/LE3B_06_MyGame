@@ -28,6 +28,8 @@ namespace LoadResourceID {
         namespace Character {
             constexpr const char* Enemy = "Models/Character/Enemy/Enemy.obj";
             constexpr const char* Enemy_Tex = "Models/Character/Enemy/Enemy.png";
+            constexpr const char* Enemy_02 = "Models/Character/Enemy_02/Enemy_02.obj";
+            constexpr const char* Enemy_02_Tex = "Models/Character/Enemy_02/Enemy_02.png";
             constexpr const char* Player = "Models/Character/Player/Player.obj";
             constexpr const char* Player_Tex = "Models/Character/Player/Player.png";
             constexpr const char* parts_01 = "Models/Character/parts_01/parts_01.obj";

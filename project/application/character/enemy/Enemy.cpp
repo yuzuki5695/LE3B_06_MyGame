@@ -38,7 +38,7 @@ namespace MyGame {
             modelPath = Character::Enemy;
             break;
         case EnemyType::Tackle:
-            modelPath = Character::Enemy;
+            modelPath = Character::Enemy_02;
             break;
         }
 
