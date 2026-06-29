@@ -83,6 +83,7 @@ namespace LoadResourceID {
             constexpr const char* LevelGage_Frame = "Textures/Operationui/LevelGage_Frame.png";
             constexpr const char* LevelGage_Green = "Textures/Operationui/LevelGage_Green.png";
             constexpr const char* LevelGage_Yellow = "Textures/Operationui/LevelGage_Yellow.png";
+            constexpr const char* Levelup = "Textures/Operationui/Levelup.png";
             constexpr const char* S = "Textures/Operationui/S.png";
             constexpr const char* SHIFT = "Textures/Operationui/SHIFT.png";
             constexpr const char* SHIFT_RED = "Textures/Operationui/SHIFT_RED.png";

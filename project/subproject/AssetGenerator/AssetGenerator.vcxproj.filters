@@ -95,5 +95,8 @@
     <ClInclude Include="engine\generator\CodeGenerator.h">
       <Filter>ヘッダー ファイル\engine\generator</Filter>
     </ClInclude>
+    <ClInclude Include="engine\generator\LoadResourceID.h">
+      <Filter>ヘッダー ファイル\engine\generator</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
