@@ -47,21 +47,15 @@ namespace MyGame {
 
     void StageManager::Update() {
 
-        //if (SceneManager::GetInstance()->GetCurrentScene(SceneName::TITLE)) {
-        //    // Skyboxの回転
-        //    Transform skyTrans = skybox_->GetTransform();
-        //    skyTrans.rotate.y += 0.001f; // Y軸回転（1フレームごとに少しずつ）
-        //    skybox_->SetRotate(skyTrans.rotate);
-        //    skybox_->Update();
-        //}
-        //if (SceneManager::GetInstance()->IsCurrentScene("GAMEPLAY")) {
-        //    // 地面    
-        //    grass->Update();
-        //}
+        // Skyboxの回転
+        Transform skyTrans = skybox_->GetTransform();
+        skyTrans.rotate.y += 0.001f; // Y軸回転
+        skybox_->SetRotate(skyTrans.rotate);
+        skybox_->Update();
 
         // スカイボックス更新処理
         skybox_->Update();
-		// 地面の更新処理
+        // 地面の更新処理
         grass->Update();
         // クリアゲートの更新処理
         clearwall_->Update();
