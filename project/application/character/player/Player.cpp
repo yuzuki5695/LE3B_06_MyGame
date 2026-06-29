@@ -79,7 +79,7 @@ namespace MyGame {
         kMaxLevel = 3;      // 最大レベル
         level_ = 1;         // 現在のレベル
         exp_ = 0;           // 現在の経験値
-        nextLevelExp_ = 70; // 次のレベルに必要な経験値
+        nextLevelExp_ = 60; // 次のレベルに必要な経験値
         isStateUpdateEnabled_ = true;
         isLevelUpRequested_ = false;
 
@@ -142,7 +142,6 @@ namespace MyGame {
     void Player::Draw() {
         // 描画処理
         object_->Draw();
-        //target_->Draw();
     }
 
     void Player::DrawSprite() {
@@ -233,7 +232,7 @@ namespace MyGame {
                 break;
             }
             // 次レベル必要経験値
-            nextLevelExp_ = static_cast<uint32_t>(nextLevelExp_ * 1.5f);
+            nextLevelExp_ = static_cast<uint32_t>(nextLevelExp_ * 1.2f);
         }
     }
 
