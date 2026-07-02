@@ -38,8 +38,8 @@ namespace MyGame {
 		for (uint32_t i = 0; i < (uint32_t)textures.size(); ++i) {
 			TitleCharUI ch{};
 
-			ch.mission_ = Sprite::Create(textures[i], titleStartPos_, 0.0f, titleSize_);
-			ch.mission_->SetTextureSize(titleSize_);
+			ch.sprite_ = Sprite::Create(textures[i], titleStartPos_, 0.0f, titleSize_);
+			ch.sprite_->SetTextureSize(titleSize_);
 
 			ch.delay = i * kInterval;
 			if (i < 3)
@@ -56,7 +56,7 @@ namespace MyGame {
 		Vector2 startPos = { 1300.0f, 450.0f };
 		Vector2 endPos = { 750.0f, 450.0f };
 
-		startUI.mission_ = Sprite::Create(Ui::UI_02, startPos, 0.0f, { 360.0f, 90.0f });
+		startUI.sprite_ = Sprite::Create(Ui::UI_02, startPos, 0.0f, { 360.0f, 90.0f });
 		// 専用座標使用
 		startUI.useCustomPos = true;
 		startUI.startPos = startPos;
@@ -72,7 +72,7 @@ namespace MyGame {
 	void TitleUI::Update() {
 		if (!isStarted_) {
 			for (auto& Chars : titleChars_) {
-				Chars.mission_->Update();
+				Chars.sprite_->Update();
 			}
 			return;
 		}
@@ -119,13 +119,13 @@ namespace MyGame {
 		}
 
 		for (auto& Chars : titleChars_) {
-			Chars.mission_->Update();
+			Chars.sprite_->Update();
 		}
 	}
 
 	void TitleUI::Draw() {
 		for (auto& Chars : titleChars_) {
-			Chars.mission_->Draw();
+			Chars.sprite_->Draw();
 		}
 	}
 
@@ -149,6 +149,6 @@ namespace MyGame {
 			end = titleEndPos_ + ch.offset;
 		}
 
-		ch.mission_->SetPosition(Vector2::Lerp(start, end, easeT));
+		ch.sprite_->SetPosition(Vector2::Lerp(start, end, easeT));
 	}
 }

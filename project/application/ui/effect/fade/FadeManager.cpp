@@ -35,15 +35,15 @@ namespace MyGame {
 
     void FadeManager::Update() {
         if (!isFading_) return;
-
+		// フェード中の処理
         timer_ += 1.0f / 60.0f;
         t_ = std::clamp(timer_ / duration_, 0.0f, 1.0f);
-
+		// フェードエフェクトの更新
         effect_->Update(t_, type_);
-
+		// フェードインが完了したかどうかを判定
         if (t_ >= 1.0f) {
 			isFadeInFinished_ = true; // フェードインが完了したことを示すフラグを立てる
-			isFading_ = false;      // フェード終了
+			isFading_ = false;        // フェード終了
             // フェード完了後にシーン切り替えが予約されている場合は実行
             if (isSceneChangeReserved_) {
                 // シーンマネージャに切り替え処理を実行
@@ -55,6 +55,7 @@ namespace MyGame {
 
     void FadeManager::Draw() {
         if (effect_) {
+			// フェードエフェクトの描画
             effect_->Draw();
         }
     }
@@ -64,9 +65,11 @@ namespace MyGame {
         if (isFading_) {
             return;
         }
+		// フェードの種類と時間を設定
         type_ = type;
         duration_ = std::max(duration, 0.001f);
         timer_ = 0.0f;
+        t_ = 0.0f;
         isFading_ = true;
 
 		// フェードスタイルに応じたエフェクトクラスのインスタンスを生成

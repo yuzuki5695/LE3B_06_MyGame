@@ -30,7 +30,7 @@ namespace MyGame {
         void UI01Finished() { ui01Finished_ = false; }
 
     private: // メンバ変数
-        std::unique_ptr<MyEngine::Sprite> mission_;
+        std::unique_ptr<MyEngine::Sprite> sprite_;
         std::unique_ptr<MyEngine::Sprite> complete_;
         std::unique_ptr<MyEngine::Sprite> ui_01_;
 
