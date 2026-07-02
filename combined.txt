@@ -156,9 +156,6 @@
     └── └── ├── CurveJsonLoader.h
     └── └── ├── PlayerDataLoader.cpp
     └── └── └── PlayerDataLoader.h
-    └── ├── math/
-    └── └── ├── Spline.cpp
-    └── └── └── Spline.h
     └── ├── particle/
     └── └── ├── BaseEmitter.cpp
     └── └── ├── BaseEmitter.h
@@ -5330,7 +5327,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="application\loader\CharacterLoader.cpp" />
     <ClCompile Include="application\loader\CurveJsonLoader.cpp" />
     <ClCompile Include="application\loader\PlayerDataLoader.cpp" />
-    <ClCompile Include="application\math\Spline.cpp" />
     <ClCompile Include="application\particle\GamePlayparticle.cpp" />
     <ClCompile Include="application\particle\BaseEmitter.cpp" />
     <ClCompile Include="application\particle\SceneEmitterManager.cpp" />
@@ -5447,7 +5443,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\loader\CharacterLoader.h" />
     <ClInclude Include="application\loader\CurveJsonLoader.h" />
     <ClInclude Include="application\loader\PlayerDataLoader.h" />
-    <ClInclude Include="application\math\Spline.h" />
     <ClInclude Include="application\particle\GamePlayparticle.h" />
     <ClInclude Include="application\particle\BaseEmitter.h" />
     <ClInclude Include="application\particle\SceneParticleBase.h" />
@@ -6017,12 +6012,6 @@ File Path: project/MyGame.vcxproj.filters
     <Filter Include="ソース ファイル\application\collision">
       <UniqueIdentifier>{6e9e9c14-5122-492b-b39e-3a28944d57ff}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ヘッダー ファイル\application\math">
-      <UniqueIdentifier>{a34d5205-3f79-4e82-a458-dde24b16cb7b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ソース ファイル\application\math">
-      <UniqueIdentifier>{83f2906c-a1cd-45a7-83e7-4e332edb6e5a}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ソース ファイル\application\ui\scene\fade">
       <UniqueIdentifier>{58a614e6-87e6-4fad-ac4d-e17a6f116a40}</UniqueIdentifier>
     </Filter>
@@ -6306,9 +6295,6 @@ File Path: project/MyGame.vcxproj.filters
     </ClCompile>
     <ClCompile Include="application\ui\scene\TitleUI.cpp">
       <Filter>ソース ファイル\application\ui\scene</Filter>
-    </ClCompile>
-    <ClCompile Include="application\math\Spline.cpp">
-      <Filter>ソース ファイル\application\math</Filter>
     </ClCompile>
     <ClCompile Include="application\character\player\Component\PlayerDeath.cpp">
       <Filter>ソース ファイル\application\character\player\component</Filter>
@@ -6738,9 +6724,6 @@ File Path: project/MyGame.vcxproj.filters
     <ClInclude Include="application\ui\scene\TitleUI.h">
       <Filter>ヘッダー ファイル\application\ui\scene</Filter>
     </ClInclude>
-    <ClInclude Include="application\math\Spline.h">
-      <Filter>ヘッダー ファイル\application\math</Filter>
-    </ClInclude>
     <ClInclude Include="application\character\player\Component\PlayerDeath.h">
       <Filter>ヘッダー ファイル\application\character\player\component</Filter>
     </ClInclude>
@@ -7057,10 +7040,9 @@ namespace MyGame {
     void GameOverCamera::Initialize(MyEngine::Camera* camera) {
 		stateData_.type = CameraType::Main;         // メインカメラを使用
 		stateData_.state = CameraState::Default;    // デフォルト
-
-        transform_ = { 0.0f, 3.0f, 0.0f };
-		//  カメラの位置を設定
-        camera->SetTranslate(transform_);
+		// カメラの位置を設定
+        translate_ = { 0.0f, 3.0f, 0.0f };
+        camera->SetTranslate(translate_);
     }
     
     void GameOverCamera::Update(MyEngine::Camera* camera) {    
@@ -7091,8 +7073,8 @@ namespace MyGame {
         /// <param name="camera"></param>
         void Update(MyEngine::Camera* camera) override;
 	private: // メンバ変数
-		// トランスフォーム
-        MyEngine::Vector3 transform_;
+		// カメラ座標
+        MyEngine::Vector3 translate_;
     };
 }
 
@@ -9963,6 +9945,11 @@ namespace MyGame {
 #endif // USE_IMGUI
             if (!IsAlive()) { return; }
             //ChangeState(std::make_unique<PlayerStateDead>());
+
+            // ★無敵状態ならダメージ処理そのものをスキップ
+            if (isInvincible_) { return; }
+            ApplyDamage(1); // 仮のダメージ値
+
             });
         // コライダー登録
         CollisionManager::GetInstance()->RegisterCollider(collider_.get());
@@ -9981,6 +9968,8 @@ namespace MyGame {
         nextLevelExp_ = 60; // 次のレベルに必要な経験値
         isStateUpdateEnabled_ = true;
         isLevelUpRequested_ = false;
+        maxHp_ = 5; // 必要に応じて調整、またはPlayerData等からロード
+        hp_ = maxHp_;  // 初期状態は満タン
 
         // コンポーネントの生成
         move_ = std::make_unique<PlayerMove>();          // 移動ロジックの生成
@@ -9994,7 +9983,38 @@ namespace MyGame {
         DrawImGui();
     }
 
+    void Player::ApplyDamage(uint32_t damage) {
+        // すでに死亡している、または無敵状態なら処理しない
+        if (hp_ <= 0 || isInvincible_) return;
+
+        hp_ -= damage;
+        if (hp_ < 0) {
+            hp_ = 0;
+        }
+
+        // ★ダメージを受けたら無敵状態にする
+        if (hp_ > 0) {
+            isInvincible_ = true;
+            invincibleTimer_ = kInvincibleTime; // 3秒セット
+        }
+
+        // HPが0になったら死亡状態へ遷移する処理
+        if (hp_ == 0) {
+            ChangeState(std::make_unique<PlayerStateDead>());
+        }
+    }
+
     void Player::Update() {
+        float deltaTime = 1.0f / 60.0f;
+        // 無敵タイマーの更新処理
+        if (isInvincible_) {
+            invincibleTimer_ -= deltaTime;
+            if (invincibleTimer_ <= 0.0f) {
+                invincibleTimer_ = 0.0f;
+                isInvincible_ = false; // 無敵終了
+            }
+        }
+
 		// イベントロックされていない場合のみ更新処理を行う
         if (!IsEventLocked()) {
             // ステートの更新
@@ -10108,7 +10128,6 @@ namespace MyGame {
     }
 
     void Player::CheckLevelUp() {
-
         // 最大レベルなら経験値加算停止
         if (level_ >= kMaxLevel) {
             level_ = kMaxLevel;
@@ -10177,6 +10196,37 @@ namespace MyGame {
                 // デバッグ用
                 if (ImGui::Button("Add EXP +10")) { GainExp(10); }
             }
+            /// --------------------------------------
+            /// ★追加：HP ＆ 無敵時間のデバッグ表示
+            /// --------------------------------------
+            ImGui::Separator(); // 区切り線
+            ImGui::Text("--- HP & Invincible ---");
+            
+            // HP表示 (バー形式)
+            ImGui::Text("HP : %u / %u", hp_, maxHp_);
+            float hpRate = (maxHp_ > 0) ? static_cast<float>(hp_) / static_cast<float>(maxHp_) : 0.0f;
+            ImGui::ProgressBar(hpRate, ImVec2(200.0f, 20.0f), hp_ == 0 ? "DEAD" : nullptr);
+
+            // 無敵状態の表示
+            if (isInvincible_) {
+                ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "Status: INVINCIBLE");
+                ImGui::Text("Invincible Timer: %.2f sec", invincibleTimer_);
+            } else {
+                ImGui::Text("Status: Normal");
+            }
+
+            // デバッグ用手動ダメージボタン
+            if (ImGui::Button("Apply 1 Damage")) {
+                ApplyDamage(1);
+            }
+
+            ImGui::SameLine();
+            if (ImGui::Button("Heal Full")) {
+                hp_ = maxHp_;
+                isInvincible_ = false;
+                invincibleTimer_ = 0.0f;
+            } 
+
             // LineRenderer基本パラメータ
             LineRenderer::GetInstance()->DrawImGui(colliderSize_);
             };
@@ -10243,6 +10293,12 @@ namespace MyGame {
 		void GainExp(uint32_t exp);
 		// レベルアップの条件をチェックし、レベルアップが必要な場合はレベルと必要経験値を更新する
 		void CheckLevelUp();
+
+		/// <summary>
+        /// ダメージを受ける処理
+        /// </summary>
+        /// <param name="damage">減少するHPの量</param>
+        void ApplyDamage(uint32_t damage);
 	private: // メンバ変数
 		PlayerData data_; // プレイヤーのデータ構造体
 		MyEngine::Transform transform_;
@@ -10268,6 +10324,14 @@ namespace MyGame {
 		uint32_t nextLevelExp_; // 次のレベルに必要な経験値
 		bool isStateUpdateEnabled_;
 		bool isLevelUpRequested_;
+		
+		// --- 追加されたメンバ変数 ---
+        uint32_t hp_ = 0;
+        uint32_t maxHp_ = 5; // 最大HPの初期値
+		// ★ここを追加：無敵時間管理用
+		bool isInvincible_ = false;       // 無敵フラグ
+		float invincibleTimer_ = 0.0f;    // 無敵残り時間タイマー
+		const float kInvincibleTime = 3.0f; // 無敵時間のデフォルト値（3秒）
 
 	public: // アクセッサ
 		// getter
@@ -10286,7 +10350,9 @@ namespace MyGame {
 		uint32_t GetMaxLevel() const { return kMaxLevel; }
 		uint32_t GetExp() const { return exp_; }
 		uint32_t GetNextLevelExp() const { return nextLevelExp_; }
-		MyEngine::Vector3 GetForward() const;
+		MyEngine::Vector3 GetForward() const;        
+        int GetHP() const { return hp_; }
+        int GetMaxHP() const { return maxHp_; }
 		// setter
 		void SetTranslate(const MyEngine::Vector3& translate) { object_->SetTranslate(translate); }
 		void SetRotate(const MyEngine::Vector3& rotate) { object_->SetRotate(rotate); }
@@ -10911,27 +10977,27 @@ namespace MyGame {
         sprites_.push_back({ nullptr, {}, 0.0f, SpriteID::BottomBar });
         sprites_.push_back({ nullptr, {}, 0.0f, SpriteID::Mission });
 
-        for (SpriteUnit& mission_ : sprites_) {
+        for (SpriteUnit& sprite_ : sprites_) {
 
-            switch (mission_.id) {
+            switch (sprite_.id) {
             case SpriteID::Background:
-                mission_.mission_ = Sprite::Create(Textures::Event::Black, Vector2{ 0.0f, 300.0f }, 0.0f, Vector2{ 1280.0f,150.0f });
-                mission_.alpha = 0.0f;
-                mission_.mission_->SetColor(Vector4{ 1.0f, 1.0f, 1.0f, mission_.alpha });
+                sprite_.sprite_ = Sprite::Create(Textures::Event::Black, Vector2{ 0.0f, 300.0f }, 0.0f, Vector2{ 1280.0f,150.0f });
+                sprite_.alpha = 0.0f;
+                sprite_.sprite_->SetColor(Vector4{ 1.0f, 1.0f, 1.0f, sprite_.alpha });
                 break;
             case SpriteID::TopBar:
-                mission_.mission_ = Sprite::Create(Textures::Event::Startevent_02, Vector2{ -1280.0f, 300.0f }, 0.0f, Vector2{ 1280.0f, 75.0f });
-                mission_.alpha = 0.0f;
+                sprite_.sprite_ = Sprite::Create(Textures::Event::Startevent_02, Vector2{ -1280.0f, 300.0f }, 0.0f, Vector2{ 1280.0f, 75.0f });
+                sprite_.alpha = 0.0f;
                 break;
             case SpriteID::BottomBar:
-                mission_.mission_ = Sprite::Create(Textures::Event::Startevent_01, Vector2{ 1280.0f, 375.0f }, 0.0f, Vector2{ 1280.0f, 75.0f });
-                mission_.alpha = 0.0f;
+                sprite_.sprite_ = Sprite::Create(Textures::Event::Startevent_01, Vector2{ 1280.0f, 375.0f }, 0.0f, Vector2{ 1280.0f, 75.0f });
+                sprite_.alpha = 0.0f;
                 break;
 
             case SpriteID::Mission:
-                mission_.mission_ = Sprite::Create(Textures::Event::start_mission, Vector2{ 500.0f, 265.0f }, 0.0f, Vector2{ 300.0f,200.0f });
-                mission_.alpha = 0.0f;
-                mission_.mission_->SetColor(Vector4{ 1.0f, 1.0f, 1.0f, mission_.alpha });
+                sprite_.sprite_ = Sprite::Create(Textures::Event::start_mission, Vector2{ 500.0f, 265.0f }, 0.0f, Vector2{ 300.0f,200.0f });
+                sprite_.alpha = 0.0f;
+                sprite_.sprite_->SetColor(Vector4{ 1.0f, 1.0f, 1.0f, sprite_.alpha });
                 break;
             }
         }
@@ -10956,7 +11022,7 @@ namespace MyGame {
         case EventPhase::Phase1: // フェーズ1：黒背景のフェードイン
             phaseDuration_ = 1.0f; // 1秒かける
             back->alpha += 0.01f;  // 少しずつ明るくする
-            back->mission_->SetColor({ 1.0f, 1.0f, 1.0f,  back->alpha }); // 色（RGBA）を更新
+            back->sprite_->SetColor({ 1.0f, 1.0f, 1.0f,  back->alpha }); // 色（RGBA）を更新
 
             if (back->alpha >= 0.7f) {
                 back->alpha = 0.7f;
@@ -10968,22 +11034,22 @@ namespace MyGame {
             phaseDuration_ = 0.5f; // 0.5秒で閉じる
 
             // 上側の移動
-            top->position = top->mission_->GetPosition();
+            top->position = top->sprite_->GetPosition();
             if (top->position.x < 200.0f) { // 左上座標を軸として目的の値の達するまで右へ移動
                 top->position.x += closeSpeed_;
                 if (top->position.x > 0.0f)   top->position.x = 0.0f; // はみ出し防止
             }
 
             // 下側の移動
-            bottom->position = bottom->mission_->GetPosition();
+            bottom->position = bottom->sprite_->GetPosition();
             if (bottom->position.x > 0.0f) { // 左上座標を軸として目的の値の達するまで左へ移動
                 bottom->position.x -= closeSpeed_;
                 if (bottom->position.x < 0.0f) bottom->position.x = 0.0f; // はみ出し防止
             }
 
             // 反映
-            top->mission_->SetPosition(top->position);
-            bottom->mission_->SetPosition(bottom->position);
+            top->sprite_->SetPosition(top->position);
+            bottom->sprite_->SetPosition(bottom->position);
 
             // 両方とも中央に到達したら次のフェーズへ
             if (top->position.x == 0.0f && bottom->position.x == 0.0f) {
@@ -11002,7 +11068,7 @@ namespace MyGame {
                 progress_ += phaseDuration_;
             }
 
-            mission->mission_->SetColor({ 1.0f, 1.0f, 1.0f, mission->alpha }); // 色を更新
+            mission->sprite_->SetColor({ 1.0f, 1.0f, 1.0f, mission->alpha }); // 色を更新
             break;
         case EventPhase::Phase4: // フェーズ4：MISSION表示維持 → フェードアウト → “START”表示
             phaseDuration_ = 2.0f; // 2秒間維持
@@ -11017,11 +11083,11 @@ namespace MyGame {
             if (mission->alpha <= 0.0f) {
                 mission->alpha = 1.0f;
                 timefige_ = false;
-                mission->mission_->SetTexture(Textures::Event::start);
+                mission->sprite_->SetTexture(Textures::Event::start);
                 phase_ = EventPhase::End;
                 progress_ += phaseDuration_;
             }
-            mission->mission_->SetColor({ 1.0f, 1.0f, 1.0f,  mission->alpha }); // 色（RGBA）を更新
+            mission->sprite_->SetColor({ 1.0f, 1.0f, 1.0f,  mission->alpha }); // 色（RGBA）を更新
             break;
         case EventPhase::End: // フェーズEnd：バーが外へ開いて終了       
             phaseDuration_ = 0.5f;
@@ -11046,29 +11112,29 @@ namespace MyGame {
             }
 
             // 反映
-            top->mission_->SetPosition(top->position);
-            bottom->mission_->SetPosition(bottom->position);
-            back->mission_->SetColor({ 1.0f, 1.0f, 1.0f, back->alpha });
-            mission->mission_->SetColor({ 1.0f, 1.0f, 1.0f, mission->alpha });
+            top->sprite_->SetPosition(top->position);
+            bottom->sprite_->SetPosition(bottom->position);
+            back->sprite_->SetColor({ 1.0f, 1.0f, 1.0f, back->alpha });
+            mission->sprite_->SetColor({ 1.0f, 1.0f, 1.0f, mission->alpha });
             break;
         }
 
         // 各スプライトの更新
-        for (SpriteUnit& mission_ : sprites_) {
-            mission_.mission_->Update();
+        for (SpriteUnit& sprite_ : sprites_) {
+            sprite_.sprite_->Update();
         }
     }
     
     void StartEvent::Draw2D() {
-        for (SpriteUnit& mission_ : sprites_) {
-            mission_.mission_->Draw();
+        for (SpriteUnit& sprite_ : sprites_) {
+            sprite_.sprite_->Draw();
         }
     }
 
     SpriteUnit* StartEvent::FindSprite(SpriteID id) {
         // 指定されたIDを持つスプライトを検索して返す
-        for (SpriteUnit& mission_ : sprites_) {
-            if (mission_.id == id) return &mission_;
+        for (SpriteUnit& sprite_ : sprites_) {
+            if (sprite_.id == id) return &sprite_;
         }
         return nullptr;
     }
@@ -11095,7 +11161,7 @@ enum class SpriteID  {
 /// スプライトと座標、アルファ値をまとめた構造体
 /// </summary>
 struct SpriteUnit {
-    std::unique_ptr<MyEngine::Sprite> mission_;
+    std::unique_ptr<MyEngine::Sprite> sprite_;
     MyEngine::Vector2 position;
     float alpha = 1.0f;
     SpriteID  id;
@@ -11638,67 +11704,6 @@ namespace MyGame {
 		static const std::string kDefaultBaseDirectory;   /// データファイルの基本ディレクトリ
 		static const std::string kExtension;              /// データファイルの拡張子
     };
-}
-
-============================================================
-File Path: project/application/math/Spline.cpp
-============================================================
-#include "Spline.h"
-
-using namespace MyEngine;
-
-namespace MyGame::Math::Spline {
-
-    Vector3 CatmullRom(const Vector3& p0, const Vector3& p1, const Vector3& p2, const Vector3& p3, float t) {
-        float t2 = t * t;
-        float t3 = t2 * t;
-
-        return 0.5f * (
-            (2.0f * p1) +
-            (-p0 + p2) * t +
-            (2.0f * p0 - 5.0f * p1 + 4.0f * p2 - p3) * t2 +
-            (-p0 + 3.0f * p1 - 3.0f * p2 + p3) * t3
-            );
-    }
-
-    Vector3 CatmullRomTangent(const Vector3& p0, const Vector3& p1, const Vector3& p2, const Vector3& p3, float t) {
-        float t2 = t * t;
-
-        return 0.5f * (
-            (-p0 + p2) +
-            2.0f * (2.0f * p0 - 5.0f * p1 + 4.0f * p2 - p3) * t +
-            3.0f * (-p0 + 3.0f * p1 - 3.0f * p2 + p3) * t2
-            );
-    }
-}
-
-============================================================
-File Path: project/application/math/Spline.h
-============================================================
-#pragma once
-#include <Vector3.h>
-
-namespace MyGame::Math::Spline {
-	/// <summary>
-	/// // Catmull-Romスプラインの計算関数
-	/// </summary>
-	/// <param name="p0"></param>
-	/// <param name="p1"></param>
-	/// <param name="p2"></param>
-	/// <param name="p3"></param>
-	/// <param name="t"></param>
-	/// <returns></returns>
-	MyEngine::Vector3 CatmullRom(const MyEngine::Vector3& p0, const MyEngine::Vector3& p1, const MyEngine::Vector3& p2, const MyEngine::Vector3& p3, float t);
-	/// <summary>
-	/// Catmull-Romスプラインの接線計算関数
-	/// </summary>
-	/// <param name="p0"></param>
-	/// <param name="p1"></param>
-	/// <param name="p2"></param>
-	/// <param name="p3"></param>
-	/// <param name="t"></param>
-	/// <returns></returns>
-	MyEngine::Vector3 CatmullRomTangent(const MyEngine::Vector3& p0, const MyEngine::Vector3& p1, const MyEngine::Vector3& p2, const MyEngine::Vector3& p3, float t);
 }
 
 ============================================================
@@ -12788,6 +12793,8 @@ namespace MyGame {
         UIManager::GetInstance()->Initialize();
         // ゲームUIにプレイヤーの情報を渡す
         UIManager::GetInstance()->GetUI<GamePlayUI>()->SetPlayer(player_.get());
+        // ゲームUIにプレイヤーの情報を渡す
+        UIManager::GetInstance()->GetUI<GamePlayUI>()->SetPlayerHp();
         // フェードマネージャの初期化(フェードイン開始処理)
         FadeManager::GetInstance()->StartFade(FadeType::FadeIn, FadeStyle::SilhouetteExplode, 1.0f);
         // ゲーム開始イベントの開始
@@ -13484,7 +13491,7 @@ namespace MyGame {
             AddUI(SceneName::GAMEPLAY, std::make_unique<GamePlayUI>());
 		} else if (currentScene == SceneName::GAMECLEAR) {                  // ゲームクリアシーンのUIを生成
             AddUI(SceneName::GAMECLEAR, std::make_unique<GameClearUI>());
-        } else if (currentScene == SceneName::GAMEOVER) {                  // ゲームオーバーシーンのUIを生成
+        } else if (currentScene == SceneName::GAMEOVER) {                   // ゲームオーバーシーンのUIを生成
             AddUI(SceneName::GAMEOVER, std::make_unique<GameOverUI>());
         }
 
@@ -13584,6 +13591,7 @@ namespace MyGame {
         // 現在のシーンで有効なUIインスタンスを保持するリスト
         std::vector<std::unique_ptr<BaseUI>> uiList_;
     public:
+        // getter
         template <typename T>
         T* GetUI() {
             for (std::unique_ptr<BaseUI>& ui : uiList_) {
@@ -13637,15 +13645,15 @@ namespace MyGame {
 
     void FadeManager::Update() {
         if (!isFading_) return;
-
+		// フェード中の処理
         timer_ += 1.0f / 60.0f;
         t_ = std::clamp(timer_ / duration_, 0.0f, 1.0f);
-
+		// フェードエフェクトの更新
         effect_->Update(t_, type_);
-
+		// フェードインが完了したかどうかを判定
         if (t_ >= 1.0f) {
 			isFadeInFinished_ = true; // フェードインが完了したことを示すフラグを立てる
-			isFading_ = false;      // フェード終了
+			isFading_ = false;        // フェード終了
             // フェード完了後にシーン切り替えが予約されている場合は実行
             if (isSceneChangeReserved_) {
                 // シーンマネージャに切り替え処理を実行
@@ -13657,6 +13665,7 @@ namespace MyGame {
 
     void FadeManager::Draw() {
         if (effect_) {
+			// フェードエフェクトの描画
             effect_->Draw();
         }
     }
@@ -13666,9 +13675,11 @@ namespace MyGame {
         if (isFading_) {
             return;
         }
+		// フェードの種類と時間を設定
         type_ = type;
         duration_ = std::max(duration, 0.001f);
         timer_ = 0.0f;
+        t_ = 0.0f;
         isFading_ = true;
 
 		// フェードスタイルに応じたエフェクトクラスのインスタンスを生成
@@ -13751,18 +13762,21 @@ namespace MyGame {
         void SceneChangeFade(const std::string& sceneName, FadeStyle style, float duration);
     private: // メンバ変数
         // 現在のフェードエフェクト
-        std::unique_ptr<IFadeEffect> effect_;
-        FadeType type_ = FadeType::None;
-        float timer_ = 0.0f;
-        float duration_ = 1.0f;
-        float t_ = 0.0f;
-        bool isFading_ = false;
-        // シーン切り替え予約用変数
-        std::string nextSceneName_;
-        bool isSceneChangeReserved_ = false; // フェード完了後にシーン切り替えを行うか
-        bool isFadeEnd_ = false;         // フェード終了済み
-        bool isFadeInFinished_ = false;  // フェードイン完了
+		std::unique_ptr<IFadeEffect> effect_; // フェードエフェクトのインスタンス
+		FadeType type_ = FadeType::None;      // フェードの種類
+		float timer_;                         // フェードの経過時間 
+		float duration_;                      // フェードの総時間
+		float t_;                             // フェードの進行度（0.0～1.0）
+		bool isFading_ = false;               // フェード中かどうか      
+        ///-----------------------------------------///
+        ///----------シーン切り替え予約用--------------///
+        ///-----------------------------------------///
+		std::string nextSceneName_;           // フェード完了後に切り替えるシーン名
+        bool isSceneChangeReserved_ = false;  // フェード完了後にシーン切り替えを行うか
+        bool isFadeEnd_ = false;              // フェード終了済み
+        bool isFadeInFinished_ = false;       // フェードイン完了
     public:
+		// getter
         bool IsFading() const { return isFading_; }
         bool IsFadeEnd() const { return isFadeEnd_; }
         bool IsFadeInFinished() const { return isFadeInFinished_; }
@@ -13779,6 +13793,7 @@ File Path: project/application/ui/effect/fade/FadeTypes.h
 #include <Sprite.h>
 
 namespace MyGame {
+
     /// <summary>
     /// フェードの種類
     /// </summary>
@@ -13787,24 +13802,25 @@ namespace MyGame {
         FadeIn,  // フェードイン
         FadeOut, // フェードアウト
     };
-
     /// <summary>
     /// フェードの演出スタイル
     /// </summary>
     enum class FadeStyle {
-        Normal,   // 全画面フェード
+        Normal,               // 全画面フェード
         SilhouetteExplode,    // 中心から外に飛び散って消えるフェード
         SilhouetteSlide,      // 左→右に消える、右→左に現れる（線状フェード）
     };
- 
+    /// <summary>
+	/// フェードの形状情報を保持する構造体
+    /// </summary>
     struct FadeShape {
-        std::unique_ptr<MyEngine::Sprite> mission_;
-        MyEngine::Vector2 position;
-        MyEngine::Vector2 size;
-        float scale;
-        float delay;
-        float rotation;
-        float rotationSpeed;
+		std::unique_ptr<MyEngine::Sprite> sprite_;   // フェード用スプライト
+		MyEngine::Vector2 position;                  // フェードの中心座標
+		MyEngine::Vector2 size;                      // フェードのサイズ
+		float scale;                                 // フェードの拡大率
+		float delay;                                 // フェード開始までの遅延時間
+		float rotation;                              // フェードの回転角度
+		float rotationSpeed;                         // フェードの回転速度
     };
 }
 
@@ -13813,14 +13829,25 @@ File Path: project/application/ui/effect/fade/IFadeEffect.h
 ============================================================
 #pragma once
 #include <FadeTypes.h>
+
 namespace MyGame {
 	// フェードエフェクトのインターフェース
     class IFadeEffect {
 	public: // メンバ関数
         virtual ~IFadeEffect() = default;
-
+        /// <summary>
+		/// 初期化処理
+        /// </summary>
         virtual void Initialize() = 0;
+        /// <summary>
+		/// 更新処理
+        /// </summary>
+        /// <param name="t"></param>
+        /// <param name="type"></param>
         virtual void Update(float t, FadeType type) = 0;
+        /// <summary>
+		/// 描画処理
+        /// </summary>
         virtual void Draw() = 0;
     };
 }
@@ -13836,10 +13863,14 @@ File Path: project/application/ui/effect/fade/effects/ExplodeFade.h
 #include <algorithm>
 
 namespace MyGame {
+    /// <summary>
+	/// 中心から外に飛び散るようなフェードエフェクト
+    /// </summary>
     class ExplodeFade : public IFadeEffect {
-	private:  
-        std::vector<FadeShape> shapes_;
-    public:
+	public: // メンバ関数
+        /// <summary>
+		/// 初期化処理
+        /// </summary>
         void Initialize() override {
             MyEngine::TextureManager::GetInstance()->LoadTexture(AssetGen::LoadResourceID::Textures::fade::white);
             // 画面を格子状に黒丸で埋める
@@ -13857,9 +13888,9 @@ namespace MyGame {
                     shape.size = { spacingX, spacingY };
                     shape.scale = 0.0f;
 
-                    shape.mission_ = MyEngine::Sprite::Create(AssetGen::LoadResourceID::Textures::fade::white, shape.position, 0.0f, shape.size);
-                    shape.mission_->SetAnchorPoint({ 0.5f, 0.5f });
-                    shape.mission_->SetColor({ 0, 0, 0, 0 });
+                    shape.sprite_ = MyEngine::Sprite::Create(AssetGen::LoadResourceID::Textures::fade::white, shape.position, 0.0f, shape.size);
+                    shape.sprite_->SetAnchorPoint({ 0.5f, 0.5f });
+                    shape.sprite_->SetColor({ 0, 0, 0, 0 });
 
                     // 中心からの距離に応じてdelay設定
                     float dx = shape.position.x - center.x;
@@ -13873,7 +13904,11 @@ namespace MyGame {
                 }
             }
         }
-
+        /// <summary>
+		/// 更新処理
+        /// </summary>
+        /// <param name="t"></param>
+        /// <param name="type"></param>
         void Update(float t, FadeType type) override {
             const float maxScale = 1.0f;
             auto easeOutQuad = [](float t) { return 1 - (1 - t) * (1 - t); };
@@ -13892,17 +13927,22 @@ namespace MyGame {
                 }
 
                 s.scale = scale;
-                s.mission_->SetSize(s.size * s.scale);
-                s.mission_->SetColor({ 0,0,0,alpha });
-                s.mission_->Update();
+                s.sprite_->SetSize(s.size * s.scale);
+                s.sprite_->SetColor({ 0,0,0,alpha });
+                s.sprite_->Update();
             }
         }
-
+        /// <summary>
+		/// 描画処理
+        /// </summary>
         void Draw() override {
             for (auto& s : shapes_) {
-                s.mission_->Draw();
+                s.sprite_->Draw();
             };
         }
+	private: // メンバ変数
+		// フェード用スプライト群
+        std::vector<FadeShape> shapes_;
     };
 }
 
@@ -13916,25 +13956,41 @@ File Path: project/application/ui/effect/fade/effects/NormalFade.h
 #include <subproject/AssetGenerator/engine/generator/LoadResourceID.h>
 
 namespace MyGame {
+    /// <summary>
+	/// 通常の全画面フェードエフェクト
+    /// </summary>
     class NormalFade : public IFadeEffect {
-	private:
-        std::unique_ptr<MyEngine::Sprite> sprite_;
-
-    public:
+	public: // メンバ関数
+        /// <summary>
+		/// 初期化処理
+        /// </summary>
         void Initialize() override {
+			// 黒テクスチャをロード
             MyEngine::TextureManager::GetInstance()->LoadTexture(AssetGen::LoadResourceID::Textures::fade::Black);
+			// フェード用スプライトを生成
             sprite_ = MyEngine::Sprite::Create(AssetGen::LoadResourceID::Textures::fade::Black, { 0,0 }, 0, { 1280,720 });
         }
-
+        /// <summary>
+		/// 更新処理
+        /// </summary>
+        /// <param name="t"></param>
+        /// <param name="type"></param>
         void Update(float t, FadeType type) override {
+			// フェードの進行度に応じてスプライトのアルファ値を変更
             float alpha = (type == FadeType::FadeOut) ? t : (1.0f - t);
+			// スプライトの色を更新（黒色にアルファ値を設定）
             sprite_->SetColor({ 0,0,0,alpha });
             sprite_->Update();
         }
-
+        /// <summary>
+		/// 描画処理
+        /// </summary>
         void Draw() override {
             sprite_->Draw();
         }
+	private: // メンバ変数
+		// フェード用スプライト
+        std::unique_ptr<MyEngine::Sprite> sprite_;
     };
 }
 
@@ -13949,10 +14005,15 @@ File Path: project/application/ui/effect/fade/effects/SlideFade.h
 #include <algorithm>
 
 namespace MyGame {
+
+    /// <summary>
+    /// 中心から外に飛び散るようなフェードエフェクト
+    /// </summary>
     class SlideFade : public IFadeEffect {
-	private:  
-        std::vector<FadeShape> shapes_;
-    public:
+    public: // メンバ関数
+        /// <summary>
+        /// 初期化処理
+        /// </summary>
         void Initialize() override {
             MyEngine::TextureManager::GetInstance()->LoadTexture(AssetGen::LoadResourceID::Textures::fade::white);
             // 画面を格子状に黒丸で埋める
@@ -13970,9 +14031,9 @@ namespace MyGame {
                     shape.size = { spacingX, spacingY };
                     shape.scale = 0.0f;
 
-                    shape.mission_ = MyEngine::Sprite::Create(AssetGen::LoadResourceID::Textures::fade::white, shape.position, 0.0f, shape.size);
-                    shape.mission_->SetAnchorPoint({ 0.5f, 0.5f });
-                    shape.mission_->SetColor({ 0, 0, 0, 0 });
+                    shape.sprite_ = MyEngine::Sprite::Create(AssetGen::LoadResourceID::Textures::fade::white, shape.position, 0.0f, shape.size);
+                    shape.sprite_->SetAnchorPoint({ 0.5f, 0.5f });
+                    shape.sprite_->SetColor({ 0, 0, 0, 0 });
 
                     // 中心からの距離に応じてdelay設定
                     float dx = shape.position.x - center.x;
@@ -13986,7 +14047,11 @@ namespace MyGame {
                 }
             }
         }
-
+        /// <summary>
+        /// 更新処理
+        /// </summary>
+        /// <param name="t"></param>
+        /// <param name="type"></param>    
         void Update(float t, FadeType type) override {
             const MyEngine::Vector2 center = { 1280.0f / 2, 720.0f / 2 };
 
@@ -14018,7 +14083,7 @@ namespace MyGame {
 
                     float spread = (1.0f - easedT) * 150.0f;
                     MyEngine::Vector2 movedPos = { pos.x + dir.x * spread, pos.y + dir.y * spread };
-                    s.mission_->SetPosition(movedPos);
+                    s.sprite_->SetPosition(movedPos);
 
                     scale = 1.0f - (1.0f - easedT) * 0.2f;
                     alpha = easedT;
@@ -14035,7 +14100,7 @@ namespace MyGame {
                         color = {
                             colorT, colorT, colorT, 1.0f // 黒→白
                         };
-                        s.mission_->SetPosition(pos);  // 動かない
+                        s.sprite_->SetPosition(pos);  // 動かない
                         scale = 1.0f;
                         alpha = 1.0f;
                     }
@@ -14049,8 +14114,8 @@ namespace MyGame {
                         MyEngine::Vector2 movedPos = { pos.x + dir.x * spread, pos.y + dir.y * spread };
 
                         s.rotation += s.rotationSpeed * easedMoveT;
-                        s.mission_->SetRotation(s.rotation);
-                        s.mission_->SetPosition(movedPos);
+                        s.sprite_->SetRotation(s.rotation);
+                        s.sprite_->SetPosition(movedPos);
 
                         // スケール・アルファ変化
                         scale = 1.0f + easedMoveT * 0.3f;
@@ -14068,17 +14133,22 @@ namespace MyGame {
                 // 共通適用
                 // ===============================================
                 s.scale = scale;
-                s.mission_->SetSize(s.size * s.scale);
-                s.mission_->SetColor(color);
-                s.mission_->Update();
+                s.sprite_->SetSize(s.size * s.scale);
+                s.sprite_->SetColor(color);
+                s.sprite_->Update();
             }
         }
-
+        /// <summary>
+        /// 描画処理
+        /// </summary>
         void Draw() override {
             for (auto& s : shapes_) {
-                s.mission_->Draw();
+                s.sprite_->Draw();
             };
         }
+    private:  // メンバ変数
+        // フェード用スプライト群
+        std::vector<FadeShape> shapes_;
     };
 }
 
@@ -14122,13 +14192,13 @@ namespace MyGame {
         ui_01_ = Sprite::Create(Ui::UI_01, ui01StartPos_, 0.0f, Vector2{ 360.0f,100.0f });
         ui_01_->SetAnchorPoint(Vector2{ 0.5f, 0.5f }); // 中心基準
 
-        mission_ = Sprite::Create(Ui::Mission, ui2StartPos, 0.0f, Vector2{ 400.0f,150.0f });
+        sprite_ = Sprite::Create(Ui::Mission, ui2StartPos, 0.0f, Vector2{ 400.0f,150.0f });
         complete_ = Sprite::Create(Ui::Complete, ui3StartPos, 0.0f, Vector2{ 400.0f,150.0f });
     }
 
     void GameClearUI::Update() {
         if (movestarted_) {
-            if (ui2Timer_ < ui2Duration_ && mission_->GetPosition().x != ui2EndPos.x) {
+            if (ui2Timer_ < ui2Duration_ && sprite_->GetPosition().x != ui2EndPos.x) {
                 ui2Timer_++;
 
                 float t = ui2Timer_ / ui2Duration_;
@@ -14137,10 +14207,10 @@ namespace MyGame {
                     ui2StartPos.x + (ui2EndPos.x - ui2StartPos.x) * easeT,
                     ui2StartPos.y + (ui2EndPos.y - ui2StartPos.y) * easeT
                 };
-                mission_->SetPosition(newPos1);
+                sprite_->SetPosition(newPos1);
             }
 
-            if (ui3Timer_ < ui3Duration_ && mission_->GetPosition().x != ui3EndPos.x && mission_->GetPosition().x < 900) {
+            if (ui3Timer_ < ui3Duration_ && sprite_->GetPosition().x != ui3EndPos.x && sprite_->GetPosition().x < 900) {
                 ui3Timer_++;
 
                 float t = ui3Timer_ / ui3Duration_;
@@ -14191,7 +14261,7 @@ namespace MyGame {
                     ui2EndPos.y
                 };
 
-                mission_->SetPosition(missionPos);
+                sprite_->SetPosition(missionPos);
 
                 // Complete
                 Vector2 completePos = {
@@ -14212,13 +14282,13 @@ namespace MyGame {
         }
 
 
-        mission_->Update();
+        sprite_->Update();
         complete_->Update();
         ui_01_->Update();
     }
 
     void GameClearUI::Draw() {
-        mission_->Draw();
+        sprite_->Draw();
         complete_->Draw();
         ui_01_->Draw();
     }
@@ -14259,7 +14329,7 @@ namespace MyGame {
         void UI01Finished() { ui01Finished_ = false; }
 
     private: // メンバ変数
-        std::unique_ptr<MyEngine::Sprite> mission_;
+        std::unique_ptr<MyEngine::Sprite> sprite_;
         std::unique_ptr<MyEngine::Sprite> complete_;
         std::unique_ptr<MyEngine::Sprite> ui_01_;
 
@@ -14482,14 +14552,14 @@ namespace MyGame {
    
     void GamePlayUI::Initialize() {
         // UIテクスチャ一覧
-        const std::array<const char*, 28> operationTextures = {
+        const std::array<const char*, 29> operationTextures = {
             Operationui::W,Operationui::A,Operationui::S,Operationui::D,
             Operationui::ArrowUp,Operationui::ArrowLeft,Operationui::ArrowDown,
             Operationui::ArrowRight,Operationui::SPACEKey,Operationui::SHIFT,Operationui::W_RED,
             Operationui::A_RED,Operationui::S_RED,Operationui::D_RED,Operationui::ArrowUp_RED,
             Operationui::ArrowLeft_RED,Operationui::ArrowDown_RED,Operationui::ArrowRight_RED,Operationui::SPACEKey_RED,
             Operationui::SHIFT_RED,Ui::Gage,Ui::Player_ui,Operationui::LevelGage_Frame,Operationui::LevelGage_Green,
-            Operationui::LevelGage_Yellow,Event::start,Operationui::Levelup,Operationui::Levelmax
+            Operationui::LevelGage_Yellow,Event::start,Operationui::Levelup,Operationui::Levelmax,Ui::Player_Hp
         };
 
 
@@ -14542,6 +14612,20 @@ namespace MyGame {
         levelUpAlpha_ = 0.0f;
         levelUpTimer_ = 0.0f;
     }
+    
+    void GamePlayUI::SetPlayerHp() {
+        // プレイヤーの参照があることを確認してHPアイコンを生成       
+        uint32_t maxHp = player_->GetMaxHP(); // プレイヤーから最大HPを取得
+        hpHearts_.clear();
+        for (uint32_t i = 0; i < maxHp; ++i) {
+            // 100, 15 の位置から 100 ずつ X 軸をずらす
+            float posX = kHeartStartX + (i * kHeartOffsetX);
+            Vector2 position = { posX, kHeartY };
+            // スプライト生成
+            auto heart = Sprite::Create(Ui::Player_Hp, position, 0.0f, kHeartSize);
+            hpHearts_.push_back(std::move(heart));
+        }
+    }
 
     void GamePlayUI::Update() {
         // ポーズ画面の更新
@@ -14566,6 +14650,24 @@ namespace MyGame {
         for (std::unique_ptr<Sprite>& ui : uis_) {
             ui->Update();
         }
+
+        // HP表示の更新処理
+        uint32_t currentHp = player_->GetHP();
+        for (size_t i = 0; i < hpHearts_.size(); ++i) {
+            if (i < currentHp) {
+                // 現在のHP以下なら通常表示
+                hpHearts_[i]->SetColor({ 1.0f, 1.0f, 1.0f, 1.0f });
+            } else {
+                // 現在のHPを超えている（ダメージを受けた）分は非表示（透明）にする
+                hpHearts_[i]->SetColor({ 1.0f, 1.0f, 1.0f, 0.0f });
+            }
+            // スプライト自体のマトリクス更新
+            hpHearts_[i]->Update();
+        }
+        // 既存のuis_などのUpdate処理...
+        for (std::unique_ptr<Sprite>& ui : uis_) {
+            ui->Update();
+        }
     }
 
     void GamePlayUI::Draw() {
@@ -14586,6 +14688,10 @@ namespace MyGame {
         // 操作UIの描画
         for (std::unique_ptr<Sprite>& ui : uis_) {
             ui->Draw();
+        }
+        // イベントロック中などに非表示にしたい場合は条件を追加してください
+        for (const auto& heart : hpHearts_) {
+            heart->Draw();
         }
     }
 
@@ -14864,9 +14970,12 @@ namespace MyGame {
         /// </summary>
         void Draw() override;
 
-        void ShowExpBar();       
+        void ShowExpBar();
         void ShowLevelUp(bool isMaxLevel);
-
+        /// <summary>
+        /// Playerを取得後に呼び出すことで、HPUIの初期化を行う
+        /// </summary>
+        void SetPlayerHp();
     private: // プレイベートメンバ関数
         void UpdateStageProgressUI();
         // UI生成用の内部関数
@@ -14910,6 +15019,12 @@ namespace MyGame {
         bool isLevelUpVisible_;
         float levelUpAlpha_;
         float levelUpTimer_;
+        // --- HP表示用の変数 ---
+        std::vector<std::unique_ptr<MyEngine::Sprite>> hpHearts_; // HPアイコンのリスト
+        const float kHeartStartX = 100.0f; // 表示開始のX座標
+        const float kHeartY = 15.0f;       // 表示のY座標
+        const float kHeartOffsetX = 75.0f;// X軸のずらし幅
+        const MyEngine::Vector2 kHeartSize = { 64.0f, 64.0f }; // アイコンサイズ
     public: // アクセッサ
         Pausemenu* GetPauseMenu() const { return pausemenu_.get(); }
         void SetPlayer(Player* player) { player_ = player; }
@@ -14961,8 +15076,8 @@ namespace MyGame {
 		for (uint32_t i = 0; i < (uint32_t)textures.size(); ++i) {
 			TitleCharUI ch{};
 
-			ch.mission_ = Sprite::Create(textures[i], titleStartPos_, 0.0f, titleSize_);
-			ch.mission_->SetTextureSize(titleSize_);
+			ch.sprite_ = Sprite::Create(textures[i], titleStartPos_, 0.0f, titleSize_);
+			ch.sprite_->SetTextureSize(titleSize_);
 
 			ch.delay = i * kInterval;
 			if (i < 3)
@@ -14979,7 +15094,7 @@ namespace MyGame {
 		Vector2 startPos = { 1300.0f, 450.0f };
 		Vector2 endPos = { 750.0f, 450.0f };
 
-		startUI.mission_ = Sprite::Create(Ui::UI_02, startPos, 0.0f, { 360.0f, 90.0f });
+		startUI.sprite_ = Sprite::Create(Ui::UI_02, startPos, 0.0f, { 360.0f, 90.0f });
 		// 専用座標使用
 		startUI.useCustomPos = true;
 		startUI.startPos = startPos;
@@ -14995,7 +15110,7 @@ namespace MyGame {
 	void TitleUI::Update() {
 		if (!isStarted_) {
 			for (auto& Chars : titleChars_) {
-				Chars.mission_->Update();
+				Chars.sprite_->Update();
 			}
 			return;
 		}
@@ -15042,13 +15157,13 @@ namespace MyGame {
 		}
 
 		for (auto& Chars : titleChars_) {
-			Chars.mission_->Update();
+			Chars.sprite_->Update();
 		}
 	}
 
 	void TitleUI::Draw() {
 		for (auto& Chars : titleChars_) {
-			Chars.mission_->Draw();
+			Chars.sprite_->Draw();
 		}
 	}
 
@@ -15072,7 +15187,7 @@ namespace MyGame {
 			end = titleEndPos_ + ch.offset;
 		}
 
-		ch.mission_->SetPosition(Vector2::Lerp(start, end, easeT));
+		ch.sprite_->SetPosition(Vector2::Lerp(start, end, easeT));
 	}
 }
 
@@ -15090,7 +15205,7 @@ namespace MyGame {
     class TitleUI : public BaseUI {
     private:
         struct TitleCharUI {
-            std::unique_ptr<MyEngine::Sprite> mission_;
+            std::unique_ptr<MyEngine::Sprite> sprite_;
             MyEngine::Vector2 startPos;   // 開始位置
             MyEngine::Vector2 endPos;     // 終了位置
             MyEngine::Vector2 offset;
@@ -15839,21 +15954,21 @@ namespace MyEngine {
 	}
 
 	std::unique_ptr<Sprite> Sprite::Create(std::string textureFilePath, Vector2 position, float rotation, Vector2 size) {
-		std::unique_ptr<Sprite> mission_ = std::make_unique<Sprite>();
-		mission_->Initialize(SpriteCommon::GetInstance());
+		std::unique_ptr<Sprite> sprite_ = std::make_unique<Sprite>();
+		sprite_->Initialize(SpriteCommon::GetInstance());
 		// 引数で受け取ってメンバ変数に記録する
-		mission_->textureFilePath_ = "Resources/" + textureFilePath;
+		sprite_->textureFilePath_ = "Resources/" + textureFilePath;
 		// 単位行列を書き込んでおく
-		mission_->textureindex = TextureManager::GetInstance()->GetSrvIndex(mission_->textureFilePath_);
-		mission_->position_ = position;
-		mission_->rotation_ = rotation;
-		mission_->size_ = size;
-		mission_->textureSize = size;
+		sprite_->textureindex = TextureManager::GetInstance()->GetSrvIndex(sprite_->textureFilePath_);
+		sprite_->position_ = position;
+		sprite_->rotation_ = rotation;
+		sprite_->size_ = size;
+		sprite_->textureSize = size;
 		// Transformの初期化
-		mission_->transform.translate = { mission_->position_.x,mission_->position_.y,0.0f };
-		mission_->transform.rotate = { 0.0f,0.0f,mission_->rotation_ };
-		mission_->transform.scale = { mission_->size_.x,mission_->size_.y,1.0f };
-		return mission_;
+		sprite_->transform.translate = { sprite_->position_.x,sprite_->position_.y,0.0f };
+		sprite_->transform.rotate = { 0.0f,0.0f,sprite_->rotation_ };
+		sprite_->transform.scale = { sprite_->size_.x,sprite_->size_.y,1.0f };
+		return sprite_;
 	}
 
 	void Sprite::DrawImGui(const std::string& name) {
@@ -19241,11 +19356,10 @@ namespace MyEngine {
         }
     }
 
-    void CameraManager::DrawEditor() {
+    void CameraManager::DrawImGui() {
 #ifdef USE_IMGUI
-
+		// ImGuiでカメラの情報を表示
         camera_.activeCamera->DrawImGui();
-
 #endif // USE_IMGUI
     }
 }
@@ -19267,7 +19381,8 @@ namespace MyEngine {
     /// カメラマネージャクラス  
     /// </summary>
     class CameraManager {
-    private:
+    private: 
+		// シングルトンインスタンス
         static std::unique_ptr<CameraManager> instance;
 
         CameraManager(CameraManager&) = delete;
@@ -19288,18 +19403,18 @@ namespace MyEngine {
         /// </summary> 
         void Update();
         /// <summary>
+		/// ImGuiの描画処理
+        /// </summary>
+        void DrawImGui();
+        /// <summary>
         /// 現在の挙動をセットする
         /// </summary>
         /// <param name="behavior">差し替える挙動の所有権</param>
         void SetSceneBehavior(std::unique_ptr<MyGame::ISceneCameraBehavior> behavior);
-
         // シーンごとに必要な「特定の挙動」を取得したい場合、
         // テンプレートを使うとキャスト処理を汎用化できます
         template <typename T>
         T* GetCurrentBehaviorAs() { return dynamic_cast<T*>(currentBehavior_.get()); }
-        
-        void DrawEditor();
-
 	private: // 内部関数
 		// 各シーンカメラの登録
         void RegisterCamera();
@@ -19317,7 +19432,6 @@ namespace MyEngine {
         Camera* GetActiveCamera() const { return camera_.activeCamera; }
         CameraSet& GetCameraSet() { return camera_; }
         const CameraDefs::StateData& GetCameraState() const { return currentBehavior_->GetStateData(); }
-
         // setter
         void SetMainCamera() { camera_.activeCamera = camera_.mainCamera.get(); }
         void SetActiveSubCamera(const std::string& name) {
@@ -22793,7 +22907,7 @@ namespace MyEngine {
         sceneFactory_ = std::make_unique<SceneFactory>();
         SceneManager::GetInstance()->SetSceneFactory(sceneFactory_.get());
         // シーンマネージャに最初のシーンをセット
-        SceneManager::GetInstance()->ChangeScene(SceneName::TITLE);
+        SceneManager::GetInstance()->ChangeScene(SceneName::GAMEPLAY);
     }
 
     void MyGame::Update() {
@@ -73324,6 +73438,7 @@ namespace LoadResourceID {
             constexpr const char* Gage = "Textures/Ui/Gage.png";
             constexpr const char* Gameover = "Textures/Ui/Gameover.png";
             constexpr const char* Mission = "Textures/Ui/Mission.png";
+            constexpr const char* Player_Hp = "Textures/Ui/Player_Hp.png";
             constexpr const char* Player_ui = "Textures/Ui/Player_ui.png";
             constexpr const char* Target = "Textures/Ui/Target.png";
             constexpr const char* titile_01 = "Textures/Ui/titile_01.png";
