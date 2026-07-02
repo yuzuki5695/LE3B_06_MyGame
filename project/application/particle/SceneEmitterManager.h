@@ -4,7 +4,9 @@
 #include <SceneParticleBase.h>
 
 namespace MyGame {
-
+    /// <summary>
+	/// シーンに応じたパーティクルの管理を行うシングルトンマネージャ
+    /// </summary>
     class SceneEmitterManager {
     private: // シングルトンインスタンス
         static std::unique_ptr<SceneEmitterManager> instance;
