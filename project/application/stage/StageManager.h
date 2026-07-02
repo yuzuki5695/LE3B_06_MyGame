@@ -1,6 +1,5 @@
 #pragma once
 #include <BaseScene.h>
-#include <CharacterLoader.h>
 #include <Skybox.h>
 #include <Object3d.h>
 

@@ -570,9 +570,6 @@
     <ClCompile Include="application\loader\CurveJsonLoader.cpp">
       <Filter>ソース ファイル\application\loader</Filter>
     </ClCompile>
-    <ClCompile Include="application\loader\CharacterLoader.cpp">
-      <Filter>ソース ファイル\application\loader</Filter>
-    </ClCompile>
     <ClCompile Include="application\stage\StageManager.cpp">
       <Filter>ソース ファイル\application\stage</Filter>
     </ClCompile>
@@ -949,9 +946,6 @@
     </ClInclude>
     <ClInclude Include="application\stage\StageManager.h">
       <Filter>ヘッダー ファイル\application\stage</Filter>
-    </ClInclude>
-    <ClInclude Include="application\loader\CharacterLoader.h">
-      <Filter>ヘッダー ファイル\application\loader</Filter>
     </ClInclude>
     <ClInclude Include="application\character\player\PlayerData.h">
       <Filter>ヘッダー ファイル\application\character\player</Filter>

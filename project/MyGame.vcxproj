@@ -148,7 +148,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="application\collision\CollisionManager.cpp" />
     <ClCompile Include="application\event\EventManager.cpp" />
     <ClCompile Include="application\event\events\StartEvent.cpp" />
-    <ClCompile Include="application\loader\CharacterLoader.cpp" />
     <ClCompile Include="application\loader\CurveJsonLoader.cpp" />
     <ClCompile Include="application\loader\PlayerDataLoader.cpp" />
     <ClCompile Include="application\particle\GamePlayparticle.cpp" />
@@ -264,7 +263,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\event\events\StartEvent.h" />
     <ClInclude Include="application\event\EventTypes.h" />
     <ClInclude Include="application\event\IEvent.h" />
-    <ClInclude Include="application\loader\CharacterLoader.h" />
     <ClInclude Include="application\loader\CurveJsonLoader.h" />
     <ClInclude Include="application\loader\PlayerDataLoader.h" />
     <ClInclude Include="application\particle\GamePlayparticle.h" />
