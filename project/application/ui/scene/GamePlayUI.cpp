@@ -21,14 +21,14 @@ namespace MyGame {
    
     void GamePlayUI::Initialize() {
         // UIテクスチャ一覧
-        const std::array<const char*, 28> operationTextures = {
+        const std::array<const char*, 29> operationTextures = {
             Operationui::W,Operationui::A,Operationui::S,Operationui::D,
             Operationui::ArrowUp,Operationui::ArrowLeft,Operationui::ArrowDown,
             Operationui::ArrowRight,Operationui::SPACEKey,Operationui::SHIFT,Operationui::W_RED,
             Operationui::A_RED,Operationui::S_RED,Operationui::D_RED,Operationui::ArrowUp_RED,
             Operationui::ArrowLeft_RED,Operationui::ArrowDown_RED,Operationui::ArrowRight_RED,Operationui::SPACEKey_RED,
             Operationui::SHIFT_RED,Ui::Gage,Ui::Player_ui,Operationui::LevelGage_Frame,Operationui::LevelGage_Green,
-            Operationui::LevelGage_Yellow,Event::start,Operationui::Levelup,Operationui::Levelmax
+            Operationui::LevelGage_Yellow,Event::start,Operationui::Levelup,Operationui::Levelmax,Ui::Player_Hp
         };
 
 
@@ -81,6 +81,20 @@ namespace MyGame {
         levelUpAlpha_ = 0.0f;
         levelUpTimer_ = 0.0f;
     }
+    
+    void GamePlayUI::SetPlayerHp() {
+        // プレイヤーの参照があることを確認してHPアイコンを生成       
+        uint32_t maxHp = player_->GetMaxHP(); // プレイヤーから最大HPを取得
+        hpHearts_.clear();
+        for (uint32_t i = 0; i < maxHp; ++i) {
+            // 100, 15 の位置から 100 ずつ X 軸をずらす
+            float posX = kHeartStartX + (i * kHeartOffsetX);
+            Vector2 position = { posX, kHeartY };
+            // スプライト生成
+            auto heart = Sprite::Create(Ui::Player_Hp, position, 0.0f, kHeartSize);
+            hpHearts_.push_back(std::move(heart));
+        }
+    }
 
     void GamePlayUI::Update() {
         // ポーズ画面の更新
@@ -105,6 +119,24 @@ namespace MyGame {
         for (std::unique_ptr<Sprite>& ui : uis_) {
             ui->Update();
         }
+
+        // HP表示の更新処理
+        uint32_t currentHp = player_->GetHP();
+        for (size_t i = 0; i < hpHearts_.size(); ++i) {
+            if (i < currentHp) {
+                // 現在のHP以下なら通常表示
+                hpHearts_[i]->SetColor({ 1.0f, 1.0f, 1.0f, 1.0f });
+            } else {
+                // 現在のHPを超えている（ダメージを受けた）分は非表示（透明）にする
+                hpHearts_[i]->SetColor({ 1.0f, 1.0f, 1.0f, 0.0f });
+            }
+            // スプライト自体のマトリクス更新
+            hpHearts_[i]->Update();
+        }
+        // 既存のuis_などのUpdate処理...
+        for (std::unique_ptr<Sprite>& ui : uis_) {
+            ui->Update();
+        }
     }
 
     void GamePlayUI::Draw() {
@@ -125,6 +157,10 @@ namespace MyGame {
         // 操作UIの描画
         for (std::unique_ptr<Sprite>& ui : uis_) {
             ui->Draw();
+        }
+        // イベントロック中などに非表示にしたい場合は条件を追加してください
+        for (const auto& heart : hpHearts_) {
+            heart->Draw();
         }
     }
 

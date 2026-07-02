@@ -86,6 +86,8 @@ namespace MyGame {
         UIManager::GetInstance()->Initialize();
         // ゲームUIにプレイヤーの情報を渡す
         UIManager::GetInstance()->GetUI<GamePlayUI>()->SetPlayer(player_.get());
+        // ゲームUIにプレイヤーの情報を渡す
+        UIManager::GetInstance()->GetUI<GamePlayUI>()->SetPlayerHp();
         // フェードマネージャの初期化(フェードイン開始処理)
         FadeManager::GetInstance()->StartFade(FadeType::FadeIn, FadeStyle::SilhouetteExplode, 1.0f);
         // ゲーム開始イベントの開始

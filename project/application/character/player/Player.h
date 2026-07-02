@@ -52,6 +52,12 @@ namespace MyGame {
 		void GainExp(uint32_t exp);
 		// レベルアップの条件をチェックし、レベルアップが必要な場合はレベルと必要経験値を更新する
 		void CheckLevelUp();
+
+		/// <summary>
+        /// ダメージを受ける処理
+        /// </summary>
+        /// <param name="damage">減少するHPの量</param>
+        void ApplyDamage(uint32_t damage);
 	private: // メンバ変数
 		PlayerData data_; // プレイヤーのデータ構造体
 		MyEngine::Transform transform_;
@@ -77,6 +83,14 @@ namespace MyGame {
 		uint32_t nextLevelExp_; // 次のレベルに必要な経験値
 		bool isStateUpdateEnabled_;
 		bool isLevelUpRequested_;
+		
+		// --- 追加されたメンバ変数 ---
+        uint32_t hp_ = 0;
+        uint32_t maxHp_ = 5; // 最大HPの初期値
+		// ★ここを追加：無敵時間管理用
+		bool isInvincible_ = false;       // 無敵フラグ
+		float invincibleTimer_ = 0.0f;    // 無敵残り時間タイマー
+		const float kInvincibleTime = 3.0f; // 無敵時間のデフォルト値（3秒）
 
 	public: // アクセッサ
 		// getter
@@ -95,7 +109,9 @@ namespace MyGame {
 		uint32_t GetMaxLevel() const { return kMaxLevel; }
 		uint32_t GetExp() const { return exp_; }
 		uint32_t GetNextLevelExp() const { return nextLevelExp_; }
-		MyEngine::Vector3 GetForward() const;
+		MyEngine::Vector3 GetForward() const;        
+        int GetHP() const { return hp_; }
+        int GetMaxHP() const { return maxHp_; }
 		// setter
 		void SetTranslate(const MyEngine::Vector3& translate) { object_->SetTranslate(translate); }
 		void SetRotate(const MyEngine::Vector3& rotate) { object_->SetRotate(rotate); }

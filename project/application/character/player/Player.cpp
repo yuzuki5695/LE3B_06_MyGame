@@ -64,6 +64,11 @@ namespace MyGame {
 #endif // USE_IMGUI
             if (!IsAlive()) { return; }
             //ChangeState(std::make_unique<PlayerStateDead>());
+
+            // ★無敵状態ならダメージ処理そのものをスキップ
+            if (isInvincible_) { return; }
+            ApplyDamage(1); // 仮のダメージ値
+
             });
         // コライダー登録
         CollisionManager::GetInstance()->RegisterCollider(collider_.get());
@@ -82,6 +87,8 @@ namespace MyGame {
         nextLevelExp_ = 60; // 次のレベルに必要な経験値
         isStateUpdateEnabled_ = true;
         isLevelUpRequested_ = false;
+        maxHp_ = 5; // 必要に応じて調整、またはPlayerData等からロード
+        hp_ = maxHp_;  // 初期状態は満タン
 
         // コンポーネントの生成
         move_ = std::make_unique<PlayerMove>();          // 移動ロジックの生成
@@ -95,7 +102,38 @@ namespace MyGame {
         DrawImGui();
     }
 
+    void Player::ApplyDamage(uint32_t damage) {
+        // すでに死亡している、または無敵状態なら処理しない
+        if (hp_ <= 0 || isInvincible_) return;
+
+        hp_ -= damage;
+        if (hp_ < 0) {
+            hp_ = 0;
+        }
+
+        // ★ダメージを受けたら無敵状態にする
+        if (hp_ > 0) {
+            isInvincible_ = true;
+            invincibleTimer_ = kInvincibleTime; // 3秒セット
+        }
+
+        // HPが0になったら死亡状態へ遷移する処理
+        if (hp_ == 0) {
+            ChangeState(std::make_unique<PlayerStateDead>());
+        }
+    }
+
     void Player::Update() {
+        float deltaTime = 1.0f / 60.0f;
+        // 無敵タイマーの更新処理
+        if (isInvincible_) {
+            invincibleTimer_ -= deltaTime;
+            if (invincibleTimer_ <= 0.0f) {
+                invincibleTimer_ = 0.0f;
+                isInvincible_ = false; // 無敵終了
+            }
+        }
+
 		// イベントロックされていない場合のみ更新処理を行う
         if (!IsEventLocked()) {
             // ステートの更新
@@ -209,7 +247,6 @@ namespace MyGame {
     }
 
     void Player::CheckLevelUp() {
-
         // 最大レベルなら経験値加算停止
         if (level_ >= kMaxLevel) {
             level_ = kMaxLevel;
@@ -278,6 +315,37 @@ namespace MyGame {
                 // デバッグ用
                 if (ImGui::Button("Add EXP +10")) { GainExp(10); }
             }
+            /// --------------------------------------
+            /// ★追加：HP ＆ 無敵時間のデバッグ表示
+            /// --------------------------------------
+            ImGui::Separator(); // 区切り線
+            ImGui::Text("--- HP & Invincible ---");
+            
+            // HP表示 (バー形式)
+            ImGui::Text("HP : %u / %u", hp_, maxHp_);
+            float hpRate = (maxHp_ > 0) ? static_cast<float>(hp_) / static_cast<float>(maxHp_) : 0.0f;
+            ImGui::ProgressBar(hpRate, ImVec2(200.0f, 20.0f), hp_ == 0 ? "DEAD" : nullptr);
+
+            // 無敵状態の表示
+            if (isInvincible_) {
+                ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "Status: INVINCIBLE");
+                ImGui::Text("Invincible Timer: %.2f sec", invincibleTimer_);
+            } else {
+                ImGui::Text("Status: Normal");
+            }
+
+            // デバッグ用手動ダメージボタン
+            if (ImGui::Button("Apply 1 Damage")) {
+                ApplyDamage(1);
+            }
+
+            ImGui::SameLine();
+            if (ImGui::Button("Heal Full")) {
+                hp_ = maxHp_;
+                isInvincible_ = false;
+                invincibleTimer_ = 0.0f;
+            } 
+
             // LineRenderer基本パラメータ
             LineRenderer::GetInstance()->DrawImGui(colliderSize_);
             };

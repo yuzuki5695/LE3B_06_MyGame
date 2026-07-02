@@ -25,9 +25,12 @@ namespace MyGame {
         /// </summary>
         void Draw() override;
 
-        void ShowExpBar();       
+        void ShowExpBar();
         void ShowLevelUp(bool isMaxLevel);
-
+        /// <summary>
+        /// Playerを取得後に呼び出すことで、HPUIの初期化を行う
+        /// </summary>
+        void SetPlayerHp();
     private: // プレイベートメンバ関数
         void UpdateStageProgressUI();
         // UI生成用の内部関数
@@ -71,6 +74,12 @@ namespace MyGame {
         bool isLevelUpVisible_;
         float levelUpAlpha_;
         float levelUpTimer_;
+        // --- HP表示用の変数 ---
+        std::vector<std::unique_ptr<MyEngine::Sprite>> hpHearts_; // HPアイコンのリスト
+        const float kHeartStartX = 100.0f; // 表示開始のX座標
+        const float kHeartY = 15.0f;       // 表示のY座標
+        const float kHeartOffsetX = 75.0f;// X軸のずらし幅
+        const MyEngine::Vector2 kHeartSize = { 64.0f, 64.0f }; // アイコンサイズ
     public: // アクセッサ
         Pausemenu* GetPauseMenu() const { return pausemenu_.get(); }
         void SetPlayer(Player* player) { player_ = player; }
