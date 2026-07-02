@@ -4,9 +4,11 @@
 #include <BaseEmitter.h>
 
 namespace MyGame {
-
+    /// <summary>
+    /// ベースとなるパーティクルの
+    /// </summary>
     class SceneParticleBase {
-    public:
+	public: // メンバ関数
         /// <summary>
 		/// デストラクタ
         /// </summary>

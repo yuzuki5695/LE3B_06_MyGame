@@ -4,7 +4,10 @@
 #include <cstring>
 #include <functional>
 
-namespace MyEngine {
+namespace MyEngine {	
+	/// <summary>
+	/// D3D12のリソースをマップしてCPUからアクセスできるようにするためのラッパー構造体
+	/// </summary>
 	template<typename T>
 	struct MappedBuffer {
 		Microsoft::WRL::ComPtr<ID3D12Resource> resource;
