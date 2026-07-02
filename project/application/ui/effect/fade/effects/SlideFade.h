@@ -6,10 +6,15 @@
 #include <algorithm>
 
 namespace MyGame {
+
+    /// <summary>
+    /// 中心から外に飛び散るようなフェードエフェクト
+    /// </summary>
     class SlideFade : public IFadeEffect {
-	private:  
-        std::vector<FadeShape> shapes_;
-    public:
+    public: // メンバ関数
+        /// <summary>
+        /// 初期化処理
+        /// </summary>
         void Initialize() override {
             MyEngine::TextureManager::GetInstance()->LoadTexture(AssetGen::LoadResourceID::Textures::fade::white);
             // 画面を格子状に黒丸で埋める
@@ -43,7 +48,11 @@ namespace MyGame {
                 }
             }
         }
-
+        /// <summary>
+        /// 更新処理
+        /// </summary>
+        /// <param name="t"></param>
+        /// <param name="type"></param>    
         void Update(float t, FadeType type) override {
             const MyEngine::Vector2 center = { 1280.0f / 2, 720.0f / 2 };
 
@@ -130,11 +139,16 @@ namespace MyGame {
                 s.mission_->Update();
             }
         }
-
+        /// <summary>
+        /// 描画処理
+        /// </summary>
         void Draw() override {
             for (auto& s : shapes_) {
                 s.mission_->Draw();
             };
         }
+    private:  // メンバ変数
+        // フェード用スプライト群
+        std::vector<FadeShape> shapes_;
     };
 }
