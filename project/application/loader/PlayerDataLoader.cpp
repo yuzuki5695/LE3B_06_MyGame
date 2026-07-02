@@ -3,6 +3,7 @@
 #include <cassert>
 
 using namespace MyEngine;
+
 namespace MyGame {
 
     using json = nlohmann::json;
