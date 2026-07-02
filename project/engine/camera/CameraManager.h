@@ -12,7 +12,8 @@ namespace MyEngine {
     /// カメラマネージャクラス  
     /// </summary>
     class CameraManager {
-    private:
+    private: 
+		// シングルトンインスタンス
         static std::unique_ptr<CameraManager> instance;
 
         CameraManager(CameraManager&) = delete;
@@ -33,18 +34,18 @@ namespace MyEngine {
         /// </summary> 
         void Update();
         /// <summary>
+		/// ImGuiの描画処理
+        /// </summary>
+        void DrawImGui();
+        /// <summary>
         /// 現在の挙動をセットする
         /// </summary>
         /// <param name="behavior">差し替える挙動の所有権</param>
         void SetSceneBehavior(std::unique_ptr<MyGame::ISceneCameraBehavior> behavior);
-
         // シーンごとに必要な「特定の挙動」を取得したい場合、
         // テンプレートを使うとキャスト処理を汎用化できます
         template <typename T>
         T* GetCurrentBehaviorAs() { return dynamic_cast<T*>(currentBehavior_.get()); }
-        
-        void DrawEditor();
-
 	private: // 内部関数
 		// 各シーンカメラの登録
         void RegisterCamera();
@@ -62,7 +63,6 @@ namespace MyEngine {
         Camera* GetActiveCamera() const { return camera_.activeCamera; }
         CameraSet& GetCameraSet() { return camera_; }
         const CameraDefs::StateData& GetCameraState() const { return currentBehavior_->GetStateData(); }
-
         // setter
         void SetMainCamera() { camera_.activeCamera = camera_.mainCamera.get(); }
         void SetActiveSubCamera(const std::string& name) {
