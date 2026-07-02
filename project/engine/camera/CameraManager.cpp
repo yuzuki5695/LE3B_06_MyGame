@@ -83,11 +83,10 @@ namespace MyEngine {
         }
     }
 
-    void CameraManager::DrawEditor() {
+    void CameraManager::DrawImGui() {
 #ifdef USE_IMGUI
-
+		// ImGuiでカメラの情報を表示
         camera_.activeCamera->DrawImGui();
-
 #endif // USE_IMGUI
     }
 }
