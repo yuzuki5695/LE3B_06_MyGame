@@ -18,7 +18,7 @@ namespace MyGame {
         /// <param name="camera"></param>
         void Update(MyEngine::Camera* camera) override;
 	private: // メンバ変数
-		// トランスフォーム
-        MyEngine::Vector3 transform_;
+		// カメラ座標
+        MyEngine::Vector3 translate_;
     };
 }
