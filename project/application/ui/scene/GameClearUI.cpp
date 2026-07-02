@@ -35,13 +35,13 @@ namespace MyGame {
         ui_01_ = Sprite::Create(Ui::UI_01, ui01StartPos_, 0.0f, Vector2{ 360.0f,100.0f });
         ui_01_->SetAnchorPoint(Vector2{ 0.5f, 0.5f }); // 中心基準
 
-        mission_ = Sprite::Create(Ui::Mission, ui2StartPos, 0.0f, Vector2{ 400.0f,150.0f });
+        sprite_ = Sprite::Create(Ui::Mission, ui2StartPos, 0.0f, Vector2{ 400.0f,150.0f });
         complete_ = Sprite::Create(Ui::Complete, ui3StartPos, 0.0f, Vector2{ 400.0f,150.0f });
     }
 
     void GameClearUI::Update() {
         if (movestarted_) {
-            if (ui2Timer_ < ui2Duration_ && mission_->GetPosition().x != ui2EndPos.x) {
+            if (ui2Timer_ < ui2Duration_ && sprite_->GetPosition().x != ui2EndPos.x) {
                 ui2Timer_++;
 
                 float t = ui2Timer_ / ui2Duration_;
@@ -50,10 +50,10 @@ namespace MyGame {
                     ui2StartPos.x + (ui2EndPos.x - ui2StartPos.x) * easeT,
                     ui2StartPos.y + (ui2EndPos.y - ui2StartPos.y) * easeT
                 };
-                mission_->SetPosition(newPos1);
+                sprite_->SetPosition(newPos1);
             }
 
-            if (ui3Timer_ < ui3Duration_ && mission_->GetPosition().x != ui3EndPos.x && mission_->GetPosition().x < 900) {
+            if (ui3Timer_ < ui3Duration_ && sprite_->GetPosition().x != ui3EndPos.x && sprite_->GetPosition().x < 900) {
                 ui3Timer_++;
 
                 float t = ui3Timer_ / ui3Duration_;
@@ -104,7 +104,7 @@ namespace MyGame {
                     ui2EndPos.y
                 };
 
-                mission_->SetPosition(missionPos);
+                sprite_->SetPosition(missionPos);
 
                 // Complete
                 Vector2 completePos = {
@@ -125,13 +125,13 @@ namespace MyGame {
         }
 
 
-        mission_->Update();
+        sprite_->Update();
         complete_->Update();
         ui_01_->Update();
     }
 
     void GameClearUI::Draw() {
-        mission_->Draw();
+        sprite_->Draw();
         complete_->Draw();
         ui_01_->Draw();
     }

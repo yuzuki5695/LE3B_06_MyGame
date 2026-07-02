@@ -55,6 +55,7 @@ namespace MyGame {
         // 現在のシーンで有効なUIインスタンスを保持するリスト
         std::vector<std::unique_ptr<BaseUI>> uiList_;
     public:
+        // getter
         template <typename T>
         T* GetUI() {
             for (std::unique_ptr<BaseUI>& ui : uiList_) {

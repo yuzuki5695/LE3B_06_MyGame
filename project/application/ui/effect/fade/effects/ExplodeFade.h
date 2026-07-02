@@ -6,10 +6,14 @@
 #include <algorithm>
 
 namespace MyGame {
+    /// <summary>
+	/// 中心から外に飛び散るようなフェードエフェクト
+    /// </summary>
     class ExplodeFade : public IFadeEffect {
-	private:  
-        std::vector<FadeShape> shapes_;
-    public:
+	public: // メンバ関数
+        /// <summary>
+		/// 初期化処理
+        /// </summary>
         void Initialize() override {
             MyEngine::TextureManager::GetInstance()->LoadTexture(AssetGen::LoadResourceID::Textures::fade::white);
             // 画面を格子状に黒丸で埋める
@@ -27,9 +31,9 @@ namespace MyGame {
                     shape.size = { spacingX, spacingY };
                     shape.scale = 0.0f;
 
-                    shape.mission_ = MyEngine::Sprite::Create(AssetGen::LoadResourceID::Textures::fade::white, shape.position, 0.0f, shape.size);
-                    shape.mission_->SetAnchorPoint({ 0.5f, 0.5f });
-                    shape.mission_->SetColor({ 0, 0, 0, 0 });
+                    shape.sprite_ = MyEngine::Sprite::Create(AssetGen::LoadResourceID::Textures::fade::white, shape.position, 0.0f, shape.size);
+                    shape.sprite_->SetAnchorPoint({ 0.5f, 0.5f });
+                    shape.sprite_->SetColor({ 0, 0, 0, 0 });
 
                     // 中心からの距離に応じてdelay設定
                     float dx = shape.position.x - center.x;
@@ -43,7 +47,11 @@ namespace MyGame {
                 }
             }
         }
-
+        /// <summary>
+		/// 更新処理
+        /// </summary>
+        /// <param name="t"></param>
+        /// <param name="type"></param>
         void Update(float t, FadeType type) override {
             const float maxScale = 1.0f;
             auto easeOutQuad = [](float t) { return 1 - (1 - t) * (1 - t); };
@@ -62,16 +70,21 @@ namespace MyGame {
                 }
 
                 s.scale = scale;
-                s.mission_->SetSize(s.size * s.scale);
-                s.mission_->SetColor({ 0,0,0,alpha });
-                s.mission_->Update();
+                s.sprite_->SetSize(s.size * s.scale);
+                s.sprite_->SetColor({ 0,0,0,alpha });
+                s.sprite_->Update();
             }
         }
-
+        /// <summary>
+		/// 描画処理
+        /// </summary>
         void Draw() override {
             for (auto& s : shapes_) {
-                s.mission_->Draw();
+                s.sprite_->Draw();
             };
         }
+	private: // メンバ変数
+		// フェード用スプライト群
+        std::vector<FadeShape> shapes_;
     };
 }

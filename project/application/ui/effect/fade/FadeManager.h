@@ -45,18 +45,21 @@ namespace MyGame {
         void SceneChangeFade(const std::string& sceneName, FadeStyle style, float duration);
     private: // メンバ変数
         // 現在のフェードエフェクト
-        std::unique_ptr<IFadeEffect> effect_;
-        FadeType type_ = FadeType::None;
-        float timer_ = 0.0f;
-        float duration_ = 1.0f;
-        float t_ = 0.0f;
-        bool isFading_ = false;
-        // シーン切り替え予約用変数
-        std::string nextSceneName_;
-        bool isSceneChangeReserved_ = false; // フェード完了後にシーン切り替えを行うか
-        bool isFadeEnd_ = false;         // フェード終了済み
-        bool isFadeInFinished_ = false;  // フェードイン完了
+		std::unique_ptr<IFadeEffect> effect_; // フェードエフェクトのインスタンス
+		FadeType type_ = FadeType::None;      // フェードの種類
+		float timer_;                         // フェードの経過時間 
+		float duration_;                      // フェードの総時間
+		float t_;                             // フェードの進行度（0.0～1.0）
+		bool isFading_ = false;               // フェード中かどうか      
+        ///-----------------------------------------///
+        ///----------シーン切り替え予約用--------------///
+        ///-----------------------------------------///
+		std::string nextSceneName_;           // フェード完了後に切り替えるシーン名
+        bool isSceneChangeReserved_ = false;  // フェード完了後にシーン切り替えを行うか
+        bool isFadeEnd_ = false;              // フェード終了済み
+        bool isFadeInFinished_ = false;       // フェードイン完了
     public:
+		// getter
         bool IsFading() const { return isFading_; }
         bool IsFadeEnd() const { return isFadeEnd_; }
         bool IsFadeInFinished() const { return isFadeInFinished_; }

@@ -27,27 +27,27 @@ namespace MyGame {
         sprites_.push_back({ nullptr, {}, 0.0f, SpriteID::BottomBar });
         sprites_.push_back({ nullptr, {}, 0.0f, SpriteID::Mission });
 
-        for (SpriteUnit& mission_ : sprites_) {
+        for (SpriteUnit& sprite_ : sprites_) {
 
-            switch (mission_.id) {
+            switch (sprite_.id) {
             case SpriteID::Background:
-                mission_.mission_ = Sprite::Create(Textures::Event::Black, Vector2{ 0.0f, 300.0f }, 0.0f, Vector2{ 1280.0f,150.0f });
-                mission_.alpha = 0.0f;
-                mission_.mission_->SetColor(Vector4{ 1.0f, 1.0f, 1.0f, mission_.alpha });
+                sprite_.sprite_ = Sprite::Create(Textures::Event::Black, Vector2{ 0.0f, 300.0f }, 0.0f, Vector2{ 1280.0f,150.0f });
+                sprite_.alpha = 0.0f;
+                sprite_.sprite_->SetColor(Vector4{ 1.0f, 1.0f, 1.0f, sprite_.alpha });
                 break;
             case SpriteID::TopBar:
-                mission_.mission_ = Sprite::Create(Textures::Event::Startevent_02, Vector2{ -1280.0f, 300.0f }, 0.0f, Vector2{ 1280.0f, 75.0f });
-                mission_.alpha = 0.0f;
+                sprite_.sprite_ = Sprite::Create(Textures::Event::Startevent_02, Vector2{ -1280.0f, 300.0f }, 0.0f, Vector2{ 1280.0f, 75.0f });
+                sprite_.alpha = 0.0f;
                 break;
             case SpriteID::BottomBar:
-                mission_.mission_ = Sprite::Create(Textures::Event::Startevent_01, Vector2{ 1280.0f, 375.0f }, 0.0f, Vector2{ 1280.0f, 75.0f });
-                mission_.alpha = 0.0f;
+                sprite_.sprite_ = Sprite::Create(Textures::Event::Startevent_01, Vector2{ 1280.0f, 375.0f }, 0.0f, Vector2{ 1280.0f, 75.0f });
+                sprite_.alpha = 0.0f;
                 break;
 
             case SpriteID::Mission:
-                mission_.mission_ = Sprite::Create(Textures::Event::start_mission, Vector2{ 500.0f, 265.0f }, 0.0f, Vector2{ 300.0f,200.0f });
-                mission_.alpha = 0.0f;
-                mission_.mission_->SetColor(Vector4{ 1.0f, 1.0f, 1.0f, mission_.alpha });
+                sprite_.sprite_ = Sprite::Create(Textures::Event::start_mission, Vector2{ 500.0f, 265.0f }, 0.0f, Vector2{ 300.0f,200.0f });
+                sprite_.alpha = 0.0f;
+                sprite_.sprite_->SetColor(Vector4{ 1.0f, 1.0f, 1.0f, sprite_.alpha });
                 break;
             }
         }
@@ -72,7 +72,7 @@ namespace MyGame {
         case EventPhase::Phase1: // フェーズ1：黒背景のフェードイン
             phaseDuration_ = 1.0f; // 1秒かける
             back->alpha += 0.01f;  // 少しずつ明るくする
-            back->mission_->SetColor({ 1.0f, 1.0f, 1.0f,  back->alpha }); // 色（RGBA）を更新
+            back->sprite_->SetColor({ 1.0f, 1.0f, 1.0f,  back->alpha }); // 色（RGBA）を更新
 
             if (back->alpha >= 0.7f) {
                 back->alpha = 0.7f;
@@ -84,22 +84,22 @@ namespace MyGame {
             phaseDuration_ = 0.5f; // 0.5秒で閉じる
 
             // 上側の移動
-            top->position = top->mission_->GetPosition();
+            top->position = top->sprite_->GetPosition();
             if (top->position.x < 200.0f) { // 左上座標を軸として目的の値の達するまで右へ移動
                 top->position.x += closeSpeed_;
                 if (top->position.x > 0.0f)   top->position.x = 0.0f; // はみ出し防止
             }
 
             // 下側の移動
-            bottom->position = bottom->mission_->GetPosition();
+            bottom->position = bottom->sprite_->GetPosition();
             if (bottom->position.x > 0.0f) { // 左上座標を軸として目的の値の達するまで左へ移動
                 bottom->position.x -= closeSpeed_;
                 if (bottom->position.x < 0.0f) bottom->position.x = 0.0f; // はみ出し防止
             }
 
             // 反映
-            top->mission_->SetPosition(top->position);
-            bottom->mission_->SetPosition(bottom->position);
+            top->sprite_->SetPosition(top->position);
+            bottom->sprite_->SetPosition(bottom->position);
 
             // 両方とも中央に到達したら次のフェーズへ
             if (top->position.x == 0.0f && bottom->position.x == 0.0f) {
@@ -118,7 +118,7 @@ namespace MyGame {
                 progress_ += phaseDuration_;
             }
 
-            mission->mission_->SetColor({ 1.0f, 1.0f, 1.0f, mission->alpha }); // 色を更新
+            mission->sprite_->SetColor({ 1.0f, 1.0f, 1.0f, mission->alpha }); // 色を更新
             break;
         case EventPhase::Phase4: // フェーズ4：MISSION表示維持 → フェードアウト → “START”表示
             phaseDuration_ = 2.0f; // 2秒間維持
@@ -133,11 +133,11 @@ namespace MyGame {
             if (mission->alpha <= 0.0f) {
                 mission->alpha = 1.0f;
                 timefige_ = false;
-                mission->mission_->SetTexture(Textures::Event::start);
+                mission->sprite_->SetTexture(Textures::Event::start);
                 phase_ = EventPhase::End;
                 progress_ += phaseDuration_;
             }
-            mission->mission_->SetColor({ 1.0f, 1.0f, 1.0f,  mission->alpha }); // 色（RGBA）を更新
+            mission->sprite_->SetColor({ 1.0f, 1.0f, 1.0f,  mission->alpha }); // 色（RGBA）を更新
             break;
         case EventPhase::End: // フェーズEnd：バーが外へ開いて終了       
             phaseDuration_ = 0.5f;
@@ -162,29 +162,29 @@ namespace MyGame {
             }
 
             // 反映
-            top->mission_->SetPosition(top->position);
-            bottom->mission_->SetPosition(bottom->position);
-            back->mission_->SetColor({ 1.0f, 1.0f, 1.0f, back->alpha });
-            mission->mission_->SetColor({ 1.0f, 1.0f, 1.0f, mission->alpha });
+            top->sprite_->SetPosition(top->position);
+            bottom->sprite_->SetPosition(bottom->position);
+            back->sprite_->SetColor({ 1.0f, 1.0f, 1.0f, back->alpha });
+            mission->sprite_->SetColor({ 1.0f, 1.0f, 1.0f, mission->alpha });
             break;
         }
 
         // 各スプライトの更新
-        for (SpriteUnit& mission_ : sprites_) {
-            mission_.mission_->Update();
+        for (SpriteUnit& sprite_ : sprites_) {
+            sprite_.sprite_->Update();
         }
     }
     
     void StartEvent::Draw2D() {
-        for (SpriteUnit& mission_ : sprites_) {
-            mission_.mission_->Draw();
+        for (SpriteUnit& sprite_ : sprites_) {
+            sprite_.sprite_->Draw();
         }
     }
 
     SpriteUnit* StartEvent::FindSprite(SpriteID id) {
         // 指定されたIDを持つスプライトを検索して返す
-        for (SpriteUnit& mission_ : sprites_) {
-            if (mission_.id == id) return &mission_;
+        for (SpriteUnit& sprite_ : sprites_) {
+            if (sprite_.id == id) return &sprite_;
         }
         return nullptr;
     }

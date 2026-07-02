@@ -6,10 +6,15 @@
 #include <algorithm>
 
 namespace MyGame {
+
+    /// <summary>
+    /// 中心から外に飛び散るようなフェードエフェクト
+    /// </summary>
     class SlideFade : public IFadeEffect {
-	private:  
-        std::vector<FadeShape> shapes_;
-    public:
+    public: // メンバ関数
+        /// <summary>
+        /// 初期化処理
+        /// </summary>
         void Initialize() override {
             MyEngine::TextureManager::GetInstance()->LoadTexture(AssetGen::LoadResourceID::Textures::fade::white);
             // 画面を格子状に黒丸で埋める
@@ -27,9 +32,9 @@ namespace MyGame {
                     shape.size = { spacingX, spacingY };
                     shape.scale = 0.0f;
 
-                    shape.mission_ = MyEngine::Sprite::Create(AssetGen::LoadResourceID::Textures::fade::white, shape.position, 0.0f, shape.size);
-                    shape.mission_->SetAnchorPoint({ 0.5f, 0.5f });
-                    shape.mission_->SetColor({ 0, 0, 0, 0 });
+                    shape.sprite_ = MyEngine::Sprite::Create(AssetGen::LoadResourceID::Textures::fade::white, shape.position, 0.0f, shape.size);
+                    shape.sprite_->SetAnchorPoint({ 0.5f, 0.5f });
+                    shape.sprite_->SetColor({ 0, 0, 0, 0 });
 
                     // 中心からの距離に応じてdelay設定
                     float dx = shape.position.x - center.x;
@@ -43,7 +48,11 @@ namespace MyGame {
                 }
             }
         }
-
+        /// <summary>
+        /// 更新処理
+        /// </summary>
+        /// <param name="t"></param>
+        /// <param name="type"></param>    
         void Update(float t, FadeType type) override {
             const MyEngine::Vector2 center = { 1280.0f / 2, 720.0f / 2 };
 
@@ -75,7 +84,7 @@ namespace MyGame {
 
                     float spread = (1.0f - easedT) * 150.0f;
                     MyEngine::Vector2 movedPos = { pos.x + dir.x * spread, pos.y + dir.y * spread };
-                    s.mission_->SetPosition(movedPos);
+                    s.sprite_->SetPosition(movedPos);
 
                     scale = 1.0f - (1.0f - easedT) * 0.2f;
                     alpha = easedT;
@@ -92,7 +101,7 @@ namespace MyGame {
                         color = {
                             colorT, colorT, colorT, 1.0f // 黒→白
                         };
-                        s.mission_->SetPosition(pos);  // 動かない
+                        s.sprite_->SetPosition(pos);  // 動かない
                         scale = 1.0f;
                         alpha = 1.0f;
                     }
@@ -106,8 +115,8 @@ namespace MyGame {
                         MyEngine::Vector2 movedPos = { pos.x + dir.x * spread, pos.y + dir.y * spread };
 
                         s.rotation += s.rotationSpeed * easedMoveT;
-                        s.mission_->SetRotation(s.rotation);
-                        s.mission_->SetPosition(movedPos);
+                        s.sprite_->SetRotation(s.rotation);
+                        s.sprite_->SetPosition(movedPos);
 
                         // スケール・アルファ変化
                         scale = 1.0f + easedMoveT * 0.3f;
@@ -125,16 +134,21 @@ namespace MyGame {
                 // 共通適用
                 // ===============================================
                 s.scale = scale;
-                s.mission_->SetSize(s.size * s.scale);
-                s.mission_->SetColor(color);
-                s.mission_->Update();
+                s.sprite_->SetSize(s.size * s.scale);
+                s.sprite_->SetColor(color);
+                s.sprite_->Update();
             }
         }
-
+        /// <summary>
+        /// 描画処理
+        /// </summary>
         void Draw() override {
             for (auto& s : shapes_) {
-                s.mission_->Draw();
+                s.sprite_->Draw();
             };
         }
+    private:  // メンバ変数
+        // フェード用スプライト群
+        std::vector<FadeShape> shapes_;
     };
 }
