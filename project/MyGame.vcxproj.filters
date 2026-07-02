@@ -352,12 +352,6 @@
     <Filter Include="ソース ファイル\application\collision">
       <UniqueIdentifier>{6e9e9c14-5122-492b-b39e-3a28944d57ff}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ヘッダー ファイル\application\math">
-      <UniqueIdentifier>{a34d5205-3f79-4e82-a458-dde24b16cb7b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ソース ファイル\application\math">
-      <UniqueIdentifier>{83f2906c-a1cd-45a7-83e7-4e332edb6e5a}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ソース ファイル\application\ui\scene\fade">
       <UniqueIdentifier>{58a614e6-87e6-4fad-ac4d-e17a6f116a40}</UniqueIdentifier>
     </Filter>
@@ -641,9 +635,6 @@
     </ClCompile>
     <ClCompile Include="application\ui\scene\TitleUI.cpp">
       <Filter>ソース ファイル\application\ui\scene</Filter>
-    </ClCompile>
-    <ClCompile Include="application\math\Spline.cpp">
-      <Filter>ソース ファイル\application\math</Filter>
     </ClCompile>
     <ClCompile Include="application\character\player\Component\PlayerDeath.cpp">
       <Filter>ソース ファイル\application\character\player\component</Filter>
@@ -1072,9 +1063,6 @@
     </ClInclude>
     <ClInclude Include="application\ui\scene\TitleUI.h">
       <Filter>ヘッダー ファイル\application\ui\scene</Filter>
-    </ClInclude>
-    <ClInclude Include="application\math\Spline.h">
-      <Filter>ヘッダー ファイル\application\math</Filter>
     </ClInclude>
     <ClInclude Include="application\character\player\Component\PlayerDeath.h">
       <Filter>ヘッダー ファイル\application\character\player\component</Filter>
