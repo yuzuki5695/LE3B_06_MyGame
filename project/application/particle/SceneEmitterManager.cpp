@@ -29,8 +29,6 @@ namespace MyGame {
     }
 
     void SceneEmitterManager::Initialize() {
-        // 前のシーンのパーティクルエミッターを削除
-        Clear();
         // 現在のシーン状況を確認
         // SceneManagerが管理している実行中シーンから名前を取得する
         std::string currentScene = SceneManager::GetInstance()->GetCurrentScene()->GetSceneName();
@@ -66,7 +64,12 @@ namespace MyGame {
     }
 
     void SceneEmitterManager::Clear() {
-		// 管理している全UIの破棄
+        // エミッターを消す前に、まずGPU側のパーティクルバッファやリクエストを完全に根こそぎクリアする
+        // これにより、バッファ参照の迷子（浮遊カウンタ）を防ぎます。
+        if (ParticleManager::GetInstance()) {
+            ParticleManager::GetInstance()->ClearAll();
+        }
+        // 管理している全UIの破棄
         emitterlist_.clear();
     }
 }

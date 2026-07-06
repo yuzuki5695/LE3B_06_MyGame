@@ -26,6 +26,7 @@ namespace MyGame {
 		// タイマーの設定
 		emitTimer_ = 0.0f;
 		emitInterval_ = 0.05f;
+		deltaTime = 0.0f;
 		// パーティクルの生成
 		playeremitter_ = std::make_unique<BaseEmitter>("Title", playerspawndata_, playerrandom_);
 	}
@@ -34,8 +35,8 @@ namespace MyGame {
 		if (!object_) {
 			return;
 		}
-
-		constexpr float deltaTime = 1.0f / 60.0f;
+	
+		deltaTime = 1.0f / 60.0f;
 		emitTimer_ += deltaTime;
 		playeremitter_->SetTranslate(object_->GetTranslate());
 

@@ -28,6 +28,7 @@ namespace MyGame {
 		float emitTimer_;
 		float emitInterval_;
 		MyEngine::Object3d* object_;              // プレイヤーのポインタ
+		float deltaTime;
 	public:
 		// setter
 		void SetObject3d(MyEngine::Object3d* object) { object_ = object; }

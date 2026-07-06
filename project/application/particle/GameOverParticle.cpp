@@ -26,10 +26,13 @@ namespace MyGame {
 		playerRandom_.velocityScale = { {0.02f,0.02f,0.02f}, {0.04f,0.04f,0.04f}, true };
 		playerRandom_.lifetime = { 0.4f, 0.8f, true };
 		playerRandom_.count = { 5, 8, true };
+
+		deltaTime = 0.0f;
+		emitInterval_ = 0.03f;
 	}
 
 	void GameOverParticle::Update() {
-		constexpr float deltaTime = 1.0f / 60.0f;
+		deltaTime = 1.0f / 60.0f;
 		for (auto& emitter : emitters_) {
 			if (!emitter.target) {
 				continue;

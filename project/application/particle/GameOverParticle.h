@@ -28,8 +28,8 @@ namespace MyGame {
 		std::vector<PartEmitter> emitters_;
 		MyEngine::ParticleSpawnData playerSpawnData_{};
 		MyEngine::ParticleSpawnRandom playerRandom_;
-
-		float emitInterval_ = 0.03f;
+		float deltaTime;
+		float emitInterval_ ;
 	public:
 		// setter	
 		void SetTargets(const std::vector<MyEngine::Object3d*>& parts);

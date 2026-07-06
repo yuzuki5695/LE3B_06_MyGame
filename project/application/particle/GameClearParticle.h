@@ -27,7 +27,8 @@ namespace MyGame {
 		float emitTimer_;
 		float emitInterval_;
 		Player* player_;              // プレイヤーのポインタ	
-    public:
+		float deltaTime;
+	public:
         // setter
         void SetPlayer(Player* player) { player_ = player; }	
 	};
