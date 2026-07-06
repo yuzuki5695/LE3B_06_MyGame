@@ -48,11 +48,15 @@ namespace MyGame {
 		/// ImGuiの描画処理
 		/// </summary>
 		void DrawImGui();
-		// 経験値獲得とレベルアップの処理
+		/// <summary>
+		///経験値獲得とレベルアップの処理
+		/// </summary>
+		/// <param name="exp">獲得する経験値</param>
 		void GainExp(uint32_t exp);
-		// レベルアップの条件をチェックし、レベルアップが必要な場合はレベルと必要経験値を更新する
+		/// <summary>
+		/// レベルアップの条件をチェックし、レベルアップが必要な場合はレベルと必要経験値を更新する
+		/// </summary>
 		void CheckLevelUp();
-
 		/// <summary>
         /// ダメージを受ける処理
         /// </summary>
@@ -60,7 +64,7 @@ namespace MyGame {
         void ApplyDamage(uint32_t damage);
 	private: // メンバ変数
 		PlayerData data_; // プレイヤーのデータ構造体
-		MyEngine::Transform transform_;
+		MyEngine::Transform transform_;   // プレイヤーのTransform
 		MyEngine::Vector3 colliderSize_;  // 当たり判定のサイズ
 		// コライダー
 		std::unique_ptr<Collider> collider_;
@@ -69,7 +73,6 @@ namespace MyGame {
 		std::unique_ptr<PlayerReticle> reticle_; // レティクルロジックの保持
 		std::unique_ptr<PlayerAttack> attack_;   // 攻撃ロジックの保持
 		std::unique_ptr<PlayerDeath> death_;     // 死亡演出ロジックの保持
-
 		std::unique_ptr <MyEngine::Sprite> targetreticle_; // レティクル用スプライト
 		std::unique_ptr <MyEngine::Object3d> target_; // ターゲット用3Dオブジェクト
 		// カメラの位置調整用オフセット
@@ -83,15 +86,17 @@ namespace MyGame {
 		uint32_t nextLevelExp_; // 次のレベルに必要な経験値
 		bool isStateUpdateEnabled_;
 		bool isLevelUpRequested_;
-		
-		// --- 追加されたメンバ変数 ---
-        uint32_t hp_ = 0;
-        uint32_t maxHp_ = 5; // 最大HPの初期値
-		// ★ここを追加：無敵時間管理用
-		bool isInvincible_ = false;       // 無敵フラグ
-		float invincibleTimer_ = 0.0f;    // 無敵残り時間タイマー
-		const float kInvincibleTime = 3.0f; // 無敵時間のデフォルト値（3秒）
-
+		// HP関連のメンバ変数		
+		uint32_t hp_;    // 現在のHP
+        uint32_t maxHp_; // 最大HPの初期値
+		// 無敵時間管理用
+		bool isInvincible_;       // 無敵フラグ
+		float invincibleTimer_;    // 無敵残り時間タイマー
+		float kInvincibleTime; // 無敵時間の長さ
+		// 点滅用のメンバ変数
+		bool isVisible_;	   // 点滅状態の可視性フラグ
+		float blinkTimer_;     // 点滅タイマー
+		float kBlinkInterval_; // 点滅間隔
 	public: // アクセッサ
 		// getter
 		PlayerMove* GetMove() { return move_.get(); }

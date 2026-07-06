@@ -50,6 +50,22 @@ namespace MyGame {
         // 状態フラグの初期化
         flags_.isAlive = true;
         flags_.isActive = true;
+
+        kMaxLevel = 3;      // 最大レベル
+        level_ = 1;         // 現在のレベル
+        exp_ = 0;           // 現在の経験値
+        nextLevelExp_ = 60; // 次のレベルに必要な経験値
+        isStateUpdateEnabled_ = true;
+        isLevelUpRequested_ = false;
+        maxHp_ = 5; // 必要に応じて調整、またはPlayerData等からロード
+        hp_ = maxHp_;  // 初期状態は満タン     
+        isInvincible_ = false;       // 無敵フラグ
+        invincibleTimer_ = 0.0f;    // 無敵残り時間タイマー
+		kInvincibleTime = 3.0f; // 無敵時間の長さ
+        isVisible_ = true; // 点滅状態の可視性フラグ
+        blinkTimer_ = 0.0f; // 点滅タイマー
+        kBlinkInterval_ = 0.1f; // 点滅間隔
+
         // 当たり判定サイズ
         colliderSize_ = object_->GetScale();
         // コライダー生成
@@ -63,9 +79,7 @@ namespace MyGame {
             LineRenderer::GetInstance()->SetHit(true);
 #endif // USE_IMGUI
             if (!IsAlive()) { return; }
-            //ChangeState(std::make_unique<PlayerStateDead>());
-
-            // ★無敵状態ならダメージ処理そのものをスキップ
+            // 無敵状態ならダメージ処理そのものをスキップ
             if (isInvincible_) { return; }
             ApplyDamage(1); // 仮のダメージ値
 
@@ -80,15 +94,6 @@ namespace MyGame {
         targetreticle_ = Sprite::Create(Ui::Target, Vector2{ 640.0f, 360.0f }, 0.0f, Vector2{ 100.0f, 100.0f });
         targetreticle_->SetTextureSize(Vector2{ 512.0f, 512.0f });
         targetreticle_->SetAnchorPoint(Vector2{ 0.5f, 0.5f }); // 中心基準
-
-        kMaxLevel = 3;      // 最大レベル
-        level_ = 1;         // 現在のレベル
-        exp_ = 0;           // 現在の経験値
-        nextLevelExp_ = 60; // 次のレベルに必要な経験値
-        isStateUpdateEnabled_ = true;
-        isLevelUpRequested_ = false;
-        maxHp_ = 5; // 必要に応じて調整、またはPlayerData等からロード
-        hp_ = maxHp_;  // 初期状態は満タン
 
         // コンポーネントの生成
         move_ = std::make_unique<PlayerMove>();          // 移動ロジックの生成
@@ -105,20 +110,19 @@ namespace MyGame {
     void Player::ApplyDamage(uint32_t damage) {
         // すでに死亡している、または無敵状態なら処理しない
         if (hp_ <= 0 || isInvincible_) return;
-
+		// ダメージを適用
         hp_ -= damage;
+		// HPが0未満にならないように制限
         if (hp_ < 0) {
             hp_ = 0;
         }
-
-        // ★ダメージを受けたら無敵状態にする
+        // ダメージを受けたら無敵状態にする
         if (hp_ > 0) {
             isInvincible_ = true;
             invincibleTimer_ = kInvincibleTime; // 3秒セット
         }
-
         // HPが0になったら死亡状態へ遷移する処理
-        if (hp_ == 0) {
+        if (hp_ == 0) {            
             ChangeState(std::make_unique<PlayerStateDead>());
         }
     }
@@ -127,11 +131,30 @@ namespace MyGame {
         float deltaTime = 1.0f / 60.0f;
         // 無敵タイマーの更新処理
         if (isInvincible_) {
-            invincibleTimer_ -= deltaTime;
+            // 無敵時間のカウントダウン
+            invincibleTimer_ -= deltaTime;    
+            // 点滅タイマー
+            blinkTimer_ += deltaTime;
+            // 点滅処理
+            if (blinkTimer_ >= kBlinkInterval_) {
+				// 点滅間隔を超えたら可視状態を切り替える
+                blinkTimer_ = 0.0f;
+                isVisible_ = !isVisible_;
+            }
+			// 点滅処理
             if (invincibleTimer_ <= 0.0f) {
                 invincibleTimer_ = 0.0f;
-                isInvincible_ = false; // 無敵終了
+                isInvincible_ = false;
+                // 無敵終了
+                isVisible_ = true;
+                blinkTimer_ = 0.0f;
             }
+            object_->SetMaterialColor({ 1.0f, 0.0f, 0.0f, 1.0f });
+        }
+        else {
+            // 無敵状態でない場合は常に可視状態にする
+            isVisible_ = true;            
+            object_->SetMaterialColor({ 1.0f, 1.0f, 1.0f, 1.0f });
         }
 
 		// イベントロックされていない場合のみ更新処理を行う
@@ -178,6 +201,9 @@ namespace MyGame {
     }
 
     void Player::Draw() {
+        if (!isVisible_) {
+            return;
+        }
         // 描画処理
         object_->Draw();
     }
@@ -225,10 +251,13 @@ namespace MyGame {
     
     Vector3 Player::GetExpTargetPosition() const {
         if (!object_) { return {}; }
+		// プレイヤーのワールド座標を取得
         Vector3 pos = object_->GetTranslate();
+		// カメラが存在しない場合はそのまま返す
         if (!CameraManager::GetInstance()->GetActiveCamera()) {
             return pos;
         }
+		// カメラの回転を取得
         Vector3 camRot = CameraManager::GetInstance()->GetActiveCamera()->GetRotate();
         float yaw = camRot.y;
         float pitch = camRot.x;
@@ -242,7 +271,9 @@ namespace MyGame {
     }
 
     void Player::GainExp(uint32_t exp) {
+		// 経験値を加算
         exp_ += exp;
+		// レベルアップの条件をチェック
         CheckLevelUp();
     }
 
@@ -253,7 +284,6 @@ namespace MyGame {
             exp_ = 0;
             return;
         }
-
         // 経験値が規定値を超えている間
         while (exp_ >= nextLevelExp_ && level_ < kMaxLevel) {
             exp_ -= nextLevelExp_;
@@ -274,14 +304,19 @@ namespace MyGame {
     }
 
     Vector3 Player::GetForward() const {
+		// カメラの回転から前方向ベクトルを計算
         Camera* active = CameraManager::GetInstance()->GetActiveCamera();
         Vector3 rot = active->GetRotate();
         float yaw = rot.y;
         float pitch = rot.x;
+		// 前方向ベクトルを計算
         Vector3 forward = { sinf(yaw) * cosf(pitch), -sinf(pitch), cosf(yaw) * cosf(pitch) };
+		// 正規化して返す
         return Normalize(forward);
     }
+
     bool Player::ConsumeLevelUpRequest() {
+		// レベルアップ要求があるかを返し、フラグをリセットする
         bool result = isLevelUpRequested_;
         isLevelUpRequested_ = false;
         return result;
@@ -338,7 +373,7 @@ namespace MyGame {
             if (ImGui::Button("Apply 1 Damage")) {
                 ApplyDamage(1);
             }
-
+			// デバッグ用手動回復ボタン
             ImGui::SameLine();
             if (ImGui::Button("Heal Full")) {
                 hp_ = maxHp_;

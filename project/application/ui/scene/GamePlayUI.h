@@ -11,6 +11,11 @@ namespace MyGame {
     /// ゲームプレイシーンのUIを管理するクラス
     /// </summary>
     class GamePlayUI : public BaseUI {
+    public:
+        struct HeartAnimation {
+            bool isPlaying = false;
+            float timer = 0.0f;
+        };
     public: // メンバ関数
         /// <summary>
         /// 初期化処理
@@ -24,8 +29,9 @@ namespace MyGame {
         /// 描画処理
         /// </summary>
         void Draw() override;
-
+        // UIの表示・非表示を切り替える
         void ShowExpBar();
+        // UIの表示・非表示を切り替える
         void ShowLevelUp(bool isMaxLevel);
         /// <summary>
         /// Playerを取得後に呼び出すことで、HPUIの初期化を行う
@@ -45,6 +51,8 @@ namespace MyGame {
         void UpdateExpBarFade();
         // レベルアップUIの更新
         void UpdateLevelUpFade();
+        /// HPUIのアニメーション更新
+        void UpdateHpAnimation();
     private: // メンバ変数
         Player* player_ = nullptr; // プレイヤーへの参照
         std::unique_ptr<Pausemenu> pausemenu_; // ポーズメニュー
@@ -55,7 +63,6 @@ namespace MyGame {
         bool isAnimating_;   // 操作UIのアニメーション中かどうかのフラグ
         float timer_;  // 操作UIのアニメーション開始からの経過時間
         float duration_;  // 操作UIのアニメーションにかける時間
-
         bool uiProgressStarted_ = false;  // ステージ進行度UIのアニメーションが開始したかどうかのフラグ
         bool uiProgressFinished_ = false; // ステージ進行度UIのアニメーションが完了したかどうかのフラグ
         bool isEventLocked;
@@ -74,12 +81,17 @@ namespace MyGame {
         bool isLevelUpVisible_;
         float levelUpAlpha_;
         float levelUpTimer_;
-        // --- HP表示用の変数 ---
+
+        // HP表示の変数 
         std::vector<std::unique_ptr<MyEngine::Sprite>> hpHearts_; // HPアイコンのリスト
-        const float kHeartStartX = 100.0f; // 表示開始のX座標
-        const float kHeartY = 15.0f;       // 表示のY座標
-        const float kHeartOffsetX = 75.0f;// X軸のずらし幅
-        const MyEngine::Vector2 kHeartSize = { 64.0f, 64.0f }; // アイコンサイズ
+        // HPアイコンの配置用定数
+        float kHeartStartX; // 表示開始のX座標
+        float kHeartY;       // 表示のY座標
+        float kHeartOffsetX;// X軸のずらし幅
+        // HPアニメーション
+        std::vector<HeartAnimation> heartAnimations_;
+        uint32_t previousHp_;
+        float kHeartAnimationTime;
     public: // アクセッサ
         Pausemenu* GetPauseMenu() const { return pausemenu_.get(); }
         void SetPlayer(Player* player) { player_ = player; }

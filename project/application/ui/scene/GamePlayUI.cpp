@@ -18,7 +18,7 @@ using namespace Easing;
 using namespace MatrixVector;
 
 namespace MyGame {
-   
+
     void GamePlayUI::Initialize() {
         // UIテクスチャ一覧
         const std::array<const char*, 29> operationTextures = {
@@ -80,19 +80,32 @@ namespace MyGame {
         isLevelUpVisible_ = false;
         levelUpAlpha_ = 0.0f;
         levelUpTimer_ = 0.0f;
+
+        kHeartStartX = 130.0f; // 表示開始のX座標
+        kHeartY = 30.0f;       // 表示のY座標
+        kHeartOffsetX = 40.0f;// X軸のずらし幅
+
+        // HPアニメーション
+        previousHp_ = 0;
+        kHeartAnimationTime = 0.4f;
     }
-    
+
     void GamePlayUI::SetPlayerHp() {
         // プレイヤーの参照があることを確認してHPアイコンを生成       
         uint32_t maxHp = player_->GetMaxHP(); // プレイヤーから最大HPを取得
         hpHearts_.clear();
         for (uint32_t i = 0; i < maxHp; ++i) {
-            // 100, 15 の位置から 100 ずつ X 軸をずらす
+            // X軸をずらす
             float posX = kHeartStartX + (i * kHeartOffsetX);
             Vector2 position = { posX, kHeartY };
             // スプライト生成
-            auto heart = Sprite::Create(Ui::Player_Hp, position, 0.0f, kHeartSize);
+            auto heart = Sprite::Create(Ui::Player_Hp, position, 0.0f, { 64.0f,64.0f });                 
+            heart->SetAnchorPoint({ 0.5f, 0.5f });
             hpHearts_.push_back(std::move(heart));
+
+            heartAnimations_.clear();
+            heartAnimations_.resize(maxHp);
+            previousHp_ = player_->GetHP();
         }
     }
 
@@ -119,24 +132,8 @@ namespace MyGame {
         for (std::unique_ptr<Sprite>& ui : uis_) {
             ui->Update();
         }
-
-        // HP表示の更新処理
-        uint32_t currentHp = player_->GetHP();
-        for (size_t i = 0; i < hpHearts_.size(); ++i) {
-            if (i < currentHp) {
-                // 現在のHP以下なら通常表示
-                hpHearts_[i]->SetColor({ 1.0f, 1.0f, 1.0f, 1.0f });
-            } else {
-                // 現在のHPを超えている（ダメージを受けた）分は非表示（透明）にする
-                hpHearts_[i]->SetColor({ 1.0f, 1.0f, 1.0f, 0.0f });
-            }
-            // スプライト自体のマトリクス更新
-            hpHearts_[i]->Update();
-        }
-        // 既存のuis_などのUpdate処理...
-        for (std::unique_ptr<Sprite>& ui : uis_) {
-            ui->Update();
-        }
+        // 
+        UpdateHpAnimation();
     }
 
     void GamePlayUI::Draw() {
@@ -161,6 +158,56 @@ namespace MyGame {
         // イベントロック中などに非表示にしたい場合は条件を追加してください
         for (const auto& heart : hpHearts_) {
             heart->Draw();
+        }
+    }
+
+    void GamePlayUI::UpdateHpAnimation() {
+        uint32_t currentHp = player_->GetHP();
+
+        // HP減少検知
+        if (currentHp < previousHp_) {
+
+            for (uint32_t i = currentHp; i < previousHp_; i++) {
+                heartAnimations_[i].isPlaying = true;
+                heartAnimations_[i].timer = 0.0f;
+            }
+            previousHp_ = currentHp;
+        }
+
+        const float deltaTime = 1.0f / 60.0f;
+
+        for (size_t i = 0; i < hpHearts_.size(); i++) {
+
+            if (heartAnimations_[i].isPlaying) {
+                auto& anim = heartAnimations_[i];
+                anim.timer += deltaTime;
+                float t = anim.timer / kHeartAnimationTime;
+                if (t >= 1.0f) {
+                    t = 1.0f;
+                    anim.isPlaying = false;
+                }
+                float scale;
+                if (t < 0.4f) {
+                    // 少し大きく
+                    scale = 1.0f + 0.4f * (t / 0.4f);
+                } else {
+                    // 縮みながら消える
+                    float x = (t - 0.4f) / 0.6f;
+                    scale = 1.4f * (1.0f - x);
+                }
+
+                hpHearts_[i]->SetSize({ 64.0f * scale, 64.0f * scale });
+                hpHearts_[i]->SetColor({ 1,1,1,1.0f - t });
+            } else {                
+                if (i < currentHp) {
+                    hpHearts_[i]->SetSize({ 64.0f,64.0f });
+                    hpHearts_[i]->SetColor({ 1,1,1,1 });
+                } else {
+                    hpHearts_[i]->SetSize({ 0,0 });
+                    hpHearts_[i]->SetColor({ 1,1,1,0 });
+                }
+            }
+            hpHearts_[i]->Update();
         }
     }
 
