@@ -7,13 +7,15 @@
 #include <SkyboxCommon.h>
 #include <SpriteCommon.h>
 #include <Object3dCommon.h>
-//#include <ParticleCommon.h>
+#include <ParticleCommon.h>
 #include <Input.h>
 #include <FadeManager.h>
 #include <StageManager.h>
 #include <Easing.h>
 #include <UIManager.h>
 #include <TitleUI.h>
+#include <SceneEmitterManager.h>
+#include <TitleParticle.h>
 
 using namespace MyEngine;
 using namespace Easing;
@@ -25,6 +27,7 @@ namespace MyGame {
 		FadeManager::GetInstance()->Finalize();   // フェードマネージャの終了処理
 		StageManager::GetInstance()->Finalize();  // ステージマネージャの終了処理
 		UIManager::GetInstance()->Finalize();     // UIマネージャの終了処理
+		SceneEmitterManager::GetInstance()->Finalize(); // パーティクルエミッターマネージャの終了処理
 	}
 
 	void TitleScene::Initialize() {
@@ -44,6 +47,9 @@ namespace MyGame {
 		UIManager::GetInstance()->Initialize();
 		// フェードマネージャの初期化
 		FadeManager::GetInstance()->StartFade(FadeType::FadeIn, FadeStyle::SilhouetteSlide, 1.0f);
+		// パーティクルエミッターの初期化
+		SceneEmitterManager::GetInstance()->Initialize();
+		SceneEmitterManager::GetInstance()->GetEmitter<TitleParticle>()->SetObject3d(player_->GetObject3d());
 	}
 
 	void TitleScene::Update() {
@@ -57,7 +63,11 @@ namespace MyGame {
 		player_->GetObject3d()->SetTranslate(playeroffset_);
 		// プレイヤ―の更新
 		player_->Update();
-
+		
+        // エミッターマネージャの更新
+        SceneEmitterManager::GetInstance()->Update();
+        // パーティクル更新
+        ParticleManager::GetInstance()->Update();
 #pragma endregion 全てのObject3d個々の更新処理
 
 #pragma region 全てのSprite個々の更新処理		
@@ -86,8 +96,8 @@ namespace MyGame {
 		// ステージマネージャの描画
 		StageManager::GetInstance()->Draw();
 		// パーティクルの描画準備。パーティクルの描画に共通のグラフィックスコマンドを積む 
-		//ParticleCommon::GetInstance()->Commondrawing();
-		//ParticleManager::GetInstance()->Draw();
+		ParticleCommon::GetInstance()->Commondrawing();
+		ParticleManager::GetInstance()->Draw();
 #pragma endregion 全てのObject3d個々の描画処理
 
 #pragma region 全てのSprite個々の描画処理 

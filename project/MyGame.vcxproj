@@ -154,6 +154,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="application\particle\GamePlayparticle.cpp" />
     <ClCompile Include="application\particle\BaseEmitter.cpp" />
     <ClCompile Include="application\particle\SceneEmitterManager.cpp" />
+    <ClCompile Include="application\particle\TitleParticle.cpp" />
     <ClCompile Include="application\scene\GameOverScene.cpp" />
     <ClCompile Include="application\scene\GamePlayScene.cpp" />
     <ClCompile Include="application\scene\TitleScene.cpp" />
@@ -271,6 +272,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\particle\BaseEmitter.h" />
     <ClInclude Include="application\particle\SceneParticleBase.h" />
     <ClInclude Include="application\particle\SceneEmitterManager.h" />
+    <ClInclude Include="application\particle\TitleParticle.h" />
     <ClInclude Include="application\scene\GameClearScene.h" />
     <ClInclude Include="application\scene\GameOverScene.h" />
     <ClInclude Include="application\scene\GamePlayScene.h" />

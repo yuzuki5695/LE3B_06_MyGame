@@ -687,6 +687,9 @@
     <ClCompile Include="application\particle\GameOverParticle.cpp">
       <Filter>ソース ファイル\application\particle</Filter>
     </ClCompile>
+    <ClCompile Include="application\particle\TitleParticle.cpp">
+      <Filter>ソース ファイル\application\scene</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="engine\2d\Sprite.h">
@@ -1131,6 +1134,9 @@
       <Filter>ヘッダー ファイル\engine\3d\Particle</Filter>
     </ClInclude>
     <ClInclude Include="application\particle\GameOverParticle.h">
+      <Filter>ヘッダー ファイル\application\particle</Filter>
+    </ClInclude>
+    <ClInclude Include="application\particle\TitleParticle.h">
       <Filter>ヘッダー ファイル\application\particle</Filter>
     </ClInclude>
   </ItemGroup>
