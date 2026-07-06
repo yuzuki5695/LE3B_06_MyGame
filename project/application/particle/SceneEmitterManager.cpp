@@ -1,5 +1,6 @@
 #include "SceneEmitterManager.h"
 #include <GamePlayParticle.h>
+#include <GameOverParticle.h>
 #include <SceneManager.h>
 #include <SceneName.h>
 
@@ -20,6 +21,7 @@ namespace MyGame {
 
     // 終了
     void SceneEmitterManager::Finalize() {
+        Clear();
         // シーンマネージャのインスタンスの解放
         instance.reset();
     }
@@ -32,8 +34,10 @@ namespace MyGame {
         std::string currentScene = SceneManager::GetInstance()->GetCurrentScene()->GetSceneName();
 
         // シーン名に紐付いたパーティクルクラスをインスタンス化
-        if (currentScene == SceneName::GAMEPLAY) {                   // ゲームプレイシーンのパーティクルエミッターを生成
+        if (currentScene == SceneName::GAMEPLAY) {                          // ゲームプレイシーンのパーティクルエミッターを生成
             AddUI(SceneName::GAMEPLAY, std::make_unique<GamePlayParticle>());
+        } else if (currentScene == SceneName::GAMEOVER) {                   // ゲームオーバーシーンのパーティクルエミッターを生成
+            AddUI(SceneName::GAMEOVER, std::make_unique<GameOverParticle>());
         }
 
         // 生成したエミッターの個別初期化
