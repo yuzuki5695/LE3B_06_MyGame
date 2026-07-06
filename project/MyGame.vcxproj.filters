@@ -687,8 +687,11 @@
     <ClCompile Include="application\particle\GameOverParticle.cpp">
       <Filter>ソース ファイル\application\particle</Filter>
     </ClCompile>
+    <ClCompile Include="application\particle\GameClearParticle.cpp">
+      <Filter>ソース ファイル\application\particle</Filter>
+    </ClCompile>
     <ClCompile Include="application\particle\TitleParticle.cpp">
-      <Filter>ソース ファイル\application\scene</Filter>
+      <Filter>ソース ファイル\application\particle</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1137,6 +1140,9 @@
       <Filter>ヘッダー ファイル\application\particle</Filter>
     </ClInclude>
     <ClInclude Include="application\particle\TitleParticle.h">
+      <Filter>ヘッダー ファイル\application\particle</Filter>
+    </ClInclude>
+    <ClInclude Include="application\particle\GameClearParticle.h">
       <Filter>ヘッダー ファイル\application\particle</Filter>
     </ClInclude>
   </ItemGroup>

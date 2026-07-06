@@ -2,6 +2,7 @@
 #include <GamePlayParticle.h>
 #include <GameOverParticle.h>
 #include <TitleParticle.h>
+#include <GameClearParticle.h>
 #include <SceneManager.h>
 #include <SceneName.h>
 
@@ -41,6 +42,8 @@ namespace MyGame {
             AddUI(SceneName::GAMEOVER, std::make_unique<GameOverParticle>());
         } else if (currentScene == SceneName::TITLE) {                      // タイトルシーンのパーティクルエミッターを生成
             AddUI(SceneName::TITLE, std::make_unique<TitleParticle>());
+        } else if (currentScene == SceneName::GAMECLEAR) {                      // ゲームクリアシーンのパーティクルエミッターを生成
+            AddUI(SceneName::GAMECLEAR, std::make_unique<GameClearParticle>());
         }
 
         // 生成したエミッターの個別初期化
