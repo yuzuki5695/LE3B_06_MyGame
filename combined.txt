@@ -150,8 +150,6 @@
     └── └──     ├── StartEvent.cpp
     └── └──     └── StartEvent.h
     └── ├── loader/
-    └── └── ├── CharacterLoader.cpp
-    └── └── ├── CharacterLoader.h
     └── └── ├── CurveJsonLoader.cpp
     └── └── ├── CurveJsonLoader.h
     └── └── ├── PlayerDataLoader.cpp
@@ -159,6 +157,8 @@
     └── ├── particle/
     └── └── ├── BaseEmitter.cpp
     └── └── ├── BaseEmitter.h
+    └── └── ├── GameOverParticle.cpp
+    └── └── ├── GameOverParticle.h
     └── └── ├── GamePlayparticle.cpp
     └── └── ├── GamePlayparticle.h
     └── └── ├── SceneEmitterManager.cpp
@@ -5324,9 +5324,9 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="application\collision\CollisionManager.cpp" />
     <ClCompile Include="application\event\EventManager.cpp" />
     <ClCompile Include="application\event\events\StartEvent.cpp" />
-    <ClCompile Include="application\loader\CharacterLoader.cpp" />
     <ClCompile Include="application\loader\CurveJsonLoader.cpp" />
     <ClCompile Include="application\loader\PlayerDataLoader.cpp" />
+    <ClCompile Include="application\particle\GameOverParticle.cpp" />
     <ClCompile Include="application\particle\GamePlayparticle.cpp" />
     <ClCompile Include="application\particle\BaseEmitter.cpp" />
     <ClCompile Include="application\particle\SceneEmitterManager.cpp" />
@@ -5440,9 +5440,9 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\event\events\StartEvent.h" />
     <ClInclude Include="application\event\EventTypes.h" />
     <ClInclude Include="application\event\IEvent.h" />
-    <ClInclude Include="application\loader\CharacterLoader.h" />
     <ClInclude Include="application\loader\CurveJsonLoader.h" />
     <ClInclude Include="application\loader\PlayerDataLoader.h" />
+    <ClInclude Include="application\particle\GameOverParticle.h" />
     <ClInclude Include="application\particle\GamePlayparticle.h" />
     <ClInclude Include="application\particle\BaseEmitter.h" />
     <ClInclude Include="application\particle\SceneParticleBase.h" />
@@ -6230,9 +6230,6 @@ File Path: project/MyGame.vcxproj.filters
     <ClCompile Include="application\loader\CurveJsonLoader.cpp">
       <Filter>ソース ファイル\application\loader</Filter>
     </ClCompile>
-    <ClCompile Include="application\loader\CharacterLoader.cpp">
-      <Filter>ソース ファイル\application\loader</Filter>
-    </ClCompile>
     <ClCompile Include="application\stage\StageManager.cpp">
       <Filter>ソース ファイル\application\stage</Filter>
     </ClCompile>
@@ -6345,6 +6342,9 @@ File Path: project/MyGame.vcxproj.filters
       <Filter>ソース ファイル\application\particle</Filter>
     </ClCompile>
     <ClCompile Include="application\particle\SceneEmitterManager.cpp">
+      <Filter>ソース ファイル\application\particle</Filter>
+    </ClCompile>
+    <ClCompile Include="application\particle\GameOverParticle.cpp">
       <Filter>ソース ファイル\application\particle</Filter>
     </ClCompile>
   </ItemGroup>
@@ -6610,9 +6610,6 @@ File Path: project/MyGame.vcxproj.filters
     <ClInclude Include="application\stage\StageManager.h">
       <Filter>ヘッダー ファイル\application\stage</Filter>
     </ClInclude>
-    <ClInclude Include="application\loader\CharacterLoader.h">
-      <Filter>ヘッダー ファイル\application\loader</Filter>
-    </ClInclude>
     <ClInclude Include="application\character\player\PlayerData.h">
       <Filter>ヘッダー ファイル\application\character\player</Filter>
     </ClInclude>
@@ -6791,6 +6788,9 @@ File Path: project/MyGame.vcxproj.filters
       <Filter>ヘッダー ファイル\application\particle</Filter>
     </ClInclude>
     <ClInclude Include="engine\3d\Particle\MappedBuffer.h">
+      <Filter>ヘッダー ファイル\engine\3d\Particle</Filter>
+    </ClInclude>
+    <ClInclude Include="application\particle\GameOverParticle.h">
       <Filter>ヘッダー ファイル\application\particle</Filter>
     </ClInclude>
   </ItemGroup>
@@ -9931,6 +9931,22 @@ namespace MyGame {
         // 状態フラグの初期化
         flags_.isAlive = true;
         flags_.isActive = true;
+
+        kMaxLevel = 3;      // 最大レベル
+        level_ = 1;         // 現在のレベル
+        exp_ = 0;           // 現在の経験値
+        nextLevelExp_ = 60; // 次のレベルに必要な経験値
+        isStateUpdateEnabled_ = true;
+        isLevelUpRequested_ = false;
+        maxHp_ = 5; // 必要に応じて調整、またはPlayerData等からロード
+        hp_ = maxHp_;  // 初期状態は満タン     
+        isInvincible_ = false;       // 無敵フラグ
+        invincibleTimer_ = 0.0f;    // 無敵残り時間タイマー
+		kInvincibleTime = 3.0f; // 無敵時間の長さ
+        isVisible_ = true; // 点滅状態の可視性フラグ
+        blinkTimer_ = 0.0f; // 点滅タイマー
+        kBlinkInterval_ = 0.1f; // 点滅間隔
+
         // 当たり判定サイズ
         colliderSize_ = object_->GetScale();
         // コライダー生成
@@ -9944,9 +9960,7 @@ namespace MyGame {
             LineRenderer::GetInstance()->SetHit(true);
 #endif // USE_IMGUI
             if (!IsAlive()) { return; }
-            //ChangeState(std::make_unique<PlayerStateDead>());
-
-            // ★無敵状態ならダメージ処理そのものをスキップ
+            // 無敵状態ならダメージ処理そのものをスキップ
             if (isInvincible_) { return; }
             ApplyDamage(1); // 仮のダメージ値
 
@@ -9961,15 +9975,6 @@ namespace MyGame {
         targetreticle_ = Sprite::Create(Ui::Target, Vector2{ 640.0f, 360.0f }, 0.0f, Vector2{ 100.0f, 100.0f });
         targetreticle_->SetTextureSize(Vector2{ 512.0f, 512.0f });
         targetreticle_->SetAnchorPoint(Vector2{ 0.5f, 0.5f }); // 中心基準
-
-        kMaxLevel = 3;      // 最大レベル
-        level_ = 1;         // 現在のレベル
-        exp_ = 0;           // 現在の経験値
-        nextLevelExp_ = 60; // 次のレベルに必要な経験値
-        isStateUpdateEnabled_ = true;
-        isLevelUpRequested_ = false;
-        maxHp_ = 5; // 必要に応じて調整、またはPlayerData等からロード
-        hp_ = maxHp_;  // 初期状態は満タン
 
         // コンポーネントの生成
         move_ = std::make_unique<PlayerMove>();          // 移動ロジックの生成
@@ -9986,20 +9991,19 @@ namespace MyGame {
     void Player::ApplyDamage(uint32_t damage) {
         // すでに死亡している、または無敵状態なら処理しない
         if (hp_ <= 0 || isInvincible_) return;
-
+		// ダメージを適用
         hp_ -= damage;
+		// HPが0未満にならないように制限
         if (hp_ < 0) {
             hp_ = 0;
         }
-
-        // ★ダメージを受けたら無敵状態にする
+        // ダメージを受けたら無敵状態にする
         if (hp_ > 0) {
             isInvincible_ = true;
             invincibleTimer_ = kInvincibleTime; // 3秒セット
         }
-
         // HPが0になったら死亡状態へ遷移する処理
-        if (hp_ == 0) {
+        if (hp_ == 0) {            
             ChangeState(std::make_unique<PlayerStateDead>());
         }
     }
@@ -10008,11 +10012,30 @@ namespace MyGame {
         float deltaTime = 1.0f / 60.0f;
         // 無敵タイマーの更新処理
         if (isInvincible_) {
-            invincibleTimer_ -= deltaTime;
+            // 無敵時間のカウントダウン
+            invincibleTimer_ -= deltaTime;    
+            // 点滅タイマー
+            blinkTimer_ += deltaTime;
+            // 点滅処理
+            if (blinkTimer_ >= kBlinkInterval_) {
+				// 点滅間隔を超えたら可視状態を切り替える
+                blinkTimer_ = 0.0f;
+                isVisible_ = !isVisible_;
+            }
+			// 点滅処理
             if (invincibleTimer_ <= 0.0f) {
                 invincibleTimer_ = 0.0f;
-                isInvincible_ = false; // 無敵終了
+                isInvincible_ = false;
+                // 無敵終了
+                isVisible_ = true;
+                blinkTimer_ = 0.0f;
             }
+            object_->SetMaterialColor({ 1.0f, 0.0f, 0.0f, 1.0f });
+        }
+        else {
+            // 無敵状態でない場合は常に可視状態にする
+            isVisible_ = true;            
+            object_->SetMaterialColor({ 1.0f, 1.0f, 1.0f, 1.0f });
         }
 
 		// イベントロックされていない場合のみ更新処理を行う
@@ -10059,6 +10082,9 @@ namespace MyGame {
     }
 
     void Player::Draw() {
+        if (!isVisible_) {
+            return;
+        }
         // 描画処理
         object_->Draw();
     }
@@ -10106,10 +10132,13 @@ namespace MyGame {
     
     Vector3 Player::GetExpTargetPosition() const {
         if (!object_) { return {}; }
+		// プレイヤーのワールド座標を取得
         Vector3 pos = object_->GetTranslate();
+		// カメラが存在しない場合はそのまま返す
         if (!CameraManager::GetInstance()->GetActiveCamera()) {
             return pos;
         }
+		// カメラの回転を取得
         Vector3 camRot = CameraManager::GetInstance()->GetActiveCamera()->GetRotate();
         float yaw = camRot.y;
         float pitch = camRot.x;
@@ -10123,7 +10152,9 @@ namespace MyGame {
     }
 
     void Player::GainExp(uint32_t exp) {
+		// 経験値を加算
         exp_ += exp;
+		// レベルアップの条件をチェック
         CheckLevelUp();
     }
 
@@ -10134,7 +10165,6 @@ namespace MyGame {
             exp_ = 0;
             return;
         }
-
         // 経験値が規定値を超えている間
         while (exp_ >= nextLevelExp_ && level_ < kMaxLevel) {
             exp_ -= nextLevelExp_;
@@ -10155,14 +10185,19 @@ namespace MyGame {
     }
 
     Vector3 Player::GetForward() const {
+		// カメラの回転から前方向ベクトルを計算
         Camera* active = CameraManager::GetInstance()->GetActiveCamera();
         Vector3 rot = active->GetRotate();
         float yaw = rot.y;
         float pitch = rot.x;
+		// 前方向ベクトルを計算
         Vector3 forward = { sinf(yaw) * cosf(pitch), -sinf(pitch), cosf(yaw) * cosf(pitch) };
+		// 正規化して返す
         return Normalize(forward);
     }
+
     bool Player::ConsumeLevelUpRequest() {
+		// レベルアップ要求があるかを返し、フラグをリセットする
         bool result = isLevelUpRequested_;
         isLevelUpRequested_ = false;
         return result;
@@ -10219,7 +10254,7 @@ namespace MyGame {
             if (ImGui::Button("Apply 1 Damage")) {
                 ApplyDamage(1);
             }
-
+			// デバッグ用手動回復ボタン
             ImGui::SameLine();
             if (ImGui::Button("Heal Full")) {
                 hp_ = maxHp_;
@@ -10289,11 +10324,15 @@ namespace MyGame {
 		/// ImGuiの描画処理
 		/// </summary>
 		void DrawImGui();
-		// 経験値獲得とレベルアップの処理
+		/// <summary>
+		///経験値獲得とレベルアップの処理
+		/// </summary>
+		/// <param name="exp">獲得する経験値</param>
 		void GainExp(uint32_t exp);
-		// レベルアップの条件をチェックし、レベルアップが必要な場合はレベルと必要経験値を更新する
+		/// <summary>
+		/// レベルアップの条件をチェックし、レベルアップが必要な場合はレベルと必要経験値を更新する
+		/// </summary>
 		void CheckLevelUp();
-
 		/// <summary>
         /// ダメージを受ける処理
         /// </summary>
@@ -10301,7 +10340,7 @@ namespace MyGame {
         void ApplyDamage(uint32_t damage);
 	private: // メンバ変数
 		PlayerData data_; // プレイヤーのデータ構造体
-		MyEngine::Transform transform_;
+		MyEngine::Transform transform_;   // プレイヤーのTransform
 		MyEngine::Vector3 colliderSize_;  // 当たり判定のサイズ
 		// コライダー
 		std::unique_ptr<Collider> collider_;
@@ -10310,7 +10349,6 @@ namespace MyGame {
 		std::unique_ptr<PlayerReticle> reticle_; // レティクルロジックの保持
 		std::unique_ptr<PlayerAttack> attack_;   // 攻撃ロジックの保持
 		std::unique_ptr<PlayerDeath> death_;     // 死亡演出ロジックの保持
-
 		std::unique_ptr <MyEngine::Sprite> targetreticle_; // レティクル用スプライト
 		std::unique_ptr <MyEngine::Object3d> target_; // ターゲット用3Dオブジェクト
 		// カメラの位置調整用オフセット
@@ -10324,15 +10362,17 @@ namespace MyGame {
 		uint32_t nextLevelExp_; // 次のレベルに必要な経験値
 		bool isStateUpdateEnabled_;
 		bool isLevelUpRequested_;
-		
-		// --- 追加されたメンバ変数 ---
-        uint32_t hp_ = 0;
-        uint32_t maxHp_ = 5; // 最大HPの初期値
-		// ★ここを追加：無敵時間管理用
-		bool isInvincible_ = false;       // 無敵フラグ
-		float invincibleTimer_ = 0.0f;    // 無敵残り時間タイマー
-		const float kInvincibleTime = 3.0f; // 無敵時間のデフォルト値（3秒）
-
+		// HP関連のメンバ変数		
+		uint32_t hp_;    // 現在のHP
+        uint32_t maxHp_; // 最大HPの初期値
+		// 無敵時間管理用
+		bool isInvincible_;       // 無敵フラグ
+		float invincibleTimer_;    // 無敵残り時間タイマー
+		float kInvincibleTime; // 無敵時間の長さ
+		// 点滅用のメンバ変数
+		bool isVisible_;	   // 点滅状態の可視性フラグ
+		float blinkTimer_;     // 点滅タイマー
+		float kBlinkInterval_; // 点滅間隔
 	public: // アクセッサ
 		// getter
 		PlayerMove* GetMove() { return move_.get(); }
@@ -11207,206 +11247,6 @@ namespace MyGame {
 }
 
 ============================================================
-File Path: project/application/loader/CharacterLoader.cpp
-============================================================
-#include "CharacterLoader.h"
-#include <json.hpp>
-#include <fstream>
-#include <ModelManager.h>
-
-namespace MyGame {
-
-    const std::string CharacterLoader::kDefaultBaseDirectory = "Resources/levels/";
-    const std::string CharacterLoader::kExtension = ".json";
-
-    LevelData* CharacterLoader::LoadFile(const std::string& fileName) {
-
-        // 連結してフルパスを得る
-        const std::string fullpath = kDefaultBaseDirectory + fileName + kExtension;
-
-        // ファイルストリーム
-        std::ifstream file;
-
-        // ファイルを開く
-        file.open(fullpath);
-        // ファイルオープン失敗をチェック
-        if (file.fail()) {
-            assert(0);
-        }
-
-        // JSON文字列から解凍したデータ
-        nlohmann::json deserialized;
-
-        // 解凍
-        file >> deserialized;
-
-        // 正しいレベルデータファイルかチェック
-        assert(deserialized.is_object());
-        assert(deserialized.contains("name"));
-        assert(deserialized["name"].is_string());
-
-        // "name"を文字列として
-        std::string name = deserialized["name"].get<std::string>();
-        // 正しいレベルデータファイルかチェック
-        assert(name.compare("scene") == 0);
-
-        // レベルデータ格納用インスタンスを生成
-        levelData = new LevelData();
-
-        // 各オブジェクトに対して再帰処理を呼び出す
-        for (const auto& objectJson : deserialized["objects"]) {
-            LoadObjectsRecursive(objectJson, *levelData);
-        }
-
-        return levelData;
-    }
-
-    void CharacterLoader::LoadObjectsRecursive(const nlohmann::json& objectJson, LevelData& levelData) {
-        assert(objectJson.contains("type"));
-
-        bool isDisabled = objectJson.contains("disabled") && objectJson["disabled"].get<bool>();
-
-        if (!isDisabled) {
-            // 種別を取得
-            std::string type = objectJson["type"].get<std::string>();
-
-            // 種類ごとの処理
-
-            // MESH
-            if (type == "MESH") {
-                // 要素追加
-                levelData.objects.emplace_back(LevelData::ObjectData{});
-                // 今追加した要素の参照を得る
-                LevelData::ObjectData& objectData = levelData.objects.back();
-
-                if (objectJson.contains("file_name")) {
-                    // file_name を取得（例: "uvChecker"）
-                    objectData.fileName = objectJson["file_name"];
-
-                    //// .obj を付けたパスでロード（例: "uvChecker.obj"）
-                    //std::string modelPath = objectData.fileName + ".obj";
-                    //ModelManager::GetInstance()->LoadModel(modelPath);
-                }
-
-
-                // トランスフォームのパラメータ読み込み
-                const auto& transform = objectJson["transform"];
-                // 平行移動
-                objectData.translation.x = (float)transform["translation"][0];
-                objectData.translation.y = (float)transform["translation"][2];
-                objectData.translation.z = (float)transform["translation"][1];
-                // 回転角
-                objectData.rotation.x = -(float)transform["rotation"][0];
-                objectData.rotation.y = -(float)transform["rotation"][2];
-                objectData.rotation.z = -(float)transform["rotation"][1];
-                // スケーリング
-                objectData.scaling.x = (float)transform["scaling"][0];
-                objectData.scaling.y = (float)transform["scaling"][2];
-                objectData.scaling.z = (float)transform["scaling"][1];
-            } else if (type.compare("PlayerSpawn") == 0) {                        // 自キャラ発生ポイント
-                // playersに要素を1つ追加する
-                levelData.players.emplace_back(PlayerSpawnData{});
-                PlayerSpawnData& playerData = levelData.players.back();
-                // トランスフォームのパラメータ読み込み
-                const auto& transform = objectJson["transform"];
-                // 平行移動の数値を書き込む
-                playerData.translation.x = (float)transform["translation"][0];
-                playerData.translation.y = (float)transform["translation"][2]; // YとZ入れ替え
-                playerData.translation.z = (float)transform["translation"][1];
-                // 回転角の数値をラジアンで書き込む
-                playerData.rotation.x = -(float)transform["rotation"][0];
-                playerData.rotation.y = -(float)transform["rotation"][2];
-                playerData.rotation.z = -(float)transform["rotation"][1];
-            } else if (type.compare("EnemySpawn") == 0) {                        // 自キャラ発生ポイント
-                // playersに要素を1つ追加する
-                levelData.enemies.emplace_back(EnemySpawnData{});
-                EnemySpawnData& enemyData = levelData.enemies.back();
-                // トランスフォームのパラメータ読み込み
-                const auto& transform = objectJson["transform"];
-                // 平行移動の数値を書き込む
-                enemyData.translation.x = (float)transform["translation"][0];
-                enemyData.translation.y = (float)transform["translation"][2]; // YとZ入れ替え
-                enemyData.translation.z = (float)transform["translation"][1];
-                // 回転角の数値をラジアンで書き込む
-                enemyData.rotation.x = -(float)transform["rotation"][0];
-                enemyData.rotation.y = -(float)transform["rotation"][2];
-                enemyData.rotation.z = -(float)transform["rotation"][1];
-                // ファイル名を取得
-                enemyData.fileName = objectJson["file_name"].get<std::string>();
-            }
-        }
-
-        // 子ノードがあれば再帰呼び出し
-        if (objectJson.contains("children") && objectJson["children"].is_array()) {
-            for (const auto& childJson : objectJson["children"]) {
-                LoadObjectsRecursive(childJson, levelData);
-            }
-        }
-    }
-}
-
-============================================================
-File Path: project/application/loader/CharacterLoader.h
-============================================================
-#pragma once
-#include <string>
-#include <vector>
-#include <Vector3.h>
-#include <json.hpp>
-
-namespace MyGame {
-	// 自キャラの生成データ
-	struct PlayerSpawnData {
-		// 位置移動
-		MyEngine::Vector3 translation;
-		// 回転角
-		MyEngine::Vector3 rotation;
-	};
-
-	struct EnemySpawnData {
-		// ファイル名
-		std::string fileName;
-		// 平行移動
-		MyEngine::Vector3 translation;
-		// 回転角
-		MyEngine::Vector3 rotation;
-	};
-
-	// レベルデータ
-	struct LevelData {
-		// オブジェクト1個分のデータ
-		struct ObjectData {
-			// ファイル名
-			std::string fileName;
-			MyEngine::Vector3 translation;
-			MyEngine::Vector3 rotation;
-			MyEngine::Vector3 scaling;
-		};
-		// オブジェクトのコンテナ
-		std::vector<ObjectData> objects;
-		// 自キャラ配列
-		std::vector<PlayerSpawnData> players;
-		// 自キャラ配列
-		std::vector<EnemySpawnData> enemies;
-	};
-
-	class CharacterLoader
-	{
-	public:// メンバ関数			
-		static const std::string kDefaultBaseDirectory;
-		static const std::string kExtension;
-
-		// ファイルの読み込み
-		LevelData* LoadFile(const std::string& fileName);
-		// モデルの情報を出力	
-		void LoadObjectsRecursive(const nlohmann::json& objectsJson, LevelData& levelData);
-
-	private: // メンバ変数
-		LevelData* levelData = nullptr;
-	};
-}
-
-============================================================
 File Path: project/application/loader/CurveJsonLoader.cpp
 ============================================================
 #include "CurveJsonLoader.h"
@@ -11588,6 +11428,7 @@ File Path: project/application/loader/PlayerDataLoader.cpp
 #include <cassert>
 
 using namespace MyEngine;
+
 namespace MyGame {
 
     using json = nlohmann::json;
@@ -11687,11 +11528,6 @@ namespace MyGame {
         /// <returns></returns>
         static PlayerData Load(const std::string& path);
         static MyEngine::Transform LoadTransform(const nlohmann::json& transform);
-        //static  PlayerMoveData LoadMove(const nlohmann::json& move);
-        //static  PlayerReticleData LoadReticle(const nlohmann::json& reticle);
-        //static PlayerWeaponData LoadWeapon(const nlohmann::json& weapon);
-        //static PlayerDeathData LoadDeath(const nlohmann::json& death);
-
     private: // 内部変数
         /// <summary>
         /// JSONオブジェクトに対して、指定したキーが存在するかを検査
@@ -11826,6 +11662,117 @@ namespace MyGame {
 }
 
 ============================================================
+File Path: project/application/particle/GameOverParticle.cpp
+============================================================
+#include "GameOverParticle.h"
+#include <Player.h>
+#include <MatrixVector.h>
+#include <CameraManager.h>
+#include <SceneEmitterManager.h>
+
+using namespace MyEngine::MatrixVector;
+
+using namespace MyEngine;
+
+namespace MyGame {
+
+	void GameOverParticle::Initialize() {
+		// パーティクルグループの作成
+		ParticleManager::GetInstance()->CreateParticleGroup("Parts", "Models/Particles/Particle_02.png", "Models/Particles/Particle_02.obj", 2000);
+
+		//--------------------------------------
+		// 設定
+		//--------------------------------------
+		playerSpawnData_.transform.scale = { 0.08f,0.08f,0.08f };
+		playerSpawnData_.count = 5;
+		playerSpawnData_.behavior = ParticleBehavior::Normal;
+		playerSpawnData_.lifetime = 1.0f;
+		playerRandom_.translate = { {-0.2f,-0.2f,-0.2f}, { 0.2f, 0.2f, 0.2f}, true };
+		playerRandom_.velocityTranslate = { {-0.01f,0.05f,-0.01f}, { 0.01f,0.12f, 0.01f}, true };
+		playerRandom_.velocityScale = { {0.02f,0.02f,0.02f}, {0.04f,0.04f,0.04f}, true };
+		playerRandom_.lifetime = { 0.4f, 0.8f, true };
+		playerRandom_.count = { 5, 8, true };
+	}
+
+	void GameOverParticle::Update() {
+		constexpr float deltaTime = 1.0f / 60.0f;
+		for (auto& emitter : emitters_) {
+			if (!emitter.target) {
+				continue;
+			}			
+			if (!emitter.enable) {
+				continue;
+			}
+			// パーツが一定以下まで落ちたら煙を出さない
+			if (emitter.target->GetTranslate().y <= -10.0f) {
+				emitter.enable = false;
+				continue;
+			}
+
+			emitter.timer += deltaTime;
+			emitter.emitter->SetTranslate(emitter.target->GetTranslate());
+
+			if (emitter.timer >= emitInterval_) {
+				emitter.emitter->Emit();
+				emitter.timer = 0.0f;
+			}
+		}
+	}
+
+	void GameOverParticle::SetTargets(const std::vector<Object3d*>& parts) {
+		emitters_.clear();
+		for (Object3d* part : parts) {
+			PartEmitter emitter;
+			emitter.target = part;
+			emitter.emitter = std::make_unique<BaseEmitter>("Parts", playerSpawnData_, playerRandom_);
+			emitter.timer = 0.0f;
+			emitters_.push_back(std::move(emitter));
+		}
+	}
+}
+
+============================================================
+File Path: project/application/particle/GameOverParticle.h
+============================================================
+#pragma once
+#include <SceneParticleBase.h>
+#include <Object3d.h>
+
+namespace MyGame {
+
+	/// <summary>
+	/// ゲームオーバーシーン用のパーティクルを管理するクラス
+	/// </summary>
+	class GameOverParticle : public SceneParticleBase {
+	public:
+		struct PartEmitter {
+			MyEngine::Object3d* target = nullptr;
+			std::unique_ptr<BaseEmitter> emitter;
+			float timer = 0.0f;
+			bool enable = true;
+		};
+	public: // メンバ関数
+		/// <summary>
+		/// 初期化処理 
+		/// </summary>
+		void Initialize() override;
+		/// <summary>
+		/// 更新処理
+		/// </summary>
+		void Update() override;
+	private: // メンバ変数
+		std::vector<PartEmitter> emitters_;
+		MyEngine::ParticleSpawnData playerSpawnData_{};
+		MyEngine::ParticleSpawnRandom playerRandom_;
+
+		float emitInterval_ = 0.03f;
+	public:
+		// setter	
+		void SetTargets(const std::vector<MyEngine::Object3d*>& parts);
+	};
+}
+
+============================================================
 File Path: project/application/particle/GamePlayparticle.cpp
 ============================================================
 #include "GamePlayParticle.h"
@@ -11939,11 +11886,14 @@ File Path: project/application/particle/GamePlayparticle.h
 #include <SceneParticleBase.h>
 
 namespace MyGame {
-
-    class Player;
-
+	// 前方宣言
+    class Player;    
+    /// <summary>
+	/// ゲームプレイシーン用のパーティクルを管理するクラス
+    /// </summary>
     class GamePlayParticle : public SceneParticleBase {
-    public:
+    public: // メンバ関数       
+		// 爆発時に出現する経験値オーブの情報を保持する構造体
         struct ExpOrb {
             MyEngine::Vector3 position;
             uint32_t exp;
@@ -11957,26 +11907,36 @@ namespace MyGame {
 		/// 更新処理
 		/// </summary>
 		void Update() override;
-
+        /// <summary>
+		/// 爆発エフェクトの追加
+        /// </summary>
+        /// <param name="pos">爆発の位置</param>
+		/// <param name="exp">爆発で得られる経験値</param>
         void AddExplosion(const MyEngine::Vector3& pos, uint32_t exp);
+        /// <summary>
+		/// プレイヤーの移動に追従するパーティクルを発生させる
+        /// </summary>
         void EmitPlayerTrail();
-
     private: // メンバ変数
-        std::vector<MyEngine::Vector3> explosionQueue_;
-
-        std::unique_ptr<BaseEmitter> explosionEmitter_;
-        MyEngine::ParticleSpawnData explosionspawndata_{};
-        MyEngine::ParticleSpawnRandom explosionRandom_;
-
-        std::unique_ptr<BaseEmitter> playeremitter_;
-        MyEngine::ParticleSpawnData  playerspawndata_{};
-        MyEngine::ParticleSpawnRandom  playerrandom_;
-        float playerEmitTimer_;
-        float playerEmitInterval_;
-        Player* player_;
-        std::vector<ExpOrb> expOrbs_;
-
+		std::vector<MyEngine::Vector3> explosionQueue_; // 爆発エフェクトの発生位置を保持するキュー
+        ///-----------------------------------------///
+        ///-------------爆発エフェクト----------------///
+        ///-----------------------------------------///
+		std::unique_ptr<BaseEmitter> explosionEmitter_;    // 爆発エフェクト用のパーティクルエミッター
+		MyEngine::ParticleSpawnData explosionspawndata_{}; // 爆発エフェクトのパーティクル発生データ
+		MyEngine::ParticleSpawnRandom explosionRandom_;    // 爆発エフェクトのパーティクル発生ランダムデータ
+        ///-----------------------------------------///
+        ///-----------プレイヤ―エフェクト--------------///
+        ///-----------------------------------------///
+		std::unique_ptr<BaseEmitter> playeremitter_;    // プレイヤーの移動に追従するパーティクルエミッター
+		MyEngine::ParticleSpawnData  playerspawndata_{}; // プレイヤーの移動に追従するパーティクル発生データ
+		MyEngine::ParticleSpawnRandom  playerrandom_;    // プレイヤーの移動に追従するパーティクル発生ランダムデータ
+		float playerEmitTimer_;       // プレイヤーの移動に追従するパーティクル発生タイマー
+		float playerEmitInterval_;    // プレイヤーの移動に追従するパーティクル発生間隔
+		Player* player_;              // プレイヤーのポインタ
+		std::vector<ExpOrb> expOrbs_; // 爆発エフェクトで得られる経験値オーブの情報を保持するベクター
     public:
+        // setter
         void SetPlayer(Player* player) { player_ = player; }	
     };
 }
@@ -11986,6 +11946,7 @@ File Path: project/application/particle/SceneEmitterManager.cpp
 ============================================================
 #include "SceneEmitterManager.h"
 #include <GamePlayParticle.h>
+#include <GameOverParticle.h>
 #include <SceneManager.h>
 #include <SceneName.h>
 
@@ -12006,6 +11967,7 @@ namespace MyGame {
 
     // 終了
     void SceneEmitterManager::Finalize() {
+        Clear();
         // シーンマネージャのインスタンスの解放
         instance.reset();
     }
@@ -12018,8 +11980,10 @@ namespace MyGame {
         std::string currentScene = SceneManager::GetInstance()->GetCurrentScene()->GetSceneName();
 
         // シーン名に紐付いたパーティクルクラスをインスタンス化
-        if (currentScene == SceneName::GAMEPLAY) {                   // ゲームプレイシーンのパーティクルエミッターを生成
+        if (currentScene == SceneName::GAMEPLAY) {                          // ゲームプレイシーンのパーティクルエミッターを生成
             AddUI(SceneName::GAMEPLAY, std::make_unique<GamePlayParticle>());
+        } else if (currentScene == SceneName::GAMEOVER) {                   // ゲームオーバーシーンのパーティクルエミッターを生成
+            AddUI(SceneName::GAMEOVER, std::make_unique<GameOverParticle>());
         }
 
         // 生成したエミッターの個別初期化
@@ -12056,7 +12020,9 @@ File Path: project/application/particle/SceneEmitterManager.h
 #include <SceneParticleBase.h>
 
 namespace MyGame {
-
+    /// <summary>
+	/// シーンに応じたパーティクルの管理を行うシングルトンマネージャ
+    /// </summary>
     class SceneEmitterManager {
     private: // シングルトンインスタンス
         static std::unique_ptr<SceneEmitterManager> instance;
@@ -12122,9 +12088,11 @@ File Path: project/application/particle/SceneParticleBase.h
 #include <BaseEmitter.h>
 
 namespace MyGame {
-
+    /// <summary>
+    /// ベースとなるパーティクルの
+    /// </summary>
     class SceneParticleBase {
-    public:
+	public: // メンバ関数
         /// <summary>
 		/// デストラクタ
         /// </summary>
@@ -12509,6 +12477,8 @@ File Path: project/application/scene/GameOverScene.cpp
 #include <StageManager.h>
 #include <ModelManager.h>
 #include <random>
+#include <SceneEmitterManager.h>
+#include <GameOverParticle.h>
 // AssetGeneratorからインクルード
 #include <subproject/AssetGenerator/engine/generator/LoadResourceID.h>
 
@@ -12516,11 +12486,13 @@ using namespace MyEngine;
 using namespace AssetGen::LoadResourceID::Models;
 
 namespace MyGame {
+
 	void GameOverScene::Finalize() {
 		CameraManager::GetInstance()->Finalize(); // カメラマネージャの終了処理
 		FadeManager::GetInstance()->Finalize();   // フェードマネージャの終了処理
 		UIManager::GetInstance()->Finalize();     // UIマネージャの終了処理 
 		StageManager::GetInstance()->Finalize();  // ステージマネージャの終了処理
+		SceneEmitterManager::GetInstance()->Finalize(); // パーティクルエミッターマネージャの終了処理
 	}
 
 	void GameOverScene::Initialize() {
@@ -12570,14 +12542,15 @@ namespace MyGame {
 		for (auto& part : partsList) {
 			partTargets.push_back(part.obj.get());  // unique_ptr → raw pointer に変換
 		}
-
-
 		// ステージマネージャの初期化
 		StageManager::GetInstance()->Initialize();
 		// フェードマネージャの初期化(フェードイン開始処理)
 		FadeManager::GetInstance()->StartFade(FadeType::FadeIn, FadeStyle::SilhouetteExplode, 1.0f);
 		// UIマネージャの初期化
 		UIManager::GetInstance()->Initialize();
+		// パーティクルエミッターの初期化
+		SceneEmitterManager::GetInstance()->Initialize();
+		SceneEmitterManager::GetInstance()->GetEmitter<GameOverParticle>()->SetTargets(partTargets);
 	}
 
 	void GameOverScene::Update() {
@@ -12595,6 +12568,11 @@ namespace MyGame {
 
 		// ステージマネージャの更新
 		StageManager::GetInstance()->Update();
+		
+		// エミッターマネージャの更新
+        SceneEmitterManager::GetInstance()->Update();
+        // パーティクル更新
+        ParticleManager::GetInstance()->Update();
 #pragma endregion 全てのObject3d個々の更新処理
 
 #pragma region 全てのSprite個々の更新処理
@@ -12622,7 +12600,8 @@ namespace MyGame {
 		// ステージマネージャの描画
 		StageManager::GetInstance()->Draw();
 		// パーティクルの描画準備。パーティクルの描画に共通のグラフィックスコマンドを積む 
-		//ParticleCommon::GetInstance()->Commondrawing();
+		ParticleCommon::GetInstance()->Commondrawing();
+		ParticleManager::GetInstance()->Draw();
 #pragma endregion 全てのObject3d個々の描画処理
 
 #pragma region 全てのSprite個々の描画処理 
@@ -13349,7 +13328,6 @@ File Path: project/application/stage/StageManager.h
 ============================================================
 #pragma once
 #include <BaseScene.h>
-#include <CharacterLoader.h>
 #include <Skybox.h>
 #include <Object3d.h>
 
@@ -14549,7 +14527,7 @@ using namespace Easing;
 using namespace MatrixVector;
 
 namespace MyGame {
-   
+
     void GamePlayUI::Initialize() {
         // UIテクスチャ一覧
         const std::array<const char*, 29> operationTextures = {
@@ -14611,19 +14589,32 @@ namespace MyGame {
         isLevelUpVisible_ = false;
         levelUpAlpha_ = 0.0f;
         levelUpTimer_ = 0.0f;
+
+        kHeartStartX = 130.0f; // 表示開始のX座標
+        kHeartY = 30.0f;       // 表示のY座標
+        kHeartOffsetX = 40.0f;// X軸のずらし幅
+
+        // HPアニメーション
+        previousHp_ = 0;
+        kHeartAnimationTime = 0.4f;
     }
-    
+
     void GamePlayUI::SetPlayerHp() {
         // プレイヤーの参照があることを確認してHPアイコンを生成       
         uint32_t maxHp = player_->GetMaxHP(); // プレイヤーから最大HPを取得
         hpHearts_.clear();
         for (uint32_t i = 0; i < maxHp; ++i) {
-            // 100, 15 の位置から 100 ずつ X 軸をずらす
+            // X軸をずらす
             float posX = kHeartStartX + (i * kHeartOffsetX);
             Vector2 position = { posX, kHeartY };
             // スプライト生成
-            auto heart = Sprite::Create(Ui::Player_Hp, position, 0.0f, kHeartSize);
+            auto heart = Sprite::Create(Ui::Player_Hp, position, 0.0f, { 64.0f,64.0f });                 
+            heart->SetAnchorPoint({ 0.5f, 0.5f });
             hpHearts_.push_back(std::move(heart));
+
+            heartAnimations_.clear();
+            heartAnimations_.resize(maxHp);
+            previousHp_ = player_->GetHP();
         }
     }
 
@@ -14650,24 +14641,8 @@ namespace MyGame {
         for (std::unique_ptr<Sprite>& ui : uis_) {
             ui->Update();
         }
-
-        // HP表示の更新処理
-        uint32_t currentHp = player_->GetHP();
-        for (size_t i = 0; i < hpHearts_.size(); ++i) {
-            if (i < currentHp) {
-                // 現在のHP以下なら通常表示
-                hpHearts_[i]->SetColor({ 1.0f, 1.0f, 1.0f, 1.0f });
-            } else {
-                // 現在のHPを超えている（ダメージを受けた）分は非表示（透明）にする
-                hpHearts_[i]->SetColor({ 1.0f, 1.0f, 1.0f, 0.0f });
-            }
-            // スプライト自体のマトリクス更新
-            hpHearts_[i]->Update();
-        }
-        // 既存のuis_などのUpdate処理...
-        for (std::unique_ptr<Sprite>& ui : uis_) {
-            ui->Update();
-        }
+        // 
+        UpdateHpAnimation();
     }
 
     void GamePlayUI::Draw() {
@@ -14692,6 +14667,56 @@ namespace MyGame {
         // イベントロック中などに非表示にしたい場合は条件を追加してください
         for (const auto& heart : hpHearts_) {
             heart->Draw();
+        }
+    }
+
+    void GamePlayUI::UpdateHpAnimation() {
+        uint32_t currentHp = player_->GetHP();
+
+        // HP減少検知
+        if (currentHp < previousHp_) {
+
+            for (uint32_t i = currentHp; i < previousHp_; i++) {
+                heartAnimations_[i].isPlaying = true;
+                heartAnimations_[i].timer = 0.0f;
+            }
+            previousHp_ = currentHp;
+        }
+
+        const float deltaTime = 1.0f / 60.0f;
+
+        for (size_t i = 0; i < hpHearts_.size(); i++) {
+
+            if (heartAnimations_[i].isPlaying) {
+                auto& anim = heartAnimations_[i];
+                anim.timer += deltaTime;
+                float t = anim.timer / kHeartAnimationTime;
+                if (t >= 1.0f) {
+                    t = 1.0f;
+                    anim.isPlaying = false;
+                }
+                float scale;
+                if (t < 0.4f) {
+                    // 少し大きく
+                    scale = 1.0f + 0.4f * (t / 0.4f);
+                } else {
+                    // 縮みながら消える
+                    float x = (t - 0.4f) / 0.6f;
+                    scale = 1.4f * (1.0f - x);
+                }
+
+                hpHearts_[i]->SetSize({ 64.0f * scale, 64.0f * scale });
+                hpHearts_[i]->SetColor({ 1,1,1,1.0f - t });
+            } else {                
+                if (i < currentHp) {
+                    hpHearts_[i]->SetSize({ 64.0f,64.0f });
+                    hpHearts_[i]->SetColor({ 1,1,1,1 });
+                } else {
+                    hpHearts_[i]->SetSize({ 0,0 });
+                    hpHearts_[i]->SetColor({ 1,1,1,0 });
+                }
+            }
+            hpHearts_[i]->Update();
         }
     }
 
@@ -14956,6 +14981,11 @@ namespace MyGame {
     /// ゲームプレイシーンのUIを管理するクラス
     /// </summary>
     class GamePlayUI : public BaseUI {
+    public:
+        struct HeartAnimation {
+            bool isPlaying = false;
+            float timer = 0.0f;
+        };
     public: // メンバ関数
         /// <summary>
         /// 初期化処理
@@ -14969,8 +14999,9 @@ namespace MyGame {
         /// 描画処理
         /// </summary>
         void Draw() override;
-
+        // UIの表示・非表示を切り替える
         void ShowExpBar();
+        // UIの表示・非表示を切り替える
         void ShowLevelUp(bool isMaxLevel);
         /// <summary>
         /// Playerを取得後に呼び出すことで、HPUIの初期化を行う
@@ -14990,6 +15021,8 @@ namespace MyGame {
         void UpdateExpBarFade();
         // レベルアップUIの更新
         void UpdateLevelUpFade();
+        /// HPUIのアニメーション更新
+        void UpdateHpAnimation();
     private: // メンバ変数
         Player* player_ = nullptr; // プレイヤーへの参照
         std::unique_ptr<Pausemenu> pausemenu_; // ポーズメニュー
@@ -15000,7 +15033,6 @@ namespace MyGame {
         bool isAnimating_;   // 操作UIのアニメーション中かどうかのフラグ
         float timer_;  // 操作UIのアニメーション開始からの経過時間
         float duration_;  // 操作UIのアニメーションにかける時間
-
         bool uiProgressStarted_ = false;  // ステージ進行度UIのアニメーションが開始したかどうかのフラグ
         bool uiProgressFinished_ = false; // ステージ進行度UIのアニメーションが完了したかどうかのフラグ
         bool isEventLocked;
@@ -15019,12 +15051,17 @@ namespace MyGame {
         bool isLevelUpVisible_;
         float levelUpAlpha_;
         float levelUpTimer_;
-        // --- HP表示用の変数 ---
+
+        // HP表示の変数 
         std::vector<std::unique_ptr<MyEngine::Sprite>> hpHearts_; // HPアイコンのリスト
-        const float kHeartStartX = 100.0f; // 表示開始のX座標
-        const float kHeartY = 15.0f;       // 表示のY座標
-        const float kHeartOffsetX = 75.0f;// X軸のずらし幅
-        const MyEngine::Vector2 kHeartSize = { 64.0f, 64.0f }; // アイコンサイズ
+        // HPアイコンの配置用定数
+        float kHeartStartX; // 表示開始のX座標
+        float kHeartY;       // 表示のY座標
+        float kHeartOffsetX;// X軸のずらし幅
+        // HPアニメーション
+        std::vector<HeartAnimation> heartAnimations_;
+        uint32_t previousHp_;
+        float kHeartAnimationTime;
     public: // アクセッサ
         Pausemenu* GetPauseMenu() const { return pausemenu_.get(); }
         void SetPlayer(Player* player) { player_ = player; }
@@ -16457,7 +16494,10 @@ File Path: project/engine/3d/Particle/MappedBuffer.h
 #include <cstring>
 #include <functional>
 
-namespace MyEngine {
+namespace MyEngine {	
+	/// <summary>
+	/// D3D12のリソースをマップしてCPUからアクセスできるようにするためのラッパー構造体
+	/// </summary>
 	template<typename T>
 	struct MappedBuffer {
 		Microsoft::WRL::ComPtr<ID3D12Resource> resource;
@@ -22907,7 +22947,7 @@ namespace MyEngine {
         sceneFactory_ = std::make_unique<SceneFactory>();
         SceneManager::GetInstance()->SetSceneFactory(sceneFactory_.get());
         // シーンマネージャに最初のシーンをセット
-        SceneManager::GetInstance()->ChangeScene(SceneName::GAMEPLAY);
+        SceneManager::GetInstance()->ChangeScene(SceneName::GAMEOVER);
     }
 
     void MyGame::Update() {
