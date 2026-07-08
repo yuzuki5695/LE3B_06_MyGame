@@ -10,6 +10,8 @@
 #include <StageManager.h>
 #include <ModelManager.h>
 #include <random>
+#include <SceneEmitterManager.h>
+#include <GameOverParticle.h>
 // AssetGeneratorからインクルード
 #include <subproject/AssetGenerator/engine/generator/LoadResourceID.h>
 
@@ -17,11 +19,13 @@ using namespace MyEngine;
 using namespace AssetGen::LoadResourceID::Models;
 
 namespace MyGame {
+
 	void GameOverScene::Finalize() {
 		CameraManager::GetInstance()->Finalize(); // カメラマネージャの終了処理
 		FadeManager::GetInstance()->Finalize();   // フェードマネージャの終了処理
 		UIManager::GetInstance()->Finalize();     // UIマネージャの終了処理 
 		StageManager::GetInstance()->Finalize();  // ステージマネージャの終了処理
+		SceneEmitterManager::GetInstance()->Finalize(); // パーティクルエミッターマネージャの終了処理
 	}
 
 	void GameOverScene::Initialize() {
@@ -71,14 +75,15 @@ namespace MyGame {
 		for (auto& part : partsList) {
 			partTargets.push_back(part.obj.get());  // unique_ptr → raw pointer に変換
 		}
-
-
 		// ステージマネージャの初期化
 		StageManager::GetInstance()->Initialize();
 		// フェードマネージャの初期化(フェードイン開始処理)
 		FadeManager::GetInstance()->StartFade(FadeType::FadeIn, FadeStyle::SilhouetteExplode, 1.0f);
 		// UIマネージャの初期化
 		UIManager::GetInstance()->Initialize();
+		// パーティクルエミッターの初期化
+		SceneEmitterManager::GetInstance()->Initialize();
+		SceneEmitterManager::GetInstance()->GetEmitter<GameOverParticle>()->SetTargets(partTargets);
 	}
 
 	void GameOverScene::Update() {
@@ -96,6 +101,11 @@ namespace MyGame {
 
 		// ステージマネージャの更新
 		StageManager::GetInstance()->Update();
+		
+		// エミッターマネージャの更新
+        SceneEmitterManager::GetInstance()->Update();
+        // パーティクル更新
+        ParticleManager::GetInstance()->Update();
 #pragma endregion 全てのObject3d個々の更新処理
 
 #pragma region 全てのSprite個々の更新処理
@@ -123,7 +133,8 @@ namespace MyGame {
 		// ステージマネージャの描画
 		StageManager::GetInstance()->Draw();
 		// パーティクルの描画準備。パーティクルの描画に共通のグラフィックスコマンドを積む 
-		//ParticleCommon::GetInstance()->Commondrawing();
+		ParticleCommon::GetInstance()->Commondrawing();
+		ParticleManager::GetInstance()->Draw();
 #pragma endregion 全てのObject3d個々の描画処理
 
 #pragma region 全てのSprite個々の描画処理 

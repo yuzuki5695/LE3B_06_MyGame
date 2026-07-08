@@ -3,7 +3,7 @@
 #include <SkyboxCommon.h>
 #include <SpriteCommon.h>
 #include <Object3dCommon.h>
-//#include <ParticleCommon.h>
+#include <ParticleCommon.h>
 #include <SceneName.h>
 #include <StageManager.h>
 #include <FadeManager.h>
@@ -11,6 +11,8 @@
 #include <Easing.h>
 #include <GameClearUI.h>
 #include <Input.h>
+#include <SceneEmitterManager.h>
+#include <GameClearParticle.h>
 #ifdef min
 #undef min
 #endif
@@ -27,6 +29,7 @@ namespace MyGame {
         FadeManager::GetInstance()->Finalize();   // フェードマネージャの終了処理
         UIManager::GetInstance()->Finalize();     // UIマネージャの終了処理 
         StageManager::GetInstance()->Finalize();  // ステージマネージャの終了処理
+        SceneEmitterManager::GetInstance()->Finalize(); // パーティクルエミッターマネージャの終了処理
     }
 
     void GameClearScene::Initialize() {
@@ -37,13 +40,13 @@ namespace MyGame {
         endOffset_ = { 0.0f, 0.0f, 20.0f };
         // プレイヤ―の生成、初期化
         player_ = std::make_unique<Player>();
-        player_->Initialize(); 
+        player_->Initialize();
         player_->SetRotate(offset_.rotate);
-        player_->SetTranslate(offset_.translate); 
+        player_->SetTranslate(offset_.translate);
 
         // カメラのターゲットにプレイヤーをセット
         CameraManager::GetInstance()->GetCurrentBehaviorAs<GameClearCamera>()->SetTargetObject(player_->GetObject3d());
-		// 演出の段階を初期化
+        // 演出の段階を初期化
         step_ = 0;
 
         // ステージマネージャの初期化
@@ -52,6 +55,9 @@ namespace MyGame {
         UIManager::GetInstance()->Initialize();
         // フェードマネージャの初期化
         FadeManager::GetInstance()->StartFade(FadeType::FadeIn, FadeStyle::Normal, 1.0f);
+        // パーティクルエミッターの初期化
+        SceneEmitterManager::GetInstance()->Initialize();
+        SceneEmitterManager::GetInstance()->GetEmitter<GameClearParticle>()->SetPlayer(player_.get());
     }
 
     void GameClearScene::Update() {
@@ -67,6 +73,10 @@ namespace MyGame {
 
         // ステージマネージャの更新
         StageManager::GetInstance()->Update();
+        // エミッターマネージャの更新
+        SceneEmitterManager::GetInstance()->Update();
+        // パーティクル更新
+        ParticleManager::GetInstance()->Update();
 #pragma endregion 全てのObject3d個々の更新処理
 
 #pragma region 全てのSprite個々の更新処理
@@ -92,7 +102,8 @@ namespace MyGame {
         // ステージマネージャの描画
         StageManager::GetInstance()->Draw();
         // パーティクルの描画準備。パーティクルの描画に共通のグラフィックスコマンドを積む 
-       // ParticleCommon::GetInstance()->Commondrawing();
+		ParticleCommon::GetInstance()->Commondrawing();
+		ParticleManager::GetInstance()->Draw();
 #pragma endregion 全てのObject3d個々の描画処理
 
 #pragma region 全てのSprite個々の描画処理 
@@ -213,62 +224,6 @@ namespace MyGame {
             player_->SetRotate(rot);
             return;
         }
-
-        ///*-----------------------------------------------*/
-        ///* ② カメラへ向かって X/Y/Z 移動（加速付き）   */
-        ///*-----------------------------------------------*/
-        //Vector3 camPos = cam->GetTranslate();
-
-        //// ----------------------------
-        //// 進行率
-        //// ----------------------------
-        //float t = (30.0f - pos.z) / 30.0f;
-        //t = std::clamp(t, 0.0f, 1.0f);
-
-        //// ----------------------------
-        //// スピード（前回作った減速付き）
-        //// ----------------------------
-        //float accel = EaseOutCubic(t);
-        //float brake = EaseInCubic(1.0f - t);
-        //float speed = 1.2f + accel * brake * 8.0f;
-        //pos.z -= speed;
-
-        //// ----------------------------
-        //// カメラ横を通る X オフセット
-        //// ----------------------------
-        //float sideStart = -25.0f;   // カメラ左
-        //float sideEnd = 25.0f;   // カメラ右（通過）
-
-        //float sideX = Lerp(sideStart, sideEnd, EaseInOutSine(t));
-
-        //// ----------------------------
-        //// 上昇
-        //// ----------------------------
-        //float rise = EaseOutCubic(t) * 15.0f;
-
-        //// ----------------------------
-        //// カメラ基準で目標位置を作る
-        //// ----------------------------
-        //Vector3 targetPos;
-        //targetPos.x = camPos.x + sideX;
-        //targetPos.y = camPos.y + rise;
-        //targetPos.z = pos.z;
-
-        //// なめらか追従
-        //pos = Vector3::Lerp(pos, targetPos, 0.15f);
-
-        //player_->GetPlayerObject()->SetTranslate(pos);
-
-
-
-
-        ///*-----------------------------------------------*/
-        ///* ③ 1秒後に一瞬フェード処理                  */
-        ///*-----------------------------------------------*/
-        //if (!step3FadeTriggered_ && step3Timer_ >= 1.0f && !FadeManager::GetInstance()->IsFading() && FadeManager::GetInstance()->IsFadeEnd()) {
-        //    FadeManager::GetInstance()->StartFadeOut(1.8f, FadeStyle::SilhouetteSlide);
-        //    step3FadeTriggered_ = true;
-        //}
     }
 
 }
