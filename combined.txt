@@ -11712,8 +11712,10 @@ namespace MyGame {
 		// タイマーの設定
 		emitTimer_ = 0.0f;
 		emitInterval_ = 0.05f;
+		deltaTime = 0.0f;
 		// パーティクルの生成
 		playeremitter_ = std::make_unique<BaseEmitter>("Clear", playerspawndata_, playerrandom_);
+
 	}
 
 	void GameClearParticle::Update() {
@@ -11721,7 +11723,7 @@ namespace MyGame {
 			return;
 		}
 
-		constexpr float deltaTime = 1.0f / 60.0f;
+		deltaTime = 1.0f / 60.0f;
 		emitTimer_ += deltaTime;
 		playeremitter_->SetTranslate(player_->GetTranslate());
 
@@ -11769,7 +11771,8 @@ namespace MyGame {
 		float emitTimer_;
 		float emitInterval_;
 		Player* player_;              // プレイヤーのポインタ	
-    public:
+		float deltaTime;
+	public:
         // setter
         void SetPlayer(Player* player) { player_ = player; }	
 	};
@@ -11806,10 +11809,13 @@ namespace MyGame {
 		playerRandom_.velocityScale = { {0.02f,0.02f,0.02f}, {0.04f,0.04f,0.04f}, true };
 		playerRandom_.lifetime = { 0.4f, 0.8f, true };
 		playerRandom_.count = { 5, 8, true };
+
+		deltaTime = 0.0f;
+		emitInterval_ = 0.03f;
 	}
 
 	void GameOverParticle::Update() {
-		constexpr float deltaTime = 1.0f / 60.0f;
+		deltaTime = 1.0f / 60.0f;
 		for (auto& emitter : emitters_) {
 			if (!emitter.target) {
 				continue;
@@ -11878,8 +11884,8 @@ namespace MyGame {
 		std::vector<PartEmitter> emitters_;
 		MyEngine::ParticleSpawnData playerSpawnData_{};
 		MyEngine::ParticleSpawnRandom playerRandom_;
-
-		float emitInterval_ = 0.03f;
+		float deltaTime;
+		float emitInterval_ ;
 	public:
 		// setter	
 		void SetTargets(const std::vector<MyEngine::Object3d*>& parts);
@@ -12089,8 +12095,6 @@ namespace MyGame {
     }
 
     void SceneEmitterManager::Initialize() {
-        // 前のシーンのパーティクルエミッターを削除
-        Clear();
         // 現在のシーン状況を確認
         // SceneManagerが管理している実行中シーンから名前を取得する
         std::string currentScene = SceneManager::GetInstance()->GetCurrentScene()->GetSceneName();
@@ -12126,7 +12130,12 @@ namespace MyGame {
     }
 
     void SceneEmitterManager::Clear() {
-		// 管理している全UIの破棄
+        // エミッターを消す前に、まずGPU側のパーティクルバッファやリクエストを完全に根こそぎクリアする
+        // これにより、バッファ参照の迷子（浮遊カウンタ）を防ぎます。
+        if (ParticleManager::GetInstance()) {
+            ParticleManager::GetInstance()->ClearAll();
+        }
+        // 管理している全UIの破棄
         emitterlist_.clear();
     }
 }
@@ -12265,6 +12274,7 @@ namespace MyGame {
 		// タイマーの設定
 		emitTimer_ = 0.0f;
 		emitInterval_ = 0.05f;
+		deltaTime = 0.0f;
 		// パーティクルの生成
 		playeremitter_ = std::make_unique<BaseEmitter>("Title", playerspawndata_, playerrandom_);
 	}
@@ -12273,8 +12283,8 @@ namespace MyGame {
 		if (!object_) {
 			return;
 		}
-
-		constexpr float deltaTime = 1.0f / 60.0f;
+	
+		deltaTime = 1.0f / 60.0f;
 		emitTimer_ += deltaTime;
 		playeremitter_->SetTranslate(object_->GetTranslate());
 
@@ -12322,6 +12332,7 @@ namespace MyGame {
 		float emitTimer_;
 		float emitInterval_;
 		MyEngine::Object3d* object_;              // プレイヤーのポインタ
+		float deltaTime;
 	public:
 		// setter
 		void SetObject3d(MyEngine::Object3d* object) { object_ = object; }
