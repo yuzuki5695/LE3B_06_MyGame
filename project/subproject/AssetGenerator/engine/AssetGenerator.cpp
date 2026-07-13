@@ -66,7 +66,7 @@ void AssetGenerator::Initialize(int argc, char* argv[]) {
     resourceRoot_ = rootPath / "project" / "Resources";
     outputDir_ = resourceRoot_ / "Data" / "Resource";
     rulesJsonPath_ = outputDir_ / "Rules.json";   
-    assetInfoPath_ = rootPath / "project" / "subproject" / "AssetGenerator" / "engine" / "generator";
+    assetInfoPath_ = rootPath / "project" / "Subproject" / "AssetGenerator" / "Engine" / "Generator";
     // 各機能コンポーネントをインスタンス化
     ruleLoader_ = std::make_unique<RuleLoader>(resourceRoot_, outputDir_);
     assetLoader_ = std::make_unique<AssetInfoLoader>();

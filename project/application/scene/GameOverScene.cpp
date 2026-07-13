@@ -83,7 +83,8 @@ namespace MyGame {
 		UIManager::GetInstance()->Initialize();
 		// パーティクルエミッターの初期化
 		SceneEmitterManager::GetInstance()->Initialize();
-		SceneEmitterManager::GetInstance()->GetEmitter<GameOverParticle>()->SetTargets(partTargets);
+
+	
 	}
 
 	void GameOverScene::Update() {
@@ -100,9 +101,19 @@ namespace MyGame {
 		}
 
 		// ステージマネージャの更新
-		StageManager::GetInstance()->Update();
-		
-		// エミッターマネージャの更新
+		StageManager::GetInstance()->Update();		
+		SceneEmitterManager::GetInstance()->GetEmitter<GameOverParticle>()->SetTarget(0, partsList[0].obj.get()->GetTranslate());
+		SceneEmitterManager::GetInstance()->GetEmitter<GameOverParticle>()->SetTarget(1, partsList[3].obj.get()->GetTranslate());
+
+
+
+
+
+
+
+
+
+	    // エミッターマネージャの更新
         SceneEmitterManager::GetInstance()->Update();
         // パーティクル更新
         ParticleManager::GetInstance()->Update();

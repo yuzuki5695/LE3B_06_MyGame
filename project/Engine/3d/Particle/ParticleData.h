@@ -19,7 +19,7 @@ namespace MyEngine {
     static const uint32_t MaxGroupCount = 64;
 
     // ゲーム全体で1フレームにスポーンできる合計数の器
-    static const uint32_t MaxSpawnRequestCount = 4000;
+    static const uint32_t MaxSpawnRequestCount = 10000;
 
     struct CameraData {
         Matrix4x4 view;

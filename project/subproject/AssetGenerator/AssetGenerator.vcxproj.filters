@@ -13,35 +13,35 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="ソース ファイル\engine">
+    <Filter Include="ソース ファイル\Engine">
       <UniqueIdentifier>{f4afbb83-5d94-46d0-8d05-4aeae6e3af46}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ソース ファイル\engine\io">
-      <UniqueIdentifier>{db1f4293-d361-4953-8ec5-e17134553877}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ソース ファイル\engine\core">
+    <Filter Include="ソース ファイル\Engine\Core">
       <UniqueIdentifier>{bc96a297-5988-4762-86c3-a53f31a8343f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ソース ファイル\engine\scanner">
-      <UniqueIdentifier>{4aad378d-6914-4146-bd42-579c9e1d6f1b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ヘッダー ファイル\engine">
-      <UniqueIdentifier>{bd23867c-de68-4f86-9d97-dac0ee007667}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ヘッダー ファイル\engine\scanner">
-      <UniqueIdentifier>{1e01f44b-7981-4150-a3e7-646ede88a062}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ヘッダー ファイル\engine\io">
-      <UniqueIdentifier>{a19d6110-0a27-4188-9523-736474d01bea}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ヘッダー ファイル\engine\core">
-      <UniqueIdentifier>{622b36e6-c56a-4d82-a1d8-b456f7257377}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ソース ファイル\engine\generator">
+    <Filter Include="ソース ファイル\Engine\Generator">
       <UniqueIdentifier>{e7cbc383-d09d-4e6b-9472-0e196fef6156}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ヘッダー ファイル\engine\generator">
+    <Filter Include="ソース ファイル\Engine\Io">
+      <UniqueIdentifier>{db1f4293-d361-4953-8ec5-e17134553877}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Engine\Scanner">
+      <UniqueIdentifier>{4aad378d-6914-4146-bd42-579c9e1d6f1b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\Engine">
+      <UniqueIdentifier>{bd23867c-de68-4f86-9d97-dac0ee007667}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\Engine\Core">
+      <UniqueIdentifier>{622b36e6-c56a-4d82-a1d8-b456f7257377}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\Engine\Generator">
       <UniqueIdentifier>{b73f704c-7d43-4a33-870e-d8dd812c5939}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\Engine\Io">
+      <UniqueIdentifier>{a19d6110-0a27-4188-9523-736474d01bea}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\Engine\Scanner">
+      <UniqueIdentifier>{1e01f44b-7981-4150-a3e7-646ede88a062}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -49,54 +49,54 @@
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="engine\scanner\Scanner.cpp">
-      <Filter>ソース ファイル\engine\scanner</Filter>
+      <Filter>ソース ファイル\Engine\Scanner</Filter>
     </ClCompile>
     <ClCompile Include="engine\AssetGenerator.cpp">
-      <Filter>ソース ファイル\engine</Filter>
+      <Filter>ソース ファイル\Engine</Filter>
     </ClCompile>
     <ClCompile Include="engine\core\ResourceMapper.cpp">
-      <Filter>ソース ファイル\engine\core</Filter>
+      <Filter>ソース ファイル\Engine\Core</Filter>
     </ClCompile>
     <ClCompile Include="engine\core\ResourceNode.cpp">
-      <Filter>ソース ファイル\engine\core</Filter>
+      <Filter>ソース ファイル\Engine\Core</Filter>
     </ClCompile>
     <ClCompile Include="engine\io\RuleLoader.cpp">
-      <Filter>ソース ファイル\engine\io</Filter>
+      <Filter>ソース ファイル\Engine\Io</Filter>
     </ClCompile>
     <ClCompile Include="engine\io\AssetInfoLoader.cpp">
-      <Filter>ソース ファイル\engine\io</Filter>
+      <Filter>ソース ファイル\Engine\Io</Filter>
     </ClCompile>
     <ClCompile Include="engine\generator\CodeGenerator.cpp">
-      <Filter>ソース ファイル\engine\generator</Filter>
+      <Filter>ソース ファイル\Engine\Generator</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="engine\core\ResourceMapper.h">
-      <Filter>ヘッダー ファイル\engine\core</Filter>
+      <Filter>ヘッダー ファイル\Engine\Core</Filter>
     </ClInclude>
     <ClInclude Include="engine\core\ResourceNode.h">
-      <Filter>ヘッダー ファイル\engine\core</Filter>
+      <Filter>ヘッダー ファイル\Engine\Core</Filter>
     </ClInclude>
     <ClInclude Include="engine\io\RuleLoader.h">
-      <Filter>ヘッダー ファイル\engine\io</Filter>
+      <Filter>ヘッダー ファイル\Engine\Io</Filter>
     </ClInclude>
     <ClInclude Include="engine\scanner\Scanner.h">
-      <Filter>ヘッダー ファイル\engine\scanner</Filter>
+      <Filter>ヘッダー ファイル\Engine\Scanner</Filter>
     </ClInclude>
     <ClInclude Include="engine\io\BaseLoader.h">
-      <Filter>ヘッダー ファイル\engine\io</Filter>
+      <Filter>ヘッダー ファイル\Engine\Io</Filter>
     </ClInclude>
     <ClInclude Include="engine\io\AssetInfoLoader.h">
-      <Filter>ヘッダー ファイル\engine\io</Filter>
+      <Filter>ヘッダー ファイル\Engine\Io</Filter>
     </ClInclude>
     <ClInclude Include="engine\AssetGenerator.h">
-      <Filter>ヘッダー ファイル\engine</Filter>
+      <Filter>ヘッダー ファイル\Engine</Filter>
     </ClInclude>
     <ClInclude Include="engine\generator\CodeGenerator.h">
-      <Filter>ヘッダー ファイル\engine\generator</Filter>
+      <Filter>ヘッダー ファイル\Engine\Generator</Filter>
     </ClInclude>
     <ClInclude Include="engine\generator\LoadResourceID.h">
-      <Filter>ヘッダー ファイル\engine\generator</Filter>
+      <Filter>ヘッダー ファイル\Engine\Generator</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

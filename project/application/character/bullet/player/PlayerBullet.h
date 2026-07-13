@@ -1,6 +1,7 @@
 #pragma once
 #include <BaseBullet.h>
 #include <Collider.h>
+#include <CollisionManager.h>
 
 namespace MyGame {
     /// <summary>
@@ -9,9 +10,13 @@ namespace MyGame {
     class PlayerBullet : public BaseBullet {
     public: // メンバ関数
         /// <summary>
-        /// 終了処理
+        /// デストラクタ
         /// </summary>
-        void Finalize() override;
+        ~PlayerBullet() override {
+            if (collider_) {
+                CollisionManager::GetInstance()->UnregisterCollider(collider_.get());
+            }
+        }
         /// <summary>
         /// 初期化処理
         /// </summary>
@@ -32,13 +37,13 @@ namespace MyGame {
         MyEngine::Vector3 colliderSize_;
     public:
         Collider* GetCollider() const override { return collider_.get(); }
-        void SetColliderSize(const MyEngine::Vector3& size) override { colliderSize_ = size; }
         MyEngine::Vector3 GetColliderSize() const override { return colliderSize_; }
-        void SetColliderSizelist(const MyEngine::Vector3& size) {
+
+        void SetColliderSize(const MyEngine::Vector3& size) override {
             colliderSize_ = size;
             if (collider_) {
                 collider_->SetSize(size);
             }
-        }
+        }        
     };
 }

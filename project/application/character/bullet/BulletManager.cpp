@@ -71,23 +71,17 @@ namespace MyGame {
     }
 
     void BulletManager::Update() {
-        // 非アクティブ削除
-        bullets_.erase(std::remove_if(bullets_.begin(), bullets_.end(),
-            [](std::unique_ptr<BaseBullet>& bullet)
-            {
-                if (!bullet->IsActive()) {
-                    bullet->Finalize();
-                    return true;
-                }
-                return false;
-            }),
-            bullets_.end()
-        );
-
         // 全弾更新
         for (std::unique_ptr<BaseBullet>& bullet : bullets_) {
             bullet->Update();
         }
+        // 非アクティブ削除
+        bullets_.erase(std::remove_if(bullets_.begin(), bullets_.end(),
+            [](const auto& bullet) {
+                return !bullet->IsActive();
+            }),
+            bullets_.end()
+        );
     }
 
     void BulletManager::Draw() {

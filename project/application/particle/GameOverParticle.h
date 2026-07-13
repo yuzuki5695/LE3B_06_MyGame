@@ -10,10 +10,13 @@ namespace MyGame {
 	class GameOverParticle : public SceneParticleBase {
 	public:
 		struct PartEmitter {
-			MyEngine::Object3d* target = nullptr;
 			std::unique_ptr<BaseEmitter> emitter;
+			MyEngine::Vector3 targettranslate;
 			float timer = 0.0f;
 			bool enable = true;
+			float emitInterval_ = 0.0f;
+			float deltaTime = 0.0f;
+			float nextEmitTime;
 		};
 	public: // メンバ関数
 		/// <summary>
@@ -25,13 +28,16 @@ namespace MyGame {
 		/// </summary>
 		void Update() override;
 	private: // メンバ変数
-		std::vector<PartEmitter> emitters_;
+		std::array<PartEmitter, 2> emitters_;
 		MyEngine::ParticleSpawnData playerSpawnData_{};
 		MyEngine::ParticleSpawnRandom playerRandom_;
-		float deltaTime;
-		float emitInterval_ ;
+
+		PartEmitter emitter01_;
+		PartEmitter emitter02_;
 	public:
 		// setter	
-		void SetTargets(const std::vector<MyEngine::Object3d*>& parts);
+		void SetTarget(uint32_t index, const MyEngine::Vector3& translate);	
+
+
 	};
 }
