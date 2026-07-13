@@ -1,6 +1,7 @@
 #pragma once
 #include <BaseBullet.h>
 #include <Collider.h>
+#include <CollisionManager.h>
 
 namespace MyGame {
     /// <summary>
@@ -9,9 +10,13 @@ namespace MyGame {
     class EnemyBullet : public BaseBullet {
     public: // メンバ関数
         /// <summary>
-        /// 終了処理
+        /// デストラクタ
         /// </summary>
-        void Finalize() override;
+        ~EnemyBullet() override {
+            if (collider_) {
+                CollisionManager::GetInstance()->UnregisterCollider(collider_.get());
+            }
+        }
         /// <summary>
         /// 初期化処理
         /// </summary>

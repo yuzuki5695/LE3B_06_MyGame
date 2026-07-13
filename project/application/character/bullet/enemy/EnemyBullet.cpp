@@ -1,6 +1,5 @@
 #include "EnemyBullet.h"
 #include <ModelManager.h>
-#include <CollisionManager.h>
 #include <CollisionConfig.h>
 #include <LineRenderer.h>
 // AssetGeneratorからインクルード
@@ -12,11 +11,6 @@ using namespace AssetGen::LoadResourceID::Models;
 namespace MyGame {
 
     using namespace CollisionConfig;
-
-    void EnemyBullet::Finalize() {
-        //コライダーの登録解除
-        CollisionManager::GetInstance()->UnregisterCollider(collider_.get());
-    }
 
     void EnemyBullet::Initialize(const MyEngine::Transform& transform, const MyEngine::Vector3& velocity) {
         // 基底の初期化
