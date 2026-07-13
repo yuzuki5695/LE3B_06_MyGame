@@ -21,6 +21,9 @@ using namespace Easing;
 
 namespace MyGame {
 
+    ///====================================================
+    /// 初期化処理
+    ///====================================================
     void GamePlayCamera::Initialize(Camera* camera) {
         // カメラのステートを設定
         stateData_.type = CameraType::Main;
@@ -34,6 +37,7 @@ namespace MyGame {
         // サブカメラ登録
         CameraManager::GetInstance()->GetCameraSet().AddSubCamera("Sub", std::move(subCam));
 
+        // メンバ変数の初期化
         speed_ = 0.3f;
         currentSegment_ = 0;
         prevForward_ = { 0,0,1 };
@@ -62,7 +66,9 @@ namespace MyGame {
         prevBezierPos_ = bezierPos_;
         railVelocity_ = {};
     }
-
+    ///====================================================
+    /// 更新処理
+    ///====================================================
     void GamePlayCamera::Update(Camera* camera) {
         if (!camera) return;
 
@@ -82,6 +88,9 @@ namespace MyGame {
             UpdateSubCamera();
             break;
         }
+        ///------------------------------------------
+        /// デバッグ描画
+        ///------------------------------------------
 #ifdef _DEBUG
         if (camera) {
             LineRenderer::GetInstance()->AddRailLine(GetRailPoints(), { 1.0f, 1.0f, 0.0f, 1.0f });
@@ -91,7 +100,9 @@ namespace MyGame {
         }
 #endif
     }
-
+    ///====================================================
+    /// レールカメラをプレイヤーの相対移動に合わせて更新する処理
+    ///====================================================
     void GamePlayCamera::UpdateRailCamera(Camera* camera) {
         // レール更新可能か判定
         if (!CanUpdateRail()) { return; }
@@ -115,7 +126,9 @@ namespace MyGame {
         camera->SetTranslate(bezierPos_);
         camera->SetRotate({ pitch, yaw, 0.0f });
     }
-
+    ///====================================================
+    /// レール更新可能かどうか判定
+    ///====================================================
     bool GamePlayCamera::CanUpdateRail() const {
         // ベジェデータがない
         if (!bezierdata_) { return false; }
@@ -126,7 +139,9 @@ namespace MyGame {
         // それ以外は更新可能
         return true;
     }
-
+    ///==================================================== 
+    /// レール移動更新
+    ///====================================================
     void GamePlayCamera::UpdateRailMovement() {
         // 現在のセグメントの終点を取得
         const auto& points = bezierdata_->points;
@@ -154,7 +169,9 @@ namespace MyGame {
             bezierPos_ += dir * speed_;
         }
     }
-
+    ///====================================================  
+    /// レールの未来位置を計算する
+    ///==================================================== 
     Vector3 GamePlayCamera::CalculateFuturePosition(const std::vector<BezierPoint>& points) const {
         // 現在のセグメントの終点を取得
         Vector3 currentEnd = points[currentSegment_ + 1].controlPoint.controlPoint;
@@ -178,7 +195,9 @@ namespace MyGame {
         // 未来位置を返す
         return futurePos;
     }
-
+    ///==================================================== 
+    /// レール回転更新
+    ///==================================================== 
     void GamePlayCamera::UpdateRailRotation() {
         // ベジェデータから現在のセグメントの制御点を取得
         const auto& points = bezierdata_->points;
@@ -196,7 +215,9 @@ namespace MyGame {
         // 現在の前方ベクトルを保存して次回の更新で使用する
         prevForward_ = forward_;
     }
-
+    ///==================================================== 
+    /// サブカメラをプレイヤーの相対移動に合わせて更新する処理 
+    ///==================================================== 
     void GamePlayCamera::UpdateSubCamera() {
         Camera* subCam = CameraManager::GetInstance()->GetActiveCamera();
         if (!subCam || !player_) return;
@@ -219,7 +240,9 @@ namespace MyGame {
             subCam->SetRotate({ pitch, yaw, 0.0f });
         }
     }
-
+    ///====================================================
+    /// レールの進行率を取得する
+    ///====================================================
     float GamePlayCamera::GetProgress() const {
         if (!bezierdata_ || bezierdata_->points.size() < 2 || totalRailLength_ <= 0.0f) {
             return 0.0f;
