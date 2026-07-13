@@ -29,6 +29,9 @@ namespace MyGame {
     }
 
     void SceneEmitterManager::Initialize() {
+        // 古いシーンのエミッターを破棄する
+        Clear();
+
         // 現在のシーン状況を確認
         // SceneManagerが管理している実行中シーンから名前を取得する
         std::string currentScene = SceneManager::GetInstance()->GetCurrentScene()->GetSceneName();

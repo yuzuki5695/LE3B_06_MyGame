@@ -3,9 +3,8 @@
 #include <CameraManager.h>
 #include <SceneEmitterManager.h>
 
-using namespace MyEngine::MatrixVector;
-
 using namespace MyEngine;
+using namespace MatrixVector;
 
 namespace MyGame {
 
