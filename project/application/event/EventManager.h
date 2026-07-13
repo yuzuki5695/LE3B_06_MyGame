@@ -7,7 +7,7 @@ namespace MyGame {
     /// </summary>
     class EventManager {
     private: // シングルトンインスタンス
-        static EventManager* instance;
+        static EventManager* instance_;
         // コピーコンストラクタを防ぐ
         EventManager(EventManager&) = delete;
         EventManager& operator=(EventManager&) = delete;

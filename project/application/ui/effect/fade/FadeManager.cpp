@@ -15,22 +15,22 @@ using namespace MyEngine;
 
 namespace MyGame {
     // シングルトン用インスタンス
-    std::unique_ptr<FadeManager> FadeManager::instance = nullptr;
+    std::unique_ptr<FadeManager> FadeManager::instance_ = nullptr;
 
     ///====================================================
     /// シングルトンインスタンスの取得
     ///====================================================
     FadeManager* FadeManager::GetInstance() {
-        if (!instance) {
-            instance = std::make_unique<FadeManager>();
+        if (!instance_) {
+            instance_ = std::make_unique<FadeManager>();
         }
-        return instance.get();
+        return instance_.get();
     }
     ///====================================================
     /// 終了処理
     ///====================================================
     void FadeManager::Finalize() {
-        instance.reset();  // `delete` 不要
+        instance_.reset();  // `delete` 不要
     }
 
     void FadeManager::Update() {

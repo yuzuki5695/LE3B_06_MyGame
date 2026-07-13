@@ -5,21 +5,21 @@ using namespace MyEngine;
 using namespace MyGame;
 
 // シングルトン用インスタンス
-std::unique_ptr<CollisionManager> CollisionManager::instance = nullptr;
+std::unique_ptr<CollisionManager> CollisionManager::instance_ = nullptr;
 
 ///====================================================
 /// シングルトンインスタンスの取得
 ///====================================================
 CollisionManager* CollisionManager::GetInstance() {
-    if (instance == nullptr) {
-        instance = std::unique_ptr<CollisionManager>(new CollisionManager());
+    if (instance_ == nullptr) {
+        instance_ = std::unique_ptr<CollisionManager>(new CollisionManager());
     }
-    return instance.get();
+    return instance_.get();
 }
 
 // 終了
 void CollisionManager::Finalize() {
-    instance.reset();  // `delete` 不要
+    instance_.reset();  // `delete` 不要
 }
 
 void CollisionManager::CheckAllCollisions() {

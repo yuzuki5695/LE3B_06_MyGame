@@ -9,13 +9,13 @@ namespace MyEngine {
 	const std::string ImGuiManager::kFontPath = "Resources/Fonts/Debug/NotoSansJP-VF.ttf";
 	const float ImGuiManager::kDefaultFontSize = 15.0f;
 
-	ImGuiManager* ImGuiManager::instance = nullptr;
+	ImGuiManager* ImGuiManager::instance_ = nullptr;
 
 	ImGuiManager* ImGuiManager::GetInstance() {
-		if (instance == nullptr) {
-			instance = new ImGuiManager;
+		if (instance_ == nullptr) {
+			instance_ = new ImGuiManager;
 		}
-		return instance;
+		return instance_;
 	}
 
 	void ImGuiManager::Finalize() {
@@ -25,8 +25,8 @@ namespace MyEngine {
 		ImGui_ImplWin32_Shutdown();
 		ImGui::DestroyContext();
 #endif // USE_IMGUI
-		delete instance;
-		instance = nullptr;
+		delete instance_;
+		instance_ = nullptr;
 	}
 
 	void ImGuiManager::Initialize([[maybe_unused]] WinApp* winApp, [[maybe_unused]] DirectXCommon* DxCommon, [[maybe_unused]] SrvManager* srvManager) {

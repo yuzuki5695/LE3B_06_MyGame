@@ -16,19 +16,19 @@ using namespace AssetGen::LoadResourceID::Models;
 namespace MyGame {
 
     // 静的メンバ変数の定義
-    std::unique_ptr<StageManager> StageManager::instance = nullptr;
+    std::unique_ptr<StageManager> StageManager::instance_ = nullptr;
 
     // シングルトンインスタンスの取得
     StageManager* StageManager::GetInstance() {
-        if (!instance) {
-            instance = std::make_unique<StageManager>();
+        if (!instance_) {
+            instance_ = std::make_unique<StageManager>();
         }
-        return instance.get();
+        return instance_.get();
     }
 
     // 終了
     void StageManager::Finalize() {
-        instance.reset();  // `delete` 不要
+        instance_.reset();  // `delete` 不要
     }
 
     void StageManager::Initialize() {

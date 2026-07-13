@@ -23,8 +23,8 @@ namespace MyEngine {
         /// エディタ全体で共通の登録管理を行うため
         /// </summary>
         static EditorEntityRegistry& Instance() {
-            static EditorEntityRegistry instance;
-            return instance;
+            static EditorEntityRegistry instance_;
+            return instance_;
         }
         /// <summary>
         /// オブジェクト情報を登録する

@@ -10,20 +10,20 @@ using namespace MyEngine;
 
 namespace MyGame {
     // 静的メンバ変数の定義
-    std::unique_ptr<UIManager> UIManager::instance = nullptr;
+    std::unique_ptr<UIManager> UIManager::instance_ = nullptr;
 
     // シングルトンインスタンスの取得
     UIManager* UIManager::GetInstance() {
-        if (!instance) {
-            instance = std::make_unique<UIManager>();
+        if (!instance_) {
+            instance_ = std::make_unique<UIManager>();
         }
-        return instance.get();
+        return instance_.get();
     }
 
     // 終了
     void UIManager::Finalize() {
         // シーンマネージャのインスタンスの解放
-        instance.reset();
+        instance_.reset();
     }
 
     void UIManager::Initialize() {

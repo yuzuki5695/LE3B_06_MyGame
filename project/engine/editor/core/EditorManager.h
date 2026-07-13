@@ -12,7 +12,7 @@ namespace MyEngine {
 	/// </summary>
 	class EditorManager {
 	private: // シングルトン
-		static std::unique_ptr<EditorManager> instance; // インスタンス
+		static std::unique_ptr<EditorManager> instance_; // インスタンス
 
 		EditorManager(EditorManager&) = delete;
 		EditorManager& operator=(EditorManager&) = delete;

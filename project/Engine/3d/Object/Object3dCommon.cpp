@@ -16,19 +16,19 @@ using namespace MyEngine::ResourceFactory;
 
 namespace MyEngine {
     // 静的メンバ変数の定義
-    std::unique_ptr<Object3dCommon> Object3dCommon::instance = nullptr;
+    std::unique_ptr<Object3dCommon> Object3dCommon::instance_ = nullptr;
 
     // シングルトンインスタンスの取得
     Object3dCommon* Object3dCommon::GetInstance() {
-        if (!instance) {
-            instance = std::make_unique<Object3dCommon>();
+        if (!instance_) {
+            instance_ = std::make_unique<Object3dCommon>();
         }
-        return instance.get();
+        return instance_.get();
     }
 
     // 終了
     void Object3dCommon::Finalize() {
-        instance.reset();  // `delete` 不要
+        instance_.reset();  // `delete` 不要
     }
 
     void Object3dCommon::Initialize(DirectXCommon* dxCommon, DsvManager* dsvManager) {

@@ -17,7 +17,7 @@ namespace MyEngine {
 	class ImGuiManager
 	{
 	private:
-		static ImGuiManager* instance;
+		static ImGuiManager* instance_;
 
 		ImGuiManager() = default;
 		~ImGuiManager() = default;

@@ -15,7 +15,7 @@ namespace MyEngine {
 	// 3Dオブジェクト共通部
 	class ParticleCommon {
 	private:
-		static std::unique_ptr<ParticleCommon> instance;
+		static std::unique_ptr<ParticleCommon> instance_;
 
 		ParticleCommon(ParticleCommon&) = delete;
 		ParticleCommon& operator=(ParticleCommon&) = delete;

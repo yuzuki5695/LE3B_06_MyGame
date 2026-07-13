@@ -15,7 +15,7 @@ namespace MyEngine {
 
 	class ParticleGroupfactory {
 	private:
-		static std::unique_ptr<ParticleGroupfactory> instance;
+		static std::unique_ptr<ParticleGroupfactory> instance_;
 
 		ParticleGroupfactory(ParticleGroupfactory&) = delete;
 		ParticleGroupfactory& operator=(ParticleGroupfactory&) = delete;

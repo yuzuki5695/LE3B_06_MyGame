@@ -7,9 +7,6 @@ namespace MyEngine {
     using namespace MatrixVector;
 
     namespace MathUtil {
-        ///====================================================
-        /// 球面線形補間 (Slerp)
-        ///====================================================
         Vector3 Slerp(const Vector3& v0, const Vector3& v1, float t) {
             float dot = Dot(v0, v1);
             dot = std::clamp(dot, -1.0f, 1.0f); // 安全クランプ
@@ -18,10 +15,7 @@ namespace MyEngine {
             Vector3 relative = Normalize(v1 - v0 * dot);
             return Normalize(v0 * cosf(theta) + relative * sinf(theta));
         }
-        ///====================================================
-        /// LookAt 用の回転計算（簡易版）
-        /// forward: 向きベクトル
-        ///====================================================
+
         Vector3 LookAtRotation(const Vector3& forward) {
             Vector3 rot;
             rot.y = atan2f(forward.x, forward.z); // Yaw
@@ -58,6 +52,15 @@ namespace MyEngine {
                 v.w * m.m[3][3];
 
             return result;
+        }
+
+        float LerpAngle(float a, float b, float t) {
+            float diff = b - a;
+
+            while (diff > 3.141592f)  diff -= 6.283184f;
+            while (diff < -3.141592f) diff += 6.283184f;
+
+            return a + diff * t;
         }
     }
 }

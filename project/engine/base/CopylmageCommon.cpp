@@ -10,19 +10,19 @@ using namespace Microsoft::WRL;
 
 namespace MyEngine {
     // 静的メンバ変数の定義
-    std::unique_ptr<CopylmageCommon> CopylmageCommon::instance = nullptr;
+    std::unique_ptr<CopylmageCommon> CopylmageCommon::instance_ = nullptr;
 
     // シングルトンインスタンスの取得
     CopylmageCommon* CopylmageCommon::GetInstance() {
-        if (!instance) {
-            instance = std::make_unique<CopylmageCommon>();
+        if (!instance_) {
+            instance_ = std::make_unique<CopylmageCommon>();
         }
-        return instance.get();
+        return instance_.get();
     }
 
     // 終了
     void CopylmageCommon::Finalize() {
-        instance.reset();  // `delete` 不要
+        instance_.reset();  // `delete` 不要
     }
 
     void CopylmageCommon::Initialize(DirectXCommon* dxCommon, SrvManager* srvManager, RtvManager* rtvManager, DsvManager* dsvManager) {

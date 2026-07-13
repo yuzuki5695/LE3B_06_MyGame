@@ -14,7 +14,7 @@ namespace MyEngine {
     class CameraManager {
     private: 
 		// シングルトンインスタンス
-        static std::unique_ptr<CameraManager> instance;
+        static std::unique_ptr<CameraManager> instance_;
 
         CameraManager(CameraManager&) = delete;
         CameraManager& operator=(CameraManager&) = delete;

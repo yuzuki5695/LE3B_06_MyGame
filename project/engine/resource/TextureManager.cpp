@@ -12,18 +12,18 @@ namespace MyEngine {
 	// ImGuiで0番目に使用するため、1番から使用
 	uint32_t TextureManager::KSRVIndexTop = 1;
 
-	TextureManager* TextureManager::instance = nullptr;
+	TextureManager* TextureManager::instance_ = nullptr;
 
 	TextureManager* TextureManager::GetInstance() {
-		if (instance == nullptr) {
-			instance = new TextureManager;
+		if (instance_ == nullptr) {
+			instance_ = new TextureManager;
 		}
-		return instance;
+		return instance_;
 	}
 
 	void TextureManager::Finalize() {
-		delete instance;
-		instance = nullptr;
+		delete instance_;
+		instance_ = nullptr;
 	}
 
 	void TextureManager::Initialize(DirectXCommon* birectxcommon, SrvManager* srvmanager) {

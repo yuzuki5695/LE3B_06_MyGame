@@ -1,18 +1,18 @@
 #include "ModelManager.h"
 
 namespace MyEngine {
-	ModelManager* ModelManager::instance = nullptr;
+	ModelManager* ModelManager::instance_ = nullptr;
 
 	ModelManager* ModelManager::GetInstance() {
-		if (instance == nullptr) {
-			instance = new ModelManager;
+		if (instance_ == nullptr) {
+			instance_ = new ModelManager;
 		}
-		return instance;
+		return instance_;
 	}
 
 	void ModelManager::Finalize() {
-		delete instance;
-		instance = nullptr;
+		delete instance_;
+		instance_ = nullptr;
 	}
 
 	void ModelManager::Initialize(DirectXCommon* dxCommon) {

@@ -10,7 +10,7 @@ namespace MyEngine {
 	// 箱の共通部
 	class SkyboxCommon {
 	private:
-		static std::unique_ptr<SkyboxCommon> instance;
+		static std::unique_ptr<SkyboxCommon> instance_;
 
 		SkyboxCommon(SkyboxCommon&) = delete;
 		SkyboxCommon& operator=(SkyboxCommon&) = delete;

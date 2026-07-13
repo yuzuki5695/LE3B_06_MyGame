@@ -7,7 +7,7 @@ namespace MyEngine {
     /// </summary>
     class LineCommon {
     private:
-        static std::unique_ptr<LineCommon> instance;
+        static std::unique_ptr<LineCommon> instance_;
 
         LineCommon(LineCommon&) = delete;
         LineCommon& operator=(LineCommon&) = delete;

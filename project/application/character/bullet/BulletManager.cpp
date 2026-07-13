@@ -10,17 +10,17 @@ using namespace MyEngine;
 
 namespace MyGame {
     // シングルトン用インスタンス
-    BulletManager* BulletManager::instance = nullptr;
+    BulletManager* BulletManager::instance_ = nullptr;
 
     ///====================================================
     /// シングルトンインスタンスの取得
     ///====================================================
     BulletManager* BulletManager::GetInstance() {
         // まだインスタンスが生成されていなければ作成
-        if (instance == nullptr) {
-            instance = new BulletManager;
+        if (instance_ == nullptr) {
+            instance_ = new BulletManager;
         }
-        return instance;
+        return instance_;
     }
 
     ///====================================================
@@ -28,8 +28,8 @@ namespace MyGame {
     ///====================================================
     void BulletManager::Finalize() {
         // インスタンスを削除してnullptrに戻す
-        delete instance;
-        instance = nullptr;
+        delete instance_;
+        instance_ = nullptr;
     }
 
     void BulletManager::Initialize() {

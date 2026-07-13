@@ -12,19 +12,19 @@
 
 namespace MyEngine {
     // 静的メンバ変数の定義
-    std::unique_ptr<EditorManager> EditorManager::instance = nullptr;
+    std::unique_ptr<EditorManager> EditorManager::instance_ = nullptr;
 
     // シングルトンインスタンスの取得
     EditorManager* EditorManager::GetInstance() {
-        if (!instance) {
-            instance = std::make_unique<EditorManager>();
+        if (!instance_) {
+            instance_ = std::make_unique<EditorManager>();
         }
-        return instance.get();
+        return instance_.get();
     }
 
     // 終了
     void EditorManager::Finalize() {
-        instance.reset();  // `delete` 不要
+        instance_.reset();  // `delete` 不要
     }
 
     void EditorManager::Initialize() {

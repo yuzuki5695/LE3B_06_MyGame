@@ -12,19 +12,19 @@ using namespace MyEngine;
 namespace MyGame {
 
     // 静的メンバ変数の定義
-    std::unique_ptr<EnemyListEditor> EnemyListEditor::instance = nullptr;
+    std::unique_ptr<EnemyListEditor> EnemyListEditor::instance_ = nullptr;
 
     // シングルトンインスタンスの取得
     EnemyListEditor* EnemyListEditor::GetInstance() {
-        if (!instance) {
-            instance = std::make_unique<EnemyListEditor>();
+        if (!instance_) {
+            instance_ = std::make_unique<EnemyListEditor>();
         }
-        return instance.get();
+        return instance_.get();
     }
 
     // 終了
     void EnemyListEditor::Finalize() {
-        instance.reset();  // `delete` 不要
+        instance_.reset();  // `delete` 不要
     }
     void EnemyListEditor::Initialize() {
 #ifdef USE_IMGUI

@@ -8,7 +8,7 @@ namespace MyGame {
     /// </summary>
     class FadeManager {
 	private: // シングルトンインスタンス
-        static std::unique_ptr<FadeManager> instance;
+        static std::unique_ptr<FadeManager> instance_;
 
         FadeManager(FadeManager&) = delete;
         FadeManager& operator=(FadeManager&) = delete;

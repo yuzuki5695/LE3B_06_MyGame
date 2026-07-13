@@ -9,19 +9,19 @@ namespace MyEngine {
     using namespace ResourceFactory;
 
     // 静的メンバ変数の定義
-    std::unique_ptr<ParticleGroupfactory> ParticleGroupfactory::instance = nullptr;
+    std::unique_ptr<ParticleGroupfactory> ParticleGroupfactory::instance_ = nullptr;
 
     // シングルトンインスタンスの取得
     ParticleGroupfactory* ParticleGroupfactory::GetInstance() {
-        if (!instance) {
-            instance = std::make_unique<ParticleGroupfactory>();
+        if (!instance_) {
+            instance_ = std::make_unique<ParticleGroupfactory>();
         }
-        return instance.get();
+        return instance_.get();
     }
 
     // 終了
     void ParticleGroupfactory::Finalize() {
-        instance.reset();  // `delete` 不要
+        instance_.reset();  // `delete` 不要
     }
 
     bool ParticleGroupfactory::Initialize(const std::string& name, const std::string& textureFilepath, std::unordered_map<std::string, ParticleGroup>* particleGroups) {

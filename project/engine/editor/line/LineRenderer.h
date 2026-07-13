@@ -23,7 +23,7 @@ namespace MyEngine {
             float thickness = 0.07f;              // ラインの太さ
         };
     private:
-        static std::unique_ptr<LineRenderer> instance;
+        static std::unique_ptr<LineRenderer> instance_;
 
         LineRenderer(LineRenderer&) = delete;
         LineRenderer& operator=(LineRenderer&) = delete;

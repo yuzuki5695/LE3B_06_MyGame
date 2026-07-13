@@ -18,19 +18,19 @@ namespace MyEngine {
     using CameraRegistry = std::unordered_map<std::string, CameraCreator>;
 
     // 静的メンバ変数の定義
-    std::unique_ptr<CameraManager> CameraManager::instance = nullptr;
+    std::unique_ptr<CameraManager> CameraManager::instance_ = nullptr;
 
     // シングルトンインスタンスの取得
     CameraManager* CameraManager::GetInstance() {
-        if (!instance) {
-            instance = std::make_unique<CameraManager>();
+        if (!instance_) {
+            instance_ = std::make_unique<CameraManager>();
         }
-        return instance.get();
+        return instance_.get();
     }
 
     // 終了
     void CameraManager::Finalize() {
-        instance.reset();  // `delete` 不要
+        instance_.reset();  // `delete` 不要
     }
 
     void CameraManager::Initialize(const std::string& sceneName) {

@@ -5,20 +5,20 @@ using namespace Microsoft::WRL;
 
 namespace MyEngine {
     // 静的メンバ変数の定義
-    std::unique_ptr<SoundLoader> SoundLoader::instance = nullptr;
+    std::unique_ptr<SoundLoader> SoundLoader::instance_ = nullptr;
 
     // シングルトンインスタンスの取得
     SoundLoader* SoundLoader::GetInstance() {
-        if (!instance) {
-            instance = std::make_unique<SoundLoader>();
+        if (!instance_) {
+            instance_ = std::make_unique<SoundLoader>();
         }
-        return instance.get();
+        return instance_.get();
     }
 
     // 終了
     void SoundLoader::Finalize() {
         GetIXAudio2();
-        instance.reset();
+        instance_.reset();
     }
 
     void SoundLoader::Initialize() {

@@ -3,19 +3,19 @@
 
 namespace MyEngine {
     // 静的メンバ変数の定義
-    std::unique_ptr<SoundPlayer> SoundPlayer::instance = nullptr;
+    std::unique_ptr<SoundPlayer> SoundPlayer::instance_ = nullptr;
 
     // シングルトンインスタンスの取得
     SoundPlayer* SoundPlayer::GetInstance() {
-        if (!instance) {
-            instance = std::make_unique<SoundPlayer>();
+        if (!instance_) {
+            instance_ = std::make_unique<SoundPlayer>();
         }
-        return instance.get();
+        return instance_.get();
     }
 
     // 終了
     void SoundPlayer::Finalize() {
-        instance.reset();
+        instance_.reset();
     }
 
     void SoundPlayer::Initialize(SoundLoader* soundLoader) {
