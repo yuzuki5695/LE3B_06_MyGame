@@ -15,7 +15,7 @@ namespace MyEngine {
 	class CopylmageCommon
 	{
 	private:
-		static std::unique_ptr<CopylmageCommon> instance;
+		static std::unique_ptr<CopylmageCommon> instance_;
 
 		CopylmageCommon(CopylmageCommon&) = delete;
 		CopylmageCommon& operator=(CopylmageCommon&) = delete;

@@ -12,7 +12,7 @@ namespace MyEngine {
 	class TextureManager
 	{
 	private:
-		static TextureManager* instance;
+		static TextureManager* instance_;
 
 		TextureManager() = default;
 		~TextureManager() = default;

@@ -12,7 +12,7 @@ namespace MyEngine {
 	/// </summary>
 	class Input	{
 	private: // シングルトンインスタンス
-		static std::unique_ptr<Input> instance; // インスタンス
+		static std::unique_ptr<Input> instance_; // インスタンス
 
 		Input(Input&) = delete;
 		Input& operator=(Input&) = delete;

@@ -9,7 +9,7 @@ namespace MyGame {
     /// </summary>
     class SceneEmitterManager {
     private: // シングルトンインスタンス
-        static std::unique_ptr<SceneEmitterManager> instance;
+        static std::unique_ptr<SceneEmitterManager> instance_;
 
         // シングルトン設計のためコピーを禁止
         SceneEmitterManager(const SceneEmitterManager&) = delete;

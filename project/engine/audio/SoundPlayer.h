@@ -5,7 +5,7 @@ namespace MyEngine {
     // 音声再生
     class SoundPlayer {
     private:
-        static std::unique_ptr<SoundPlayer> instance;
+        static std::unique_ptr<SoundPlayer> instance_;
 
         SoundPlayer(SoundPlayer&) = delete;
         SoundPlayer& operator=(SoundPlayer&) = delete;

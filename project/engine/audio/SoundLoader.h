@@ -40,7 +40,7 @@ namespace MyEngine {
     class SoundLoader
     {
     private:
-        static std::unique_ptr<SoundLoader> instance;
+        static std::unique_ptr<SoundLoader> instance_;
 
         SoundLoader(SoundLoader&) = delete;
         SoundLoader& operator=(SoundLoader&) = delete;

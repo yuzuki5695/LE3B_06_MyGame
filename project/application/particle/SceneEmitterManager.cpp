@@ -11,21 +11,21 @@ using namespace MyEngine;
 namespace MyGame {
 
     // 静的メンバ変数の定義
-    std::unique_ptr<SceneEmitterManager> SceneEmitterManager::instance = nullptr;
+    std::unique_ptr<SceneEmitterManager> SceneEmitterManager::instance_ = nullptr;
 
     // シングルトンインスタンスの取得
     SceneEmitterManager* SceneEmitterManager::GetInstance() {
-        if (!instance) {
-            instance = std::make_unique<SceneEmitterManager>();
+        if (!instance_) {
+            instance_ = std::make_unique<SceneEmitterManager>();
         }
-        return instance.get();
+        return instance_.get();
     }
 
     // 終了
     void SceneEmitterManager::Finalize() {
         Clear();
         // シーンマネージャのインスタンスの解放
-        instance.reset();
+        instance_.reset();
     }
 
     void SceneEmitterManager::Initialize() {

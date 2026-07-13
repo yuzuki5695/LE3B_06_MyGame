@@ -21,19 +21,19 @@ namespace MyEngine {
     using namespace ResourceFactory;
 
     // 静的メンバ変数の定義
-    std::unique_ptr<ParticleManager> ParticleManager::instance = nullptr;
+    std::unique_ptr<ParticleManager> ParticleManager::instance_ = nullptr;
 
     // シングルトンインスタンスの取得
     ParticleManager* ParticleManager::GetInstance() {
-        if (!instance) {
-            instance = std::make_unique<ParticleManager>();
+        if (!instance_) {
+            instance_ = std::make_unique<ParticleManager>();
         }
-        return instance.get();
+        return instance_.get();
     }
 
     // 終了
     void ParticleManager::Finalize() {
-        instance.reset();
+        instance_.reset();
     }
 
     void ParticleManager::ClearAll() {

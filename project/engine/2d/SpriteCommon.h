@@ -7,7 +7,7 @@ namespace MyEngine {
 	// スプライト共通部
 	class SpriteCommon {
 	private:
-		static std::unique_ptr<SpriteCommon> instance;
+		static std::unique_ptr<SpriteCommon> instance_;
 
 		SpriteCommon(SpriteCommon&) = delete;
 		SpriteCommon& operator=(SpriteCommon&) = delete;

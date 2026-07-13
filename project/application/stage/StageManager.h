@@ -9,7 +9,7 @@ namespace MyGame {
     /// </summary>
     class StageManager {
 	private: // シングルトンインスタンス
-        static std::unique_ptr<StageManager> instance;
+        static std::unique_ptr<StageManager> instance_;
 
         StageManager(StageManager&) = delete;
         StageManager& operator=(StageManager&) = delete;

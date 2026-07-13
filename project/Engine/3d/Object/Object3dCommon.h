@@ -13,7 +13,7 @@ namespace MyEngine {
 	// 3Dオブジェクト共通部
 	class Object3dCommon {
 	private:
-		static std::unique_ptr<Object3dCommon> instance;
+		static std::unique_ptr<Object3dCommon> instance_;
 
 		Object3dCommon(Object3dCommon&) = delete;
 		Object3dCommon& operator=(Object3dCommon&) = delete;

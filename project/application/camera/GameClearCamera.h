@@ -11,36 +11,32 @@ namespace MyGame {
         /// 初期化処理
         /// </summary>
         /// <param name="camera"></param>
-        void Initialize(MyEngine::Camera* camera)override;
-        /// <summary>
+        void Initialize(MyEngine::Camera* camera) override;
+        /// <summary
         /// 更新処理 
         /// </summary>
         /// <param name="camera"></param>
         void Update(MyEngine::Camera* camera) override;
+    private: // 内部関数
         /// <summary>
-        /// 注視状態の更新
+        /// ターゲットへ向くようカメラの回転を更新する
         /// </summary>
         /// <param name="camera"></param>
         void UpdateLookAt(MyEngine::Camera* camera);
-
-        float LerpAngle(float a, float b, float t) {
-            float diff = b - a;
-
-            while (diff > 3.141592f)  diff -= 6.283184f;
-            while (diff < -3.141592f) diff += 6.283184f;
-
-            return a + diff * t;
-        }
-
-    private:
-        MyEngine::Vector3 transform_ = { 0.0f, 0.0f, -100.0f };
-        float startX = -15.0f;
-        float startX2 = 0.0f;
-        float endX = 0.0f;
-        float t = 0.0f;
-		float easeT = 0.0f;
-
-		bool lookAtInitialized_ = false; // 注視状態の初期化フラグ
-
+    private: // 定数
+        static constexpr float kMoveDistance = 8.0f;          // カメラの移動距離
+        static constexpr float kMoveSpeed = 0.02f;            // 移動補間速度
+        static constexpr float kRotationLerp = 0.1f;          // 回転補間係数
+        static constexpr float kMinDirectionLength = 0.0001f; // 正規化を行う最小ベクトル長
+    private: // メンバ変数
+        // カメラの位置
+        MyEngine::Vector3 transform_;
+        // カメラ移動用
+        float moveStartX_;      // カメラ移動の開始位置
+        float moveEndX_;        // カメラ移動の終了位置
+        float moveTimer_;       // 移動補間用タイマー
+        float moveEase_;        // イージング後の補間係数
+        // 注視初期化フラグ
+        bool isLookAtInitialized_;
     };
 }

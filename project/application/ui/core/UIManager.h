@@ -9,7 +9,7 @@ namespace MyGame {
     /// </summary>
     class UIManager {
     private: // シングルトンインスタンス
-        static std::unique_ptr<UIManager> instance;
+        static std::unique_ptr<UIManager> instance_;
 
         // シングルトン設計のためコピーを禁止
         UIManager(const UIManager&) = delete;

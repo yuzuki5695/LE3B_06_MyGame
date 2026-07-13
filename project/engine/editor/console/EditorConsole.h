@@ -10,7 +10,7 @@ namespace MyEngine {
     /// </summary>
     class EditorConsole {
     private: // シングルトン
-        static std::unique_ptr<EditorConsole> instance; // インスタンス
+        static std::unique_ptr<EditorConsole> instance_; // インスタンス
 
         EditorConsole(EditorConsole&) = delete;
         EditorConsole& operator=(EditorConsole&) = delete;

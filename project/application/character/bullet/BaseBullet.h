@@ -41,7 +41,7 @@ namespace MyGame {
 
     protected: // メンバ変数
         // ポインタ
-        std::unique_ptr<MyEngine::Object3d> bullet;
+        std::unique_ptr<MyEngine::Object3d> bullet; // 
         bool active_ = true;
         MyEngine::Transform transform_; // 現在の位置
         MyEngine::Vector3 velocity_; // 毎フレームの移動量（速度ベクトル）

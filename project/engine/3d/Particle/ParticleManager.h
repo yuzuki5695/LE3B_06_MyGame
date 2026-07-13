@@ -13,7 +13,7 @@ namespace MyEngine {
 	// 3Dオブジェクト共通部
 	class ParticleManager {
 	public:
-		static std::unique_ptr<ParticleManager> instance;
+		static std::unique_ptr<ParticleManager> instance_;
 
 		ParticleManager(ParticleManager&) = delete;
 		ParticleManager& operator=(ParticleManager&) = delete;

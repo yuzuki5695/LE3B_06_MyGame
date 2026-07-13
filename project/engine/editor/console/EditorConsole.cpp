@@ -9,19 +9,19 @@ namespace MyEngine {
     using namespace EditorTypes::console;
 
     // 静的メンバ変数の定義
-    std::unique_ptr<EditorConsole> EditorConsole::instance = nullptr;
+    std::unique_ptr<EditorConsole> EditorConsole::instance_ = nullptr;
 
     // シングルトンインスタンスの取得
     EditorConsole* EditorConsole::GetInstance() {
-        if (!instance) {
-            instance = std::make_unique<EditorConsole>();
+        if (!instance_) {
+            instance_ = std::make_unique<EditorConsole>();
         }
-        return instance.get();
+        return instance_.get();
     }
 
     // 終了
     void EditorConsole::Finalize() {
-        instance.reset();  // `delete` 不要
+        instance_.reset();  // `delete` 不要
     }
 
     void EditorConsole::Clear() {

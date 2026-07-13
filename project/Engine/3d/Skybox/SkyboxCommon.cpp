@@ -8,19 +8,19 @@ using namespace Microsoft::WRL;
 
 namespace MyEngine {
     // 静的メンバ変数の定義
-    std::unique_ptr<SkyboxCommon> SkyboxCommon::instance = nullptr;
+    std::unique_ptr<SkyboxCommon> SkyboxCommon::instance_ = nullptr;
 
     // シングルトンインスタンスの取得
     SkyboxCommon* SkyboxCommon::GetInstance() {
-        if (!instance) {
-            instance = std::make_unique<SkyboxCommon>();
+        if (!instance_) {
+            instance_ = std::make_unique<SkyboxCommon>();
         }
-        return instance.get();
+        return instance_.get();
     }
 
     // 終了
     void SkyboxCommon::Finalize() {
-        instance.reset();  // `delete` 不要
+        instance_.reset();  // `delete` 不要
     }
 
     void SkyboxCommon::Initialize(DirectXCommon* dxCommon, DsvManager* dsvManager) {

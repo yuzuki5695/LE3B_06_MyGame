@@ -5,14 +5,14 @@
 
 namespace MyEngine {
 	// 静的メンバ変数の定義
-	std::unique_ptr<SceneManager> SceneManager::instance = nullptr;
+	std::unique_ptr<SceneManager> SceneManager::instance_ = nullptr;
 
 	// シングルトンインスタンスの取得
 	SceneManager* SceneManager::GetInstance() {
-		if (!instance) {
-			instance = std::make_unique<SceneManager>();
+		if (!instance_) {
+			instance_ = std::make_unique<SceneManager>();
 		}
-		return instance.get();
+		return instance_.get();
 	}
 
 	// 終了
@@ -23,7 +23,7 @@ namespace MyEngine {
 			scene_ = nullptr;
 		}
 		// シーンマネージャのインスタンスの解放
-		instance.reset();
+		instance_.reset();
 	}
 
 	void SceneManager::Update() {

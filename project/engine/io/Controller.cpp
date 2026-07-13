@@ -8,8 +8,8 @@
 namespace MyEngine {
     Controller* Controller::GetInstance() {
         // インスタンス取得
-        static Controller instance;
-        return &instance;
+        static Controller instance_;
+        return &instance_;
     }
 
     void Controller::Update() {

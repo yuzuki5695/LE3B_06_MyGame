@@ -5,7 +5,7 @@ namespace MyEngine {
 	// シェーダーコンパイル
 	class ShaderCompiler {
 	private:
-		static std::unique_ptr<ShaderCompiler> instance;
+		static std::unique_ptr<ShaderCompiler> instance_;
 
 		ShaderCompiler(ShaderCompiler&) = delete;
 		ShaderCompiler& operator=(ShaderCompiler&) = delete;

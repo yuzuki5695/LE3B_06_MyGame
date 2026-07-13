@@ -9,7 +9,7 @@ namespace MyEngine {
 	{
 	private:
 
-		static ModelManager* instance;
+		static ModelManager* instance_;
 
 		ModelManager() = default;
 		~ModelManager() = default;

@@ -12,19 +12,19 @@ namespace MyEngine {
     using namespace LineTypes;
 
     // 静的メンバ変数の定義
-    std::unique_ptr<LineRenderer> LineRenderer::instance = nullptr;
+    std::unique_ptr<LineRenderer> LineRenderer::instance_ = nullptr;
 
     // シングルトンインスタンスの取得
     LineRenderer* LineRenderer::GetInstance() {
-        if (!instance) {
-            instance = std::make_unique<LineRenderer>();
+        if (!instance_) {
+            instance_ = std::make_unique<LineRenderer>();
         }
-        return instance.get();
+        return instance_.get();
     }
 
     // 終了
     void LineRenderer::Finalize() {
-        instance.reset();  // `delete` 不要
+        instance_.reset();  // `delete` 不要
     }
 
     void LineRenderer::Initialize() {

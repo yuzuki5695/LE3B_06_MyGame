@@ -8,19 +8,19 @@ namespace MyEngine {
 	using Microsoft::WRL::ComPtr;
 
       // 静的メンバ変数の定義
-    std::unique_ptr<LineCommon> LineCommon::instance = nullptr;
+    std::unique_ptr<LineCommon> LineCommon::instance_ = nullptr;
 
     // シングルトンインスタンスの取得
     LineCommon* LineCommon::GetInstance() {
-        if (!instance) {
-            instance = std::make_unique<LineCommon>();
+        if (!instance_) {
+            instance_ = std::make_unique<LineCommon>();
         }
-        return instance.get();
+        return instance_.get();
     }
 
     // 終了
     void LineCommon::Finalize() {
-        instance.reset();  // `delete` 不要
+        instance_.reset();  // `delete` 不要
     }
 
 	void LineCommon::Initialize(DirectXCommon* dxCommon) {

@@ -9,7 +9,7 @@ namespace MyGame {
 
     class EnemyListEditor {
     private:
-        static std::unique_ptr<EnemyListEditor> instance;
+        static std::unique_ptr<EnemyListEditor> instance_;
 
         EnemyListEditor(EnemyListEditor&) = delete;
         EnemyListEditor& operator=(EnemyListEditor&) = delete;

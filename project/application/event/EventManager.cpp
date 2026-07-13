@@ -3,17 +3,17 @@
 namespace MyGame {
 
     // シングルトン用インスタンス
-    EventManager* EventManager::instance = nullptr;
+    EventManager* EventManager::instance_ = nullptr;
 
     ///====================================================
     /// シングルトンインスタンスの取得
     ///====================================================
     EventManager* EventManager::GetInstance() {
         // まだインスタンスが生成されていなければ作成
-        if (instance == nullptr) {
-            instance = new EventManager;
+        if (instance_ == nullptr) {
+            instance_ = new EventManager;
         }
-        return instance;
+        return instance_;
     }
 
     ///====================================================
@@ -21,8 +21,8 @@ namespace MyGame {
     ///====================================================
     void EventManager::Finalize() {
         // インスタンスを削除してnullptrに戻す
-        delete instance;
-        instance = nullptr;
+        delete instance_;
+        instance_ = nullptr;
     }
 
     void EventManager::EventStart(Event::EventState state) {

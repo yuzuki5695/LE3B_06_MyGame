@@ -12,7 +12,7 @@ namespace MyGame {
     /// </summary>
     class CollisionManager {
     private: // シングルトンインスタンス
-        static std::unique_ptr<CollisionManager> instance;
+        static std::unique_ptr<CollisionManager> instance_;
         // コピーコンストラクタを防ぐ
         CollisionManager(const CollisionManager&) = delete;
         CollisionManager& operator=(const CollisionManager&) = delete;

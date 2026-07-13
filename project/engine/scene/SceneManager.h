@@ -8,7 +8,7 @@ namespace MyEngine {
 	// シーン管理
 	class SceneManager {
 	private: // シングルトンインスタンス
-		static std::unique_ptr<SceneManager> instance;
+		static std::unique_ptr<SceneManager> instance_;
 
 		SceneManager(SceneManager&) = delete;
 		SceneManager& operator=(SceneManager&) = delete;
