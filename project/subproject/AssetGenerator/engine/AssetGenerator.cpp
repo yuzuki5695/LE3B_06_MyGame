@@ -129,5 +129,5 @@ void AssetGenerator::Execute() {
 }
 
 void AssetGenerator::Finalize() {
-    std::cout << "処理が完了しました。" << std::endl;
+    std::cout << "[AssetGenerator] Process completed." << std::endl;
 }

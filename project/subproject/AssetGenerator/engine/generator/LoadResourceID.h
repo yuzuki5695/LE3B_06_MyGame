@@ -13,6 +13,7 @@ namespace LoadResourceID {
     // ==========================================================
     namespace Audio {
         constexpr const char* Alarm01 = "Audio/Alarm01.wav";
+        constexpr const char* hit = "Audio/hit.wav";
     } // namespace Audio
 
     // ==========================================================

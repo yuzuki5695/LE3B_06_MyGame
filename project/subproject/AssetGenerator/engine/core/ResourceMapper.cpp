@@ -78,7 +78,7 @@ void ResourceMapper::SaveIfChanged(const std::string& content, const std::filesy
 
         // --- 内容が同じなら何もしない ---
         if (buffer.str() == content) {
-            std::cout << "変更なし: " << path.string() << std::endl;
+            std::cout << "[ResourceMapper] No changes: " << path.string() << std::endl;
             return;
         }
     }
@@ -87,7 +87,7 @@ void ResourceMapper::SaveIfChanged(const std::string& content, const std::filesy
     std::ofstream ofs(path);
     ofs << content;
 
-    std::cout << "更新: " << path.string() << std::endl;
+    std::cout << "[ResourceMapper] Updated: " << path.string() << std::endl;
 }
 
 std::string ResourceMapper::ReadAllText(const fs::path& path) {
