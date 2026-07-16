@@ -25,39 +25,72 @@ namespace MyEngine {
         this->soundLoader_ = soundLoader;
     }
 
-    void SoundPlayer::SoundPlayWave(const SoundData& soundData, bool loop) {
+    void SoundPlayer::SoundPlayWave(const SoundData& soundData, bool loop, float volume) {
         HRESULT result;
 
-        // 波形フォーマットを元にSourceVoiceの生成
         IXAudio2SourceVoice* pSourceVoice = nullptr;
-        result = soundLoader_->GetIXAudio2()->CreateSourceVoice(&pSourceVoice, &soundData.wfex);
+
+        result = soundLoader_->GetIXAudio2()->CreateSourceVoice(
+            &pSourceVoice,
+            &soundData.wfex);
+
         assert(SUCCEEDED(result));
 
-        // 再生する波形データの設定
+        // 音量設定
+        pSourceVoice->SetVolume(volume);
+
         XAUDIO2_BUFFER buf{};
         buf.pAudioData = soundData.pBuffer;
         buf.AudioBytes = soundData.bufferSize;
 
-        // 再生をループするかどうか
         if (loop) {
-            // 無限ループ
             buf.LoopCount = XAUDIO2_LOOP_INFINITE;
         } else {
-            // 1度だけ再生
             buf.Flags = XAUDIO2_END_OF_STREAM;
         }
 
-        // 波形データの再生
         result = pSourceVoice->SubmitSourceBuffer(&buf);
+        assert(SUCCEEDED(result));
+
         result = pSourceVoice->Start();
+        assert(SUCCEEDED(result));
     }
 
-    void SoundPlayer::SoundUnload(SoundData* soundData)
-    {
+    void SoundPlayer::SoundUnload(SoundData* soundData) {
         // バッファのメモリを解放
         delete[] soundData->pBuffer;
         soundData->pBuffer = 0;
         soundData->bufferSize = 0;
         soundData->wfex = {};
+    }
+
+    void SoundPlayer::SoundPlayBGM(const SoundData& soundData) {
+        // すでにBGMが鳴っていたら止める
+        StopBGM();
+
+        HRESULT result;
+
+        result = soundLoader_->GetIXAudio2()->CreateSourceVoice(&bgmVoice_, &soundData.wfex);
+        assert(SUCCEEDED(result));
+
+        XAUDIO2_BUFFER buf{};
+        buf.pAudioData = soundData.pBuffer;
+        buf.AudioBytes = soundData.bufferSize;
+        buf.LoopCount = XAUDIO2_LOOP_INFINITE;
+
+        result = bgmVoice_->SubmitSourceBuffer(&buf);
+        assert(SUCCEEDED(result));
+
+        result = bgmVoice_->Start();
+        assert(SUCCEEDED(result));
+    }
+
+    void SoundPlayer::StopBGM() {
+        if (bgmVoice_) {
+            bgmVoice_->Stop(0);
+            bgmVoice_->FlushSourceBuffers();
+            bgmVoice_->DestroyVoice();
+            bgmVoice_ = nullptr;
+        }
     }
 }
