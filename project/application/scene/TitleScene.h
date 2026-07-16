@@ -1,7 +1,6 @@
 #pragma once
 #include <BaseScene.h>
 #include <Player.h>
-#include <SoundLoader.h>
 
 namespace MyGame {
     /// <summary>
@@ -49,10 +48,6 @@ namespace MyGame {
         float floatAmplitude_ = 2.0f;
 
         bool isCameraTriggered_ = false;
-      
-        // 決定音
-        MyEngine::SoundData pushSE_;
-        // タイトルBGM
-//        MyEngine::SoundData titleBGM_;
+    
     };
 }
