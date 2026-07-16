@@ -307,9 +307,6 @@
     <Filter Include="ソース ファイル\Application\Character\Enemy\Component">
       <UniqueIdentifier>{61879419-1938-46bf-9a6b-528d1c6d651e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ソース ファイル\Application\Character\Player\omponent">
-      <UniqueIdentifier>{f1514230-bfac-493f-a432-f79baa720490}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ソース ファイル\Application\Character\Player\State">
       <UniqueIdentifier>{5bdb69e4-01f5-4daf-9094-631d99b3292a}</UniqueIdentifier>
     </Filter>
@@ -381,6 +378,9 @@
     </Filter>
     <Filter Include="ヘッダー ファイル\Application\Character\Player\State">
       <UniqueIdentifier>{2fdf9cbb-c2d5-4d35-a5d8-8eb6c98868d0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Application\Character\Player\Component">
+      <UniqueIdentifier>{f1514230-bfac-493f-a432-f79baa720490}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -577,7 +577,7 @@
       <Filter>ソース ファイル\Application\Loader</Filter>
     </ClCompile>
     <ClCompile Include="application\character\player\Component\PlayerMove.cpp">
-      <Filter>ソース ファイル\Application\Character\Player\omponent</Filter>
+      <Filter>ソース ファイル\Application\Character\Player\Component</Filter>
     </ClCompile>
     <ClCompile Include="application\character\basestate\CharacterState.cpp">
       <Filter>ソース ファイル\Application\Character\Basestate</Filter>
@@ -586,7 +586,7 @@
       <Filter>ソース ファイル\Application\Character\Player\State</Filter>
     </ClCompile>
     <ClCompile Include="application\character\player\Component\PlayerReticle.cpp">
-      <Filter>ソース ファイル\Application\Character\Player\omponent</Filter>
+      <Filter>ソース ファイル\Application\Character\Player\Component</Filter>
     </ClCompile>
     <ClCompile Include="application\character\bullet\player\PlayerBullet.cpp">
       <Filter>ソース ファイル\Application\Character\Bullet</Filter>
@@ -595,7 +595,7 @@
       <Filter>ソース ファイル\Application\Character\Bullet</Filter>
     </ClCompile>
     <ClCompile Include="application\character\player\Component\PlayerAttack.cpp">
-      <Filter>ソース ファイル\Application\Character\Player\omponent</Filter>
+      <Filter>ソース ファイル\Application\Character\Player\Component</Filter>
     </ClCompile>
     <ClCompile Include="application\ui\core\UIManager.cpp">
       <Filter>ソース ファイル\Application\Ui\Core</Filter>
@@ -634,7 +634,7 @@
       <Filter>ソース ファイル\Application\Ui\Scene</Filter>
     </ClCompile>
     <ClCompile Include="application\character\player\Component\PlayerDeath.cpp">
-      <Filter>ソース ファイル\Application\Character\Player\omponent</Filter>
+      <Filter>ソース ファイル\Application\Character\Player\Component</Filter>
     </ClCompile>
     <ClCompile Include="application\character\bullet\enemy\EnemyBullet.cpp">
       <Filter>ソース ファイル\Application\Character\Bullet</Filter>

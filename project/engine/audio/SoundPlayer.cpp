@@ -28,16 +28,12 @@ namespace MyEngine {
     void SoundPlayer::SoundPlayWave(const SoundData& soundData, bool loop, float volume) {
         HRESULT result;
 
-        IXAudio2SourceVoice* pSourceVoice = nullptr;
-
-        result = soundLoader_->GetIXAudio2()->CreateSourceVoice(
-            &pSourceVoice,
-            &soundData.wfex);
-
+        result = soundLoader_->GetIXAudio2()->CreateSourceVoice(&psourcevoice_, &soundData.wfex);
         assert(SUCCEEDED(result));
 
         // 音量設定
-        pSourceVoice->SetVolume(volume);
+        psourcevoice_->SetVolume(volume);
+        assert(SUCCEEDED(result));
 
         XAUDIO2_BUFFER buf{};
         buf.pAudioData = soundData.pBuffer;
@@ -49,10 +45,10 @@ namespace MyEngine {
             buf.Flags = XAUDIO2_END_OF_STREAM;
         }
 
-        result = pSourceVoice->SubmitSourceBuffer(&buf);
+        result = psourcevoice_->SubmitSourceBuffer(&buf);
         assert(SUCCEEDED(result));
 
-        result = pSourceVoice->Start();
+        result = psourcevoice_->Start();
         assert(SUCCEEDED(result));
     }
 
@@ -62,35 +58,11 @@ namespace MyEngine {
         soundData->pBuffer = 0;
         soundData->bufferSize = 0;
         soundData->wfex = {};
-    }
-
-    void SoundPlayer::SoundPlayBGM(const SoundData& soundData) {
-        // すでにBGMが鳴っていたら止める
-        StopBGM();
-
-        HRESULT result;
-
-        result = soundLoader_->GetIXAudio2()->CreateSourceVoice(&bgmVoice_, &soundData.wfex);
-        assert(SUCCEEDED(result));
-
-        XAUDIO2_BUFFER buf{};
-        buf.pAudioData = soundData.pBuffer;
-        buf.AudioBytes = soundData.bufferSize;
-        buf.LoopCount = XAUDIO2_LOOP_INFINITE;
-
-        result = bgmVoice_->SubmitSourceBuffer(&buf);
-        assert(SUCCEEDED(result));
-
-        result = bgmVoice_->Start();
-        assert(SUCCEEDED(result));
-    }
-
-    void SoundPlayer::StopBGM() {
-        if (bgmVoice_) {
-            bgmVoice_->Stop(0);
-            bgmVoice_->FlushSourceBuffers();
-            bgmVoice_->DestroyVoice();
-            bgmVoice_ = nullptr;
+        if (psourcevoice_) {
+            psourcevoice_->Stop(0);
+            psourcevoice_->FlushSourceBuffers();
+            psourcevoice_->DestroyVoice();
+            psourcevoice_ = nullptr;
         }
     }
 }

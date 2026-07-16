@@ -23,12 +23,8 @@ namespace MyEngine {
         void SoundPlayWave(const SoundData& soundData, bool loop, float volume);
         // 音声データ解放
         void SoundUnload(SoundData* soundData);
-        // BGM停止
-        void StopBGM();
-        // BGM再生
-        void SoundPlayBGM(const SoundData& soundData);
     private:
         SoundLoader* soundLoader_ = nullptr;
-        IXAudio2SourceVoice* bgmVoice_ = nullptr;
+        IXAudio2SourceVoice* psourcevoice_ = nullptr;
     };
 }

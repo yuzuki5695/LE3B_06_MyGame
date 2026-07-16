@@ -1,7 +1,8 @@
 {
     "Audio": {
         "Audio": [
-            "Audio/Alarm01.wav"
+            "Audio/Alarm01.wav",
+            "Audio/Bgsa.wav"
         ]
     }
 }

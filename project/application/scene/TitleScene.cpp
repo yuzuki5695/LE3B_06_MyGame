@@ -16,20 +16,30 @@
 #include <TitleUI.h>
 #include <SceneEmitterManager.h>
 #include <TitleParticle.h>
+#include <SoundPlayer.h>
+// AssetGeneratorからインクルード
+#include <subproject/AssetGenerator/engine/generator/LoadResourceID.h>
 
 using namespace MyEngine;
 using namespace Easing;
+using namespace AssetGen::LoadResourceID;
 
 namespace MyGame {
-
+    ///====================================================
+    /// 終了処理
+    ///====================================================
 	void TitleScene::Finalize() {
 		CameraManager::GetInstance()->Finalize(); // カメラマネージャの終了処理
 		FadeManager::GetInstance()->Finalize();   // フェードマネージャの終了処理
 		StageManager::GetInstance()->Finalize();  // ステージマネージャの終了処理
 		UIManager::GetInstance()->Finalize();     // UIマネージャの終了処理
 		SceneEmitterManager::GetInstance()->Finalize(); // パーティクルエミッターマネージャの終了処理
+		// オーディオの終了処理	
+		SoundPlayer::GetInstance()->SoundUnload(&pushSE_);   // 決定音の解放
 	}
-
+    ///====================================================
+    /// 初期化処理
+    ///====================================================
 	void TitleScene::Initialize() {
 		CameraManager::GetInstance()->Initialize(SceneName::TITLE);
 
@@ -50,12 +60,20 @@ namespace MyGame {
 		// パーティクルエミッターの初期化
 		SceneEmitterManager::GetInstance()->Initialize();
 		SceneEmitterManager::GetInstance()->GetEmitter<TitleParticle>()->SetObject3d(player_->GetObject3d());
-	}
 
+		// オーディオの読み込み		
+		pushSE_ = SoundLoader::SoundLoadWave(Audio::Bgsa);
+	}
+	///====================================================
+    /// 更新処理
+    ///====================================================
 	void TitleScene::Update() {
 #pragma region 全てのObject3d個々の更新処理				
 		// カメラマネージャの更新
 		CameraManager::GetInstance()->Update();
+		if (Input::GetInstance()->TriggerKey(DIK_S)) {
+			SoundPlayer::GetInstance()->SoundPlayWave(pushSE_, false, 0.2f);
+		}
 
 		// 移動処理
 		PlayerMotion();
@@ -80,7 +98,9 @@ namespace MyGame {
 		FadeManager::GetInstance()->Update();
 #pragma endregion 全てのSprite個々の更新処理
 	}
-
+    ///====================================================
+    /// 描画処理
+    ///====================================================
 	void TitleScene::Draw() {
 #pragma region 全てのObject3d個々の描画処理
 		// 箱オブジェクトの描画準備。3Dオブジェクトの描画に共通のグラフィックスコマンドを積む
