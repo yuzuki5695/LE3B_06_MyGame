@@ -52,7 +52,7 @@ namespace MyGame {
     private:
         std::vector<std::unique_ptr<BaseBullet>> bullets_;
         // 共通のコライダーサイズパラメータ
-        MyEngine::Vector3 commonPlayerBulletSize_ = { 1.0f, 1.0f, 1.0f };
-        MyEngine::Vector3 commonEnemyBulletSize_ = { 1.0f, 1.0f, 1.0f };
+        MyEngine::Vector3 commonplayerbulletsize_ = { 1.0f, 1.0f, 1.0f };
+        MyEngine::Vector3 commonenemybulletsize_ = { 1.0f, 1.0f, 1.0f };
     };
 }

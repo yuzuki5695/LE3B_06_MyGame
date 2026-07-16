@@ -11,7 +11,18 @@ using namespace AssetGen::LoadResourceID::Models;
 namespace MyGame {
 
     using namespace CollisionConfig;
-
+    
+    ///====================================================
+    /// デストラクタ
+    ///====================================================
+    EnemyBullet::~EnemyBullet() {
+        if (collider_) {
+            CollisionManager::GetInstance()->UnregisterCollider(collider_.get());
+        }
+    }
+    ///====================================================
+    /// 初期化処理
+    ///====================================================
     void EnemyBullet::Initialize(const MyEngine::Transform& transform, const MyEngine::Vector3& velocity) {
         // 基底の初期化
         BaseBullet::Initialize(transform, velocity);
@@ -37,29 +48,25 @@ namespace MyGame {
         // 初期位置設定
         bullet_->SetTranslate(transform_.translate);
     }
-
+    ///====================================================
+    /// 更新処理
+    ///====================================================
     void EnemyBullet::Update() {
-        // =============================
-        // ① 移動処理
-        // =============================
+        // 移動処理      
         transform_.translate += velocity_;
 
-        // =============================
-        // ② Objectに反映
-        // =============================
+        // Objectに反映
         if (bullet_) {
             bullet_->SetTranslate(transform_.translate);
             bullet_->Update();
         }
 
-        // =============================
-        // ③ 寿命処理
-        // =============================
+        // 寿命処理
         UpdateLifeTime(1.0f / 60.0f); // 仮で60FPS固定
-
         // OBB更新
         collider_->SetOBB(CollisionUtils::CreateOBB(bullet_.get(), collidersize_));
 #ifdef USE_IMGUI
+        // デバッグ描画 
         if (active_) {
             const auto& debug = LineRenderer::GetInstance()->GetDebugSettings();
             if (debug.enable && bullet_ && collider_) {
@@ -70,7 +77,9 @@ namespace MyGame {
         }
 #endif // USE_IMGUI
     }
-
+    ///====================================================
+    /// 描画処理
+    ///====================================================
     void EnemyBullet::Draw() {
         // アクティブでない場合は描画しない
         if (!active_) { return; }

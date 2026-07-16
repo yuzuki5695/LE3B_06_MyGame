@@ -12,11 +12,7 @@ namespace MyGame {
         /// <summary>
         /// デストラクタ
         /// </summary>
-        ~PlayerBullet() override {
-            if (collider_) {
-                CollisionManager::GetInstance()->UnregisterCollider(collider_.get());
-            }
-        }
+        ~PlayerBullet() override;
         /// <summary>
         /// 初期化処理
         /// </summary>

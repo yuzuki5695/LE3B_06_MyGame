@@ -12,11 +12,7 @@ namespace MyGame {
         /// <summary>
         /// デストラクタ
         /// </summary>
-        ~EnemyBullet() override {
-            if (collider_) {
-                CollisionManager::GetInstance()->UnregisterCollider(collider_.get());
-            }
-        }
+        ~EnemyBullet() override;
         /// <summary>
         /// 初期化処理
         /// </summary>
