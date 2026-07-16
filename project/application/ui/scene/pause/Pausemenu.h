@@ -39,12 +39,25 @@ namespace MyGame {
         /// 描画処理
         /// </summary>
         void Draw();
-
+        /// <summary>
+        /// キー入力による選択更新処理
+        /// </summary>
         void keyUpdate();
+        /// <summary>
+        /// 選択中矢印の位置更新処理
+        /// </summary>
         void UpdateArrowPositions();
+        /// <summary>
+        /// 選択されたコマンド実行処理
+        /// </summary>
         void ExecuteCommand();
-
+        /// <summary>
+        /// 操作説明画面への移動演出更新
+        /// </summary>
         void UpdateOperationMove();
+        /// <summary>
+        /// コマンドUI位置更新処理
+        /// </summary>
         void UpdateCommandPosition();
     private: // メンバ変数
         bool isActive_;  // メニューがアクティブか
@@ -79,19 +92,14 @@ namespace MyGame {
         static constexpr float kPanelLeftX = -1280.0f;
         MyEngine::Vector2 panel1Start_;
         MyEngine::Vector2 panel1End_;
-
         MyEngine::Vector2 panel2Start_;
         MyEngine::Vector2 panel2End_;
         bool isOperationMode_ = false;
         bool isCommandRunning_ = false; // コマンド実行中
-
-
         float frame_;           // 現在の経過フレーム
         const float kMaxFrame = 30.0f; // アニメーションにかける時間（30フレーム = 約0.5秒）   
         bool isfinished_ = false; // 閉じる演出が完全に終わった
-
         float panelStartOffsetY_;
-
         float openTimer_;
         bool isOpening_;
         bool isClosing_;
