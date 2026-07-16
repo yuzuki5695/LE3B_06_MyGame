@@ -7,9 +7,9 @@ namespace MyGame {
         /// </summary>
         enum class EventPhase {
             Phase1,   // 第1段階（演出開始)
-            Phase2,
-            Phase3,
-            Phase4,
+            Phase2,   // 第2段階
+            Phase3,   // 第3段階
+            Phase4,   // 第4段階
             End,      // 完了
         };
 

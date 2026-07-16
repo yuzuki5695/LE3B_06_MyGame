@@ -11,23 +11,31 @@
 #include <ModelManager.h>
 #include <random>
 #include <SceneEmitterManager.h>
-#include <GameOverParticle.h>
 // AssetGeneratorからインクルード
 #include <subproject/AssetGenerator/engine/generator/LoadResourceID.h>
+#include <SoundPlayer.h>
+#include <input.h>
+#include <GameOverUI.h>
 
 using namespace MyEngine;
 using namespace AssetGen::LoadResourceID::Models;
+using namespace AssetGen::LoadResourceID;
 
 namespace MyGame {
-
+	///====================================================
+    /// 終了処理
+    ///====================================================
 	void GameOverScene::Finalize() {
 		CameraManager::GetInstance()->Finalize(); // カメラマネージャの終了処理
 		FadeManager::GetInstance()->Finalize();   // フェードマネージャの終了処理
 		UIManager::GetInstance()->Finalize();     // UIマネージャの終了処理 
 		StageManager::GetInstance()->Finalize();  // ステージマネージャの終了処理
-		SceneEmitterManager::GetInstance()->Finalize(); // パーティクルエミッターマネージャの終了処理
+		// オーディオの開放処理
+		SoundPlayer::GetInstance()->SoundUnload(&button_);
 	}
-
+    ///====================================================
+    /// 初期化処理
+    ///====================================================
 	void GameOverScene::Initialize() {
 		// カメラマネージャの初期化       
 		CameraManager::GetInstance()->Initialize(SceneName::GAMEOVER);
@@ -71,9 +79,8 @@ namespace MyGame {
 		}
 		std::vector<Object3d*> partTargets;
 		partTargets.reserve(partsList.size());  // 最適化
-
 		for (auto& part : partsList) {
-			partTargets.push_back(part.obj.get());  // unique_ptr → raw pointer に変換
+			partTargets.push_back(part.obj.get());
 		}
 		// ステージマネージャの初期化
 		StageManager::GetInstance()->Initialize();
@@ -81,17 +88,24 @@ namespace MyGame {
 		FadeManager::GetInstance()->StartFade(FadeType::FadeIn, FadeStyle::SilhouetteExplode, 1.0f);
 		// UIマネージャの初期化
 		UIManager::GetInstance()->Initialize();
-		// パーティクルエミッターの初期化
-		SceneEmitterManager::GetInstance()->Initialize();
-
-	
+		// オーディオの読み込み		
+		button_ = SoundLoader::SoundLoadWave(Audio::push);
 	}
-
+	///====================================================
+    /// 更新処理
+	///====================================================
 	void GameOverScene::Update() {
 		// カメラマネージャの更新
 		CameraManager::GetInstance()->Update();
 
 #pragma region 全てのObject3d個々の更新処理			
+		if (UIManager::GetInstance()->GetUI<GameOverUI>()->GetPhase() == 2) {
+			// 入力処理
+			if (Input::GetInstance()->TriggerKey(DIK_RETURN)) {
+				// 音を鳴らす
+				SoundPlayer::GetInstance()->SoundPlayWave(button_, false, 0.4f);
+			}
+		}
 
 		//  落下処理
 		UpdateParts();
@@ -101,22 +115,7 @@ namespace MyGame {
 		}
 
 		// ステージマネージャの更新
-		StageManager::GetInstance()->Update();		
-		SceneEmitterManager::GetInstance()->GetEmitter<GameOverParticle>()->SetTarget(0, partsList[0].obj.get()->GetTranslate());
-		SceneEmitterManager::GetInstance()->GetEmitter<GameOverParticle>()->SetTarget(1, partsList[3].obj.get()->GetTranslate());
-
-
-
-
-
-
-
-
-
-	    // エミッターマネージャの更新
-        SceneEmitterManager::GetInstance()->Update();
-        // パーティクル更新
-        ParticleManager::GetInstance()->Update();
+		StageManager::GetInstance()->Update();
 #pragma endregion 全てのObject3d個々の更新処理
 
 #pragma region 全てのSprite個々の更新処理
@@ -126,7 +125,9 @@ namespace MyGame {
 		FadeManager::GetInstance()->Update();
 #pragma endregion 全てのSprite個々の更新処理
 	}
-
+    ///====================================================
+    /// 描画処理
+    ///====================================================
 	void GameOverScene::Draw() {
 #pragma region 全てのObject3d個々の描画処理
 		// 箱オブジェクトの描画準備。3Dオブジェクトの描画に共通のグラフィックスコマンドを積む
@@ -145,7 +146,6 @@ namespace MyGame {
 		StageManager::GetInstance()->Draw();
 		// パーティクルの描画準備。パーティクルの描画に共通のグラフィックスコマンドを積む 
 		ParticleCommon::GetInstance()->Commondrawing();
-		ParticleManager::GetInstance()->Draw();
 #pragma endregion 全てのObject3d個々の描画処理
 
 #pragma region 全てのSprite個々の描画処理 

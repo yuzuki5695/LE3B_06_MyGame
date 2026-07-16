@@ -2,7 +2,9 @@
 #include <BaseCharacter.h>
 
 namespace MyGame {
-
+    ///====================================================
+    /// ステート変更
+    ///====================================================
     void CharacterState::ChangeState(BaseCharacter& character, std::unique_ptr<ICharacterState> nextState) {
         // 現在のステートが存在する場合、終了処理を呼び出す
         if (currentState_) {
@@ -16,7 +18,9 @@ namespace MyGame {
             currentState_->Enter(character);
         }
     }
-
+    ///====================================================
+    /// ステート更新
+    ///====================================================
     void CharacterState::Update(BaseCharacter& character) {
         // 現在のステートに更新処理を委譲
         if (currentState_) {

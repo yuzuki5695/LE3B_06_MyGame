@@ -20,10 +20,11 @@ namespace MyEngine {
         // 初期化
         void Initialize(SoundLoader* soundLoader);
         // 音声再生
-        void SoundPlayWave(const SoundData& soundData, bool loop);
+        void SoundPlayWave(const SoundData& soundData, bool loop, float volume);
         // 音声データ解放
         void SoundUnload(SoundData* soundData);
     private:
         SoundLoader* soundLoader_ = nullptr;
+        IXAudio2SourceVoice* psourcevoice_ = nullptr;
     };
 }

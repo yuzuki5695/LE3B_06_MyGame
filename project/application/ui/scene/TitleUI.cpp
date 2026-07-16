@@ -66,7 +66,7 @@ namespace MyGame {
 		titleChars_.push_back(std::move(startUI));
 		// 初期化
 		timer_ = 0.0f;
-		isFinished_ = false;
+		isfinished_ = false;
 	}
 
 	void TitleUI::Update() {
@@ -109,7 +109,7 @@ namespace MyGame {
 		if (timer_ >= lastEndTime) {
 			// 通常演出終了
 			if (!PlayingOut) {
-				isFinished_ = true;
+				isfinished_ = true;
 			}
 
 			// 逆演出終了

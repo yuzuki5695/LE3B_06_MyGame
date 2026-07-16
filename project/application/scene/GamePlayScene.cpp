@@ -19,7 +19,6 @@
 #include <CollisionManager.h>
 #include <CameraDefs.h>
 #include <PlayerState.h>
-#include <EnemyListEditor.h>
 #include <LineRenderer.h>
 #include <SceneEmitterManager.h>
 // AssetGeneratorからインクルード
@@ -31,7 +30,9 @@ using namespace AssetGen;
 using namespace AssetGen::LoadResourceID::Models;
 
 namespace MyGame {
-
+    ///====================================================
+    /// 終了処理
+    ///====================================================
     void GamePlayScene::Finalize() {
         BulletManager::GetInstance()->Finalize();    // 弾マネージャの終了処理
         StageManager::GetInstance()->Finalize();     // ステージマネージャの終了処理
@@ -40,10 +41,11 @@ namespace MyGame {
         FadeManager::GetInstance()->Finalize();      // フェードマネージャの終了処理
         CollisionManager::GetInstance()->Finalize(); // 衝突マネージャの終了処理
         EventManager::GetInstance()->Finalize();     // イベントマネージャの終了処理
-        EnemyListEditor::GetInstance()->Finalize();  // 敵リストエディタの終了処理
         SceneEmitterManager::GetInstance()->Finalize(); // パーティクルエミッターマネージャの終了処理
     }
-
+    ///====================================================
+    /// 初期化処理
+    ///====================================================
     void GamePlayScene::Initialize() {
         // カメラマネージャの初期化
         CameraManager::GetInstance()->Initialize(SceneName::GAMEPLAY);
@@ -72,9 +74,6 @@ namespace MyGame {
         enemySpawner_->Initialize();
         enemySpawner_->SetEnemies(&enemies_);    // 敵リストへの参照をセット
         enemySpawner_->SetPlayer(player_.get()); // プレイヤーへの参照をセット
-        // imgui
-        EnemyListEditor::GetInstance()->SetEnemies(&enemies_);
-
         // 最初のスポーン
         player_->SetEnemy(enemies_.empty() ? nullptr : enemies_.front().get());
 
@@ -95,14 +94,14 @@ namespace MyGame {
         gamened_ = false;
 #ifdef USE_IMGUI
         BulletManager::GetInstance()->Initialize();
-        // 敵のパラメータ
-        EnemyListEditor::GetInstance()->Initialize();
 #endif // USE_IMGUI     
         // パーティクルエミッターの初期化
         SceneEmitterManager::GetInstance()->Initialize();
         SceneEmitterManager::GetInstance()->GetEmitter<GamePlayParticle>()->SetPlayer(player_.get());
     }
-
+    ///====================================================
+    /// 更新処理
+    ///====================================================
     void GamePlayScene::Update() {
         // ゲーム開始イベントの開始判定
         if (!isGameStartEventDone_ && CameraManager::GetInstance()->GetCameraState().state == CameraDefs::CameraState::Default) {
@@ -225,8 +224,10 @@ namespace MyGame {
         FadeManager::GetInstance()->Update();
 
 #pragma endregion 全てのSprite個々の更新処理
-    }
-
+    }    
+    ///====================================================
+    /// 描画処理
+    ///====================================================
     void GamePlayScene::Draw() {
 #pragma region 全てのObject3d個々の描画処理
         // 箱オブジェクトの描画準備。3Dオブジェクトの描画に共通のグラフィックスコマンドを積む

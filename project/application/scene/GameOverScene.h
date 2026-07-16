@@ -1,6 +1,7 @@
 #pragma once
 #include <BaseScene.h>
 #include <Object3d.h>
+#include <SoundLoader.h>
 
 struct PartInfo {
     std::unique_ptr<MyEngine::Object3d> obj;
@@ -38,5 +39,7 @@ namespace MyGame {
     private: // メンバ変数      
         std::vector<PartInfo> partsList; // 複数のパーツ用
         uint32_t partCount_; // 生成するオブジェクト数
+        // 決定音
+        MyEngine::SoundData button_;
     };
 }

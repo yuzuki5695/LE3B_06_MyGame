@@ -4,14 +4,18 @@
 using namespace MyEngine;
 
 namespace MyGame {
-
+    ///==================================================== 
+    /// 死亡演出を開始する
+    ///====================================================
     void EnemyDeath::Start() {
         isPlaying_ = true;
-        isFinished_ = false;
+        isfinished_ = false;
         timer_ = 0.0f;
         duration_ = 0.5f;
-    }
-
+    }    
+    ///====================================================
+    /// 更新処理
+    ///====================================================
     void EnemyDeath::Update(Object3d* object) {
         if (!isPlaying_ || !object) {
             return;
@@ -21,28 +25,21 @@ namespace MyGame {
 
         float t = timer_ / duration_;
 
-        // =================================
         // 演出終了時
-        // =================================
         if (t >= 1.0f) {
             t = 1.0f;
             // 完全に0スケールで固定
             object->SetScale({ 0.0f, 0.0f, 0.0f });
-            isFinished_ = true;
+            isfinished_ = true;
             isPlaying_ = false;
             return;
         }
 
-        // =================================
         // 縮小
-        // =================================
         float scale = 1.0f - t;
 
         object->SetScale({ scale, scale, scale });
-
-        // =================================
         // ランダム回転
-        // =================================
         std::uniform_real_distribution<float> rotDist(-5.0f, 5.0f);
 
         Vector3 rot = object->GetRotate();
@@ -52,10 +49,7 @@ namespace MyGame {
         rot.z += rotDist(randomEngine_);
 
         object->SetRotate(rot);
-
-        // =================================
         // 吹っ飛び
-        // =================================
         std::uniform_real_distribution<float> moveDist(-0.2f, 0.2f);
         std::uniform_real_distribution<float> moveZDist(0.1f, 0.3f);
 

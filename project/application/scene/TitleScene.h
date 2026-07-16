@@ -1,6 +1,7 @@
 #pragma once
 #include <BaseScene.h>
 #include <Player.h>
+#include <SoundLoader.h>
 
 namespace MyGame {
     /// <summary>
@@ -26,28 +27,23 @@ namespace MyGame {
         /// 描画処理
         /// </summary>
         void Draw() override;
-
+        /// <summary>
+        /// プレイヤ―の動き
+        /// </summary>
         void PlayerMotion();
-
     private: // メンバ変数
         std::unique_ptr <Player> player_;
-
-
         MyEngine::Vector3 playeroffset_;
         bool isMoving_ = true;
-
-
-        float moveTimer_ = 0.0f;
+        float movetimer_ = 0.0f;
         float moveDuration_ = 2.0f; // 秒
-
         float startZ_ = -100.0f;
         float targetZ_ = 100.0f;
-
         float floatTime_ = 0.0f;
         float floatSpeed_ = 2.0f;
         float floatAmplitude_ = 2.0f;
-
         bool isCameraTriggered_ = false;
-    
+        // 決定音
+        MyEngine::SoundData button_; 
     };
 }

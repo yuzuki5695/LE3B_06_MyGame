@@ -7,14 +7,18 @@ using namespace MyEngine;
 using namespace MatrixVector;
 
 namespace MyGame {
-
+    ///====================================================
+    /// 初期化処理
+    ///====================================================
     void EnemySpawner::Initialize() {
         spawnInterval_ = 3.0f;   // 何秒ごと
         spawnTimer_ = 0.0f;
         spawnCount_ = 3;           // 1回で出す数
         isEventLocked_ = true;
     }
-
+    ///====================================================
+    /// 更新処理
+    ///====================================================
     void EnemySpawner::Update() {
         // イベント中はスポーン停止
         if (isEventLocked_) { return; }
@@ -26,7 +30,9 @@ namespace MyGame {
             spawnTimer_ = 0.0f;
         }
     }
-
+    ///====================================================
+    /// 敵のスポーン処理
+    ///====================================================
     void EnemySpawner::SpawnEnemies(int count) {
         GamePlayCamera* cam = CameraManager::GetInstance()->GetCurrentBehaviorAs<GamePlayCamera>();
         if (!cam || !player_) return;

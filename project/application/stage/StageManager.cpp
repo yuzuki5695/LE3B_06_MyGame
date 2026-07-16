@@ -30,7 +30,9 @@ namespace MyGame {
     void StageManager::Finalize() {
         instance_.reset();  // `delete` 不要
     }
-
+    ///====================================================
+    /// 初期化処理
+    ///====================================================
     void StageManager::Initialize() {
 		// テクスチャとモデルの読み込み
         TextureManager::GetInstance()->LoadTexture(stage::CubemapBox);
@@ -44,7 +46,9 @@ namespace MyGame {
         // クリアゲートの生成
         clearwall_ = Object3d::Create(Object::goal, Transform({ 1.0f, 1.0f, 1.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }));
     }
-
+    ///====================================================
+    /// 更新処理
+    ///====================================================
     void StageManager::Update() {
 
         // Skyboxの回転
@@ -60,7 +64,9 @@ namespace MyGame {
         // クリアゲートの更新処理
         clearwall_->Update();
     }
-
+    ///====================================================
+    /// 描画処理
+    ///====================================================
     void StageManager::Draw() {
         if (SceneManager::GetInstance()->IsCurrentScene(SceneName::GAMEPLAY)) {
             // クリアゲートの描画処理

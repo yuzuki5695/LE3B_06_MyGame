@@ -136,7 +136,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="application\character\enemy\component\EnemyAttack.cpp" />
     <ClCompile Include="application\character\enemy\component\EnemyDeath.cpp" />
     <ClCompile Include="application\character\enemy\Enemy.cpp" />
-    <ClCompile Include="application\character\enemy\EnemyListEditor.cpp" />
     <ClCompile Include="application\character\enemy\EnemySpawner.cpp" />
     <ClCompile Include="application\character\enemy\state\EnemyState.cpp" />
     <ClCompile Include="application\character\player\Component\PlayerAttack.cpp" />
@@ -151,7 +150,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="application\loader\CurveJsonLoader.cpp" />
     <ClCompile Include="application\loader\PlayerDataLoader.cpp" />
     <ClCompile Include="application\particle\GameClearParticle.cpp" />
-    <ClCompile Include="application\particle\GameOverParticle.cpp" />
     <ClCompile Include="application\particle\GamePlayparticle.cpp" />
     <ClCompile Include="application\particle\BaseEmitter.cpp" />
     <ClCompile Include="application\particle\SceneEmitterManager.cpp" />
@@ -246,7 +244,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\character\enemy\component\EnemyAttack.h" />
     <ClInclude Include="application\character\enemy\component\EnemyDeath.h" />
     <ClInclude Include="application\character\enemy\Enemy.h" />
-    <ClInclude Include="application\character\enemy\EnemyListEditor.h" />
     <ClInclude Include="application\character\enemy\EnemySpawner.h" />
     <ClInclude Include="application\character\enemy\EnemyType.h" />
     <ClInclude Include="application\character\enemy\state\EnemyState.h" />
@@ -255,7 +252,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\character\player\Component\PlayerMove.h" />
     <ClInclude Include="application\character\player\Component\PlayerReticle.h" />
     <ClInclude Include="application\character\player\Player.h" />
-    <ClInclude Include="application\character\player\PlayerData.h" />
     <ClInclude Include="application\character\player\State\PlayerState.h" />
     <ClInclude Include="application\collision\Collider.h" />
     <ClInclude Include="application\collision\ColliderCreateInfo.h" />
@@ -269,7 +265,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\loader\CurveJsonLoader.h" />
     <ClInclude Include="application\loader\PlayerDataLoader.h" />
     <ClInclude Include="application\particle\GameClearParticle.h" />
-    <ClInclude Include="application\particle\GameOverParticle.h" />
     <ClInclude Include="application\particle\GamePlayparticle.h" />
     <ClInclude Include="application\particle\BaseEmitter.h" />
     <ClInclude Include="application\particle\SceneParticleBase.h" />

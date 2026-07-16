@@ -58,7 +58,7 @@ namespace MyGame {
         closeSpeed_ = 17.0f;
 
         timefige_ = false;
-        isFinished_ = false;
+        isfinished_ = false;
     }
 
     void StartEvent::Update() {
@@ -157,7 +157,7 @@ namespace MyGame {
                 if (mission->alpha <= 0.7f)
                     back->alpha -= 0.05f;
                 if (back->alpha <= 0.0f && mission->alpha <= 0.0f) {
-                    isFinished_ = true;
+                    isfinished_ = true;
                 }
             }
 

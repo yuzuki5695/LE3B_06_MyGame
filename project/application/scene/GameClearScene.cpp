@@ -19,19 +19,31 @@
 #ifdef max
 #undef max
 #endif
+#include <SoundPlayer.h>
+// AssetGeneratorからインクルード
+#include <subproject/AssetGenerator/engine/generator/LoadResourceID.h>
 
 using namespace MyEngine;
 using namespace Easing;
+using namespace AssetGen::LoadResourceID;
+
 
 namespace MyGame {
+    ///====================================================
+    /// 終了処理
+    ///====================================================
     void GameClearScene::Finalize() {
         CameraManager::GetInstance()->Finalize(); // カメラマネージャの終了処理
         FadeManager::GetInstance()->Finalize();   // フェードマネージャの終了処理
         UIManager::GetInstance()->Finalize();     // UIマネージャの終了処理 
         StageManager::GetInstance()->Finalize();  // ステージマネージャの終了処理
-        SceneEmitterManager::GetInstance()->Finalize(); // パーティクルエミッターマネージャの終了処理
+        SceneEmitterManager::GetInstance()->Finalize(); // パーティクルエミッターマネージャの終了処理       
+        // オーディオの開放処理
+        SoundPlayer::GetInstance()->SoundUnload(&button_);
     }
-
+    ///====================================================
+    /// 初期化処理
+    ///====================================================
     void GameClearScene::Initialize() {
         CameraManager::GetInstance()->Initialize(SceneName::GAMECLEAR);
 
@@ -58,14 +70,18 @@ namespace MyGame {
         // パーティクルエミッターの初期化
         SceneEmitterManager::GetInstance()->Initialize();
         SceneEmitterManager::GetInstance()->GetEmitter<GameClearParticle>()->SetPlayer(player_.get());
+        // オーディオの読み込み		
+        button_ = SoundLoader::SoundLoadWave(Audio::push);
     }
-
+    ///====================================================
+    /// 更新処理
+    ///====================================================
     void GameClearScene::Update() {
         // カメラマネージャの更新
         CameraManager::GetInstance()->Update();
 
 #pragma region 全てのObject3d個々の更新処理
-
+        // 演出処理
         UpdateStep();
 
         // プレイヤ―の更新
@@ -86,7 +102,9 @@ namespace MyGame {
         FadeManager::GetInstance()->Update();
 #pragma endregion 全てのSprite個々の更新処理
     }
-
+    ///====================================================
+    /// 描画処理
+    ///====================================================
     void GameClearScene::Draw() {
 #pragma region 全てのObject3d個々の描画処理
         // 箱オブジェクトの描画準備。3Dオブジェクトの描画に共通のグラフィックスコマンドを積む
@@ -180,6 +198,8 @@ namespace MyGame {
                 UIManager::GetInstance()->GetUI<GameClearUI>()->StartBack();
                 UIManager::GetInstance()->GetUI<GameClearUI>()->SetMovestarted(false);
             }
+            // 音を鳴らす
+            SoundPlayer::GetInstance()->SoundPlayWave(button_, false, 0.4f);
             step2FinishPlayerEase_ = true;  // Y補完開始
         }
     }

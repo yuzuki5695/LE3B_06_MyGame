@@ -5,10 +5,6 @@
 #include <random>
 
 namespace MyGame {
-
-    // 前方宣言
-    //class Player;
-
     /// <summary>
 	/// 敵のスポーンを管理するクラス
     /// </summary>
@@ -28,15 +24,13 @@ namespace MyGame {
         /// <param name="count"></param>
         void SpawnEnemies(int count);
 	private: // メンバ変数
-        float spawnInterval_ = 3.0f;   // 何秒ごと
-        float spawnTimer_ = 0.0f;
-        int spawnCount_ = 4;           // 1回で出す数
-        std::vector<std::unique_ptr<Enemy>>* enemies_ = nullptr;
-
-        std::mt19937 randomEngine;               // 乱数生成器
-
-        Player* player_ = nullptr;
-        bool isEventLocked_ = false;
+        std::vector<std::unique_ptr<Enemy>>* enemies_ = nullptr;  // 敵リストへの参照
+        Player* player_ = nullptr;                                // プレイヤ―の参照
+        float spawnInterval_;        // 何秒ごと
+        float spawnTimer_;           // スポーン経過時間
+        int spawnCount_;             // 1回で出す数
+        std::mt19937 randomEngine;   // 乱数生成器
+        bool isEventLocked_ = false; // イベント中のスポーン停止フラグ
     public:
         void SetEnemies(std::vector<std::unique_ptr<Enemy>>* enemies) { enemies_ = enemies; }
         void SetPlayer(Player* player) { player_ = player; }

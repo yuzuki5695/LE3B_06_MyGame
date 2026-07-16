@@ -25,39 +25,44 @@ namespace MyEngine {
         this->soundLoader_ = soundLoader;
     }
 
-    void SoundPlayer::SoundPlayWave(const SoundData& soundData, bool loop) {
+    void SoundPlayer::SoundPlayWave(const SoundData& soundData, bool loop, float volume) {
         HRESULT result;
 
-        // 波形フォーマットを元にSourceVoiceの生成
-        IXAudio2SourceVoice* pSourceVoice = nullptr;
-        result = soundLoader_->GetIXAudio2()->CreateSourceVoice(&pSourceVoice, &soundData.wfex);
+        result = soundLoader_->GetIXAudio2()->CreateSourceVoice(&psourcevoice_, &soundData.wfex);
         assert(SUCCEEDED(result));
 
-        // 再生する波形データの設定
+        // 音量設定
+        psourcevoice_->SetVolume(volume);
+        assert(SUCCEEDED(result));
+
         XAUDIO2_BUFFER buf{};
         buf.pAudioData = soundData.pBuffer;
         buf.AudioBytes = soundData.bufferSize;
 
-        // 再生をループするかどうか
         if (loop) {
-            // 無限ループ
             buf.LoopCount = XAUDIO2_LOOP_INFINITE;
         } else {
-            // 1度だけ再生
             buf.Flags = XAUDIO2_END_OF_STREAM;
         }
 
-        // 波形データの再生
-        result = pSourceVoice->SubmitSourceBuffer(&buf);
-        result = pSourceVoice->Start();
+        result = psourcevoice_->SubmitSourceBuffer(&buf);
+        assert(SUCCEEDED(result));
+
+        result = psourcevoice_->Start();
+        assert(SUCCEEDED(result));
     }
 
-    void SoundPlayer::SoundUnload(SoundData* soundData)
-    {
+    void SoundPlayer::SoundUnload(SoundData* soundData) {
         // バッファのメモリを解放
         delete[] soundData->pBuffer;
         soundData->pBuffer = 0;
         soundData->bufferSize = 0;
         soundData->wfex = {};
+        if (psourcevoice_) {
+            psourcevoice_->Stop(0);
+            psourcevoice_->FlushSourceBuffers();
+            psourcevoice_->DestroyVoice();
+            psourcevoice_ = nullptr;
+        }
     }
 }

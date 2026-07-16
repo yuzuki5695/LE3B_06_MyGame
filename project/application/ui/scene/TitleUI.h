@@ -16,9 +16,18 @@ namespace MyGame {
             float delay;
             bool useCustomPos = false;
         };
-    public: // メンバ関数
+    public: // メンバ関数 
+        /// <summary>
+        /// 初期化処理
+        /// </summary>
         void Initialize() override;
+        /// <summary>
+        /// 毎フレームの更新処理
+        /// </summary>
         void Update() override;
+        /// <summary>
+        /// 描画処理
+        /// </summary>
         void Draw() override;
 
         void UpdateChar(TitleCharUI& ch, float t);
@@ -29,12 +38,12 @@ namespace MyGame {
 
         void StartReverse() {
             PlayingOut = true;
-            isFinished_ = false;
+            isfinished_ = false;
             timer_ = 0.0f;
             isReverseFinished_ = false;
         }
 
-        bool IsFinished() const { return isFinished_; }
+        bool IsFinished() const { return isfinished_; }
 
         bool IsReverseFinished() const { return isReverseFinished_; }
 
@@ -48,7 +57,7 @@ namespace MyGame {
         const float kInterval = 0.1f;
         float timer_ = 0.0f;
 
-        bool isFinished_ = false;
+        bool isfinished_ = false;
         bool isStarted_ = false;
         bool PlayingOut = false;
         bool isReverseFinished_ = false; 

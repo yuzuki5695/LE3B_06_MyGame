@@ -7,7 +7,22 @@
 using namespace MyEngine;
 
 namespace MyGame {
-
+    ///====================================================
+    /// 初期化処理
+    ///====================================================
+	void PlayerMove::Initialize() {
+		isDashing_ = false;      // ダッシュ中フラグ
+		dashTimer_ = 0.0f;       // ダッシュ経過時間
+		coolDownTimer_ = 0.0f;   // ダッシュ再使用までの時間
+		kDashDuration = 0.5f; // ダッシュの持続時間
+		kCoolDownTime = 3.0f; // ダッシュ後のクールダウン時間
+		kDashSpeedMult = 2.0f; // ダッシュ中の速度倍率
+		extraRotationZ_ = 0.0f; // ダッシュ中の追加回転量
+		speedMultiplier_ = 1.0f; // 通常時の速度倍率
+	}
+	///====================================================
+    /// 更新処理
+    ///====================================================
 	void PlayerMove::Update(MyEngine::Transform& transform, float speedMultiplier) {
 		Input* input = Input::GetInstance();
 

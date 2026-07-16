@@ -16,20 +16,30 @@
 #include <TitleUI.h>
 #include <SceneEmitterManager.h>
 #include <TitleParticle.h>
+#include <SoundPlayer.h>
+// AssetGeneratorからインクルード
+#include <subproject/AssetGenerator/engine/generator/LoadResourceID.h>
 
 using namespace MyEngine;
 using namespace Easing;
+using namespace AssetGen::LoadResourceID;
 
 namespace MyGame {
-
+    ///====================================================
+    /// 終了処理
+    ///====================================================
 	void TitleScene::Finalize() {
 		CameraManager::GetInstance()->Finalize(); // カメラマネージャの終了処理
 		FadeManager::GetInstance()->Finalize();   // フェードマネージャの終了処理
 		StageManager::GetInstance()->Finalize();  // ステージマネージャの終了処理
 		UIManager::GetInstance()->Finalize();     // UIマネージャの終了処理
 		SceneEmitterManager::GetInstance()->Finalize(); // パーティクルエミッターマネージャの終了処理
+		// オーディオの開放処理
+		SoundPlayer::GetInstance()->SoundUnload(&button_);
 	}
-
+    ///====================================================
+    /// 初期化処理
+    ///====================================================
 	void TitleScene::Initialize() {
 		CameraManager::GetInstance()->Initialize(SceneName::TITLE);
 
@@ -40,7 +50,6 @@ namespace MyGame {
 		player_->GetObject3d()->SetTranslate(playeroffset_);
 		// カメラのターゲットにプレイヤーをセット
 		CameraManager::GetInstance()->GetCurrentBehaviorAs<TitleCamera>()->SetTargetObject(player_->GetObject3d());
-
 		// ステージマネージャの初期化
 		StageManager::GetInstance()->Initialize();
 		// UIマネージャの初期化
@@ -50,8 +59,14 @@ namespace MyGame {
 		// パーティクルエミッターの初期化
 		SceneEmitterManager::GetInstance()->Initialize();
 		SceneEmitterManager::GetInstance()->GetEmitter<TitleParticle>()->SetObject3d(player_->GetObject3d());
+
+		// オーディオの読み込み		
+		button_ = SoundLoader::SoundLoadWave(Audio::push);		
 	}
 
+	///====================================================
+    /// 更新処理
+    ///====================================================
 	void TitleScene::Update() {
 #pragma region 全てのObject3d個々の更新処理				
 		// カメラマネージャの更新
@@ -80,7 +95,9 @@ namespace MyGame {
 		FadeManager::GetInstance()->Update();
 #pragma endregion 全てのSprite個々の更新処理
 	}
-
+    ///====================================================
+    /// 描画処理
+    ///====================================================
 	void TitleScene::Draw() {
 #pragma region 全てのObject3d個々の描画処理
 		// 箱オブジェクトの描画準備。3Dオブジェクトの描画に共通のグラフィックスコマンドを積む
@@ -114,8 +131,8 @@ namespace MyGame {
 		TitleUI* titleUI = UIManager::GetInstance()->GetUI<TitleUI>();
 		
 		if (isMoving_) {
-			moveTimer_ += 1.0f / 60.0f;
-			float t = moveTimer_ / moveDuration_;
+			movetimer_ += 1.0f / 60.0f;
+			float t = movetimer_ / moveDuration_;
 			t = std::clamp(t, 0.0f, 1.0f);
 			float easeT = EaseOutCubic(t);
 			playeroffset_.z = Lerp(startZ_, targetZ_, easeT);
@@ -142,6 +159,8 @@ namespace MyGame {
 		// =========================
 		if (Input::GetInstance()->TriggerKey(DIK_RETURN) && titleUI->IsFinished()) {
 			titleUI->StartReverse();
+			// 音を鳴らす
+			SoundPlayer::GetInstance()->SoundPlayWave(button_, false, 0.4f);
 		}
 
 		if (titleUI->IsReverseFinished()) {

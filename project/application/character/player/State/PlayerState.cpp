@@ -10,13 +10,18 @@
 using namespace MyEngine;
 
 namespace MyGame {
+    ///====================================================
+    /// 更新処理
+    ///====================================================
     void PlayerStateIdle::Update(BaseCharacter& character) {
 		// 現在のシーンはゲームプレイなら移動状態へ遷移
         if (CameraManager::GetInstance()->GetCurrentBehaviorAs <GamePlayCamera>()) {
             character.ChangeState(std::make_unique<PlayerStateMove>());
         }
     }
-
+    ///====================================================
+    /// 更新処理
+    ///====================================================
     void PlayerStateMove::Update(BaseCharacter& character) {
         // 必要なコンポーネント
         Player* player = dynamic_cast<Player*>(&character); 
@@ -33,7 +38,9 @@ namespace MyGame {
             player->GetAttack()->Update(player->GetObject3d()->GetTransform(), player->GetTarget()->GetTranslate(), player->GetLevel());
         }
     }
-
+    ///====================================================
+    /// 更新処理
+    ///====================================================
     void PlayerStateDead::Update(BaseCharacter& character) {
         Player* player = static_cast<Player*>(&character);
         if (player->IsActive()) {

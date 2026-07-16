@@ -1,7 +1,10 @@
 {
     "Audio": {
         "Audio": [
-            "Audio/Alarm01.wav"
+            "Audio/Alarm01.wav",
+            "Audio/BGM.wav",
+            "Audio/explosion.wav",
+            "Audio/push.wav"
         ]
     }
 }

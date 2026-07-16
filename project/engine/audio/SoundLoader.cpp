@@ -17,8 +17,12 @@ namespace MyEngine {
 
     // 終了
     void SoundLoader::Finalize() {
-        GetIXAudio2();
-        instance_.reset();
+        if (masterVoice) {
+            masterVoice->DestroyVoice();
+            masterVoice = nullptr;
+        }
+        xAudio2.Reset();
+        instance_.reset();;
     }
 
     void SoundLoader::Initialize() {
@@ -34,8 +38,8 @@ namespace MyEngine {
         // ①ファイルオープン
         // ファイル入力ストリームのインスタンス
         std::ifstream file;
-        // Resources/Audio/ を前につけてファイルパスを構築
-        std::string fullPath = "Resources/Audio/" + std::string(filename);
+        // Resources/を前につけてファイルパスを構築
+        std::string fullPath = "Resources/" + std::string(filename);
         // .wavファイルをバイナリモードで開く
         file.open(fullPath, std::ios_base::binary);
         // ファイルオープン失敗を検出する

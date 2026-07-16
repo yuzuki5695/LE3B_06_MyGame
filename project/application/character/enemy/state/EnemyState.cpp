@@ -13,6 +13,9 @@ using namespace Easing;
 using namespace MatrixVector;
 
 namespace MyGame {
+    ///====================================================
+    /// 更新処理
+    ///====================================================
     void EnemyIdle::Update(BaseCharacter& character) {
         // 必要なコンポーネント
         Enemy* enemy = dynamic_cast<Enemy*>(&character);
@@ -46,8 +49,10 @@ namespace MyGame {
                 character.ChangeState(std::make_unique<EnemyAlive>());
             }
         }
-    }
-
+    }  
+    ///====================================================
+    /// 更新処理
+    ///====================================================
     void EnemyAlive::Update(BaseCharacter& character) {
         // 必要なコンポーネント
         Enemy* enemy = dynamic_cast<Enemy*>(&character);
@@ -68,7 +73,9 @@ namespace MyGame {
             character.GetCollider()->SetOBB(CollisionUtils::CreateOBB(character.GetObject3d()));
         }
     }
-
+    ///====================================================
+    /// 更新処理
+    ///====================================================
     void EnemyDead::Update(BaseCharacter& character) {
         // 必要なコンポーネント
         Enemy* enemy = dynamic_cast<Enemy*>(&character);
@@ -82,7 +89,7 @@ namespace MyGame {
         // =========================
         // プレイヤーの弾による死亡のみ演出
         // =========================
-        if (!enemy->IsDeathStarted()) {
+        if (!enemy->IsDeathStarted()) {           
             enemy->SetDeathStarted(true);
             // 当たり判定解除
             CollisionManager::GetInstance()->UnregisterCollider(character.GetCollider());

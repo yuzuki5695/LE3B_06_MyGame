@@ -2,113 +2,138 @@
 #include <CameraManager.h>
 #include <MatrixVector.h>
 #include <Easing.h>
+#include <MathUtil.h>
 
 using namespace MyEngine;
 using namespace MatrixVector;
 using namespace Easing;
 using namespace CameraDefs;
+using namespace MathUtil;
 
 namespace MyGame {
-
+    
+    ///====================================================
+    /// 初期化処理
+    ///====================================================
     void TitleCamera::Initialize(Camera* camera) {
-        stateData_.type = CameraType::Main;
-        stateData_.state = CameraState::LockOn;
-
-        transform_ = { 5.0f, -3.0f, 0.0f };
-        camera->SetTranslate(transform_);
+        // カメラ状態を初期化
+        statedata_.type = CameraType::Main;
+        statedata_.state = CameraState::LockOn;
+        // カメラ位置を初期位置へ設定
+        kInitialposition_ = { 5.0f, -3.0f, 0.0f };
+        camera->SetTranslate(kInitialposition_);
+        // メンバ変数を初期化
+        targetPosition_ = kInitialposition_;
+        kOffset_ = { 6.0f,-1.0f,-20.0f };
+        kfollowtightness_ = 0.05f;
+        krotationlerp_ = 0.1f;
+        kmindirectionlength_ = 0.0001f;
+        kmovecompletedistance_ = 0.1f;
+        isIntrotargetlocked_ = false;
     }
-
+    ///====================================================
+    /// 更新処理
+    ///====================================================
     void TitleCamera::Update(Camera* camera) {
-        switch (stateData_.type) {
+        switch (statedata_.type) {
         case CameraType::Main:
-            switch (stateData_.state) {
+            switch (statedata_.state) {
+                // 通常状態
             case CameraState::Default:
-
-
-
                 break;
+
+                // ターゲットを注視する
             case CameraState::LockOn:
-				// 注視状態の更新
                 UpdateLookAt(camera);
+                break;
 
-                break;
+                // 演出移動
             case CameraState::Move:
-				// 移動状態の更新
-                UpdateMove(camera);             
+                UpdateMove(camera);
                 break;
+
             default:
                 break;
             }
+
             break;
+
         case CameraType::Sub:
             break;
         }
     }
-
+    ///====================================================
+    /// ターゲットを注視する
+    ///====================================================
     void TitleCamera::UpdateLookAt(Camera* camera) {
-        if (!target_) return;
 
-        Vector3 camPos = camera->GetTranslate();
-        Vector3 camrot = camera->GetRotate();
-        Vector3 targetPos = target_->GetTranslate();
-        Vector3 dir= targetPos - camPos;
+        // ターゲットが存在しない場合
+        if (!target_) {
+            return;
+        }
 
-        if (Length(dir) > 0.0001f) {
+        // カメラ情報を取得
+        Vector3 cameraPosition = camera->GetTranslate();
+        Vector3 cameraRotation = camera->GetRotate();
+        // ターゲット位置を取得
+        Vector3 targetPosition = target_->GetTranslate();
+        // ターゲット方向
+        Vector3 direction = targetPosition - cameraPosition;
 
-            dir = Normalize(dir);
-
-            float targetYaw = atan2f(dir.x, dir.z);
-            float targetPitch = -asinf(dir.y);
-
-            // 補間係数（小さいほどゆっくり）
-            float rotTightness = 0.1f;
-
-            camrot.x = LerpAngle(camrot.x, targetPitch, rotTightness);
-            camrot.y = LerpAngle(camrot.y, targetYaw, rotTightness);
-            camrot.z = 0.0f;
-
-            camera->SetRotate(camrot);
+        // 十分な長さがある場合のみ回転更新
+        if (Length(direction) > kmindirectionlength_) {
+            direction = Normalize(direction);
+            float targetYaw = atan2f(direction.x, direction.z);
+            float targetPitch = -asinf(direction.y);
+            // 滑らかに回転
+            cameraRotation.x = LerpAngle(cameraRotation.x, targetPitch, krotationlerp_);
+            cameraRotation.y = LerpAngle(cameraRotation.y, targetYaw, krotationlerp_);
+            cameraRotation.z = 0.0f;
+            camera->SetRotate(cameraRotation);
         }
     }
-
+    ///====================================================
+    /// タイトル演出用カメラ移動開始
+    ///====================================================
     void TitleCamera::StartIntroMove() {
-        stateData_.state = CameraState::Move; isIntroTargetLocked_ = false;
+        statedata_.state = CameraState::Move;
+        isIntrotargetlocked_ = false;
     }
-
+    ///====================================================
+    /// タイトル演出用カメラ移動更新
+    ///====================================================
     void TitleCamera::UpdateMove(Camera* camera) {
-        if (!target_) return;
 
-        // ---------------------------
-        // 1回だけ目標固定
-        // ---------------------------
-        if (!isIntroTargetLocked_) {
-
-            Vector3 playerPos = target_->GetTranslate();
-
-            transform_.x = playerPos.x + offsetX_;
-            transform_.y = playerPos.y + offsetY_;
-            transform_.z = playerPos.z + offsetZ_;
-
-            isIntroTargetLocked_ = true;
+        // ターゲットが存在しない場合
+        if (!target_) {
+            return;
+        }
+        //==========================================
+        // 目標位置を一度だけ決定
+        //==========================================
+        if (!isIntrotargetlocked_) {
+            Vector3 playerPosition = target_->GetTranslate();
+            targetPosition_ = playerPosition + kOffset_;
+            isIntrotargetlocked_ = true;
         }
 
-        // ---------------------------
-        // 補間移動
-        // ---------------------------
-        Vector3 camPos = camera->GetTranslate();
-        camPos = Lerp(camPos, transform_, followTightness_);
-        camera->SetTranslate(camPos);
+        //==========================================
+        // カメラ位置を補間
+        //==========================================
+        Vector3 cameraPosition = camera->GetTranslate();
+        cameraPosition = Lerp(cameraPosition, targetPosition_, kfollowtightness_);
+        camera->SetTranslate(cameraPosition);
 
-        // ---------------------------
-        // 到達判定
-        // ---------------------------
-        float distance = Length(transform_ - camPos);
+        //==========================================
+        // 移動完了判定
+        //==========================================
+        float distance = Length(targetPosition_ - cameraPosition);
 
-        if (distance < 0.1f) {
-            // ピタ止め
-            camera->SetTranslate(transform_);
-            // 状態遷移
-            stateData_.state = CameraState::Default;
-        } 
+        if (distance < kmovecompletedistance_) {
+            // 最終位置へ補正
+            camera->SetTranslate(targetPosition_);
+            // 通常状態へ戻す
+            statedata_.state = CameraState::Default;
+        }
     }
 }

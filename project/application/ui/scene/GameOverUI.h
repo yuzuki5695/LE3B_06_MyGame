@@ -4,7 +4,7 @@
 
 namespace MyGame {
     /// <summary>
-	/// ゲームオーバーシーンのUIクラス
+    /// ゲームオーバーシーンのUIクラス
     /// </summary>
     class GameOverUI : public BaseUI {
     public: // メンバ関数
@@ -34,6 +34,7 @@ namespace MyGame {
         float ui2Duration_;
 
         uint32_t phase_;
-    
+    public:
+        uint32_t GetPhase() const { return phase_; }
     };
 }

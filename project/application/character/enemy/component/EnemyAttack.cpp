@@ -11,7 +11,9 @@ using namespace MatrixVector;
 using namespace Easing;
 
 namespace MyGame {
-
+    ///====================================================
+    /// 初期化処理
+    ///====================================================
     void EnemyAttack::Initialize() {
         // 初期化
         // 乱数エンジン初期化
@@ -23,8 +25,17 @@ namespace MyGame {
         timer_ = coolTime_;
         speed = 2.0f;
         state_ = AttackState::Idle;
+        // 突撃用変数
+        dashSpeed_ = 1.5f;
+        dashDistance_ = 0.0f;
+        maxDashDistance_ = 25.0f;
+        dashRotationSpeed_ = 1.5f;
+        chargeTimer_ = 0.0f;
+        chargeDuration_ = 1.5f; // 溜め時間
     }
-
+    ///====================================================
+    /// 更新処理
+    ///====================================================
     void EnemyAttack::Update(EnemyType type, Object3d* object, const Vector3& aimWorldPos) {
 
         switch (type) {
@@ -36,8 +47,10 @@ namespace MyGame {
             UpdateTackle(object, aimWorldPos);
             break;
         }
-    }
-
+    } 
+    ///==================================================== 
+    /// 射撃タイプの攻撃更新
+    ///====================================================
     void EnemyAttack::UpdateShot(Object3d* object, const Vector3& aimWorldPos) {
         // =========================
         // タイマー更新
@@ -74,7 +87,9 @@ namespace MyGame {
         // 発射後は撃てないようにする
         canShoot_ = false;
     }
-
+    ///====================================================   
+    /// 突撃タイプの攻撃更新
+    ///====================================================
     void EnemyAttack::UpdateTackle(Object3d* object, const Vector3& aimWorldPos) {
         Transform transform = object->GetTransform();
 

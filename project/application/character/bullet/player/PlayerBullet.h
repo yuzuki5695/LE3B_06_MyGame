@@ -12,16 +12,12 @@ namespace MyGame {
         /// <summary>
         /// デストラクタ
         /// </summary>
-        ~PlayerBullet() override {
-            if (collider_) {
-                CollisionManager::GetInstance()->UnregisterCollider(collider_.get());
-            }
-        }
+        ~PlayerBullet() override;
         /// <summary>
         /// 初期化処理
         /// </summary>
-        /// <param name="transform"></param>
-        /// <param name="velocity"></param>
+        /// <param name="transform">初期Transform</param>
+        /// <param name="velocity">初速度</param>
         void Initialize(const MyEngine::Transform& transform, const MyEngine::Vector3& velocity)  override;
         /// <summary>
         /// 更新処理
@@ -34,13 +30,15 @@ namespace MyGame {
     private: // メンバ変数
         // コライダー
         std::unique_ptr<Collider> collider_;
-        MyEngine::Vector3 colliderSize_;
+        // コライダーサイズ
+        MyEngine::Vector3 collidersize_;
     public:
+        // getter
         Collider* GetCollider() const override { return collider_.get(); }
-        MyEngine::Vector3 GetColliderSize() const override { return colliderSize_; }
-
+        MyEngine::Vector3 GetColliderSize() const override { return collidersize_; }
+        // setter
         void SetColliderSize(const MyEngine::Vector3& size) override {
-            colliderSize_ = size;
+            collidersize_ = size;
             if (collider_) {
                 collider_->SetSize(size);
             }
