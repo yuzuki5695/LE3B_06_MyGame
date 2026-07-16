@@ -18,14 +18,18 @@ using namespace MyEngine;
 using namespace AssetGen::LoadResourceID::Models;
 
 namespace MyGame {
-
+	///====================================================
+    /// 終了処理
+    ///====================================================
 	void GameOverScene::Finalize() {
 		CameraManager::GetInstance()->Finalize(); // カメラマネージャの終了処理
 		FadeManager::GetInstance()->Finalize();   // フェードマネージャの終了処理
 		UIManager::GetInstance()->Finalize();     // UIマネージャの終了処理 
 		StageManager::GetInstance()->Finalize();  // ステージマネージャの終了処理
 	}
-
+    ///====================================================
+    /// 初期化処理
+    ///====================================================
 	void GameOverScene::Initialize() {
 		// カメラマネージャの初期化       
 		CameraManager::GetInstance()->Initialize(SceneName::GAMEOVER);
@@ -80,7 +84,9 @@ namespace MyGame {
 		// UIマネージャの初期化
 		UIManager::GetInstance()->Initialize();
 	}
-
+	///====================================================
+    /// 更新処理
+	///====================================================
 	void GameOverScene::Update() {
 		// カメラマネージャの更新
 		CameraManager::GetInstance()->Update();
@@ -105,7 +111,9 @@ namespace MyGame {
 		FadeManager::GetInstance()->Update();
 #pragma endregion 全てのSprite個々の更新処理
 	}
-
+    ///====================================================
+    /// 描画処理
+    ///====================================================
 	void GameOverScene::Draw() {
 #pragma region 全てのObject3d個々の描画処理
 		// 箱オブジェクトの描画準備。3Dオブジェクトの描画に共通のグラフィックスコマンドを積む

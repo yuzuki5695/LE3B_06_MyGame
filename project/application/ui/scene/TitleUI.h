@@ -16,9 +16,18 @@ namespace MyGame {
             float delay;
             bool useCustomPos = false;
         };
-    public: // メンバ関数
+    public: // メンバ関数 
+        /// <summary>
+        /// 初期化処理
+        /// </summary>
         void Initialize() override;
+        /// <summary>
+        /// 毎フレームの更新処理
+        /// </summary>
         void Update() override;
+        /// <summary>
+        /// 描画処理
+        /// </summary>
         void Draw() override;
 
         void UpdateChar(TitleCharUI& ch, float t);

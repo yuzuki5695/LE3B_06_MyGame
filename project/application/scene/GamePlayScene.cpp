@@ -30,7 +30,9 @@ using namespace AssetGen;
 using namespace AssetGen::LoadResourceID::Models;
 
 namespace MyGame {
-
+    ///====================================================
+    /// 終了処理
+    ///====================================================
     void GamePlayScene::Finalize() {
         BulletManager::GetInstance()->Finalize();    // 弾マネージャの終了処理
         StageManager::GetInstance()->Finalize();     // ステージマネージャの終了処理
@@ -41,7 +43,9 @@ namespace MyGame {
         EventManager::GetInstance()->Finalize();     // イベントマネージャの終了処理
         SceneEmitterManager::GetInstance()->Finalize(); // パーティクルエミッターマネージャの終了処理
     }
-
+    ///====================================================
+    /// 初期化処理
+    ///====================================================
     void GamePlayScene::Initialize() {
         // カメラマネージャの初期化
         CameraManager::GetInstance()->Initialize(SceneName::GAMEPLAY);
@@ -95,7 +99,9 @@ namespace MyGame {
         SceneEmitterManager::GetInstance()->Initialize();
         SceneEmitterManager::GetInstance()->GetEmitter<GamePlayParticle>()->SetPlayer(player_.get());
     }
-
+    ///====================================================
+    /// 更新処理
+    ///====================================================
     void GamePlayScene::Update() {
         // ゲーム開始イベントの開始判定
         if (!isGameStartEventDone_ && CameraManager::GetInstance()->GetCameraState().state == CameraDefs::CameraState::Default) {
@@ -218,8 +224,10 @@ namespace MyGame {
         FadeManager::GetInstance()->Update();
 
 #pragma endregion 全てのSprite個々の更新処理
-    }
-
+    }    
+    ///====================================================
+    /// 描画処理
+    ///====================================================
     void GamePlayScene::Draw() {
 #pragma region 全てのObject3d個々の描画処理
         // 箱オブジェクトの描画準備。3Dオブジェクトの描画に共通のグラフィックスコマンドを積む

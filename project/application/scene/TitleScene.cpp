@@ -16,9 +16,13 @@
 #include <TitleUI.h>
 #include <SceneEmitterManager.h>
 #include <TitleParticle.h>
+#include <SoundPlayer.h>
+// AssetGeneratorからインクルード
+#include <subproject/AssetGenerator/engine/generator/LoadResourceID.h>
 
 using namespace MyEngine;
 using namespace Easing;
+using namespace AssetGen::LoadResourceID;
 
 namespace MyGame {
     ///====================================================
@@ -30,6 +34,8 @@ namespace MyGame {
 		StageManager::GetInstance()->Finalize();  // ステージマネージャの終了処理
 		UIManager::GetInstance()->Finalize();     // UIマネージャの終了処理
 		SceneEmitterManager::GetInstance()->Finalize(); // パーティクルエミッターマネージャの終了処理
+		// オーディオの開放処理
+		SoundPlayer::GetInstance()->SoundUnload(&button_);
 	}
     ///====================================================
     /// 初期化処理
@@ -44,7 +50,6 @@ namespace MyGame {
 		player_->GetObject3d()->SetTranslate(playeroffset_);
 		// カメラのターゲットにプレイヤーをセット
 		CameraManager::GetInstance()->GetCurrentBehaviorAs<TitleCamera>()->SetTargetObject(player_->GetObject3d());
-
 		// ステージマネージャの初期化
 		StageManager::GetInstance()->Initialize();
 		// UIマネージャの初期化
@@ -54,7 +59,11 @@ namespace MyGame {
 		// パーティクルエミッターの初期化
 		SceneEmitterManager::GetInstance()->Initialize();
 		SceneEmitterManager::GetInstance()->GetEmitter<TitleParticle>()->SetObject3d(player_->GetObject3d());
+
+		// オーディオの読み込み		
+		button_ = SoundLoader::SoundLoadWave(Audio::push);
 	}
+
 	///====================================================
     /// 更新処理
     ///====================================================
@@ -150,6 +159,8 @@ namespace MyGame {
 		// =========================
 		if (Input::GetInstance()->TriggerKey(DIK_RETURN) && titleUI->IsFinished()) {
 			titleUI->StartReverse();
+			// 音を鳴らす
+			SoundPlayer::GetInstance()->SoundPlayWave(button_, false, 0.4f);
 		}
 
 		if (titleUI->IsReverseFinished()) {

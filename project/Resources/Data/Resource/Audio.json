@@ -2,7 +2,8 @@
     "Audio": {
         "Audio": [
             "Audio/Alarm01.wav",
-            "Audio/Bgsa.wav"
+            "Audio/explosion.wav",
+            "Audio/push.wav"
         ]
     }
 }

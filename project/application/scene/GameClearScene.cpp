@@ -24,6 +24,9 @@ using namespace MyEngine;
 using namespace Easing;
 
 namespace MyGame {
+    ///====================================================
+    /// 終了処理
+    ///====================================================
     void GameClearScene::Finalize() {
         CameraManager::GetInstance()->Finalize(); // カメラマネージャの終了処理
         FadeManager::GetInstance()->Finalize();   // フェードマネージャの終了処理
@@ -31,7 +34,9 @@ namespace MyGame {
         StageManager::GetInstance()->Finalize();  // ステージマネージャの終了処理
         SceneEmitterManager::GetInstance()->Finalize(); // パーティクルエミッターマネージャの終了処理
     }
-
+    ///====================================================
+    /// 初期化処理
+    ///====================================================
     void GameClearScene::Initialize() {
         CameraManager::GetInstance()->Initialize(SceneName::GAMECLEAR);
 
@@ -59,13 +64,15 @@ namespace MyGame {
         SceneEmitterManager::GetInstance()->Initialize();
         SceneEmitterManager::GetInstance()->GetEmitter<GameClearParticle>()->SetPlayer(player_.get());
     }
-
+    ///====================================================
+    /// 更新処理
+    ///====================================================
     void GameClearScene::Update() {
         // カメラマネージャの更新
         CameraManager::GetInstance()->Update();
 
 #pragma region 全てのObject3d個々の更新処理
-
+        // 演出処理
         UpdateStep();
 
         // プレイヤ―の更新
@@ -86,7 +93,9 @@ namespace MyGame {
         FadeManager::GetInstance()->Update();
 #pragma endregion 全てのSprite個々の更新処理
     }
-
+    ///====================================================
+    /// 描画処理
+    ///====================================================
     void GameClearScene::Draw() {
 #pragma region 全てのObject3d個々の描画処理
         // 箱オブジェクトの描画準備。3Dオブジェクトの描画に共通のグラフィックスコマンドを積む
