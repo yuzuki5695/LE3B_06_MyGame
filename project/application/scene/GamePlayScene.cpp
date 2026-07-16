@@ -19,7 +19,6 @@
 #include <CollisionManager.h>
 #include <CameraDefs.h>
 #include <PlayerState.h>
-#include <EnemyListEditor.h>
 #include <LineRenderer.h>
 #include <SceneEmitterManager.h>
 // AssetGeneratorからインクルード
@@ -40,7 +39,6 @@ namespace MyGame {
         FadeManager::GetInstance()->Finalize();      // フェードマネージャの終了処理
         CollisionManager::GetInstance()->Finalize(); // 衝突マネージャの終了処理
         EventManager::GetInstance()->Finalize();     // イベントマネージャの終了処理
-        EnemyListEditor::GetInstance()->Finalize();  // 敵リストエディタの終了処理
         SceneEmitterManager::GetInstance()->Finalize(); // パーティクルエミッターマネージャの終了処理
     }
 
@@ -72,9 +70,6 @@ namespace MyGame {
         enemySpawner_->Initialize();
         enemySpawner_->SetEnemies(&enemies_);    // 敵リストへの参照をセット
         enemySpawner_->SetPlayer(player_.get()); // プレイヤーへの参照をセット
-        // imgui
-        EnemyListEditor::GetInstance()->SetEnemies(&enemies_);
-
         // 最初のスポーン
         player_->SetEnemy(enemies_.empty() ? nullptr : enemies_.front().get());
 
@@ -95,8 +90,6 @@ namespace MyGame {
         gamened_ = false;
 #ifdef USE_IMGUI
         BulletManager::GetInstance()->Initialize();
-        // 敵のパラメータ
-        EnemyListEditor::GetInstance()->Initialize();
 #endif // USE_IMGUI     
         // パーティクルエミッターの初期化
         SceneEmitterManager::GetInstance()->Initialize();

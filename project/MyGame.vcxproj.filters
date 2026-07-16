@@ -666,9 +666,6 @@
     <ClCompile Include="engine\editor\line\LineRenderer.cpp">
       <Filter>ソース ファイル\Engine\Editor\Line</Filter>
     </ClCompile>
-    <ClCompile Include="application\character\enemy\EnemyListEditor.cpp">
-      <Filter>ソース ファイル\Application\Character\Enemy</Filter>
-    </ClCompile>
     <ClCompile Include="engine\3d\Particle\ParticleGroupfactory.cpp">
       <Filter>ソース ファイル\Engine\3d\Particle</Filter>
     </ClCompile>
@@ -1108,9 +1105,6 @@
     </ClInclude>
     <ClInclude Include="engine\math\Collision\OBB.h">
       <Filter>ヘッダー ファイル\Engine\Math\Collision</Filter>
-    </ClInclude>
-    <ClInclude Include="application\character\enemy\EnemyListEditor.h">
-      <Filter>ヘッダー ファイル\Application\Character\Enemy</Filter>
     </ClInclude>
     <ClInclude Include="application\character\enemy\EnemyType.h">
       <Filter>ヘッダー ファイル\Application\Character\Enemy</Filter>

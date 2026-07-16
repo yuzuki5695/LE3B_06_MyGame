@@ -34,43 +34,7 @@ namespace MyGame {
     ///====================================================
     /// 初期化処理
     ///====================================================
-    void BulletManager::Initialize() {
-#ifdef USE_IMGUI
-        EditorTypes::EditorObjectInfo info;
-        info.name = "Bullet Manager";                                 // エディタメニューに表示される名前
-        info.category = EditorTypes::ObjectCategory::List;            // リスト/マネジメントカテゴリ
-        info.objectPtr = this;
-        info.drawEditor = [this]() {
-            ImGui::SeparatorText("Player Bullet");
-            // ImGuiでサイズを変更（ドラッグで調整可能に）
-            if (ImGui::DragFloat3("Player Bullet Size", &commonplayerbulletsize_.x, 0.05f, 0.1f, 10.0f)) {
-                // 値が変わったら、現在画面内に存在するすべての弾に即座に反映
-                for (auto& bullet_ : bullets_) {
-                    if (bullet_ && bullet_->IsActive()) {
-                        if (PlayerBullet* Player = dynamic_cast<PlayerBullet*>(bullet_.get())) {
-                            Player->SetColliderSize(commonplayerbulletsize_);
-                        }
-                    }
-                }
-            }
-
-            ImGui::SeparatorText("Enemy Bullet Settings");
-            if (ImGui::DragFloat3("Enemy Bullet Size", &commonenemybulletsize_.x, 0.05f, 0.1f, 10.0f)) {
-                // 値が変わったら、現在画面内に存在するすべての弾に即座に反映
-                for (auto& bullet_ : bullets_) {
-                    if (bullet_ && bullet_->IsActive()) {
-                        if (EnemyBullet* Enemy = dynamic_cast<EnemyBullet*>(bullet_.get())) {
-                            Enemy->SetColliderSize(commonenemybulletsize_);
-                        }
-                    }
-                }
-            }
-
-            };
-        // エディタシステムに登録
-        EditorEntityRegistry::Instance().Register(info);
-#endif // USE_IMGUI
-    }
+    void BulletManager::Initialize() {}
     ///====================================================
     /// 更新処理
     ///====================================================
