@@ -684,9 +684,6 @@
     <ClCompile Include="application\particle\SceneEmitterManager.cpp">
       <Filter>ソース ファイル\Application\Particle</Filter>
     </ClCompile>
-    <ClCompile Include="application\particle\GameOverParticle.cpp">
-      <Filter>ソース ファイル\Application\Particle</Filter>
-    </ClCompile>
     <ClCompile Include="application\particle\GameClearParticle.cpp">
       <Filter>ソース ファイル\Application\Particle</Filter>
     </ClCompile>
@@ -1135,9 +1132,6 @@
     </ClInclude>
     <ClInclude Include="engine\3d\Particle\MappedBuffer.h">
       <Filter>ヘッダー ファイル\Engine\3d\Particle</Filter>
-    </ClInclude>
-    <ClInclude Include="application\particle\GameOverParticle.h">
-      <Filter>ヘッダー ファイル\Application\Particle</Filter>
     </ClInclude>
     <ClInclude Include="application\particle\TitleParticle.h">
       <Filter>ヘッダー ファイル\Application\Particle</Filter>

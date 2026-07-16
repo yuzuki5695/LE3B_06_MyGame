@@ -11,7 +11,6 @@
 #include <ModelManager.h>
 #include <random>
 #include <SceneEmitterManager.h>
-#include <GameOverParticle.h>
 // AssetGeneratorからインクルード
 #include <subproject/AssetGenerator/engine/generator/LoadResourceID.h>
 
@@ -25,7 +24,6 @@ namespace MyGame {
 		FadeManager::GetInstance()->Finalize();   // フェードマネージャの終了処理
 		UIManager::GetInstance()->Finalize();     // UIマネージャの終了処理 
 		StageManager::GetInstance()->Finalize();  // ステージマネージャの終了処理
-		SceneEmitterManager::GetInstance()->Finalize(); // パーティクルエミッターマネージャの終了処理
 	}
 
 	void GameOverScene::Initialize() {
@@ -81,10 +79,6 @@ namespace MyGame {
 		FadeManager::GetInstance()->StartFade(FadeType::FadeIn, FadeStyle::SilhouetteExplode, 1.0f);
 		// UIマネージャの初期化
 		UIManager::GetInstance()->Initialize();
-		// パーティクルエミッターの初期化
-		SceneEmitterManager::GetInstance()->Initialize();
-
-	
 	}
 
 	void GameOverScene::Update() {
@@ -101,22 +95,7 @@ namespace MyGame {
 		}
 
 		// ステージマネージャの更新
-		StageManager::GetInstance()->Update();		
-		SceneEmitterManager::GetInstance()->GetEmitter<GameOverParticle>()->SetTarget(0, partsList[0].obj.get()->GetTranslate());
-		SceneEmitterManager::GetInstance()->GetEmitter<GameOverParticle>()->SetTarget(1, partsList[3].obj.get()->GetTranslate());
-
-
-
-
-
-
-
-
-
-	    // エミッターマネージャの更新
-        SceneEmitterManager::GetInstance()->Update();
-        // パーティクル更新
-        ParticleManager::GetInstance()->Update();
+		StageManager::GetInstance()->Update();
 #pragma endregion 全てのObject3d個々の更新処理
 
 #pragma region 全てのSprite個々の更新処理
@@ -145,7 +124,6 @@ namespace MyGame {
 		StageManager::GetInstance()->Draw();
 		// パーティクルの描画準備。パーティクルの描画に共通のグラフィックスコマンドを積む 
 		ParticleCommon::GetInstance()->Commondrawing();
-		ParticleManager::GetInstance()->Draw();
 #pragma endregion 全てのObject3d個々の描画処理
 
 #pragma region 全てのSprite個々の描画処理 

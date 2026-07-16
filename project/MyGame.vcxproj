@@ -151,7 +151,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="application\loader\CurveJsonLoader.cpp" />
     <ClCompile Include="application\loader\PlayerDataLoader.cpp" />
     <ClCompile Include="application\particle\GameClearParticle.cpp" />
-    <ClCompile Include="application\particle\GameOverParticle.cpp" />
     <ClCompile Include="application\particle\GamePlayparticle.cpp" />
     <ClCompile Include="application\particle\BaseEmitter.cpp" />
     <ClCompile Include="application\particle\SceneEmitterManager.cpp" />
@@ -269,7 +268,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\loader\CurveJsonLoader.h" />
     <ClInclude Include="application\loader\PlayerDataLoader.h" />
     <ClInclude Include="application\particle\GameClearParticle.h" />
-    <ClInclude Include="application\particle\GameOverParticle.h" />
     <ClInclude Include="application\particle\GamePlayparticle.h" />
     <ClInclude Include="application\particle\BaseEmitter.h" />
     <ClInclude Include="application\particle\SceneParticleBase.h" />
