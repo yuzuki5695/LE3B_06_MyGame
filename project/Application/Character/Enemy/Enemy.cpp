@@ -19,12 +19,17 @@ namespace MyGame {
 
     Enemy::~Enemy() {}
 
+    ///====================================================
+    /// 終了処理
+    ///====================================================
     void Enemy::Finalize() {
         CollisionManager::GetInstance()->UnregisterCollider(collider_.get()); // 当たり判定の登録解除
         collider_.reset(); // コライダーの破棄
         object_.reset();   // 3Dオブジェクトの破棄
     }
-
+    ///====================================================
+    /// 初期化処理
+    ///====================================================
     void Enemy::Initialize() {
         // 乱数エンジンを初期化
         std::random_device rd;
@@ -101,7 +106,9 @@ namespace MyGame {
         // 初期ステートをセットする
         ChangeState(std::make_unique<EnemyIdle>());
     }
-
+    ///====================================================
+    /// 更新処理
+    ///====================================================
     void Enemy::Update() {
         // ステートの更新（現在のステートのUpdateが呼ばれる）
         state_.Update(*this);
@@ -117,13 +124,17 @@ namespace MyGame {
         }
 #endif // USE_IMGUI
     }
-
+    ///====================================================
+    /// 描画処理
+    ///====================================================
     void Enemy::Draw() {
         if (!IsAlive()) { return; }
         // オブジェクトの描画
         object_->Draw();
     }
-
+    ///====================================================
+    /// カメラの後方へ通過した敵を自動削除するか判定
+    ///====================================================
     bool Enemy::ShouldAutoDestroy() const {
         Camera* camera = CameraManager::GetInstance()->GetActiveCamera();
         Vector3 pos = object_->GetTranslate();
@@ -132,7 +143,10 @@ namespace MyGame {
         }
         Vector3 toEnemy = Normalize(pos - camera->GetTranslate());
         return Dot(camera->GetForward(), toEnemy) < 0.0f;
-    }
+    }   
+    ///====================================================	
+    /// 敵がカメラを通過したか判定
+    ///====================================================
     bool Enemy::HasPassedCamera() const {
         auto* gameCamera = CameraManager::GetInstance()->GetCurrentBehaviorAs<GamePlayCamera>();
         if (!gameCamera) {
