@@ -8,11 +8,15 @@ using namespace MyEngine;
 using namespace MatrixVector;
 
 namespace MyGame {
-
+    ///====================================================
+    /// 初期化処理
+    ///====================================================
     void PlayerAttack::Initialize() {
         timer_ = 0.0f;
     }
-
+    ///====================================================
+    /// 更新処理
+    ///====================================================
     void PlayerAttack::Update(const Transform& playerTransform, const Vector3& aimWorldPos, uint32_t level) {
         // クールタイム更新
         timer_ -= 1.0f / 60.0f;
