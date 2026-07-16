@@ -34,13 +34,13 @@ namespace MyGame {
     private: // メンバ変数
         // コライダー
         std::unique_ptr<Collider> collider_;
-        MyEngine::Vector3 colliderSize_;
+        MyEngine::Vector3 collidersize_;
     public:
         Collider* GetCollider() const override { return collider_.get(); }
-        void SetColliderSize(const MyEngine::Vector3& size) override { colliderSize_ = size; }
-        MyEngine::Vector3 GetColliderSize() const override { return colliderSize_; }
+        void SetColliderSize(const MyEngine::Vector3& size) override { collidersize_ = size; }
+        MyEngine::Vector3 GetColliderSize() const override { return collidersize_; }
         void SetColliderSizelist(const MyEngine::Vector3& size) {
-            colliderSize_ = size;
+            collidersize_ = size;
             if (collider_) {
                 collider_->SetSize(size);
             }

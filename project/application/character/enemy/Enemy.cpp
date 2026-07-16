@@ -69,9 +69,9 @@ namespace MyGame {
         deathParticleRequested_ = false;
         deathType_ = DeathType::None;
         // 当たり判定サイズ
-        colliderSize_ = object_->GetScale();
+        collidersize_ = object_->GetScale();
         // 当たり判定の生成、初期化
-        collider_ = Collider::Create({ .profile = Profile::Enemy,.obb = CollisionUtils::CreateOBB(object_.get(),colliderSize_) });
+        collider_ = Collider::Create({ .profile = Profile::Enemy,.obb = CollisionUtils::CreateOBB(object_.get(),collidersize_) });
         // 衝突時の処理
         collider_->SetCallback([this](Collider* other) {
 #ifdef USE_IMGUI

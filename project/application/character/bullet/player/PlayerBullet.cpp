@@ -18,12 +18,12 @@ namespace MyGame {
 
         // オブジェクト生成
         ModelManager::GetInstance()->LoadModel(Bullet::PlayerBullet);
-        bullet = Object3d::Create(Bullet::PlayerBullet, transform_);
+        bullet_ = Object3d::Create(Bullet::PlayerBullet, transform_);
         
         // 当たり判定サイズ 
-        colliderSize_ = bullet->GetScale();
+        collidersize_ = bullet_->GetScale();
         // コライダー生成
-        collider_ = Collider::Create({ .profile = Profile::PlayerBullet,.obb = CollisionUtils::CreateOBB(bullet.get(),colliderSize_) });
+        collider_ = Collider::Create({ .profile = Profile::PlayerBullet,.obb = CollisionUtils::CreateOBB(bullet_.get(),collidersize_) });
         // 衝突時の処理
         collider_->SetCallback([this](Collider* other) {
 #ifdef USE_IMGUI
@@ -37,7 +37,7 @@ namespace MyGame {
         CollisionManager::GetInstance()->RegisterCollider(collider_.get());
 
         // 初期位置設定
-        bullet->SetTranslate(transform_.translate);
+        bullet_->SetTranslate(transform_.translate);
     }
 
     void PlayerBullet::Update() {
@@ -49,9 +49,9 @@ namespace MyGame {
         // =============================
         // ② Objectに反映
         // =============================
-        if (bullet) {
-            bullet->SetTranslate(transform_.translate);
-            bullet->Update();
+        if (bullet_) {
+            bullet_->SetTranslate(transform_.translate);
+            bullet_->Update();
         }
 
         // =============================
@@ -60,11 +60,11 @@ namespace MyGame {
         UpdateLifeTime(1.0f / 60.0f); // 仮で60FPS固定
 
         // OBB更新
-        collider_->SetOBB(CollisionUtils::CreateOBB(bullet.get(), colliderSize_));
+        collider_->SetOBB(CollisionUtils::CreateOBB(bullet_.get(), collidersize_));
 #ifdef USE_IMGUI
         if (active_) {
             const auto& debug = LineRenderer::GetInstance()->GetDebugSettings();
-            if (debug.enable && bullet && collider_) {
+            if (debug.enable && bullet_ && collider_) {
                 LineRenderer::GetInstance()->SetHit(false);
                 Vector4 hitColor = debug.isHit ? Vector4{ 1,0,0,1 } : Vector4{ 0,1,0,1 };
                 LineRenderer::GetInstance()->AddOBB(collider_->GetOBB(), hitColor);
@@ -76,6 +76,6 @@ namespace MyGame {
     void PlayerBullet::Draw() {
         // アクティブでない場合は描画しない
         if (!active_) { return; }
-        bullet->Draw();
+        bullet_->Draw();
     }
 }

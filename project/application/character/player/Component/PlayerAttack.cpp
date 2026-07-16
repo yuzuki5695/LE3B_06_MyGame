@@ -38,11 +38,11 @@ namespace MyGame {
     }
 
     void PlayerAttack::SpawnBullet(const Vector3& position, const ShotData& shotData) {
-        Transform bullet;
-        bullet.scale = { 1,1,1 };
-        bullet.rotate = { shotData.pitch,shotData.yaw,0.0f };
-        bullet.translate = position;
-        BulletManager::GetInstance()->SpawnPlayerBullet(bullet, shotData.velocity);
+        Transform bullet_;
+        bullet_.scale = { 1,1,1 };
+        bullet_.rotate = { shotData.pitch,shotData.yaw,0.0f };
+        bullet_.translate = position;
+        BulletManager::GetInstance()->SpawnPlayerBullet(bullet_, shotData.velocity);
     }
 
     PlayerAttack::ShotData PlayerAttack::CalculateShotData(const Transform& playerTransform, const Vector3& aimWorldPos) {

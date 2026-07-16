@@ -43,7 +43,7 @@ namespace MyGame {
 		std::unique_ptr<EnemyAttack> attack_; // 攻撃ロジックの保持
 		std::unique_ptr<EnemyDeath> death_;   // 死亡演出の保持
 		bool isSpawned_ = false; // 出現フラグ
-		MyEngine::Vector3 colliderSize_;  // 当たり判定のサイズ
+		MyEngine::Vector3 collidersize_;  // 当たり判定のサイズ
 		// プレイヤーへの参照
 		Player* player_ = nullptr;
 		uint32_t expReward_; // 倒した時の経験値
@@ -65,7 +65,7 @@ namespace MyGame {
 		MyEngine::Transform* GetTransform() { return &object_->GetTransform(); }
 		EnemyAttack* GetAttack() { return attack_.get(); }
 		EnemyDeath* GetDeath() { return death_.get(); }
-		MyEngine::Vector3 GetColliderSize() const { return colliderSize_; }
+		MyEngine::Vector3 GetColliderSize() const { return collidersize_; }
 		Player* GetPlayer() const { return player_; }
 		uint32_t GetExpReward() const { return expReward_; }
 		EnemyType GetEnemyType() { return enemyType_; }
@@ -77,9 +77,9 @@ namespace MyGame {
 		void SetKilledByPlayer(bool flag) { isKilledByPlayer_ = flag; }
 		void SetDeathStarted(bool flag) { isDeathStarted_ = flag; }
 		void SetColliderSize(const MyEngine::Vector3& size) {
-			colliderSize_ = size;
+			collidersize_ = size;
 			// すでにコライダーが生成されている場合は、そのサイズを即座に同期する
-			if (collider_) { collider_->SetSize(colliderSize_); }
+			if (collider_) { collider_->SetSize(collidersize_); }
 		}
 		void SetDeathType(DeathType type) { deathType_ = type; }
 		bool ConsumeDeathParticleRequest() {

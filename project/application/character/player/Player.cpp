@@ -67,11 +67,11 @@ namespace MyGame {
         kBlinkInterval_ = 0.1f; // 点滅間隔
 
         // 当たり判定サイズ
-        colliderSize_ = object_->GetScale();
+        collidersize_ = object_->GetScale();
         // コライダー生成
-        collider_ = Collider::Create({ .profile = Profile::Player,.obb = CollisionUtils::CreateOBB(object_.get(),colliderSize_) });
+        collider_ = Collider::Create({ .profile = Profile::Player,.obb = CollisionUtils::CreateOBB(object_.get(),collidersize_) });
         // ラインのサイズをコライダーに合わせる
-        LineRenderer::GetInstance()->SetSize(colliderSize_);
+        LineRenderer::GetInstance()->SetSize(collidersize_);
         // 衝突時の処理
         collider_->SetCallback([this](Collider* other) {
 #ifdef USE_IMGUI
@@ -165,7 +165,7 @@ namespace MyGame {
             }
 			// コライダーのOBBをプレイヤーオブジェクトの現在の状態に合わせて更新
             if (collider_ && object_ && IsActive()) {
-                collider_->SetOBB(CollisionUtils::CreateOBB(object_.get(), colliderSize_));
+                collider_->SetOBB(CollisionUtils::CreateOBB(object_.get(), collidersize_));
             }
         }
         
@@ -382,7 +382,7 @@ namespace MyGame {
             } 
 
             // LineRenderer基本パラメータ
-            LineRenderer::GetInstance()->DrawImGui(colliderSize_);
+            LineRenderer::GetInstance()->DrawImGui(collidersize_);
             };
         // オブジェクト情報を登録する
         EditorEntityRegistry::Instance().Register(info);

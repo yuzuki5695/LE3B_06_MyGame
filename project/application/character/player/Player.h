@@ -65,7 +65,7 @@ namespace MyGame {
 	private: // メンバ変数
 		PlayerData data_; // プレイヤーのデータ構造体
 		MyEngine::Transform transform_;   // プレイヤーのTransform
-		MyEngine::Vector3 colliderSize_;  // 当たり判定のサイズ
+		MyEngine::Vector3 collidersize_;  // 当たり判定のサイズ
 		// コライダー
 		std::unique_ptr<Collider> collider_;
 		// 各種コンポーネント
@@ -103,7 +103,7 @@ namespace MyGame {
 		PlayerReticle* GetReticle() { return reticle_.get(); }
 		PlayerAttack* GetAttack() { return attack_.get(); }
 		PlayerDeath* GetDeath() { return death_.get(); }
-		const MyEngine::Vector3& GetColliderSize() const { return colliderSize_; }
+		const MyEngine::Vector3& GetColliderSize() const { return collidersize_; }
 		const MyEngine::Vector3& GetRotate() const { return object_->GetRotate(); }
 		const MyEngine::Vector3& GetTranslate() const { return object_->GetTranslate(); }
 		MyEngine::Vector3 GetExpTargetPosition() const;

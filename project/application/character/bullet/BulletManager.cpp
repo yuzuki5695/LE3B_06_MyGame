@@ -43,9 +43,9 @@ namespace MyGame {
             // ImGuiでサイズを変更（ドラッグで調整可能に）
             if (ImGui::DragFloat3("Player Bullet Size", &commonPlayerBulletSize_.x, 0.05f, 0.1f, 10.0f)) {
                 // 値が変わったら、現在画面内に存在するすべての弾に即座に反映
-                for (auto& bullet : bullets_) {
-                    if (bullet && bullet->IsActive()) {
-                        if (PlayerBullet* Player = dynamic_cast<PlayerBullet*>(bullet.get())) {
+                for (auto& bullet_ : bullets_) {
+                    if (bullet_ && bullet_->IsActive()) {
+                        if (PlayerBullet* Player = dynamic_cast<PlayerBullet*>(bullet_.get())) {
                             Player->SetColliderSize(commonPlayerBulletSize_);
                         }
                     }
@@ -55,9 +55,9 @@ namespace MyGame {
             ImGui::SeparatorText("Enemy Bullet Settings");
             if (ImGui::DragFloat3("Enemy Bullet Size", &commonEnemyBulletSize_.x, 0.05f, 0.1f, 10.0f)) {
                 // 値が変わったら、現在画面内に存在するすべての弾に即座に反映
-                for (auto& bullet : bullets_) {
-                    if (bullet && bullet->IsActive()) {
-                        if (EnemyBullet* Enemy = dynamic_cast<EnemyBullet*>(bullet.get())) {
+                for (auto& bullet_ : bullets_) {
+                    if (bullet_ && bullet_->IsActive()) {
+                        if (EnemyBullet* Enemy = dynamic_cast<EnemyBullet*>(bullet_.get())) {
                             Enemy->SetColliderSize(commonEnemyBulletSize_);
                         }
                     }
@@ -72,41 +72,41 @@ namespace MyGame {
 
     void BulletManager::Update() {
         // 全弾更新
-        for (std::unique_ptr<BaseBullet>& bullet : bullets_) {
-            bullet->Update();
+        for (std::unique_ptr<BaseBullet>& bullet_ : bullets_) {
+            bullet_->Update();
         }
         // 非アクティブ削除
         bullets_.erase(std::remove_if(bullets_.begin(), bullets_.end(),
-            [](const auto& bullet) {
-                return !bullet->IsActive();
+            [](const auto& bullet_) {
+                return !bullet_->IsActive();
             }),
             bullets_.end()
         );
     }
 
     void BulletManager::Draw() {
-        for (std::unique_ptr<BaseBullet>& bullet : bullets_) {
-            bullet->Draw();
+        for (std::unique_ptr<BaseBullet>& bullet_ : bullets_) {
+            bullet_->Draw();
         }
     }
 
     void BulletManager::SpawnPlayerBullet(const Transform& transform, const Vector3& velocity) {
-        std::unique_ptr<BaseBullet> bullet = std::make_unique<PlayerBullet>();
-        bullet->Initialize(transform, velocity);
+        std::unique_ptr<BaseBullet> bullet_ = std::make_unique<PlayerBullet>();
+        bullet_->Initialize(transform, velocity);
         // 最新の共通サイズを適用
-        if (PlayerBullet* Player = dynamic_cast<PlayerBullet*>(bullet.get())) {
+        if (PlayerBullet* Player = dynamic_cast<PlayerBullet*>(bullet_.get())) {
             Player->SetColliderSize(commonPlayerBulletSize_);
         }
-        bullets_.push_back(std::move(bullet));
+        bullets_.push_back(std::move(bullet_));
     }
 
     void BulletManager::SpawnEnemyBullet(const MyEngine::Transform& transform, const MyEngine::Vector3& velocity) {
-        std::unique_ptr<BaseBullet> bullet = std::make_unique<EnemyBullet>();
-        bullet->Initialize(transform, velocity);
+        std::unique_ptr<BaseBullet> bullet_ = std::make_unique<EnemyBullet>();
+        bullet_->Initialize(transform, velocity);
         // 最新の共通サイズを適用
-        if (EnemyBullet* Enemy = dynamic_cast<EnemyBullet*>(bullet.get())) {
+        if (EnemyBullet* Enemy = dynamic_cast<EnemyBullet*>(bullet_.get())) {
             Enemy->SetColliderSize(commonEnemyBulletSize_);
         }
-        bullets_.push_back(std::move(bullet));
+        bullets_.push_back(std::move(bullet_));
     }
 }
