@@ -153,11 +153,11 @@ namespace MyEngine {
         // ------------------------------------------------------------
         // 起動完了時間の確定
         // ------------------------------------------------------------
-        //TimeSystem::MarkWindowInitialized();                                                          // 起動からここまでの時間を確定
-        //float startupTime = static_cast<float>(TimeSystem::GetStartupSeconds());                      // 起動完了までの経過秒を取得
-        //std::string formatString = MessageService::GetText("System.EngineInit");                      // ローカライズされたメッセージ取得
-        //std::string finalMessage = std::vformat(formatString, std::make_format_args(startupTime));    // 秒数をフォーマット埋め込み
-        //EditorConsole::GetInstance()->AddLog(finalMessage);                                           // コンソールへ出力
+        TimeSystem::MarkWindowInitialized();                                                          // 起動からここまでの時間を確定
+        float startupTime = static_cast<float>(TimeSystem::GetStartupSeconds());                      // 起動完了までの経過秒を取得
+        std::string formatString = MessageService::GetText("System.EngineInit");                      // ローカライズされたメッセージ取得
+        std::string finalMessage = std::vformat(formatString, std::make_format_args(startupTime));    // 秒数をフォーマット埋め込み
+        EditorConsole::GetInstance()->AddLog(finalMessage);                                           // コンソールへ出力
 #endif
     }
 
