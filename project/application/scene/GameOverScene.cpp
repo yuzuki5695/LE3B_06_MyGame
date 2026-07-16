@@ -13,9 +13,13 @@
 #include <SceneEmitterManager.h>
 // AssetGeneratorからインクルード
 #include <subproject/AssetGenerator/engine/generator/LoadResourceID.h>
+#include <SoundPlayer.h>
+#include <input.h>
+#include <GameOverUI.h>
 
 using namespace MyEngine;
 using namespace AssetGen::LoadResourceID::Models;
+using namespace AssetGen::LoadResourceID;
 
 namespace MyGame {
 	///====================================================
@@ -26,6 +30,8 @@ namespace MyGame {
 		FadeManager::GetInstance()->Finalize();   // フェードマネージャの終了処理
 		UIManager::GetInstance()->Finalize();     // UIマネージャの終了処理 
 		StageManager::GetInstance()->Finalize();  // ステージマネージャの終了処理
+		// オーディオの開放処理
+		SoundPlayer::GetInstance()->SoundUnload(&button_);
 	}
     ///====================================================
     /// 初期化処理
@@ -73,9 +79,8 @@ namespace MyGame {
 		}
 		std::vector<Object3d*> partTargets;
 		partTargets.reserve(partsList.size());  // 最適化
-
 		for (auto& part : partsList) {
-			partTargets.push_back(part.obj.get());  // unique_ptr → raw pointer に変換
+			partTargets.push_back(part.obj.get());
 		}
 		// ステージマネージャの初期化
 		StageManager::GetInstance()->Initialize();
@@ -83,6 +88,8 @@ namespace MyGame {
 		FadeManager::GetInstance()->StartFade(FadeType::FadeIn, FadeStyle::SilhouetteExplode, 1.0f);
 		// UIマネージャの初期化
 		UIManager::GetInstance()->Initialize();
+		// オーディオの読み込み		
+		button_ = SoundLoader::SoundLoadWave(Audio::push);
 	}
 	///====================================================
     /// 更新処理
@@ -92,6 +99,13 @@ namespace MyGame {
 		CameraManager::GetInstance()->Update();
 
 #pragma region 全てのObject3d個々の更新処理			
+		if (UIManager::GetInstance()->GetUI<GameOverUI>()->GetPhase() == 2) {
+			// 入力処理
+			if (Input::GetInstance()->TriggerKey(DIK_RETURN)) {
+				// 音を鳴らす
+				SoundPlayer::GetInstance()->SoundPlayWave(button_, false, 0.4f);
+			}
+		}
 
 		//  落下処理
 		UpdateParts();

@@ -4,6 +4,7 @@
 #include <Player.h>
 #include <Enemy.h>
 #include <EnemySpawner.h>
+#include <SoundLoader.h>
 
 namespace MyGame {
     /// <summary>
@@ -41,5 +42,8 @@ namespace MyGame {
         bool gamened_;
         uint32_t prevPlayerExp_; // 前フレームのプレイヤーの経験値
         bool isFirstExpGainIgnored_ = false; // 経験値の初期化が完了したかどうかのフラグ
+
+        // 決定音
+        MyEngine::SoundData button_;
     };
 }

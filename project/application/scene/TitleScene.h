@@ -27,9 +27,10 @@ namespace MyGame {
         /// 描画処理
         /// </summary>
         void Draw() override;
-
+        /// <summary>
+        /// プレイヤ―の動き
+        /// </summary>
         void PlayerMotion();
-
     private: // メンバ変数
         std::unique_ptr <Player> player_;
         MyEngine::Vector3 playeroffset_;

@@ -19,9 +19,14 @@
 #ifdef max
 #undef max
 #endif
+#include <SoundPlayer.h>
+// AssetGeneratorからインクルード
+#include <subproject/AssetGenerator/engine/generator/LoadResourceID.h>
 
 using namespace MyEngine;
 using namespace Easing;
+using namespace AssetGen::LoadResourceID;
+
 
 namespace MyGame {
     ///====================================================
@@ -32,7 +37,9 @@ namespace MyGame {
         FadeManager::GetInstance()->Finalize();   // フェードマネージャの終了処理
         UIManager::GetInstance()->Finalize();     // UIマネージャの終了処理 
         StageManager::GetInstance()->Finalize();  // ステージマネージャの終了処理
-        SceneEmitterManager::GetInstance()->Finalize(); // パーティクルエミッターマネージャの終了処理
+        SceneEmitterManager::GetInstance()->Finalize(); // パーティクルエミッターマネージャの終了処理       
+        // オーディオの開放処理
+        SoundPlayer::GetInstance()->SoundUnload(&button_);
     }
     ///====================================================
     /// 初期化処理
@@ -63,6 +70,8 @@ namespace MyGame {
         // パーティクルエミッターの初期化
         SceneEmitterManager::GetInstance()->Initialize();
         SceneEmitterManager::GetInstance()->GetEmitter<GameClearParticle>()->SetPlayer(player_.get());
+        // オーディオの読み込み		
+        button_ = SoundLoader::SoundLoadWave(Audio::push);
     }
     ///====================================================
     /// 更新処理
@@ -189,6 +198,8 @@ namespace MyGame {
                 UIManager::GetInstance()->GetUI<GameClearUI>()->StartBack();
                 UIManager::GetInstance()->GetUI<GameClearUI>()->SetMovestarted(false);
             }
+            // 音を鳴らす
+            SoundPlayer::GetInstance()->SoundPlayWave(button_, false, 0.4f);
             step2FinishPlayerEase_ = true;  // Y補完開始
         }
     }

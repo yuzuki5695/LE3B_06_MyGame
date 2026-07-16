@@ -1,6 +1,7 @@
 #pragma once
 #include <BaseScene.h>
 #include <Player.h>
+#include <SoundLoader.h>
 
 namespace MyGame {
     /// <summary>
@@ -62,5 +63,7 @@ namespace MyGame {
         float step3TimeScale = 0.7f; // 0.3～0.6 あたりがおすすめ
         float startStep3PosZ_;
 
+        // 決定音
+        MyEngine::SoundData button_;
     };
 }

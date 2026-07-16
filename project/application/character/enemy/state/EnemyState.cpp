@@ -89,7 +89,7 @@ namespace MyGame {
         // =========================
         // プレイヤーの弾による死亡のみ演出
         // =========================
-        if (!enemy->IsDeathStarted()) {
+        if (!enemy->IsDeathStarted()) {           
             enemy->SetDeathStarted(true);
             // 当たり判定解除
             CollisionManager::GetInstance()->UnregisterCollider(character.GetCollider());

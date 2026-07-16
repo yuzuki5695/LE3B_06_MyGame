@@ -61,7 +61,7 @@ namespace MyGame {
 		SceneEmitterManager::GetInstance()->GetEmitter<TitleParticle>()->SetObject3d(player_->GetObject3d());
 
 		// オーディオの読み込み		
-		button_ = SoundLoader::SoundLoadWave(Audio::push);
+		button_ = SoundLoader::SoundLoadWave(Audio::push);		
 	}
 
 	///====================================================
