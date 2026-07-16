@@ -16,7 +16,6 @@ namespace MyEngine {
         enum class ObjectCategory {
             Object3D,  // 3Dオブジェクト
             Object2D,  // 2Dオブジェクト
-            List,      // オブジェクトリスト
             Count
         };
 
@@ -31,7 +30,6 @@ namespace MyEngine {
             static_cast<size_t>(ObjectCategory::Count)> kCategoryInfos = { {
                 { ObjectCategory::Object3D, "Object.Category3D" },
                 { ObjectCategory::Object2D, "Object.Category2D" },
-                { ObjectCategory::List, "Object.CategoryList" }
             }
         };
 
