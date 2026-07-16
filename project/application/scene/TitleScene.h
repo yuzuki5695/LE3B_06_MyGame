@@ -37,7 +37,7 @@ namespace MyGame {
         bool isMoving_ = true;
 
 
-        float moveTimer_ = 0.0f;
+        float movetimer_ = 0.0f;
         float moveDuration_ = 2.0f; // 秒
 
         float startZ_ = -100.0f;

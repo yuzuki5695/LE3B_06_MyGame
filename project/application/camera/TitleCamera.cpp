@@ -17,21 +17,27 @@ namespace MyGame {
     ///====================================================
     void TitleCamera::Initialize(Camera* camera) {
         // カメラ状態を初期化
-        stateData_.type = CameraType::Main;
-        stateData_.state = CameraState::LockOn;
+        statedata_.type = CameraType::Main;
+        statedata_.state = CameraState::LockOn;
         // カメラ位置を初期位置へ設定
-        camera->SetTranslate(kInitialPosition);
+        kInitialposition_ = { 5.0f, -3.0f, 0.0f };
+        camera->SetTranslate(kInitialposition_);
         // メンバ変数を初期化
-        targetPosition_ = kInitialPosition;
-        isIntroTargetLocked_ = false;
+        targetPosition_ = kInitialposition_;
+        kOffset_ = { 6.0f,-1.0f,-20.0f };
+        kfollowtightness_ = 0.05f;
+        krotationlerp_ = 0.1f;
+        kmindirectionlength_ = 0.0001f;
+        kmovecompletedistance_ = 0.1f;
+        isIntrotargetlocked_ = false;
     }
     ///====================================================
     /// 更新処理
     ///====================================================
     void TitleCamera::Update(Camera* camera) {
-        switch (stateData_.type) {
+        switch (statedata_.type) {
         case CameraType::Main:
-            switch (stateData_.state) {
+            switch (statedata_.state) {
                 // 通常状態
             case CameraState::Default:
                 break;
@@ -75,13 +81,13 @@ namespace MyGame {
         Vector3 direction = targetPosition - cameraPosition;
 
         // 十分な長さがある場合のみ回転更新
-        if (Length(direction) > kMinDirectionLength) {
+        if (Length(direction) > kmindirectionlength_) {
             direction = Normalize(direction);
             float targetYaw = atan2f(direction.x, direction.z);
             float targetPitch = -asinf(direction.y);
             // 滑らかに回転
-            cameraRotation.x = LerpAngle(cameraRotation.x, targetPitch, kRotationLerp);
-            cameraRotation.y = LerpAngle(cameraRotation.y, targetYaw, kRotationLerp);
+            cameraRotation.x = LerpAngle(cameraRotation.x, targetPitch, krotationlerp_);
+            cameraRotation.y = LerpAngle(cameraRotation.y, targetYaw, krotationlerp_);
             cameraRotation.z = 0.0f;
             camera->SetRotate(cameraRotation);
         }
@@ -90,8 +96,8 @@ namespace MyGame {
     /// タイトル演出用カメラ移動開始
     ///====================================================
     void TitleCamera::StartIntroMove() {
-        stateData_.state = CameraState::Move;
-        isIntroTargetLocked_ = false;
+        statedata_.state = CameraState::Move;
+        isIntrotargetlocked_ = false;
     }
     ///====================================================
     /// タイトル演出用カメラ移動更新
@@ -105,19 +111,17 @@ namespace MyGame {
         //==========================================
         // 目標位置を一度だけ決定
         //==========================================
-        if (!isIntroTargetLocked_) {
+        if (!isIntrotargetlocked_) {
             Vector3 playerPosition = target_->GetTranslate();
-            targetPosition_.x = playerPosition.x + kOffsetX;
-            targetPosition_.y = playerPosition.y + kOffsetY;
-            targetPosition_.z = playerPosition.z + kOffsetZ;
-            isIntroTargetLocked_ = true;
+            targetPosition_ = playerPosition + kOffset_;
+            isIntrotargetlocked_ = true;
         }
 
         //==========================================
         // カメラ位置を補間
         //==========================================
         Vector3 cameraPosition = camera->GetTranslate();
-        cameraPosition = Lerp(cameraPosition, targetPosition_, kFollowTightness);
+        cameraPosition = Lerp(cameraPosition, targetPosition_, kfollowtightness_);
         camera->SetTranslate(cameraPosition);
 
         //==========================================
@@ -125,11 +129,11 @@ namespace MyGame {
         //==========================================
         float distance = Length(targetPosition_ - cameraPosition);
 
-        if (distance < kMoveCompleteDistance) {
+        if (distance < kmovecompletedistance_) {
             // 最終位置へ補正
             camera->SetTranslate(targetPosition_);
             // 通常状態へ戻す
-            stateData_.state = CameraState::Default;
+            statedata_.state = CameraState::Default;
         }
     }
 }

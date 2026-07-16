@@ -30,11 +30,11 @@ namespace MyGame {
         // 対象のオブジェクト
         MyEngine::Object3d* target_{};
         // カメラの状態データ
-        MyEngine::CameraDefs::StateData stateData_;
+        MyEngine::CameraDefs::StateData statedata_;
     public:
         // getter
-        const MyEngine::CameraDefs::StateData& GetStateData() const { return stateData_; }
+        const MyEngine::CameraDefs::StateData& GetStateData() const { return statedata_; }
         // setter
-        void SetCameraState(const MyEngine::CameraDefs::CameraState& state) { stateData_.state = state; }
+        void SetCameraState(const MyEngine::CameraDefs::CameraState& state) { statedata_.state = state; }
     };
 }

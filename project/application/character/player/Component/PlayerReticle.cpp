@@ -13,19 +13,19 @@ namespace MyGame {
     void PlayerReticle::Update() {
         Input* input = Input::GetInstance();
         if (input->PushKey(DIK_LEFT)) {
-            offset_.x -= kMoveSpeed;
+            offset_.x -= kmovespeed_;
         }
 
         if (input->PushKey(DIK_RIGHT)) {
-            offset_.x += kMoveSpeed;
+            offset_.x += kmovespeed_;
         }
 
         if (input->PushKey(DIK_UP)) {
-            offset_.y += kMoveSpeed;
+            offset_.y += kmovespeed_;
         }
 
         if (input->PushKey(DIK_DOWN)) {
-            offset_.y -= kMoveSpeed;
+            offset_.y -= kmovespeed_;
         }
 
         offset_.x = std::clamp(offset_.x, -kMaxOffsetX, kMaxOffsetX);

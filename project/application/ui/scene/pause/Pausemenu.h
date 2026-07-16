@@ -88,7 +88,7 @@ namespace MyGame {
 
         float frame_;           // 現在の経過フレーム
         const float kMaxFrame = 30.0f; // アニメーションにかける時間（30フレーム = 約0.5秒）   
-        bool isFinished_ = false; // 閉じる演出が完全に終わった
+        bool isfinished_ = false; // 閉じる演出が完全に終わった
 
         float panelStartOffsetY_;
 

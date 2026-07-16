@@ -29,12 +29,12 @@ namespace MyGame {
 
         void StartReverse() {
             PlayingOut = true;
-            isFinished_ = false;
+            isfinished_ = false;
             timer_ = 0.0f;
             isReverseFinished_ = false;
         }
 
-        bool IsFinished() const { return isFinished_; }
+        bool IsFinished() const { return isfinished_; }
 
         bool IsReverseFinished() const { return isReverseFinished_; }
 
@@ -48,7 +48,7 @@ namespace MyGame {
         const float kInterval = 0.1f;
         float timer_ = 0.0f;
 
-        bool isFinished_ = false;
+        bool isfinished_ = false;
         bool isStarted_ = false;
         bool PlayingOut = false;
         bool isReverseFinished_ = false; 

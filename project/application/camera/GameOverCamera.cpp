@@ -7,8 +7,8 @@ using namespace CameraDefs;
 namespace MyGame {
 
     void GameOverCamera::Initialize(MyEngine::Camera* camera) {
-		stateData_.type = CameraType::Main;         // メインカメラを使用
-		stateData_.state = CameraState::Default;    // デフォルト
+		statedata_.type = CameraType::Main;         // メインカメラを使用
+		statedata_.state = CameraState::Default;    // デフォルト
 		// カメラの位置を設定
         translate_ = { 0.0f, 3.0f, 0.0f };
         camera->SetTranslate(translate_);

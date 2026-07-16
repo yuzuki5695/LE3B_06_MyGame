@@ -19,7 +19,7 @@ namespace MyGame {
         static constexpr float kMaxOffsetY = 4.0f;
     private:
         MyEngine::Vector2 offset_ = { 0.0f, 0.0f };
-        static constexpr float kMoveSpeed = 0.2f;
+        static constexpr float kmovespeed_ = 0.2f;
     public:
         const MyEngine::Vector2& GetOffset() const { return offset_; }
 

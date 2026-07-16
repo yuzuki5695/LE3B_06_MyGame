@@ -17,24 +17,28 @@ namespace MyGame {
     ///====================================================
     void GameClearCamera::Initialize(MyEngine::Camera* camera) {
         // カメラ状態を初期化
-        stateData_.type = CameraType::Main;
-        stateData_.state = CameraState::LockOn;
+        statedata_.type = CameraType::Main;
+        statedata_.state = CameraState::LockOn;
         // カメラ位置を初期位置へ設定
         transform_ = { 0.0f,0.0f,0.0f };
         camera->SetTranslate(transform_);
 
         // 変数を初期化
-        moveStartX_ = -15.0f;
-        moveEndX_ = 0.0f;
-        moveTimer_ = 0.0f;
-        moveEase_ = 0.0f;
-        isLookAtInitialized_ = false;
+        movestartx_ = -15.0f;
+        moveendx_ = 0.0f;
+        movetimer_ = 0.0f;
+        moveease_ = 0.0f;
+        islookatInitialized_ = false;
+        kmovedistance_ = 8.0f;
+        kmovespeed_ = 0.02f;
+        krotationlerp_ = 0.1f;
+        kmindirectionlength_ = 0.0001f;
     }
     ///====================================================
     /// 更新処理
     ///====================================================
     void GameClearCamera::Update(MyEngine::Camera* camera) {
-        switch (stateData_.state) {
+        switch (statedata_.state) {
             // 通常状態
         case CameraState::Default:
             break;
@@ -45,29 +49,29 @@ namespace MyGame {
             // カメラ移動
         case CameraState::Move:
             // 移動開始位置を一度だけ設定
-            if (!isLookAtInitialized_) {
-                moveStartX_ = target_->GetTranslate().x;
-                moveEndX_ = moveStartX_ + kMoveDistance;
-                isLookAtInitialized_ = true;
+            if (!islookatInitialized_) {
+                movestartx_ = target_->GetTranslate().x;
+                moveendx_ = movestartx_ + kmovedistance_;
+                islookatInitialized_ = true;
             }
 
             // 補間タイマー更新
-            moveTimer_ += kMoveSpeed;
+            movetimer_ += kmovespeed_;
 
-            if (moveTimer_ > 1.0f) {
-                moveTimer_ = 1.0f;
+            if (movetimer_ > 1.0f) {
+                movetimer_ = 1.0f;
             }
 
             // イージング計算
-            moveEase_ = EaseOutCubic(moveTimer_);
+            moveease_ = EaseOutCubic(movetimer_);
             // カメラ位置を補間
-            transform_.x = moveStartX_ + (moveEndX_ - moveStartX_) * moveEase_;
+            transform_.x = movestartx_ + (moveendx_ - movestartx_) * moveease_;
             camera->SetTranslate(transform_);
 
             // 移動終了
-            if (moveTimer_ >= 1.0f) {
+            if (movetimer_ >= 1.0f) {
 
-                stateData_.state = CameraState::Default;
+                statedata_.state = CameraState::Default;
             }
             break;
         }
@@ -91,14 +95,14 @@ namespace MyGame {
         Vector3 direction = targetPosition - cameraPosition;
 
         // ベクトル長が十分ある場合のみ回転を更新
-        if (Length(direction) > kMinDirectionLength) {
+        if (Length(direction) > kmindirectionlength_) {
             direction = Normalize(direction);
             // 目標回転角を計算
             float targetYaw = atan2f(direction.x, direction.z);
             float targetPitch = -asinf(direction.y);
             // 現在角度から目標角度へ滑らかに補間
-            cameraRotation.x = LerpAngle(cameraRotation.x, targetPitch, kRotationLerp);
-            cameraRotation.y = LerpAngle(cameraRotation.y, targetYaw, kRotationLerp);
+            cameraRotation.x = LerpAngle(cameraRotation.x, targetPitch, krotationlerp_);
+            cameraRotation.y = LerpAngle(cameraRotation.y, targetYaw, krotationlerp_);
             cameraRotation.z = 0.0f;
             camera->SetRotate(cameraRotation);
         }

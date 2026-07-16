@@ -50,28 +50,28 @@ namespace MyGame {
         MyEngine::Vector3 CalculateFuturePosition(const std::vector<BezierPoint>& points) const;
     private: // メンバ変数
         Player* player_ = nullptr;                               // プレイヤーへの参照ポインタ
-        std::unique_ptr<CurveJsonLoader> Jsondata_ = nullptr;    // ベジェ制御点を読み込むローダー 
+        std::unique_ptr<CurveJsonLoader> jsonLoader_ = nullptr;  // ベジェ制御点を読み込むローダー 
         std::unique_ptr<BezierData> bezierdata_;                 // 移動に使う制御点データ    
         /// レール情報
-        MyEngine::Vector3 bezierPos_{};                          // 現在のベジェ曲線上の位置
+        MyEngine::Vector3 bezierposition_{};                     // 現在のベジェ曲線上の位置
         MyEngine::Vector3 forward_{};                            // 現在の進行方向
-        MyEngine::Vector3 prevBezierPos_{};                      // 前フレーム位置
-        MyEngine::Vector3 prevForward_;                          // 前フレームのレール座標  
-        MyEngine::Vector3 railVelocity_{};                       // レール移動速度
+        MyEngine::Vector3 previousbezierposition_{};             // 前フレーム位置
+        MyEngine::Vector3 previousforward_;                      // 前フレームのレール座標  
+        MyEngine::Vector3 railvelocity_{};                       // レール移動速度
         /// レール制御パラメータ
-        uint32_t currentSegment_;      // 現在のレールセグメント 
+        uint32_t currentsegment_;      // 現在のレールセグメント 
         float speed_;                  // 移動速度
-        float lookAheadDistance_;      // 未来を見る距離
-        float rotateSmooth_;           // 回転の追従速度
+        float lookaheaddistance_;      // 未来を見る距離
+        float rotatesmooth_;           // 回転の追従速度
         float pitchInfluence_;         // ピッチ影響率
-        float totalRailLength_;        // レール全体の長さ
-        bool isFinished_ = false;      // 
+        float totalrailLength_;        // レール全体の長さ
+        bool isfinished_ = false;      // レール終点へ到達したかどうか
     public: // アクセッサ
         // getter
         const MyEngine::Vector3& GetForward() const { return forward_; }
-        const MyEngine::Vector3& GetRailPosition() const { return bezierPos_; }
-        const bool GetFinished() const { return isFinished_; }
-        const MyEngine::Vector3& GetRailVelocity() const { return railVelocity_; }
+        const MyEngine::Vector3& GetRailPosition() const { return bezierposition_; }
+        const bool GetFinished() const { return isfinished_; }
+        const MyEngine::Vector3& GetRailVelocity() const { return railvelocity_; }
         float GetProgress() const;
         MyEngine::Vector3 GetRailEndPosition() const {
             // データ未読み込み対策

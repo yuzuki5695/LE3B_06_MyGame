@@ -23,9 +23,9 @@ namespace MyGame {
         virtual void Draw2D() = 0;
        
 		/// イベントの終了判定        
-        bool IsFinished() const { return isFinished_; }
+        bool IsFinished() const { return isfinished_; }
 	protected: 
         // イベントの終了フラグ		
-        bool isFinished_ = false;
+        bool isfinished_ = false;
     };
 }

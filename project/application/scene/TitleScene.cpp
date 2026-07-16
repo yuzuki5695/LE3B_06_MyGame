@@ -114,8 +114,8 @@ namespace MyGame {
 		TitleUI* titleUI = UIManager::GetInstance()->GetUI<TitleUI>();
 		
 		if (isMoving_) {
-			moveTimer_ += 1.0f / 60.0f;
-			float t = moveTimer_ / moveDuration_;
+			movetimer_ += 1.0f / 60.0f;
+			float t = movetimer_ / moveDuration_;
 			t = std::clamp(t, 0.0f, 1.0f);
 			float easeT = EaseOutCubic(t);
 			playeroffset_.z = Lerp(startZ_, targetZ_, easeT);

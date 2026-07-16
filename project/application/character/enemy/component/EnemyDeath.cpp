@@ -7,7 +7,7 @@ namespace MyGame {
 
     void EnemyDeath::Start() {
         isPlaying_ = true;
-        isFinished_ = false;
+        isfinished_ = false;
         timer_ = 0.0f;
         duration_ = 0.5f;
     }
@@ -28,7 +28,7 @@ namespace MyGame {
             t = 1.0f;
             // 完全に0スケールで固定
             object->SetScale({ 0.0f, 0.0f, 0.0f });
-            isFinished_ = true;
+            isfinished_ = true;
             isPlaying_ = false;
             return;
         }
