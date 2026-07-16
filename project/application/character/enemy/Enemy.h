@@ -14,10 +14,13 @@ namespace MyGame {
 	/// </summary>
 	class Enemy : public BaseCharacter {
 	public:
+		/// <summary>	
+		/// 敵が誰によって死亡したかを表す列挙型
+		/// </summary>
 		enum class DeathType {
-			None,
-			Player,
-			System
+			None,   // 死亡していない、または未設定
+			Player, // プレイヤーによって撃破された
+			System  // システム（画面外消滅など）によって削除された
 		};
 	public:// メンバ関数
 		// デストラクタ
@@ -37,25 +40,32 @@ namespace MyGame {
 		/// <summary>
 		/// 描画処理
 		/// </summary>
-		void Draw() override;
+		void Draw() override;		
+		/// <summary>
+		/// カメラの後方へ通過した敵を自動削除するか判定
+		/// </summary>
+		/// <returns>削除対象ならtrue</returns>
+		bool ShouldAutoDestroy() const;
+		/// <summary>
+		/// 敵がカメラを通過したか判定
+		/// </summary>
+		/// <returns>通過済みならtrue</returns>
+		bool HasPassedCamera() const;
 	private: // メンバ変数
 		// ポインタ
 		std::unique_ptr<EnemyAttack> attack_; // 攻撃ロジックの保持
 		std::unique_ptr<EnemyDeath> death_;   // 死亡演出の保持
-		bool isSpawned_ = false; // 出現フラグ
+		bool isSpawned_ = false;          // 出現フラグ
 		MyEngine::Vector3 collidersize_;  // 当たり判定のサイズ
-		// プレイヤーへの参照
-		Player* player_ = nullptr;
-		uint32_t expReward_; // 倒した時の経験値
-		bool isExpGranted_; // 経験値付与済みフラグ
-		bool isKilledByPlayer_;
-		bool isDeathStarted_;
-
-		EnemyType enemyType_; // 敵のタイプ
-		std::mt19937 randomEngine; // 乱数生成器
-
-		bool deathParticleRequested_;
-		DeathType deathType_;
+		Player* player_ = nullptr; 		  // プレイヤーへの参照
+		uint32_t expReward_;              // 倒した時の経験値
+		bool isExpGranted_;               // 経験値付与済みフラグ
+		bool isKilledByPlayer_;           // プレイヤー撃破判定
+		bool isDeathStarted_;             // 死亡演出開始フラグ
+		EnemyType enemyType_;             // 敵のタイプ
+		std::mt19937 randomEngine;        // 乱数生成器
+		bool deathParticleRequested_;     // 死亡パーティクル生成要求
+		DeathType deathType_;             // 敵の死亡させた対象
 	public: // アクセッサ
 		bool IsSpawned() const { return isSpawned_; }
 		bool IsExpGranted() const { return isExpGranted_; }
@@ -88,8 +98,5 @@ namespace MyGame {
 			return true;
 		}
 		void RequestDeathParticle() { deathParticleRequested_ = true; }
-		bool ShouldAutoDestroy() const;
-		bool HasPassedCamera() const;
-
 	};
 }
