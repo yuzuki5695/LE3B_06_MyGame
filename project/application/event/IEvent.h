@@ -20,8 +20,7 @@ namespace MyGame {
         /// <summary>
 		/// 2D描画処理
         /// </summary>
-        virtual void Draw2D() = 0;
-       
+        virtual void Draw2D() = 0; 
 		/// イベントの終了判定        
         bool IsFinished() const { return isfinished_; }
 	protected: 

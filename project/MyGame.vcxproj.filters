@@ -950,9 +950,6 @@
     <ClInclude Include="application\stage\StageManager.h">
       <Filter>ヘッダー ファイル\Application\Stage</Filter>
     </ClInclude>
-    <ClInclude Include="application\character\player\PlayerData.h">
-      <Filter>ヘッダー ファイル\Application\Character\Player</Filter>
-    </ClInclude>
     <ClInclude Include="application\character\BaseData.h">
       <Filter>ヘッダー ファイル\Application\Character</Filter>
     </ClInclude>

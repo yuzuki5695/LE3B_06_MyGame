@@ -50,8 +50,8 @@ namespace MyGame {
         /// <param name="shotData"></param>
         /// <param name="level"></param>
         void FireByLevel(const MyEngine::Vector3& playerPos, const ShotData& shotData, uint32_t level);
+        static constexpr float coolTime_ = 0.2f;   // 発射間隔
     private:
-        float coolTime_ = 0.2f;   // 発射間隔
-		float timer_ = 0.0f;      // クールタイム管理用タイマー
+		float timer_;      // クールタイム管理用タイマー
     };
 }

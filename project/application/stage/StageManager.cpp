@@ -30,7 +30,9 @@ namespace MyGame {
     void StageManager::Finalize() {
         instance_.reset();  // `delete` 不要
     }
-
+    ///====================================================
+    /// 初期化処理
+    ///====================================================
     void StageManager::Initialize() {
 		// テクスチャとモデルの読み込み
         TextureManager::GetInstance()->LoadTexture(stage::CubemapBox);

@@ -34,7 +34,9 @@ namespace MyGame {
         object_.reset();   // 3Dオブジェクトの破棄
 		CollisionManager::GetInstance()->UnregisterCollider(collider_.get()); // コライダーの登録解除
     }
-
+    ///====================================================
+    /// 初期化処理
+    ///====================================================
     void Player::Initialize() {
         // テクスチャの読み込み
         TextureManager::GetInstance()->LoadTexture(Ui::Target);
@@ -100,33 +102,17 @@ namespace MyGame {
         reticle_ = std::make_unique<PlayerReticle>();    // レティクルロジックの生成
         attack_ = std::make_unique<PlayerAttack>();      // 攻撃ロジックの生成
         death_ = std::make_unique<PlayerDeath>();        // 死亡演出ロジックの生成
-        death_->Initialize();     // 死亡演出の初期化
+        // 各処理の初期化
+        death_->Initialize();
+        move_->Initialize();
         // 初期ステートをセットする
         ChangeState(std::make_unique<PlayerStateIdle>());
         // ImGuiの登録
         DrawImGui();
     }
-
-    void Player::ApplyDamage(uint32_t damage) {
-        // すでに死亡している、または無敵状態なら処理しない
-        if (hp_ <= 0 || isInvincible_) return;
-		// ダメージを適用
-        hp_ -= damage;
-		// HPが0未満にならないように制限
-        if (hp_ < 0) {
-            hp_ = 0;
-        }
-        // ダメージを受けたら無敵状態にする
-        if (hp_ > 0) {
-            isInvincible_ = true;
-            invincibleTimer_ = kInvincibleTime; // 3秒セット
-        }
-        // HPが0になったら死亡状態へ遷移する処理
-        if (hp_ == 0) {            
-            ChangeState(std::make_unique<PlayerStateDead>());
-        }
-    }
-
+    ///====================================================
+    /// 更新処理
+    ///====================================================
     void Player::Update() {
         float deltaTime = 1.0f / 60.0f;
         // 無敵タイマーの更新処理
@@ -199,7 +185,9 @@ namespace MyGame {
         }
 #endif // USE_IMGUI
     }
-
+    ///====================================================
+    /// 描画処理(3D)
+    ///====================================================
     void Player::Draw() {
         if (!isVisible_) {
             return;
@@ -207,12 +195,34 @@ namespace MyGame {
         // 描画処理
         object_->Draw();
     }
-
+    ///====================================================
+    /// 描画処理(2D)
+    ///====================================================
     void Player::DrawSprite() {
         // 活動していない場合は描画処理をスキップ
         if (!IsActive()) { return; }
         if (targetreticle_) {
             targetreticle_->Draw();
+        }
+    }
+    
+    void Player::ApplyDamage(uint32_t damage) {
+        // すでに死亡している、または無敵状態なら処理しない
+        if (hp_ <= 0 || isInvincible_) return;
+		// ダメージを適用
+        hp_ -= damage;
+		// HPが0未満にならないように制限
+        if (hp_ < 0) {
+            hp_ = 0;
+        }
+        // ダメージを受けたら無敵状態にする
+        if (hp_ > 0) {
+            isInvincible_ = true;
+            invincibleTimer_ = kInvincibleTime; // 3秒セット
+        }
+        // HPが0になったら死亡状態へ遷移する処理
+        if (hp_ == 0) {            
+            ChangeState(std::make_unique<PlayerStateDead>());
         }
     }
 

@@ -49,7 +49,7 @@ namespace MyGame {
 		/// </summary>
 		void DrawImGui();
 		/// <summary>
-		///経験値獲得とレベルアップの処理
+		/// 経験値獲得とレベルアップの処理
 		/// </summary>
 		/// <param name="exp">獲得する経験値</param>
 		void GainExp(uint32_t exp);

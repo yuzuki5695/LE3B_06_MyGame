@@ -6,6 +6,12 @@ namespace MyGame {
 
     void PlayerDeath::Initialize() {
         timer_ = 0.0f;
+        timer_ = 0.0f;          // 経過時間タイマー
+        kDuration = 2.5f; // 演出の合計時間（秒）
+        // --- 演出用の設定定数 ---
+        kFallSpeedY = 0.02f; // 下方向への落下速度
+        kFallSpeedZ = 0.2f;  // 前方向への慣性移動速度
+        kBlinkSpeed = 50.0f; // 赤点滅の速さ
     }
 
     void PlayerDeath::Update(Vector3& rotate, Vector3& offset, Object3d* object) {

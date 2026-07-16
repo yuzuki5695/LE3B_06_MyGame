@@ -24,7 +24,9 @@ namespace MyGame {
         delete instance_;
         instance_ = nullptr;
     }
-
+    ///====================================================		
+    /// イベント開始
+    ///====================================================
     void EventManager::EventStart(Event::EventState state) {
         switch (state) {
         case Event::EventState::GameStart:
@@ -33,7 +35,9 @@ namespace MyGame {
             break;
         }
     }
-
+    ///====================================================
+    /// 更新処理
+    ///====================================================
     void EventManager::Update() {
         if (currentEvent_) {
             currentEvent_->Update();
@@ -43,7 +47,9 @@ namespace MyGame {
             }
         }
     }
-
+    ///====================================================
+    /// 描画処理
+    ///====================================================
     void EventManager::Draw2D() {
         if (currentEvent_) {
             currentEvent_->Draw2D();

@@ -50,14 +50,10 @@ namespace MyGame {
             state_.ChangeState(*this, std::move(nextState));            // 内部のステート管理クラスに処理を委譲
         }
     protected: // メンバ変数
-        /// 3Dオブジェクト
-        std::unique_ptr<MyEngine::Object3d> object_;
-        /// 当たり判定
-		std::unique_ptr<Collider> collider_;
-        /// 状態フラグ
-        CharacterFlags flags_;
-        /// ステート
-        CharacterState state_;
+        std::unique_ptr<MyEngine::Object3d> object_;  /// 3Dオブジェクト
+		std::unique_ptr<Collider> collider_;          /// 当たり判定
+        CharacterFlags flags_;                        /// 状態フラグ
+        CharacterState state_;                        /// ステート
     public: // アクセッサ
         // getter
         MyEngine::Object3d* GetObject3d() const { return object_.get(); }

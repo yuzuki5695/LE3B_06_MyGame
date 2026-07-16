@@ -9,7 +9,9 @@ using namespace MathUtil;
 using namespace MatrixVector;
 
 namespace MyGame {
-
+    ///====================================================
+    /// 更新処理
+    ///====================================================
     void PlayerReticle::Update() {
         Input* input = Input::GetInstance();
         if (input->PushKey(DIK_LEFT)) {
