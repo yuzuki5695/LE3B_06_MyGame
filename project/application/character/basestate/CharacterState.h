@@ -28,6 +28,7 @@ namespace MyGame {
         // 現在実行中のステート（Strategy/Stateパターン）
         std::unique_ptr<ICharacterState> currentState_;
 	public: // アクセッサ
+        // getter
 		ICharacterState* GetCurrentState() const { return currentState_.get(); }
     };
 }
