@@ -67,7 +67,7 @@ namespace MyGame {
         // 状態フラグの初期化
         flags_.isAlive = true;
         flags_.isActive = false;
-        expReward_ = 10; // 倒した時の経験値
+        expreward_ = 10; // 倒した時の経験値
         isExpGranted_ = false; // 経験値付与済みフラグ
         isKilledByPlayer_ = false;
         isDeathStarted_ = false;

@@ -58,7 +58,7 @@ namespace MyGame {
 		bool isSpawned_ = false;          // 出現フラグ
 		MyEngine::Vector3 collidersize_;  // 当たり判定のサイズ
 		Player* player_ = nullptr; 		  // プレイヤーへの参照
-		uint32_t expReward_;              // 倒した時の経験値
+		uint32_t expreward_;              // 倒した時の経験値
 		bool isExpGranted_;               // 経験値付与済みフラグ
 		bool isKilledByPlayer_;           // プレイヤー撃破判定
 		bool isDeathStarted_;             // 死亡演出開始フラグ
@@ -77,7 +77,7 @@ namespace MyGame {
 		EnemyDeath* GetDeath() { return death_.get(); }
 		MyEngine::Vector3 GetColliderSize() const { return collidersize_; }
 		Player* GetPlayer() const { return player_; }
-		uint32_t GetExpReward() const { return expReward_; }
+		uint32_t GetExpReward() const { return expreward_; }
 		EnemyType GetEnemyType() { return enemyType_; }
 		DeathType GetDeathType() const { return deathType_; }
 		// setter
