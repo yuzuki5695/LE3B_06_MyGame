@@ -127,12 +127,11 @@ namespace MyEngine {
         }
         // 距離取得
         float distance = Length(center - camera->GetTranslate());
-        // 基準太さ
-        constexpr float baseThickness = 0.08f;
-        // 距離スケール（弱め）
+        // 基準太さ        
+        float thickness = debug_.thickness;
+        // 距離スケール
         float thicknessScale = std::clamp(distance * 0.01f, 1.0f, 3.0f);
-        side *= baseThickness * thicknessScale * 0.5f;
-
+        side *= thickness * thicknessScale * 0.5f;
         // 頂点生成
         Vector3 v0 = line.start + side;
         Vector3 v1 = line.end + side;
@@ -310,7 +309,6 @@ namespace MyEngine {
             //--------------------------------
             ImGui::Checkbox("表示、非表示", &debug_.enable);                      // 描画の表示、非表示
             ImGui::DragFloat3("サイズ", &size.x, 0.01f, 0.1f, 20.0f);     // サイズ
-            //ImGui::ColorEdit4("カラー", &debug_.color.x);                        // カラー
             ImGui::Separator();        
             ImGui::Text("当たり判定");
             if (debug_.isHit) {
