@@ -5,10 +5,13 @@
 #include <EnemyDeath.h>
 #include <random>
 #include <EnemyType.h>
-#include <Player.h>
 #include <GamePlayparticle.h>
 
 namespace MyGame {
+
+	// 前方宣言
+	class Player;
+
 	/// <summary>
 	/// 敵キャラクタークラス
 	/// </summary>

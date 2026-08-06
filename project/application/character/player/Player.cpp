@@ -32,7 +32,7 @@ namespace MyGame {
     void Player::Finalize() {
         collider_.reset(); // コライダーの破棄
         object_.reset();   // 3Dオブジェクトの破棄
-		CollisionManager::GetInstance()->UnregisterCollider(collider_.get()); // コライダーの登録解除
+        CollisionManager::GetInstance()->UnregisterCollider(collider_.get()); // コライダーの登録解除
     }
     ///====================================================
     /// 初期化処理
@@ -63,7 +63,7 @@ namespace MyGame {
         hp_ = maxHp_;  // 初期状態は満タン     
         isInvincible_ = false;       // 無敵フラグ
         invincibleTimer_ = 0.0f;    // 無敵残り時間タイマー
-		kInvincibleTime = 3.0f; // 無敵時間の長さ
+        kInvincibleTime = 3.0f; // 無敵時間の長さ
         isVisible_ = true; // 点滅状態の可視性フラグ
         blinkTimer_ = 0.0f; // 点滅タイマー
         kBlinkInterval_ = 0.1f; // 点滅間隔
@@ -118,16 +118,16 @@ namespace MyGame {
         // 無敵タイマーの更新処理
         if (isInvincible_) {
             // 無敵時間のカウントダウン
-            invincibleTimer_ -= deltaTime;    
+            invincibleTimer_ -= deltaTime;
             // 点滅タイマー
             blinkTimer_ += deltaTime;
             // 点滅処理
             if (blinkTimer_ >= kBlinkInterval_) {
-				// 点滅間隔を超えたら可視状態を切り替える
+                // 点滅間隔を超えたら可視状態を切り替える
                 blinkTimer_ = 0.0f;
                 isVisible_ = !isVisible_;
             }
-			// 点滅処理
+            // 点滅処理
             if (invincibleTimer_ <= 0.0f) {
                 invincibleTimer_ = 0.0f;
                 isInvincible_ = false;
@@ -136,25 +136,24 @@ namespace MyGame {
                 blinkTimer_ = 0.0f;
             }
             object_->SetMaterialColor({ 1.0f, 0.0f, 0.0f, 1.0f });
-        }
-        else {
+        } else {
             // 無敵状態でない場合は常に可視状態にする
-            isVisible_ = true;            
+            isVisible_ = true;
             object_->SetMaterialColor({ 1.0f, 1.0f, 1.0f, 1.0f });
         }
 
-		// イベントロックされていない場合のみ更新処理を行う
+        // イベントロックされていない場合のみ更新処理を行う
         if (!IsEventLocked()) {
             // ステートの更新
             if (isStateUpdateEnabled_) {
                 state_.Update(*this);
             }
-			// コライダーのOBBをプレイヤーオブジェクトの現在の状態に合わせて更新
+            // コライダーのOBBをプレイヤーオブジェクトの現在の状態に合わせて更新
             if (collider_ && object_ && IsActive()) {
                 collider_->SetOBB(CollisionUtils::CreateOBB(object_.get(), collidersize_));
             }
         }
-        
+
         // カメラがGamePlayCameraで更新中の場合、プレイヤーのワールド座標をカメラ位置に基づいて更新する
         if (CameraManager::GetInstance()->GetCurrentBehaviorAs<GamePlayCamera>()) {
             // 死亡状態ではないなら
@@ -169,7 +168,7 @@ namespace MyGame {
         object_->Update();
 #ifdef USE_IMGUI
         if (IsActive()) {
-			// ライン表示はGamePlayCameraのときのみ
+            // ライン表示はGamePlayCameraのときのみ
             if (CameraManager::GetInstance()->GetCurrentBehaviorAs<GamePlayCamera>()) {
                 // LineRendererクラスにある基本のパラメータ
                 const auto& debug = LineRenderer::GetInstance()->GetDebugSettings();
@@ -205,13 +204,13 @@ namespace MyGame {
             targetreticle_->Draw();
         }
     }
-    
+
     void Player::ApplyDamage(uint32_t damage) {
         // すでに死亡している、または無敵状態なら処理しない
         if (hp_ <= 0 || isInvincible_) return;
-		// ダメージを適用
+        // ダメージを適用
         hp_ -= damage;
-		// HPが0未満にならないように制限
+        // HPが0未満にならないように制限
         if (hp_ < 0) {
             hp_ = 0;
         }
@@ -221,7 +220,7 @@ namespace MyGame {
             invincibleTimer_ = kInvincibleTime; // 3秒セット
         }
         // HPが0になったら死亡状態へ遷移する処理
-        if (hp_ == 0) {            
+        if (hp_ == 0) {
             ChangeState(std::make_unique<PlayerStateDead>());
         }
     }
@@ -258,16 +257,16 @@ namespace MyGame {
         Vector2 screenPos = reticle_->WorldToScreen(target_->GetTranslate(), active);
         targetreticle_->SetPosition(screenPos);
     }
-    
+
     Vector3 Player::GetExpTargetPosition() const {
         if (!object_) { return {}; }
-		// プレイヤーのワールド座標を取得
+        // プレイヤーのワールド座標を取得
         Vector3 pos = object_->GetTranslate();
-		// カメラが存在しない場合はそのまま返す
+        // カメラが存在しない場合はそのまま返す
         if (!CameraManager::GetInstance()->GetActiveCamera()) {
             return pos;
         }
-		// カメラの回転を取得
+        // カメラの回転を取得
         Vector3 camRot = CameraManager::GetInstance()->GetActiveCamera()->GetRotate();
         float yaw = camRot.y;
         float pitch = camRot.x;
@@ -281,9 +280,9 @@ namespace MyGame {
     }
 
     void Player::GainExp(uint32_t exp) {
-		// 経験値を加算
+        // 経験値を加算
         exp_ += exp;
-		// レベルアップの条件をチェック
+        // レベルアップの条件をチェック
         CheckLevelUp();
     }
 
@@ -314,19 +313,19 @@ namespace MyGame {
     }
 
     Vector3 Player::GetForward() const {
-		// カメラの回転から前方向ベクトルを計算
+        // カメラの回転から前方向ベクトルを計算
         Camera* active = CameraManager::GetInstance()->GetActiveCamera();
         Vector3 rot = active->GetRotate();
         float yaw = rot.y;
         float pitch = rot.x;
-		// 前方向ベクトルを計算
+        // 前方向ベクトルを計算
         Vector3 forward = { sinf(yaw) * cosf(pitch), -sinf(pitch), cosf(yaw) * cosf(pitch) };
-		// 正規化して返す
+        // 正規化して返す
         return Normalize(forward);
     }
 
     bool Player::ConsumeLevelUpRequest() {
-		// レベルアップ要求があるかを返し、フラグをリセットする
+        // レベルアップ要求があるかを返し、フラグをリセットする
         bool result = isLevelUpRequested_;
         isLevelUpRequested_ = false;
         return result;
@@ -365,7 +364,7 @@ namespace MyGame {
             /// --------------------------------------
             ImGui::Separator(); // 区切り線
             ImGui::Text("--- HP & Invincible ---");
-            
+
             // HP表示 (バー形式)
             ImGui::Text("HP : %u / %u", hp_, maxHp_);
             float hpRate = (maxHp_ > 0) ? static_cast<float>(hp_) / static_cast<float>(maxHp_) : 0.0f;
@@ -383,13 +382,30 @@ namespace MyGame {
             if (ImGui::Button("Apply 1 Damage")) {
                 ApplyDamage(1);
             }
-			// デバッグ用手動回復ボタン
+            // デバッグ用手動回復ボタン
             ImGui::SameLine();
             if (ImGui::Button("Heal Full")) {
                 hp_ = maxHp_;
                 isInvincible_ = false;
                 invincibleTimer_ = 0.0f;
-            } 
+            }
+
+            ImGui::Separator();
+            ImGui::Text("Enemy LockOn");
+            if (lockOnEnemy_) {
+                ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "LockOn : ON");
+                // 敵の座標も表示
+                const auto& pos = lockOnEnemy_->GetObject3d()->GetTranslate();
+                ImGui::Text("Enemy Pos : %.2f %.2f %.2f", pos.x, pos.y, pos.z);
+            } else {
+                ImGui::TextColored(
+                    ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "LockOn : OFF");
+            }
+            if (lockOnEnemy_) {
+                Vector3 diff = lockOnEnemy_->GetObject3d()->GetTranslate() - GetObject3d()->GetTranslate();
+                float distance = sqrtf(diff.x * diff.x + diff.y * diff.y + diff.z * diff.z);
+                ImGui::Text("Distance : %.2f", distance);
+            }
 
             // LineRenderer基本パラメータ
             LineRenderer::GetInstance()->DrawImGui(collidersize_);

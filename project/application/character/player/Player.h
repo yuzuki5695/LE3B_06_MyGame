@@ -63,6 +63,9 @@ namespace MyGame {
         /// <param name="damage">減少するHPの量</param>
         void ApplyDamage(uint32_t damage);
 	private: // メンバ変数
+		// 参照ポインタ
+		Enemy* enemy_;
+		Enemy* lockOnEnemy_ = nullptr; // ロックオン中の敵
 		PlayerData data_; // プレイヤーのデータ構造体
 		MyEngine::Transform transform_;   // プレイヤーのTransform
 		MyEngine::Vector3 collidersize_;  // 当たり判定のサイズ
@@ -77,8 +80,6 @@ namespace MyGame {
 		std::unique_ptr <MyEngine::Object3d> target_; // ターゲット用3Dオブジェクト
 		// カメラの位置調整用オフセット
 		MyEngine::Vector3 baseOffset_;
-		// 参照ポインタ
-		Enemy* enemy_;
 		// 経験値・レベル用メンバ変数
 		uint32_t kMaxLevel;      // 最大レベル
 		uint32_t level_;         // 現在のレベル
@@ -117,11 +118,13 @@ namespace MyGame {
 		MyEngine::Vector3 GetForward() const;        
         int GetHP() const { return hp_; }
         int GetMaxHP() const { return maxHp_; }
+		Enemy* GetLockOnEnemy() const { return lockOnEnemy_; }
 		// setter
 		void SetTranslate(const MyEngine::Vector3& translate) { object_->SetTranslate(translate); }
 		void SetRotate(const MyEngine::Vector3& rotate) { object_->SetRotate(rotate); }
 		void SetEnemy(Enemy* enemy) { enemy_ = enemy; }
 		void SetStateUpdateEnabled(bool enable) { isStateUpdateEnabled_ = enable; }
 		bool ConsumeLevelUpRequest();
+		void SetLockOnEnemy(Enemy* enemy) { lockOnEnemy_ = enemy; }
 	};
 }
