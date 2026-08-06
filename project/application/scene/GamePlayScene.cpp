@@ -185,6 +185,8 @@ namespace MyGame {
         CameraManager::GetInstance()->GetCurrentBehaviorAs<GamePlayCamera>()->SetPlayer(player_.get());
         // プレイヤーの更新
         player_->Update();
+        // レティクルのロックオン判定
+        player_->GetReticle()->UpdateLockOn(player_.get(), enemies_);
         // EXP増加検知
         if (player_->GetExp() > prevPlayerExp_) {
             UIManager::GetInstance()->GetUI<GamePlayUI>()->ShowExpBar();

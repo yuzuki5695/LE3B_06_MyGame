@@ -6,6 +6,7 @@
 #include <LineRenderer.h>
 #include <EditorEntityRegistry.h>
 #include <EditorTypes.h>
+#include <Player.h>
 // AssetGeneratorからインクルード
 #include <subproject/AssetGenerator/engine/generator/LoadResourceID.h>
 

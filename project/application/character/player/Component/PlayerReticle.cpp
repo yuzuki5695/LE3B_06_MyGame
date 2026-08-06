@@ -3,6 +3,9 @@
 #include <MatrixVector.h>
 #include <algorithm>
 #include <MathUtil.h>
+#include <CameraManager.h>
+#include <Player.h>
+#include <Enemy.h>
 
 using namespace MyEngine;
 using namespace MathUtil;
@@ -32,6 +35,50 @@ namespace MyGame {
 
         offset_.x = std::clamp(offset_.x, -kMaxOffsetX, kMaxOffsetX);
         offset_.y = std::clamp(offset_.y, -kMaxOffsetY, kMaxOffsetY);
+    }
+
+    void PlayerReticle::UpdateLockOn(Player* player, const std::vector<std::unique_ptr<Enemy>>& enemies) {
+        if (!player) {
+            return;
+        }
+
+        // 現在使用中のカメラ
+        Camera* camera = CameraManager::GetInstance()->GetActiveCamera();
+        if (!camera) {
+            return;
+        }
+
+        // レティクル(Target)の画面座標
+        Vector2 reticleScreen = WorldToScreen(player->GetTarget()->GetTranslate(), camera);
+
+        Enemy* bestEnemy = nullptr;
+        float bestDistance = FLT_MAX;
+
+        constexpr float kLockRange = 40.0f;   // ロック判定半径(px)
+        for (const auto& enemy : enemies) {
+            // 無効な敵は除外
+            if (!enemy->IsAlive()) {
+                continue;
+            }
+            if (!enemy->IsActive()) {
+                continue;
+            }
+            // 敵の画面座標
+            Vector2 enemyScreen = WorldToScreen(enemy->GetObject3d()->GetTranslate(), camera);
+
+            // レティクルとの差
+            float dx = enemyScreen.x - reticleScreen.x;
+            float dy = enemyScreen.y - reticleScreen.y;
+            float distance = sqrtf(dx * dx + dy * dy);
+
+            if (distance < kLockRange && distance < bestDistance) {
+                bestDistance = distance;
+                bestEnemy = enemy.get();
+            }
+        }
+
+        // 一番近い敵をPlayerへ保存
+        player->SetLockOnEnemy(bestEnemy);
     }
 
     Vector2 PlayerReticle::WorldToScreen(const Vector3& worldPos, Camera* camera) {

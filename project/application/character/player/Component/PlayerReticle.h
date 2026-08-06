@@ -3,8 +3,15 @@
 #include <Vector3.h>
 #include <Transform.h>
 #include <Camera.h>
+#include <vector>
+#include <memory>
 
 namespace MyGame {
+
+    // 前方宣言
+	class Enemy;
+	class Player;
+
     /// <summary>
     /// プレイヤーのレティクルクラス
     /// </summary>
@@ -14,6 +21,8 @@ namespace MyGame {
         /// レティクル位置を更新する
         /// </summary>
         void Update();
+
+        void UpdateLockOn(Player* player, const std::vector<std::unique_ptr<Enemy>>& enemies);
         /// <summary>
         /// ワールド座標をスクリーン座標へ変換する
         /// </summary>
