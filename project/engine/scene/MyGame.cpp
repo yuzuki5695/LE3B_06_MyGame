@@ -3,6 +3,7 @@
 #include <SceneName.h>
 
 namespace MyEngine {
+
     void MyGame::Finalize() {
         // 基底クラスの終了処理
         Framework::Finalize();
