@@ -22,13 +22,13 @@ generated/
 # --- 新規追加設定
 
 # ビルド成果物と中間ファイルを再帰的に除外
-# 階層を問わず、これらの中間ファイルや成果物を除外します
+# 階層を問わず、これらの中間ファイルや成果物を除外
 **/*.pch
 **/*.pdb
 **/*.obj
 
 # --- 指摘された不要なディレクトリの再帰的除外 ---
-# project/externals/ 配下などにあるビルド用フォルダを全て除外します
+# project/externals/ 配下などにあるビルド用フォルダを全て除外
 **/x64/
 **/x86/
 **/Win32/
@@ -39,13 +39,12 @@ generated/
 **/build/
 
 # --- ビルドキャッシュやログの除外 ---
-# .tlog や .lastbuildstate 等を網羅します
 **/*.tlog
 **/*.lastbuildstate
 **/*.log
 
 # --- 特定の外部ライブラリフォルダの明示的な除外 ---
-# 設定が不足していると指摘された箇所を直接指定します
+# 設定が不足していると指摘された箇所を直接指定
 project/externals/DirectXTex/Bin/
 
 # Visual Studio 2015/2017 cache/options directory
